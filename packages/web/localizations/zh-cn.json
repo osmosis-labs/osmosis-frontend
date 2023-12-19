@@ -548,7 +548,12 @@
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配"
+    "rewardDistribution": "奖励分配",
+    "aprBreakdown": {
+      "swapFees": "掉期费用",
+      "boost": "促进",
+      "total": "总年利率"
+    }
   },
   "profile": {
     "balance": "结余",
@@ -800,6 +805,7 @@
     "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
+    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
     "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
     "pastDaysReturns": "过去一天的回报",
@@ -832,5 +838,52 @@
   "unlistedAssetsEnabled": "启用非上市资产",
   "unlistedAssetsDisabled": "非上市资产已禁用",
   "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
-  "disclaimer": "免责声明"
+  "earnPage": {
+    "title": "赚",
+    "position": "位置",
+    "positions": "职位",
+    "allocation": "分配",
+    "tokensCount": "{number}标记",
+    "strategiesCount": "{number}策略",
+    "value": "价值",
+    "method": "方法",
+    "platform": "平台",
+    "scrollToSeeMore": "滚动查看更多",
+    "discoverStrategies": "发现策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "apy": "平均年产量",
+    "daily": "日常的",
+    "reward": "报酬",
+    "lock": "锁",
+    "days": "天",
+    "risk": "风险",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "platforms": "平台",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "锁定时间",
+    "specialTokens": "特殊代币",
+    "filters": "过滤器",
+    "resetFilters": "重置过滤器",
+    "saveFilters": "保存过滤器",
+    "rewards": "奖励",
+    "estimatedInYearlyRewards": "预计每年奖励",
+    "availableToClaim": "可索赔",
+    "claimAllRewards": "领取所有奖励",
+    "join": "加入",
+    "tokenFilterOptions": {
+      "my": "我的代币",
+      "all": "所有代币"
+    },
+    "rewardTypes": {
+      "all": "全部",
+      "single": "单身的",
+      "multi": "多"
+    }
+  },
+  "disclaimer": "免责声明",
+  "lvnmilk": {
+    "description": "Milkyway的 $milkTIA 和 Levana的 $LVN 现在可以在 Osmosis 上使用！"
+  }
 }

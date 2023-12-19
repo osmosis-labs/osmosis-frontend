@@ -22,10 +22,18 @@ import {
   useRef,
   useState,
 } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
 import { CheckBox, MenuSelectProps } from "~/components/control";
+import {
+  arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
+  listOptionValueEquals,
+  strictEqualFilter,
+} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import {
   MetricLoaderCell,
@@ -41,6 +49,8 @@ import { MenuOptionsModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
+
+import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -423,41 +433,53 @@ export const AllPoolsTable: FunctionComponent<{
                * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
-              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
-                ? pool.apr
-                    .toDec()
-                    .gt(
-                      inflation.inflation
-                        .toDec()
-                        .quo(new Dec(100))
-                        .mul(new Dec(100))
-                    )
-                : false;
+              const isAPRTooHigh =
+                !Boolean(pool.concentratedPoolDetail) &&
+                inflation.inflation.toDec().gt(new Dec(0))
+                  ? pool.apr
+                      .toDec()
+                      .gt(
+                        inflation.inflation
+                          .toDec()
+                          .quo(new Dec(100))
+                          .mul(new Dec(100))
+                      )
+                  : false;
+
+              let value: ReactNode | null;
+              if (isAPRTooHigh) {
+                // Only display warning when APR is too high
+                value = (
+                  <Tooltip
+                    className="w-5"
+                    content={t("highPoolInflationWarning")}
+                  >
+                    <p className="flex items-center gap-1.5">
+                      <Icon
+                        id="alert-triangle"
+                        className="h-4 w-4 text-osmoverse-400"
+                      />
+                      {pool.apr.toString()}
+                    </p>
+                  </Tooltip>
+                );
+              } else if (
+                Boolean(pool.concentratedPoolDetail) &&
+                flags.aprBreakdown
+              ) {
+                value = <ClAprBreakdownCell poolId={pool.queryPool.id} />;
+              } else if (flags._isInitialized) {
+                value = pool.apr.toString();
+              } else {
+                value = null;
+              }
 
               return (
                 <MetricLoaderCell
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
-                  value={
-                    // Only display warning when APR is too high
-                    isAPRTooHigh ? (
-                      <Tooltip
-                        className="w-5"
-                        content={t("highPoolInflationWarning")}
-                      >
-                        <p className="flex items-center gap-1.5">
-                          <Icon
-                            id="alert-triangle"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />
-                          {pool.apr.toString()}
-                        </p>
-                      </Tooltip>
-                    ) : (
-                      pool.apr.toString()
-                    )
-                  }
+                  value={value}
                 />
               );
             }
@@ -507,6 +529,8 @@ export const AllPoolsTable: FunctionComponent<{
         quickLockTokens,
         quickRemoveLiquidity,
         t,
+        flags.aprBreakdown,
+        flags._isInitialized,
       ]
     );
 
@@ -541,6 +565,20 @@ export const AllPoolsTable: FunctionComponent<{
         }
       },
       manualSorting: true,
+      filterFns: {
+        /**
+         * these filters, even though they are not used in this table instance,
+         * are necessary to suppress errors derived by the "@tanstack/table-core"
+         * module declaration in the earn page.
+         *
+         * @fabryscript
+         */
+        arrLengthEquals,
+        strictEqualFilter,
+        boolEquals,
+        boolEqualsString,
+        listOptionValueEquals,
+      },
     });
 
     const handleFetchRemaining = useCallback(

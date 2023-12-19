@@ -19,6 +19,7 @@ import {
   ObservablePoolsBonding,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
+  ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
   ObservableQueryTokensPairHistoricalChart,
@@ -46,6 +47,7 @@ export class ObservablePoolWithMetric {
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore
   ) {
@@ -213,6 +215,7 @@ export class ObservablePoolsWithMetric {
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
     protected readonly userSettings: UserSettings
@@ -339,6 +342,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
     protected readonly userSettings: UserSettings

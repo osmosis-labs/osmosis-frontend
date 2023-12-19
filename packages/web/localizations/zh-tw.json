@@ -548,7 +548,12 @@
     "myPools": "我的流動性池",
     "poolId": "流動性池 #{id}",
     "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發還有"
+    "rewardDistribution": "距下次獎勵分發還有",
+    "aprBreakdown": {
+      "swapFees": "掉期費用",
+      "boost": "促進",
+      "total": "總年利率"
+    }
   },
   "profile": {
     "balance": "結餘",
@@ -800,6 +805,7 @@
     "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
+    "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
     "provideLiquidity": "提供流動性並賺取費用和掉期費用",
     "yourBalance": "您的餘額",
     "pastDaysReturns": "過去一天的回報",
@@ -832,5 +838,52 @@
   "unlistedAssetsEnabled": "啟用非上市資產",
   "unlistedAssetsDisabled": "非上市資產已停用",
   "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
-  "disclaimer": "免責聲明"
+  "earnPage": {
+    "title": "賺",
+    "position": "位置",
+    "positions": "職位",
+    "allocation": "分配",
+    "tokensCount": "{number}標記",
+    "strategiesCount": "{number}策略",
+    "value": "價值",
+    "method": "方法",
+    "platform": "平台",
+    "scrollToSeeMore": "捲動查看更多",
+    "discoverStrategies": "發現策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "apy": "平均年產量",
+    "daily": "日常的",
+    "reward": "報酬",
+    "lock": "鎖",
+    "days": "天",
+    "risk": "風險",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "platforms": "平台",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "鎖定時間",
+    "specialTokens": "特殊代幣",
+    "filters": "過濾器",
+    "resetFilters": "重置過濾器",
+    "saveFilters": "保存過濾器",
+    "rewards": "獎勵",
+    "estimatedInYearlyRewards": "預計每年獎勵",
+    "availableToClaim": "可索賠",
+    "claimAllRewards": "領取所有獎勵",
+    "join": "加入",
+    "tokenFilterOptions": {
+      "my": "我的代幣",
+      "all": "所有代幣"
+    },
+    "rewardTypes": {
+      "all": "全部",
+      "single": "單身的",
+      "multi": "多"
+    }
+  },
+  "disclaimer": "免責聲明",
+  "lvnmilk": {
+    "description": "Milkyway的 $milkTIA 和 Levana的 $LVN 現在可以在 Osmosis 上使用！"
+  }
 }

@@ -6,6 +6,7 @@ import {
   IPriceStore,
   ObservableQueryActiveGauges,
   ObservableQueryClPoolAvgAprs,
+  ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
   ObservableQueryTokensPairHistoricalChart,
@@ -37,6 +38,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
       queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,

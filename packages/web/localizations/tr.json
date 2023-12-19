@@ -548,7 +548,12 @@
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
     "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre"
+    "rewardDistribution": "Ödül dağıtımına kalan süre",
+    "aprBreakdown": {
+      "swapFees": "Takas ücretleri",
+      "boost": "Artırmak",
+      "total": "Toplam Nisan"
+    }
   },
   "profile": {
     "balance": "denklemek",
@@ -800,6 +805,7 @@
     "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
     "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
+    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
     "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
     "pastDaysReturns": "Geçmiş günün getirileri",
@@ -832,5 +838,52 @@
   "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
   "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
   "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "earnPage": {
+    "title": "Para kazanmak",
+    "position": "Konum",
+    "positions": "Pozisyonlar",
+    "allocation": "Paylaştırma",
+    "tokensCount": "{number} jeton",
+    "strategiesCount": "{number} stratejiler",
+    "value": "Değer",
+    "method": "Yöntem",
+    "platform": "platformu",
+    "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
+    "discoverStrategies": "Stratejileri Keşfedin",
+    "myStrategies": "Stratejilerim",
+    "strategyPlatform": "Strateji / Platform",
+    "apy": "APY",
+    "daily": "Günlük",
+    "reward": "Ödül",
+    "lock": "Kilit",
+    "days": "günler",
+    "risk": "Risk",
+    "strategyMethod": "Strateji Yöntemi",
+    "allMethods": "Tüm Yöntemler",
+    "platforms": "Platformlar",
+    "allPlatforms": "Tüm Platformlar",
+    "lockingDuration": "Kilitleme Süresi",
+    "specialTokens": "Özel Jetonlar",
+    "filters": "Filtreler",
+    "resetFilters": "Filtreleri Sıfırla",
+    "saveFilters": "Filtreleri Kaydet",
+    "rewards": "Ödüller",
+    "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
+    "availableToClaim": "talep edilebilir",
+    "claimAllRewards": "Tüm ödülleri talep edin",
+    "join": "Katılmak",
+    "tokenFilterOptions": {
+      "my": "Jetonlarım",
+      "all": "Tüm Jetonlar"
+    },
+    "rewardTypes": {
+      "all": "Tüm",
+      "single": "Bekar",
+      "multi": "Çok"
+    }
+  },
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "lvnmilk": {
+    "description": "Milkyway'in $milkTIA ve Levana'nın $LVN artık Osmosis'te kullanılabilir!"
+  }
 }

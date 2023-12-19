@@ -548,7 +548,12 @@
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in"
+    "rewardDistribution": "Recompensele se distribuie in",
+    "aprBreakdown": {
+      "swapFees": "Taxe de schimb",
+      "boost": "Boost",
+      "total": "DAE totală"
+    }
   },
   "profile": {
     "balance": "Balanta",
@@ -800,6 +805,7 @@
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
     "pastDaysReturns": "Revenirile din zilele trecute",
@@ -832,5 +838,52 @@
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
   "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
-  "disclaimer": "Disclaimer"
+  "earnPage": {
+    "title": "Câştiga",
+    "position": "Poziţie",
+    "positions": "Poziții",
+    "allocation": "Alocare",
+    "tokensCount": "{number} jetoane",
+    "strategiesCount": "{number} strategii",
+    "value": "Valoare",
+    "method": "Metodă",
+    "platform": "Platformă",
+    "scrollToSeeMore": "derulați pentru a vedea mai multe",
+    "discoverStrategies": "Descoperiți strategiile",
+    "myStrategies": "Strategiile mele",
+    "strategyPlatform": "Strategie / Platformă",
+    "apy": "APY",
+    "daily": "Zilnic",
+    "reward": "Răsplată",
+    "lock": "Lacăt",
+    "days": "zile",
+    "risk": "Risc",
+    "strategyMethod": "Metoda Strategiei",
+    "allMethods": "Toate Metoda",
+    "platforms": "Platforme",
+    "allPlatforms": "Toate platformele",
+    "lockingDuration": "Durata de blocare",
+    "specialTokens": "Jetoane speciale",
+    "filters": "Filtre",
+    "resetFilters": "Resetați filtrele",
+    "saveFilters": "Salvați filtrele",
+    "rewards": "Recompense",
+    "estimatedInYearlyRewards": "Estimat în recompense anuale",
+    "availableToClaim": "disponibil pentru revendicare",
+    "claimAllRewards": "Revendicați toate recompensele",
+    "join": "A te alatura",
+    "tokenFilterOptions": {
+      "my": "Jetoanele mele",
+      "all": "Toate jetoanele"
+    },
+    "rewardTypes": {
+      "all": "Toate",
+      "single": "Singur",
+      "multi": "Multi"
+    }
+  },
+  "disclaimer": "Disclaimer",
+  "lvnmilk": {
+    "description": "$milkTIA de la Milkyway și $LVN de la Levana sunt acum disponibile pe Osmosis!"
+  }
 }

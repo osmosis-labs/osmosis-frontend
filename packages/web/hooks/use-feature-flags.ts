@@ -16,10 +16,12 @@ export type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "unlistedAssets"
+  | "earnPage"
   | "sidecarRouter"
   | "legacyRouter"
   | "tfmRouter"
-  | "osmosisUpdatesPopUp";
+  | "osmosisUpdatesPopUp"
+  | "aprBreakdown";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
