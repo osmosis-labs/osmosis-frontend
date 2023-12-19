@@ -30,7 +30,7 @@ import {
   GetBridgeQuoteParams,
   GetTransferStatusParams,
 } from "../types";
-import { EvmTx, Msg, MultiChainMsg } from "./types";
+import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 const providerName = "Skip" as const;
 const logoUrl = "/bridges/skip.svg" as const;
@@ -210,7 +210,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           }
         }
 
-        const messages = await this.skipClient.messages({
+        const { msgs } = await this.skipClient.messages({
           address_list: addressList,
           source_asset_denom: route.source_asset_denom,
           source_asset_chain_id: route.source_asset_chain_id,
@@ -224,7 +224,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
           fromAddress,
-          messages
+          msgs
         );
 
         if (!transactionRequest) {
@@ -340,7 +340,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   private async createTransaction(
     chainID: string,
     address: string,
-    messages: Msg[]
+    messages: SkipMsg[]
   ) {
     for (const message of messages) {
       if ("evm_tx" in message) {
@@ -358,7 +358,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   private async createCosmosTransaction(
-    message: MultiChainMsg
+    message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest> {
     const messageData = JSON.parse(message.msg);
 
@@ -391,7 +391,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   private async createEvmTransaction(
     chainID: string,
     sender: string,
-    message: EvmTx
+    message: SkipEvmTx
   ): Promise<EvmBridgeTransactionRequest> {
     let approvalTransactionRequest;
     if (message.required_erc20_approvals.length > 0) {

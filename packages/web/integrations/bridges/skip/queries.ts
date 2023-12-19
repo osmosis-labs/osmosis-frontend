@@ -1,79 +1,69 @@
+import { apiClient } from "@osmosis-labs/utils";
+
 import {
-  Asset,
-  Chain,
-  MsgsRequest,
-  MsgsResponse,
-  RouteRequest,
-  RouteResponse,
-  TxStatusResponse,
+  SkipAsset,
+  SkipChain,
+  SkipMsgsRequest,
+  SkipMsgsResponse,
+  SkipRouteRequest,
+  SkipRouteResponse,
+  SkipTxStatusResponse,
 } from "./types";
 
 class SkipApiClient {
   async assets({ chainID }: { chainID?: string } = {}) {
-    const urlParams = new URLSearchParams({
-      include_evm_assets: "true",
-    });
+    const url = new URL("/v1/fungible/assets", "https://api.skip.money");
+
+    url.searchParams.append("include_evm_assets", "true");
 
     if (chainID) {
-      urlParams.set("chain_id", chainID);
+      url.searchParams.set("chain_id", chainID);
     }
 
-    const response = await fetch(
-      `https://api.skip.money/v1/fungible/assets?${urlParams.toString()}`
-    );
-
-    const data = (await response.json()) as {
-      chain_to_assets_map: Record<string, { assets: Asset[] }>;
-    };
+    const data = await apiClient<{
+      chain_to_assets_map: Record<string, { assets: SkipAsset[] }>;
+    }>(url.toString());
 
     return data.chain_to_assets_map;
   }
 
   async chains() {
-    const urlParams = new URLSearchParams({
-      include_evm: "true",
-    });
+    const url = new URL("/v1/info/chains", "https://api.skip.money");
 
-    const response = await fetch(
-      `https://api.skip.money/v1/info/chains?${urlParams.toString()}`
-    );
+    url.searchParams.append("include_evm", "true");
 
-    const data = (await response.json()) as { chains: Chain[] };
+    const data = await apiClient<{
+      chains: SkipChain[];
+    }>(url.toString());
 
     return data.chains;
   }
 
-  async route(options: RouteRequest) {
-    const response = await fetch(`https://api.skip.money/v2/fungible/route`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...options,
-        cumulative_affiliate_fee_bps:
-          options.cumulative_affiliate_fee_bps ?? "0",
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message ?? "failed to fetch route");
-    }
-
-    return data as RouteResponse;
+  async route(options: SkipRouteRequest) {
+    return apiClient<SkipRouteResponse>(
+      "https://api.skip.money/v2/fungible/route",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          ...options,
+          cumulative_affiliate_fee_bps:
+            options.cumulative_affiliate_fee_bps ?? "0",
+        }),
+      }
+    );
   }
 
-  async messages(options: MsgsRequest) {
-    const response = await fetch(`https://api.skip.money/v2/fungible/msgs`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...options,
-        slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
-      }),
-    });
-
-    const data = (await response.json()) as MsgsResponse;
-
-    return data.msgs;
+  async messages(options: SkipMsgsRequest) {
+    return apiClient<SkipMsgsResponse>(
+      `https://api.skip.money/v2/fungible/msgs`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          ...options,
+          slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
+        }),
+      }
+    );
   }
 
   async transactionStatus({
@@ -83,13 +73,12 @@ class SkipApiClient {
     chainID: string;
     txHash: string;
   }) {
-    const response = await fetch(
-      `https://api.skip.money/v2/tx/status?chain_id=${chainID}&tx_hash=${txHash}`
-    );
+    const url = new URL("/v2/tx/status", "https://api.skip.money");
 
-    const data = await response.json();
+    url.searchParams.append("chain_id", chainID);
+    url.searchParams.append("tx_hash", txHash);
 
-    return data as TxStatusResponse;
+    return apiClient<SkipTxStatusResponse>(url.toString());
   }
 }
 

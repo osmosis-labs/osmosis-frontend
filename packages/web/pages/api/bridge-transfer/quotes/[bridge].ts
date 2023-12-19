@@ -39,8 +39,6 @@ export default async function quoteByBridge(
     });
   }
 
-  console.log("quoteByBridge: ", req.url);
-
   const { bridge: bridgeProviderId, ...quoteStringParams } = req.query as {
     fromAddress: string;
     fromAmount: string;
@@ -62,14 +60,10 @@ export default async function quoteByBridge(
       lruCache
     );
 
-    console.log("bridgeManager: ", bridgeManager);
-
     const bridgeProvider =
       bridgeManager.bridges[
         bridgeProviderId as keyof typeof bridgeManager.bridges
       ];
-
-    console.log("bridgeProvider: ", bridgeProvider);
 
     if (!bridgeProvider) {
       return res.status(400).json({ error: "Invalid bridge provider id" });

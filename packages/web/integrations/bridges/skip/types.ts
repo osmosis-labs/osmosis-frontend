@@ -1,4 +1,4 @@
-export type Asset = {
+export type SkipAsset = {
   denom: string;
   chain_id: string;
 
@@ -17,7 +17,7 @@ export type Asset = {
   recommended_symbol?: string;
 };
 
-export type Chain = {
+export type SkipChain = {
   chain_name: string;
   chain_id: string;
   pfm_enabled: boolean;
@@ -28,7 +28,7 @@ export type Chain = {
   chain_type: string;
 };
 
-export type RouteRequestBase = {
+export type SkipRouteRequestBase = {
   source_asset_denom: string;
   source_asset_chain_id: string;
   dest_asset_denom: string;
@@ -38,19 +38,21 @@ export type RouteRequestBase = {
   client_id?: string;
 };
 
-export type RouteRequestGivenIn = RouteRequestBase & {
+export type SkipRouteRequestGivenIn = SkipRouteRequestBase & {
   amount_in: string;
   amount_out?: never;
 };
 
-export type RouteRequestGivenOut = RouteRequestBase & {
+export type SkipRouteRequestGivenOut = SkipRouteRequestBase & {
   amount_in?: never;
   amount_out: string;
 };
 
-export type RouteRequest = RouteRequestGivenIn | RouteRequestGivenOut;
+export type SkipRouteRequest =
+  | SkipRouteRequestGivenIn
+  | SkipRouteRequestGivenOut;
 
-export type RouteResponse = {
+export type SkipRouteResponse = {
   source_asset_denom: string;
   source_asset_chain_id: string;
   dest_asset_denom: string;
@@ -58,12 +60,12 @@ export type RouteResponse = {
   amount_in: string;
   amount_out: string;
 
-  operations: Operation[];
+  operations: SkipOperation[];
   chain_ids: string[];
 
   does_swap: boolean;
   estimated_amount_out?: string;
-  swap_venue?: SwapVenue;
+  swap_venue?: SkipSwapVenue;
 
   txs_required: number;
 
@@ -72,12 +74,12 @@ export type RouteResponse = {
   swap_price_impact_percent?: string;
 };
 
-export type Operation =
-  | { transfer: Transfer }
-  | { swap: Swap }
-  | { axelar_transfer: AxelarTransfer };
+export type SkipOperation =
+  | { transfer: SkipTransfer }
+  | { swap: SkipSwap }
+  | { axelar_transfer: SkipAxelarTransfer };
 
-export type Transfer = {
+export type SkipTransfer = {
   port: string;
   channel: string;
   chain_id: string;
@@ -86,32 +88,32 @@ export type Transfer = {
   supports_memo: boolean;
 };
 
-export type Swap = (
-  | { swap_in: SwapExactCoinIn }
-  | { swap_out: SwapExactCoinOut }
+export type SkipSwap = (
+  | { swap_in: SkipSwapExactCoinIn }
+  | { swap_out: SkipSwapExactCoinOut }
 ) & {
   estimated_affiliate_fee?: string;
 };
 
-export type SwapExactCoinIn = {
-  swap_venue: SwapVenue;
-  swap_operations: SwapOperation[];
+export type SkipSwapExactCoinIn = {
+  swap_venue: SkipSwapVenue;
+  swap_operations: SkipSwapOperation[];
   swap_amount_in?: string;
   price_impact_percent?: string;
 };
 
-export type SwapVenue = {
+export type SkipSwapVenue = {
   name: string;
   chain_id: string;
 };
 
-export type SwapOperation = {
+export type SkipSwapOperation = {
   pool: string;
   denom_in: string;
   denom_out: string;
 };
 
-export type AxelarTransfer = {
+export type SkipAxelarTransfer = {
   from_chain: string;
   from_chain_id: string;
   to_chain: string;
@@ -119,18 +121,18 @@ export type AxelarTransfer = {
   asset: string;
   should_unwrap: boolean;
   fee_amount: string;
-  fee_asset: Asset;
+  fee_asset: SkipAsset;
   is_testnet: boolean;
 };
 
-export type SwapExactCoinOut = {
-  swap_venue: SwapVenue;
-  swap_operations: SwapOperation[];
+export type SkipSwapExactCoinOut = {
+  swap_venue: SkipSwapVenue;
+  swap_operations: SkipSwapOperation[];
   swap_amount_out: string;
   price_impact_percent?: string;
 };
 
-export type MsgsRequest = {
+export type SkipMsgsRequest = {
   source_asset_denom: string;
   source_asset_chain_id: string;
   dest_asset_denom: string;
@@ -138,48 +140,50 @@ export type MsgsRequest = {
   amount_in: string;
   amount_out: string;
   address_list: string[];
-  operations: Operation[];
+  operations: SkipOperation[];
 
   estimated_amount_out?: string;
   slippage_tolerance_percent?: string;
-  affiliates?: Affiliate[];
+  affiliates?: SkipAffiliate[];
 
   client_id?: string;
 };
 
-export type Affiliate = {
+export type SkipAffiliate = {
   basis_points_fee: string;
   address: string;
 };
 
-export type MsgsResponse = {
-  msgs: Msg[];
+export type SkipMsgsResponse = {
+  msgs: SkipMsg[];
 };
 
-export type Msg = { multi_chain_msg: MultiChainMsg } | { evm_tx: EvmTx };
+export type SkipMsg =
+  | { multi_chain_msg: SkipMultiChainMsg }
+  | { evm_tx: SkipEvmTx };
 
-export type MultiChainMsg = {
+export type SkipMultiChainMsg = {
   chain_id: string;
   path: string[];
   msg: string;
   msg_type_url: string;
 };
 
-export type EvmTx = {
+export type SkipEvmTx = {
   chain_id: string;
   to: string;
   value: string;
   data: string;
-  required_erc20_approvals: ERC20Approval[];
+  required_erc20_approvals: SkipERC20Approval[];
 };
 
-export type ERC20Approval = {
+export type SkipERC20Approval = {
   token_contract: string;
   spender: string;
   amount: string;
 };
 
-export type StatusState =
+export type SkipStatusState =
   | "STATE_UNKNOWN"
   | "STATE_SUBMITTED"
   | "STATE_PENDING"
@@ -189,6 +193,6 @@ export type StatusState =
   | "STATE_COMPLETED_SUCCESS"
   | "STATE_COMPLETED_ERROR";
 
-export type TxStatusResponse = {
-  state: StatusState;
+export type SkipTxStatusResponse = {
+  state: SkipStatusState;
 };
