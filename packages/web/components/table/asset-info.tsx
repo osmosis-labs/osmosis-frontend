@@ -583,13 +583,13 @@ export const AssetActionsCell: AssetInfoCellComponent<{
 }) => (
   <div className="flex items-center gap-2">
     <button
-      className="h-8 w-8 rounded-full bg-[#19183A] p-1"
+      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
       onClick={() => onDeposit(coinDenom)}
     >
       <Icon className="m-auto" id="deposit" width={16} height={16} />
     </button>
     <button
-      className="h-8 w-8 rounded-full bg-[#19183A] p-1"
+      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
       onClick={() => onWithdraw(coinDenom)}
     >
       <Icon className="m-auto" id="withdraw" width={16} height={16} />
