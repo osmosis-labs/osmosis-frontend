@@ -38,7 +38,7 @@ export const RewardsCard: React.FC<{
       <Button
         disabled={disabled}
         mode="unstyled"
-        className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden border-osmoverse-600 bg-transparent !p-0 disabled:cursor-not-allowed disabled:opacity-50"
+        className="relative flex w-full cursor-pointer flex-col justify-start !p-0 disabled:cursor-not-allowed disabled:opacity-50"
         onClick={onClick}
       >
         <div className="relative h-full w-full">
