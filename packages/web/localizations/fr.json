@@ -881,9 +881,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Clause de non-responsabilité",
-  "namada": {
-    "description": "Les utilisateurs d'Osmosis peuvent être éligibles pour la demande de lancement de Namada.",
-    "link": "Vérifiez votre éligibilité $NAM ici!"
-  }
+  "disclaimer": "Clause de non-responsabilité"
 }

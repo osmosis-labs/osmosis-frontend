@@ -881,9 +881,5 @@
       "multi": "Múltiplo"
     }
   },
-  "disclaimer": "Isenção de responsabilidade",
-  "namada": {
-    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
-    "link": "Verifique sua elegibilidade para $NAM aqui!"
-  }
+  "disclaimer": "Isenção de responsabilidade"
 }

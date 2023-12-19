@@ -881,9 +881,5 @@
       "multi": "다중"
     }
   },
-  "disclaimer": "부인 성명",
-  "namada": {
-    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
-    "link": "여기에서 $NAM 자격을 확인하세요!"
-  }
+  "disclaimer": "부인 성명"
 }

@@ -881,9 +881,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Disclaimer",
-  "namada": {
-    "description": "Osmosis users may be eligible for the Namada launch claim.",
-    "link": "Check your $NAM eligibility here!"
-  }
+  "disclaimer": "Disclaimer"
 }

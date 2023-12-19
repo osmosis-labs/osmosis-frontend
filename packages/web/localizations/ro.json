@@ -881,9 +881,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Disclaimer",
-  "namada": {
-    "description": "Utilizatorii Osmosis pot fi eligibili pentru cererea de lansare Namada.",
-    "link": "Verificați eligibilitatea pentru $NAM aici!"
-  }
+  "disclaimer": "Disclaimer"
 }

@@ -881,9 +881,5 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免责声明",
-  "namada": {
-    "description": "Osmosis 用户可能有资格参加 Namada 发布申请。",
-    "link": "在此检查您的 $NAM 资格！"
-  }
+  "disclaimer": "免责声明"
 }

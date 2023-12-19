@@ -881,9 +881,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Descargo de responsabilidad",
-  "namada": {
-    "description": "Los usuarios de Osmosis pueden ser elegibles para la reclamación del lanzamiento de Namada.",
-    "link": "¡Verifica tu elegibilidad para $NAM aquí!"
-  }
+  "disclaimer": "Descargo de responsabilidad"
 }

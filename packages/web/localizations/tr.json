@@ -881,9 +881,5 @@
       "multi": "Çok"
     }
   },
-  "disclaimer": "Sorumluluk reddi beyanı",
-  "namada": {
-    "description": "Osmosis kullanıcıları, Namada lansman talebi için uygun olabilirler.",
-    "link": "$NAM uygunluğunuzu buradan kontrol edin!"
-  }
+  "disclaimer": "Sorumluluk reddi beyanı"
 }

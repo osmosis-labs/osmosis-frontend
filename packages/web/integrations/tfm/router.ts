@@ -15,7 +15,10 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly tfmBaseUrl: string
+    protected readonly tfmBaseUrl: string,
+    protected readonly calcAssetPrice: (
+      coinMinimalDenom: string
+    ) => Promise<Dec | undefined>
   ) {
     this.baseUrl = new URL(tfmBaseUrl);
   }
@@ -44,18 +47,26 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
     try {
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
+      const amount = new Int(result.returnAmount);
 
-      const priceImpactTokenOut = new Dec(result.routes[0].priceImpact);
+      const priceImpactTokenOut = await calculatePriceImpact(
+        tokenIn,
+        {
+          denom: tokenOutDenom,
+          amount,
+        },
+        this.calcAssetPrice
+      );
 
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
-      if (priceImpactTokenOut.gt(new Dec(0.5))) {
+      if (priceImpactTokenOut?.gt(new Dec(0.5))) {
         throw new NotEnoughLiquidityError();
       }
 
       // convert quote response to SplitTokenInQuote
       return {
-        amount: new Int(result.returnAmount),
+        amount,
         split: result.routes[0].routes.map(({ inputAmount, operations }) => {
           return {
             initialAmount: new Int(inputAmount),
@@ -88,4 +99,26 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       );
     }
   }
+}
+
+async function calculatePriceImpact(
+  tokenIn: Token,
+  tokenOut: Token,
+  calcAssetPrice: (coinMinimalDenom: string) => Promise<Dec | undefined>
+): Promise<Dec | undefined> {
+  const tokenInPrice = await calcAssetPrice(tokenIn.denom).catch(() => {
+    return undefined;
+  });
+  const tokenOutPrice = await calcAssetPrice(tokenOut.denom).catch(() => {
+    return undefined;
+  });
+
+  if (!tokenInPrice || !tokenOutPrice) {
+    return undefined;
+  }
+
+  const tokenInValue = tokenIn.amount.toDec().mul(tokenInPrice);
+  const tokenOutValue = tokenOut.amount.toDec().mul(tokenOutPrice);
+
+  return tokenOutValue.sub(tokenInValue).quo(tokenInValue);
 }

@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -432,46 +433,53 @@ export const AllPoolsTable: FunctionComponent<{
                * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
-              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
-                ? pool.apr
-                    .toDec()
-                    .gt(
-                      inflation.inflation
-                        .toDec()
-                        .quo(new Dec(100))
-                        .mul(new Dec(100))
-                    )
-                : false;
+              const isAPRTooHigh =
+                !Boolean(pool.concentratedPoolDetail) &&
+                inflation.inflation.toDec().gt(new Dec(0))
+                  ? pool.apr
+                      .toDec()
+                      .gt(
+                        inflation.inflation
+                          .toDec()
+                          .quo(new Dec(100))
+                          .mul(new Dec(100))
+                      )
+                  : false;
+
+              let value: ReactNode | null;
+              if (isAPRTooHigh) {
+                // Only display warning when APR is too high
+                value = (
+                  <Tooltip
+                    className="w-5"
+                    content={t("highPoolInflationWarning")}
+                  >
+                    <p className="flex items-center gap-1.5">
+                      <Icon
+                        id="alert-triangle"
+                        className="h-4 w-4 text-osmoverse-400"
+                      />
+                      {pool.apr.toString()}
+                    </p>
+                  </Tooltip>
+                );
+              } else if (
+                Boolean(pool.concentratedPoolDetail) &&
+                flags.aprBreakdown
+              ) {
+                value = <ClAprBreakdownCell poolId={pool.queryPool.id} />;
+              } else if (flags._isInitialized) {
+                value = pool.apr.toString();
+              } else {
+                value = null;
+              }
 
               return (
                 <MetricLoaderCell
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
-                  value={
-                    // Only display warning when APR is too high
-                    isAPRTooHigh ? (
-                      <Tooltip
-                        className="w-5"
-                        content={t("highPoolInflationWarning")}
-                      >
-                        <p className="flex items-center gap-1.5">
-                          <Icon
-                            id="alert-triangle"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />
-                          {pool.apr.toString()}
-                        </p>
-                      </Tooltip>
-                    ) : Boolean(pool.concentratedPoolDetail) ? (
-                      <ClAprBreakdownCell
-                        poolId={pool.queryPool.id}
-                        apr={pool.apr}
-                      />
-                    ) : (
-                      pool.apr.toString()
-                    )
-                  }
+                  value={value}
                 />
               );
             }
@@ -521,6 +529,8 @@ export const AllPoolsTable: FunctionComponent<{
         quickLockTokens,
         quickRemoveLiquidity,
         t,
+        flags.aprBreakdown,
+        flags._isInitialized,
       ]
     );
 
