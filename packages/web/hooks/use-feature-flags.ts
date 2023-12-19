@@ -46,6 +46,5 @@ export const useFeatureFlags = () => {
       : launchdarklyFlags.notifications,
     _isInitialized: isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-    multiBridgeProviders: true,
   } as Record<ModifiedFlags, boolean>;
 };
