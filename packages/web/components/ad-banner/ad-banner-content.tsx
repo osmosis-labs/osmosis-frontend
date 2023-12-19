@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import Image from "next/image";
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 
 import { Ad } from "~/components/ad-banner/ad-banner-types";
 import { Icon } from "~/components/assets";
+import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 
 type AdBannerContentProps = Ad;
 
@@ -18,21 +19,13 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
     arrow_color,
     gradient,
   }) => {
-    const [showBanner, setShowBanner] = useState(false);
-
-    useEffect(() => {
-      const bannerStatus = localStorage.getItem('bannerStatus');
-      if (bannerStatus !== 'closed') {
-        setShowBanner(true);
-      }
-    }, []);
+    const [showBanner, setShowBanner] = useLocalStorageState('bannerStatus', 'closed');
 
     const closeBanner = () => {
-      localStorage.setItem('bannerStatus', 'closed');
-      setShowBanner(false);
+      setShowBanner('closed');
     };
 
-    if (!showBanner) {
+    if (showBanner === 'closed') {
       return null;
     }
 
