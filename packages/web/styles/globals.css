@@ -336,9 +336,14 @@
   white-space-collapse: break-spaces;
 }
 
-.mask1 {
-  -webkit-mask-image: url(w3logo.png);
-  mask-image: url(w3logo.png);
-  -webkit-mask-repeat: no-repeat;
+.folder-left {
+  mask-image: url("./folder-left-tab.png");
+  mask-size: cover;
+  mask-repeat: no-repeat;
+}
+
+.folder-right {
+  mask-image: url("./folder-right-tab.png");
+  mask-size: cover;
   mask-repeat: no-repeat;
 }
