@@ -881,8 +881,5 @@
       "multi": "다중"
     }
   },
-  "disclaimer": "부인 성명",
-  "lvnmilk": {
-    "description": "Milkyway의 $milkTIA와 Levana의 $LVN이 이제 Osmosis에서 사용 가능합니다!"
-  }
+  "disclaimer": "부인 성명"
 }
