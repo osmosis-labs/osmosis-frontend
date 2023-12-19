@@ -54,7 +54,9 @@ type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+  onDeposit: (coinDenom: string) => void;
+  onWithdraw: (coinDenom: string) => void;
+}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
@@ -178,7 +180,13 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: () => <div>buttons</div>,
+        cell: (cell) => (
+          <AssetActionsCell
+            {...cell}
+            onDeposit={onDeposit}
+            onWithdraw={onWithdraw}
+          />
+        ),
       }),
     ],
     [
@@ -189,6 +197,8 @@ export const AssetsInfoTable: FunctionComponent<{
       sortDirection,
       addFavoriteDenom,
       removeFavoriteDenom,
+      onDeposit,
+      onWithdraw,
     ]
   );
 
@@ -559,6 +569,32 @@ const SortHeader: FunctionComponent<
       />
     )}
   </button>
+);
+
+export const AssetActionsCell: AssetInfoCellComponent<{
+  onDeposit: (coinDenom: string) => void;
+  onWithdraw: (coinDenom: string) => void;
+}> = ({
+  row: {
+    original: { coinDenom },
+  },
+  onDeposit,
+  onWithdraw,
+}) => (
+  <div className="flex items-center gap-2">
+    <button
+      className="h-8 w-8 rounded-full bg-[#19183A] p-1"
+      onClick={() => onDeposit(coinDenom)}
+    >
+      <Icon className="m-auto" id="deposit" width={16} height={16} />
+    </button>
+    <button
+      className="h-8 w-8 rounded-full bg-[#19183A] p-1"
+      onClick={() => onWithdraw(coinDenom)}
+    >
+      <Icon className="m-auto" id="withdraw" width={16} height={16} />
+    </button>
+  </div>
 );
 
 const TableControls: FunctionComponent<{
