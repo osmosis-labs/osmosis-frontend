@@ -41,6 +41,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
+import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../spinner";
@@ -70,6 +71,10 @@ export const AssetsInfoTable: FunctionComponent<{
   const [sortKey, setSortKey] = useState<SortKey>();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
+  const [selectedView, setSelectedView] = useState<"myTokens" | "allTokens">(
+    "allTokens"
+  );
+
   // Query
   const {
     data: assetPagesData,
@@ -88,6 +93,12 @@ export const AssetsInfoTable: FunctionComponent<{
             keyPath: sortKey,
             direction: sortDirection,
           }
+        : // if the user is viewing their tokens and isn't sorting, secretly sort by balance so that infinite scroll more effectively finds their balances
+        selectedView === "myTokens"
+        ? {
+            keyPath: "usdValue",
+            direction: "desc",
+          }
         : undefined,
     },
     {
@@ -96,10 +107,12 @@ export const AssetsInfoTable: FunctionComponent<{
       initialCursor: 0,
     }
   );
-  const assetsData = useMemo(
-    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [assetPagesData]
-  );
+  const assetsData = useMemo(() => {
+    const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
+    if (selectedView === "myTokens")
+      return assets.filter((a) => a.amount?.toDec().isPositive());
+    return assets;
+  }, [assetPagesData, selectedView]);
 
   // Define columns
   const columnHelper = createColumnHelper<AssetInfo>();
@@ -252,6 +265,8 @@ export const AssetsInfoTable: FunctionComponent<{
         selectedTimeFrame={selectedTimeFrame}
         setSelectedTimeFrame={setSelectedTimeFrame}
         setSearchQuery={setSearchQuery}
+        selectedView={selectedView}
+        setSelectedView={setSelectedView}
       />
       <table className="w-full">
         <thead>
@@ -556,7 +571,15 @@ const TableControls: FunctionComponent<{
   selectedTimeFrame: CommonHistoricalPriceTimeFrame;
   setSelectedTimeFrame: (timeFrame: CommonHistoricalPriceTimeFrame) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ selectedTimeFrame, setSelectedTimeFrame, setSearchQuery }) => {
+  selectedView: "myTokens" | "allTokens";
+  setSelectedView: (view: "myTokens" | "allTokens") => void;
+}> = ({
+  selectedTimeFrame,
+  setSelectedTimeFrame,
+  setSearchQuery,
+  selectedView,
+  setSelectedView,
+}) => {
   const { t } = useTranslation();
 
   const [searchInput, _, setSearchInput, searchQueryInput] =
@@ -570,27 +593,39 @@ const TableControls: FunctionComponent<{
   );
 
   return (
-    <div className="flex h-12 w-full items-center gap-2">
-      <SearchBox
-        className="!w-full"
-        currentValue={searchInput}
-        onInput={setSearchInput}
-        placeholder={t("assets.table.search")}
-      />
-      <SelectMenu
-        classes={useConst({ container: "h-full" })}
+    <div className="flex h-12 w-full items-center gap-5">
+      <div className="flex h-12 w-full gap-3">
+        <SearchBox
+          className="!w-full"
+          currentValue={searchInput}
+          onInput={setSearchInput}
+          placeholder={t("assets.table.search")}
+        />
+        <SelectMenu
+          classes={useConst({ container: "h-full" })}
+          options={useConst([
+            { id: "1H", display: "1H" },
+            { id: "1D", display: "1D" },
+            { id: "1W", display: "1W" },
+            { id: "1M", display: "1M" },
+          ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
+          defaultSelectedOptionId={selectedTimeFrame}
+          onSelect={useCallback(
+            (id: string) =>
+              setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
+            [setSelectedTimeFrame]
+          )}
+        />
+      </div>
+      <MenuToggle
         options={useConst([
-          { id: "1H", display: "1H" },
-          { id: "1D", display: "1D" },
-          { id: "1W", display: "1W" },
-          { id: "1M", display: "1M" },
-        ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
-        defaultSelectedOptionId={selectedTimeFrame}
-        onSelect={useCallback(
-          (id: string) =>
-            setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
-          [setSelectedTimeFrame]
-        )}
+          { id: "myTokens", display: "My Tokens" },
+          { id: "allTokens", display: "All Tokens" },
+        ])}
+        selectedOptionId={selectedView as string}
+        onSelect={(optionId) =>
+          setSelectedView(optionId as "myTokens" | "allTokens")
+        }
       />
     </div>
   );
