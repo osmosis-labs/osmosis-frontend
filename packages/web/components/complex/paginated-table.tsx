@@ -2,7 +2,6 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -76,32 +75,36 @@ export const PaginatedTable = ({
           position: "relative",
         }}
       >
-    {virtualRows.map((virtualRow) => {
-      const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-      const isCosmwasmPool = row.original.queryPool.type === 'cosmwasm'; // replace 'cosmwasm' with the correct identifier for cosmwasm pools
-      return (
-        <Link
-          key={row.original.queryPool.id}
-          href={getPoolLink(row.original.queryPool)}
-          passHref
-          legacyBehavior
-        >
-          <a
-            target={isCosmwasmPool ? "_blank" : "_self"}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start - topOffset}px)`,
-            }}
-          >
-            <MobileTableRow row={row} />
-          </a>
-        </Link>
-      );
-    })}
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+          return (
+            <a
+              key={row.original.queryPool.id}
+              href={getPoolLink(row.original.queryPool)}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start - topOffset}px)`,
+              }}
+              target={row.original.queryPool.type === "transmuter" ? "_blank" : "_self"}
+              rel={row.original.queryPool.type === "transmuter" ? "noopener noreferrer" : ""}
+              onClick={(e) => {
+                e.stopPropagation();
+                const link = getPoolLink(row.original.queryPool);
+                if (row.original.queryPool.type === "transmuter") {
+                  window.open(link, '_blank');
+                } else {
+                  router.push(link);
+                }
+              }}
+            >
+              <MobileTableRow row={row} />
+            </a>
+          );
+        })}
       </div>
     );
   }
@@ -158,31 +161,36 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-            <tr
-              key={row.id}
-              className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => {
-                router.push(getPoolLink(row.original.queryPool));
-              }}
-            >
-              {row.getVisibleCells().map((cell) => {
-                return (
-                  <td key={cell.id}>
-                    <a
-                      href={getPoolLink(row.original.queryPool)}
-                      target="_blank"
-                      key={virtualRow.index}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </a>
-                  </td>
-                );
-              })}
-            </tr>
+        <tr
+          key={row.id}
+          className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+          onClick={(e) => {
+            e.stopPropagation();
+            const link = getPoolLink(row.original.queryPool);
+            if (row.original.queryPool.type === "transmuter") {
+              window.open(link, '_blank');
+            } else {
+              router.push(link);
+            }
+          }}
+        >
+        {row.getVisibleCells().map((cell) => {
+          return (
+            <td key={cell.id}>
+              <a 
+                href={getPoolLink(row.original.queryPool)}
+                target={row.original.queryPool.type === "transmuter" ? "_blank" : undefined} 
+                rel={row.original.queryPool.type === "transmuter" ? "noopener noreferrer" : undefined}
+              >
+                {flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext()
+                )}
+              </a>
+            </td>
+          );
+        })}
+        </tr>
           );
         })}
         {paddingBottom > 0 && (
