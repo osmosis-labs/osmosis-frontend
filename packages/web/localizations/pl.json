@@ -880,8 +880,5 @@
       "multi": "Wielo"
     }
   },
-  "disclaimer": "Zastrzeżenie",
-  "lvnmilk": {
-    "description": "$milkTIA z Milkyway i $LVN z Levana są teraz dostępne na Osmosis!"
-  }
+  "disclaimer": "Zastrzeżenie"
 }

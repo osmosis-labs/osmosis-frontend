@@ -880,8 +880,5 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免责声明",
-  "lvnmilk": {
-    "description": "Milkyway的 $milkTIA 和 Levana的 $LVN 现在可以在 Osmosis 上使用！"
-  }
+  "disclaimer": "免责声明"
 }
