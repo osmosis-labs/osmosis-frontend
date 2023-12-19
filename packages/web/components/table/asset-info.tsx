@@ -93,12 +93,6 @@ export const AssetsInfoTable: FunctionComponent<{
             keyPath: sortKey,
             direction: sortDirection,
           }
-        : // if the user is viewing their tokens and isn't sorting, secretly sort by balance so that infinite scroll more effectively finds their balances
-        selectedView === "myTokens"
-        ? {
-            keyPath: "usdValue",
-            direction: "desc",
-          }
         : undefined,
     },
     {
