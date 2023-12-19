@@ -150,7 +150,7 @@ export const StakeDashboard: React.FC<{
           <RewardsCard
             disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
-            tooltipContent={t("stake.collectRewardsTooltip")}
+            // tooltipContent={t("stake.collectRewardsTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
               collectRewardsMinimumOsmo: Number(
                 collectRewardsMinimumOsmo.toString()
@@ -163,8 +163,12 @@ export const StakeDashboard: React.FC<{
           <RewardsCard
             disabled={rewardsCardDisabled}
             title={t("stake.investRewards")}
-            tooltipContent={t("stake.collectAndReinvestTooltip")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
+            // tooltipContent={t("stake.collectAndReinvestTooltip")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+              collectRewardsMinimumOsmo: Number(
+                collectRewardsMinimumOsmo.toString()
+              ).toFixed(2),
+            })}
             onClick={collectAndReinvestRewards}
             globalLottieFileKey="reinvest"
             position="right"

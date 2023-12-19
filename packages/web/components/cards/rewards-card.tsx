@@ -7,7 +7,7 @@ import { Tooltip } from "~/components/tooltip";
 
 export const RewardsCard: React.FC<{
   title: string;
-  tooltipContent: string;
+  // tooltipContent: string;
   disabledTooltipContent?: string;
   onClick: () => void;
   disabled: boolean;
@@ -15,14 +15,13 @@ export const RewardsCard: React.FC<{
   position: "left" | "right";
 }> = ({
   title,
-  tooltipContent,
+  // tooltipContent,
   disabledTooltipContent,
   onClick,
-  // disabled,
+  disabled,
   globalLottieFileKey,
   position,
 }) => {
-  const disabled = false;
   const ConditionalWrapper: React.FC<{ children: React.ReactNode }> = ({
     children,
   }) =>
@@ -34,23 +33,22 @@ export const RewardsCard: React.FC<{
       <>{children}</>
     );
 
-  console.log("globalLottieFileKey: ", globalLottieFileKey);
-
   return (
     <ConditionalWrapper>
       <Button
         disabled={disabled}
         mode="unstyled"
-        // className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden rounded-[28px] border-[1px] border-osmoverse-600 bg-osmoverse-800 !p-0 disabled:cursor-not-allowed disabled:opacity-50"
-        className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden rounded-[28px] border-osmoverse-600 bg-transparent !p-0 disabled:cursor-not-allowed disabled:opacity-50"
+        className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden border-osmoverse-600 bg-transparent !p-0 disabled:cursor-not-allowed disabled:opacity-50"
         onClick={onClick}
       >
         <div className="relative h-full w-full">
           <div
             className={classNames(
+              "z-10 h-full w-full bg-osmoverse-500 bg-cover",
               `folder-${position}`,
-              "z-10 h-full w-full bg-osmoverse-500"
-              // "bg-[url('/right-grid.png')] bg-contain"
+              position === "right"
+                ? "bg-[url('bg-right-tab.svg')]"
+                : "bg-[url('bg-left-tab.svg')]"
             )}
           />
           <DynamicLottieAnimation
@@ -60,11 +58,10 @@ export const RewardsCard: React.FC<{
             loop={true}
           />
         </div>
-        {/* <div className="absolute z-10 flex items-center gap-2 p-4"> */}
         <div
           className={classNames(
             `${position}-0`,
-            "absolute top-0  flex items-center gap-2 py-3 px-2"
+            "absolute top-0 flex items-center gap-2 py-3 px-2"
           )}
         >
           <span className="text-osmoverse-white z-30 text-sm">{title}</span>

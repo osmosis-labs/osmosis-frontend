@@ -337,13 +337,13 @@
 }
 
 .folder-left {
-  mask-image: url("./folder-left-tab.png");
+  mask-image: url("./folder-left-tab.svg");
   mask-size: cover;
   mask-repeat: no-repeat;
 }
 
 .folder-right {
-  mask-image: url("./folder-right-tab.png");
+  mask-image: url("./folder-right-tab.svg");
   mask-size: cover;
   mask-repeat: no-repeat;
 }
