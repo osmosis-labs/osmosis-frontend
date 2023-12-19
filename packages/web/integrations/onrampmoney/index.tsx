@@ -17,7 +17,7 @@ export const OnrampMoney: FunctionComponent<
 
   return (
     <iframe
-      src={`https://onramp.money/main/buy/?appId=1&coinCode=osmo&walletAddress=${account?.address}`
+      src={`https://onramp.money/osmosis?walletAddress=${account?.address}`
       }
       width="420"
       height="700"
