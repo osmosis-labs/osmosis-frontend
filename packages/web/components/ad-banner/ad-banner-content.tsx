@@ -19,7 +19,7 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
     arrow_color,
     gradient,
   }) => {
-    const [showBanner, setShowBanner] = useLocalStorageState('bannerStatus', 'closed');
+    const [showBanner, setShowBanner] = useLocalStorageState('bannerStatus', 'open');
 
     const closeBanner = () => {
       setShowBanner('closed');
