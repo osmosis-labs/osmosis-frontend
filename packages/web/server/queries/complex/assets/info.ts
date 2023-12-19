@@ -38,10 +38,15 @@ export async function getAssetMarketCapRank({
 export function calculateRank(marketCaps: TokenMarketCap[]) {
   const rankMap = new Map<string, number>();
   marketCaps.sort((a, b) => b.market_cap - a.market_cap);
+
+  let rank = 1;
   for (let i = 0; i < marketCaps.length; i++) {
-    const rank = i + 1;
+    if (i > 0 && marketCaps[i].market_cap !== marketCaps[i - 1].market_cap) {
+      rank++;
+    }
     rankMap.set(marketCaps[i].symbol, rank);
   }
+
   return rankMap;
 }
 
