@@ -54,8 +54,8 @@ type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-  onDeposit: (coinDenom: string) => void;
-  onWithdraw: (coinDenom: string) => void;
+  onDeposit: (coinMinimalDenom: string) => void;
+  onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -572,11 +572,11 @@ const SortHeader: FunctionComponent<
 );
 
 export const AssetActionsCell: AssetInfoCellComponent<{
-  onDeposit: (coinDenom: string) => void;
-  onWithdraw: (coinDenom: string) => void;
+  onDeposit: (coinMinimalDenom: string) => void;
+  onWithdraw: (coinMinimalDenom: string) => void;
 }> = ({
   row: {
-    original: { coinDenom },
+    original: { coinMinimalDenom },
   },
   onDeposit,
   onWithdraw,
@@ -584,13 +584,13 @@ export const AssetActionsCell: AssetInfoCellComponent<{
   <div className="flex items-center gap-2">
     <button
       className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onDeposit(coinDenom)}
+      onClick={() => onDeposit(coinMinimalDenom)}
     >
       <Icon className="m-auto" id="deposit" width={16} height={16} />
     </button>
     <button
       className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onWithdraw(coinDenom)}
+      onClick={() => onWithdraw(coinMinimalDenom)}
     >
       <Icon className="m-auto" id="withdraw" width={16} height={16} />
     </button>
