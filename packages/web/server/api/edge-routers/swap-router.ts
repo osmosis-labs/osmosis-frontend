@@ -41,7 +41,8 @@ const routers: {
     router: new TfmRemoteRouter(
       osmosisChainId,
       tfmBaseUrl ?? "https://api.tfm.com",
-      (coinMinimalDenom) => getAssetPrice({ asset: { coinMinimalDenom } })
+      (coinMinimalDenom, amount) =>
+        calcAssetValue({ anyDenom: coinMinimalDenom, amount })
     ),
   },
   {
