@@ -519,7 +519,7 @@ const SortHeader: FunctionComponent<
       className
     )}
     onClick={() => {
-      if (!currentSortKey) {
+      if (currentSortKey !== sortKey) {
         // select to sort and start descending
         console.log("select to sort and start descending", sortKey);
         setSortKey(sortKey as SortKey);
