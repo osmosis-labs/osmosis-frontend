@@ -260,7 +260,7 @@ export const AssetsInfoTable: FunctionComponent<{
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("subtitle1", {
-                    "!text-left": header.index === 0,
+                    "w-96 !text-left": header.index === 0,
                     "text-right": header.index > 0,
                   })}
                   key={header.id}
@@ -387,7 +387,7 @@ const AssetCell: AssetInfoCellComponent<{
             <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
           )}
         </div>
-        <div className="subtitle1 flex w-60 flex-col place-content-center">
+        <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
           <div className="flex">
             <span className="text-white-high">{coinDenom}</span>
           </div>
@@ -521,7 +521,6 @@ const SortHeader: FunctionComponent<
     onClick={() => {
       if (currentSortKey !== sortKey) {
         // select to sort and start descending
-        console.log("select to sort and start descending", sortKey);
         setSortKey(sortKey as SortKey);
         setSortDirection("desc");
         return;
@@ -538,13 +537,17 @@ const SortHeader: FunctionComponent<
   >
     <span>{label}</span>
     {currentSortKey === sortKey && (
-      <div
-        className={classNames("transform self-center transition-transform", {
-          "rotate-180": currentDirection === "asc",
-        })}
-      >
-        <Icon className="h-full w-full text-osmoverse-400" id="triangle-down" />
-      </div>
+      <Icon
+        width={10}
+        height={6}
+        className={classNames(
+          "ml-1 transform text-osmoverse-400 transition-transform",
+          {
+            "rotate-180": currentDirection === "asc",
+          }
+        )}
+        id="triangle-down"
+      />
     )}
   </button>
 );
