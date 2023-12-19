@@ -100,7 +100,7 @@ export type FormattedValidator = {
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
-  usersValidatorSetPreferenceMap: Map<string, string>;
+  // usersValidatorSetPreferenceMap: Map<string, string>;
   action: StakeOrEdit;
   coin: {
     currency: Currency;
@@ -120,7 +120,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       queryValidators,
       usersValidatorsMap,
       validators,
-      usersValidatorSetPreferenceMap,
+      // usersValidatorSetPreferenceMap,
     }) => {
       // chain
       const { chainStore, accountStore, queriesStore } = useStore();
@@ -472,8 +472,17 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
       useEffect(() => {
+        // const defaultusersValidatorSetPreferenceMap = new Set(
+        //   usersValidatorSetPreferenceMap.keys()
+        // );
+
         const defaultusersValidatorSetPreferenceMap = new Set(
-          usersValidatorSetPreferenceMap.keys()
+          usersValidatorsMap.keys()
+        );
+
+        console.log(
+          "use effect triggered defaultusersValidatorSetPreferenceMap: ",
+          defaultusersValidatorSetPreferenceMap
         );
 
         const defaultRowSelection = { ...rowSelection };
@@ -489,7 +498,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         });
 
         setRowSelection(defaultRowSelection);
-      }, [usersValidatorSetPreferenceMap]);
+        // }, [usersValidatorsMap, table, rowSelection]);
+      }, []);
 
       const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
 
