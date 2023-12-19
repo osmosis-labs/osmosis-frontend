@@ -7,6 +7,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { Currency } from "@osmosis-labs/types";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -19,6 +20,7 @@ import {
   useState,
 } from "react";
 import { useDebounce, useUnmount } from "react-use";
+import { Required } from "utility-types";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button, buttonCVA } from "~/components/buttons";
@@ -32,12 +34,15 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { useTxEventToasts } from "~/integrations";
+import { SourceChain, useTxEventToasts } from "~/integrations";
 import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/bridges/axelar";
+import {
+  AxelarChainIds_SourceChainMap,
+  SourceChainTokenConfig,
+} from "~/integrations/bridges/axelar";
 import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
@@ -58,33 +63,284 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 import { ErrorTypes } from "~/utils/error-types";
+import { noop } from "~/utils/function";
 import { getKeyByValue } from "~/utils/object";
+import { createContext } from "~/utils/react-context";
 import { api } from "~/utils/trpc";
 
+interface BridgeTransferContext {
+  useWrappedToken: boolean;
+  useNativeToken: boolean;
+  setUseWrappedToken: (nextValue: boolean) => void;
+  sourceChainConfig?: SourceChainTokenConfig;
+  sourceChainKeyMapped: SourceChain;
+  originCurrency: Currency;
+}
+
+const [BridgeTransferModalProvider, useBridgeTransfer] =
+  createContext<BridgeTransferContext>({
+    name: "BridgeTransferModal",
+    strict: true,
+  });
+
+interface BridgeTransferModalProps extends ModalBaseProps {
+  isWithdraw: boolean;
+  balance: IBCBalance;
+  sourceChainKey: SourceChainKey;
+  walletClient?: ObservableWallet;
+  onRequestSwitchWallet: () => void;
+}
+
+export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> =
+  observer((props) => {
+    const { balance: assetToBridge, sourceChainKey, walletClient } = props;
+
+    if (!assetToBridge.originBridgeInfo) {
+      console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+      return null;
+    }
+
+    const sourceChainConfig =
+      assetToBridge.originBridgeInfo!.sourceChainTokens.find(
+        ({ id }) => id === sourceChainKey
+      );
+
+    const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
+      sourceChainConfig?.erc20ContractAddress &&
+        sourceChainConfig?.nativeWrapEquivalent
+        ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
+        : "",
+      false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+    );
+
+    const sourceChainKeyMapped =
+      AxelarChainIds_SourceChainMap[sourceChainKey] || sourceChainKey;
+
+    const useNativeToken =
+      (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
+
+    const originCurrency = useMemo(() => {
+      const wrapCurrency = sourceChainConfig?.nativeWrapEquivalent
+        ? {
+            ...assetToBridge.balance.currency.originCurrency!,
+            coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+          }
+        : undefined;
+
+      return !useNativeToken && wrapCurrency
+        ? wrapCurrency
+        : assetToBridge.balance.currency.originCurrency!;
+    }, [sourceChainConfig, assetToBridge, useNativeToken]);
+
+    const contextValue = useMemo<BridgeTransferContext>(
+      () => ({
+        useNativeToken,
+        useWrappedToken,
+        setUseWrappedToken,
+        sourceChainConfig,
+        sourceChainKeyMapped,
+        originCurrency,
+      }),
+      [
+        originCurrency,
+        setUseWrappedToken,
+        sourceChainConfig,
+        sourceChainKeyMapped,
+        useNativeToken,
+        useWrappedToken,
+      ]
+    );
+
+    return (
+      <BridgeTransferModalProvider value={contextValue}>
+        {walletClient ? (
+          <EvmTransfer {...props} walletClient={walletClient} />
+        ) : (
+          <ManualTransfer {...props} />
+        )}
+      </BridgeTransferModalProvider>
+    );
+  });
+
+const EvmTransfer: FunctionComponent<
+  Required<BridgeTransferModalProps, "walletClient" | "balance">
+> = (props) => {
+  const {
+    isWithdraw,
+    balance: assetToBridge,
+    sourceChainKey,
+    walletClient,
+  } = props;
+
+  const {
+    sourceChainKeyMapped,
+    sourceChainConfig,
+    originCurrency,
+    useNativeToken,
+  } = useBridgeTransfer();
+
+  const ethWalletClient = walletClient as EthWallet;
+  const isDeposit = !isWithdraw;
+
+  useTxEventToasts(ethWalletClient);
+
+  const ethWalletClientChainKey =
+    EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ""] ||
+    ethWalletClient?.chainId;
+  const isCorrectChainSelected =
+    ethWalletClientChainKey === sourceChainKeyMapped;
+
+  const erc20Balance = useErc20Balance(
+    ethWalletClient,
+    isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
+  );
+  const nativeBalance = useNativeBalance(
+    ethWalletClient,
+    isDeposit ? originCurrency : undefined
+  );
+
+  const {
+    amount: depositAmount,
+    setAmount: setDepositAmount,
+    toggleIsMax: toggleIsDepositAmtMax,
+  } = useEvmAmountConfig({
+    sendFn: ethWalletClient?.send,
+    balance: useNativeToken
+      ? nativeBalance ?? undefined
+      : erc20Balance ?? undefined,
+    address: ethWalletClient?.accountAddress,
+    gasCurrency: useNativeToken
+      ? assetToBridge.balance.currency.originCurrency
+      : undefined, // user will inspect gas costs in their wallet
+  });
+
+  // notify eth wallet of prev selected preferred chain
+  useEffect(() => {
+    let ethClientChainName: string | undefined =
+      getKeyByValue(EthClientChainIds_SourceChainMap, sourceChainKey) ??
+      sourceChainKey;
+
+    let hexChainId: string | undefined = getKeyByValue(
+      ChainNames,
+      ethClientChainName
+    )
+      ? ethClientChainName
+      : undefined;
+
+    if (!hexChainId || !ethWalletClient) return;
+
+    ethWalletClient.setPreferredSourceChain(hexChainId);
+  }, [ethWalletClient, sourceChainKey, walletClient]);
+
+  const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
+    useState(false);
+  useEffect(() => {
+    if (!ethWalletClient?.isConnected) {
+      setUserDisconnectedWallet(true);
+    }
+    if (ethWalletClient?.isConnected && userDisconnectedEthWallet) {
+      setUserDisconnectedWallet(false);
+    }
+  }, [ethWalletClient?.isConnected, userDisconnectedEthWallet]);
+
+  const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
+    useLocalStorageState<string | null>(
+      isWithdraw
+        ? ""
+        : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
+      null
+    );
+
+  const warnOfDifferentDepositAddress =
+    isWithdraw &&
+    ethWalletClient?.isConnected &&
+    lastDepositAccountEvmAddress &&
+    ethWalletClient?.accountAddress
+      ? ethWalletClient?.accountAddress !== lastDepositAccountEvmAddress
+      : false;
+
+  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
+
+  return (
+    <TransferContent
+      {...props}
+      erc20Balance={erc20Balance}
+      nativeBalance={nativeBalance}
+      isCorrectChainSelected={isCorrectChainSelected}
+      depositAmount={depositAmount}
+      setDepositAmount={setDepositAmount}
+      toggleIsDepositAmtMax={toggleIsDepositAmtMax}
+      counterpartyAddress={ethWalletClient.accountAddress ?? ""}
+      warnOfDifferentDepositAddress={warnOfDifferentDepositAddress}
+      setLastDepositAccountEvmAddress={setLastDepositAccountEvmAddress}
+      isEthTxPending={
+        isEthTxPending || ethWalletClient?.isSending === "eth_sendTransaction"
+      }
+      ethWalletClient={ethWalletClient}
+    />
+  );
+};
+
+const ManualTransfer: FunctionComponent<
+  Omit<BridgeTransferModalProps, "walletClient">
+> = (props) => {
+  return (
+    <TransferContent
+      {...props}
+      counterpartyAddress="Pizza"
+      depositAmount=""
+      setDepositAmount={noop}
+      toggleIsDepositAmtMax={noop}
+      setLastDepositAccountEvmAddress={noop}
+    />
+  );
+};
+
 /** Modal that lets user transfer via non-IBC bridges. */
-export const BridgeTransferV2Modal: FunctionComponent<
+export const TransferContent: FunctionComponent<
   ModalBaseProps & {
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
+    counterpartyAddress: string;
+
+    // Deposit
+    isCorrectChainSelected?: boolean;
+    erc20Balance?: CoinPretty;
+    nativeBalance?: CoinPretty;
+    depositAmount: string;
+    setDepositAmount: (amount: string) => void;
+    toggleIsDepositAmtMax: () => void;
+    setLastDepositAccountEvmAddress: (address: string) => void;
+    userDisconnectedEthWallet?: boolean;
+    warnOfDifferentDepositAddress?: boolean;
+    isEthTxPending?: boolean;
+    ethWalletClient?: EthWallet;
   }
 > = observer((props) => {
   const {
     isWithdraw,
     balance: assetToBridge,
     sourceChainKey,
-    walletClient,
     onRequestClose,
     onRequestSwitchWallet,
+    isCorrectChainSelected,
+    depositAmount,
+    setDepositAmount,
+    toggleIsDepositAmtMax,
+    nativeBalance,
+    erc20Balance,
+    userDisconnectedEthWallet,
+    counterpartyAddress,
+    warnOfDifferentDepositAddress,
+    setLastDepositAccountEvmAddress,
+    isEthTxPending,
+    ethWalletClient,
   } = props;
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-
-  const ethWalletClient = walletClient as EthWallet;
-  useTxEventToasts(ethWalletClient);
 
   const {
     queriesExternalStore,
@@ -105,6 +361,14 @@ export const BridgeTransferV2Modal: FunctionComponent<
     },
     props.onRequestClose
   );
+  const {
+    useNativeToken,
+    originCurrency,
+    useWrappedToken,
+    setUseWrappedToken,
+    sourceChainConfig,
+  } = useBridgeTransfer();
+
   const { chainId: osmosisChainId, chainName } = chainStore.osmosis;
   const osmosisAccount = accountStore.getWallet(osmosisChainId);
   const osmosisAddress = osmosisAccount?.address ?? "";
@@ -115,40 +379,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const isDeposit = !isWithdraw;
 
-  const ethChainKey =
-    EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ||
-    ethWalletClient.chainId;
-  const sourceChainKeyMapped =
-    AxelarChainIds_SourceChainMap[sourceChainKey] || sourceChainKey;
-
   if (!assetToBridge.originBridgeInfo) {
     console.error("BridgeTransferModal given unconfigured IBC balance/asset");
     return null;
   }
   const { bridge } = assetToBridge.originBridgeInfo;
-
-  // notify eth wallet of prev selected preferred chain
-  useEffect(() => {
-    let ethClientChainName: string | undefined =
-      getKeyByValue(EthClientChainIds_SourceChainMap, sourceChainKey) ??
-      sourceChainKey;
-
-    let hexChainId: string | undefined = getKeyByValue(
-      ChainNames,
-      ethClientChainName
-    )
-      ? ethClientChainName
-      : undefined;
-
-    if (!hexChainId) return;
-
-    ethWalletClient.setPreferredSourceChain(hexChainId);
-  }, [ethWalletClient, sourceChainKey, walletClient]);
-
-  const sourceChainConfig =
-    assetToBridge.originBridgeInfo.sourceChainTokens.find(
-      ({ id }) => id === sourceChainKey
-    );
 
   let modalTitle = "";
 
@@ -195,51 +430,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
 
   // DEPOSIT
-  const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
-    sourceChainConfig?.erc20ContractAddress &&
-      sourceChainConfig?.nativeWrapEquivalent
-      ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
-      : "",
-    false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
-  );
-  const useNativeToken =
-    (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
-
-  const originCurrency = useMemo(() => {
-    const wrapCurrency = sourceChainConfig?.nativeWrapEquivalent
-      ? {
-          ...assetToBridge.balance.currency.originCurrency!,
-          coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
-        }
-      : undefined;
-
-    return !useNativeToken && wrapCurrency
-      ? wrapCurrency
-      : assetToBridge.balance.currency.originCurrency!;
-  }, [sourceChainConfig, assetToBridge, useNativeToken]);
-
-  const erc20Balance = useErc20Balance(
-    ethWalletClient,
-    isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
-  );
-  const nativeBalance = useNativeBalance(
-    ethWalletClient,
-    isDeposit ? originCurrency : undefined
-  );
-  const {
-    amount: depositAmount,
-    setAmount: setDepositAmount,
-    toggleIsMax: toggleIsDepositAmtMax,
-  } = useEvmAmountConfig({
-    sendFn: ethWalletClient.send,
-    balance: useNativeToken
-      ? nativeBalance ?? undefined
-      : erc20Balance ?? undefined,
-    address: ethWalletClient.accountAddress,
-    gasCurrency: useNativeToken
-      ? assetToBridge.balance.currency.originCurrency
-      : undefined, // user will inspect gas costs in their wallet
-  });
 
   const inputAmountRaw = isWithdraw
     ? withdrawAmountConfig.amount
@@ -261,8 +451,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
   );
 
-  const isCorrectChainSelected = ethChainKey === sourceChainKeyMapped;
-
   let availableBalance: CoinPretty | undefined;
   if (isWithdraw) {
     availableBalance = assetToBridge.balance;
@@ -271,17 +459,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
   } else if (sourceChainConfig?.erc20ContractAddress) {
     availableBalance = erc20Balance;
   }
-
-  const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
-    useState(false);
-  useEffect(() => {
-    if (!ethWalletClient.isConnected) {
-      setUserDisconnectedWallet(true);
-    }
-    if (ethWalletClient.isConnected && userDisconnectedEthWallet) {
-      setUserDisconnectedWallet(false);
-    }
-  }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
   const osmosisPath = {
     address: osmosisAddress,
@@ -304,7 +481,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const counterpartyPath = {
-    address: ethWalletClient.accountAddress || "",
+    address: counterpartyAddress,
     networkName: sourceChainKey,
     iconUrl: assetToBridge.balance.currency.coinImageUrl,
     source: "counterpartyAccount" as const,
@@ -525,21 +702,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     setSelectedBridgeProvider(null);
   });
 
-  const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
-    useLocalStorageState<string | null>(
-      isWithdraw
-        ? ""
-        : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
-      null
-    );
-  const warnOfDifferentDepositAddress =
-    isWithdraw &&
-    ethWalletClient.isConnected &&
-    lastDepositAccountEvmAddress &&
-    ethWalletClient.accountAddress
-      ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
-      : false;
-
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
     (providerId: AvailableBridges, params: GetTransferStatusParams) => {
@@ -563,12 +725,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
-  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
 
   // close modal when initial eth transaction is committed
   const isSendTxPending = isWithdraw
     ? osmosisAccount?.txTypeInProgress !== ""
-    : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
+    : isEthTxPending;
   useEffect(() => {
     if (transferInitiated && !isSendTxPending) {
       onRequestClose();
@@ -577,7 +738,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     transferInitiated,
     isSendTxPending,
     osmosisAccount?.txTypeInProgress,
-    ethWalletClient.isSending,
     isEthTxPending,
     onRequestClose,
   ]);
@@ -585,6 +745,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const handleEvmTx = async (
     quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
   ) => {
+    if (!ethWalletClient) throw new Error("No ETH wallet client found");
+
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
@@ -848,11 +1010,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
+      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
     });
   } else if (isDeposit && !isCorrectChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
+      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
     });
   } else if (bridgeQuote.error) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
@@ -909,7 +1071,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   let warningMessage;
   if (warnOfDifferentDepositAddress) {
     warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
-      address: ethWalletClient.displayInfo.displayName,
+      address: ethWalletClient?.displayInfo.displayName ?? "",
     });
   }
 
@@ -940,7 +1102,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
               },
         ]}
         selectedWalletDisplay={
-          isWithdraw ? undefined : ethWalletClient.displayInfo
+          isWithdraw || !ethWalletClient
+            ? undefined
+            : ethWalletClient.displayInfo
         }
         isOsmosisAccountLoaded={
           osmosisAccount?.walletStatus === WalletStatus.Connected
@@ -1069,7 +1233,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
-                ethWalletClient.enable();
+                ethWalletClient?.enable();
               else onTransfer();
             }}
           >

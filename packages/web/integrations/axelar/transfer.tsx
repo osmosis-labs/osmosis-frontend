@@ -300,7 +300,7 @@ const AxelarTransfer: FunctionComponent<
     }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
     const correctChainSelected =
-      (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
+      (EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ""] ??
         ethWalletClient.chainId) ===
       (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
         selectedSourceChainAxelarKey);
