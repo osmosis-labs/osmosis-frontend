@@ -68,13 +68,13 @@ const NomicTransfer: FunctionComponent<
     const osmosisPath = {
       address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.chainName,
-      iconUrl: "/tokens/osmo.svg",
+      iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`,
       source: "account" as const,
     };
     const bitcoinPath = {
       address: "",
       networkName: selectedSourceChainKey,
-      iconUrl: "/tokens/nbtc.svg",
+      iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/nbtc.svg`,
       source: "counterpartyAccount" as const,
     };
     let [from, to] = [
@@ -231,7 +231,7 @@ const NomicTransfer: FunctionComponent<
               <div className="mb-4 flex justify-center">
                 <img
                   className="h-16 w-16"
-                  src="/tokens/nbtc.svg"
+                  src={`${process.env.NEXT_PUBLIC_BASEPATH}/tokens/nbtc.svg`}
                   alt="nbtc logo"
                 />
               </div>
@@ -455,7 +455,7 @@ const NomicTransfer: FunctionComponent<
                             width="24"
                             height="24"
                             className="inline rounded-sm hover:cursor-pointer active:bg-osmoverse-600"
-                            src="/icons/copy.svg"
+                            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/copy.svg`}
                             onClick={() =>
                               navigator.clipboard.writeText(
                                 bridgeInfo?.bitcoinAddress as string
@@ -546,7 +546,7 @@ const NomicTransfer: FunctionComponent<
                         marginLeft: 8,
                       }}
                       className="inline"
-                      src="/logos/nomic.svg"
+                      src={`${process.env.NEXT_PUBLIC_BASEPATH}/logos/nomic.svg`}
                     />
                   </a>
                 </div>

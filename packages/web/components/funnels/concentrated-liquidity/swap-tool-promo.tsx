@@ -45,7 +45,7 @@ export const SwapToolPromo: FunctionComponent<{
     <div className="flex place-content-start items-center gap-5">
       <Image
         alt="lightning badge"
-        src="/images/cl-homepage-bars.png"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/cl-homepage-bars.png`}
         width={64}
         height={64}
       />

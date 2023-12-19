@@ -51,7 +51,7 @@ const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
-  logoUrl = "/bridges/axelar.svg";
+  logoUrl = `${process.env.NEXT_PUBLIC_BASEPATH}/bridges/axelar.svg`;
 
   private _queryClient: AxelarQueryAPI | null = null;
   private _assetTransferClient: AxelarAssetTransfer | null = null;

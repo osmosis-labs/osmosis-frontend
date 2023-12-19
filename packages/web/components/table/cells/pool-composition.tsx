@@ -47,7 +47,7 @@ export const PoolCompositionCell: FunctionComponent<
         {stableswapPool && (
           <Image
             alt=""
-            src="/icons/stableswap-pool.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/stableswap-pool.svg`}
             width={24}
             height={24}
           />
@@ -58,7 +58,7 @@ export const PoolCompositionCell: FunctionComponent<
         {transmuterPool && (
           <Image
             alt=""
-            src="/icons/stableswap-pool.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/stableswap-pool.svg`}
             width={24}
             height={24}
           />

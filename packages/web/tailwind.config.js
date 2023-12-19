@@ -142,7 +142,7 @@ module.exports = {
     },
     backgroundImage: {
       none: "none",
-      "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
+      "home-bg-pattern": `url('${process.env.NEXT_PUBLIC_BASEPATH}/images/osmosis-home-bg-pattern.svg')`,
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
       superfluid: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",

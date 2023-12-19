@@ -89,7 +89,7 @@ const YourBalance = observer(
                   }
                   image={
                     <Image
-                      src={"/images/staking-apr-full.svg"}
+                      src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/staking-apr-full.svg`}
                       alt={`Stake image`}
                       className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
                       width={224}
@@ -114,7 +114,7 @@ const YourBalance = observer(
                   sub={t("tokenInfos.provideLiquidity")}
                   image={
                     <Image
-                      src={"/images/explore-pools.svg"}
+                      src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/explore-pools.svg`}
                       alt={`Explore pools image`}
                       className={`overflow-visible object-cover 2xl:object-contain`}
                       width={189}

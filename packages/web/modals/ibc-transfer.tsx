@@ -157,7 +157,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     address: account?.address ?? "",
                     networkName:
                       chainStore.getChain(osmosisChainId).prettyChainName,
-                    iconUrl: "/tokens/osmo.svg",
+                    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`,
                     source: "account" as const,
                   },
                   {
@@ -180,7 +180,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     address: account?.address ?? "",
                     networkName:
                       chainStore.getChain(osmosisChainId).prettyChainName,
-                    iconUrl: "/tokens/osmo.svg",
+                    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`,
                     source: "account" as const,
                   },
                 ]

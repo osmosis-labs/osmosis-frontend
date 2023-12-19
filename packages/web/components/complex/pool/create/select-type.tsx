@@ -50,8 +50,8 @@ export const SelectType: FunctionComponent<{
                 <Image
                   src={
                     type === "weighted"
-                      ? "/icons/weighted-pool.svg"
-                      : "/icons/stable-pool.svg"
+                      ? `${process.env.NEXT_PUBLIC_BASEPATH}/icons/weighted-pool.svg`
+                      : `${process.env.NEXT_PUBLIC_BASEPATH}/icons/stable-pool.svg`
                   }
                   alt={type === "weighted" ? "weighted pool" : "stable pool"}
                   height={64}

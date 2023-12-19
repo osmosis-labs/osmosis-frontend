@@ -83,7 +83,7 @@ export const DepositAmountGroup: FunctionComponent<{
           <Image
             className="h-6"
             alt=""
-            src="/icons/lock.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/lock.svg`}
             height={24}
             width={24}
           />

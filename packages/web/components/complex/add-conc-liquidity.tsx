@@ -235,7 +235,7 @@ const Overview: FunctionComponent<
                 description={t("addConcentratedLiquidity.managedDescription")}
                 selected={selected === "add_managed"}
                 onClick={() => selectView("add_managed")}
-                imgSrc="/images/cl-pool-providers.png"
+                imgSrc={`${process.env.NEXT_PUBLIC_BASEPATH}/images/cl-pool-providers.png`}
                 isNew
               />
             ) : (
@@ -243,7 +243,7 @@ const Overview: FunctionComponent<
                 title={t("addConcentratedLiquidity.managed")}
                 description={t("addConcentratedLiquidity.managedDescription")}
                 selected={selected === "add_managed"}
-                imgSrc="/images/cl-managed-pick-strategy.png"
+                imgSrc={`${process.env.NEXT_PUBLIC_BASEPATH}/images/cl-managed-pick-strategy.png`}
               />
             )}
           </div>
@@ -253,7 +253,7 @@ const Overview: FunctionComponent<
               description={t("addConcentratedLiquidity.manualDescription")}
               selected={selected === "add_manual"}
               onClick={() => selectView("add_manual")}
-              imgSrc="/images/cl-manual-pick-strategy.png"
+              imgSrc={`${process.env.NEXT_PUBLIC_BASEPATH}/images/cl-manual-pick-strategy.png`}
             />
           </div>
         </div>
@@ -392,7 +392,7 @@ const AddConcLiqView: FunctionComponent<
         >
           <Image
             alt="left"
-            src="/icons/arrow-left.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/arrow-left.svg`}
             width={24}
             height={24}
           />
@@ -643,7 +643,7 @@ const AddConcLiqManaged: FunctionComponent<
         >
           <Image
             alt="left"
-            src="/icons/arrow-left.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/arrow-left.svg`}
             width={24}
             height={24}
           />
@@ -668,7 +668,7 @@ const AddConcLiqManaged: FunctionComponent<
                 <div className="col-span-3 flex items-center gap-4">
                   <Image
                     alt="quasar-provider"
-                    src="/tokens/quasar.png"
+                    src={`${process.env.NEXT_PUBLIC_BASEPATH}/tokens/quasar.png`}
                     width={80}
                     height={80}
                     className="h-[80px]"
@@ -676,7 +676,7 @@ const AddConcLiqManaged: FunctionComponent<
                   <div>
                     <Image
                       alt="quasar-provider"
-                      src="/logos/quasar.svg"
+                      src={`${process.env.NEXT_PUBLIC_BASEPATH}/logos/quasar.svg`}
                       width={80}
                       height={30}
                       className="mb-1.5 h-[30px]"
@@ -797,7 +797,7 @@ const StrategySelectorGroup: FunctionComponent<
       <div className="flex gap-2 1.5md:pl-4 sm:flex-col sm:pl-0">
         <PresetStrategyCard
           type={null}
-          src="/images/custom-vial.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/custom-vial.svg`}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
           className="sm:order-4 sm:w-full"
@@ -806,21 +806,21 @@ const StrategySelectorGroup: FunctionComponent<
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
             type="passive"
-            src="/images/small-vial.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/small-vial.svg`}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
           />
           <PresetStrategyCard
             type="moderate"
-            src="/images/medium-vial.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/medium-vial.svg`}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
           />
           <PresetStrategyCard
             type="aggressive"
-            src="/images/large-vial.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/large-vial.svg`}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
@@ -979,7 +979,7 @@ const PriceInputBox: FunctionComponent<{
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
   /** to allow decimals, display the raw string value while typing
-   otherwise, display the nearest tick rounded price. 
+   otherwise, display the nearest tick rounded price.
     All values have currency decimals adjusted for display. */
   const currentValue = isFocused
     ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
@@ -997,7 +997,7 @@ const PriceInputBox: FunctionComponent<{
         <div className="flex h-[41px] items-center px-2">
           <Image
             alt="infinity"
-            src="/icons/infinity.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/infinity.svg`}
             width={16}
             height={16}
           />

@@ -8,7 +8,7 @@ const ErrorFallback = () => {
     <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-8 pt-4 text-center">
       <div className="flex gap-2">
         <Image
-          src="/icons/error-x.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/error-x.svg`}
           alt={t("500.title")}
           height={25}
           width={25}

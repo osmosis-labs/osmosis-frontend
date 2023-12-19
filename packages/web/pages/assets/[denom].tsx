@@ -5,9 +5,8 @@ import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent, useCallback, useEffect } from "react";
 import { useMemo } from "react";
-import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -25,7 +24,13 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import {
+  COINGECKO_PUBLIC_URL,
+  ENABLE_FEATURES,
+  EventName,
+  TWITTER_PUBLIC_URL,
+  URBIT_DEPLOYMENT,
+} from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import {
@@ -75,7 +80,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
     useEffect(() => {
       if (
         typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
+        !(ENABLE_FEATURES || featureFlags.tokenInfo)
       ) {
         router.push("/assets");
       }
@@ -103,7 +108,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
-      router.query.denom as string,
+      (router.query.denom as string).toUpperCase(),
       queriesExternalStore,
       priceStore,
       imperatorDenom,
@@ -113,7 +118,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     useAmplitudeAnalytics({
       onLoadEvent: [
         EventName.TokenInfo.pageViewed,
-        { tokenName: router.query.denom as string },
+        { tokenName: (router.query.denom as string).toUpperCase() },
       ],
     });
 
@@ -124,7 +129,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           icon={
             <Image
               alt="left"
-              src="/icons/arrow-left.svg"
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/arrow-left.svg`}
               width={24}
               height={24}
               className="text-osmoverse-200"
@@ -155,7 +160,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const memoedPools = routablePools ?? [];
 
     const denom = useMemo(() => {
-      return router.query.denom as string;
+      return (router.query.denom as string).toUpperCase();
     }, [router.query.denom]);
 
     return (
@@ -541,18 +546,24 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   paths = currencies.map((currency) => ({
     params: {
-      denom: currency.coinDenom,
+      denom: URBIT_DEPLOYMENT
+        ? currency.coinDenom.toLowerCase()
+        : currency.coinDenom,
     },
   }));
 
-  return { paths, fallback: "blocking" };
+  return {
+    paths,
+    // Set fallback false when static export is enabled
+    fallback: process.env.STATIC_EXPORT === "true" ? false : "blocking",
+  };
 };
 
 export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   params,
 }) => {
   let tweets: RichTweet[] = [];
-  let tokenDenom = params?.denom as string;
+  let tokenDenom = (params?.denom as string).toUpperCase();
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
   let imperatorDenom: string | null = null;
@@ -653,6 +664,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
     // - At most once every 7200 seconds (2 hours)
-    revalidate: 7200, // In seconds
+    // Set revalidate to false when static export is enabled
+    revalidate: process.env.STATIC_EXPORT === "true" ? false : 7200, // In seconds
   };
 };

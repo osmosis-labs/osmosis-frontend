@@ -22,7 +22,7 @@ export class ObservableWalletConnect implements EthWallet {
   readonly mobileEnabled = false;
 
   displayInfo: WalletDisplay = {
-    iconUrl: "/icons/walletconnect.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/icons/walletconnect.svg`,
     displayName: "WalletConnect",
   };
 
@@ -52,7 +52,9 @@ export class ObservableWalletConnect implements EthWallet {
         description: "Interchain Liquidity Lab",
         icons:
           typeof window !== "undefined"
-            ? [`${window.origin}/icons/OSMO.svg`]
+            ? [
+                `${window.origin}/${process.env.NEXT_PUBLIC_BASEPATH}/icons/osmo.svg`,
+              ]
             : [],
         name: "Osmosis",
         url: "https://osmosis.zone/",

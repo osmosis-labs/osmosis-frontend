@@ -41,7 +41,7 @@ import {
   PoolQuickActionCell,
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
-import { EventName, IS_TESTNET } from "~/config";
+import { ENABLE_FEATURES, EventName, IS_TESTNET } from "~/config";
 import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -144,7 +144,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     const router = useRouter();
     const PoolFilters = useMemo(
-      () => getPoolFilters(t, flags.concentratedLiquidity),
+      () => getPoolFilters(t, ENABLE_FEATURES || flags.concentratedLiquidity),
       [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
@@ -236,7 +236,7 @@ export const AllPoolsTable: FunctionComponent<{
         sorting[0]?.id,
         sorting[0]?.desc,
         isSearching,
-        flags.concentratedLiquidity
+        ENABLE_FEATURES || flags.concentratedLiquidity
       );
 
     const initiallyFilteredPools = useMemo(

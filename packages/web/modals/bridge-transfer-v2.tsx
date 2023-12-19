@@ -286,7 +286,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const osmosisPath = {
     address: osmosisAddress,
     networkName: chainStore.osmosis.prettyChainName,
-    iconUrl: "/tokens/osmo.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`,
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,

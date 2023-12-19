@@ -12,7 +12,7 @@ export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({
         className="rounded-full"
         alt=""
         placeholder=""
-        src={imgSrc ?? "/icons/profile.svg"}
+        src={imgSrc ?? `${process.env.NEXT_PUBLIC_BASEPATH}/icons/profile.svg`}
       />
     </div>
     <span>{value ?? ""}</span>

@@ -305,7 +305,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                         <FallbackImg
                           alt={props.row.original.validatorName}
                           src={imageUrl}
-                          fallbacksrc="/icons/superfluid-osmo.svg"
+                          fallbacksrc={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/superfluid-osmo.svg`}
                           height={40}
                           width={40}
                         />

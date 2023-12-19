@@ -95,7 +95,7 @@ export class RootStore {
 
     const webApiBaseUrl =
       typeof window !== "undefined"
-        ? window.origin
+        ? process.env.NEXT_PUBLIC_WEB_API_BASE_URL ?? window.origin
         : "https://app.osmosis.zone";
 
     this.queriesStore = new QueriesStore(

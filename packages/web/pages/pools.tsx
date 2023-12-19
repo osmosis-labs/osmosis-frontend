@@ -24,7 +24,7 @@ import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/sup
 import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
-import { EventName } from "~/config";
+import { ENABLE_FEATURES, EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -320,7 +320,7 @@ const Pools: NextPage = observer(function () {
             />
           </section>
         )}
-      {flags.concentratedLiquidity &&
+      {(ENABLE_FEATURES || flags.concentratedLiquidity) &&
         flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 &&
         !isMobile && (
@@ -350,7 +350,7 @@ const Pools: NextPage = observer(function () {
             />
           </section>
         )}
-      {flags.concentratedLiquidity &&
+      {(ENABLE_FEATURES || flags.concentratedLiquidity) &&
         queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
           .positions.length > 0 && (
           <section ref={myPositionsRef}>

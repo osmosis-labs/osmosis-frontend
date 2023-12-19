@@ -37,11 +37,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     (coinDenom) => {
       const justDenom = coinDenom.split(" ")[0]; // remove channel info
       for (const chain of this.chainInfos) {
-        if (chain.raw.stakeCurrency.coinDenom === justDenom) {
+        if (
+          chain.raw.stakeCurrency.coinDenom.toUpperCase() ===
+          justDenom.toUpperCase()
+        ) {
           return chain;
         }
         const chainCurrency = chain.raw.currencies.find(
-          (c) => c.coinDenom === justDenom
+          (c) => c.coinDenom.toUpperCase() === justDenom.toUpperCase()
         );
         if (chainCurrency) {
           return chain;

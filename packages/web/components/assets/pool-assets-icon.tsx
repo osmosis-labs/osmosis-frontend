@@ -54,7 +54,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
               />
             ) : (
               <img
-                src="/icons/question-mark.svg"
+                src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/question-mark.svg`}
                 alt="no token icon"
                 width={size === "md" ? 50 : 40}
                 height={size === "md" ? 50 : 40}

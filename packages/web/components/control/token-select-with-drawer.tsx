@@ -83,7 +83,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
             {selectedToken.coinImageUrl && (
               <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
                 <Image
-                  src={selectedToken.coinImageUrl}
+                  src={`${process.env.NEXT_PUBLIC_BASEPATH}${selectedToken.coinImageUrl}`}
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}

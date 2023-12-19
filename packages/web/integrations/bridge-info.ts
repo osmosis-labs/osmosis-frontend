@@ -262,19 +262,19 @@ export const FiatRampDisplayInfos: Record<
 > = {
   kado: {
     rampKey: "kado",
-    iconUrl: "/logos/kado.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/logos/kado.svg`,
     displayName: "Kado",
     logoId: "kado-logo",
   },
   transak: {
     rampKey: "transak",
-    iconUrl: "/logos/transak.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/logos/transak.svg`,
     displayName: "Transak",
     logoId: "transak-logo",
   },
   layerswapcoinbase: {
     rampKey: "layerswapcoinbase",
-    iconUrl: "/logos/coinbase.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/logos/coinbase.svg`,
     displayName: "Coinbase",
   },
 };

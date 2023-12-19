@@ -197,7 +197,7 @@ export const ProfileModal: FunctionComponent<
             <div className="flex flex-col gap-[30px]">
               <div className="flex items-center gap-1.5">
                 <Image
-                  src="/icons/profile-osmo.svg"
+                  src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/profile-osmo.svg`}
                   alt="Osmo icon"
                   width={24}
                   height={24}
@@ -508,7 +508,7 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-woz.png"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/profile-woz.png`}
           width={140}
           height={140}
         />
@@ -532,7 +532,7 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-ammelia.png"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/profile-ammelia.png`}
           width={140}
           height={140}
         />

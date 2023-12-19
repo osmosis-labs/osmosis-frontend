@@ -93,7 +93,7 @@ const TransferButton: FunctionComponent<{
       <div className="w-fit shrink-0">
         <Image
           alt="external transfer link"
-          src="/icons/external-link.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/external-link.svg`}
           height={13}
           width={13}
         />

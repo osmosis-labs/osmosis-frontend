@@ -27,7 +27,7 @@ export const AvailableConversions: FunctionComponent<{
         <div className="relative flex h-fit w-full place-content-evenly items-center justify-end gap-5 overflow-clip rounded-xl bg-bullish-300/20 p-3 text-center">
           <Image
             alt="osmo-tokens"
-            src="/images/osmo-tokens.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/osmo-tokens.svg`}
             width={100}
             height={130}
             className="absolute left-1 -top-10 h-[130px] rotate-45"

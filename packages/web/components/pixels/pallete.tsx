@@ -109,7 +109,7 @@ const Palette = ({
               <div className="ml-1 flex items-center justify-center">
                 <Image
                   alt="link"
-                  src="/icons/link-deco-real-white.svg"
+                  src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/link-deco-real-white.svg`}
                   height={14}
                   width={14}
                 />

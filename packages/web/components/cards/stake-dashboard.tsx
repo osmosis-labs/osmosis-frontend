@@ -17,6 +17,16 @@ import { useStore } from "~/stores";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
 
+const giftBoxClassName =
+  "pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('" +
+  process.env.NEXT_PUBLIC_BASEPATH +
+  "/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible";
+
+const piggyBankClassName =
+  "pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('" +
+  process.env.NEXT_PUBLIC_BASEPATH +
+  "/images/piggy-bank.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible";
+
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   setShowStakeLearnMoreModal: (val: boolean) => void;
@@ -157,9 +167,7 @@ export const StakeDashboard: React.FC<{
               ).toFixed(2),
             })}
             onClick={collectRewards}
-            image={
-              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
-            }
+            image={<div className={giftBoxClassName} />}
           />
           <RewardsCard
             disabled={rewardsCardDisabled}
@@ -167,9 +175,7 @@ export const StakeDashboard: React.FC<{
             tooltipContent={t("stake.collectAndReinvestTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectAndReinvestRewards}
-            image={
-              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
-            }
+            image={<div className={piggyBankClassName} />}
           />
         </div>
       </GenericMainCard>

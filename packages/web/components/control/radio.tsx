@@ -49,7 +49,12 @@ export const Radio: FunctionComponent<Props> = ({
               disabled ? "opacity-38 cursor-default" : null
             )}
           >
-            <Image alt="" src="/icons/dot.svg" height={20} width={20} />
+            <Image
+              alt=""
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/dot.svg`}
+              height={20}
+              width={20}
+            />
           </div>
         )}
         <input

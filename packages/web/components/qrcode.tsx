@@ -129,7 +129,10 @@ const QRCode: FunctionComponent<{
         >
           <Image
             height={logoSize}
-            src={logoUrl ?? "/osmosis-logo-wc.png"}
+            src={
+              logoUrl ??
+              `${process.env.NEXT_PUBLIC_BASEPATH}/osmosis-logo-wc.png`
+            }
             width={logoSize}
             alt="QR code logo"
           />

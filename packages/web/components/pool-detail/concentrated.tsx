@@ -217,7 +217,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     <span className="body2 text-supercharged-gradient flex items-center gap-1.5">
                       <Image
                         alt=""
-                        src="/icons/superfluid-osmo.svg"
+                        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/superfluid-osmo.svg`}
                         height={18}
                         width={18}
                       />

@@ -10,7 +10,7 @@ import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
-const OSMO_IMG_URL = "/tokens/osmo.svg";
+const OSMO_IMG_URL = `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`;
 
 export const StakeInfoCard: FunctionComponent<{
   availableAmount?: CoinPretty;

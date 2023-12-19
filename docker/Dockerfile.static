@@ -1,0 +1,20 @@
+FROM node:18.18.2 as build
+
+WORKDIR /app
+
+COPY turbo.json lerna.json package.json tsconfig.json yarn.lock /app/
+COPY packages /app/packages/
+
+RUN yarn
+RUN yarn build:libs
+
+FROM node:18.18.2-alpine3.17
+
+RUN apk --update --no-cache add sed bash curl
+
+WORKDIR /app
+COPY --from=build /app .
+
+WORKDIR /app/packages/web
+EXPOSE 3000
+CMD [ "yarn", "build:static" ]

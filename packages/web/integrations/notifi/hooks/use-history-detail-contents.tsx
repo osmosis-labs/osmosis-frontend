@@ -129,7 +129,7 @@ export const useHistoryDetailContents: UseHistoryDetailContents = (
                 (tokens ?? []).length > 1 ? "s" : ""
               }: ${tokens?.join(", ")}`;
               emoji = <NewTokenIcon />;
-              popOutUrl = `/pool/${poolId}`;
+              popOutUrl = `${process.env.NEXT_PUBLIC_BASEPATH}/pool/${poolId}`;
             }
             if (poolEventDetailsJson?.EventData.isTokenSwapped) {
               const txHash =
@@ -202,7 +202,7 @@ export const useHistoryDetailContents: UseHistoryDetailContents = (
               "notifi.positionOutOfRangeHistoryMessage"
             )} [${asset0}/${asset1}]`;
             emoji = <PositionOutOfRangeIcon />;
-            popOutUrl = `/pool/${positionPoolId}`;
+            popOutUrl = `${process.env.NEXT_PUBLIC_BASEPATH}/pool/${positionPoolId}`;
             break;
 
           default:
