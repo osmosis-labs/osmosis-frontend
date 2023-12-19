@@ -5,6 +5,7 @@ import { RecommendedSwapDenoms } from "~/config/feature-flag";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
+  AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
   getAssetPrice,
@@ -20,15 +21,14 @@ import {
   TimeFrame,
 } from "~/server/queries/indexer/token-historical-chart";
 import { compareDec, compareDefinedMember } from "~/utils/compare";
-import { SearchSchema } from "~/utils/search";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.extend({
-  search: SearchSchema.optional(),
-}).and(UserOsmoAddressSchema);
+const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.and(
+  AssetFilterSchema
+).and(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
   getAsset: publicProcedure
@@ -51,15 +51,20 @@ export const assetsRouter = createTRPCRouter({
     }),
   getAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
-    .query(async ({ input: { search, userOsmoAddress, limit, cursor } }) => {
-      const userAssets = await mapGetUserAssetInfos({
-        search,
-        userOsmoAddress,
-        sortFiatValueDirection: "desc",
-      });
+    .query(
+      async ({
+        input: { search, userOsmoAddress, limit, cursor, onlyVerified },
+      }) => {
+        const userAssets = await mapGetUserAssetInfos({
+          search,
+          userOsmoAddress,
+          onlyVerified,
+          sortFiatValueDirection: "desc",
+        });
 
-      return maybeCursorPaginatedItems(userAssets, cursor, limit);
-    }),
+        return maybeCursorPaginatedItems(userAssets, cursor, limit);
+      }
+    ),
   getAssetPrice: publicProcedure
     .input(
       z.object({
@@ -103,6 +108,7 @@ export const assetsRouter = createTRPCRouter({
         input: {
           sort: sortInput,
           search,
+          onlyVerified,
           userOsmoAddress,
           preferredDenoms,
           cursor,
@@ -114,6 +120,7 @@ export const assetsRouter = createTRPCRouter({
         let assets;
         assets = await mapGetAssetMarketInfos({
           search,
+          onlyVerified,
         });
 
         assets = await mapGetUserAssetInfos({

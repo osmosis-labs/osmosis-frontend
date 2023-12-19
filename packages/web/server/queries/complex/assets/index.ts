@@ -3,10 +3,11 @@ import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
+import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { Search, search } from "~/utils/search";
+import { search, SearchSchema } from "~/utils/search";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
@@ -26,9 +27,12 @@ export type Asset = {
   isVerified: boolean;
 };
 
-type AssetFilter = Partial<{
-  search: Search;
-}>;
+export const AssetFilterSchema = z.object({
+  search: SearchSchema.optional(),
+  onlyVerified: z.boolean().default(false).optional(),
+});
+/** Params for filtering assets. */
+export type AssetFilter = z.infer<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
@@ -102,6 +106,13 @@ export async function getAssets({
       );
     }
 
+    // Filter by only verified
+    if (params.onlyVerified) {
+      assetListAssets = assetListAssets.filter((asset) =>
+        Boolean(asset.keywords?.includes("osmosis-main"))
+      );
+    }
+
     // Transform into a more compact object
     return assetListAssets.map(makeMinimalAsset);
   };
@@ -149,17 +160,16 @@ export async function getUserAssetInfo<TAsset extends Asset>({
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
 export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assetList = AssetLists,
-  assets,
-  userOsmoAddress,
-  search,
-  sortFiatValueDirection,
+  ...params
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
   userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
-  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
+  const { userOsmoAddress, search, sortFiatValueDirection } = params;
+  let { assets } = params;
+  if (!assets) assets = (await getAssets(params)) as TAsset[];
   if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances(userOsmoAddress);
@@ -228,13 +238,13 @@ export type AssetMarketInfo = Partial<{
  *  If no assets provided, they will be fetched and passed the given search params. */
 export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
-  assets,
-  search,
+  ...params
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
+  let { assets } = params;
+  if (!assets) assets = (await getAssets(params)) as TAsset[];
 
   return await Promise.all(
     assets.map((asset) => getAssetMarketInfo({ asset }))

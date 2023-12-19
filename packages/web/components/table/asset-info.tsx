@@ -33,6 +33,7 @@ import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
 import type { CommonHistoricalPriceTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import type { Search } from "~/utils/search";
@@ -57,7 +58,7 @@ export const AssetsInfoTable: FunctionComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
@@ -77,6 +78,11 @@ export const AssetsInfoTable: FunctionComponent<{
     "allTokens"
   );
 
+  const showUnverifiedAssetsSetting =
+    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
+  const showUnverifiedAssets =
+    showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
+
   // Query
   const {
     data: assetPagesData,
@@ -90,6 +96,7 @@ export const AssetsInfoTable: FunctionComponent<{
       preferredDenoms: favoritesList,
       limit: 20,
       search: searchQuery,
+      onlyVerified: showUnverifiedAssets === false,
       sort: sortKey
         ? {
             keyPath: sortKey,
