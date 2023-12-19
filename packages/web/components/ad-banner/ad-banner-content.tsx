@@ -51,6 +51,7 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
         />
         <div
           className={classNames("flex w-full flex-col gap-1 py-2.5")}
+        // we pass this color in directly to avoid having to manually update our tailwind safelist with arbitrary values
           style={textContainerStyle}
         >
           <h6 className="font-semibold">{header}</h6>
