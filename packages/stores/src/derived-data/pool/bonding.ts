@@ -21,6 +21,7 @@ import { OsmosisQueries } from "../../queries";
 import { ObservableQueryGauge } from "../../queries/incentives";
 import {
   ObservableQueryActiveGauges,
+  ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
 import { ObservableSharePoolDetails } from "./share-pool-details";
@@ -39,6 +40,7 @@ export class ObservableSharePoolBonding {
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>
@@ -166,7 +168,6 @@ export class ObservableSharePoolBonding {
   /** Memoizes calculation of bond duration data per duration in ms */
   protected readonly getBondDuration = computedFn(
     (durationMs: number): BondDuration | undefined => {
-      const internalGauges = this.superfluidPoolDetail.gaugesWithSuperfluidApr;
       const externalGauges =
         this.externalQueries.queryActiveGauges.getExternalGaugesForPool(
           this.poolId
@@ -182,6 +183,10 @@ export class ObservableSharePoolBonding {
       const curDuration = dayjs.duration({
         milliseconds: durationMs,
       });
+
+      const isHighestDuration =
+        curDuration.asMilliseconds() ===
+        this.sharePoolDetail.longestDuration?.asMilliseconds();
 
       const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
         this.sharePoolDetail.poolShareCurrency,
@@ -199,9 +204,6 @@ export class ObservableSharePoolBonding {
           );
 
       /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
-      const internalGaugeOfDuration = internalGauges.find(
-        (gauge) => gauge.duration.asMilliseconds() === durationMs
-      );
       const externalGaugesOfDuration = externalGauges.reduce<
         ObservableQueryGauge[]
       >((gauges, externalGauge) => {
@@ -252,51 +254,25 @@ export class ObservableSharePoolBonding {
 
       const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
 
+      const queryPoolAprs = this.externalQueries.queryPoolAprs.getForPool(
+        this.poolId
+      );
+
       // push single internal incentive for current duration
-      if (internalGaugeOfDuration) {
-        const { apr } = internalGaugeOfDuration;
-
-        const fiatCurrency = this.priceStore.getFiatCurrency(
-          this.priceStore.defaultVsCurrency
-        );
-
-        if (fiatCurrency) {
-          const dailyPoolReward =
-            this.queries.queryIncentivizedPools.computeDailyRewardForDuration(
-              this.poolId,
-              curDuration,
-              this.priceStore,
-              fiatCurrency
-            );
-
-          if (dailyPoolReward) {
-            incentivesBreakdown.push({
-              dailyPoolReward,
-              apr,
-            });
-          }
-        }
+      if (queryPoolAprs?.osmosis) {
+        incentivesBreakdown.push({
+          apr: queryPoolAprs.osmosis,
+          type: "osmosis",
+        });
       }
 
-      // push external incentives to current duration
-      externalGaugesOfDuration.forEach((gauge) => {
-        if (!gauge.gauge) return;
-
-        for (const { remaining } of gauge.coins) {
-          incentivesBreakdown.push({
-            dailyPoolReward: new Dec(gauge.remainingEpoch).isZero()
-              ? new CoinPretty(remaining.currency, 0)
-              : remaining.quo(new Dec(gauge.remainingEpoch)),
-            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-              this.poolId,
-              gauge.gauge.id,
-              remaining.currency.coinMinimalDenom,
-              this.priceStore
-            ),
-            numDaysRemaining: gauge.remainingEpoch,
-          });
-        }
-      });
+      // push external incentives to current duration (called "boost")
+      if (queryPoolAprs?.boost) {
+        incentivesBreakdown.push({
+          apr: queryPoolAprs.boost,
+          type: "boost",
+        });
+      }
 
       // add superfluid data if highest duration
       const sfsDuration = this.sharePoolDetail.longestDuration;
@@ -318,7 +294,7 @@ export class ObservableSharePoolBonding {
 
         superfluid = {
           duration: sfsDuration,
-          apr: this.superfluidPoolDetail.superfluidApr,
+          apr: queryPoolAprs?.superfluid ?? new RatePretty(0),
           commission: delegation?.validatorCommission,
           delegated: !this.superfluidPoolDetail.userUpgradeableSharePoolLockIds
             ? delegation?.equivalentOsmoAmount
@@ -332,27 +308,16 @@ export class ObservableSharePoolBonding {
         };
       }
 
-      let aggregateApr = incentivesBreakdown.reduce<RatePretty>(
-        (sum, { apr }) => sum.add(apr),
-        new RatePretty(0)
-      );
-      aggregateApr = aggregateApr.add(this.sharePoolDetail.swapFeeApr);
-      if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
+      const aggregateApr = queryPoolAprs?.totalApr ?? new RatePretty(0);
 
       return {
         duration: curDuration,
-        bondable:
-          internalGaugeOfDuration !== undefined ||
-          externalGaugesOfDuration.length > 0 ||
-          isSuperfluidDuration,
+        bondable: isHighestDuration,
         userShares: lockedUserShares,
         userLockedShareValue,
         userUnlockingShares,
         aggregateApr,
-        swapFeeApr: this.sharePoolDetail.swapFeeApr,
-        swapFeeDailyReward: this.externalQueries.queryPoolFeeMetrics
-          .getPoolFeesMetrics(this.poolId, this.priceStore)
-          .feesSpent7d.quo(new Dec(7)),
+        swapFeeApr: queryPoolAprs?.swapFees ?? new RatePretty(0),
         incentivesBreakdown,
         superfluid,
       };
@@ -371,6 +336,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>
