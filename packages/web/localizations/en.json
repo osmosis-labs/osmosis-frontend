@@ -549,6 +549,7 @@
     "aprBreakdown": {
       "swapFees": "Swap fees",
       "boost": "Boost",
+      "externalBoost": "External Boost",
       "total": "Total APR"
     }
   },
