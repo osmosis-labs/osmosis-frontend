@@ -21,7 +21,7 @@ export const BridgeAnimation = (props: CustomClasses) => {
   return (
     <div
       className={classNames(
-        "absolute left-1/2 top-[22px]  -translate-x-1/2 transform transition-opacity duration-300 md:h-[50px]",
+        "absolute left-1/2 top-[22px] -translate-x-1/2 transform transition-opacity duration-300 md:top-[8px] sm:left-[45%]",
         className
       )}
     >
@@ -29,7 +29,7 @@ export const BridgeAnimation = (props: CustomClasses) => {
         animationData={animData}
         autoplay
         loop
-        className="h-[85px] w-[400px] md:h-[80px] md:w-[500px]"
+        className="h-[85px] w-[400px] md:w-[400px] sm:w-[120%]"
       />
     </div>
   );

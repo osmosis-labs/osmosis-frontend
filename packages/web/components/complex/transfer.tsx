@@ -262,7 +262,7 @@ export const Transfer = observer(
           <div
             className={classNames(
               "z-10 flex w-full flex-col gap-12 transition-width",
-              !isEditingWithdrawAddr && "flex pl-6",
+              !isEditingWithdrawAddr && "flex pl-6 sm:pl-0",
               {
                 "w-1/4 text-osmoverse-400/30": isEditingWithdrawAddr,
               }
@@ -408,7 +408,7 @@ export const Transfer = observer(
           <div
             className={classNames(
               "z-10 flex w-full flex-col gap-12 transition-width",
-              isEditingWithdrawAddr ? "p-[7px]" : "flex pr-7",
+              isEditingWithdrawAddr ? "p-[7px]" : "flex pr-7 md:pr-9 sm:pr-0",
               {
                 "w-3/4": isEditingWithdrawAddr,
               }
