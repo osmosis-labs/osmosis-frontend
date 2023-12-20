@@ -25,7 +25,7 @@ export const AprBreakdownCell: FunctionComponent<{
           "text-bullish-500": Boolean(poolAprs?.boost),
         })}
       >
-        {poolAprs?.boost ? (
+        {poolAprs?.boost || poolAprs?.osmosis ? (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
@@ -54,12 +54,18 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
             />
           )}
           {poolAprs?.osmosis && (
-            <BreakdownRow label={"Osmosis"} value={poolAprs.osmosis} />
+            <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
+              <div className="flex place-content-between items-center gap-1">
+                <p>OSMO {t("pools.aprBreakdown.boost")}</p>
+                <Icon id="boost" color={theme.colors.bullish[500]} />
+              </div>
+              <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
+            </div>
           )}
           {poolAprs?.boost && (
             <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
               <div className="flex place-content-between items-center gap-1">
-                <p>{t("pools.aprBreakdown.boost")}</p>
+                <p>{t("pools.aprBreakdown.externalBoost")}</p>
                 <Icon id="boost" color={theme.colors.bullish[500]} />
               </div>
               <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
