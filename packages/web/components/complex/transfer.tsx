@@ -1,8 +1,10 @@
+import { Menu } from "@headlessui/react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 
@@ -22,7 +24,7 @@ import { useWindowSize } from "~/hooks";
 import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
 import { WalletDisplay } from "~/integrations/wallets";
 import { useStore } from "~/stores";
-import { formatICNSName } from "~/utils/string";
+import { formatICNSName, truncateString } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 
@@ -175,10 +177,54 @@ export const Transfer = observer(
       !disabled &&
       !isEditingWithdrawAddr;
 
+    const overlayedIconSize = isMobile
+      ? { height: 36, width: 36 }
+      : { height: 45, width: 45 };
+    const longFromName = from.networkName.length > 7;
+    const longToName = to.networkName.length > 7;
+
+    const selectedProvider = bridgeProviders?.find(
+      (provider) => provider.id === selectedBridgeProvidersId
+    );
+    const filteredBridgeProviders = bridgeProviders?.filter(
+      (provider) => provider.id !== selectedBridgeProvidersId
+    );
+
+    let displayFromAddress: ReactNode | undefined;
+    if (!from.address.startsWith("0x") || from.address.length === 0) {
+      if (isOsmosisAccountLoaded) {
+        displayFromAddress =
+          fromAddressIcnsName ??
+          Bech32Address.shortenAddress(from.address, maxFromChars);
+      } else {
+        displayFromAddress = <i>{t("connectWallet")}</i>;
+      }
+    } else {
+      displayFromAddress = truncateEthAddress(from.address);
+    }
+
+    let displayToAddress: ReactNode | undefined;
+    if (!isEditingWithdrawAddr && !disabled) {
+      if (!to.address.startsWith("0x") || to.address.length === 0) {
+        if (isOsmosisAccountLoaded) {
+          displayToAddress = (
+            <span title={toAddressToDisplay}>
+              {toAddressIcnsName ??
+                Bech32Address.shortenAddress(toAddressToDisplay, maxToChars)}
+            </span>
+          );
+        } else {
+          displayToAddress = <i>{t("connectWallet")}</i>;
+        }
+      } else {
+        displayToAddress = truncateEthAddress(to.address);
+      }
+    }
+
     return (
-      <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
+      <div className="flex flex-col gap-11 overflow-x-auto pt-8 md:gap-4">
         {toggleUseWrappedConfig && (
-          <div className="mx-auto w-fit pt-[10px]">
+          <div className="mx-auto w-fit ">
             <MenuToggle
               options={[
                 {
@@ -204,193 +250,319 @@ export const Transfer = observer(
             />
           </div>
         )}
-        <BridgeAnimation
-          className={`mx-auto  flex-shrink-0 ${
-            toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
-          }`}
-          transferPath={[from, to]}
-          bridgeProviders={bridgeProviders}
-          onSelectBridgeProvider={onSelectBridgeProvider}
-          selectedBridgeProvidersId={selectedBridgeProvidersId}
-        />
+
         <div
           className={classNames(
-            "body1 flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2"
+            "body1 relative flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2"
           )}
         >
+          <BridgeAnimation />
+
+          {/* From */}
           <div
             className={classNames(
-              "flex w-full rounded-2xl border border-white-faint p-4 text-center transition-width md:p-2",
+              "z-10 flex w-full flex-col gap-12 transition-width",
+              !isEditingWithdrawAddr && "flex pl-6",
               {
-                "w-1/4": isEditingWithdrawAddr,
-                "text-osmoverse-400/30": isEditingWithdrawAddr,
+                "w-1/4 text-osmoverse-400/30": isEditingWithdrawAddr,
               }
             )}
           >
-            {!(isMobile && isEditingWithdrawAddr) && !disabled && (
-              <div
-                className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2"
-                title={from.address}
-              >
-                {!from.address.startsWith("0x") || from.address.length === 0 ? (
-                  isOsmosisAccountLoaded ? (
-                    fromAddressIcnsName ??
-                    Bech32Address.shortenAddress(from.address, maxFromChars)
-                  ) : (
-                    <i>{t("connectWallet")}</i>
-                  )
-                ) : (
-                  truncateEthAddress(from.address)
+            {/* Network*/}
+            <div className="flex flex-col items-center gap-4 text-center">
+              <span
+                className={classNames(
+                  "whitespace-nowrap text-osmoverse-100 transition-opacity duration-300",
+                  longFromName || longToName
+                    ? isMobile
+                      ? "caption"
+                      : "subtitle1"
+                    : "md:subtitle2",
+                  longFromName
+                    ? "left-[90px] md:-left-[4px]"
+                    : "left-[122px] md:left-[10px]"
                 )}
-                {from.address.length > 0 &&
-                  !from.address.startsWith("osmo") &&
-                  selectedWalletDisplay && (
-                    <SwitchWalletButton
-                      selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
-                      onClick={() => onRequestSwitchWallet?.(from.source)}
-                      disabled={disabled}
-                    />
-                  )}
-              </div>
-            )}
+              >
+                {t("assets.transfer.from")}{" "}
+                {truncateString(from.networkName, 22)}
+              </span>
+
+              {from.iconUrl && (
+                <div
+                  className="transition-opacity duration-300"
+                  style={overlayedIconSize}
+                >
+                  <Image
+                    alt="token icon"
+                    src={from.iconUrl}
+                    {...overlayedIconSize}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Address */}
+            <div
+              className={classNames(
+                "flex h-full w-full rounded-2xl border border-white-faint p-4 text-center md:p-2"
+              )}
+            >
+              {!(isMobile && isEditingWithdrawAddr) && !disabled && (
+                <div
+                  className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2"
+                  title={from.address}
+                >
+                  {displayFromAddress}
+                  {from.address.length > 0 &&
+                    !from.address.startsWith("osmo") &&
+                    selectedWalletDisplay && (
+                      <SwitchWalletButton
+                        selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
+                        onClick={() => onRequestSwitchWallet?.(from.source)}
+                        disabled={disabled}
+                      />
+                    )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Provider select */}
+          {filteredBridgeProviders && selectedProvider && (
+            <div
+              className="absolute left-1/2 flex -translate-x-[33%] transform place-content-between items-center"
+              title={t("assets.ibcTransfer.provider")}
+            >
+              {filteredBridgeProviders?.length === 0 ? (
+                <p className="subtitle-2 flex flex-col items-center gap-4">
+                  <span className="rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
+                    {selectedProvider.name}
+                  </span>
+                  <Image
+                    src={selectedProvider.logo}
+                    alt={`${selectedProvider.name} logo`}
+                    {...overlayedIconSize}
+                  />
+                </p>
+              ) : (
+                <Menu>
+                  {({ open }) => (
+                    <div className="relative">
+                      <Menu.Button className="flex flex-col items-center gap-4">
+                        <div className="subtitle-2 flex items-center gap-1.5 rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
+                          {selectedProvider.name}
+                          <Icon
+                            className="flex shrink-0 items-center"
+                            id={open ? "chevron-up" : "chevron-down"}
+                            height={10}
+                            width={10}
+                          />
+                        </div>
+                        <Image
+                          src={selectedProvider.logo}
+                          alt={`${selectedProvider.name} logo`}
+                          {...overlayedIconSize}
+                        />
+                      </Menu.Button>
+
+                      <Menu.Items className="absolute top-1/3 -right-px mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-700">
+                        {filteredBridgeProviders.map((provider, index) => (
+                          <Menu.Item key={provider.id}>
+                            {({ active }) => (
+                              <button
+                                onClick={() =>
+                                  onSelectBridgeProvider?.(provider)
+                                }
+                                className={classNames(
+                                  "flex cursor-pointer items-center gap-2 py-1 pl-2  pr-4 transition-colors",
+                                  {
+                                    "bg-osmoverse-600": active,
+                                    "rounded-b-xlinset":
+                                      index ===
+                                      filteredBridgeProviders.length - 1,
+                                  }
+                                )}
+                              >
+                                <div className="flex flex-shrink-0">
+                                  <Image
+                                    src={provider.logo}
+                                    alt={`${provider.name} logo`}
+                                    width={16}
+                                    height={16}
+                                  />
+                                </div>
+                                {provider.name}
+                              </button>
+                            )}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Items>
+                    </div>
+                  )}
+                </Menu>
+              )}
+            </div>
+          )}
+
+          {/* To */}
           <div
             className={classNames(
-              "w-full rounded-2xl border border-white-faint text-center transition-width",
-              isEditingWithdrawAddr ? "p-[7px]" : "flex p-4 md:p-2",
+              "z-10 flex w-full flex-col gap-12 transition-width",
+              isEditingWithdrawAddr ? "p-[7px]" : "flex pr-7",
               {
                 "w-3/4": isEditingWithdrawAddr,
               }
             )}
           >
-            <div className="md:caption mx-auto flex flex-nowrap items-center  justify-center gap-2 sm:flex-wrap">
-              {!isEditingWithdrawAddr &&
-                !disabled &&
-                (!to.address.startsWith("0x") || to.address.length === 0 ? (
-                  isOsmosisAccountLoaded ? (
-                    <span title={toAddressToDisplay}>
-                      {toAddressIcnsName ??
-                        Bech32Address.shortenAddress(
-                          toAddressToDisplay,
-                          maxToChars
-                        )}
-                    </span>
-                  ) : (
-                    <i>{t("connectWallet")}</i>
-                  )
-                ) : (
-                  truncateEthAddress(to.address)
-                ))}
-              <div
+            {/* Network */}
+            <div className="flex flex-col items-center gap-4 text-center">
+              <span
                 className={classNames(
-                  "flex items-center gap-2",
-                  isEditingWithdrawAddr && "w-full flex-col"
+                  "w-fit whitespace-nowrap text-osmoverse-100 transition-opacity duration-300",
+                  longFromName || longToName
+                    ? isMobile
+                      ? "caption"
+                      : "subtitle1"
+                    : "md:subtitle2",
+                  "left-[405px] md:left-[210px]"
                 )}
               >
-                {/* To avoid overflowing, display menu dropdown when edit and switch wallet are visible. */}
-                {isEditButtonVisible && isSwitchWalletVisibleForTo ? (
-                  <div
-                    ref={dropdownContainerRef}
-                    className="hover:pointer-cursor relative"
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <IconButton
-                      icon={<Icon id="more-menu" className="h-6 w-6" />}
-                      aria-label="Menu"
-                      onClick={() =>
-                        setIsOptionsDropdownOpen(!isOptionsDropdownOpen)
-                      }
-                      mode="unstyled"
-                    />
-                    <MenuDropdown
-                      className="top-full right-0"
-                      isOpen={isOptionsDropdownOpen}
-                      options={[
-                        {
-                          id: "switch-wallet",
-                          display: (
-                            <div className="flex gap-2 whitespace-nowrap">
-                              <div className="mt-[2px] h-[16px] w-[16px]">
-                                <Image
-                                  src={selectedWalletDisplay!.iconUrl}
-                                  width={16}
-                                  height={16}
-                                  alt="wallet icon"
-                                />
+                {t("assets.transfer.to")} {truncateString(to.networkName, 22)}
+              </span>
+              {to.iconUrl && (
+                <div
+                  className="transition-opacity duration-300"
+                  style={overlayedIconSize}
+                >
+                  <Image
+                    alt="token icon"
+                    src={to.iconUrl}
+                    {...overlayedIconSize}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Address */}
+            <div
+              className={classNames(
+                "flex h-full w-full rounded-2xl border border-white-faint py-1 text-center"
+              )}
+            >
+              <div className="md:caption mx-auto flex flex-nowrap items-center justify-center gap-2 sm:flex-wrap">
+                {displayToAddress}
+                <div
+                  className={classNames(
+                    "flex items-center gap-2",
+                    isEditingWithdrawAddr && "w-full flex-col"
+                  )}
+                >
+                  {/* To avoid overflowing, display menu dropdown when edit and switch wallet are visible. */}
+                  {isEditButtonVisible && isSwitchWalletVisibleForTo ? (
+                    <div
+                      ref={dropdownContainerRef}
+                      className="hover:pointer-cursor relative"
+                      onClick={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      <IconButton
+                        icon={<Icon id="more-menu" className="h-6 w-6" />}
+                        aria-label="Menu"
+                        onClick={() =>
+                          setIsOptionsDropdownOpen(!isOptionsDropdownOpen)
+                        }
+                        mode="unstyled"
+                      />
+                      <MenuDropdown
+                        className="top-full right-0"
+                        isOpen={isOptionsDropdownOpen}
+                        options={[
+                          {
+                            id: "switch-wallet",
+                            display: (
+                              <div className="flex gap-2 whitespace-nowrap">
+                                <div className="mt-[2px] h-[16px] w-[16px]">
+                                  <Image
+                                    src={selectedWalletDisplay!.iconUrl}
+                                    width={16}
+                                    height={16}
+                                    alt="wallet icon"
+                                  />
+                                </div>
+                                <p>Switch wallet</p>
                               </div>
-                              <p>Switch wallet</p>
-                            </div>
-                          ),
-                        },
+                            ),
+                          },
+                          {
+                            id: "edit-address",
+                            display: "Edit address",
+                          },
+                        ]}
+                        onSelect={(id) => {
+                          setIsOptionsDropdownOpen(false);
+
+                          if (id === "switch-wallet") {
+                            onRequestSwitchWallet?.(to.source);
+                          }
+
+                          if (id === "edit-address") {
+                            setIsEditingWithdrawAddr(true);
+                            editWithdrawAddrConfig.setCustomAddress(to.address);
+                          }
+                        }}
+                        isFloating
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      {isSwitchWalletVisibleForTo ? (
+                        <SwitchWalletButton
+                          selectedWalletIconUrl={selectedWalletDisplay!.iconUrl}
+                          onClick={() => onRequestSwitchWallet?.(to.source)}
+                          disabled={disabled}
+                        />
+                      ) : undefined}
+                      {isEditButtonVisible && (
+                        <Button
+                          mode="amount"
+                          onClick={() => {
+                            setIsEditingWithdrawAddr(true);
+                            editWithdrawAddrConfig.setCustomAddress(to.address);
+                          }}
+                        >
+                          {t("assets.ibcTransfer.buttonEdit")}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                  {isEditingWithdrawAddr && editWithdrawAddrConfig && (
+                    <InputBox
+                      className="w-full"
+                      style="no-border"
+                      currentValue={editWithdrawAddrConfig.customAddress}
+                      disabled={disabled}
+                      onInput={(value) => {
+                        editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
+                        editWithdrawAddrConfig.setCustomAddress(value);
+                      }}
+                      labelButtons={[
                         {
-                          id: "edit-address",
-                          display: "Edit address",
+                          label: t("assets.ibcTransfer.buttonEnter"),
+                          className:
+                            "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
+                          onClick: () => setIsEditingWithdrawAddr(false),
+                          disabled: !editWithdrawAddrConfig.isValid,
                         },
                       ]}
-                      onSelect={(id) => {
-                        setIsOptionsDropdownOpen(false);
-
-                        if (id === "switch-wallet") {
-                          onRequestSwitchWallet?.(to.source);
-                        }
-
-                        if (id === "edit-address") {
-                          setIsEditingWithdrawAddr(true);
-                          editWithdrawAddrConfig.setCustomAddress(to.address);
-                        }
-                      }}
-                      isFloating
                     />
-                  </div>
-                ) : (
-                  <>
-                    {isSwitchWalletVisibleForTo ? (
-                      <SwitchWalletButton
-                        selectedWalletIconUrl={selectedWalletDisplay!.iconUrl}
-                        onClick={() => onRequestSwitchWallet?.(to.source)}
-                        disabled={disabled}
-                      />
-                    ) : undefined}
-                    {isEditButtonVisible && (
-                      <Button
-                        mode="amount"
-                        onClick={() => {
-                          setIsEditingWithdrawAddr(true);
-                          editWithdrawAddrConfig.setCustomAddress(to.address);
-                        }}
-                      >
-                        {t("assets.ibcTransfer.buttonEdit")}
-                      </Button>
-                    )}
-                  </>
-                )}
-                {isEditingWithdrawAddr && editWithdrawAddrConfig && (
-                  <InputBox
-                    className="w-full"
-                    style="no-border"
-                    currentValue={editWithdrawAddrConfig.customAddress}
-                    disabled={disabled}
-                    onInput={(value) => {
-                      editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
-                      editWithdrawAddrConfig.setCustomAddress(value);
-                    }}
-                    labelButtons={[
-                      {
-                        label: t("assets.ibcTransfer.buttonEnter"),
-                        className:
-                          "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
-                        onClick: () => setIsEditingWithdrawAddr(false),
-                        disabled: !editWithdrawAddrConfig.isValid,
-                      },
-                    ]}
-                  />
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
+
         <div
           className={classNames(
             "flex flex-col gap-4 transition-opacity duration-300",

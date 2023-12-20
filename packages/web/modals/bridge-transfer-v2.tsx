@@ -24,7 +24,7 @@ import { Required } from "utility-types";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button, buttonCVA } from "~/components/buttons";
-import { Transfer } from "~/components/complex/transfer";
+import { Transfer, TransferProps } from "~/components/complex/transfer";
 import { EventName } from "~/config";
 import {
   useAmountConfig,
@@ -164,7 +164,7 @@ export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> 
 
 const EvmTransfer: FunctionComponent<
   Required<BridgeTransferModalProps, "walletClient" | "balance">
-> = (props) => {
+> = observer((props) => {
   const {
     isWithdraw,
     balance: assetToBridge,
@@ -279,22 +279,33 @@ const EvmTransfer: FunctionComponent<
       ethWalletClient={ethWalletClient}
     />
   );
-};
+});
 
 const ManualTransfer: FunctionComponent<
   Omit<BridgeTransferModalProps, "walletClient">
-> = (props) => {
+> = observer((props) => {
+  const [address, setAddress] = useState("");
+
   return (
     <TransferContent
       {...props}
-      counterpartyAddress="Pizza"
+      counterpartyAddress={address}
       depositAmount=""
       setDepositAmount={noop}
       toggleIsDepositAmtMax={noop}
       setLastDepositAccountEvmAddress={noop}
+      editWithdrawAddrConfig={{
+        customAddress: address,
+        setCustomAddress(bech32Address) {
+          setAddress(bech32Address);
+        },
+        isValid: true,
+        didAckWithdrawRisk: true,
+        setDidAckWithdrawRisk: noop,
+      }}
     />
   );
-};
+});
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -318,6 +329,7 @@ export const TransferContent: FunctionComponent<
     warnOfDifferentDepositAddress?: boolean;
     isEthTxPending?: boolean;
     ethWalletClient?: EthWallet;
+    editWithdrawAddrConfig?: TransferProps<any>["editWithdrawAddrConfig"];
   }
 > = observer((props) => {
   const {
@@ -338,6 +350,7 @@ export const TransferContent: FunctionComponent<
     setLastDepositAccountEvmAddress,
     isEthTxPending,
     ethWalletClient,
+    editWithdrawAddrConfig,
   } = props;
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -428,8 +441,6 @@ export const TransferContent: FunctionComponent<
     feeConfig,
     assetToBridge.balance.currency
   );
-
-  // DEPOSIT
 
   const inputAmountRaw = isWithdraw
     ? withdrawAmountConfig.amount
@@ -1202,6 +1213,7 @@ export const TransferContent: FunctionComponent<
           setSelectedBridgeProvider(id);
         }}
         isLoadingDetails={isLoadingBridgeQuote}
+        editWithdrawAddrConfig={editWithdrawAddrConfig}
       />
       <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 md:mt-4">
         {walletConnected ? (
