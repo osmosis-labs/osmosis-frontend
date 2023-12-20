@@ -503,6 +503,12 @@ const AnnouncementBanner: FunctionComponent<
     onOpen: onOpenLeavingOsmosis,
   } = useDisclosure();
 
+  const [showBanner, setShowBanner] = useState<boolean>(() => {
+    // Check local storage on initial render
+    const bannerState = localStorage.getItem('bannerState');
+    return bannerState !== 'closed';
+  });
+
   const linkText = t(
     link?.enTextOrLocalizationKey ?? "Click here to learn more"
   );
@@ -512,6 +518,17 @@ const AnnouncementBanner: FunctionComponent<
       url: link?.url ?? "",
       openModal: onOpenLeavingOsmosis,
     });
+
+  const handleCloseBanner = () => {
+    setShowBanner(false);
+    closeBanner();
+    // Update local storage when banner is closed
+    localStorage.setItem('bannerState', 'closed');
+  };
+
+  if (!showBanner) {
+    return null;
+  }
 
   return (
     <div
@@ -549,7 +566,7 @@ const AnnouncementBanner: FunctionComponent<
       {!persistent && !isWarning && (
         <IconButton
           className="flex w-fit cursor-pointer items-center py-0 text-white-full"
-          onClick={closeBanner}
+          onClick={handleCloseBanner} // Call handleCloseBanner instead of closeBanner
           aria-label="Close"
           icon={<Icon id="close-small" height={24} width={24} />}
           size="unstyled"
