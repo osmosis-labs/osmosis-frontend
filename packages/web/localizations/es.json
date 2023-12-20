@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
-    "7davg": "(7d Promedio)",
     "amountDaysUnbonding": "{numDays} día para desabonar",
     "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "APR": "TPA",
@@ -478,7 +477,6 @@
     "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "liquidity": "Liquidez",
-    "numDaysRemaining": "{numDays} días restantes",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para obtener TPAs increíbles. Mientras más tiempo sea su período para desabonarse, más generará.",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",

@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
-export const ClAprBreakdownCell: FunctionComponent<{
+export const AprBreakdownCell: FunctionComponent<{
   poolId: string;
 }> = observer(({ poolId }) => {
   const { queriesExternalStore } = useStore();

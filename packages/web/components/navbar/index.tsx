@@ -35,7 +35,10 @@ import {
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
-import { ExternalLinkModal } from "~/modals/external-links-modal";
+import {
+  ExternalLinkModal,
+  handleExternalLink,
+} from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
@@ -504,20 +507,11 @@ const AnnouncementBanner: FunctionComponent<
     link?.enTextOrLocalizationKey ?? "Click here to learn more"
   );
 
-  const handleLeaveClick = () => {
-    // try/catch in case user is in private mode
-    try {
-      const doNotShowModal = localStorage.getItem("doNotShowExternalLinkModal");
-      if (doNotShowModal) {
-        window.open(link?.url, "_blank");
-      } else {
-        onOpenLeavingOsmosis();
-      }
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
-      onOpenLeavingOsmosis();
-    }
-  };
+  const handleLeaveClick = () =>
+    handleExternalLink({
+      url: link?.url ?? "",
+      openModal: onOpenLeavingOsmosis,
+    });
 
   return (
     <div
