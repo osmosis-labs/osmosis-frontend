@@ -225,6 +225,7 @@ const TokenDetails = ({
                 {shortBase ? (
                   <ClipboardButton
                     aria-label="Clipboard"
+                    defaultIcon="code"
                     value={currency?.base}
                   >
                     {shortBase}
