@@ -125,7 +125,7 @@ const TokenDetails = ({
     ).reduce((a, b) => [...a, ...b]);
 
     const currency = currencies.find(
-      (el) => el.coinDenom === denom.toUpperCase()
+      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
     );
 
     return currency;
@@ -147,6 +147,8 @@ const TokenDetails = ({
 
     return asset?.rawAsset.name;
   }, [details, currency]);
+
+  console.log(currency);
 
   const shortBase = useMemo(() => {
     if (currency?.base) {
