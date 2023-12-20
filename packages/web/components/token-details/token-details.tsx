@@ -148,8 +148,6 @@ const TokenDetails = ({
     return asset?.rawAsset.name;
   }, [details, currency]);
 
-  console.log(currency);
-
   const shortBase = useMemo(() => {
     if (currency?.base) {
       if (!currency.base.includes("/")) {
