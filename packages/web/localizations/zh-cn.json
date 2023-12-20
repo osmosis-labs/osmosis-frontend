@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解绑",
     "amountDaysUnbonding_plural": "{numDays} 天解绑期",
     "APR": "APR",
@@ -466,7 +465,7 @@
     "collapseDetails": "收起详情",
     "commission": "佣金",
     "currentDailyEarn": "您当前正在赚取",
-    "dailyEarnAmount": "{amount} / 天",
+    "dailyEarnAmount": "{amount} /天",
     "day": "天",
     "delegated": "委托",
     "details": "详情",
@@ -478,7 +477,6 @@
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "liquidity": "资金池流动性",
-    "numDaysRemaining": "还剩 {numDays} 天",
     "putAssetsToWork": "让您的资产发挥作用.",
     "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
     "rewardDistribution": "向所有流动性提供者发放奖励",
@@ -881,9 +879,5 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免责声明",
-  "namada": {
-    "description": "Osmosis 用户可能有资格参加 Namada 发布申请。",
-    "link": "在此检查您的 $NAM 资格！"
-  }
+  "disclaimer": "免责声明"
 }

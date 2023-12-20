@@ -1,4 +1,5 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
+import { useState } from "react";
 
 import { CheckBox } from "~/components/control";
 import { useTranslation } from "~/hooks";
@@ -6,15 +7,56 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 
 import { Button } from "../components/buttons";
 
+const DoNotShowAgainExcludedUrlsKey = "do-not-show-again-excluded-urls";
+type DoNotShowAgainExcludedUrls = Record<string, boolean>;
+
+export function getDoNotShowAgainExcludedUrls(): DoNotShowAgainExcludedUrls {
+  const value = localStorage.getItem(DoNotShowAgainExcludedUrlsKey);
+  return value ? JSON.parse(value) : {};
+}
+
+function setDoNotShowAgainExcludedUrls(url: string, value: boolean) {
+  const excludedUrls = getDoNotShowAgainExcludedUrls();
+  excludedUrls[url] = value;
+  return localStorage.setItem(
+    DoNotShowAgainExcludedUrlsKey,
+    JSON.stringify(excludedUrls)
+  );
+}
+
+export function handleExternalLink({
+  url,
+  openModal,
+}: {
+  url: string;
+  openModal: () => void;
+}) {
+  try {
+    const doNotShowModalExcludedUrls = getDoNotShowAgainExcludedUrls();
+
+    if (doNotShowModalExcludedUrls[url]) {
+      window.open(url, "_blank");
+    } else {
+      openModal();
+    }
+  } catch (error) {
+    console.error("Error accessing localStorage:", error);
+    openModal();
+  }
+}
+
 export const ExternalLinkModal: FunctionComponent<
   { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ url, ...modalBaseProps }) => {
   const { t } = useTranslation();
   const [doNotShowAgain, setDoNotShowAgain] = useState(false);
 
-  const handleDoNotShowAgainChange = () => {
-    setDoNotShowAgain(!doNotShowAgain);
-    localStorage.setItem("doNotShowExternalLinkModal", String(!doNotShowAgain));
+  const onToggleDoNotShowAgain = () => {
+    setDoNotShowAgain((prevDoNotShowAgain) => {
+      const nextValue = !prevDoNotShowAgain;
+      setDoNotShowAgainExcludedUrls(url, nextValue);
+      return nextValue;
+    });
   };
 
   return (
@@ -44,10 +86,7 @@ export const ExternalLinkModal: FunctionComponent<
         </div>
 
         <label className="mb-6 flex items-center space-x-2">
-          <CheckBox
-            isOn={doNotShowAgain}
-            onToggle={handleDoNotShowAgainChange}
-          />
+          <CheckBox isOn={doNotShowAgain} onToggle={onToggleDoNotShowAgain} />
           <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
         </label>
 

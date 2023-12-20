@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
-    "7davg": "(7j moy)",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
@@ -478,7 +477,6 @@
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
-    "numDaysRemaining": "{numDays} jours restants",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "rewardDistribution": "Récompenses distribuées à tous les fournisseurs de liquidités",
@@ -881,9 +879,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Clause de non-responsabilité",
-  "namada": {
-    "description": "Les utilisateurs d'Osmosis peuvent être éligibles pour la demande de lancement de Namada.",
-    "link": "Vérifiez votre éligibilité $NAM ici!"
-  }
+  "disclaimer": "Clause de non-responsabilité"
 }

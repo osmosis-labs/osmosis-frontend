@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
-    "7davg": "(7d śr.)",
     "amountDaysUnbonding": "{numDays} dzień rozłączenia",
     "amountDaysUnbonding_plural": "{numDays} dni rozwiązywania",
     "APR": "APR",
@@ -478,7 +477,6 @@
     "learnMore": "Dowiedz się więcej",
     "level": "Poziom {level}",
     "liquidity": "Płynność puli",
-    "numDaysRemaining": "Pozostały {numDays} dni",
     "putAssetsToWork": "Zarabiaj dzięki swoim środkom",
     "putAssetsToWorkCaption": "Dodaj swoje środki do tej puli, żeby odblokować ekscytujące APR. Im dłuższy okres związania, tym wyższe zarobki.",
     "rewardDistribution": "Nagrody przekazywane wszystkim udostępniającym płynność",
@@ -881,9 +879,5 @@
       "multi": "Wielo"
     }
   },
-  "disclaimer": "Zastrzeżenie",
-  "namada": {
-    "description": "Użytkownicy Osmosis mogą być uprawnieni do zgłoszenia roszczenia o start Namada.",
-    "link": "Sprawdź swoją uprawnienie do $NAM tutaj!"
-  }
+  "disclaimer": "Zastrzeżenie"
 }

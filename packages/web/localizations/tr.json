@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
-    "7davg": "(7g ort)",
     "amountDaysUnbonding": "{numDays} gün ayrılma",
     "amountDaysUnbonding_plural": "{numDays} gün sonra çözülecek",
     "APR": "APR",
@@ -478,7 +477,6 @@
     "learnMore": "Daha fazla öğren",
     "level": "Seviye {level}",
     "liquidity": "Havuzdaki likidite",
-    "numDaysRemaining": "{numDays} gün kaldı",
     "putAssetsToWork": "Varlıklarınız sizin için çalışsın.",
     "putAssetsToWorkCaption": "Heyecan verici APR'lerden yararlanmak için varlıklarınızı bu havuza ekleyin. Bağlama süreniz ne kadar uzun olursa, o kadar çok kazanırsınız.",
     "rewardDistribution": "Tüm likidite sağlayıcılarına dağıtılan ödüller",
@@ -881,9 +879,5 @@
       "multi": "Çok"
     }
   },
-  "disclaimer": "Sorumluluk reddi beyanı",
-  "namada": {
-    "description": "Osmosis kullanıcıları, Namada lansman talebi için uygun olabilirler.",
-    "link": "$NAM uygunluğunuzu buradan kontrol edin!"
-  }
+  "disclaimer": "Sorumluluk reddi beyanı"
 }
