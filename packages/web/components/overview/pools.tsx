@@ -6,8 +6,8 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { Button } from "~/components/buttons";
-import { Breakpoint, CustomClasses } from "~/components/types";
-import { useTranslation } from "~/hooks";
+import { CustomClasses } from "~/components/types";
+import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 

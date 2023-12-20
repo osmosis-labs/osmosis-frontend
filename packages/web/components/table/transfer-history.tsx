@@ -12,9 +12,8 @@ import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
-import { Breakpoint, CustomClasses } from "~/components/types";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
+import { CustomClasses } from "~/components/types";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { GetTransferStatusParams } from "~/integrations/bridges/types";
 import { useStore } from "~/stores";
 import { truncateString } from "~/utils/string";

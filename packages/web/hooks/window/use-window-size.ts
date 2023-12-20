@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 
-import { Breakpoint } from "~/components/types";
-
 export interface WindowSize {
   width: number;
   height: number;
   isMobile: boolean;
   isLargeDesktop: boolean;
   isExtraLargeDesktop: boolean;
+}
+
+/** Should match settings in tailwind.config.js
+ *
+ *  https://tailwindcss.com/docs/responsive-design
+ */
+export const enum Breakpoint {
+  SM = 640,
+  MD = 768,
+  LG = 1024,
+  XLG = 1152,
+  XL = 1280,
+  XLHALF = 1408,
+  XXL = 1536,
+  XXXL = 1792,
 }
 
 /**

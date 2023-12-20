@@ -7,10 +7,8 @@ import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
-import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export type App = {
   title: string;
