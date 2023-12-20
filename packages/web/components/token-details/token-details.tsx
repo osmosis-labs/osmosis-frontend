@@ -3,10 +3,9 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { useCallback } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import ClipboardButton from "~/components/buttons/clipboard-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
@@ -149,12 +148,6 @@ const TokenDetails = ({
     return asset?.rawAsset.name;
   }, [details, currency]);
 
-  const copyAssetBase = useCallback(() => {
-    if (currency?.base) {
-      navigator.clipboard.writeText(currency.base);
-    }
-  }, [currency]);
-
   const shortBase = useMemo(() => {
     if (currency?.base) {
       if (!currency.base.includes("/")) {
@@ -230,19 +223,12 @@ const TokenDetails = ({
                   />
                 )}
                 {shortBase ? (
-                  <IconButton
-                    mode="icon-social"
-                    size="md-min"
-                    aria-label={"clipboard"}
-                    onClick={copyAssetBase}
+                  <ClipboardButton
+                    aria-label="Clipboard"
+                    value={currency?.base}
                   >
-                    <div className="flex items-center transition-all duration-300 group-hover:px-4">
-                      <p className="w-0 overflow-hidden text-body2 font-medium text-osmoverse-300 opacity-0 transition-all duration-300 group-hover:mr-2 group-hover:w-25 group-hover:opacity-100">
-                        {shortBase}
-                      </p>
-                      <Icon className="h-4 w-4 text-osmoverse-300" id="copy" />
-                    </div>
-                  </IconButton>
+                    {shortBase}
+                  </ClipboardButton>
                 ) : (
                   false
                 )}
