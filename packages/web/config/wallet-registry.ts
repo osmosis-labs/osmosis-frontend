@@ -129,7 +129,6 @@ export const WalletRegistry: RegistryWallet[] = [
         "osmosis-1",
         "passage-2",
         "core-1",
-        "core-1",
         "planq_7070-2",
         "pio-mainnet-1",
         "quasar-1",
