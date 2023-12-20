@@ -549,6 +549,7 @@
     "aprBreakdown": {
       "swapFees": "Takas ücretleri",
       "boost": "Artırmak",
+      "externalBoost": "Harici Güçlendirme",
       "total": "Toplam Nisan"
     }
   },

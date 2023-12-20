@@ -549,6 +549,7 @@
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",
+      "externalBoost": "Zewnętrzne wzmocnienie",
       "total": "Całkowita RRSO"
     }
   },
