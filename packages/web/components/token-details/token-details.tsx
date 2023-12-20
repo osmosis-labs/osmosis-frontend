@@ -125,7 +125,7 @@ const TokenDetails = ({
     ).reduce((a, b) => [...a, ...b]);
 
     const currency = currencies.find(
-      (el) => el.coinDenom === denom.toUpperCase()
+      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
     );
 
     return currency;
@@ -147,6 +147,8 @@ const TokenDetails = ({
 
     return asset?.rawAsset.name;
   }, [details, currency]);
+
+  console.log(currency);
 
   const shortBase = useMemo(() => {
     if (currency?.base) {
@@ -176,7 +178,7 @@ const TokenDetails = ({
       {name && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
-            <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:gap-4">
+            <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
                 {t("tokenInfos.aboutDenom", { name })}
               </h6>
@@ -225,6 +227,7 @@ const TokenDetails = ({
                 {shortBase ? (
                   <ClipboardButton
                     aria-label="Clipboard"
+                    defaultIcon="code"
                     value={currency?.base}
                   >
                     {shortBase}

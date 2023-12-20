@@ -3,6 +3,7 @@ import { ComponentProps, forwardRef } from "react";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { SpriteIconId } from "~/config";
 
 import IconButton from "./icon-button";
 
@@ -13,6 +14,7 @@ const ClipboardButton = forwardRef<
   HTMLButtonElement,
   {
     value?: string;
+    defaultIcon?: SpriteIconId;
   } & ComponentProps<typeof IconButton>
 >((props, ref) => {
   const [copied, setCopied] = useState(false);
@@ -22,6 +24,7 @@ const ClipboardButton = forwardRef<
     children,
     mode = "icon-social",
     size = "md-min",
+    defaultIcon = "copy",
     value,
     "aria-label": ariaLabel = "clipboard",
     ...rest
@@ -53,16 +56,22 @@ const ClipboardButton = forwardRef<
         </p>
         <div className="relative h-4 w-4">
           <Icon
-            className={`absolute left-0 right-0 h-full w-full text-osmoverse-300 opacity-100 transition-opacity ${
+            className={`absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-osmoverse-300 opacity-100  transition-opacity duration-300 group-hover:opacity-0 ${
               copied ? "!opacity-0" : ""
             }`}
-            id="copy"
+            id={defaultIcon}
           />
           <Icon
             className={`absolute left-0 right-0 h-full w-full text-bullish-600 opacity-0 transition-opacity duration-300 ${
               copied ? "!opacity-100" : ""
             }`}
             id="check-mark"
+          />
+          <Icon
+            className={`absolute left-0 right-0 h-full w-full text-osmoverse-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
+              copied ? "!opacity-0" : ""
+            }`}
+            id="copy"
           />
         </div>
       </div>
