@@ -2574,6 +2574,11 @@ export class OsmosisAccountImpl {
           this.queries.queryUsersValidatorPreferences
             .get(this.address)
             .waitFreshResponse();
+
+          // refresh query delegations
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2634,6 +2639,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
+          // refresh query delegations
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
             .waitFreshResponse();

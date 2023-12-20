@@ -56,7 +56,11 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       queriesStore,
       accountStore,
       priceStore,
-      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
+      queriesExternalStore: {
+        queryPoolFeeMetrics,
+        queryAccountsPoolRewards,
+        queryPoolAprs,
+      },
       derivedDataStore,
       userUpgrades,
     } = useStore();
@@ -79,6 +83,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const address = account?.address ?? "";
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
+    const queryPoolApr = queryPoolAprs.getForPool(poolId);
 
     // initialize pool data stores once root pool store is loaded
     const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
@@ -678,11 +683,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                           {t("pool.earnSwapFees")}
                         </h6>
                         <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
-                          pool
-                            ? queryPoolFeeMetrics
-                                .get7dPoolFeeApr(pool, priceStore)
-                                .maxDecimals(2)
-                                .toString()
+                          queryPoolApr?.swapFees
+                            ? queryPoolApr.swapFees.maxDecimals(2).toString()
                             : ""
                         } ${t("pool.APR")}`}</h6>
                       </div>

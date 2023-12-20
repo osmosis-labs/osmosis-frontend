@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -478,7 +477,6 @@
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",
-    "numDaysRemaining": "{numDays} dias restantes",
     "putAssetsToWork": "Coloque seus ativos para trabalhar",
     "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
     "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
@@ -881,9 +879,5 @@
       "multi": "Múltiplo"
     }
   },
-  "disclaimer": "Isenção de responsabilidade",
-  "namada": {
-    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
-    "link": "Verifique sua elegibilidade para $NAM aqui!"
-  }
+  "disclaimer": "Isenção de responsabilidade"
 }

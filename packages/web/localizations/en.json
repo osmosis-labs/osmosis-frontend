@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} day unbonding",
     "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "APR": "APR",
@@ -478,7 +477,6 @@
     "learnMore": "Learn more",
     "level": "Level {level}",
     "liquidity": "Pool liquidity",
-    "numDaysRemaining": "{numDays} days remaining",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make.",
     "rewardDistribution": "Rewards distributed to all liquidity providers",
@@ -881,9 +879,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Disclaimer",
-  "namada": {
-    "description": "Osmosis users may be eligible for the Namada launch claim.",
-    "link": "Check your $NAM eligibility here!"
-  }
+  "disclaimer": "Disclaimer"
 }
