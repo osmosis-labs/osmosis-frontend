@@ -80,17 +80,14 @@ export const PaginatedTable = ({
           return (
             <a
               key={row.original.queryPool.id}
-              href={getPoolLink(row.original.queryPool)}
               style={{
                 position: "absolute",
                 top: 0,
                 left: 0,
                 width: "100%",
                 height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start - topOffset}px)`,
+                transform: `translateY(${virtualRow.start - topOffset}px)`
               }}
-              target={row.original.queryPool.type === "transmuter" ? "_blank" : "_self"}
-              rel={row.original.queryPool.type === "transmuter" ? "noopener noreferrer" : ""}
               onClick={(e) => {
                 e.stopPropagation();
                 const link = getPoolLink(row.original.queryPool);
@@ -101,7 +98,7 @@ export const PaginatedTable = ({
                 }
               }}
             >
-              <MobileTableRow row={row} />
+            <MobileTableRow row={row} />
             </a>
           );
         })}
@@ -161,36 +158,30 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-        <tr
-          key={row.id}
-          className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-          onClick={(e) => {
-            e.stopPropagation();
-            const link = getPoolLink(row.original.queryPool);
-            if (row.original.queryPool.type === "transmuter") {
-              window.open(link, '_blank');
-            } else {
-              router.push(link);
-            }
-          }}
-        >
-        {row.getVisibleCells().map((cell) => {
-          return (
-            <td key={cell.id}>
-              <a 
-                href={getPoolLink(row.original.queryPool)}
-                target={row.original.queryPool.type === "transmuter" ? "_blank" : undefined} 
-                rel={row.original.queryPool.type === "transmuter" ? "noopener noreferrer" : undefined}
-              >
+<tr
+            key={row.id}
+            className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+            onClick={(e) => {
+              e.stopPropagation();
+              const link = getPoolLink(row.original.queryPool);
+              if (row.original.queryPool.type === "transmuter") {
+                window.open(link, '_blank');
+              } else {
+                router.push(link);
+              }
+            }}
+          >
+          {row.getVisibleCells().map((cell) => {
+            return (
+              <td key={cell.id}>
                 {flexRender(
                   cell.column.columnDef.cell,
                   cell.getContext()
                 )}
-              </a>
-            </td>
-          );
-        })}
-        </tr>
+              </td>
+            );
+          })}
+          </tr>
           );
         })}
         {paddingBottom > 0 && (
