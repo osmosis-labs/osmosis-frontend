@@ -59,7 +59,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
                 <p>OSMO {t("pools.aprBreakdown.boost")}</p>
                 <Icon id="boost" color={theme.colors.bullish[500]} />
               </div>
-              <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
+              <p>{poolAprs.osmosis.maxDecimals(1).toString()}</p>
             </div>
           )}
           {poolAprs?.boost && (
