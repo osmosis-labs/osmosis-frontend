@@ -242,7 +242,8 @@
         "noQuotesAvailable": "No Quotes Available",
         "unexpectedError": "Unexpected Error. Please try again.",
         "transactionError": "Error getting transaction. Please try again.",
-        "missingAddress": "Missing Address"
+        "missingAddress": "Missing Address",
+        "invalidAddress": "Invalid Address"
       },
       "from": "From",
       "loading": "Loading",

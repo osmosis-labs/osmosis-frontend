@@ -232,6 +232,7 @@
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "givePermission": "Belirteçleri kullanma izinleri verin",
+      "enterEthAddress": "EVM adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
         "insufficientFee": "Yetersiz Ücret",
@@ -240,7 +241,8 @@
         "seeRequest": "{walletName}'deki talebi gör",
         "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
         "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin."
+        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
+        "invalidAddress": "Geçersiz adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",

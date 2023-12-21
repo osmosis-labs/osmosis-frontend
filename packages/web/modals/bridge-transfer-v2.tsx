@@ -316,6 +316,7 @@ const ManualTransfer: FunctionComponent<
         !addressConfig.isValid ||
         !didAckWithdrawRisk
       }
+      isCounterpartyAddressValid={addressConfig.isValid}
     />
   );
 });
@@ -329,6 +330,7 @@ export const TransferContent: FunctionComponent<
     sourceChainKey: SourceChainKey;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
+    isCounterpartyAddressValid?: boolean;
 
     // Deposit
     isCorrectChainSelected?: boolean;
@@ -366,6 +368,7 @@ export const TransferContent: FunctionComponent<
     ethWalletClient,
     addWithdrawAddrConfig,
     isDisabled: isDisabledProp,
+    isCounterpartyAddressValid = true,
   } = props;
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -547,7 +550,10 @@ export const TransferContent: FunctionComponent<
       fromAmount: inputAmount.truncate().toString(),
     },
     {
-      enabled: inputAmount.gt(new Dec(0)),
+      enabled:
+        inputAmount.gt(new Dec(0)) &&
+        counterpartyAddress !== "" &&
+        isCounterpartyAddressValid,
       refetchInterval: 30 * 1000, // 30 seconds
       retry(failureCount, error) {
         if (failureCount > 3) return false;
@@ -1034,6 +1040,8 @@ export const TransferContent: FunctionComponent<
   let buttonErrorMessage: string | undefined;
   if (!counterpartyAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
+  } else if (!isCounterpartyAddressValid) {
+    buttonErrorMessage = t("assets.transfer.errors.invalidAddress");
   } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (userDisconnectedEthWallet) {

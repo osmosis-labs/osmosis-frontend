@@ -198,8 +198,6 @@ export const Transfer = observer(
     const overlayedIconSize = isMobile
       ? { height: 36, width: 36 }
       : { height: 45, width: 45 };
-    const longFromName = from.networkName.length > 7;
-    const longToName = to.networkName.length > 7;
 
     const selectedProvider = bridgeProviders?.find(
       (provider) => provider.id === selectedBridgeProvidersId
