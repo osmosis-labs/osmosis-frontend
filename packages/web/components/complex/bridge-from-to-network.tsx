@@ -90,12 +90,12 @@ export const BridgeFromToNetwork = <
         {/* Provider select */}
         {filteredBridgeProviders && selectedProvider && (
           <div
-            className="absolute left-1/2 z-20 flex -translate-x-[33%] transform place-content-between items-center"
+            className="absolute left-1/2 z-20 flex -translate-x-[33%] transform place-content-between items-center sm:top-[60%] sm:-translate-x-1/2"
             title={t("assets.ibcTransfer.provider")}
           >
             {filteredBridgeProviders?.length === 0 ? (
-              <p className="subtitle-2 flex flex-col items-center gap-4">
-                <span className="rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
+              <p className="subtitle-2 flex flex-col items-center gap-4 sm:gap-2">
+                <span className="rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200 sm:order-2">
                   {selectedProvider.name}
                 </span>
                 <Image

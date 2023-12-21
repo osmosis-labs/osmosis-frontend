@@ -232,7 +232,7 @@
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "givePermission": "Acordați permisiunea de a folosi jetoane",
-      "enterEthAddress": "adresa EVM",
+      "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
