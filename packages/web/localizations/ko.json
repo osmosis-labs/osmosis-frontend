@@ -172,6 +172,7 @@
       "title": "전송 내역"
     },
     "ibcTransfer": {
+      "buttonAdd": "추가하다",
       "buttonEdit": "수정",
       "buttonEnter": "입력",
       "channelCongestedDeposit": "입금 (채널 혼잡)",

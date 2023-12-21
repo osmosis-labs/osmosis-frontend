@@ -172,6 +172,7 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
       "channelCongestedDeposit": "存入 (频道争抢)",

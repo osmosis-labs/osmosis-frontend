@@ -21,7 +21,7 @@ export const BridgeAnimation = (props: CustomClasses) => {
   return (
     <div
       className={classNames(
-        "absolute left-1/2 top-[22px] -translate-x-1/2 transform transition-opacity duration-300 md:top-[8px] sm:left-[45%]",
+        "absolute left-1/2 top-[22px] -translate-x-1/2 transform transition-opacity duration-300 md:top-[18px] sm:left-[45%]",
         className
       )}
     >

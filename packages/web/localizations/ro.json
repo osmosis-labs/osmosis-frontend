@@ -172,6 +172,7 @@
       "title": "Istoric Transferuri"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adăuga",
       "buttonEdit": "Modifica",
       "buttonEnter": "Intra",
       "channelCongestedDeposit": "Depoziteaza (Channel congested)",

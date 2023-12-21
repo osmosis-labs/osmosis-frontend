@@ -172,6 +172,7 @@
       "title": "轉移歷史"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "編輯",
       "buttonEnter": "輸入",
       "channelCongestedDeposit": "存入 (通道擁擠緊)",

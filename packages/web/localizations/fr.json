@@ -172,6 +172,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",

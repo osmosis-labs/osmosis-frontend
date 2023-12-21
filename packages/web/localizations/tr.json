@@ -172,6 +172,7 @@
       "title": "Transfer Geçmişi"
     },
     "ibcTransfer": {
+      "buttonAdd": "Eklemek",
       "buttonEdit": "Düzenle",
       "buttonEnter": "Onay",
       "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",

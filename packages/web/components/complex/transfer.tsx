@@ -4,6 +4,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
@@ -34,6 +35,14 @@ export type BaseBridgeProviderOption = {
   name: string;
 };
 
+interface ChangeAddressConfig {
+  customAddress: string;
+  isValid: boolean;
+  setCustomAddress: (bech32Address: string) => void;
+  didAckWithdrawRisk: boolean;
+  setDidAckWithdrawRisk: (did: boolean) => void;
+  inputPlaceholder?: string;
+}
 type ClassKeys = "expectedOutputValue" | "priceImpactValue";
 
 export type TransferProps<
@@ -60,13 +69,8 @@ export type TransferProps<
   isOsmosisAccountLoaded: boolean;
   onRequestSwitchWallet?: (source: PathSource) => void;
   availableBalance?: CoinPretty;
-  editWithdrawAddrConfig?: {
-    customAddress: string;
-    isValid: boolean;
-    setCustomAddress: (bech32Address: string) => void;
-    didAckWithdrawRisk: boolean;
-    setDidAckWithdrawRisk: (did: boolean) => void;
-  };
+  addWithdrawAddrConfig?: ChangeAddressConfig;
+  editWithdrawAddrConfig?: ChangeAddressConfig;
   warningMessage?: string;
   toggleIsMax: () => void;
   toggleUseWrappedConfig?: {
@@ -121,29 +125,33 @@ export const Transfer = observer(
     expectedOutputFiat,
     priceImpact,
     classes,
+    addWithdrawAddrConfig,
   }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
+    const [isAddingWithdrawAddr, setIsAddingWithdrawAddr] = useState(false);
     const [isOptionsDropdownOpen, setIsOptionsDropdownOpen] = useState(false);
 
     const dropdownContainerRef = useRef<HTMLDivElement>(null);
     useClickAway(dropdownContainerRef, () => setIsOptionsDropdownOpen(false));
 
-    const maxFromChars = isEditingWithdrawAddr
-      ? 13 // can't be on mobile
-      : !from.address.startsWith("osmo") && selectedWalletDisplay
-      ? isMobile
-        ? 13
-        : 18 // more space for switch wallet button
-      : isMobile
-      ? 14
-      : 24;
+    const maxFromChars =
+      isEditingWithdrawAddr || isAddingWithdrawAddr
+        ? 13 // can't be on mobile
+        : !from.address.startsWith("osmo") && selectedWalletDisplay
+        ? isMobile
+          ? 13
+          : 18 // more space for switch wallet button
+        : isMobile
+        ? 14
+        : 24;
     const maxToChars =
       (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
-      editWithdrawAddrConfig
+      editWithdrawAddrConfig ||
+      addWithdrawAddrConfig
         ? isMobile
           ? 13
           : 18
@@ -151,10 +159,17 @@ export const Transfer = observer(
         ? 14
         : 24;
 
-    const toAddressToDisplay =
-      editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== ""
-        ? editWithdrawAddrConfig.customAddress
-        : to.address;
+    let toAddressToDisplay: string;
+    if (editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "") {
+      toAddressToDisplay = editWithdrawAddrConfig.customAddress;
+    } else if (
+      addWithdrawAddrConfig &&
+      addWithdrawAddrConfig.customAddress !== ""
+    ) {
+      toAddressToDisplay = addWithdrawAddrConfig.customAddress;
+    } else {
+      toAddressToDisplay = to.address;
+    }
 
     const toAddressIcnsName = formatICNSName(
       queriesExternalStore.queryICNSNames.getQueryContract(toAddressToDisplay)
@@ -176,6 +191,9 @@ export const Transfer = observer(
       editWithdrawAddrConfig &&
       !disabled &&
       !isEditingWithdrawAddr;
+
+    const isAddButtonVisible =
+      isWithdraw && addWithdrawAddrConfig && !disabled && !isAddingWithdrawAddr;
 
     const overlayedIconSize = isMobile
       ? { height: 36, width: 36 }
@@ -204,7 +222,7 @@ export const Transfer = observer(
     }
 
     let displayToAddress: ReactNode | undefined;
-    if (!isEditingWithdrawAddr && !disabled) {
+    if (!isEditingWithdrawAddr && !disabled && !isAddingWithdrawAddr) {
       if (!to.address.startsWith("0x") || to.address.length === 0) {
         if (isOsmosisAccountLoaded) {
           displayToAddress = (
@@ -222,9 +240,14 @@ export const Transfer = observer(
     }
 
     return (
-      <div className="flex flex-col gap-11 overflow-x-auto pt-8 md:gap-4">
+      <div
+        className={classNames("flex flex-col gap-11 overflow-x-auto md:gap-4", {
+          "pt-2": toggleUseWrappedConfig,
+          "pt-8": !toggleUseWrappedConfig,
+        })}
+      >
         {toggleUseWrappedConfig && (
-          <div className="mx-auto w-fit ">
+          <div className="mx-auto w-fit">
             <MenuToggle
               options={[
                 {
@@ -251,36 +274,16 @@ export const Transfer = observer(
           </div>
         )}
 
-        <div
-          className={classNames(
-            "body1 relative flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2"
-          )}
-        >
+        <div className="body1 relative flex w-full flex-col gap-12 text-osmoverse-400 transition-opacity duration-300">
           <BridgeAnimation />
 
-          {/* From */}
-          <div
-            className={classNames(
-              "z-10 flex w-full flex-col gap-12 transition-width",
-              !isEditingWithdrawAddr && "flex pl-6 sm:pl-0",
-              {
-                "w-1/4 text-osmoverse-400/30": isEditingWithdrawAddr,
-              }
-            )}
-          >
-            {/* Network*/}
-            <div className="flex flex-col items-center gap-4 text-center">
+          <div className="flex w-full overflow-hidden text-center">
+            {/* From Network */}
+            <div className="z-10 flex flex-1 flex-col items-center gap-4 pl-4 md:pl-8 sm:pl-0">
               <span
                 className={classNames(
                   "whitespace-nowrap text-osmoverse-100 transition-opacity duration-300",
-                  longFromName || longToName
-                    ? isMobile
-                      ? "caption"
-                      : "subtitle1"
-                    : "md:subtitle2",
-                  longFromName
-                    ? "left-[90px] md:-left-[4px]"
-                    : "left-[122px] md:left-[10px]"
+                  "md:subtitle2"
                 )}
               >
                 {t("assets.transfer.from")}{" "}
@@ -301,10 +304,117 @@ export const Transfer = observer(
               )}
             </div>
 
-            {/* Address */}
+            {/* Provider select */}
+            {filteredBridgeProviders && selectedProvider && (
+              <div
+                className="absolute left-1/2 flex -translate-x-[33%] transform place-content-between items-center"
+                title={t("assets.ibcTransfer.provider")}
+              >
+                {filteredBridgeProviders?.length === 0 ? (
+                  <p className="subtitle-2 flex flex-col items-center gap-4">
+                    <span className="rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
+                      {selectedProvider.name}
+                    </span>
+                    <Image
+                      src={selectedProvider.logo}
+                      alt={`${selectedProvider.name} logo`}
+                      {...overlayedIconSize}
+                    />
+                  </p>
+                ) : (
+                  <Menu>
+                    {({ open }) => (
+                      <div className="relative">
+                        <Menu.Button className="flex flex-col items-center gap-4">
+                          <div className="subtitle-2 flex items-center gap-1.5 rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
+                            {selectedProvider.name}
+                            <Icon
+                              className="flex shrink-0 items-center"
+                              id={open ? "chevron-up" : "chevron-down"}
+                              height={10}
+                              width={10}
+                            />
+                          </div>
+                          <Image
+                            src={selectedProvider.logo}
+                            alt={`${selectedProvider.name} logo`}
+                            {...overlayedIconSize}
+                          />
+                        </Menu.Button>
+
+                        <Menu.Items className="absolute top-1/3 -right-px mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-700">
+                          {filteredBridgeProviders.map((provider, index) => (
+                            <Menu.Item key={provider.id}>
+                              {({ active }) => (
+                                <button
+                                  onClick={() =>
+                                    onSelectBridgeProvider?.(provider)
+                                  }
+                                  className={classNames(
+                                    "flex cursor-pointer items-center gap-2 py-1 pl-2  pr-4 transition-colors",
+                                    {
+                                      "bg-osmoverse-600": active,
+                                      "rounded-b-xlinset":
+                                        index ===
+                                        filteredBridgeProviders.length - 1,
+                                    }
+                                  )}
+                                >
+                                  <div className="flex flex-shrink-0">
+                                    <Image
+                                      src={provider.logo}
+                                      alt={`${provider.name} logo`}
+                                      width={16}
+                                      height={16}
+                                    />
+                                  </div>
+                                  {provider.name}
+                                </button>
+                              )}
+                            </Menu.Item>
+                          ))}
+                        </Menu.Items>
+                      </div>
+                    )}
+                  </Menu>
+                )}
+              </div>
+            )}
+
+            {/* To Network */}
+            <div className="z-10 flex flex-1 flex-col items-center gap-4 pr-5 text-center md:pr-8 sm:-mr-1 sm:pr-0">
+              <span
+                className={classNames(
+                  "w-fit whitespace-nowrap text-osmoverse-100 transition-opacity duration-300",
+                  "md:subtitle2"
+                )}
+              >
+                {t("assets.transfer.to")} {truncateString(to.networkName, 22)}
+              </span>
+              {to.iconUrl && (
+                <div
+                  className="transition-opacity duration-300"
+                  style={overlayedIconSize}
+                >
+                  <Image
+                    alt="token icon"
+                    src={to.iconUrl}
+                    {...overlayedIconSize}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
+            {/* From Address */}
             <div
               className={classNames(
-                "flex h-full w-full rounded-2xl border border-white-faint p-4 text-center md:p-2"
+                "md flex w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width",
+                {
+                  "w-1/4 text-osmoverse-400/30": isEditingWithdrawAddr,
+                  hidden: isAddingWithdrawAddr,
+                }
               )}
             >
               {!(isMobile && isEditingWithdrawAddr) && !disabled && (
@@ -325,136 +435,30 @@ export const Transfer = observer(
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Provider select */}
-          {filteredBridgeProviders && selectedProvider && (
-            <div
-              className="absolute left-1/2 flex -translate-x-[33%] transform place-content-between items-center"
-              title={t("assets.ibcTransfer.provider")}
-            >
-              {filteredBridgeProviders?.length === 0 ? (
-                <p className="subtitle-2 flex flex-col items-center gap-4">
-                  <span className="rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
-                    {selectedProvider.name}
-                  </span>
-                  <Image
-                    src={selectedProvider.logo}
-                    alt={`${selectedProvider.name} logo`}
-                    {...overlayedIconSize}
-                  />
-                </p>
-              ) : (
-                <Menu>
-                  {({ open }) => (
-                    <div className="relative">
-                      <Menu.Button className="flex flex-col items-center gap-4">
-                        <div className="subtitle-2 flex items-center gap-1.5 rounded-lg bg-osmoverse-700 px-2 text-osmoverse-200">
-                          {selectedProvider.name}
-                          <Icon
-                            className="flex shrink-0 items-center"
-                            id={open ? "chevron-up" : "chevron-down"}
-                            height={10}
-                            width={10}
-                          />
-                        </div>
-                        <Image
-                          src={selectedProvider.logo}
-                          alt={`${selectedProvider.name} logo`}
-                          {...overlayedIconSize}
-                        />
-                      </Menu.Button>
-
-                      <Menu.Items className="absolute top-1/3 -right-px mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-700">
-                        {filteredBridgeProviders.map((provider, index) => (
-                          <Menu.Item key={provider.id}>
-                            {({ active }) => (
-                              <button
-                                onClick={() =>
-                                  onSelectBridgeProvider?.(provider)
-                                }
-                                className={classNames(
-                                  "flex cursor-pointer items-center gap-2 py-1 pl-2  pr-4 transition-colors",
-                                  {
-                                    "bg-osmoverse-600": active,
-                                    "rounded-b-xlinset":
-                                      index ===
-                                      filteredBridgeProviders.length - 1,
-                                  }
-                                )}
-                              >
-                                <div className="flex flex-shrink-0">
-                                  <Image
-                                    src={provider.logo}
-                                    alt={`${provider.name} logo`}
-                                    width={16}
-                                    height={16}
-                                  />
-                                </div>
-                                {provider.name}
-                              </button>
-                            )}
-                          </Menu.Item>
-                        ))}
-                      </Menu.Items>
-                    </div>
-                  )}
-                </Menu>
-              )}
-            </div>
-          )}
-
-          {/* To */}
-          <div
-            className={classNames(
-              "z-10 flex w-full flex-col gap-12 transition-width",
-              isEditingWithdrawAddr ? "p-[7px]" : "flex pr-7 md:pr-9 sm:pr-0",
-              {
-                "w-3/4": isEditingWithdrawAddr,
-              }
-            )}
-          >
-            {/* Network */}
-            <div className="flex flex-col items-center gap-4 text-center">
-              <span
-                className={classNames(
-                  "w-fit whitespace-nowrap text-osmoverse-100 transition-opacity duration-300",
-                  longFromName || longToName
-                    ? isMobile
-                      ? "caption"
-                      : "subtitle1"
-                    : "md:subtitle2",
-                  "left-[405px] md:left-[210px]"
-                )}
-              >
-                {t("assets.transfer.to")} {truncateString(to.networkName, 22)}
-              </span>
-              {to.iconUrl && (
-                <div
-                  className="transition-opacity duration-300"
-                  style={overlayedIconSize}
-                >
-                  <Image
-                    alt="token icon"
-                    src={to.iconUrl}
-                    {...overlayedIconSize}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Address */}
+            {/* To Address */}
             <div
               className={classNames(
-                "flex h-full w-full rounded-2xl border border-white-faint py-1 text-center"
+                "flex h-full w-full rounded-2xl border border-white-faint py-2.5 text-center transition-width",
+                {
+                  "w-3/4": isEditingWithdrawAddr,
+                }
               )}
             >
-              <div className="md:caption mx-auto flex flex-nowrap items-center justify-center gap-2 sm:flex-wrap">
+              <div
+                className={classNames(
+                  "md:caption mx-auto flex flex-nowrap items-center justify-center gap-2 sm:flex-wrap",
+                  {
+                    "w-full px-3": isAddingWithdrawAddr,
+                  }
+                )}
+              >
                 {displayToAddress}
                 <div
                   className={classNames(
                     "flex items-center gap-2",
-                    isEditingWithdrawAddr && "w-full flex-col"
+                    (isEditingWithdrawAddr || isAddingWithdrawAddr) &&
+                      "w-full flex-col"
                   )}
                 >
                   {/* To avoid overflowing, display menu dropdown when edit and switch wallet are visible. */}
@@ -516,6 +520,19 @@ export const Transfer = observer(
                     </div>
                   ) : (
                     <>
+                      {isAddButtonVisible && (
+                        <Button
+                          mode="amount"
+                          onClick={() => {
+                            setIsAddingWithdrawAddr(true);
+                            addWithdrawAddrConfig.setCustomAddress(to.address);
+                          }}
+                        >
+                          {addWithdrawAddrConfig.customAddress !== ""
+                            ? t("assets.ibcTransfer.buttonEdit")
+                            : t("assets.ibcTransfer.buttonAdd")}
+                        </Button>
+                      )}
                       {isSwitchWalletVisibleForTo ? (
                         <SwitchWalletButton
                           selectedWalletIconUrl={selectedWalletDisplay!.iconUrl}
@@ -536,27 +553,19 @@ export const Transfer = observer(
                       )}
                     </>
                   )}
-                  {isEditingWithdrawAddr && editWithdrawAddrConfig && (
-                    <InputBox
-                      className="w-full"
-                      style="no-border"
-                      currentValue={editWithdrawAddrConfig.customAddress}
-                      disabled={disabled}
-                      onInput={(value) => {
-                        editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
-                        editWithdrawAddrConfig.setCustomAddress(value);
-                      }}
-                      labelButtons={[
-                        {
-                          label: t("assets.ibcTransfer.buttonEnter"),
-                          className:
-                            "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
-                          onClick: () => setIsEditingWithdrawAddr(false),
-                          disabled: !editWithdrawAddrConfig.isValid,
-                        },
-                      ]}
-                    />
-                  )}
+
+                  <CustomAddressInputBox
+                    isVisible={isEditingWithdrawAddr}
+                    disabled={disabled}
+                    onClickEnter={() => setIsEditingWithdrawAddr(false)}
+                    addressConfig={editWithdrawAddrConfig}
+                  />
+                  <CustomAddressInputBox
+                    isVisible={isAddingWithdrawAddr}
+                    disabled={disabled}
+                    onClickEnter={() => setIsAddingWithdrawAddr(false)}
+                    addressConfig={addWithdrawAddrConfig}
+                  />
                 </div>
               </div>
             </div>
@@ -615,10 +624,18 @@ export const Transfer = observer(
                   "flex place-content-between items-center text-subtitle1 font-subtitle1 text-osmoverse-100"
                 }
               >
-                <span className="flex items-center gap-1">
-                  <span>{t("assets.transfer.expectedOutput")}</span>{" "}
-                  <Tooltip content={t("assets.transfer.expectedOutputInfo")}>
-                    <Icon width={16} height={16} id="info" />
+                <span className="inline">
+                  {t("assets.transfer.expectedOutput")}
+                  <Tooltip
+                    content={t("assets.transfer.expectedOutputInfo")}
+                    className="!inline"
+                  >
+                    <Icon
+                      className="-mt-1 ml-1 inline"
+                      width={16}
+                      height={16}
+                      id="info"
+                    />
                   </Tooltip>
                 </span>
                 <SkeletonLoader
@@ -716,28 +733,77 @@ export const Transfer = observer(
               <span className="body2 md:caption">{warningMessage}</span>
             </GradientView>
           )}
-          {editWithdrawAddrConfig &&
-            editWithdrawAddrConfig.customAddress !== "" && (
-              <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
-                <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
-                <div className="mx-auto">
-                  <CheckBox
-                    isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
-                    borderStyles="border-superfluid"
-                    backgroundStyles="bg-superfluid"
-                    onToggle={() =>
-                      editWithdrawAddrConfig.setDidAckWithdrawRisk(
-                        !editWithdrawAddrConfig.didAckWithdrawRisk
-                      )
-                    }
-                  >
-                    {t("assets.ibcTransfer.checkboxVerify")}
-                  </CheckBox>
-                </div>
-              </GradientView>
-            )}
+
+          <AckWithdrawCustomAddressRisk
+            addressConfig={editWithdrawAddrConfig}
+          />
+          <AckWithdrawCustomAddressRisk addressConfig={addWithdrawAddrConfig} />
         </div>
       </div>
     );
   }
 );
+
+const AckWithdrawCustomAddressRisk: FunctionComponent<{
+  addressConfig?: ChangeAddressConfig;
+}> = ({ addressConfig }) => {
+  const { t } = useTranslation();
+
+  if (!addressConfig || addressConfig.customAddress === "") return null;
+
+  return (
+    <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
+      <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
+      <div className="mx-auto">
+        <CheckBox
+          isOn={addressConfig.didAckWithdrawRisk}
+          borderStyles="border-superfluid"
+          backgroundStyles="bg-superfluid"
+          onToggle={() =>
+            addressConfig.setDidAckWithdrawRisk(
+              !addressConfig.didAckWithdrawRisk
+            )
+          }
+          labelClassName="items-center"
+        >
+          {t("assets.ibcTransfer.checkboxVerify")}
+        </CheckBox>
+      </div>
+    </GradientView>
+  );
+};
+
+const CustomAddressInputBox: FunctionComponent<{
+  isVisible: boolean;
+  disabled: boolean;
+  onClickEnter: () => void;
+  addressConfig?: ChangeAddressConfig;
+}> = ({ addressConfig, isVisible, onClickEnter, disabled }) => {
+  const { t } = useTranslation();
+
+  if (!isVisible || !addressConfig) return null;
+
+  return (
+    <InputBox
+      className="w-full"
+      style="no-border"
+      currentValue={addressConfig.customAddress}
+      disabled={disabled}
+      onInput={(value) => {
+        addressConfig.setDidAckWithdrawRisk(false);
+        addressConfig.setCustomAddress(value);
+      }}
+      placeholder={addressConfig.inputPlaceholder}
+      autoFocus
+      labelButtons={[
+        {
+          label: t("assets.ibcTransfer.buttonEnter"),
+          className:
+            "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
+          onClick: onClickEnter,
+          disabled: !addressConfig.isValid,
+        },
+      ]}
+    />
+  );
+};

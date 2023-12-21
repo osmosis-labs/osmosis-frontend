@@ -21,6 +21,7 @@ import {
 } from "react";
 import { useDebounce, useUnmount } from "react-use";
 import { Required } from "utility-types";
+import { isAddress } from "web3-utils";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button, buttonCVA } from "~/components/buttons";
@@ -156,7 +157,7 @@ export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> 
         {walletClient ? (
           <EvmTransfer {...props} walletClient={walletClient} />
         ) : (
-          <ManualTransfer {...props} />
+          <ManualTransfer {...props} chainType="evm" />
         )}
       </BridgeTransferModalProvider>
     );
@@ -282,9 +283,24 @@ const EvmTransfer: FunctionComponent<
 });
 
 const ManualTransfer: FunctionComponent<
-  Omit<BridgeTransferModalProps, "walletClient">
+  Omit<BridgeTransferModalProps, "walletClient"> & { chainType: "evm" }
 > = observer((props) => {
+  const { t } = useTranslation();
   const [address, setAddress] = useState("");
+  const [didAckWithdrawRisk, setAckWithdrawRisk] = useState(false);
+
+  if (props.chainType !== "evm") throw new Error("Unsupported chain type");
+
+  const addressConfig: TransferProps<any>["addWithdrawAddrConfig"] = {
+    customAddress: address,
+    setCustomAddress(bech32Address) {
+      setAddress(bech32Address);
+    },
+    isValid: isAddress(address),
+    didAckWithdrawRisk: didAckWithdrawRisk,
+    setDidAckWithdrawRisk: setAckWithdrawRisk,
+    inputPlaceholder: t("assets.transfer.enterEthAddress"),
+  };
 
   return (
     <TransferContent
@@ -294,15 +310,12 @@ const ManualTransfer: FunctionComponent<
       setDepositAmount={noop}
       toggleIsDepositAmtMax={noop}
       setLastDepositAccountEvmAddress={noop}
-      editWithdrawAddrConfig={{
-        customAddress: address,
-        setCustomAddress(bech32Address) {
-          setAddress(bech32Address);
-        },
-        isValid: true,
-        didAckWithdrawRisk: true,
-        setDidAckWithdrawRisk: noop,
-      }}
+      addWithdrawAddrConfig={addressConfig}
+      isDisabled={
+        addressConfig?.customAddress === "" ||
+        !addressConfig.isValid ||
+        !didAckWithdrawRisk
+      }
     />
   );
 });
@@ -329,7 +342,8 @@ export const TransferContent: FunctionComponent<
     warnOfDifferentDepositAddress?: boolean;
     isEthTxPending?: boolean;
     ethWalletClient?: EthWallet;
-    editWithdrawAddrConfig?: TransferProps<any>["editWithdrawAddrConfig"];
+    addWithdrawAddrConfig?: TransferProps<any>["addWithdrawAddrConfig"];
+    isDisabled?: boolean;
   }
 > = observer((props) => {
   const {
@@ -350,7 +364,8 @@ export const TransferContent: FunctionComponent<
     setLastDepositAccountEvmAddress,
     isEthTxPending,
     ethWalletClient,
-    editWithdrawAddrConfig,
+    addWithdrawAddrConfig,
+    isDisabled: isDisabledProp,
   } = props;
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -1017,7 +1032,9 @@ export const TransferContent: FunctionComponent<
   const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
-  if (hasNoQuotes) {
+  if (!counterpartyAddress) {
+    buttonErrorMessage = t("assets.transfer.errors.missingAddress");
+  } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
@@ -1213,7 +1230,7 @@ export const TransferContent: FunctionComponent<
           setSelectedBridgeProvider(id);
         }}
         isLoadingDetails={isLoadingBridgeQuote}
-        editWithdrawAddrConfig={editWithdrawAddrConfig}
+        addWithdrawAddrConfig={addWithdrawAddrConfig}
       />
       <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 md:mt-4">
         {walletConnected ? (
@@ -1236,7 +1253,9 @@ export const TransferContent: FunctionComponent<
               isApprovingToken ||
               Boolean(bridgeQuote.error) ||
               Boolean(bridgeTransaction.error) ||
-              !bridgeQuote.data?.selectedQuote
+              !bridgeQuote.data?.selectedQuote ||
+              isDisabledProp ||
+              !counterpartyAddress
             }
             mode={
               warnUserOfSlippage || warnUserOfPriceImpact

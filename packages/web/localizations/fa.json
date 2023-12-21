@@ -172,6 +172,7 @@
       "title": "تاریخ چه انتقال"
     },
     "ibcTransfer": {
+      "buttonAdd": "اضافه کردن",
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",
       "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",

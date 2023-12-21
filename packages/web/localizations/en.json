@@ -172,6 +172,7 @@
       "title": "Transfer History"
     },
     "ibcTransfer": {
+      "buttonAdd": "Add",
       "buttonEdit": "Edit",
       "buttonEnter": "Enter",
       "channelCongestedDeposit": "Deposit (Channel congested)",
@@ -231,6 +232,7 @@
       "availableOn": "Available on {network}",
       "approving": "Approving...",
       "givePermission": "Give permissions to use tokens",
+      "enterEthAddress": "EVM address",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
@@ -239,7 +241,8 @@
         "seeRequest": "See request in {walletName}",
         "noQuotesAvailable": "No Quotes Available",
         "unexpectedError": "Unexpected Error. Please try again.",
-        "transactionError": "Error getting transaction. Please try again."
+        "transactionError": "Error getting transaction. Please try again.",
+        "missingAddress": "Missing Address"
       },
       "from": "From",
       "loading": "Loading",
