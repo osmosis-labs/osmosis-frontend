@@ -305,7 +305,7 @@ export const Transfer = observer(
             {/* Provider select */}
             {filteredBridgeProviders && selectedProvider && (
               <div
-                className="absolute left-1/2 flex -translate-x-[33%] transform place-content-between items-center"
+                className="absolute left-1/2 z-20 flex -translate-x-[33%] transform place-content-between items-center"
                 title={t("assets.ibcTransfer.provider")}
               >
                 {filteredBridgeProviders?.length === 0 ? (
