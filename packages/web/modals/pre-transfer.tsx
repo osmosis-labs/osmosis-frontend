@@ -10,8 +10,8 @@ import { TokenSelect } from "~/components/control";
 import { UNSTABLE_MSG } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { ModalBase, ModalBaseProps } from "~/modals";
-import { useStore } from "~/stores";
 import { ObservableAssets } from "~/stores/assets/assets-store";
 
 /** MOBILE: Pre transfer to select whether to deposit/withdraw */
@@ -37,14 +37,10 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw,
     onDeposit,
   } = props;
-  const { priceStore } = useStore();
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
-  const tokenValue = priceStore.calculatePrice(
-    selectedToken.balance,
-    priceStore.defaultVsCurrency
-  );
+  const tokenValue = useCoinFiatValue(selectedToken.balance);
 
   const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";
 
