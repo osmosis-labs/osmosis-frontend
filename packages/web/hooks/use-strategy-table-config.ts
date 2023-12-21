@@ -9,14 +9,7 @@ import { MOCK_tableData } from "~/components/earn/_mock-data";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  getDefaultFiltersState,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
+import { getDefaultFiltersState } from "~/components/earn/table/utils";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 
 export const useStrategyTableConfig = (showBalance: boolean) => {
@@ -44,13 +37,6 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
       },
       globalFilter: filters!.search,
       columnFilters,
-    },
-    filterFns: {
-      strictEqualFilter,
-      arrLengthEquals,
-      listOptionValueEquals,
-      boolEqualsString,
-      boolEquals,
     },
     globalFilterFn: "includesString",
     onGlobalFilterChange: (e) => setFilter("search", e),
