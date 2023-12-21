@@ -107,6 +107,7 @@ export const WalletSelectModal: FunctionComponent<
     walletRepo: walletRepoProp,
     onConnect: onConnectProp,
   } = props;
+  const { isMobile } = useWindowSize();
   const { accountStore, chainStore } = useStore();
 
   // const { t } = useTranslation();
@@ -252,7 +253,11 @@ export const WalletSelectModal: FunctionComponent<
             "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
           )}
         >
-          <LeftModalContent onConnect={onConnect} walletRepo={walletRepoProp} />
+          <LeftModalContent
+            onConnect={onConnect}
+            walletRepo={walletRepoProp}
+            isMobile={isMobile}
+          />
         </ClientOnly>
 
         <div className="relative w-full overflow-auto py-8 sm:static">
@@ -291,9 +296,9 @@ const LeftModalContent: FunctionComponent<
       sync: boolean,
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => void;
+    isMobile: boolean;
   }
-> = observer(({ walletRepo, onConnect }) => {
-  const { isMobile } = useWindowSize();
+> = observer(({ walletRepo, onConnect, isMobile }) => {
   const { t } = useTranslation();
 
   const wallets = useMemo(
