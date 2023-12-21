@@ -242,7 +242,8 @@
         "noQuotesAvailable": "无可用报价",
         "unexpectedError": "意外的错误。请再试一次。",
         "transactionError": "获取交易时出错。请再试一次。",
-        "invalidAddress": "无效地址"
+        "invalidAddress": "无效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "从",
       "loading": "加载中",

@@ -242,7 +242,8 @@
         "noQuotesAvailable": "Nu există oferte disponibile",
         "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
         "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
-        "invalidAddress": "Adresă invalidă"
+        "invalidAddress": "Adresă invalidă",
+        "missingAddress": "Adresa lipsă"
       },
       "from": "De la",
       "loading": "Se incarca",

@@ -242,7 +242,8 @@
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
         "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
-        "invalidAddress": "Adresse invalide"
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",

@@ -242,7 +242,8 @@
         "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
         "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
         "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
-        "invalidAddress": "Geçersiz adres"
+        "invalidAddress": "Geçersiz adres",
+        "missingAddress": "Eksik Adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",

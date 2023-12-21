@@ -242,7 +242,8 @@
         "noQuotesAvailable": "Nenhuma cotação disponível",
         "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
         "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
-        "invalidAddress": "Endereço inválido"
+        "invalidAddress": "Endereço inválido",
+        "missingAddress": "Endereço ausente"
       },
       "from": "De",
       "loading": "Carregando",

@@ -242,7 +242,8 @@
         "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
         "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
         "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
-        "invalidAddress": "آدرس نامعتبر"
+        "invalidAddress": "آدرس نامعتبر",
+        "missingAddress": "آدرس گم شده"
       },
       "from": "از",
       "loading": "در حال بارگذاری",

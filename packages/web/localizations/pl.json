@@ -242,7 +242,8 @@
         "noQuotesAvailable": "Brak dostępnych cytatów",
         "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
         "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
-        "invalidAddress": "Błędny adres"
+        "invalidAddress": "Błędny adres",
+        "missingAddress": "Brak adresu"
       },
       "from": "Od",
       "loading": "Ładowanie",

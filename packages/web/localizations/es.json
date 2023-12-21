@@ -242,7 +242,8 @@
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
         "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
-        "invalidAddress": "Dirección inválida"
+        "invalidAddress": "Dirección inválida",
+        "missingAddress": "Dirección faltante"
       },
       "from": "De",
       "loading": "Cargando",

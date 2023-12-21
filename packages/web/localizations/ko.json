@@ -242,7 +242,8 @@
         "noQuotesAvailable": "이용 가능한 견적이 없습니다.",
         "unexpectedError": "예기치 않은 오류. 다시 시도해 주세요.",
         "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요.",
-        "invalidAddress": "잘못된 주소"
+        "invalidAddress": "잘못된 주소",
+        "missingAddress": "누락된 주소"
       },
       "from": "발신 체인",
       "loading": "로딩",

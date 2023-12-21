@@ -242,7 +242,8 @@
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
         "transactionError": "獲取交易時出錯。請再試一次。",
-        "invalidAddress": "無效地址"
+        "invalidAddress": "無效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "從",
       "loading": "載入中",
