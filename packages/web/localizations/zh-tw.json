@@ -172,6 +172,7 @@
       "title": "轉移歷史"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "編輯",
       "buttonEnter": "輸入",
       "channelCongestedDeposit": "存入 (通道擁擠中)",
@@ -231,6 +232,7 @@
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的權限",
+      "enterEthAddress": "評估板地址",
       "errors": {
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
@@ -239,7 +241,9 @@
         "seeRequest": "在{walletName}中檢視請求",
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。"
+        "transactionError": "獲取交易時出錯。請再試一次。",
+        "invalidAddress": "無效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "從",
       "loading": "載入中",

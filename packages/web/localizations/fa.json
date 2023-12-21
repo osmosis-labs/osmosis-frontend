@@ -172,6 +172,7 @@
       "title": "تاریخ چه انتقال"
     },
     "ibcTransfer": {
+      "buttonAdd": "اضافه کردن",
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",
       "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",
@@ -231,6 +232,7 @@
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
       "givePermission": "اجازه استفاده از توکن ها را بدهید",
+      "enterEthAddress": "آدرس EVM",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
         "insufficientFee": "کارمزد ناکافی",
@@ -239,7 +241,9 @@
         "seeRequest": "درخواست را در {walletName} ببینید",
         "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
         "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
-        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید."
+        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
+        "invalidAddress": "آدرس نامعتبر",
+        "missingAddress": "آدرس گم شده"
       },
       "from": "از",
       "loading": "در حال بارگذاری",

@@ -172,6 +172,7 @@
       "title": "Istoric Transferuri"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adăuga",
       "buttonEdit": "Modifica",
       "buttonEnter": "Intra",
       "channelCongestedDeposit": "Depoziteaza (Channel congested)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "givePermission": "Acordați permisiunea de a folosi jetoane",
+      "enterEthAddress": "adresa EVM",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
@@ -239,7 +241,9 @@
         "seeRequest": "Vezi solicitarea în {walletName}",
         "noQuotesAvailable": "Nu există oferte disponibile",
         "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
+        "invalidAddress": "Adresă invalidă",
+        "missingAddress": "Adresa lipsă"
       },
       "from": "De la",
       "loading": "Se incarca",
