@@ -56,7 +56,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
   // State
-  const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
+  const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
     useUserFavoriteAssetDenoms();
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -122,9 +122,11 @@ export const AssetsInfoTable: FunctionComponent<{
             {...cell}
             isFavorite={favoritesList.includes(cell.row.original.coinDenom)}
             onRemoveFavorite={() =>
-              removeFavoriteDenom(cell.row.original.coinDenom)
+              onRemoveFavoriteDenom(cell.row.original.coinDenom)
             }
-            onSetFavorite={() => addFavoriteDenom(cell.row.original.coinDenom)}
+            onSetFavorite={() =>
+              onAddFavoriteDenom(cell.row.original.coinDenom)
+            }
           />
         ),
       }),
@@ -195,8 +197,8 @@ export const AssetsInfoTable: FunctionComponent<{
       selectedTimeFrame,
       sortKey,
       sortDirection,
-      addFavoriteDenom,
-      removeFavoriteDenom,
+      onAddFavoriteDenom,
+      onRemoveFavoriteDenom,
       onDeposit,
       onWithdraw,
     ]

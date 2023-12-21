@@ -3,31 +3,31 @@ import { useCallback } from "react";
 import { useLocalStorageState } from "../window/use-localstorage-state";
 
 export function useUserFavoriteAssetDenoms() {
-  const [favoritesList, onSetFavoritesList] = useLocalStorageState(
+  const [favoritesList, setFavoritesList] = useLocalStorageState(
     "favoritesList",
     ["OSMO", "ATOM", "TIA"]
   );
 
-  const addFavoriteDenom = useCallback(
+  const onAddFavoriteDenom = useCallback(
     (denom: string) => {
       if (favoritesList.includes(denom)) return;
-      onSetFavoritesList([...favoritesList, denom]);
+      setFavoritesList([...favoritesList, denom]);
     },
-    [favoritesList, onSetFavoritesList]
+    [favoritesList, setFavoritesList]
   );
 
-  const removeFavoriteDenom = useCallback(
+  const onRemoveFavoriteDenom = useCallback(
     (denom: string) => {
       if (!favoritesList.includes(denom)) return;
-      onSetFavoritesList(favoritesList.filter((d) => d !== denom));
+      setFavoritesList(favoritesList.filter((d) => d !== denom));
     },
-    [favoritesList, onSetFavoritesList]
+    [favoritesList, setFavoritesList]
   );
 
   return {
     favoritesList,
-    addFavoriteDenom,
-    removeFavoriteDenom,
-    onSetFavoritesList,
+    onAddFavoriteDenom,
+    onRemoveFavoriteDenom,
+    setFavoritesList,
   };
 }
