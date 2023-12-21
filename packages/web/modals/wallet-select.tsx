@@ -243,7 +243,7 @@ export const WalletSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0"
+      className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0 sm:max-h-[80vh]"
     >
       <div className="flex max-h-[530px] min-h-[50vh] overflow-auto sm:max-h-full sm:flex-col">
         <ClientOnly
