@@ -451,7 +451,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
-    "7davg": "(7일 평균)",
     "amountDaysUnbonding": "{numDays}일 연결 해제",
     "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "APR": "APR",
@@ -466,7 +465,7 @@
     "collapseDetails": "닫기",
     "commission": "수수료",
     "currentDailyEarn": "내 일일 보상",
-    "dailyEarnAmount": "{amount} / 일",
+    "dailyEarnAmount": "{amount} /일",
     "day": "일",
     "delegated": "위임된 자산",
     "details": "상세정보",
@@ -478,7 +477,6 @@
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "liquidity": "유동성",
-    "numDaysRemaining": "{numDays}일 남음",
     "putAssetsToWork": "자산을 늘리세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 APR 수익을 벌어보세요. 더 긴 해제 기간을 선택하면, 더 많은 보상을 얻을 수 있어요.",
     "rewardDistribution": "모든 유동성 공급자에게 분배된 보상",
@@ -881,8 +879,5 @@
       "multi": "다중"
     }
   },
-  "disclaimer": "부인 성명",
-  "lvnmilk": {
-    "description": "Milkyway의 $milkTIA와 Levana의 $LVN이 이제 Osmosis에서 사용 가능합니다!"
-  }
+  "disclaimer": "부인 성명"
 }
