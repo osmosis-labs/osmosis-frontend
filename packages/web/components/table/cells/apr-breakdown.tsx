@@ -22,7 +22,7 @@ export const AprBreakdownCell: FunctionComponent<{
     >
       <p
         className={classNames("ml-auto flex items-center gap-1.5", {
-          "text-bullish-500": Boolean(poolAprs?.boost),
+          "text-bullish-500": Boolean(poolAprs?.boost || poolAprs?.osmosis),
         })}
       >
         {poolAprs?.boost || poolAprs?.osmosis ? (
