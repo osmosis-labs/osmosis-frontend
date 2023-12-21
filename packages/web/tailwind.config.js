@@ -220,6 +220,7 @@ module.exports = {
         earnpositions: "minmax(0, 1fr), 1px, minmax(0, 284px)",
       },
       width: {
+        25: "6.25rem",
         loader: {
           1: "3.75rem",
           2: "4rem",
@@ -248,6 +249,7 @@ module.exports = {
         terms: "28rem",
       },
       minWidth: {
+        10: "2.5rem",
         "rewards-container": "332px",
         "multi-radio": "290px",
         "dropdown-with-label": "200px",
