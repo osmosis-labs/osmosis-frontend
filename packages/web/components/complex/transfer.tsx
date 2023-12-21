@@ -194,17 +194,6 @@ export const Transfer = observer(
     const isAddButtonVisible =
       isWithdraw && addWithdrawAddrConfig && !disabled && !isAddingWithdrawAddr;
 
-    const overlayedIconSize = isMobile
-      ? { height: 36, width: 36 }
-      : { height: 45, width: 45 };
-
-    const selectedProvider = bridgeProviders?.find(
-      (provider) => provider.id === selectedBridgeProvidersId
-    );
-    const filteredBridgeProviders = bridgeProviders?.filter(
-      (provider) => provider.id !== selectedBridgeProvidersId
-    );
-
     let displayFromAddress: ReactNode | undefined;
     if (!from.address.startsWith("0x") || from.address.length === 0) {
       if (isOsmosisAccountLoaded) {
