@@ -232,7 +232,7 @@
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "givePermission": "Belirteçleri kullanma izinleri verin",
-      "enterEthAddress": "EVM adresi",
+      "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
         "insufficientFee": "Yetersiz Ücret",

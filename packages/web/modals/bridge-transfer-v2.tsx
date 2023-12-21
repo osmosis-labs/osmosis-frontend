@@ -288,6 +288,7 @@ const ManualTransfer: FunctionComponent<
   const { t } = useTranslation();
   const [address, setAddress] = useState("");
   const [didAckWithdrawRisk, setAckWithdrawRisk] = useState(false);
+  const { sourceChainKeyMapped } = useBridgeTransfer();
 
   if (props.chainType !== "evm") throw new Error("Unsupported chain type");
 
@@ -299,7 +300,9 @@ const ManualTransfer: FunctionComponent<
     isValid: isAddress(address),
     didAckWithdrawRisk: didAckWithdrawRisk,
     setDidAckWithdrawRisk: setAckWithdrawRisk,
-    inputPlaceholder: t("assets.transfer.enterEthAddress"),
+    inputPlaceholder: t("assets.transfer.enterAddress", {
+      network: sourceChainKeyMapped,
+    }),
   };
 
   return (

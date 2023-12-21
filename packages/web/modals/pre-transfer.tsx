@@ -93,8 +93,8 @@ export const PreTransferModal: FunctionComponent<
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
-                height={8}
-                width={8}
+                height={12}
+                width={12}
               />
             </a>
           ) : (

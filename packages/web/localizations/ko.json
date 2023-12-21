@@ -232,7 +232,7 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "givePermission": "토큰 사용 권한 부여",
-      "enterEthAddress": "EVM 주소",
+      "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",

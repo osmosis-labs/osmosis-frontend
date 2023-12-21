@@ -232,7 +232,7 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "givePermission": "Dê permissões para usar tokens",
-      "enterEthAddress": "Endereço EVM",
+      "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",

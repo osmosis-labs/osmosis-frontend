@@ -232,7 +232,7 @@
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
       "givePermission": "اجازه استفاده از توکن ها را بدهید",
-      "enterEthAddress": "آدرس EVM",
+      "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
         "insufficientFee": "کارمزد ناکافی",

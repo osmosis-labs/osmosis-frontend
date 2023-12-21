@@ -232,7 +232,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
-      "enterEthAddress": "Adresse EVM",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
