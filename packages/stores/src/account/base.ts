@@ -83,7 +83,7 @@ import {
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
-export const GasMultiplier = 2;
+export const GasMultiplier = 1.5;
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
