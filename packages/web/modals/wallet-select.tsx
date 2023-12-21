@@ -243,19 +243,19 @@ export const WalletSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="max-h-screen w-full max-w-[800px] overflow-hidden !px-0 py-0"
+      className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0"
     >
-      <div className="flex min-h-[50vh] overflow-auto sm:flex-col">
+      <div className="flex max-h-[530px] min-h-[50vh] overflow-auto sm:max-h-full sm:flex-col">
         <ClientOnly
           className={classNames(
-            "h-full w-full max-w-[284px] sm:max-w-none sm:bg-[rgba(20,15,52,0.2)]",
+            "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
             "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
           )}
         >
           <LeftModalContent onConnect={onConnect} walletRepo={walletRepoProp} />
         </ClientOnly>
 
-        <div className="relative w-full py-8 sm:static">
+        <div className="relative w-full overflow-auto py-8 sm:static">
           {onRequestBack && (
             <IconButton
               aria-label="Go Back"
@@ -385,11 +385,11 @@ const LeftModalContent: FunctionComponent<
   );
 
   return (
-    <section className="flex flex-col gap-8 overflow-auto py-8 pl-8 pr-5">
+    <section className="flex flex-col gap-8 py-8 pl-8  sm:pl-3">
       <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
         {t("connectWallet")}
       </h1>
-      <div className="z-10 flex flex-col gap-8">
+      <div className="z-10 flex flex-col gap-8 overflow-auto pr-5">
         {Object.entries(categories)
           .filter(([_, wallets]) => wallets.length > 0)
           .map(([categoryName, wallets]) => {
@@ -399,7 +399,7 @@ const LeftModalContent: FunctionComponent<
                   {t(categoryName)}
                 </h2>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col sm:flex-row sm:overflow-x-auto">
                   {wallets.map((wallet) => (
                     <button
                       className={classNames(
