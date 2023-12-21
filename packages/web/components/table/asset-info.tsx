@@ -18,13 +18,6 @@ import {
 } from "react";
 
 import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
-import {
   useTranslation,
   useUserFavoriteAssetDenoms,
   useWalletSelect,
@@ -217,20 +210,6 @@ export const AssetsInfoTable: FunctionComponent<{
     manualPagination: true,
     enableFilters: false,
     getCoreRowModel: getCoreRowModel(),
-    filterFns: {
-      /**
-       * these filters, even though they are not used in this table instance,
-       * are necessary to suppress errors derived by the "@tanstack/table-core"
-       * module declaration in the earn page.
-       *
-       * @fabryscript
-       */
-      arrLengthEquals,
-      strictEqualFilter,
-      boolEquals,
-      boolEqualsString,
-      listOptionValueEquals,
-    },
   });
 
   // Virtualization is used to render only the visible rows
