@@ -2,6 +2,7 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -78,28 +79,30 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-            <a
-              key={row.original.queryPool.id}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start - topOffset}px)`
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                const link = getPoolLink(row.original.queryPool);
-                if (row.original.queryPool.type === "transmuter") {
-                  window.open(link, '_blank');
-                } else {
-                  router.push(link);
-                }
-              }}
-            >
+        <Link
+          key={row.original.queryPool.id}
+          href={getPoolLink(row.original.queryPool)}
+          passHref
+        >
+          <a
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start - topOffset}px)`
+            }}
+            onClick={(e) => {
+              if (row.original.queryPool.type === "transmuter") {
+                e.preventDefault();
+                window.open(getPoolLink(row.original.queryPool), '_blank');
+              }
+            }}
+          >
             <MobileTableRow row={row} />
-            </a>
+          </a>
+        </Link>
           );
         })}
       </div>
@@ -158,30 +161,29 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-<tr
-            key={row.id}
-            className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-            onClick={(e) => {
-              e.stopPropagation();
-              const link = getPoolLink(row.original.queryPool);
-              if (row.original.queryPool.type === "transmuter") {
-                window.open(link, '_blank');
-              } else {
-                router.push(link);
-              }
-            }}
-          >
-          {row.getVisibleCells().map((cell) => {
-            return (
-              <td key={cell.id}>
-                {flexRender(
-                  cell.column.columnDef.cell,
-                  cell.getContext()
-                )}
-              </td>
-            );
-          })}
-          </tr>
+          <tr
+          key={row.id}
+          className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (row.original.queryPool.type === "transmuter") {
+              window.open(getPoolLink(row.original.queryPool), '_blank');
+            } else {
+              router.push(getPoolLink(row.original.queryPool));
+            }
+          }}
+        >
+        {row.getVisibleCells().map((cell) => {
+          return (
+            <td key={cell.id}>
+              {flexRender(
+                cell.column.columnDef.cell,
+                cell.getContext()
+              )}
+            </td>
+          );
+        })}
+        </tr>
           );
         })}
         {paddingBottom > 0 && (
