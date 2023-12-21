@@ -316,8 +316,11 @@ export function useSwapAssets({
   } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
   // generate debounced search from user inputs
-  const [assetsQueryInput, _, setAssetsQueryInput, inputSearch] =
-    useSearchQueryInput();
+  const {
+    searchInput: assetsQueryInput,
+    setSearchInput: setAssetsQueryInput,
+    queryInput,
+  } = useSearchQueryInput();
 
   const canLoadAssets =
     !isLoadingWallet &&
@@ -328,11 +331,11 @@ export function useSwapAssets({
   const { data: searchAssets, isLoading: isLoadingSearchAssets } =
     api.edge.assets.getAssets.useQuery(
       {
-        search: inputSearch,
+        search: queryInput,
         userOsmoAddress: account?.address,
       },
       {
-        enabled: canLoadAssets && Boolean(inputSearch),
+        enabled: canLoadAssets && Boolean(queryInput),
       }
     );
   const {
@@ -352,16 +355,16 @@ export function useSwapAssets({
       initialCursor: 0,
     }
   );
-  const isLoadingSelectAssets = Boolean(inputSearch)
+  const isLoadingSelectAssets = Boolean(queryInput)
     ? isLoadingSearchAssets
     : isLoadingInfiniteAssets;
 
   const allSelectableAssets = useMemo(
     () =>
-      inputSearch
+      queryInput
         ? searchAssets?.items
         : selectableAssetPages?.pages.flatMap(({ items }) => items),
-    [selectableAssetPages?.pages, inputSearch, searchAssets]
+    [selectableAssetPages?.pages, queryInput, searchAssets]
   );
 
   const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(

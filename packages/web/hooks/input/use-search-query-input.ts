@@ -23,10 +23,10 @@ export function useSearchQueryInput(debounceMs = 500) {
     [debouncedSearchInput]
   );
 
-  return [
+  return {
     searchInput,
     debouncedSearchInput,
     setSearchInput,
     queryInput,
-  ] as const;
+  };
 }

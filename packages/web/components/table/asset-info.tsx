@@ -460,10 +460,15 @@ const SparklineChartCell: AssetInfoCellComponent<{
   timeFrame,
 }) => {
   const { data: recentPrices } =
-    api.edge.assets.getAssetHistoricalPrice.useQuery({
-      coinDenom,
-      timeFrame,
-    });
+    api.edge.assets.getAssetHistoricalPrice.useQuery(
+      {
+        coinDenom,
+        timeFrame,
+      },
+      {
+        staleTime: 1000 * 30, // 30 secs
+      }
+    );
 
   const recentPriceCloses = useMemo(
     () => (recentPrices ? recentPrices.map((p) => p.close) : []),
@@ -476,19 +481,22 @@ const SparklineChartCell: AssetInfoCellComponent<{
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
 
+  let color: string;
+  if (isBullish) {
+    color = theme.colors.bullish[400];
+  } else if (isBearish) {
+    color = theme.colors.ammelia[400];
+  } else {
+    color = theme.colors.wosmongton[200];
+  }
+
   return (
     <Sparkline
       width={80}
       height={50}
       lineWidth={2}
       data={recentPriceCloses}
-      color={
-        isBullish
-          ? theme.colors.bullish[400]
-          : isBearish
-          ? theme.colors.ammelia[400]
-          : theme.colors.wosmongton[200]
-      }
+      color={color}
     />
   );
 };
@@ -619,15 +627,11 @@ const TableControls: FunctionComponent<{
 }) => {
   const { t } = useTranslation();
 
-  const [searchInput, _, setSearchInput, searchQueryInput] =
-    useSearchQueryInput();
+  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
 
   // Pass search query in an effect to prevent rendering the entire table on every input change
   // Only on debounced search query input
-  useEffect(
-    () => setSearchQuery(searchQueryInput),
-    [setSearchQuery, searchQueryInput]
-  );
+  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
     <div className="flex h-12 w-full items-center gap-5">
