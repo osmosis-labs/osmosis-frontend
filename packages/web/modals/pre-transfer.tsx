@@ -73,10 +73,14 @@ export const PreTransferModal: FunctionComponent<
           {externalWithdrawUrl ? (
             <a
               className={classNames(
-                "flex h-10 w-full items-center justify-center gap-1 rounded-lg border border-wosmongton-200 bg-wosmongton-200/30 text-button font-button",
+                buttonCVA({
+                  className:
+                    "h-10 w-full gap-2 border-wosmongton-200/30 bg-wosmongton-200/30 hover:border-wosmongton-200/40 hover:bg-wosmongton-200/40",
+                  mode: "primary",
+                }),
                 { "opacity-30": isUnstable }
               )}
-              href={externalWithdrawUrl}
+              href={isUnstable ? "" : externalWithdrawUrl}
               rel="noreferrer"
               target="_blank"
               style={
