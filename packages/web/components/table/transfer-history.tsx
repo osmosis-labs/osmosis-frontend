@@ -121,7 +121,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
             },
             {
               display: t("assets.historyTable.colums.status"),
-              collapseAt: Breakpoint.SM,
+              collapseAt: Breakpoint.sm,
               className: "md:!pr-2",
               displayCell: StatusDisplayCell,
             },

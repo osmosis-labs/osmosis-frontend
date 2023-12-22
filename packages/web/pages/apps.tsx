@@ -81,9 +81,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const appsToDisplay = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   const searchBoxSize = useMemo(() => {
-    if (width <= Breakpoint.SM) {
+    if (width <= Breakpoint.sm) {
       return "small";
-    } else if (width <= Breakpoint.LG) {
+    } else if (width <= Breakpoint.lg) {
       return "medium";
     }
     return "long";
@@ -115,7 +115,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
         imageUrl={
-          width <= Breakpoint.SM
+          width <= Breakpoint.sm
             ? featuredApp.thumbnail_image_URL
             : featuredApp.hero_image_URL
         }

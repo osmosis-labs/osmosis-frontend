@@ -89,19 +89,19 @@ export const PoolsOverview: FunctionComponent<
           src="/images/lab-machine.svg"
           className="h-full"
           height={
-            width < Breakpoint.MD
+            width < Breakpoint.md
               ? 100
-              : width < Breakpoint.XLHALF
-              ? width < Breakpoint.XL
+              : width < Breakpoint.xlhalf
+              ? width < Breakpoint.xl
                 ? 190
                 : 200
               : 212
           }
           width={
-            width < Breakpoint.MD
+            width < Breakpoint.md
               ? 180
-              : width < Breakpoint.XLHALF
-              ? width < Breakpoint.XL
+              : width < Breakpoint.xlhalf
+              ? width < Breakpoint.xl
                 ? 280
                 : 380
               : 425

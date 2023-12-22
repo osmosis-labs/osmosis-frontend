@@ -13,14 +13,14 @@ export interface WindowSize {
  *  https://tailwindcss.com/docs/responsive-design
  */
 export const enum Breakpoint {
-  SM = 640,
-  MD = 768,
-  LG = 1024,
-  XLG = 1152,
-  XL = 1280,
-  XLHALF = 1408,
-  XXL = 1536,
-  XXXL = 1792,
+  sm = 640,
+  md = 768,
+  lg = 1024,
+  xlg = 1152,
+  xl = 1280,
+  xlhalf = 1408,
+  xxl = 1536,
+  xxxl = 1792,
 }
 
 /**
@@ -30,7 +30,7 @@ export const enum Breakpoint {
  * @returns '{ width: number, height: number, isMobile: boolean }'
  */
 export function useWindowSize(
-  maxMobileWidth: Breakpoint = Breakpoint.MD
+  maxMobileWidth: Breakpoint = Breakpoint.md
 ): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
@@ -45,8 +45,8 @@ export function useWindowSize(
         width: window.innerWidth,
         height: window.innerHeight,
         isMobile: window.innerWidth <= maxMobileWidth,
-        isLargeDesktop: window.innerWidth >= Breakpoint.XXL,
-        isExtraLargeDesktop: window.innerWidth >= Breakpoint.XXXL,
+        isLargeDesktop: window.innerWidth >= Breakpoint.xxl,
+        isExtraLargeDesktop: window.innerWidth >= Breakpoint.xxxl,
       });
     }
 

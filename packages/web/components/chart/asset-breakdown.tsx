@@ -63,7 +63,7 @@ export const AssetBreakdownChart: FunctionComponent<{
               {amount.toDec().round().gt(new Int(0))
                 ? amount.maxDecimals(0).hideDenom(true).toString()
                 : amount
-                    .maxDecimals(width < Breakpoint.LG && !isMobile ? 4 : 8)
+                    .maxDecimals(width < Breakpoint.lg && !isMobile ? 4 : 8)
                     .hideDenom(true)
                     .toString()}
             </h6>
