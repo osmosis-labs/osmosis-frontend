@@ -58,40 +58,50 @@ cases(
   }
 );
 
-describe("compareDefinedMember", () => {
-  it("should return -1 if member is in a but not in b", () => {
-    const a = { member: "value" };
-    const b = {};
-    expect(compareDefinedMember(a, b, "member")).toBe(-1);
-  });
-
-  it("should return 1 if member is in b but not in a", () => {
-    const a = {};
-    const b = { member: "value" };
-    expect(compareDefinedMember(a, b, "member")).toBe(1);
-  });
-
-  it("should return 0 if member is in both a and b", () => {
-    const a = { member: "value" };
-    const b = { member: "value" };
-    expect(compareDefinedMember(a, b, "member")).toBe(0);
-  });
-
-  it("should return 0 if member is in neither a nor b", () => {
-    const a = {};
-    const b = {};
-    expect(compareDefinedMember(a, b, "member")).toBe(0);
-  });
-
-  it("should return -1 if a is a value and b is a nil value", () => {
-    const a = { member: "value" };
-    const b = { member: undefined };
-    expect(compareDefinedMember(a, b, "member")).toBe(-1);
-  });
-
-  it("should return 0 if a and b are nil values", () => {
-    const a = { member: null };
-    const b = { member: undefined };
-    expect(compareDefinedMember(a, b, "member")).toBe(0);
-  });
-});
+cases(
+  "compareDefinedMember",
+  ({ a, b, member, expected }) => {
+    type TestType = { member?: string | null | undefined };
+    expect(compareDefinedMember<TestType>(a, b, member as keyof TestType)).toBe(
+      expected
+    );
+  },
+  {
+    "should return -1 if member is in a but not in b": {
+      a: { member: "value" },
+      b: {},
+      member: "member",
+      expected: -1,
+    },
+    "should return 1 if member is in b but not in a": {
+      a: {},
+      b: { member: "value" },
+      member: "member",
+      expected: 1,
+    },
+    "should return 0 if member is in both a and b": {
+      a: { member: "value" },
+      b: { member: "value" },
+      member: "member",
+      expected: 0,
+    },
+    "should return 0 if member is in neither a nor b": {
+      a: {},
+      b: {},
+      member: "member",
+      expected: 0,
+    },
+    "should return -1 if a is a value and b is a nil value": {
+      a: { member: "value" },
+      b: { member: undefined },
+      member: "member",
+      expected: -1,
+    },
+    "should return 0 if a and b are nil values": {
+      a: { member: null },
+      b: { member: undefined },
+      member: "member",
+      expected: 0,
+    },
+  }
+);
