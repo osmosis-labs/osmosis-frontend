@@ -355,56 +355,47 @@ const AssetCell: AssetInfoCellComponent<{
   isFavorite,
   onSetFavorite,
   onRemoveFavorite,
-}) => {
-  const [isHover, setHover] = useState(false);
+}) => (
+  <div
+    className={classNames("group flex items-center gap-2", {
+      "opacity-40": !isVerified,
+    })}
+  >
+    <div className="cursor-pointer">
+      <Icon
+        id="star"
+        className={classNames(
+          "text-osmoverse-600 transition-opacity group-hover:opacity-100",
+          isFavorite ? "text-wosmongton-400" : "opacity-0"
+        )}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
 
-  return (
-    <div
-      className={classNames("flex items-center gap-2", {
-        "opacity-40": !isVerified,
-      })}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      {isFavorite || isHover ? (
-        <div className="cursor-pointer">
-          <Icon
-            id="star"
-            className={classNames(
-              isHover ? "text-osmoverse-600" : "text-wosmongton-400"
-            )}
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-
-              if (isFavorite) onRemoveFavorite();
-              else onSetFavorite();
-            }}
-            height={24}
-            width={24}
-          />
+          if (isFavorite) onRemoveFavorite();
+          else onSetFavorite();
+        }}
+        height={24}
+        width={24}
+      />
+    </div>
+    <div className="flex items-center gap-4">
+      <div className="h-10 w-10">
+        {coinImageUrl && (
+          <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+        )}
+      </div>
+      <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
+        <div className="flex">
+          <span className="text-white-high">{coinDenom}</span>
         </div>
-      ) : (
-        <div style={{ height: 24, width: 24 }} />
-      )}
-      <div className="flex items-center gap-4">
-        <div className="h-10 w-10">
-          {coinImageUrl && (
-            <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
-          )}
-        </div>
-        <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
-          <div className="flex">
-            <span className="text-white-high">{coinDenom}</span>
-          </div>
-          <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
-            {coinName}
-          </span>
-        </div>
+        <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
+          {coinName}
+        </span>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 const PriceCell: AssetInfoCellComponent = ({
   row: {
