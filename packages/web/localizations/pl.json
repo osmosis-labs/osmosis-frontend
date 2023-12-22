@@ -172,6 +172,7 @@
       "title": "Historia Transferów"
     },
     "ibcTransfer": {
+      "buttonAdd": "Dodać",
       "buttonEdit": "Edytuj",
       "buttonEnter": "Ok",
       "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
@@ -231,6 +232,7 @@
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
       "givePermission": "Nadaj uprawnienia do używania tokenów",
+      "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
@@ -239,7 +241,9 @@
         "seeRequest": "Zobacz żądanie w {walletName}",
         "noQuotesAvailable": "Brak dostępnych cytatów",
         "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
-        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
+        "invalidAddress": "Błędny adres",
+        "missingAddress": "Brak adresu"
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",
+      "externalBoost": "Zewnętrzne wzmocnienie",
       "total": "Całkowita RRSO"
     }
   },

@@ -27,13 +27,6 @@ import { ReactNode } from "react";
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
 import { CheckBox, MenuSelectProps } from "~/components/control";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import {
   MetricLoaderCell,
@@ -525,20 +518,6 @@ export const AllPoolsTable: FunctionComponent<{
         }
       },
       manualSorting: true,
-      filterFns: {
-        /**
-         * these filters, even though they are not used in this table instance,
-         * are necessary to suppress errors derived by the "@tanstack/table-core"
-         * module declaration in the earn page.
-         *
-         * @fabryscript
-         */
-        arrLengthEquals,
-        strictEqualFilter,
-        boolEquals,
-        boolEqualsString,
-        listOptionValueEquals,
-      },
     });
 
     const handleFetchRemaining = useCallback(

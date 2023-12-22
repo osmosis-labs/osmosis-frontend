@@ -7,19 +7,18 @@ import { EthWallet } from "~/integrations/ethereum/types";
 
 /** Use native EVM balance. */
 export function useNativeBalance(
-  ethWallet: EthWallet,
+  ethWallet: EthWallet | undefined,
   originCurrency?: Currency
 ) {
   const [nativeBalance, setNativeBalance] = useState<Int | null>(null);
 
-  const address = ethWallet.accountAddress;
-  const sendFn = ethWallet.send;
+  const address = ethWallet?.accountAddress;
+  const sendFn = ethWallet?.send;
 
   useEffect(() => {
-    if (address) {
-      queryAccountBalance(sendFn, address).then(setNativeBalance);
-    }
-  }, [ethWallet.chainId, address, sendFn]);
+    if (!ethWallet || !sendFn || !address) return;
+    queryAccountBalance(sendFn, address).then(setNativeBalance);
+  }, [ethWallet?.chainId, address, sendFn, ethWallet]);
 
   if (!originCurrency || !nativeBalance) return;
   return new CoinPretty(originCurrency, nativeBalance);
