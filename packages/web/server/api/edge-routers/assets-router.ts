@@ -99,17 +99,19 @@ export const assetsRouter = createTRPCRouter({
             "marketCap",
             "usdValue",
           ] as const).optional(),
+          onlyPositiveBalances: z.boolean().default(false).optional(),
         })
       )
     )
     .query(
       async ({
         input: {
-          sort: sortInput,
           search,
           onlyVerified,
           userOsmoAddress,
           preferredDenoms,
+          sort: sortInput,
+          onlyPositiveBalances,
           cursor,
           limit,
         },
@@ -131,6 +133,10 @@ export const assetsRouter = createTRPCRouter({
             ? sortInput.direction
             : undefined,
         });
+
+        if (onlyPositiveBalances) {
+          assets = assets.filter((asset) => asset.amount?.toDec().isPositive());
+        }
 
         // Default sort (no sort provided):
         //  1. preferred denoms (from `preferredDenoms`)

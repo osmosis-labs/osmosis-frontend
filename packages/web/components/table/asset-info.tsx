@@ -96,6 +96,7 @@ export const AssetsInfoTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
+      onlyPositiveBalances: selectedView === "myTokens",
     },
     {
       enabled: !isLoadingWallet,
@@ -103,12 +104,10 @@ export const AssetsInfoTable: FunctionComponent<{
       initialCursor: 0,
     }
   );
-  const assetsData = useMemo(() => {
-    const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
-    if (selectedView === "myTokens")
-      return assets.filter((a) => a.amount?.toDec().isPositive());
-    return assets;
-  }, [assetPagesData, selectedView]);
+  const assetsData = useMemo(
+    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
+    [assetPagesData]
+  );
 
   // Define columns
   const columnHelper = createColumnHelper<AssetInfo>();
