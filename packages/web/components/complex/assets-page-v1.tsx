@@ -73,7 +73,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
 
       setPreTransferModalProps({
         isOpen: true,
-        selectedToken: ibcBalance.balance,
+        selectedToken: ibcBalance,
         tokens: ibcBalances.map(({ balance }) => balance),
         externalDepositUrl: ibcBalance.depositUrlOverride,
         externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
