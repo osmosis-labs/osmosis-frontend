@@ -156,13 +156,13 @@ export const NavBar: FunctionComponent<
     // announcement banner
     const [_showBanner, setShowBanner] = useLocalStorageState(
       Announcement ? Announcement?.localStorageKey ?? "" : "",
-      null
+      false // Change this from 'null' to 'false'
     );
-    
+
     const showBanner =
-      _showBanner === true &&
-      Announcement &&
-      (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+    _showBanner === true &&
+    Announcement &&
+    (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
@@ -385,18 +385,18 @@ export const NavBar: FunctionComponent<
         </div>
         {/* Back-layer element to occupy space for the caller */}
         <div
-          className={classNames(
-            "bg-osmoverse-900",
-            showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
-            backElementClassNames
-          )}
-        />
-        {showBanner && (
-          <AnnouncementBanner
-            {...Announcement!}
-            closeBanner={() => setShowBanner(null)}
+        className={classNames(
+              "bg-osmoverse-900",
+              showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
+              backElementClassNames
+            )}
           />
-        )}
+          {showBanner && (
+            <AnnouncementBanner
+              {...Announcement!}
+              closeBanner={() => setShowBanner(null)}
+            />
+          )}
         <FrontierMigrationModal
           isOpen={isFrontierMigrationOpen}
           onRequestClose={onCloseFrontierMigration}
