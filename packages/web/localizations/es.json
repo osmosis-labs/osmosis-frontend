@@ -172,6 +172,7 @@
       "title": "Historial de transferencias"
     },
     "ibcTransfer": {
+      "buttonAdd": "Agregar",
       "buttonEdit": "Editar",
       "buttonEnter": "Ingresar",
       "channelCongestedDeposit": "Depositar (Canal impugnado)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
       "givePermission": "Dar permisos para usar tokens",
+      "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
@@ -239,7 +241,9 @@
         "seeRequest": "Ver solicitud en {walletName}",
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
+        "invalidAddress": "Dirección inválida",
+        "missingAddress": "Dirección faltante"
       },
       "from": "De",
       "loading": "Cargando",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
+      "externalBoost": "Impulso externo",
       "total": "TAE total"
     }
   },

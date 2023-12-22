@@ -172,6 +172,7 @@
       "title": "Transfer History"
     },
     "ibcTransfer": {
+      "buttonAdd": "Add",
       "buttonEdit": "Edit",
       "buttonEnter": "Enter",
       "channelCongestedDeposit": "Deposit (Channel congested)",
@@ -231,6 +232,7 @@
       "availableOn": "Available on {network}",
       "approving": "Approving...",
       "givePermission": "Give permissions to use tokens",
+      "enterAddress": "{network} address",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
@@ -239,7 +241,9 @@
         "seeRequest": "See request in {walletName}",
         "noQuotesAvailable": "No Quotes Available",
         "unexpectedError": "Unexpected Error. Please try again.",
-        "transactionError": "Error getting transaction. Please try again."
+        "transactionError": "Error getting transaction. Please try again.",
+        "invalidAddress": "Invalid Address",
+        "missingAddress": "Missing Address"
       },
       "from": "From",
       "loading": "Loading",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Swap fees",
       "boost": "Boost",
+      "externalBoost": "External Boost",
       "total": "Total APR"
     }
   },

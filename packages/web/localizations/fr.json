@@ -172,6 +172,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
@@ -239,7 +241,9 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Frais de swap",
       "boost": "Booster",
+      "externalBoost": "Boost externe",
       "total": "TAEG total"
     }
   },
