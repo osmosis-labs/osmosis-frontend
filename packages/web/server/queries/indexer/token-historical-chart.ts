@@ -52,18 +52,21 @@ export async function queryTokenHistoricalChart({
     `/tokens/v2/historical/${coinDenom}/chart?tf=${timeFrameMinutes}`,
     IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   );
+  try {
+    const response = await apiClient<
+      TokenHistoricalPrice[] | { message: string }
+    >(url.toString());
 
-  const response = await apiClient<
-    TokenHistoricalPrice[] | { message: string }
-  >(url.toString());
+    if ("message" in response) {
+      if (response.message.includes("symbol not Found")) return [];
+    } else if (!Array.isArray(response)) {
+      throw new Error("Unexpected response");
+    }
 
-  if ("message" in response) {
-    if (response.message.includes("symbol not Found")) return [];
-  } else if (!Array.isArray(response)) {
+    return response as TokenHistoricalPrice[];
+  } catch (e) {
     throw new Error(
-      `Failed to fetch price for token ${coinDenom}: ` + response
+      `Unexpected error while fetching historical price for token ${coinDenom}: ${e}`
     );
   }
-
-  return response as TokenHistoricalPrice[];
 }
