@@ -394,7 +394,7 @@ export const NavBar: FunctionComponent<
           {showBanner && (
             <AnnouncementBanner
               {...Announcement!}
-              closeBanner={() => setShowBanner(null)}
+              closeBanner={() => setShowBanner(fasle)}
             />
           )}
         <FrontierMigrationModal
