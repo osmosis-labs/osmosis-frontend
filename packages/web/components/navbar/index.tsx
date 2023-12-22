@@ -156,7 +156,7 @@ export const NavBar: FunctionComponent<
     // announcement banner
     const [_showBanner, setShowBanner] = useLocalStorageState(
       Announcement ? Announcement?.localStorageKey ?? "" : "",
-      false // Change this from 'null' to 'false'
+      false 
     );
 
     const showBanner =
@@ -394,7 +394,7 @@ export const NavBar: FunctionComponent<
           {showBanner && (
             <AnnouncementBanner
               {...Announcement!}
-              closeBanner={() => setShowBanner(fasle)}
+              closeBanner={() => setShowBanner(false)}
             />
           )}
         <FrontierMigrationModal
