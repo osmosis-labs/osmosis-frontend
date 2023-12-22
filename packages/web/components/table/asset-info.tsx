@@ -24,7 +24,7 @@ import {
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
-import type { CommonHistoricalPriceTimeFrame } from "~/server/queries/complex/assets";
+import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -62,7 +62,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
   const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonHistoricalPriceTimeFrame>("1D");
+    useState<CommonPriceChartTimeFrame>("1D");
 
   const [sortKey, setSortKey] = useState<SortKey>();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -433,7 +433,7 @@ const PriceCell: AssetInfoCellComponent = ({
 );
 
 const SparklineChartCell: AssetInfoCellComponent<{
-  timeFrame: CommonHistoricalPriceTimeFrame;
+  timeFrame: CommonPriceChartTimeFrame;
 }> = ({
   row: {
     original: { coinDenom, priceChange24h },
@@ -594,8 +594,8 @@ export const AssetActionsCell: AssetInfoCellComponent<{
 );
 
 const TableControls: FunctionComponent<{
-  selectedTimeFrame: CommonHistoricalPriceTimeFrame;
-  setSelectedTimeFrame: (timeFrame: CommonHistoricalPriceTimeFrame) => void;
+  selectedTimeFrame: CommonPriceChartTimeFrame;
+  setSelectedTimeFrame: (timeFrame: CommonPriceChartTimeFrame) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
   selectedView: "myTokens" | "allTokens";
   setSelectedView: (view: "myTokens" | "allTokens") => void;
@@ -630,11 +630,11 @@ const TableControls: FunctionComponent<{
             { id: "1D", display: "1D" },
             { id: "1W", display: "1W" },
             { id: "1M", display: "1M" },
-          ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
+          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
           defaultSelectedOptionId={selectedTimeFrame}
           onSelect={useCallback(
             (id: string) =>
-              setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
+              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
             [setSelectedTimeFrame]
           )}
         />

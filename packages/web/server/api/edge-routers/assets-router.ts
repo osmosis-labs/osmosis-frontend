@@ -9,7 +9,6 @@ import {
   getAsset,
   getAssetHistoricalPrice,
   getAssetPrice,
-  getCommonTimeFrameAssetHistoricalPrice,
   getUserAssetInfo,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
@@ -192,7 +191,7 @@ export const assetsRouter = createTRPCRouter({
         timeFrame: z.union([
           z.object({
             custom: z.object({
-              timeFrameMinutes: z
+              timeFrame: z
                 .number()
                 .refine((tf) => AvailableRangeValues.includes(tf as TimeFrame)),
               numRecentFrames: z.number().optional(),
@@ -202,20 +201,15 @@ export const assetsRouter = createTRPCRouter({
         ]),
       })
     )
-    .query(({ input: { coinDenom, timeFrame } }) => {
-      if (typeof timeFrame === "string") {
-        return getCommonTimeFrameAssetHistoricalPrice({
-          coinDenom,
-          timeFrame,
-        });
-      }
-
-      return getAssetHistoricalPrice({
+    .query(({ input: { coinDenom, timeFrame } }) =>
+      getAssetHistoricalPrice({
         coinDenom,
-        ...(timeFrame.custom as {
-          timeFrameMinutes: TimeFrame;
-          numRecentFrames?: number;
-        }),
-      });
-    }),
+        ...(typeof timeFrame === "string"
+          ? { timeFrame }
+          : (timeFrame.custom as {
+              timeFrame: TimeFrame;
+              numRecentFrames?: number;
+            })),
+      })
+    ),
 });
