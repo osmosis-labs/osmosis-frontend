@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
+import { useEffect } from "react";
 
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
@@ -20,8 +21,8 @@ import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useSearchQueryInput } from "./input/use-search-query-input";
 import { useBalances } from "./queries/cosmos/balances";
+import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./wallet-select";
@@ -316,11 +317,17 @@ export function useSwapAssets({
   } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
   // generate debounced search from user inputs
-  const {
-    searchInput: assetsQueryInput,
-    setSearchInput: setAssetsQueryInput,
-    queryInput,
-  } = useSearchQueryInput();
+  const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
+  const [debouncedSearchInput, setDebouncedSearchInput] =
+    useDebouncedState<string>("", 500);
+  useEffect(() => {
+    setDebouncedSearchInput(assetsQueryInput);
+  }, [setDebouncedSearchInput, assetsQueryInput]);
+
+  const queryInput = useMemo(
+    () => (debouncedSearchInput ? { query: debouncedSearchInput } : undefined),
+    [debouncedSearchInput]
+  );
 
   const canLoadAssets =
     !isLoadingWallet &&
@@ -328,24 +335,15 @@ export function useSwapAssets({
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
   // use a separate query for search to maintain pagination in other infinite query
-  const { data: searchAssets, isLoading: isLoadingSearchAssets } =
-    api.edge.assets.getAssets.useQuery(
-      {
-        search: queryInput,
-        userOsmoAddress: account?.address,
-      },
-      {
-        enabled: canLoadAssets && Boolean(queryInput),
-      }
-    );
   const {
     data: selectableAssetPages,
-    isLoading: isLoadingInfiniteAssets,
+    isLoading: isLoadingSelectAssets,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = api.edge.assets.getAssets.useInfiniteQuery(
     {
+      search: queryInput,
       userOsmoAddress: account?.address,
       limit: 50, // items per page
     },
@@ -355,16 +353,10 @@ export function useSwapAssets({
       initialCursor: 0,
     }
   );
-  const isLoadingSelectAssets = Boolean(queryInput)
-    ? isLoadingSearchAssets
-    : isLoadingInfiniteAssets;
 
   const allSelectableAssets = useMemo(
-    () =>
-      queryInput
-        ? searchAssets?.items
-        : selectableAssetPages?.pages.flatMap(({ items }) => items),
-    [selectableAssetPages?.pages, queryInput, searchAssets]
+    () => selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [],
+    [selectableAssetPages?.pages]
   );
 
   const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
@@ -391,7 +383,7 @@ export function useSwapAssets({
   /** Remove to and from assets from assets that can be selected. */
   const filteredSelectableAssets = useMemo(
     () =>
-      allSelectableAssets?.filter(
+      allSelectableAssets.filter(
         (asset) =>
           asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
           asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
@@ -508,7 +500,10 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinMinimalDenom === minDenomOrSymbol
   );
   const queryEnabled =
-    Boolean(minDenomOrSymbol) && !isLoadingWallet && !existingAsset;
+    !isNil(minDenomOrSymbol) &&
+    typeof minDenomOrSymbol === "string" &&
+    !isLoadingWallet &&
+    !existingAsset;
   const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
       findMinDenomOrSymbol: minDenomOrSymbol ?? "",
