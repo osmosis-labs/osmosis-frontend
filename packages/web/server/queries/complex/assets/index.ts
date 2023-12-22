@@ -1,17 +1,19 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
+import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { Search, search } from "~/utils/search";
+import { search, SearchSchema } from "~/utils/search";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
-import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
+import { queryTokenMarketCaps } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getAssetData, getAssetMarketCapRank } from "./info";
 import { calcAssetValue, getAssetPrice } from "./price";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -25,9 +27,12 @@ export type Asset = {
   isVerified: boolean;
 };
 
-type AssetFilter = Partial<{
-  search: Search;
-}>;
+export const AssetFilterSchema = z.object({
+  search: SearchSchema.optional(),
+  onlyVerified: z.boolean().default(false).optional(),
+});
+/** Params for filtering assets. */
+export type AssetFilter = z.infer<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
@@ -101,6 +106,13 @@ export async function getAssets({
       );
     }
 
+    // Filter by only verified
+    if (params.onlyVerified) {
+      assetListAssets = assetListAssets.filter((asset) =>
+        Boolean(asset.keywords?.includes("osmosis-main"))
+      );
+    }
+
     // Transform into a more compact object
     return assetListAssets.map(makeMinimalAsset);
   };
@@ -124,23 +136,41 @@ export type MaybeUserAssetInfo = Partial<{
   usdValue: PricePretty;
 }>;
 
+export async function getUserAssetInfo<TAsset extends Asset>({
+  assetList = AssetLists,
+  asset,
+  userOsmoAddress,
+}: {
+  assetList?: AssetList[];
+  asset: TAsset;
+  userOsmoAddress?: string;
+}): Promise<TAsset & MaybeUserAssetInfo> {
+  if (!userOsmoAddress) return asset;
+
+  const userAssets = await mapGetUserAssetInfos({
+    assetList,
+    assets: [asset],
+    userOsmoAddress,
+  });
+  return userAssets[0];
+}
+
 /** Maps user asset balance data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
 export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assetList = AssetLists,
-  assets,
-  userOsmoAddress,
-  search,
-  sortFiatValueDirection,
+  ...params
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
   userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
-  if (!userOsmoAddress) return assets as (TAsset & MaybeUserAssetInfo)[];
-  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
+  const { userOsmoAddress, search, sortFiatValueDirection } = params;
+  let { assets } = params;
+  if (!assets) assets = (await getAssets(params)) as TAsset[];
+  if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances(userOsmoAddress);
 
@@ -199,6 +229,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
+  marketCapRank: number;
   currentPrice: PricePretty;
   priceChange24h: RatePretty;
 }>;
@@ -207,22 +238,26 @@ export type AssetMarketInfo = Partial<{
  *  If no assets provided, they will be fetched and passed the given search params. */
 export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
-  assets,
-  search,
+  ...params
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
+  let { assets } = params;
+  if (!assets) assets = (await getAssets(params)) as TAsset[];
 
-  return await Promise.all(assets.map(getAssetMarketInfo));
+  return await Promise.all(
+    assets.map((asset) => getAssetMarketInfo({ asset }))
+  );
 }
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
-export async function getAssetMarketInfo<TAsset extends Asset>(
-  asset: TAsset
-): Promise<TAsset & AssetMarketInfo> {
+export async function getAssetMarketInfo<TAsset extends Asset>({
+  asset,
+}: {
+  asset: TAsset;
+}): Promise<TAsset & AssetMarketInfo> {
   return cachified({
     cache: marketInfoCache,
     key: asset.coinDenom + asset.coinMinimalDenom,
@@ -235,15 +270,10 @@ export async function getAssetMarketInfo<TAsset extends Asset>(
       const marketCap = (
         await queryTokenMarketCaps().catch(() => {
           // if not found, return undefined
-          return;
+          return undefined;
         })
       )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
-      const priceChange24h = (
-        await queryTokenData(asset).catch(() => {
-          // if not found, return undefined
-          return;
-        })
-      )?.price_24h_change;
+      const priceChange24h = (await getAssetData(asset))?.price_24h_change;
 
       return {
         ...asset,
@@ -253,8 +283,11 @@ export async function getAssetMarketInfo<TAsset extends Asset>(
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        marketCapRank: await getAssetMarketCapRank({
+          coinDenom: asset.coinDenom,
+        }),
         priceChange24h: priceChange24h
-          ? new RatePretty(priceChange24h)
+          ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
           : undefined,
       };
     },

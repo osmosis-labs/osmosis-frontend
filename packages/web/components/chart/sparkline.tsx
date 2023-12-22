@@ -92,7 +92,7 @@ export const Sparkline: FunctionComponent<{
   }, [drawSparkline, shouldFillContainer]);
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full" style={{ width }}>
       <canvas width={width} height={height ?? 230} ref={canvasRef} />
     </div>
   );
