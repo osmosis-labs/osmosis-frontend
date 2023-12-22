@@ -1,22 +1,36 @@
-import type { Asset, AssetList } from "@osmosis-labs/types";
+import type {
+  Asset,
+  AssetList,
+  IbcCW20Trace,
+  IBCTrace,
+} from "@osmosis-labs/types";
+
+export function getIbcTrace(
+  traces: Asset["traces"]
+): IbcCW20Trace | IBCTrace | undefined {
+  return traces.find(
+    (trace): trace is IBCTrace | IbcCW20Trace =>
+      trace.type === "ibc-cw20" || trace.type === "ibc"
+  );
+}
 
 export function getSourceDenomFromAssetList({
   traces,
-  symbol,
   base,
-}: Pick<Asset, "traces" | "symbol" | "base">) {
+}: Pick<Asset, "traces" | "base">) {
   /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
   if (traces?.length === 0) {
     return base;
   }
 
-  const lastTrace = traces[traces.length - 1];
+  const ibcTrace = getIbcTrace(traces);
 
-  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
-    throw new Error(`Unknown trace type ${lastTrace?.type}. Asset ${symbol}`);
+  /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
+  if (!ibcTrace) {
+    return base;
   }
 
-  return lastTrace.counterparty.base_denom;
+  return ibcTrace.counterparty.base_denom;
 }
 
 export function getDisplayDecimalsFromAsset({
@@ -91,16 +105,14 @@ export const hasMatchingSourceDenom = (
 export function getChannelInfoFromAsset(
   asset: Pick<Asset, "traces" | "symbol">
 ) {
-  const lastTrace = asset.traces[asset.traces.length - 1];
+  const ibcTrace = getIbcTrace(asset.traces);
 
-  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
-    throw new Error(
-      `Unknown trace type ${lastTrace?.type}. Asset ${asset.symbol}`
-    );
+  if (!ibcTrace) {
+    throw new Error(`Asset ${asset.symbol} does not have an IBC trace.`);
   }
 
-  const sourceChannelId = lastTrace.chain.channel_id;
-  const destChannelId = lastTrace.counterparty.channel_id;
+  const sourceChannelId = ibcTrace.chain.channel_id;
+  const destChannelId = ibcTrace.counterparty.channel_id;
 
   return {
     sourceChannelId,
