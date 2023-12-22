@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
+      "externalBoost": "Impulso externo",
       "total": "TAEG total"
     }
   },

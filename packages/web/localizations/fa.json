@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "کارمزد تعویض",
       "boost": "تقویت کنید",
+      "externalBoost": "تقویت خارجی",
       "total": "کل آوریل"
     }
   },

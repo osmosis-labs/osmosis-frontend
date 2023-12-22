@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Taxe de schimb",
       "boost": "Boost",
+      "externalBoost": "Boost extern",
       "total": "DAE totală"
     }
   },
