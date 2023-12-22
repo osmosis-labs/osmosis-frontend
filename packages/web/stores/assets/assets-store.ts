@@ -11,7 +11,10 @@ import {
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
-import { getIbcTrace, getSourceDenomFromAssetList } from "@osmosis-labs/utils";
+import {
+  getLastIbcTrace,
+  getSourceDenomFromAssetList,
+} from "@osmosis-labs/utils";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -181,7 +184,7 @@ export class ObservableAssets {
           );
         }
 
-        const ibcTrace = getIbcTrace(ibcAsset.traces);
+        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
 
         if (!ibcTrace) {
           throw new Error(

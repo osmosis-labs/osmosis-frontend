@@ -1,7 +1,10 @@
 import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
-import { getIbcTrace, getSourceDenomFromAssetList } from "@osmosis-labs/utils";
+import {
+  getLastIbcTrace,
+  getSourceDenomFromAssetList,
+} from "@osmosis-labs/utils";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -42,7 +45,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         )
       ) // Filter Osmosis assets
       .forEach((ibcAsset) => {
-        const ibcTrace = getIbcTrace(ibcAsset.traces);
+        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
         const ibcDenom = ibcAsset.base; // The IBC denom will also be the multihop hash when needed
 
         if (!ibcTrace) {

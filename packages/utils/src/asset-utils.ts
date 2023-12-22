@@ -5,13 +5,14 @@ import type {
   IBCTrace,
 } from "@osmosis-labs/types";
 
-export function getIbcTrace(
+export function getLastIbcTrace(
   traces: Asset["traces"]
 ): IbcCW20Trace | IBCTrace | undefined {
-  return traces.find(
+  const ibcTraces = traces.filter(
     (trace): trace is IBCTrace | IbcCW20Trace =>
       trace.type === "ibc-cw20" || trace.type === "ibc"
   );
+  return ibcTraces[ibcTraces.length - 1];
 }
 
 export function getSourceDenomFromAssetList({
@@ -23,7 +24,7 @@ export function getSourceDenomFromAssetList({
     return base;
   }
 
-  const ibcTrace = getIbcTrace(traces);
+  const ibcTrace = getLastIbcTrace(traces);
 
   /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
   if (!ibcTrace) {
@@ -105,7 +106,7 @@ export const hasMatchingSourceDenom = (
 export function getChannelInfoFromAsset(
   asset: Pick<Asset, "traces" | "symbol">
 ) {
-  const ibcTrace = getIbcTrace(asset.traces);
+  const ibcTrace = getLastIbcTrace(asset.traces);
 
   if (!ibcTrace) {
     throw new Error(`Asset ${asset.symbol} does not have an IBC trace.`);
