@@ -79,30 +79,33 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-        <Link
-          key={row.original.queryPool.id}
-          href={getPoolLink(row.original.queryPool)}
-          passHref
-        >
-          <a
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start - topOffset}px)`
-            }}
-            onClick={(e) => {
-              if (row.original.queryPool.type === "transmuter") {
-                e.preventDefault();
-                window.open(getPoolLink(row.original.queryPool), '_blank');
-              }
-            }}
+          <Link
+            key={row.original.queryPool.id}
+            href={getPoolLink(row.original.queryPool)}
+            passHref
           >
-            <MobileTableRow row={row} />
-          </a>
-        </Link>
+            <a
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start - topOffset}px)`
+              }}
+              onClick={(e) => {
+                if (row.original.queryPool.type === "transmuter") {
+                  e.preventDefault();
+                  window.open(getPoolLink(row.original.queryPool), '_blank');
+                } else {
+                  // If not a "transmuter," open in the same tab
+                  window.location.href = getPoolLink(row.original.queryPool);
+                }
+              }}
+            >
+              <MobileTableRow row={row} />
+            </a>
+          </Link>
           );
         })}
       </div>
