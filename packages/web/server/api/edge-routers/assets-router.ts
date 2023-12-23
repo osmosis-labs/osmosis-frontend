@@ -5,53 +5,59 @@ import { RecommendedSwapDenoms } from "~/config/feature-flag";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
+  AssetFilterSchema,
   getAsset,
+  getAssetHistoricalPrice,
   getAssetPrice,
-  getAssets,
+  getUserAssetInfo,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
-  MaybeUserAssetInfo,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
+import {
+  AvailableRangeValues,
+  TimeFrame,
+} from "~/server/queries/indexer/token-historical-chart";
 import { compareDec, compareDefinedMember } from "~/utils/compare";
-import { SearchSchema } from "~/utils/search";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.extend({
-  search: SearchSchema.optional(),
-}).and(UserOsmoAddressSchema);
+const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.and(
+  AssetFilterSchema
+).and(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
-  getAssets: publicProcedure
+  getAsset: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.and(
-        z.object({
-          findMinDenomOrSymbol: z.string().optional(),
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
         })
-      )
+        .and(UserOsmoAddressSchema)
     )
+    .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+
+      if (!asset) throw new Error("Asset not found " + findMinDenomOrSymbol);
+
+      return await getUserAssetInfo({
+        asset,
+        userOsmoAddress,
+      });
+    }),
+  getAssets: publicProcedure
+    .input(GetInfiniteAssetsInputSchema)
     .query(
       async ({
-        input: { search, findMinDenomOrSymbol, userOsmoAddress, limit, cursor },
-      }): Promise<{
-        items: (Asset & MaybeUserAssetInfo)[];
-        nextCursor: number;
-      }> => {
-        const assets = await getAssets({
-          search,
-          findMinDenomOrSymbol,
-        });
-
-        if (!userOsmoAddress)
-          return maybeCursorPaginatedItems(assets, cursor, limit);
-
+        input: { search, userOsmoAddress, limit, cursor, onlyVerified },
+      }) => {
         const userAssets = await mapGetUserAssetInfos({
-          assets,
+          search,
           userOsmoAddress,
+          onlyVerified,
           sortFiatValueDirection: "desc",
         });
 
@@ -93,29 +99,29 @@ export const assetsRouter = createTRPCRouter({
             "marketCap",
             "usdValue",
           ] as const).optional(),
+          onlyPositiveBalances: z.boolean().default(false).optional(),
         })
       )
     )
     .query(
       async ({
         input: {
-          sort: sortInput,
           search,
+          onlyVerified,
           userOsmoAddress,
           preferredDenoms,
+          sort: sortInput,
+          onlyPositiveBalances,
           cursor,
           limit,
         },
       }) => {
-        /** Default sort (no sort provided):
-         *  1. fiat balance descending (from `mapGetUserAssetInfos`)
-         *  2. preferred denoms
-         *  3. Market cap */
-        const isDefaultSort = !sortInput;
+        const isDefaultSort = !sortInput && !search;
 
         let assets;
         assets = await mapGetAssetMarketInfos({
           search,
+          onlyVerified,
         });
 
         assets = await mapGetUserAssetInfos({
@@ -128,10 +134,28 @@ export const assetsRouter = createTRPCRouter({
             : undefined,
         });
 
-        // Add default sorting
+        if (onlyPositiveBalances) {
+          assets = assets.filter((asset) => asset.amount?.toDec().isPositive());
+        }
+
+        // Default sort (no sort provided):
+        //  1. preferred denoms (from `preferredDenoms`)
+        //  2. fiat balance descending (from `mapGetUserAssetInfos`)
+        //  3. Market cap
         if (isDefaultSort) {
-          // Preferred denom default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
           assets = assets.sort((assetA, assetB) => {
+            const isAPreferred =
+              preferredDenoms &&
+              (preferredDenoms.includes(assetA.coinDenom) ||
+                preferredDenoms.includes(assetA.coinMinimalDenom));
+            const isBPreferred =
+              preferredDenoms &&
+              (preferredDenoms.includes(assetB.coinDenom) ||
+                preferredDenoms.includes(assetB.coinMinimalDenom));
+
+            if (isAPreferred && !isBPreferred) return -1;
+            if (!isAPreferred && isBPreferred) return 1;
+
             // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
             const usdValueDefinedCompare = compareDefinedMember(
               assetA,
@@ -154,18 +178,6 @@ export const assetsRouter = createTRPCRouter({
               );
               if (marketCapCompare) return marketCapCompare;
             }
-
-            const isAPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetA.coinDenom) ||
-                preferredDenoms.includes(assetA.coinMinimalDenom));
-            const isBPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetB.coinDenom) ||
-                preferredDenoms.includes(assetB.coinMinimalDenom));
-
-            if (isAPreferred && !isBPreferred) return -1;
-            if (!isAPreferred && isBPreferred) return 1;
             return 0;
           });
         }
@@ -177,5 +189,33 @@ export const assetsRouter = createTRPCRouter({
         // Can be searching and/or sorting
         return maybeCursorPaginatedItems(assets, cursor, limit);
       }
+    ),
+  getAssetHistoricalPrice: publicProcedure
+    .input(
+      z.object({
+        coinDenom: z.string(),
+        timeFrame: z.union([
+          z.object({
+            custom: z.object({
+              timeFrame: z
+                .number()
+                .refine((tf) => AvailableRangeValues.includes(tf as TimeFrame)),
+              numRecentFrames: z.number().optional(),
+            }),
+          }),
+          z.enum(["1H", "1D", "1W", "1M"]),
+        ]),
+      })
+    )
+    .query(({ input: { coinDenom, timeFrame } }) =>
+      getAssetHistoricalPrice({
+        coinDenom,
+        ...(typeof timeFrame === "string"
+          ? { timeFrame }
+          : (timeFrame.custom as {
+              timeFrame: TimeFrame;
+              numRecentFrames?: number;
+            })),
+      })
     ),
 });

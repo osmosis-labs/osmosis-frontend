@@ -15,7 +15,7 @@ export function search<TItem extends object>(
 ): TItem[] {
   const fuse = new Fuse(data, {
     keys,
-    threshold: 0.2,
+    threshold: 0.4,
   });
 
   return fuse

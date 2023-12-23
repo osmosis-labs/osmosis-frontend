@@ -5,6 +5,7 @@
  *  Default cursor is 0 and default limit is 50.
  *  The cursor doesn't point to the page, but to the item index of the last element of the requested page.
  *  The limit is the number of items per page.
+ *  If `nextCursor` is null, there are no more items.
  *
  *  See: https://trpc.io/docs/client/react/useInfiniteQuery
  *  Guide: https://tanstack.com/query/v4/docs/react/guides/infinite-queries
@@ -15,20 +16,22 @@ export function maybeCursorPaginatedItems<TItem>(
   limit: number | null | undefined
 ): {
   items: TItem[];
-  nextCursor: number;
+  nextCursor: number | null;
 } {
-  if (!cursor && !limit) return { items, nextCursor: items.length - 1 };
+  if (!cursor && !limit) return { items, nextCursor: null };
 
   cursor = cursor || 0;
   limit = limit || 50;
   const startIndex = cursor;
 
-  if (startIndex >= items.length - 1) return { items: [], nextCursor: cursor };
+  // no more items
+  if (startIndex >= items.length - 1) return { items: [], nextCursor: null };
 
-  const paginatedItems = items.slice(startIndex, startIndex + limit);
+  // get the page
+  const page = items.slice(startIndex, startIndex + limit);
 
   return {
-    items: paginatedItems,
+    items: page,
     nextCursor: Math.min(cursor + limit, items.length - 1),
   };
 }
