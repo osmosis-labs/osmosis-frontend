@@ -120,7 +120,11 @@ export function useSwap({
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
-    const error = quoteError ?? spotPriceQuoteError;
+    let error = quoteError;
+
+    // only show spot price error if there's no quote
+    if (quote && !quote.amount.toDec().isPositive() && !error)
+      error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
@@ -130,6 +134,7 @@ export function useSwap({
       return inAmountInput.error;
   }, [
     quoteError,
+    quote,
     spotPriceQuoteError,
     inAmountInput.error,
     inAmountInput.isEmpty,
