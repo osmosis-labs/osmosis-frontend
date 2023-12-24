@@ -70,7 +70,7 @@ const Pool: FunctionComponent = observer(() => {
       <NextSeo
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
-      {showTradeModal && queryPool && poolId && (
+      {queryPool && Boolean(poolId) && (
         <TradeTokens
           className="md:!p-0"
           isOpen={showTradeModal}

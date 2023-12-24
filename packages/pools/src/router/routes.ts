@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { NotEnoughLiquidityError } from "../errors";
+import { NotEnoughLiquidityError, NotEnoughQuotedError } from "../errors";
 import { NoRouteError } from "./errors";
 import {
   cacheKeyForRoute,
@@ -381,8 +381,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         /** If the pool doesn't contain the estimated out amount, there's
          *  not enough liquidity. */
-        if (quoteOut.amount.lte(new Int(0)))
-          throw new NotEnoughLiquidityError();
+        if (quoteOut.amount.lte(new Int(0))) throw new NotEnoughQuotedError();
 
         beforeSpotPriceInOverOut = quoteOut.beforeSpotPriceInOverOut
           ? beforeSpotPriceInOverOut.mulTruncate(
