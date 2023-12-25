@@ -83,7 +83,11 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   const inputAmountWithFraction = useMemo(
     () =>
       fraction != null && amount
-        ? new IntPretty(amount).trim(true).toString()
+        ? new IntPretty(amount)
+            .inequalitySymbol(false)
+            .locale(false)
+            .trim(true)
+            .toString()
         : inputAmount,
     [fraction, amount, inputAmount]
   );

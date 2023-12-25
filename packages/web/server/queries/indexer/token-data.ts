@@ -31,3 +31,9 @@ export async function queryTokenData({
   // for some reason it returns in an array format, but let's return the first item
   return (await apiClient<TokenData[]>(url.toString()))?.[0];
 }
+
+export async function queryAllTokenData(): Promise<TokenData[]> {
+  // collect params
+  const url = new URL("/tokens/v2/all", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  return await apiClient<TokenData[]>(url.toString());
+}
