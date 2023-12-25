@@ -22,15 +22,13 @@ export const AprBreakdownCell: FunctionComponent<{
     >
       <p
         className={classNames("ml-auto flex items-center gap-1.5", {
-          "text-bullish-500": Boolean(poolAprs?.boost),
+          "text-bullish-500": Boolean(poolAprs?.boost || poolAprs?.osmosis),
         })}
       >
-        {poolAprs?.boost ? (
+        {(poolAprs?.boost || poolAprs?.osmosis) && (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
-        ) : (
-          <Icon id="info" className="h-4 w-4 text-osmoverse-400" />
         )}
         {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
       </p>
@@ -54,12 +52,18 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
             />
           )}
           {poolAprs?.osmosis && (
-            <BreakdownRow label={"Osmosis"} value={poolAprs.osmosis} />
+            <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
+              <div className="flex place-content-between items-center gap-1">
+                <p>OSMO {t("pools.aprBreakdown.boost")}</p>
+                <Icon id="boost" color={theme.colors.bullish[500]} />
+              </div>
+              <p>{poolAprs.osmosis.maxDecimals(1).toString()}</p>
+            </div>
           )}
           {poolAprs?.boost && (
             <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
               <div className="flex place-content-between items-center gap-1">
-                <p>{t("pools.aprBreakdown.boost")}</p>
+                <p>{t("pools.aprBreakdown.externalBoost")}</p>
                 <Icon id="boost" color={theme.colors.bullish[500]} />
               </div>
               <p>{poolAprs.boost.maxDecimals(1).toString()}</p>

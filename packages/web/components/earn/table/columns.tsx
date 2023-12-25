@@ -1,4 +1,4 @@
-import { createColumnHelper, FilterFn } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
@@ -9,17 +9,14 @@ import {
   TVLCell,
 } from "~/components/earn/table/cells";
 import { Strategy } from "~/components/earn/table/types/strategy";
+import {
+  arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
+  listOptionValueEquals,
+  strictEqualFilter,
+} from "~/components/earn/table/utils";
 import { TranslationPath, useTranslation } from "~/hooks";
-
-declare module "@tanstack/table-core" {
-  interface FilterFns {
-    strictEqualFilter?: FilterFn<Strategy>;
-    arrLengthEquals?: FilterFn<Strategy>;
-    listOptionValueEquals?: FilterFn<Strategy>;
-    boolEquals?: FilterFn<Strategy>;
-    boolEqualsString?: FilterFn<Strategy>;
-  }
-}
 
 const columnHelper = createColumnHelper<Strategy>();
 
@@ -101,7 +98,7 @@ export const tableColumns = [
         ))}
       </div>
     ),
-    filterFn: "arrLengthEquals",
+    filterFn: arrLengthEquals,
   }),
   columnHelper.accessor("lock", {
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
@@ -143,31 +140,31 @@ export const tableColumns = [
   columnHelper.accessor("strategyMethod.id", {
     header: () => {},
     cell: () => {},
-    filterFn: "strictEqualFilter",
+    filterFn: strictEqualFilter,
     enableHiding: true,
   }),
   columnHelper.accessor("platform.id", {
     header: () => {},
     cell: () => {},
-    filterFn: "strictEqualFilter",
+    filterFn: strictEqualFilter,
     enableHiding: true,
   }),
   columnHelper.accessor("hasLockingDuration", {
     header: () => {},
     cell: () => {},
-    filterFn: "boolEquals",
+    filterFn: boolEquals,
     enableHiding: true,
   }),
   columnHelper.accessor("holdsTokens", {
     header: () => {},
     cell: () => {},
-    filterFn: "boolEqualsString",
+    filterFn: boolEqualsString,
     enableHiding: true,
   }),
   columnHelper.accessor("chainType", {
     header: () => {},
     cell: () => {},
-    filterFn: "listOptionValueEquals",
+    filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
 ];

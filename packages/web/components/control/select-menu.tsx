@@ -55,6 +55,12 @@ export const SelectMenu: FunctionComponent<Props> = ({
         selectedOptionIdProp ? "text-rust-200" : "text-osmoverse-200",
         classes?.container
       )}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) {
+          setIsDropdownOpen(!isDropdownOpen);
+        }
+      }}
       ref={containerRef}
     >
       <div
@@ -85,7 +91,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
       {isMobile ? (
         <MenuOptionsModal
           title={selectedItem?.display ?? placeholder}
-          selectedOptionId={selectedOptionIdProp}
+          selectedOptionId={selectedOptionId}
           options={options}
           isOpen={isDropdownOpen}
           onRequestClose={() => setIsDropdownOpen(false)}
@@ -95,7 +101,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
         <MenuDropdown
           className="top-full -left-px w-[calc(100%_+_2px)]"
           options={options}
-          selectedOptionId={selectedOptionIdProp}
+          selectedOptionId={selectedOptionId}
           onSelect={onSelect}
           isOpen={isDropdownOpen}
         />

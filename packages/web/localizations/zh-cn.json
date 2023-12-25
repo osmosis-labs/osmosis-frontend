@@ -172,6 +172,7 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
       "channelCongestedDeposit": "存入 (频道争抢)",
@@ -231,6 +232,7 @@
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的权限",
+      "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
@@ -239,7 +241,9 @@
         "seeRequest": "在{walletName}中查看请求",
         "noQuotesAvailable": "无可用报价",
         "unexpectedError": "意外的错误。请再试一次。",
-        "transactionError": "获取交易时出错。请再试一次。"
+        "transactionError": "获取交易时出错。请再试一次。",
+        "invalidAddress": "无效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "从",
       "loading": "加载中",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "掉期费用",
       "boost": "促进",
+      "externalBoost": "外部升压",
       "total": "总年利率"
     }
   },

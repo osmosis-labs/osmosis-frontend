@@ -172,6 +172,7 @@
       "title": "Transfer Geçmişi"
     },
     "ibcTransfer": {
+      "buttonAdd": "Eklemek",
       "buttonEdit": "Düzenle",
       "buttonEnter": "Onay",
       "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
@@ -231,6 +232,7 @@
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "givePermission": "Belirteçleri kullanma izinleri verin",
+      "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
         "insufficientFee": "Yetersiz Ücret",
@@ -239,7 +241,9 @@
         "seeRequest": "{walletName}'deki talebi gör",
         "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
         "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin."
+        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
+        "invalidAddress": "Geçersiz adres",
+        "missingAddress": "Eksik Adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Takas ücretleri",
       "boost": "Artırmak",
+      "externalBoost": "Harici Güçlendirme",
       "total": "Toplam Nisan"
     }
   },

@@ -172,6 +172,7 @@
       "title": "전송 내역"
     },
     "ibcTransfer": {
+      "buttonAdd": "추가하다",
       "buttonEdit": "수정",
       "buttonEnter": "입력",
       "channelCongestedDeposit": "입금 (채널 혼잡)",
@@ -231,6 +232,7 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "givePermission": "토큰 사용 권한 부여",
+      "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
@@ -239,7 +241,9 @@
         "seeRequest": "{walletName}에서 요청 사항 확인하기",
         "noQuotesAvailable": "이용 가능한 견적이 없습니다.",
         "unexpectedError": "예기치 않은 오류. 다시 시도해 주세요.",
-        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요."
+        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요.",
+        "invalidAddress": "잘못된 주소",
+        "missingAddress": "누락된 주소"
       },
       "from": "발신 체인",
       "loading": "로딩",
@@ -351,7 +355,7 @@
     "negativeAmount": "수량이 음수입니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
     "negativeSlippage": "슬리피지가 음수입니다",
-    "negativeSwapFee": "Swap fee is negative",
+    "negativeSwapFee": "교환 수수료가 음수입니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
@@ -549,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "스왑 수수료",
       "boost": "후원",
+      "externalBoost": "외부 부스트",
       "total": "총 연이율"
     }
   },

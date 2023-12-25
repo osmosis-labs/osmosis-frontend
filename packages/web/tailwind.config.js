@@ -53,10 +53,12 @@ module.exports = {
         810: "#241E4B",
         825: "#232047",
         850: "#201B43",
+        860: "#19183A",
         900: "#140F34",
         1000: "#090524",
       },
       ammelia: {
+        400: "#D779CF",
         600: "#CA2EBD",
       },
       rust: {
@@ -220,6 +222,7 @@ module.exports = {
         earnpositions: "minmax(0, 1fr), 1px, minmax(0, 284px)",
       },
       width: {
+        25: "6.25rem",
         loader: {
           1: "3.75rem",
           2: "4rem",
@@ -248,6 +251,7 @@ module.exports = {
         terms: "28rem",
       },
       minWidth: {
+        10: "2.5rem",
         "rewards-container": "332px",
         "multi-radio": "290px",
         "dropdown-with-label": "200px",
