@@ -76,9 +76,26 @@ export const PaginatedTable = ({
           position: "relative",
         }}
       >
-        {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-          return (
+      {virtualRows.map((virtualRow) => {
+        const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+        return row.original.queryPool.type === "transmuter" ? (
+          <a
+            key={row.original.queryPool.id}
+            href={getPoolLink(row.original.queryPool)}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start - topOffset}px)`
+            }}
+          >
+            <MobileTableRow row={row} />
+          </a>
+        ) : (
           <Link
             key={row.original.queryPool.id}
             href={getPoolLink(row.original.queryPool)}
@@ -93,21 +110,12 @@ export const PaginatedTable = ({
                 height: `${virtualRow.size}px`,
                 transform: `translateY(${virtualRow.start - topOffset}px)`
               }}
-              onClick={(e) => {
-                if (row.original.queryPool.type === "transmuter") {
-                  e.preventDefault();
-                  window.open(getPoolLink(row.original.queryPool), '_blank');
-                } else {
-                  // If not a "transmuter," open in the same tab
-                  window.location.href = getPoolLink(row.original.queryPool);
-                }
-              }}
             >
               <MobileTableRow row={row} />
             </a>
           </Link>
-          );
-        })}
+        );
+      })}
       </div>
     );
   }
@@ -164,29 +172,31 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-          <tr
-          key={row.id}
-          className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (row.original.queryPool.type === "transmuter") {
-              window.open(getPoolLink(row.original.queryPool), '_blank');
-            } else {
-              router.push(getPoolLink(row.original.queryPool));
-            }
-          }}
-        >
-        {row.getVisibleCells().map((cell) => {
-          return (
-            <td key={cell.id}>
-              {flexRender(
-                cell.column.columnDef.cell,
-                cell.getContext()
-              )}
-            </td>
-          );
-        })}
-        </tr>
+<tr
+  key={row.id}
+  className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+>
+  {row.getVisibleCells().map((cell) => {
+    return (
+      <td
+        key={cell.id}
+        onClick={() => {
+          if (row.original.queryPool.type !== "transmuter") {
+            router.push(getPoolLink(row.original.queryPool));
+          }
+        }}
+      >
+        {row.original.queryPool.type === "transmuter" ? (
+          <a href={getPoolLink(row.original.queryPool)} target="_blank" rel="noopener noreferrer">
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </a>
+        ) : (
+          flexRender(cell.column.columnDef.cell, cell.getContext())
+        )}
+      </td>
+    );
+  })}
+</tr>
           );
         })}
         {paddingBottom > 0 && (
