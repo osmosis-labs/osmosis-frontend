@@ -1,17 +1,58 @@
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { NextRouter, useRouter } from "next/router";
+import { FunctionComponent, ReactNode, useEffect } from "react";
+import { CSSProperties } from "react";
 
 import { Icon } from "~/components/assets";
 import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
-import { getPoolLink } from "./all-pools-table";
+interface PoolLinkProps {
+  queryPool: ObservableQueryPool;
+  style?: CSSProperties;
+  children: ReactNode;
+}
+
+const poolLinkRoute = (queryPool: ObservableQueryPool) =>
+  queryPool.type === "transmuter"
+    ? `https://celatone.osmosis.zone/osmosis-1/pools/${queryPool.id}`
+    : `/pool/${queryPool.id}`;
+
+const PoolLink: FunctionComponent<PoolLinkProps> = ({
+  children,
+  queryPool,
+  style,
+}) => {
+  const route = poolLinkRoute(queryPool);
+
+  return (
+    <Link
+      href={route}
+      passHref
+      target={queryPool.type === "transmuter" ? "_blank" : undefined}
+      style={style}
+    >
+      {children}
+    </Link>
+  );
+};
+
+const onPoolClick =
+  (queryPool: ObservableQueryPool, router: NextRouter) =>
+  (ev: React.MouseEvent<HTMLElement>) => {
+    if (queryPool.type === "transmuter") {
+      ev.stopPropagation();
+      window.open(poolLinkRoute(queryPool), "_blank");
+    } else {
+      router.push(poolLinkRoute(queryPool));
+    }
+  };
 
 type Props = {
   mobileSize?: number;
@@ -79,25 +120,20 @@ export const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
-            <Link
+            <PoolLink
               key={row.original.queryPool.id}
-              href={getPoolLink(row.original.queryPool)}
-              passHref
-              legacyBehavior
+              queryPool={row.original.queryPool}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start - topOffset}px)`,
+              }}
             >
-              <a
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start - topOffset}px)`,
-                }}
-              >
-                <MobileTableRow row={row} />
-              </a>
-            </Link>
+              <MobileTableRow row={row} />
+            </PoolLink>
           );
         })}
       </div>
@@ -159,24 +195,17 @@ export const PaginatedTable = ({
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => {
-                router.push(getPoolLink(row.original.queryPool));
-              }}
+              onClick={onPoolClick(row.original.queryPool, router)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>
-                    <Link
-                      href={getPoolLink(row.original.queryPool)}
-                      key={virtualRow.index}
-                      passHref
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <PoolLink queryPool={row.original.queryPool}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </Link>
+                    </PoolLink>
                   </td>
                 );
               })}
