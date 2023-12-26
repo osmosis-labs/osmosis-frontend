@@ -18,9 +18,10 @@ import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
+import AnnouncementBanner from "~/components/navbar/announcement";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName } from "~/config";
+import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -35,10 +36,6 @@ import {
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
-import {
-  ExternalLinkModal,
-  handleExternalLink,
-} from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
@@ -152,17 +149,6 @@ export const NavBar: FunctionComponent<
     const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
       account?.address ?? ""
     );
-
-    // announcement banner
-    const [_showBanner, setShowBanner] = useLocalStorageState(
-      Announcement ? Announcement?.localStorageKey ?? "" : "",
-      true
-    );
-
-    const showBanner =
-      _showBanner &&
-      Announcement &&
-      (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
@@ -384,19 +370,7 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         {/* Back-layer element to occupy space for the caller */}
-        <div
-          className={classNames(
-            "bg-osmoverse-900",
-            showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
-            backElementClassNames
-          )}
-        />
-        {showBanner && (
-          <AnnouncementBanner
-            {...Announcement!}
-            closeBanner={() => setShowBanner(false)}
-          />
-        )}
+        <AnnouncementBanner backElementClassNames={backElementClassNames} />
         <FrontierMigrationModal
           isOpen={isFrontierMigrationOpen}
           onRequestClose={onCloseFrontierMigration}
@@ -485,87 +459,6 @@ const WalletInfo: FunctionComponent<
     </div>
   );
 });
-
-const AnnouncementBanner: FunctionComponent<
-  typeof Announcement & { closeBanner: () => void }
-> = ({
-  enTextOrLocalizationPath,
-  link,
-  isWarning,
-  persistent,
-  closeBanner,
-  bg,
-}) => {
-  const { t } = useTranslation();
-  const {
-    isOpen: isLeavingOsmosisOpen,
-    onClose: onCloseLeavingOsmosis,
-    onOpen: onOpenLeavingOsmosis,
-  } = useDisclosure();
-
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
-
-  const handleLeaveClick = () =>
-    handleExternalLink({
-      url: link?.url ?? "",
-      openModal: onOpenLeavingOsmosis,
-    });
-
-  return (
-    <div
-      className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
-        {
-          "bg-gradient-negative": isWarning,
-          "bg-gradient-neutral": !isWarning,
-        },
-        bg
-      )}
-    >
-      <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(enTextOrLocalizationPath)}</span>
-        {Boolean(link) && (
-          <div className="flex cursor-pointer items-center gap-2">
-            {link?.isExternal ? (
-              <button className="underline" onClick={handleLeaveClick}>
-                {linkText}
-              </button>
-            ) : (
-              <a
-                className="underline"
-                href={link?.url}
-                rel="noreferrer"
-                // target="_blank"
-              >
-                {linkText}
-              </a>
-            )}
-            <Icon id="arrow-right" height={24} width={24} />
-          </div>
-        )}
-      </div>
-      {!persistent && !isWarning && (
-        <IconButton
-          className="flex w-fit cursor-pointer items-center py-0 text-white-full"
-          onClick={closeBanner}
-          aria-label="Close"
-          icon={<Icon id="close-small" height={24} width={24} />}
-          size="unstyled"
-          mode="unstyled"
-        />
-      )}
-      {link?.isExternal && (
-        <ExternalLinkModal
-          url={link.url}
-          onRequestClose={onCloseLeavingOsmosis}
-          isOpen={isLeavingOsmosisOpen}
-        />
-      )}
-    </div>
-  );
-};
 
 const FrontierMigrationModal: FunctionComponent<
   ModalBaseProps & { onOpenSettings: () => void }

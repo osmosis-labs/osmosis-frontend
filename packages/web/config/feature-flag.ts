@@ -7,30 +7,30 @@ export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
 
+export interface AnnouncementInterface {
+  localStorageKey?: string;
+  /** Leave undefined to include all pages. */
+  pageRoute?: string;
+  /** English text or key into localization jsons. */
+  enTextOrLocalizationPath: string;
+  /** Link to external page. */
+  link?: {
+    /** Default: "Click here to learn more" in english-us */
+    enTextOrLocalizationKey?: string;
+    url: string;
+    /** External to Osmosis. Show disclaimer before linking out of app. */
+    isExternal?: boolean;
+  };
+  /** Use orange styling, persist on page reloads. */
+  isWarning?: boolean;
+  /** Will always show on page reload. Use with caution. (Warnings persist) */
+  persistent?: boolean;
+  /** Custom Background color. */
+  bg?: string;
+}
+
 /** Banner below nav bar: mapping of inclusion (.includes()) in page routes to message in banner. */
-export const Announcement:
-  | {
-      localStorageKey?: string;
-      /** Leave undefined to include all pages. */
-      pageRoute?: string;
-      /** English text or key into localization jsons. */
-      enTextOrLocalizationPath: string;
-      /** Link to external page. */
-      link?: {
-        /** Default: "Click here to learn more" in english-us */
-        enTextOrLocalizationKey?: string;
-        url: string;
-        /** External to Osmosis. Show disclaimer before linking out of app. */
-        isExternal?: boolean;
-      };
-      /** Use orange styling, persist on page reloads. */
-      isWarning?: boolean;
-      /** Will always show on page reload. Use with caution. (Warnings persist) */
-      persistent?: boolean;
-      /** Custom Background color. */
-      bg?: string;
-    }
-  | undefined = IS_HALTED
+export const Announcement: AnnouncementInterface | undefined = IS_HALTED
   ? {
       enTextOrLocalizationPath:
         "Chain is halted, transactions are temporarily disabled",
