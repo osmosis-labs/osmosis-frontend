@@ -29,6 +29,8 @@ import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
 import { removeQueryParam } from "~/utils/url";
 
+import { AprBreakdown } from "../cards/apr-breakdown";
+
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
@@ -509,6 +511,11 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             ))}
           </div>
         </div>
+        <AprBreakdown
+          className="rounded-[28px] bg-osmoverse-1000"
+          poolId={poolId}
+        />
+
         {hasIncentives && (
           <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">
