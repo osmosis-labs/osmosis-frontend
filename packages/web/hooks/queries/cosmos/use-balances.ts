@@ -8,25 +8,17 @@ function getQueryKey(address: string): string[] {
   return ["balances", address];
 }
 
-export const useBalances = <
-  TQueryFnData = ResponseData,
-  TError = unknown,
-  TData = ResponseData
->({
+export const useBalances = ({
   address,
   queryOptions = {},
 }: {
   address: string;
-  queryOptions?: UseQueryOptions<TQueryFnData, TError, TData, string[]>;
+  queryOptions?: UseQueryOptions<ResponseData, unknown, ResponseData, string[]>;
 }) => {
-  return useQuery(
-    getQueryKey(address),
-    () => queryBalances(address) as Promise<TQueryFnData>,
-    {
-      enabled: Boolean(address) && typeof address === "string",
-      ...queryOptions,
-    }
-  );
+  return useQuery(getQueryKey(address), () => queryBalances(address), {
+    enabled: Boolean(address) && typeof address === "string",
+    ...queryOptions,
+  });
 };
 
 useBalances.invalidateQuery = ({
