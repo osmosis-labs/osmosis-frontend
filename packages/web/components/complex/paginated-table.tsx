@@ -164,14 +164,14 @@ export const PaginatedTable = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-          const tab = getPoolTypeTarget(row.original.queryPool.type);
+          const target = getPoolTypeTarget(row.original.queryPool.type);
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
               onClick={() => {
-                tab != ""
-                  ? window.open(getPoolLink(row.original.queryPool), tab)
+                target != ""
+                  ? window.open(getPoolLink(row.original.queryPool), target)
                   : router.push(getPoolLink(row.original.queryPool));
               }}
             >
@@ -181,7 +181,7 @@ export const PaginatedTable = ({
                     <Link
                       href={getPoolLink(row.original.queryPool)}
                       key={virtualRow.index}
-                      target={tab}
+                      target={target}
                       passHref
                       onClick={(e) => e.stopPropagation()}
                     >
