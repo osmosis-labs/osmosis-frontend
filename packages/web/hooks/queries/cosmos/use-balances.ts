@@ -4,24 +4,29 @@ import { queryBalances } from "~/server/queries/cosmos";
 
 type ResponseData = Awaited<ReturnType<typeof queryBalances>>;
 
-function getQueryKey(address: string) {
+function getQueryKey(address: string): string[] {
   return ["balances", address];
 }
 
-export const useBalances = ({
+export const useBalances = <
+  TQueryFnData = ResponseData,
+  TError = unknown,
+  TData = ResponseData
+>({
   address,
-  queryOptions,
+  queryOptions = {},
 }: {
   address: string;
-  queryOptions: UseQueryOptions<ResponseData, unknown, ResponseData, string[]>;
+  queryOptions?: UseQueryOptions<TQueryFnData, TError, TData, string[]>;
 }) => {
-  const result = useQuery(
+  return useQuery(
     getQueryKey(address),
-    () => queryBalances(address),
-    queryOptions
+    () => queryBalances(address) as Promise<TQueryFnData>,
+    {
+      enabled: Boolean(address) && typeof address === "string",
+      ...queryOptions,
+    }
   );
-
-  return result;
 };
 
 useBalances.invalidateQuery = ({

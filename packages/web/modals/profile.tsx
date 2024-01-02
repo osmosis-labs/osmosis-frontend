@@ -40,9 +40,11 @@ import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { formatICNSName, getShortAddress } from "~/utils/string";
+import { api } from "~/utils/trpc";
 
 const QRCode = dynamic(() => import("~/components/qrcode"));
 
@@ -58,7 +60,6 @@ export const ProfileModal: FunctionComponent<
     accountStore,
     priceStore,
     profileStore,
-    navBarStore,
   } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
@@ -90,6 +91,16 @@ export const ProfileModal: FunctionComponent<
   );
 
   const address = wallet?.address ?? "";
+
+  const { data: userOsmoAsset } = api.edge.assets.getAsset.useQuery(
+    {
+      findMinDenomOrSymbol: "OSMO",
+      userOsmoAddress: wallet?.address ?? "",
+    },
+    {
+      enabled: Boolean(wallet?.address) && typeof wallet?.address === "string",
+    }
+  );
 
   const onCopyAddress = () => {
     copyToClipboard(address);
@@ -210,16 +221,8 @@ export const ProfileModal: FunctionComponent<
               <div>
                 <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
                   {formatPretty(
-                    priceStore.calculatePrice(
-                      navBarStore.walletInfo.balance,
-                      priceStore.defaultVsCurrency
-                    ) ??
-                      new PricePretty(
-                        priceStore.getFiatCurrency(
-                          priceStore.defaultVsCurrency
-                        )!,
-                        new Dec(0)
-                      ),
+                    userOsmoAsset?.usdValue ??
+                      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
                     {
                       minimumFractionDigits: 2,
                       maximumSignificantDigits: undefined,
@@ -228,7 +231,7 @@ export const ProfileModal: FunctionComponent<
                   )}
                 </h6>
                 <p className="text-h5 font-h5">
-                  {formatPretty(navBarStore.walletInfo.balance, {
+                  {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                     minimumFractionDigits: 2,
                     maximumSignificantDigits: undefined,
                     notation: "standard",
@@ -278,7 +281,7 @@ export const ProfileModal: FunctionComponent<
                 <div className="h-12 w-12 shrink-0">
                   <img
                     alt="wallet-icon"
-                    src={navBarStore.walletInfo.logoUrl}
+                    src={wallet?.walletInfo.logo ?? "/"}
                     height={48}
                     width={48}
                   />
@@ -416,11 +419,8 @@ export const ProfileModal: FunctionComponent<
         onRequestClose={onCloseFiatOnrampSelection}
         onSelectRamp={(ramp) => {
           if (ramp !== "transak") return;
-          const fiatValue = priceStore.calculatePrice(
-            navBarStore.walletInfo.balance,
-            priceStore.defaultVsCurrency
-          );
-          const coinValue = navBarStore.walletInfo.balance;
+          const fiatValue = userOsmoAsset?.usdValue;
+          const coinValue = userOsmoAsset?.amount;
 
           logEvent([
             EventName.ProfileModal.buyTokensClicked,

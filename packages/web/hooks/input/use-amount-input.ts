@@ -14,7 +14,7 @@ import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
 import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
-import { useBalances } from "../queries/cosmos/balances";
+import { useBalances } from "../queries/cosmos/use-balances";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user's currency balance as input. Includes support for debounce on input. */
