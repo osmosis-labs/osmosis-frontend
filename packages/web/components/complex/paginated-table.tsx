@@ -10,17 +10,23 @@ import { Icon } from "~/components/assets";
 import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
-import { openTab } from "~/utils/openTab";
 
 import { getPoolLink } from "./all-pools-table";
 
-type Props = {
+function getPoolTypeTarget(poolType: string) {
+  if (poolType === "transmuter") {
+    return "_blank";
+  }
+  return "";
+}
+
+interface PaginatedTableProps {
   mobileSize?: number;
   paginate: () => void;
   size: number;
   table: Table<ObservablePoolWithMetric>;
   topOffset: number;
-};
+}
 
 export const PaginatedTable = ({
   mobileSize,
@@ -28,7 +34,7 @@ export const PaginatedTable = ({
   size,
   table,
   topOffset,
-}: Props) => {
+}: PaginatedTableProps) => {
   const { isMobile } = useWindowSize();
 
   const { rows } = table.getRowModel();
@@ -79,12 +85,12 @@ export const PaginatedTable = ({
       >
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-          const tab = openTab(row.original.queryPool.type);
+          const target = getPoolTypeTarget(row.original.queryPool.type);
           return (
             <Link
               key={row.original.queryPool.id}
               href={getPoolLink(row.original.queryPool)}
-              target={tab}
+              target={target}
               passHref
               legacyBehavior
             >
@@ -158,7 +164,7 @@ export const PaginatedTable = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-          const tab = openTab(row.original.queryPool.type);
+          const tab = getPoolTypeTarget(row.original.queryPool.type);
           return (
             <tr
               key={row.id}
