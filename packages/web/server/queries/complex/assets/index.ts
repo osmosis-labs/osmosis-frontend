@@ -274,6 +274,7 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
         })
       )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
       const priceChange24h = (await getAssetData(asset))?.price_24h_change;
+      const marketCapRank = await getAssetMarketCapRank(asset);
 
       return {
         ...asset,
@@ -283,7 +284,7 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
-        marketCapRank: await getAssetMarketCapRank(asset),
+        marketCapRank,
         priceChange24h: priceChange24h
           ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
           : undefined,
