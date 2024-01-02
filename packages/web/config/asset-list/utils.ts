@@ -203,9 +203,6 @@ export function getKeplrCompatibleChain({
           typeof displayDecimals === "undefined" ||
           typeof sourceDenom === "undefined"
         ) {
-          console.warn(
-            `Failed to find fee asset on asset list for ${asset.display} on ${chain.chain_name}. Skipping adding it to 'keplrChain.currencies'`
-          );
           return acc;
         }
 
@@ -294,9 +291,6 @@ export function getKeplrCompatibleChain({
       );
 
       if (!asset) {
-        console.warn(
-          `Failed to find fee asset on asset list for ${token.denom} on ${chain.chain_name}. Skipping adding it to 'keplrChain.feeCurrencies'`
-        );
         return acc;
       }
 
