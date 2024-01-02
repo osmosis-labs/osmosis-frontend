@@ -8,6 +8,7 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
+  getAssetMarketInfo,
   getAssetPrice,
   getUserAssetInfo,
   mapGetAssetMarketInfos,
@@ -86,6 +87,26 @@ export const assetsRouter = createTRPCRouter({
 
     return assets.filter((a): a is Asset => !!a);
   }),
+  getAssetInfo: publicProcedure
+    .input(
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
+        })
+        .and(UserOsmoAddressSchema)
+    )
+    .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+
+      if (!asset) throw new Error("Asset not found " + findMinDenomOrSymbol);
+
+      const userAsset = await getUserAssetInfo({ asset, userOsmoAddress });
+      const userMarketInfoAsset = await getAssetMarketInfo({
+        asset: userAsset,
+      });
+
+      return userMarketInfoAsset;
+    }),
   getAssetInfos: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.and(
