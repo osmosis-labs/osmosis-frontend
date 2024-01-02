@@ -10,6 +10,7 @@ import { Icon } from "~/components/assets";
 import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
+import { openTab } from "~/utils/openTab";
 
 import { getPoolLink } from "./all-pools-table";
 
@@ -78,10 +79,12 @@ export const PaginatedTable = ({
       >
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+          const tab = openTab(row.original.queryPool.type);
           return (
             <Link
               key={row.original.queryPool.id}
               href={getPoolLink(row.original.queryPool)}
+              target={tab}
               passHref
               legacyBehavior
             >
@@ -155,12 +158,15 @@ export const PaginatedTable = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+          const tab = openTab(row.original.queryPool.type);
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
               onClick={() => {
-                router.push(getPoolLink(row.original.queryPool));
+                tab != ""
+                  ? window.open(getPoolLink(row.original.queryPool), tab)
+                  : router.push(getPoolLink(row.original.queryPool));
               }}
             >
               {row.getVisibleCells().map((cell) => {
@@ -169,6 +175,7 @@ export const PaginatedTable = ({
                     <Link
                       href={getPoolLink(row.original.queryPool)}
                       key={virtualRow.index}
+                      target={tab}
                       passHref
                       onClick={(e) => e.stopPropagation()}
                     >
