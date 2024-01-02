@@ -452,19 +452,19 @@ const WalletInfo: FunctionComponent<
     );
 
   return (
-    <SkeletonLoader isLoaded={walletConnected ? !isLoadingUserOsmoAsset : true}>
-      <div className={className}>
-        {!walletConnected ? (
-          <Button
-            className="!h-[42px] w-40 lg:w-36 md:w-full"
-            onClick={() => {
-              logEvent([EventName.Topnav.connectWalletClicked]);
-              onOpenWalletSelect(chainId);
-            }}
-          >
-            <span className="button mx-auto">{t("connectWallet")}</span>
-          </Button>
-        ) : (
+    <div className={className}>
+      {!walletConnected ? (
+        <Button
+          className="!h-[42px] w-40 lg:w-36 md:w-full"
+          onClick={() => {
+            logEvent([EventName.Topnav.connectWalletClicked]);
+            onOpenWalletSelect(chainId);
+          }}
+        >
+          <span className="button mx-auto">{t("connectWallet")}</span>
+        </Button>
+      ) : (
+        <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -506,9 +506,9 @@ const WalletInfo: FunctionComponent<
               </span>
             </div>
           </button>
-        )}
-      </div>
-    </SkeletonLoader>
+        </SkeletonLoader>
+      )}
+    </div>
   );
 });
 
