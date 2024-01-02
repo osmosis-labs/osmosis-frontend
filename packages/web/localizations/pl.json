@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",
+      "superfluid": "Nadciekły",
       "externalBoost": "Zewnętrzne wzmocnienie",
       "total": "Całkowita RRSO"
     }

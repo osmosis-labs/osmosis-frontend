@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
+      "superfluid": "Superfluido",
       "externalBoost": "Impulso externo",
       "total": "TAEG total"
     }
