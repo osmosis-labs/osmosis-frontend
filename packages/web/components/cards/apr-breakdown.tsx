@@ -35,6 +35,12 @@ export const AprBreakdown: FunctionComponent<
             <p>{poolAprs.osmosis.maxDecimals(1).toString()}</p>
           </div>
         )}
+        {poolAprs?.superfluid && (
+          <BreakdownRow
+            label={t("pools.aprBreakdown.superfluid")}
+            value={poolAprs.superfluid}
+          />
+        )}
         {poolAprs?.boost && (
           <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
             <div className="flex place-content-between items-center gap-1">
@@ -43,12 +49,6 @@ export const AprBreakdown: FunctionComponent<
             </div>
             <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
           </div>
-        )}
-        {poolAprs?.superfluid && (
-          <BreakdownRow
-            label={t("pools.aprBreakdown.superfluid")}
-            value={poolAprs.superfluid}
-          />
         )}
       </div>
 
