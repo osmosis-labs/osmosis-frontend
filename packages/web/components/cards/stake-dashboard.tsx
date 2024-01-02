@@ -129,7 +129,7 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around space-y-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -146,9 +146,15 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
+        <div
+          className={classNames(
+            "flex h-full w-full flex-row gap-2 md:flex-col",
+            "!m-0 !h-[150px] w-full md:!h-[360px]"
+          )}
+        >
           <RewardsCard
-            disabled={rewardsCardDisabled}
+            // disabled={rewardsCardDisabled}
+            disabled={false}
             title={t("stake.collectRewards")}
             // tooltipContent={t("stake.collectRewardsTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
@@ -161,7 +167,8 @@ export const StakeDashboard: React.FC<{
             position="left"
           />
           <RewardsCard
-            disabled={rewardsCardDisabled}
+            // disabled={rewardsCardDisabled}
+            disabled={false}
             title={t("stake.investRewards")}
             // tooltipContent={t("stake.collectAndReinvestTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {

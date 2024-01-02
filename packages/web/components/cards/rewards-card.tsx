@@ -26,7 +26,7 @@ export const RewardsCard: React.FC<{
     children,
   }) =>
     disabled ? (
-      <Tooltip content={disabledTooltipContent} className="w-full">
+      <Tooltip content={disabledTooltipContent} className="h-full w-full">
         {children as any}
       </Tooltip>
     ) : (
@@ -38,7 +38,7 @@ export const RewardsCard: React.FC<{
       <Button
         disabled={disabled}
         mode="unstyled"
-        className="relative flex w-full cursor-pointer flex-col justify-start !p-0 disabled:cursor-not-allowed disabled:opacity-50"
+        className="relative !m-0 flex h-full cursor-pointer flex-col justify-start !p-0 disabled:cursor-not-allowed disabled:opacity-50"
         onClick={onClick}
       >
         <div className="relative h-full w-full">
@@ -66,12 +66,12 @@ export const RewardsCard: React.FC<{
         >
           <span className="text-osmoverse-white z-30 text-sm">{title}</span>
           {/* {!disabled && (
-            <div className="text-osmoverse-600 sm:hidden">
-              <Tooltip content={tooltipContent}>
-                <Icon id="info" height="14px" width="14px" fill="#958FC0" />
-              </Tooltip>
-            </div>
-          )} */}
+          <div className="text-osmoverse-600 sm:hidden">
+            <Tooltip content={tooltipContent}>
+              <Icon id="info" height="14px" width="14px" fill="#958FC0" />
+            </Tooltip>
+          </div>
+        )} */}
         </div>
       </Button>
     </ConditionalWrapper>
