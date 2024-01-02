@@ -147,12 +147,12 @@ export const NavBar: FunctionComponent<
       }
     }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
-    const account = accountStore.getWallet(chainId);
+    const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
-      account?.walletInfo?.features?.includes("notifications");
+      wallet?.walletInfo?.features?.includes("notifications");
 
     const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
-      address: account?.address ?? "",
+      address: wallet?.address ?? "",
     });
 
     // announcement banner
@@ -207,7 +207,7 @@ export const NavBar: FunctionComponent<
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      if (!account) return;
+                      if (!wallet) return;
                       onOpenNotifi();
                       closeMobileMainMenu();
                     },
@@ -376,7 +376,11 @@ export const NavBar: FunctionComponent<
             />
             <ClientOnly>
               <SkeletonLoader
-                isLoaded={!isWalletLoading && !isLoadingICNSQuery}
+                isLoaded={
+                  wallet?.isWalletConnected
+                    ? !isWalletLoading && !isLoadingICNSQuery
+                    : !isWalletLoading
+                }
               >
                 <WalletInfo
                   className="md:hidden"
@@ -448,7 +452,7 @@ const WalletInfo: FunctionComponent<
     );
 
   return (
-    <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
+    <SkeletonLoader isLoaded={walletConnected ? !isLoadingUserOsmoAsset : true}>
       <div className={className}>
         {!walletConnected ? (
           <Button
