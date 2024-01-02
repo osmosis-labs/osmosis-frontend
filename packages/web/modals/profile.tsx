@@ -58,7 +58,6 @@ export const ProfileModal: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
-    priceStore,
     profileStore,
   } = useStore();
   const { logEvent } = useAmplitudeAnalytics();

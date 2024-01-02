@@ -71,6 +71,7 @@ import {
   DeliverTxResponse,
   RegistryWallet,
   TxEvent,
+  TxEvents,
 } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
@@ -136,11 +137,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     protected readonly chainGetter: ChainGetter,
     protected readonly options: {
       walletConnectOptions?: WalletConnectOptions;
-      preTxEvents?: {
-        onBroadcastFailed?: (string: string, e?: Error) => void;
-        onBroadcasted?: (string: string, txHash: Uint8Array) => void;
-        onFulfill?: (string: string, tx: any) => void;
-      };
+      preTxEvents?: TxEvents;
       broadcastUrl?: string;
       simulateUrl?: string;
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
