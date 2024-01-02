@@ -246,7 +246,12 @@ export const WalletSelectModal: FunctionComponent<
       hideCloseButton
       className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0 sm:max-h-[80vh]"
     >
-      <div className="flex max-h-[530px] min-h-[50vh] overflow-auto sm:max-h-full sm:flex-col">
+      <div
+        className={classNames(
+          "flex min-h-[50vh] overflow-auto sm:max-h-full sm:flex-col",
+          modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]"
+        )}
+      >
         <ClientOnly
           className={classNames(
             "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
