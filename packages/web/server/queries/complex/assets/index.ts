@@ -283,9 +283,7 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
-        marketCapRank: await getAssetMarketCapRank({
-          coinDenom: asset.coinDenom,
-        }),
+        marketCapRank: await getAssetMarketCapRank(asset),
         priceChange24h: priceChange24h
           ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
           : undefined,
