@@ -32,8 +32,8 @@ export const RewardsCard: React.FC<{
   const maskClasses = `[mask-size:contain] [mask-repeat:no-repeat]`;
   const rightLeftClasses =
     position === "right"
-      ? `[mask-image:url('./folder-right-tab.svg')] bg-[url('bg-right-tab.svg')]`
-      : `[mask-image:url('./folder-left-tab.svg')] bg-[url('bg-left-tab.svg')]`;
+      ? `[mask-image:url('/images/folder-right-tab.svg')] bg-[url('/images/bg-right-tab.svg')]`
+      : `[mask-image:url('/images/folder-left-tab.svg')] bg-[url('/images/bg-left-tab.svg')]`;
 
   return (
     <Button
