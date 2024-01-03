@@ -22,7 +22,7 @@ export const RewardsCard: React.FC<{
   globalLottieFileKey,
   position,
 }) => {
-  const ConditionalWrapper: React.FC<{ children: React.ReactNode }> = ({
+  const ConditionalTooltip: React.FC<{ children: React.ReactNode }> = ({
     children,
   }) =>
     disabled ? (
@@ -34,38 +34,40 @@ export const RewardsCard: React.FC<{
     );
 
   return (
-    // <ConditionalWrapper>
     <Button
       disabled={disabled}
       mode="unstyled"
-      // className="relative m-0 flex !h-[150px] flex-grow cursor-pointer flex-col !p-0 disabled:cursor-not-allowed disabled:opacity-50"
-      className={classNames(
-        "relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0",
-        `folder-${position}`,
-        position === "right"
-          ? "bg-[url('bg-right-tab.svg')]"
-          : "bg-[url('bg-left-tab.svg')]"
-      )}
+      className="relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0 disabled:opacity-50"
       onClick={onClick}
     >
-      <DynamicLottieAnimation
-        className={classNames(
-          "absolute left-0 top-0 z-20",
-          position === "right" ? "scale-[0.85]" : "scale-1"
-        )}
-        globalLottieFileKey={globalLottieFileKey}
-        importFn={() => import(`./${globalLottieFileKey}.json`)}
-        loop={true}
-      />
-      <div
-        className={classNames(
-          `${position}-0`,
-          "absolute top-0 flex items-center gap-2 py-3 px-2"
-        )}
-      >
-        <span className="text-osmoverse-white z-30 text-sm">{title}</span>
-      </div>
+      <ConditionalTooltip>
+        <div
+          className={classNames(
+            "relative h-full w-full",
+            `folder-${position}`,
+            position === "right"
+              ? "bg-[url('bg-right-tab.svg')]"
+              : "bg-[url('bg-left-tab.svg')]"
+          )}
+        ></div>
+        <DynamicLottieAnimation
+          className={classNames(
+            "absolute left-0 top-0 z-20",
+            position === "right" ? "scale-[0.85]" : "scale-1"
+          )}
+          globalLottieFileKey={globalLottieFileKey}
+          importFn={() => import(`./${globalLottieFileKey}.json`)}
+          loop={true}
+        />
+        <div
+          className={classNames(
+            `${position}-0`,
+            "absolute top-0 flex items-center gap-2 py-3 px-2"
+          )}
+        >
+          <span className="text-osmoverse-white z-30 text-sm">{title}</span>
+        </div>
+      </ConditionalTooltip>
     </Button>
-    // </ConditionalWrapper>
   );
 };

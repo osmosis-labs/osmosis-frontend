@@ -146,13 +146,7 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        {/* <div
-          className={classNames(
-            "flex h-full w-full flex-row gap-2 xl:flex-col"
-            // "!m-0 !h-[300px] xl:!h-[360px]"
-          )}
-        > */}
-        <div className="flex gap-2">
+        <div className="flex flex-row items-center gap-2 xl:flex-col">
           <RewardsCard
             disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
@@ -180,7 +174,6 @@ export const StakeDashboard: React.FC<{
             position="right"
           />
         </div>
-        {/* </div> */}
       </GenericMainCard>
     );
   }
