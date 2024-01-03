@@ -20,9 +20,7 @@ export const RewardsCard: React.FC<{
   globalLottieFileKey,
   position,
 }) => {
-  const ConditionalTooltip: React.FC<{ children: React.ReactNode }> = ({
-    children,
-  }) =>
+  const ConditionalTooltip: React.FC = ({ children }) =>
     disabled ? (
       <Tooltip content={disabledTooltipContent} className="h-full w-full">
         {children as any}
