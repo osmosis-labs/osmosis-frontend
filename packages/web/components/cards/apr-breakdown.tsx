@@ -19,7 +19,7 @@ export const AprBreakdown: FunctionComponent<
 
   return (
     <div className={classNames("flex w-60 flex-col gap-4 p-5", className)}>
-      <div className="my-auto flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         {poolAprs?.swapFees && (
           <BreakdownRow
             label={t("pools.aprBreakdown.swapFees")}
@@ -34,6 +34,12 @@ export const AprBreakdown: FunctionComponent<
             </div>
             <p>{poolAprs.osmosis.maxDecimals(1).toString()}</p>
           </div>
+        )}
+        {poolAprs?.superfluid && (
+          <BreakdownRow
+            label={t("pools.aprBreakdown.superfluid")}
+            value={poolAprs.superfluid}
+          />
         )}
         {poolAprs?.boost && (
           <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">

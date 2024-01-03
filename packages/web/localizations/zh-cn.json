@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "掉期费用",
       "boost": "促进",
+      "superfluid": "超流体",
       "externalBoost": "外部升压",
       "total": "总年利率"
     }

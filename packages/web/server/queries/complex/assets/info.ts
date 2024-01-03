@@ -1,53 +1,35 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import {
-  queryAllTokenData,
-  queryTokenMarketCaps,
-  TokenData,
-  TokenMarketCap,
-} from "../../indexer";
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 
-const marketCapsCache = new LRUCache<string, CacheEntry>({ max: 1 });
-/** Gets the numerical market cap rank based on the available market caps given a token symbol/denom.
+import { queryCoingeckoCoin } from "../../coingecko";
+import { queryAllTokenData, TokenData } from "../../indexer";
+
+const marketCapsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Gets the numerical market cap rank given a token symbol/denom.
  *  Returns `undefined` if a market cap is not available for the given symbol/denom. */
 export async function getAssetMarketCapRank({
-  coinDenom,
+  coinGeckoId,
 }: {
-  coinDenom: string;
+  coinGeckoId: string | undefined;
 }): Promise<number | undefined> {
-  const rankMap: Map<string, number> = await cachified({
+  if (!coinGeckoId) return;
+
+  return await cachified({
     cache: marketCapsCache,
     ttl: 1000 * 60 * 15, // 15 minutes since market ranks don't change often
-    key: "marketCapRankMap",
+    key: "market-cap-" + coinGeckoId,
     getFreshValue: async () => {
       try {
-        const marketCaps = await queryTokenMarketCaps();
+        const coinGeckoCoin = await queryCoingeckoCoin(coinGeckoId);
 
-        return calculateRank(marketCaps);
-      } catch (error) {
-        console.error("Could not fetch market caps for ranking", error);
-        return new Map<string, number>();
+        return coinGeckoCoin.market_cap_rank;
+      } catch {
+        // ignore error and return undefined, since market cap rank is non-critical
       }
     },
   });
-
-  return rankMap.get(coinDenom);
-}
-
-export function calculateRank(marketCaps: TokenMarketCap[]) {
-  const rankMap = new Map<string, number>();
-  marketCaps.sort((a, b) => b.market_cap - a.market_cap);
-
-  let rank = 1;
-  for (let i = 0; i < marketCaps.length; i++) {
-    if (i > 0 && marketCaps[i].market_cap !== marketCaps[i - 1].market_cap) {
-      rank++;
-    }
-    rankMap.set(marketCaps[i].symbol, rank);
-  }
-
-  return rankMap;
 }
 
 const allTokenDataCache = new LRUCache<string, CacheEntry>({ max: 1 });

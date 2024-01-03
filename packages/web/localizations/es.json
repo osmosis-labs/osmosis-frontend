@@ -553,6 +553,7 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
+      "superfluid": "superfluido",
       "externalBoost": "Impulso externo",
       "total": "TAE total"
     }
