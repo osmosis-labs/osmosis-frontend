@@ -7,7 +7,6 @@ import { Tooltip } from "~/components/tooltip";
 
 export const RewardsCard: React.FC<{
   title: string;
-  // tooltipContent: string;
   disabledTooltipContent?: string;
   onClick: () => void;
   disabled: boolean;
@@ -15,7 +14,6 @@ export const RewardsCard: React.FC<{
   position: "left" | "right";
 }> = ({
   title,
-  // tooltipContent,
   disabledTooltipContent,
   onClick,
   disabled,
