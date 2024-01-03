@@ -30,14 +30,10 @@ export const RewardsCard: React.FC<{
     );
 
   const maskClasses = `[mask-size:contain] [mask-repeat:no-repeat]`;
-  const maskImage =
+  const rightLeftClasses =
     position === "right"
-      ? `[mask-image:url('./folder-right-tab.svg')]`
-      : `[mask-image:url('./folder-left-tab.svg')]`;
-  const bgUrlClasses =
-    position === "right"
-      ? "bg-[url('bg-right-tab.svg')]"
-      : "bg-[url('bg-left-tab.svg')]";
+      ? `[mask-image:url('./folder-right-tab.svg')] bg-[url('bg-right-tab.svg')]`
+      : `[mask-image:url('./folder-left-tab.svg')] bg-[url('bg-left-tab.svg')]`;
 
   return (
     <Button
@@ -51,8 +47,7 @@ export const RewardsCard: React.FC<{
           className={classNames(
             "relative h-full w-full",
             maskClasses,
-            maskImage,
-            bgUrlClasses
+            rightLeftClasses
           )}
         ></div>
         <DynamicLottieAnimation
