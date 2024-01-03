@@ -377,15 +377,6 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.evmos.org/assets",
     withdrawUrlOverride: "https://app.evmos.org/assets",
   },
-  XCN: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.xcn.ethereum],
-    },
-  },
   BONK: {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
