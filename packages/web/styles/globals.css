@@ -335,15 +335,3 @@
 .breakspaces {
   white-space-collapse: break-spaces;
 }
-
-.folder-left {
-  mask-image: url("./folder-left-tab.svg");
-  mask-size: contain;
-  mask-repeat: no-repeat;
-}
-
-.folder-right {
-  mask-image: url("./folder-right-tab.svg");
-  mask-size: contain;
-  mask-repeat: no-repeat;
-}

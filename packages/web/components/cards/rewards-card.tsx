@@ -29,6 +29,16 @@ export const RewardsCard: React.FC<{
       <>{children}</>
     );
 
+  const maskClasses = `[mask-size:contain] [mask-repeat:no-repeat]`;
+  const maskImage =
+    position === "right"
+      ? `[mask-image:url('./folder-right-tab.svg')]`
+      : `[mask-image:url('./folder-left-tab.svg')]`;
+  const bgUrlClasses =
+    position === "right"
+      ? "bg-[url('bg-right-tab.svg')]"
+      : "bg-[url('bg-left-tab.svg')]";
+
   return (
     <Button
       disabled={disabled}
@@ -40,10 +50,9 @@ export const RewardsCard: React.FC<{
         <div
           className={classNames(
             "relative h-full w-full",
-            `folder-${position}`,
-            position === "right"
-              ? "bg-[url('bg-right-tab.svg')]"
-              : "bg-[url('bg-left-tab.svg')]"
+            maskClasses,
+            maskImage,
+            bgUrlClasses
           )}
         ></div>
         <DynamicLottieAnimation
