@@ -167,15 +167,6 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
     },
   },
-  UNI: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.uni.ethereum],
-    },
-  },
   BUSD: {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
@@ -241,15 +232,6 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
-    },
-  },
-  AXS: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.axs.ethereum],
     },
   },
   INJ: {
@@ -386,15 +368,6 @@ const MainnetIBCAdditionalData: Partial<
   EVMOS: {
     depositUrlOverride: "https://app.evmos.org/assets",
     withdrawUrlOverride: "https://app.evmos.org/assets",
-  },
-  XCN: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.xcn.ethereum],
-    },
   },
   BONK: {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
