@@ -383,10 +383,6 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.wglmr.moonbeam],
     },
   },
-  KUJI: {
-    depositUrlOverride:
-      "https://blue.kujira.app/ibc?destination=osmosis-1&denom=ukuji",
-  },
   EVMOS: {
     depositUrlOverride: "https://app.evmos.org/assets",
     withdrawUrlOverride: "https://app.evmos.org/assets",
@@ -428,10 +424,6 @@ const MainnetIBCAdditionalData: Partial<
   MNTA: {
     depositUrlOverride:
       "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7%2Fumnta",
-  },
-  USK: {
-    depositUrlOverride:
-      "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
   },
   PLQ: {
     depositUrlOverride:
