@@ -332,12 +332,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     } catch (error: any) {
       if ("message" in error) {
         if (error.message.includes("not found")) {
-          try {
-            await this.skipClient.trackTransaction({
-              chainID: fromChainId.toString(),
-              txHash: sendTxHash,
-            });
-          } catch (error) {}
+          await this.skipClient.trackTransaction({
+            chainID: fromChainId.toString(),
+            txHash: sendTxHash,
+          });
 
           return undefined;
         }

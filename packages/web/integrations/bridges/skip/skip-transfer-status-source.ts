@@ -56,7 +56,13 @@ export class SkipTransferStatusSource implements ITxStatusSource {
           }
         }
       },
-      validate: (incomingStatus) => incomingStatus !== undefined,
+      validate: (incomingStatus) => {
+        if (!incomingStatus) {
+          return false;
+        }
+
+        return incomingStatus.status !== "pending";
+      },
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
