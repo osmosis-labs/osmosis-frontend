@@ -146,15 +146,15 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div
+        {/* <div
           className={classNames(
-            "flex h-full w-full flex-row gap-2 md:flex-col",
-            "!m-0 !h-[150px] w-full md:!h-[360px]"
+            "flex h-full w-full flex-row gap-2 xl:flex-col"
+            // "!m-0 !h-[300px] xl:!h-[360px]"
           )}
-        >
+        > */}
+        <div className="flex gap-2">
           <RewardsCard
-            // disabled={rewardsCardDisabled}
-            disabled={false}
+            disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
             // tooltipContent={t("stake.collectRewardsTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
@@ -167,8 +167,7 @@ export const StakeDashboard: React.FC<{
             position="left"
           />
           <RewardsCard
-            // disabled={rewardsCardDisabled}
-            disabled={false}
+            disabled={rewardsCardDisabled}
             title={t("stake.investRewards")}
             // tooltipContent={t("stake.collectAndReinvestTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
@@ -181,6 +180,7 @@ export const StakeDashboard: React.FC<{
             position="right"
           />
         </div>
+        {/* </div> */}
       </GenericMainCard>
     );
   }

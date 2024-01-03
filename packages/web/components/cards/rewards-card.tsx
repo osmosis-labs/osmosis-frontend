@@ -34,46 +34,38 @@ export const RewardsCard: React.FC<{
     );
 
   return (
-    <ConditionalWrapper>
-      <Button
-        disabled={disabled}
-        mode="unstyled"
-        className="relative !m-0 flex h-full cursor-pointer flex-col justify-start !p-0 disabled:cursor-not-allowed disabled:opacity-50"
-        onClick={onClick}
+    // <ConditionalWrapper>
+    <Button
+      disabled={disabled}
+      mode="unstyled"
+      // className="relative m-0 flex !h-[150px] flex-grow cursor-pointer flex-col !p-0 disabled:cursor-not-allowed disabled:opacity-50"
+      className={classNames(
+        "relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0",
+        `folder-${position}`,
+        position === "right"
+          ? "bg-[url('bg-right-tab.svg')]"
+          : "bg-[url('bg-left-tab.svg')]"
+      )}
+      onClick={onClick}
+    >
+      <DynamicLottieAnimation
+        className={classNames(
+          "absolute left-0 top-0 z-20",
+          position === "right" ? "scale-[0.85]" : "scale-1"
+        )}
+        globalLottieFileKey={globalLottieFileKey}
+        importFn={() => import(`./${globalLottieFileKey}.json`)}
+        loop={true}
+      />
+      <div
+        className={classNames(
+          `${position}-0`,
+          "absolute top-0 flex items-center gap-2 py-3 px-2"
+        )}
       >
-        <div className="relative h-full w-full">
-          <div
-            className={classNames(
-              "z-10 h-full w-full bg-osmoverse-500 bg-cover",
-              `folder-${position}`,
-              position === "right"
-                ? "bg-[url('bg-right-tab.svg')]"
-                : "bg-[url('bg-left-tab.svg')]"
-            )}
-          />
-          <DynamicLottieAnimation
-            className="absolute left-0 top-0 z-20 h-full w-full"
-            globalLottieFileKey={globalLottieFileKey}
-            importFn={() => import(`./${globalLottieFileKey}.json`)}
-            loop={true}
-          />
-        </div>
-        <div
-          className={classNames(
-            `${position}-0`,
-            "absolute top-0 flex items-center gap-2 py-3 px-2"
-          )}
-        >
-          <span className="text-osmoverse-white z-30 text-sm">{title}</span>
-          {/* {!disabled && (
-          <div className="text-osmoverse-600 sm:hidden">
-            <Tooltip content={tooltipContent}>
-              <Icon id="info" height="14px" width="14px" fill="#958FC0" />
-            </Tooltip>
-          </div>
-        )} */}
-        </div>
-      </Button>
-    </ConditionalWrapper>
+        <span className="text-osmoverse-white z-30 text-sm">{title}</span>
+      </div>
+    </Button>
+    // </ConditionalWrapper>
   );
 };
