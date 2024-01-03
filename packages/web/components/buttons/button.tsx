@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, forwardRef } from "react";
 import { CustomClasses } from "~/components/types";
 
 export const buttonCVA = cva(
-  "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
+  "flex w-full group place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {
       /**
@@ -188,6 +188,7 @@ export const buttonCVA = cva(
         amount:
           "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         "md-icon-social": "w-10 h-10 button tracking-wide shrink-0 py-0",
+        "md-min": "w-auto min-w-10 h-10 button tracking-wide shrink-0 py-0",
         unstyled: null,
       },
     },

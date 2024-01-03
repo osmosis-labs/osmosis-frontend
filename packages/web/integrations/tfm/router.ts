@@ -16,8 +16,9 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly tfmBaseUrl: string,
-    protected readonly calcAssetPrice: (
-      coinMinimalDenom: string
+    protected readonly calcAssetValue: (
+      coinMinimalDenom: string,
+      amount: Int
     ) => Promise<Dec | undefined>
   ) {
     this.baseUrl = new URL(tfmBaseUrl);
@@ -49,14 +50,10 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
       const amount = new Int(result.returnAmount);
 
-      const priceImpactTokenOut = await calculatePriceImpact(
-        tokenIn,
-        {
-          denom: tokenOutDenom,
-          amount,
-        },
-        this.calcAssetPrice
-      );
+      const priceImpactTokenOut = await this.calculatePriceImpact(tokenIn, {
+        denom: tokenOutDenom,
+        amount,
+      });
 
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
@@ -99,26 +96,24 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       );
     }
   }
-}
 
-async function calculatePriceImpact(
-  tokenIn: Token,
-  tokenOut: Token,
-  calcAssetPrice: (coinMinimalDenom: string) => Promise<Dec | undefined>
-): Promise<Dec | undefined> {
-  const tokenInPrice = await calcAssetPrice(tokenIn.denom).catch(() => {
-    return undefined;
-  });
-  const tokenOutPrice = await calcAssetPrice(tokenOut.denom).catch(() => {
-    return undefined;
-  });
+  protected async calculatePriceImpact(
+    tokenIn: Token,
+    tokenOut: Token
+  ): Promise<Dec | undefined> {
+    const tokenInValue = await this.calcAssetValue(
+      tokenIn.denom,
+      tokenIn.amount
+    );
+    const tokenOutValue = await this.calcAssetValue(
+      tokenOut.denom,
+      tokenOut.amount
+    );
 
-  if (!tokenInPrice || !tokenOutPrice) {
-    return undefined;
+    if (!tokenInValue || !tokenOutValue) {
+      return undefined;
+    }
+
+    return tokenOutValue.sub(tokenInValue).quo(tokenInValue);
   }
-
-  const tokenInValue = tokenIn.amount.toDec().mul(tokenInPrice);
-  const tokenOutValue = tokenOut.amount.toDec().mul(tokenOutPrice);
-
-  return tokenOutValue.sub(tokenInValue).quo(tokenInValue);
 }

@@ -93,7 +93,7 @@ interface TraceChain {
   path: string;
 }
 
-interface IBCTrace {
+export interface IBCTrace {
   type: "ibc";
   counterparty: TraceCounterpartyChain & {
     channel_id: string;
@@ -101,7 +101,7 @@ interface IBCTrace {
   chain: TraceChain;
 }
 
-interface IbcCW20Trace {
+export interface IbcCW20Trace {
   type: "ibc-cw20";
   counterparty: TraceCounterpartyChain & {
     port: string;

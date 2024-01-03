@@ -16,7 +16,7 @@ export function useAmountConfig({
   address,
   gasCurrency,
 }: {
-  sendFn: SendFn;
+  sendFn?: SendFn;
   balance?: CoinPretty;
   address?: string;
   gasCurrency?: Currency;

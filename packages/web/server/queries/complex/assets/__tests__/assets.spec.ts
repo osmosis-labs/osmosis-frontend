@@ -37,6 +37,23 @@ describe("getAssets", () => {
 
       expect(assets).toEqual([]);
     });
+
+    it("should filter unverified assets if specified", async () => {
+      const assets = await getAssets({
+        assetList: AssetLists,
+        onlyVerified: true,
+      });
+
+      expect(assets.some((asset) => !asset.isVerified)).toBeFalsy();
+    });
+
+    it("should include unverified assets by default", async () => {
+      const assets = await getAssets({
+        assetList: AssetLists,
+      });
+
+      expect(assets.some((asset) => !asset.isVerified)).toBeTruthy();
+    });
   });
 });
 

@@ -7,10 +7,8 @@ import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
-import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export type App = {
   title: string;
@@ -83,9 +81,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const appsToDisplay = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   const searchBoxSize = useMemo(() => {
-    if (width <= Breakpoint.SM) {
+    if (width <= Breakpoint.sm) {
       return "small";
-    } else if (width <= Breakpoint.LG) {
+    } else if (width <= Breakpoint.lg) {
       return "medium";
     }
     return "long";
@@ -117,7 +115,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
         imageUrl={
-          width <= Breakpoint.SM
+          width <= Breakpoint.sm
             ? featuredApp.thumbnail_image_URL
             : featuredApp.hero_image_URL
         }

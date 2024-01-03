@@ -494,7 +494,7 @@ const MyPoolsSection = observer(() => {
               poolDetail instanceof ObservableSharePoolDetail
                 ? poolBonding.highestBondDuration?.aggregateApr ??
                   new RatePretty(0)
-                : poolDetail.swapFeeApr;
+                : poolDetail.totalApr;
 
             const poolLiquidity = formatPretty(poolDetail.totalValueLocked, {
               maxDecimals: 0,

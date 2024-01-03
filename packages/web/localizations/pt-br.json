@@ -172,6 +172,7 @@
       "title": "Histórico de Transferências"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adicionar",
       "buttonEdit": "Editar",
       "buttonEnter": "Entrar",
       "channelCongestedDeposit": "Depositar (Canal congestionada)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "givePermission": "Dê permissões para usar tokens",
+      "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",
@@ -239,7 +241,9 @@
         "seeRequest": "Ver solicitação em {walletName}",
         "noQuotesAvailable": "Nenhuma cotação disponível",
         "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente."
+        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
+        "invalidAddress": "Endereço inválido",
+        "missingAddress": "Endereço ausente"
       },
       "from": "De",
       "loading": "Carregando",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -478,7 +481,6 @@
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",
-    "numDaysRemaining": "{numDays} dias restantes",
     "putAssetsToWork": "Coloque seus ativos para trabalhar",
     "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
     "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
@@ -551,6 +553,8 @@
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
+      "superfluid": "Superfluido",
+      "externalBoost": "Impulso externo",
       "total": "TAEG total"
     }
   },

@@ -12,9 +12,9 @@ import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { BridgeAnimation } from "~/components/animation";
 import { GradientView } from "~/components/assets/gradient-view";
 import { Button } from "~/components/buttons";
+import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { IS_TESTNET } from "~/config";
@@ -277,10 +277,11 @@ const NomicTransfer: FunctionComponent<
           </div>
         ) : (
           <>
-            <BridgeAnimation
-              className={`mx-auto mt-6 -mb-4`}
+            <BridgeFromToNetwork
+              className={`mx-auto mt-6`}
               transferPath={[from, to]}
             />
+
             {isWithdraw ? (
               <>
                 <div

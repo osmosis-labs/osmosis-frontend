@@ -172,6 +172,7 @@
       "title": "Historia Transferów"
     },
     "ibcTransfer": {
+      "buttonAdd": "Dodać",
       "buttonEdit": "Edytuj",
       "buttonEnter": "Ok",
       "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
@@ -231,6 +232,7 @@
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
       "givePermission": "Nadaj uprawnienia do używania tokenów",
+      "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
@@ -239,7 +241,9 @@
         "seeRequest": "Zobacz żądanie w {walletName}",
         "noQuotesAvailable": "Brak dostępnych cytatów",
         "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
-        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
+        "invalidAddress": "Błędny adres",
+        "missingAddress": "Brak adresu"
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
-    "7davg": "(7d śr.)",
     "amountDaysUnbonding": "{numDays} dzień rozłączenia",
     "amountDaysUnbonding_plural": "{numDays} dni rozwiązywania",
     "APR": "APR",
@@ -478,7 +481,6 @@
     "learnMore": "Dowiedz się więcej",
     "level": "Poziom {level}",
     "liquidity": "Płynność puli",
-    "numDaysRemaining": "Pozostały {numDays} dni",
     "putAssetsToWork": "Zarabiaj dzięki swoim środkom",
     "putAssetsToWorkCaption": "Dodaj swoje środki do tej puli, żeby odblokować ekscytujące APR. Im dłuższy okres związania, tym wyższe zarobki.",
     "rewardDistribution": "Nagrody przekazywane wszystkim udostępniającym płynność",
@@ -551,6 +553,8 @@
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",
+      "superfluid": "Nadciekły",
+      "externalBoost": "Zewnętrzne wzmocnienie",
       "total": "Całkowita RRSO"
     }
   },

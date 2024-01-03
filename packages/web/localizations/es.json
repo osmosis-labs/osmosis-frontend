@@ -172,6 +172,7 @@
       "title": "Historial de transferencias"
     },
     "ibcTransfer": {
+      "buttonAdd": "Agregar",
       "buttonEdit": "Editar",
       "buttonEnter": "Ingresar",
       "channelCongestedDeposit": "Depositar (Canal impugnado)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
       "givePermission": "Dar permisos para usar tokens",
+      "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
@@ -239,7 +241,9 @@
         "seeRequest": "Ver solicitud en {walletName}",
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
+        "invalidAddress": "Dirección inválida",
+        "missingAddress": "Dirección faltante"
       },
       "from": "De",
       "loading": "Cargando",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
-    "7davg": "(7d Promedio)",
     "amountDaysUnbonding": "{numDays} día para desabonar",
     "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "APR": "TPA",
@@ -478,7 +481,6 @@
     "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "liquidity": "Liquidez",
-    "numDaysRemaining": "{numDays} días restantes",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para obtener TPAs increíbles. Mientras más tiempo sea su período para desabonarse, más generará.",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",
@@ -551,6 +553,8 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
+      "superfluid": "superfluido",
+      "externalBoost": "Impulso externo",
       "total": "TAE total"
     }
   },

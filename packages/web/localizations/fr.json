@@ -172,6 +172,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
@@ -239,7 +241,9 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
-    "7davg": "(7j moy)",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
@@ -478,7 +481,6 @@
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
-    "numDaysRemaining": "{numDays} jours restants",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "rewardDistribution": "Récompenses distribuées à tous les fournisseurs de liquidités",
@@ -551,6 +553,8 @@
     "aprBreakdown": {
       "swapFees": "Frais de swap",
       "boost": "Booster",
+      "superfluid": "Superfluide",
+      "externalBoost": "Boost externe",
       "total": "TAEG total"
     }
   },

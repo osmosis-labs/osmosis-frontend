@@ -172,6 +172,7 @@
       "title": "轉移歷史"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "編輯",
       "buttonEnter": "輸入",
       "channelCongestedDeposit": "存入 (通道擁擠緊)",
@@ -231,6 +232,7 @@
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的權限",
+      "enterAddress": "{network}位址",
       "errors": {
         "insufficientBal": "結餘唔夠喎",
         "insufficientFee": "交易費唔夠喎",
@@ -239,7 +241,9 @@
         "seeRequest": "在{walletName}中查看請求",
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。"
+        "transactionError": "獲取交易時出錯。請再試一次。",
+        "invalidAddress": "無效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "從",
       "loading": "載入中",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解綁",
     "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
     "APR": "APR",
@@ -466,7 +469,7 @@
     "collapseDetails": "收起詳情",
     "commission": "佣金",
     "currentDailyEarn": "你現在正賺取",
-    "dailyEarnAmount": "{amount} / 日",
+    "dailyEarnAmount": "{amount} /天",
     "day": "日",
     "delegated": "已質押",
     "details": "詳情",
@@ -478,7 +481,6 @@
     "learnMore": "了解更多",
     "level": "等級 {level}",
     "liquidity": "流動性",
-    "numDaysRemaining": "剩低{numDays}日",
     "putAssetsToWork": "讓你嘅資產為你工作",
     "putAssetsToWorkCaption": "將你嘅資產加入到此流動性池以解鎖誘人嘅獎勵，選擇嘅解鎖時間愈長，賺得愈多",
     "rewardDistribution": "獎勵會被分發俾所有流動性提供者",
@@ -551,6 +553,8 @@
     "aprBreakdown": {
       "swapFees": "掉期費用",
       "boost": "促進",
+      "superfluid": "超流體",
+      "externalBoost": "外部升壓",
       "total": "總年利率"
     }
   },
