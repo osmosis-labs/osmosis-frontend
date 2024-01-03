@@ -35,6 +35,7 @@ import {
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
+import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";
@@ -235,7 +236,11 @@ export class RootStore {
       this.queriesStore,
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [new AxelarTransferStatusSource(), new SquidTransferStatusSource()]
+      [
+        new AxelarTransferStatusSource(),
+        new SquidTransferStatusSource(),
+        new SkipTransferStatusSource(),
+      ]
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

@@ -310,24 +310,41 @@ export class SkipBridgeProvider implements BridgeProvider {
     sendTxHash,
     fromChainId,
   }: GetTransferStatusParams): Promise<BridgeTransferStatus | undefined> {
-    const txStatus = await this.skipClient.transactionStatus({
-      chainID: fromChainId.toString(),
-      txHash: sendTxHash,
-    });
+    try {
+      const txStatus = await this.skipClient.transactionStatus({
+        chainID: fromChainId.toString(),
+        txHash: sendTxHash,
+      });
 
-    let status: TxStatus = "pending";
-    if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
-      status = "success";
+      let status: TxStatus = "pending";
+      if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
+        status = "success";
+      }
+
+      if (txStatus.state === "STATE_COMPLETED_ERROR") {
+        status = "failed";
+      }
+
+      return {
+        id: sendTxHash,
+        status,
+      };
+    } catch (error: any) {
+      if ("message" in error) {
+        if (error.message.includes("not found")) {
+          try {
+            await this.skipClient.trackTransaction({
+              chainID: fromChainId.toString(),
+              txHash: sendTxHash,
+            });
+          } catch (error) {}
+
+          return undefined;
+        }
+      }
+
+      throw error;
     }
-
-    if (txStatus.state === "STATE_COMPLETED_ERROR") {
-      status = "failed";
-    }
-
-    return {
-      id: sendTxHash,
-      status,
-    };
   }
 
   async getTransactionData(

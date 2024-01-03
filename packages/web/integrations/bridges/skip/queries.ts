@@ -66,6 +66,22 @@ class SkipApiClient {
     );
   }
 
+  async trackTransaction({
+    chainID,
+    txHash,
+  }: {
+    chainID: string;
+    txHash: string;
+  }) {
+    return apiClient<{ tx_id: string }>("https://api.skip.money/v2/tx/track", {
+      method: "POST",
+      body: JSON.stringify({
+        chain_id: chainID,
+        tx_hash: txHash,
+      }),
+    });
+  }
+
   async transactionStatus({
     chainID,
     txHash,
