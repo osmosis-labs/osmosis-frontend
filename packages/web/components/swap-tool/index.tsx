@@ -846,7 +846,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   : "primary"
               }
               disabled={
-                isSwapToolLoading ||
+                isWalletLoading ||
+                swapState.isQuoteLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||
