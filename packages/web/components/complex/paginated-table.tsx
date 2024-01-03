@@ -12,7 +12,7 @@ import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { openTab } from "~/utils/openTab";
 
-import { getPoolLink } from "./all-pools-table";
+import { getPoolLink } from "./all-pools-table-v1";
 
 type Props = {
   mobileSize?: number;
