@@ -129,7 +129,7 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around space-y-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -146,30 +146,30 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
+        <div className="flex flex-row items-center gap-2 xl:flex-col">
           <RewardsCard
             disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
-            tooltipContent={t("stake.collectRewardsTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
               collectRewardsMinimumOsmo: Number(
                 collectRewardsMinimumOsmo.toString()
               ).toFixed(2),
             })}
             onClick={collectRewards}
-            image={
-              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
-            }
+            globalLottieFileKey="collect"
+            position="left"
           />
           <RewardsCard
             disabled={rewardsCardDisabled}
             title={t("stake.investRewards")}
-            tooltipContent={t("stake.collectAndReinvestTooltip")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+              collectRewardsMinimumOsmo: Number(
+                collectRewardsMinimumOsmo.toString()
+              ).toFixed(2),
+            })}
             onClick={collectAndReinvestRewards}
-            image={
-              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
-            }
+            globalLottieFileKey="reinvest"
+            position="right"
           />
         </div>
       </GenericMainCard>
