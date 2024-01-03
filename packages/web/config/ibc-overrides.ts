@@ -236,15 +236,6 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
     },
   },
-  AXS: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.axs.ethereum],
-    },
-  },
   INJ: {
     depositUrlOverride:
       "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
