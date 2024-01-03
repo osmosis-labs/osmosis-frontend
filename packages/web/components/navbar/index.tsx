@@ -443,7 +443,7 @@ const WalletInfo: FunctionComponent<
     api.edge.assets.getAsset.useQuery(
       {
         findMinDenomOrSymbol: "OSMO",
-        userOsmoAddress: wallet?.address ?? "",
+        userOsmoAddress: wallet?.address as string,
       },
       {
         enabled:
