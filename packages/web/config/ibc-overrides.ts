@@ -169,15 +169,6 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
     },
   },
-  UNI: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.uni.ethereum],
-    },
-  },
   BUSD: {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
