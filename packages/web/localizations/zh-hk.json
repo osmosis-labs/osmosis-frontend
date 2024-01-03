@@ -601,7 +601,6 @@
     "unbondingSubtext": "此期過後，你可以在資產標籤下訪問你的OSMO",
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們將在指定的解綁期後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
-    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
     "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
     "isAPRTooHighTooltip": "此驗證器收取了異常高的佣金。請考慮選擇另一個驗證器。",

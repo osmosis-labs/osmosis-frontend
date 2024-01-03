@@ -601,7 +601,6 @@
     "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
-    "collectRewardsTooltip": "Recoge todas tus recompensas no reclamadas. Estos tokens estarán disponibles de inmediato en Osmosis.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
     "collectAndReinvestTooltip": "Recoge y vuelve a apostar automáticamente tus ganancias no reclamadas con un solo clic. La capitalización es una excelente manera de ganar más con sus activos.",
     "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
