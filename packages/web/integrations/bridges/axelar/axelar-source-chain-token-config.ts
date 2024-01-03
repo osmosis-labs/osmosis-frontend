@@ -181,14 +181,6 @@ export const AxelarSourceChainTokenConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
-  axs: {
-    ethereum: {
-      id: EthereumChainInfo["Ethereum"].chainName,
-      chainId: EthereumChainInfo["Ethereum"].chainId,
-      erc20ContractAddress: "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b",
-      logoUrl: "/networks/ethereum.svg",
-    },
-  },
   mkr: {
     ethereum: {
       id: EthereumChainInfo["Ethereum"].chainName,
@@ -210,22 +202,6 @@ export const AxelarSourceChainTokenConfigs: {
       id: EthereumChainInfo["Ethereum"].chainName,
       chainId: EthereumChainInfo["Ethereum"].chainId,
       erc20ContractAddress: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
-      logoUrl: "/networks/ethereum.svg",
-    },
-  },
-  uni: {
-    ethereum: {
-      id: EthereumChainInfo["Ethereum"].chainName,
-      chainId: EthereumChainInfo["Ethereum"].chainId,
-      erc20ContractAddress: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-      logoUrl: "/networks/ethereum.svg",
-    },
-  },
-  xcn: {
-    ethereum: {
-      id: EthereumChainInfo["Ethereum"].chainName,
-      chainId: EthereumChainInfo["Ethereum"].chainId,
-      erc20ContractAddress: "0xA2cd3D43c775978A96BdBf12d733D5A1ED94fb18",
       logoUrl: "/networks/ethereum.svg",
     },
   },
