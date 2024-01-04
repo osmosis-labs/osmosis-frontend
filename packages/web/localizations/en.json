@@ -613,6 +613,7 @@
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
+    "insufficientBalance": "Insufficient balance",
     "learnMore": {
       "step1": {
         "title": "What is staking?",

@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -325,8 +325,13 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
+  const hasInsufficientBalance = activeAmountConfig.balance
+    ?.toDec()
+    .lt(new Dec(activeAmountConfig.amount || "1"));
+
   const disableMainStakeCardButton =
-    isWalletConnected && Number(activeAmountConfig.amount) <= 0;
+    (isWalletConnected && Number(activeAmountConfig.amount) <= 0) ||
+    hasInsufficientBalance;
 
   const setAmount = useCallback(
     (amount: string) => {
@@ -356,6 +361,7 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <StakeTool
+            hasInsufficientBalance={hasInsufficientBalance}
             handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
             handleHalfButtonClick={() =>
               activeAmountConfig.fraction
