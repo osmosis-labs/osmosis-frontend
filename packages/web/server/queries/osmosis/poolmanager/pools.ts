@@ -99,7 +99,7 @@ export type CosmwasmPoolRawResponse = {
   instantiate_msg: string;
 };
 
-type PoolRawResponse =
+export type PoolRawResponse =
   | WeightedPoolRawResponse
   | StablePoolRawResponse
   | ConcentratedPoolRawResponse
