@@ -247,6 +247,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       splitableRoutes.map((r) => routeToString(r))
     );
 
+    // If at least one of the routes is not enough quoted AND
+    // all routes fail, then we assume that this is the main error for the quote overall
+    let isNotEnoughQuoted = false;
+
     const directQuotes = (
       await Promise.all(
         splitableRoutes.map(async (route, index) => {
@@ -258,6 +262,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
               },
             ]);
           } catch (e) {
+            if (e instanceof NotEnoughQuotedError) {
+              isNotEnoughQuoted = true;
+            }
+
             // if there's not enough liquidity, skip this route
             this._logger?.error(
               `Dismissing direct route at index: ${index}:`,
@@ -296,6 +304,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     if (directQuotes.length === 0 && !splitQuote) {
+      if (isNotEnoughQuoted) {
+        throw new NotEnoughQuotedError();
+      }
+
       throw new NoRouteError();
     }
 
@@ -359,6 +371,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const outDenom = route.tokenOutDenoms[i];
 
         poolsSwapFees.push(pool.swapFee);
+
+        if (previousInAmount.isZero()) {
+          throw new NotEnoughQuotedError();
+        }
 
         // calc out given in through pool, cached
         const calcOutGivenInParams = [
