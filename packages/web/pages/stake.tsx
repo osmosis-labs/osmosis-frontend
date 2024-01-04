@@ -395,6 +395,7 @@ export const Staking: React.FC = observer(() => {
             />
           ) : (
             <StakeDashboard
+              hasInsufficientBalance={hasInsufficientBalance}
               setShowValidatorModal={() => setShowValidatorModal(true)}
               setShowStakeLearnMoreModal={() =>
                 setShowStakeLearnMoreModal(true)
