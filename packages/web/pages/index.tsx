@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
-import { AdBanner } from "~/components/ad-banner";
+import { Ad, AdBanner } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
@@ -55,21 +55,6 @@ const Home = () => {
     </main>
   );
 };
-
-export interface Ad {
-  name: string;
-  start_date: string;
-  end_date: string;
-  header: string;
-  subheader: string;
-  external_url: string;
-  icon_image_url: string;
-  icon_image_alt: string;
-  gradient: string;
-  font_color: string;
-  arrow_color: string;
-  featured: true;
-}
 
 const SwapAdsBanner = () => {
   /**
