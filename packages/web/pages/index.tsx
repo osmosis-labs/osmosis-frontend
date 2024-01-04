@@ -68,6 +68,9 @@ const SwapAdsBanner = () => {
         repo: OsmosisCmsRepo,
         filePath: "cms/swap-rotating-banner.json",
       }),
+
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
   });
 
   if (!data?.banners || isLoading) return null;
