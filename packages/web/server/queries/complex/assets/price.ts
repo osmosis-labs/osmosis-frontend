@@ -12,7 +12,7 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/legacy";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 
 import {
   queryTokenHistoricalChart,

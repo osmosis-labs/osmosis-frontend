@@ -10,19 +10,19 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryBalances } from "../../cosmos";
+import { queryBalances } from "../../../cosmos";
 import {
   FilteredPoolsResponse,
   PoolToken,
   queryFilteredPools,
-} from "../../indexer";
+} from "../../../indexer";
 import {
   queryNumPools,
   queryPoolmanagerParams,
   queryPools,
-} from "../../osmosis";
+} from "../../../osmosis";
 
-/** @deprecated */
+/** @deprecated Fetches pools from indexer. */
 export async function queryPaginatedPools({
   page,
   limit,
