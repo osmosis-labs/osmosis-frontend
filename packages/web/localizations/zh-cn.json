@@ -610,9 +610,7 @@
     "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
     "estimatedEarningsTooltip": "这些收益是根据当前质押年利率计算的，可能会发生变化。",
-    "collectRewardsTooltip": "收集所有无人认领的奖励。这些代币将立即在 Osmosis 上可供您使用。",
     "collectRewardsTooltipDisabled": "您的奖励太少，无法领取，请在您的无人认领余额达到{collectRewardsMinimumOsmo} OSMO 的最低阈值后重试。",
-    "collectAndReinvestTooltip": "一键收集并自动重新抵押您无人认领的收入。复利是利用资产赚取更多收入的好方法。",
     "isAPRTooHighTooltip": "该验证器收取异常高的佣金。考虑选择不同的验证器。",
     "isVotingPowerTooHighTooltip": "这是具有高投票权的前 10 名验证者。考虑选择不同的验证器来帮助促进去中心化。",
     "learnMore": {

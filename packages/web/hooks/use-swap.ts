@@ -21,7 +21,7 @@ import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useBalances } from "./queries/cosmos/balances";
+import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";

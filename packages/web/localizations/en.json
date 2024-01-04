@@ -599,7 +599,7 @@
     "stakeBalanceTitle": "Total staked balance",
     "viewOrEdit": "View or edit",
     "collectRewards": "Collect rewards",
-    "investRewards": "Collect and re-invest",
+    "investRewards": "Collect and reinvest",
     "learn": "Learn more",
     "alertTitleBeginning": "Earn",
     "alertTitleEnd": "APR",
@@ -610,9 +610,7 @@
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
-    "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
