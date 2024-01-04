@@ -555,7 +555,12 @@
       "boost": "Booster",
       "superfluid": "Superfluide",
       "externalBoost": "Boost externe",
-      "total": "TAEG total"
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Comment sont calculés les TAEG ?",
+        "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
+        "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
+      }
     }
   },
   "profile": {

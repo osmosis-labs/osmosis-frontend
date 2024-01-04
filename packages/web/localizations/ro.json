@@ -555,7 +555,12 @@
       "boost": "Boost",
       "superfluid": "Superfluid",
       "externalBoost": "Boost extern",
-      "total": "DAE totală"
+      "total": "DAE totală",
+      "explainer": {
+        "title": "Cum se calculează APR-urile?",
+        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
+        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+      }
     }
   },
   "profile": {

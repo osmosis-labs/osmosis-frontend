@@ -516,6 +516,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           <AprBreakdown
             className="shrink-0 rounded-[28px] bg-osmoverse-1000"
             poolId={poolId}
+            showDisclaimerTooltip
           />
         )}
 

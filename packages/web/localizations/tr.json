@@ -555,7 +555,12 @@
       "boost": "Artırmak",
       "superfluid": "Süperakışkan",
       "externalBoost": "Harici Güçlendirme",
-      "total": "Toplam Nisan"
+      "total": "Toplam Nisan",
+      "explainer": {
+        "title": "APR'ler nasıl hesaplanır?",
+        "p1": "Tüm APR'ler tahmindir. Havuzdaki likiditenin ortalama APR'si alınarak hesaplanır.",
+        "p3": "Tahminleri ihtiyatlı tutmak için tüm APR'ler 3 faktörüne bölünür."
+      }
     }
   },
   "profile": {

@@ -555,7 +555,13 @@
       "boost": "Boost",
       "superfluid": "Superfluid",
       "externalBoost": "External Boost",
-      "total": "Total APR"
+      "total": "Total APR",
+      "explainer": {
+        "title": "How are APRs calculated?",
+        "p1": "All APRs are estimates. They are calculated by taking the average APR for liquidity in the pool.",
+        "p2": "In supercharged pools, most users will receive lower rewards. This is due to positions that are more concentrated, which capture more of the incentives.",
+        "p3": "In order to keep estimates conservative, all APRs are divided by factor of 3."
+      }
     }
   },
   "profile": {

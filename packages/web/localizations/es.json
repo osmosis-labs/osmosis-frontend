@@ -555,7 +555,12 @@
       "boost": "Aumentar",
       "superfluid": "superfluido",
       "externalBoost": "Impulso externo",
-      "total": "TAE total"
+      "total": "TAE total",
+      "explainer": {
+        "title": "¿Cómo se calculan las APR?",
+        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
+        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+      }
     }
   },
   "profile": {
