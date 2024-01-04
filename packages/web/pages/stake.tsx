@@ -329,9 +329,10 @@ export const Staking: React.FC = observer(() => {
     ?.toDec()
     .lt(new Dec(activeAmountConfig.amount || "1"));
 
-  const disableMainStakeCardButton =
-    (isWalletConnected && Number(activeAmountConfig.amount) <= 0) ||
-    hasInsufficientBalance;
+  // never disable when wallet is not connected
+  const disableMainStakeCardButton = !isWalletConnected
+    ? false
+    : Number(activeAmountConfig.amount) <= 0 || hasInsufficientBalance;
 
   const setAmount = useCallback(
     (amount: string) => {
