@@ -200,7 +200,7 @@ const StakeBalances: React.FC<{
   }, [osmoAmount]);
 
   return (
-    <div className="flex flex-col items-start justify-center gap-1 text-left">
+    <div className="m-0 flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
