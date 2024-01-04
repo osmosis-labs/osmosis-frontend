@@ -559,6 +559,7 @@
       "explainer": {
         "title": "Cum se calculează APR-urile?",
         "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
+        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
         "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
       }
     }

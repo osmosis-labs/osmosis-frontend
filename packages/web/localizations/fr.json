@@ -559,6 +559,7 @@
       "explainer": {
         "title": "Comment sont calculés les TAEG ?",
         "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
+        "p2": "Dans les pools suralimentés, la plupart des utilisateurs recevront des récompenses inférieures. Cela est dû à des positions plus concentrées, qui captent davantage d’incitations.",
         "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
       }
     }
