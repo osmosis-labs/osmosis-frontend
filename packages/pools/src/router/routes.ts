@@ -337,7 +337,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
-    const routePoolsSwapFees: Dec[][] = [];
 
     const sumInitialAmount = routes.reduce(
       (sum, route) => sum.add(route.initialAmount),
@@ -360,7 +359,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       let afterSpotPriceInOverOut: Dec = new Dec(1);
       let effectivePriceInOverOut: Dec = new Dec(1);
       let poolsSwapFee: Dec = new Dec(0);
-      const poolsSwapFees: Dec[] = [];
 
       for (let i = 0; i < route.pools.length; i++) {
         const pool = this._sortedPools.find(
@@ -369,8 +367,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         if (!pool) throw new Error("Pool not found");
 
         const outDenom = route.tokenOutDenoms[i];
-
-        poolsSwapFees.push(pool.swapFee);
 
         if (previousInAmount.isZero()) {
           throw new NotEnoughQuotedError();
@@ -439,7 +435,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           previousInAmount = quoteOut.amount;
         }
       }
-      routePoolsSwapFees.push(poolsSwapFees);
     }
 
     const priceImpactTokenOut = totalBeforeSpotPriceInOverOut.gt(new Dec(0))
@@ -449,14 +444,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       : new Dec(0);
 
     return {
-      split: routes
-        .map((route, i) => ({
-          ...route,
-          effectiveSwapFees: routePoolsSwapFees[i],
-        }))
-        .sort((a, b) =>
-          Number(b.initialAmount.sub(a.initialAmount).toString())
-        ),
+      split: routes.sort((a, b) =>
+        Number(b.initialAmount.sub(a.initialAmount).toString())
+      ),
       amount: totalOutAmount,
       beforeSpotPriceInOverOut: totalBeforeSpotPriceInOverOut,
       beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(

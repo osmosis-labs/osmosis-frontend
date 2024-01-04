@@ -180,6 +180,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
+            swapFee: staticPool?.swapFee,
             type: staticPool?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
