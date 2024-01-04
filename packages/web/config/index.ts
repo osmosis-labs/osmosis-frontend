@@ -16,6 +16,3 @@ export * from "./env";
 export * from "./ibc-overrides";
 export * from "./initial-assets-sort";
 export * from "./user-analytics-v2";
-
-/** Config for displaying ads banner assets */
-export * from "./ads-banner";
