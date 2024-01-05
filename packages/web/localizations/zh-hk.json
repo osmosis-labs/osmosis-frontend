@@ -555,7 +555,13 @@
       "boost": "促進",
       "superfluid": "超流體",
       "externalBoost": "外部升壓",
-      "total": "總年利率"
+      "total": "總年利率",
+      "explainer": {
+        "title": "年利率是如何計算的？",
+        "p1": "所有年利率均為估計值。它們是透過池中流動性的平均年利率來計算的。",
+        "p2": "在超級礦池中，大多數用戶將獲得較低的獎勵。這是因為職位更集中，能夠獲得更多的激勵。",
+        "p3": "為了保持估計保守，所有年利率均除以 3。"
+      }
     }
   },
   "profile": {
@@ -610,9 +616,7 @@
     "unbondingSubtext": "此期過後，你可以在資產標籤下訪問你的OSMO",
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們將在指定的解綁期後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
-    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
     "isAPRTooHighTooltip": "此驗證器收取了異常高的佣金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {

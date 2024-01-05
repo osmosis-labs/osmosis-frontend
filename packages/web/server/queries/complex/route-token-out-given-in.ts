@@ -42,7 +42,7 @@ export async function routeTokenOutGivenIn({
   forcePoolId?: string;
 }) {
   // get quote
-  const router = await getRouter();
+  const router = await getRouter(forcePoolId ? 0 : undefined);
   const quote = await router.routeByTokenIn(token, tokenOutDenom, forcePoolId);
   const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
 
@@ -64,10 +64,11 @@ const routerCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Gets pools and returns a cached router instance. */
 export async function getRouter(
+  minLiquidityUsd = 1000,
   routerCacheTtl = 30 * 1000
 ): Promise<OptimizedRoutes> {
   return cachified({
-    key: "router",
+    key: "router" + minLiquidityUsd,
     cache: routerCache,
     ttl: routerCacheTtl,
     async getFreshValue() {
@@ -76,7 +77,7 @@ export async function getRouter(
       const poolsResponse = await queryPaginatedPools({
         page: 1,
         limit: Number(numPoolsResponse.num_pools),
-        minimumLiquidity: 1000,
+        minimumLiquidity: minLiquidityUsd,
       });
 
       // create routable pool impls from response

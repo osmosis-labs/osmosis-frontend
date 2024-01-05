@@ -470,7 +470,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         setRowSelection(defaultRowSelection);
       }, [usersValidatorSetPreferenceMap]);
 
-      const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
+      const setSquadButtonDisabled = Object.keys(rowSelection).length === 0;
 
       const handleSetSquadClick = useCallback(async () => {
         // TODO disable cases for button, disable if none selected, if weights and list is same

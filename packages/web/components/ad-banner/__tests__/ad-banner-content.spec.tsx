@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { AdBannerContent } from "../ad-banner-content";
-import { Ad } from "../ad-banner-types";
+import { Ad, AdBannerContent } from "../ad-banner";
 
 const mockAd: Ad = {
   name: "Mock Ad",

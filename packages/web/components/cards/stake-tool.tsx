@@ -12,6 +12,7 @@ import { StakeOrUnstake } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
+  hasInsufficientBalance: boolean;
   inputAmount?: string;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
@@ -27,6 +28,7 @@ export const StakeTool: React.FC<{
   onStakeButtonClick: () => void;
   disabled: boolean;
 }> = ({
+  hasInsufficientBalance,
   inputAmount,
   handleHalfButtonClick,
   handleMaxButtonClick,
@@ -46,10 +48,18 @@ export const StakeTool: React.FC<{
   const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");
 
+    const showInsufficientText =
+      inputAmount?.toString() !== "" && hasInsufficientBalance;
+
+    if (showInsufficientText)
+      return activeTab === "Stake"
+        ? t("errors.insufficientBal")
+        : t("errors.insufficientAmount");
+
     return activeTab === "Stake"
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
-  }, [activeTab, isWalletConnected, t]);
+  }, [activeTab, isWalletConnected, t, hasInsufficientBalance, inputAmount]);
 
   return (
     <GenericMainCard title={t("stake.stake")}>

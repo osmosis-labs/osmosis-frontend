@@ -75,3 +75,9 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
       supportsChain: Required<RegistryWallet>["supportsChain"];
       walletInfo: RegistryWallet;
     };
+
+export interface TxEvents {
+  onBroadcastFailed?: (string: string, e?: Error) => void;
+  onBroadcasted?: (string: string, txHash: Uint8Array) => void;
+  onFulfill?: (string: string, tx: any) => void;
+}

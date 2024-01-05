@@ -555,7 +555,13 @@
       "boost": "Boost",
       "superfluid": "Superfluid",
       "externalBoost": "Boost extern",
-      "total": "DAE totală"
+      "total": "DAE totală",
+      "explainer": {
+        "title": "Cum se calculează APR-urile?",
+        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
+        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
+        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+      }
     }
   },
   "profile": {
@@ -610,9 +616,7 @@
     "unbondingSubtext": "După ce această perioadă a trecut, vei putea accesa OSMO-ul tău din tab-ul de active",
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
-    "collectRewardsTooltip": "Colectează toate recompensele tale nerevendicate. Aceste token-uri vor fi imediat disponibile pentru tine pe Osmosis.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Colectează și reinvestește automat câștigurile tale nerevendicate cu un singur clic. Reinvestirea este un mod excelent de a câștiga mai mult cu activele tale.",
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {

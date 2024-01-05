@@ -43,6 +43,7 @@ import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
 import { AprBreakdownCell } from "../table/cells/apr-breakdown";
+import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -438,7 +439,12 @@ export const AllPoolsTable: FunctionComponent<{
               );
             }
           ),
-          header: t("pools.allPools.sort.APRIncentivized"),
+          header: () => (
+            <div className="flex items-center gap-1">
+              <AprDisclaimerTooltip />
+              <span>{t("pools.allPools.sort.APRIncentivized")}</span>
+            </div>
+          ),
           id: "apr",
         }),
         columnHelper.accessor((row) => row, {

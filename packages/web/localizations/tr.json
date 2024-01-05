@@ -555,7 +555,13 @@
       "boost": "Artırmak",
       "superfluid": "Süperakışkan",
       "externalBoost": "Harici Güçlendirme",
-      "total": "Toplam Nisan"
+      "total": "Toplam Nisan",
+      "explainer": {
+        "title": "APR'ler nasıl hesaplanır?",
+        "p1": "Tüm APR'ler tahmindir. Havuzdaki likiditenin ortalama APR'si alınarak hesaplanır.",
+        "p2": "Süper şarjlı havuzlarda çoğu kullanıcı daha düşük ödüller alacaktır. Bunun nedeni daha yoğun olan ve daha fazla teşviki yakalayan pozisyonlardır.",
+        "p3": "Tahminleri ihtiyatlı tutmak için tüm APR'ler 3 faktörüne bölünür."
+      }
     }
   },
   "profile": {
@@ -610,9 +616,7 @@
     "unbondingSubtext": "Bu süre sona erdikten sonra varlıklar sekmesi altında OSMO'nuza erişebilirsiniz",
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
-    "collectRewardsTooltip": "Alınmamış tüm ödüllerinizi toplayın. Bu tokenler Osmosis'te hemen size sunulacaktır.",
     "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
-    "collectAndReinvestTooltip": "Alınmamış kazançlarınızı tek tıklamayla toplayın ve otomatik olarak yeniden yatırın. Bileşik faiz, varlıklarınızla daha fazla kazanmanın harika bir yoludur.",
     "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
     "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
     "learnMore": {

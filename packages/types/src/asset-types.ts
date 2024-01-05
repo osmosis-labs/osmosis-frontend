@@ -48,6 +48,7 @@ export interface AssetList {
 interface TraceCounterpartyChain {
   chain_name: string;
   base_denom: string;
+  contract?: string;
 }
 
 interface TestMintageTrace {

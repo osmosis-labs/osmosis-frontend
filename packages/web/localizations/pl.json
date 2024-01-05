@@ -555,7 +555,13 @@
       "boost": "Zwiększyć",
       "superfluid": "Nadciekły",
       "externalBoost": "Zewnętrzne wzmocnienie",
-      "total": "Całkowita RRSO"
+      "total": "Całkowita RRSO",
+      "explainer": {
+        "title": "Jak obliczane są RRSO?",
+        "p1": "Wszystkie RRSO mają charakter szacunkowy. Oblicza się je, biorąc średnią stopę procentową APR dla płynności w puli.",
+        "p2": "W pulach z doładowaniem większość użytkowników otrzyma niższe nagrody. Dzieje się tak ze względu na bardziej skoncentrowane stanowiska, które przyciągają więcej zachęt.",
+        "p3": "Aby zachować ostrożne szacunki, wszystkie RRSO dzieli się przez współczynnik 3."
+      }
     }
   },
   "profile": {
@@ -610,9 +616,7 @@
     "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywów",
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
-    "collectRewardsTooltip": "Zbierz wszystkie niewybrane nagrody. Te tokeny będą od razu dostępne dla ciebie na Osmosis.",
     "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Zbierz i automatycznie ponownie zainwestuj niewybrane zarobki jednym kliknięciem. Składanie jest świetnym sposobem na zarabianie większych środków na twoich aktywach.",
     "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
     "learnMore": {

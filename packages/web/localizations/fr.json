@@ -555,7 +555,13 @@
       "boost": "Booster",
       "superfluid": "Superfluide",
       "externalBoost": "Boost externe",
-      "total": "TAEG total"
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Comment sont calculés les TAEG ?",
+        "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
+        "p2": "Dans les pools suralimentés, la plupart des utilisateurs recevront des récompenses inférieures. Cela est dû à des positions plus concentrées, qui captent davantage d’incitations.",
+        "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
+      }
     }
   },
   "profile": {
@@ -610,9 +616,7 @@
     "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
-    "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
     "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
-    "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
