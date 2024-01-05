@@ -1195,7 +1195,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param pools Desired pools to swap through.
    * @param tokenIn Token being swapped.
-   * @param tokenOutMinAmount Min out amount.
+   * @param tokenOutMinAmount Min out amount. Slippage calculation included.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param TxFee Fee options.
@@ -1213,10 +1213,6 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const tokenInCoin = new Coin(
-      tokenIn.currency.coinMinimalDenom,
-      tokenIn.amount
-    );
     const msg = this.msgOpts.swapExactAmountIn.messageComposer({
       sender: this.address,
       routes: pools.map(({ id, tokenOutDenom }) => {
@@ -1226,8 +1222,8 @@ export class OsmosisAccountImpl {
         };
       }),
       tokenIn: {
-        denom: tokenInCoin.denom,
-        amount: tokenInCoin.amount.toString(),
+        denom: tokenIn.currency.coinMinimalDenom,
+        amount: tokenIn.amount.toString(),
       },
       tokenOutMinAmount,
     });
@@ -1272,7 +1268,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-out
    * @param pools Desired pools to swap through.
    * @param tokenOut Token specified out.
-   * @param tokenInMaxAmount Max token in.
+   * @param tokenInMaxAmount Max token in. Slippage included.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param TxFee Fee options.
@@ -2578,6 +2574,11 @@ export class OsmosisAccountImpl {
           this.queries.queryUsersValidatorPreferences
             .get(this.address)
             .waitFreshResponse();
+
+          // refresh query delegations
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2638,6 +2639,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
+          // refresh query delegations
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
             .waitFreshResponse();

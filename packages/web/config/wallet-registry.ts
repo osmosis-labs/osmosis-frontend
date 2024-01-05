@@ -1,5 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { RegistryWallet } from "@osmosis-labs/stores";
+import {
+  RegistryWallet,
+  WalletConnectionInProgressError,
+} from "@osmosis-labs/stores";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
@@ -66,9 +69,90 @@ export const WalletRegistry: RegistryWallet[] = [
     lazyInstall: () =>
       import("@cosmos-kit/leap-extension").then((m) => m.LeapExtensionWallet),
     windowPropertyName: "leap",
-    stakeUrl: "https://cosmos.leapwallet.io/staking",
-    governanceUrl: "https://cosmos.leapwallet.io/gov",
+    stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
+    governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: ["notifications"],
+  },
+  {
+    ...CosmosKitWalletList["leap-cosmos-mobile"],
+    logo: "/wallets/leap.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/leap-mobile").then((m) => m.LeapMobileWallet),
+    supportsChain: async (chainId) => {
+      const leapMobileAvailableChains: MainnetChainIds[] = [
+        "agoric-3",
+        "akashnet-2",
+        "archway-1",
+        "mantle-1",
+        "axelar-dojo-1",
+        "laozi-mainnet",
+        "bitsong-2b",
+        "bitcanna-1",
+        "canto_7700-1",
+        "carbon-1",
+        "celestia",
+        "cheqd-mainnet-1",
+        "chihuahua-1",
+        "comdex-1",
+        "centauri-1",
+        "coreum-mainnet-1",
+        "cosmoshub-4",
+        "crescent-1",
+        "cudos-1",
+        "mainnet-3",
+        "desmos-mainnet",
+        "dydx-mainnet-1",
+        "emoney-3",
+        "empowerchain-1",
+        "evmos_9001-2",
+        "fetchhub-4",
+        "gravity-bridge-3",
+        "gitopia",
+        "injective-1",
+        "irishub-1",
+        "ixo-5",
+        "jackal-1",
+        "juno-1",
+        "kava_2222-10",
+        "kichain-2",
+        "kaiyo-1",
+        "kyve-1",
+        "likecoin-mainnet-2",
+        "mars-1",
+        "migaloo-1",
+        "neutron-1",
+        "noble-1",
+        "pirin-1",
+        "nomic-stakenet-3",
+        "omniflixhub-1",
+        "onomy-mainnet-1",
+        "osmosis-1",
+        "passage-2",
+        "core-1",
+        "planq_7070-2",
+        "pio-mainnet-1",
+        "quasar-1",
+        "quicksilver-2",
+        "secret-4",
+        "pacific-1",
+        "sentinelhub-2",
+        "sgenet-1",
+        "sifchain-1",
+        "sommelier-3",
+        "stargaze-1",
+        "iov-mainnet-ibc",
+        "stride-1",
+        "teritori-1",
+        "phoenix-1",
+        "umee-1",
+        "dimension_37-1",
+      ];
+      return leapMobileAvailableChains.includes(chainId as MainnetChainIds);
+    },
+
+    stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
+    governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
+    features: [],
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
@@ -104,71 +188,75 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
-  // {
-  //   ...CosmosKitWalletList["okxwallet-extension"],
-  //   logo: "/wallets/okx.png",
-  //   lazyInstall: () =>
-  //     import("@cosmos-kit/okxwallet-extension").then(
-  //       (m) => m.OkxwalletExtensionWallet
-  //     ),
-  //   windowPropertyName: "okxwallet",
-  //   async supportsChain(chainId, retryCount = 0) {
-  //     if (typeof window === "undefined") return true;
+  {
+    ...CosmosKitWalletList["okxwallet-extension"],
+    logo: "/wallets/okx.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/okxwallet-extension").then(
+        (m) => m.OkxwalletExtensionWallet
+      ),
+    windowPropertyName: "okxwallet",
+    async supportsChain(chainId, retryCount = 0) {
+      if (typeof window === "undefined") return true;
 
-  //     const okxWallet = (window as any)?.okxwallet?.keplr as {
-  //       getKey: (chainId: string) => Promise<boolean>;
-  //     };
+      const okxWallet = (window as any)?.okxwallet?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
 
-  //     if (!okxWallet) return true;
+      if (!okxWallet) return true;
 
-  //     try {
-  //       await okxWallet.getKey(chainId);
-  //       return true;
-  //     } catch (e) {
-  //       const error = e as { code: number; message: string };
+      try {
+        await okxWallet.getKey(chainId);
+        return true;
+      } catch (e) {
+        const error = e as { code: number; message: string };
 
-  //       // Check for chain not supported error
-  //       if (
-  //         error.code === -32603 &&
-  //         error.message.includes("There is no chain info")
-  //       ) {
-  //         return false;
-  //       }
+        // Check for chain not supported error
+        if (
+          error.code === -32603 &&
+          error.message.includes("There is no chain info")
+        ) {
+          return false;
+        }
 
-  //       // Retry if the wallet is already processing
-  //       if (
-  //         error.code === -32002 &&
-  //         error.message.includes("Already processing") &&
-  //         retryCount < 5
-  //       ) {
-  //         /**
-  //          * Simple exponential backoff mechanism where the delay doubles
-  //          * with each retry. Here, we have a base delay of 100 milliseconds.
-  //          * So, the first retry will wait for 200 ms,
-  //          * the second for 400 ms, and so on.
-  //          */
-  //         await new Promise((resolve) =>
-  //           setTimeout(resolve, Math.pow(2, retryCount) * 100)
-  //         );
-  //         // @ts-ignore
-  //         return this.supportsChain(chainId, retryCount + 1);
-  //       }
+        // Retry if the wallet is already processing
+        if (
+          error.code === -32002 &&
+          error.message.includes("Already processing") &&
+          retryCount < 5
+        ) {
+          /**
+           * Simple exponential backoff mechanism where the delay doubles
+           * with each retry. Here, we have a base delay of 100 milliseconds.
+           * So, the first retry will wait for 200 ms,
+           * the second for 400 ms, and so on.
+           */
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.pow(2, retryCount) * 100)
+          );
+          // @ts-ignore
+          return this.supportsChain(chainId, retryCount + 1);
+        }
 
-  //       return false;
-  //     }
-  //   },
-  //   matchError: (error) => {
-  //     if (typeof error !== "string") return error;
+        return false;
+      }
+    },
+    matchError: (error) => {
+      if (typeof error !== "string") return error;
 
-  //     if (
-  //       error.includes(
-  //         "Already processing wallet_requestIdentities. Please wait."
-  //       )
-  //     ) {
-  //       return new WalletConnectionInProgressError();
-  //     }
+      if (
+        error.includes(
+          "Already processing wallet_requestIdentities. Please wait."
+        )
+      ) {
+        return new WalletConnectionInProgressError();
+      }
 
-  //     return error;
-  //   },
-  // },
+      return error;
+    },
+    signOptions: {
+      preferNoSetFee: true,
+    },
+    features: [],
+  },
 ];

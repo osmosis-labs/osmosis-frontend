@@ -2,8 +2,11 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck >/dev/null && shellcheck "$0"
 
+GREEN='\033[0;32m' # Green color
+NC='\033[0m' # No Color
+
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="42b2aced91f09a640898f44e4402d5321b7dc451"
+OSMOSIS_COMMIT_HASH="b09f8724030c351e5cbc96b25a84ea0d114d3f34"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
@@ -14,85 +17,62 @@ mkdir -p "$PROTO_DIR"
 
 # OSMOSIS PROTOS
 
-# If the osmosis repo is there, fetch, otherwise clone sparse
-if [ -d ".repos/osmosis/.git" ]; then
-  git -C .repos/osmosis fetch --all --tags
-  git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
-  git -C .repos/osmosis pull origin $OSMOSIS_COMMIT_HASH
-else
-  git clone --filter=blob:none --sparse https://github.com/osmosis-labs/osmosis.git .repos/osmosis
+git clone --filter=blob:none --sparse https://github.com/osmosis-labs/osmosis.git .repos/osmosis
 
-  # Checkout to Osmosis hash commit
-  git -C .repos/osmosis sparse-checkout set proto
-  git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
-fi
+# Checkout to Osmosis hash commit
+git -C .repos/osmosis sparse-checkout set proto
+git fetch --all --tags
+git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
+
 
 # SDK PROTOS
-COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ')
+COSMOS_SDK_VERSION=$(awk -F '=>' '/github.com\/osmosis-labs\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | awk '{print $NF}' | tr -d '\n')
+echo -e "${GREEN}COSMOS_SDK_VERSION: $COSMOS_SDK_VERSION${NC}"
 
-# If the cosmos-sdk repo is there, fetch, otherwise clone sparse
-if [ -d ".repos/cosmos-sdk/.git" ]; then
-  git -C .repos/cosmos-sdk fetch --all --tags
-  git -C .repos/cosmos-sdk checkout $COSMOS_SDK_VERSION
-  git -C .repos/cosmos-sdk pull origin $COSMOS_SDK_VERSION
-else
-  git clone --filter=blob:none --sparse https://github.com/cosmos/cosmos-sdk.git .repos/cosmos-sdk
+git clone --filter=blob:none --sparse https://github.com/osmosis-labs/cosmos-sdk.git .repos/cosmos-sdk
 
-  # Checkout to Cosmos hash commit
-  git -C .repos/cosmos-sdk sparse-checkout set proto
-  git -C .repos/cosmos-sdk checkout $COSMOS_SDK_VERSION  
-fi
+# Checkout to Cosmos hash commit
+git -C .repos/cosmos-sdk sparse-checkout set proto
+git fetch --all --tags
+git -C .repos/cosmos-sdk checkout $COSMOS_SDK_VERSION  
+
 
 # IBC PROTOS
 
 IBC_GO_VERSION=$(awk '/github.com\/cosmos\/ibc-go/ {print $2}' .repos/osmosis/go.mod)
+echo -e "${GREEN}IBC_GO_VERSION: $IBC_GO_VERSION${NC}"
 
-# If the ibc-go repo is there, fetch, otherwise clone sparse
-if [ -d ".repos/ibc-go/.git" ]; then
-  git -C .repos/ibc-go fetch --all --tags
-  git -C .repos/ibc-go checkout $IBC_GO_VERSION
-  git -C .repos/ibc-go pull origin $IBC_GO_VERSION
-else
-  git clone --filter=blob:none --sparse https://github.com/cosmos/ibc-go.git .repos/ibc-go
+git clone --filter=blob:none --sparse https://github.com/cosmos/ibc-go.git .repos/ibc-go
 
-  # Checkout to IBC hash commit
-  git -C .repos/ibc-go sparse-checkout set proto
-  git -C .repos/ibc-go checkout $IBC_GO_VERSION
-fi
+# Checkout to IBC hash commit
+git -C .repos/ibc-go sparse-checkout set proto
+git fetch --all --tags
+git -C .repos/ibc-go checkout $IBC_GO_VERSION
 
 # WASMD PROTOS
 
 # Extract the Wasmd version from the go.mod file
 WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
-# Clone or update the wasmd repo (osmosis-labs fork)
-# If the wasmd repo is there, fetch, otherwise clone sparse
-if [ -d ".repos/wasmd/.git" ]; then
-  git -C .repos/wasmd fetch --all --tags
-  git -C .repos/wasmd checkout $WASMD_VERSION
-  git -C .repos/wasmd pull origin $WASMD_VERSION
-else
-  git clone --filter=blob:none --sparse https://github.com/osmosis-labs/wasmd.git .repos/wasmd
+echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
 
-  # Checkout to IBC hash commit
-  git -C .repos/wasmd sparse-checkout set proto
-  git -C .repos/wasmd checkout $WASMD_VERSION
-fi
+# TROUBLESHOOTING
+# if this fails, reach out to chain team to tag the replaced commits instead of using the commit directly - 
+
+git clone --filter=blob:none --sparse https://github.com/osmosis-labs/wasmd.git .repos/wasmd
+
+# Checkout to IBC hash commit
+git -C .repos/wasmd sparse-checkout set proto
+git fetch --all --tags
+git -C .repos/wasmd checkout $WASMD_VERSION
 
 # ICS23 PROTOS
 
-# If the ibc-go repo is there, fetch, otherwise clone sparse
-if [ -d ".repos/ics23/.git" ]; then
-  git -C .repos/ics23 fetch --all --tags
-  git -C .repos/ics23 checkout $ICS23_COMMIT_HASH
-  git -C .repos/ics23 pull origin $ICS23_COMMIT_HASH
-else
-  git clone --filter=blob:none --sparse https://github.com/cosmos/ics23.git .repos/ics23
+git clone --filter=blob:none --sparse https://github.com/cosmos/ics23.git .repos/ics23
 
-  # Checkout to IBC hash commit
-  git -C .repos/ics23 checkout $ICS23_COMMIT_HASH
-
-  git -C .repos/ics23 sparse-checkout set proto
-fi
+# Checkout to IBC hash commit
+git -C .repos/ics23 sparse-checkout set proto
+git fetch --all --tags
+git -C .repos/ics23 checkout $ICS23_COMMIT_HASH
 
 # Remove query.proto files from the repos
 find .repos -type f -name "query.proto" -exec rm -f {} \;

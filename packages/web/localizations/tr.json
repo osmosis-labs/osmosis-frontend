@@ -116,7 +116,8 @@
       "externalLink": "Şimdi Osmosis uygulamasından ayrılıyorsun ve gitmek için",
       "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
       "externalLinkModalTitle": "Osmosis'den Ayrılma",
-      "goToSite": "Site'ye Git"
+      "goToSite": "Site'ye Git",
+      "doNotShowAgain": "Bunu tekrar gösterme"
     }
   },
   "store": {
@@ -171,6 +172,7 @@
       "title": "Transfer Geçmişi"
     },
     "ibcTransfer": {
+      "buttonAdd": "Eklemek",
       "buttonEdit": "Düzenle",
       "buttonEnter": "Onay",
       "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
@@ -221,7 +223,8 @@
         "symbol": "Sembol"
       },
       "title": "Tüm Varlıklar",
-      "withdrawButton": "Çek"
+      "withdrawButton": "Çek",
+      "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
     "transfer": {
@@ -229,6 +232,7 @@
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "givePermission": "Belirteçleri kullanma izinleri verin",
+      "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
         "insufficientFee": "Yetersiz Ücret",
@@ -237,7 +241,9 @@
         "seeRequest": "{walletName}'deki talebi gör",
         "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
         "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin."
+        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
+        "invalidAddress": "Geçersiz adres",
+        "missingAddress": "Eksik Adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
@@ -246,7 +252,12 @@
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
       "waitTime": "{minutes} dakika",
-      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "expectedOutput": "Beklenen çıktı",
+      "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
+      "priceImpact": "Fiyat Etkisi",
+      "sending": "Gönderiliyor...",
+      "transferAnyway": "Yine de Aktar"
     },
     "transferAssetSelect": {
       "buttonNext": "Sonraki",
@@ -444,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
-    "7davg": "(7g ort)",
     "amountDaysUnbonding": "{numDays} gün ayrılma",
     "amountDaysUnbonding_plural": "{numDays} gün sonra çözülecek",
     "APR": "APR",
@@ -471,7 +481,6 @@
     "learnMore": "Daha fazla öğren",
     "level": "Seviye {level}",
     "liquidity": "Havuzdaki likidite",
-    "numDaysRemaining": "{numDays} gün kaldı",
     "putAssetsToWork": "Varlıklarınız sizin için çalışsın.",
     "putAssetsToWorkCaption": "Heyecan verici APR'lerden yararlanmak için varlıklarınızı bu havuza ekleyin. Bağlama süreniz ne kadar uzun olursa, o kadar çok kazanırsınız.",
     "rewardDistribution": "Tüm likidite sağlayıcılarına dağıtılan ödüller",
@@ -479,6 +488,7 @@
     "sharesAvailableIn": "sonra kullanılabilir",
     "showDetails": "Detayları göster",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Dönüştürücü",
     "superfluidEarnMore": "Superfluid'e geçin, {rate} daha fazla kazanın.",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Stake",
@@ -539,7 +549,14 @@
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
     "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre"
+    "rewardDistribution": "Ödül dağıtımına kalan süre",
+    "aprBreakdown": {
+      "swapFees": "Takas ücretleri",
+      "boost": "Artırmak",
+      "superfluid": "Süperakışkan",
+      "externalBoost": "Harici Güçlendirme",
+      "total": "Toplam Nisan"
+    }
   },
   "profile": {
     "balance": "denklemek",
@@ -593,9 +610,7 @@
     "unbondingSubtext": "Bu süre sona erdikten sonra varlıklar sekmesi altında OSMO'nuza erişebilirsiniz",
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
-    "collectRewardsTooltip": "Alınmamış tüm ödüllerinizi toplayın. Bu tokenler Osmosis'te hemen size sunulacaktır.",
-    "collectRewardsTooltipDisabled": "Ödülleriniz toplamak için çok düşük, lütfen gaz maliyetlerini karşılamak için daha fazla ödülünüz olduğunda tekrar deneyin.",
-    "collectAndReinvestTooltip": "Alınmamış kazançlarınızı tek tıklamayla toplayın ve otomatik olarak yeniden yatırın. Bileşik faiz, varlıklarınızla daha fazla kazanmanın harika bir yoludur.",
+    "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
     "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
     "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
     "learnMore": {
@@ -791,6 +806,7 @@
     "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
     "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
+    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
     "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
     "pastDaysReturns": "Geçmiş günün getirileri",
@@ -822,5 +838,50 @@
   },
   "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
   "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
-  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin."
+  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
+  "earnPage": {
+    "title": "Para kazanmak",
+    "position": "Konum",
+    "positions": "Pozisyonlar",
+    "allocation": "Paylaştırma",
+    "tokensCount": "{number} jeton",
+    "strategiesCount": "{number} stratejiler",
+    "value": "Değer",
+    "method": "Yöntem",
+    "platform": "platformu",
+    "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
+    "discoverStrategies": "Stratejileri Keşfedin",
+    "myStrategies": "Stratejilerim",
+    "strategyPlatform": "Strateji / Platform",
+    "apy": "APY",
+    "daily": "Günlük",
+    "reward": "Ödül",
+    "lock": "Kilit",
+    "days": "günler",
+    "risk": "Risk",
+    "strategyMethod": "Strateji Yöntemi",
+    "allMethods": "Tüm Yöntemler",
+    "platforms": "Platformlar",
+    "allPlatforms": "Tüm Platformlar",
+    "lockingDuration": "Kilitleme Süresi",
+    "specialTokens": "Özel Jetonlar",
+    "filters": "Filtreler",
+    "resetFilters": "Filtreleri Sıfırla",
+    "saveFilters": "Filtreleri Kaydet",
+    "rewards": "Ödüller",
+    "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
+    "availableToClaim": "talep edilebilir",
+    "claimAllRewards": "Tüm ödülleri talep edin",
+    "join": "Katılmak",
+    "tokenFilterOptions": {
+      "my": "Jetonlarım",
+      "all": "Tüm Jetonlar"
+    },
+    "rewardTypes": {
+      "all": "Tüm",
+      "single": "Bekar",
+      "multi": "Çok"
+    }
+  },
+  "disclaimer": "Sorumluluk reddi beyanı"
 }

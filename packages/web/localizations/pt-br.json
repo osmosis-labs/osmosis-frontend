@@ -116,7 +116,8 @@
       "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
-      "goToSite": "Ir para o site"
+      "goToSite": "Ir para o site",
+      "doNotShowAgain": "Não mostre isso novamente"
     }
   },
   "store": {
@@ -171,6 +172,7 @@
       "title": "Histórico de Transferências"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adicionar",
       "buttonEdit": "Editar",
       "buttonEnter": "Entrar",
       "channelCongestedDeposit": "Depositar (Canal congestionada)",
@@ -221,7 +223,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos os ativos",
-      "withdrawButton": "Sacar"
+      "withdrawButton": "Sacar",
+      "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
     "transfer": {
@@ -229,6 +232,7 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "givePermission": "Dê permissões para usar tokens",
+      "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",
@@ -237,7 +241,9 @@
         "seeRequest": "Ver solicitação em {walletName}",
         "noQuotesAvailable": "Nenhuma cotação disponível",
         "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente."
+        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
+        "invalidAddress": "Endereço inválido",
+        "missingAddress": "Endereço ausente"
       },
       "from": "De",
       "loading": "Carregando",
@@ -246,7 +252,12 @@
       "to": "Para",
       "transferFee": "Taxa de Transferência",
       "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
+      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
+      "expectedOutput": "Resultado Esperado",
+      "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
+      "priceImpact": "Impacto no preço",
+      "sending": "Enviando...",
+      "transferAnyway": "Transferir de qualquer maneira"
     },
     "transferAssetSelect": {
       "buttonNext": "Próximo",
@@ -444,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -471,7 +481,6 @@
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",
-    "numDaysRemaining": "{numDays} dias restantes",
     "putAssetsToWork": "Coloque seus ativos para trabalhar",
     "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
     "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
@@ -479,6 +488,7 @@
     "sharesAvailableIn": "disponível em",
     "showDetails": "Mostrar composição da piscina",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutador",
     "superfluidEarnMore": "Ganhe{rate} mais. Ative o superfluido",
     "superfluidEnabled": "Superfluido",
     "superfluidStaking": "Staking Superfluido",
@@ -539,7 +549,14 @@
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em"
+    "rewardDistribution": "Distribuição de Recompensa em",
+    "aprBreakdown": {
+      "swapFees": "Taxas de troca",
+      "boost": "Impulsionar",
+      "superfluid": "Superfluido",
+      "externalBoost": "Impulso externo",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Saldo",
@@ -593,9 +610,7 @@
     "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
-    "collectRewardsTooltip": "Colete todas as suas recompensas não reclamadas. Esses tokens estarão imediatamente disponíveis para você no Osmosis.",
-    "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando tiver mais recompensas para cobrir os custos do gás.",
-    "collectAndReinvestTooltip": "Colete e reaposte automaticamente seus ganhos não reclamados com um clique. A composição é uma ótima maneira de ganhar mais com seus ativos.",
+    "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
     "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
     "learnMore": {
@@ -791,6 +806,7 @@
     "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
     "pastDaysReturns": "Retornos do dia anterior",
@@ -822,5 +838,50 @@
   },
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
-  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "earnPage": {
+    "title": "Ganhar",
+    "position": "Posição",
+    "positions": "Posições",
+    "allocation": "Alocação",
+    "tokensCount": "{number} tokens",
+    "strategiesCount": "{number} estratégias",
+    "value": "Valor",
+    "method": "Método",
+    "platform": "Plataforma",
+    "scrollToSeeMore": "role para ver mais",
+    "discoverStrategies": "Descubra estratégias",
+    "myStrategies": "Minhas estratégias",
+    "strategyPlatform": "Estratégia/Plataforma",
+    "apy": "APY",
+    "daily": "Diário",
+    "reward": "Recompensa",
+    "lock": "Trancar",
+    "days": "dias",
+    "risk": "Risco",
+    "strategyMethod": "Método de Estratégia",
+    "allMethods": "Todos os métodos",
+    "platforms": "Plataformas",
+    "allPlatforms": "Todas as plataformas",
+    "lockingDuration": "Duração do bloqueio",
+    "specialTokens": "Tokens Especiais",
+    "filters": "Filtros",
+    "resetFilters": "Redefinir filtros",
+    "saveFilters": "Salvar filtros",
+    "rewards": "Recompensas",
+    "estimatedInYearlyRewards": "Estimado em recompensas anuais",
+    "availableToClaim": "disponível para reivindicar",
+    "claimAllRewards": "Reivindique todas as recompensas",
+    "join": "Juntar",
+    "tokenFilterOptions": {
+      "my": "Meus tokens",
+      "all": "Todos os tokens"
+    },
+    "rewardTypes": {
+      "all": "Todos",
+      "single": "Solteiro",
+      "multi": "Múltiplo"
+    }
+  },
+  "disclaimer": "Isenção de responsabilidade"
 }

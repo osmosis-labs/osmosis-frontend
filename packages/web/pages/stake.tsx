@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -84,7 +84,8 @@ export const Staking: React.FC = observer(() => {
     account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
   );
 
-  const amountConfig = useAmountConfig(
+  // wallet balance
+  const stakeTabAmountConfig = useAmountConfig(
     chainStore,
     queriesStore,
     osmosisChainId,
@@ -93,7 +94,8 @@ export const Staking: React.FC = observer(() => {
     osmo
   );
 
-  const stakedAmountConfig = useStakedAmountConfig(
+  // staked amount balance
+  const unstakeTabAmountConfig = useStakedAmountConfig(
     chainStore,
     queriesStore,
     osmosisChainId,
@@ -103,12 +105,15 @@ export const Staking: React.FC = observer(() => {
   );
 
   const stakeAmount = useMemo(() => {
-    if (amountConfig.amount) {
-      return new CoinPretty(osmo, amountConfig.amount);
+    if (stakeTabAmountConfig.amount) {
+      return new CoinPretty(osmo, stakeTabAmountConfig.amount);
     }
-  }, [amountConfig.amount, osmo]);
+  }, [stakeTabAmountConfig.amount, osmo]);
 
-  const primitiveAmount = amountConfig.getAmountPrimitive();
+  const activeAmountConfig =
+    activeTab === "Stake" ? stakeTabAmountConfig : unstakeTabAmountConfig;
+
+  const primitiveAmount = activeAmountConfig.getAmountPrimitive();
 
   const coin = useMemo(() => {
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
@@ -154,16 +159,16 @@ export const Staking: React.FC = observer(() => {
   }, [userValidatorPreferences]);
 
   const validatorSquadModalAction: StakeOrEdit = Boolean(
-    Number(amountConfig.amount)
+    Number(stakeTabAmountConfig.amount)
   )
     ? "stake"
     : "edit";
 
-  const amountDefault = getAmountDefault(amountConfig.fraction);
-  const amount = amountConfig.amount || "0";
+  const amountDefault = getAmountDefault(stakeTabAmountConfig.fraction);
+  const amount = stakeTabAmountConfig.amount || "0";
   const amountUSD = priceStore
     .calculatePrice(
-      new CoinPretty(osmo, amountConfig.getAmountPrimitive().amount)
+      new CoinPretty(osmo, stakeTabAmountConfig.getAmountPrimitive().amount)
     )
     ?.toString();
 
@@ -320,11 +325,14 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
-  const activeAmountConfig =
-    activeTab === "Stake" ? amountConfig : stakedAmountConfig;
+  const hasInsufficientBalance = activeAmountConfig.balance
+    ?.toDec()
+    .lt(new Dec(activeAmountConfig.amount || "1"));
 
-  const disableMainStakeCardButton =
-    isWalletConnected && Number(activeAmountConfig.amount) <= 0;
+  // never disable when wallet is not connected
+  const disableMainStakeCardButton = !isWalletConnected
+    ? false
+    : Number(activeAmountConfig.amount) <= 0 || hasInsufficientBalance;
 
   const setAmount = useCallback(
     (amount: string) => {
@@ -354,6 +362,7 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <StakeTool
+            hasInsufficientBalance={hasInsufficientBalance}
             handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
             handleHalfButtonClick={() =>
               activeAmountConfig.fraction
@@ -386,13 +395,14 @@ export const Staking: React.FC = observer(() => {
             />
           ) : (
             <StakeDashboard
+              hasInsufficientBalance={hasInsufficientBalance}
               setShowValidatorModal={() => setShowValidatorModal(true)}
               setShowStakeLearnMoreModal={() =>
                 setShowStakeLearnMoreModal(true)
               }
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
-              balance={stakedAmountConfig.balance}
+              balance={unstakeTabAmountConfig.balance}
             />
           )}
         </div>

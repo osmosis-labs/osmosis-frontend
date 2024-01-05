@@ -56,6 +56,7 @@ export type EventProperties = {
   amount: string;
   amountUSD: string | undefined;
   type: string;
+  router: string;
 };
 
 export type UserProperties = {
@@ -82,9 +83,7 @@ export const EventName = {
     pageViewed: "Swap: Page viewed",
     maxClicked: "Swap: Max clicked",
     halfClicked: "Swap: Half clicked",
-    inputEntered: "Swap: Input entered",
     slippageToleranceSet: "Swap: Slippage tolerance set",
-    switchClicked: "Swap: Switch clicked",
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",

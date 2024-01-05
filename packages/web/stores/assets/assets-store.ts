@@ -11,7 +11,10 @@ import {
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
+import {
+  getLastIbcTrace,
+  getSourceDenomFromAssetList,
+} from "@osmosis-labs/utils";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -162,11 +165,14 @@ export class ObservableAssets {
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
 
-        const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
+        const minimalDenom = getSourceDenomFromAssetList(ibcAsset);
         const originCurrency = chainInfo.currencies.find((cur) => {
           if (typeof minimalDenom === "undefined") return false;
 
           if (minimalDenom.startsWith("cw20:")) {
+            /** Note: since we're searching on counterparty config, the coinMinimalDenom
+             *  is not the Osmosis IBC denom, it's the source denom
+             */
             return cur.coinMinimalDenom.startsWith(minimalDenom);
           }
           return cur.coinMinimalDenom === minimalDenom;
@@ -178,16 +184,16 @@ export class ObservableAssets {
           );
         }
 
-        const lastTrace = ibcAsset.traces[ibcAsset.traces.length - 1];
+        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
 
-        if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+        if (!ibcTrace) {
           throw new Error(
-            `Unknown trace type ${lastTrace?.type}. Asset ${ibcAsset.symbol}`
+            `Invalid IBC asset config: ${JSON.stringify(ibcAsset)}`
           );
         }
 
-        const sourceChannelId = lastTrace.chain.channel_id;
-        const destChannelId = lastTrace.counterparty.channel_id;
+        const sourceChannelId = ibcTrace.chain.channel_id;
+        const destChannelId = ibcTrace.counterparty.channel_id;
         const isVerified = ibcAsset.keywords?.includes("osmosis-main");
         const isUnstable = ibcAsset.keywords?.includes("osmosis-unstable");
 
@@ -199,7 +205,7 @@ export class ObservableAssets {
          * to send the source denom for deposits.
          */
         let sourceDenom: string | undefined;
-        if ((lastTrace.chain.path.match(/transfer/gi)?.length ?? 0) >= 2) {
+        if ((ibcTrace.chain.path.match(/transfer/gi)?.length ?? 0) >= 2) {
           sourceDenom = minimalDenom;
         }
 
@@ -251,10 +257,10 @@ export class ObservableAssets {
           this._verifiedAssets.add(balance.currency.coinDenom);
         }
 
-        if (lastTrace.type === "ibc-cw20") {
+        if (ibcTrace.type === "ibc-cw20") {
           return {
             ...ibcBalance,
-            ics20ContractAddress: lastTrace.counterparty.port.split(".")[1],
+            ics20ContractAddress: ibcTrace.counterparty.port.split(".")[1],
           } as IBCCW20ContractBalance;
         } else {
           return ibcBalance;

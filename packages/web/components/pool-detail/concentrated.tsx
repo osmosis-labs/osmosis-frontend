@@ -18,7 +18,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
@@ -28,6 +28,8 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
 import { removeQueryParam } from "~/utils/url";
+
+import { AprBreakdown } from "../cards/apr-breakdown";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -463,6 +465,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { derivedDataStore } = useStore();
     const { t } = useTranslation();
+    const featureFlags = useFeatureFlags();
 
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
@@ -470,7 +473,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
     return (
-      <div className="flex h-40 gap-4">
+      <div className="flex flex-wrap gap-4">
         <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
@@ -509,6 +512,13 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             ))}
           </div>
         </div>
+        {featureFlags.aprBreakdown && (
+          <AprBreakdown
+            className="shrink-0 rounded-[28px] bg-osmoverse-1000"
+            poolId={poolId}
+          />
+        )}
+
         {hasIncentives && (
           <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">

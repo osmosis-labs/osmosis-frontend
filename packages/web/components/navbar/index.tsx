@@ -27,6 +27,7 @@ import {
   useDisclosure,
   useLocalStorageState,
 } from "~/hooks";
+import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import {
@@ -35,7 +36,10 @@ import {
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
-import { ExternalLinkModal } from "~/modals/external-links-modal";
+import {
+  ExternalLinkModal,
+  handleExternalLink,
+} from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
@@ -43,6 +47,7 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
 import { formatICNSName, getShortAddress } from "~/utils/string";
+import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
@@ -55,7 +60,6 @@ export const NavBar: FunctionComponent<
 > = observer(
   ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
     const {
-      queriesExternalStore,
       navBarStore,
       chainStore: {
         osmosis: { chainId },
@@ -143,12 +147,13 @@ export const NavBar: FunctionComponent<
       }
     }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
-    const account = accountStore.getWallet(chainId);
+    const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
-      account?.walletInfo?.features?.includes("notifications");
-    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      account?.address ?? ""
-    );
+      wallet?.walletInfo?.features?.includes("notifications");
+
+    const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
+      address: wallet?.address ?? "",
+    });
 
     // announcement banner
     const [_showBanner, setShowBanner] = useLocalStorageState(
@@ -202,7 +207,7 @@ export const NavBar: FunctionComponent<
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      if (!account) return;
+                      if (!wallet) return;
                       onOpenNotifi();
                       closeMobileMainMenu();
                     },
@@ -370,7 +375,13 @@ export const NavBar: FunctionComponent<
               onRequestClose={onCloseSettings}
             />
             <ClientOnly>
-              <SkeletonLoader isLoaded={!isWalletLoading}>
+              <SkeletonLoader
+                isLoaded={
+                  wallet?.isWalletConnected
+                    ? !isWalletLoading && !isLoadingICNSQuery
+                    : !isWalletLoading
+                }
+              >
                 <WalletInfo
                   className="md:hidden"
                   icnsName={icnsQuery?.primaryName}
@@ -417,7 +428,6 @@ const WalletInfo: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
-    navBarStore,
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
@@ -429,11 +439,23 @@ const WalletInfo: FunctionComponent<
   const wallet = accountStore.getWallet(chainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
+  const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
+    api.edge.assets.getAsset.useQuery(
+      {
+        findMinDenomOrSymbol: "OSMO",
+        userOsmoAddress: wallet?.address as string,
+      },
+      {
+        enabled:
+          Boolean(wallet?.address) && typeof wallet?.address === "string",
+      }
+    );
+
   return (
     <div className={className}>
       {!walletConnected ? (
         <Button
-          className="!h-10 w-40 lg:w-36 md:w-full"
+          className="!h-[42px] w-40 lg:w-36 md:w-full"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect(chainId);
@@ -442,42 +464,49 @@ const WalletInfo: FunctionComponent<
           <span className="button mx-auto">{t("connectWallet")}</span>
         </Button>
       ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenProfile();
-          }}
-          className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-        >
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-            {profileStore.currentAvatar === "ammelia" ? (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-ammelia.png"
-                height={32}
-                width={32}
-              />
-            ) : (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-woz.png"
-                height={32}
-                width={32}
-              />
-            )}
-          </div>
+        <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProfile();
+            }}
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+          >
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+              {profileStore.currentAvatar === "ammelia" ? (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-ammelia.png"
+                  height={32}
+                  width={32}
+                />
+              ) : (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-woz.png"
+                  height={32}
+                  width={32}
+                />
+              )}
+            </div>
 
-          <div className="flex w-full  flex-col truncate text-right leading-tight">
-            <span className="body2 font-bold leading-4" title={icnsName}>
-              {Boolean(icnsName)
-                ? formatICNSName(icnsName)
-                : getShortAddress(wallet?.address!)}
-            </span>
-            <span className="caption font-medium tracking-wider text-osmoverse-200">
-              {navBarStore.walletInfo.balance.toString()}
-            </span>
-          </div>
-        </button>
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span className="body2 font-bold leading-4" title={icnsName}>
+                {Boolean(icnsName)
+                  ? formatICNSName(icnsName)
+                  : getShortAddress(wallet?.address!)}
+              </span>
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
+                {userOsmoAsset?.amount
+                  ?.trim(true)
+                  .maxDecimals(2)
+                  .shrink(true)
+                  .upperCase(true)
+                  .toString()}
+              </span>
+            </div>
+          </button>
+        </SkeletonLoader>
       )}
     </div>
   );
@@ -504,6 +533,12 @@ const AnnouncementBanner: FunctionComponent<
     link?.enTextOrLocalizationKey ?? "Click here to learn more"
   );
 
+  const handleLeaveClick = () =>
+    handleExternalLink({
+      url: link?.url ?? "",
+      openModal: onOpenLeavingOsmosis,
+    });
+
   return (
     <div
       className={classNames(
@@ -520,7 +555,7 @@ const AnnouncementBanner: FunctionComponent<
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
-              <button className="underline" onClick={onOpenLeavingOsmosis}>
+              <button className="underline" onClick={handleLeaveClick}>
                 {linkText}
               </button>
             ) : (

@@ -12,6 +12,11 @@ import {
   ModuleRouteAmino,
   ModuleRouteSDKType,
 } from "./module_route";
+import {
+  DenomPairTakerFee,
+  DenomPairTakerFeeAmino,
+  DenomPairTakerFeeSDKType,
+} from "./tx";
 /** Params holds parameters for the poolmanager module */
 export interface Params {
   poolCreationFee: Coin[];
@@ -68,6 +73,10 @@ export interface GenesisState {
   params: Params;
   /** pool_routes is the container of the mappings from pool id to pool type. */
   poolRoutes: ModuleRoute[];
+  /** KVStore state */
+  takerFeesTracker?: TakerFeesTracker;
+  poolVolumes: PoolVolume[];
+  denomPairTakerFeeStore: DenomPairTakerFee[];
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.GenesisState";
@@ -81,6 +90,10 @@ export interface GenesisStateAmino {
   params?: ParamsAmino;
   /** pool_routes is the container of the mappings from pool id to pool type. */
   pool_routes: ModuleRouteAmino[];
+  /** KVStore state */
+  taker_fees_tracker?: TakerFeesTrackerAmino;
+  pool_volumes: PoolVolumeAmino[];
+  denom_pair_taker_fee_store: DenomPairTakerFeeAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/poolmanager/genesis-state";
@@ -91,6 +104,9 @@ export interface GenesisStateSDKType {
   next_pool_id: bigint;
   params: ParamsSDKType;
   pool_routes: ModuleRouteSDKType[];
+  taker_fees_tracker?: TakerFeesTrackerSDKType;
+  pool_volumes: PoolVolumeSDKType[];
+  denom_pair_taker_fee_store: DenomPairTakerFeeSDKType[];
 }
 /** TakerFeeParams consolidates the taker fee parameters for the poolmanager. */
 export interface TakerFeeParams {
@@ -245,6 +261,65 @@ export interface TakerFeeDistributionPercentageSDKType {
   staking_rewards: string;
   community_pool: string;
 }
+export interface TakerFeesTracker {
+  takerFeesToStakers: Coin[];
+  takerFeesToCommunityPool: Coin[];
+  heightAccountingStartsFrom: bigint;
+}
+export interface TakerFeesTrackerProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeesTracker";
+  value: Uint8Array;
+}
+export interface TakerFeesTrackerAmino {
+  taker_fees_to_stakers: CoinAmino[];
+  taker_fees_to_community_pool: CoinAmino[];
+  height_accounting_starts_from: string;
+}
+export interface TakerFeesTrackerAminoMsg {
+  type: "osmosis/poolmanager/taker-fees-tracker";
+  value: TakerFeesTrackerAmino;
+}
+export interface TakerFeesTrackerSDKType {
+  taker_fees_to_stakers: CoinSDKType[];
+  taker_fees_to_community_pool: CoinSDKType[];
+  height_accounting_starts_from: bigint;
+}
+/**
+ * PoolVolume stores the KVStore entries for each pool's volume, which
+ * is used in export/import genesis.
+ */
+export interface PoolVolume {
+  /** pool_id is the id of the pool. */
+  poolId: bigint;
+  /** pool_volume is the cumulative volume of the pool. */
+  poolVolume: Coin[];
+}
+export interface PoolVolumeProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.PoolVolume";
+  value: Uint8Array;
+}
+/**
+ * PoolVolume stores the KVStore entries for each pool's volume, which
+ * is used in export/import genesis.
+ */
+export interface PoolVolumeAmino {
+  /** pool_id is the id of the pool. */
+  pool_id: string;
+  /** pool_volume is the cumulative volume of the pool. */
+  pool_volume: CoinAmino[];
+}
+export interface PoolVolumeAminoMsg {
+  type: "osmosis/poolmanager/pool-volume";
+  value: PoolVolumeAmino;
+}
+/**
+ * PoolVolume stores the KVStore entries for each pool's volume, which
+ * is used in export/import genesis.
+ */
+export interface PoolVolumeSDKType {
+  pool_id: bigint;
+  pool_volume: CoinSDKType[];
+}
 function createBaseParams(): Params {
   return {
     poolCreationFee: [],
@@ -370,6 +445,9 @@ function createBaseGenesisState(): GenesisState {
     nextPoolId: BigInt(0),
     params: Params.fromPartial({}),
     poolRoutes: [],
+    takerFeesTracker: undefined,
+    poolVolumes: [],
+    denomPairTakerFeeStore: [],
   };
 }
 export const GenesisState = {
@@ -386,6 +464,18 @@ export const GenesisState = {
     }
     for (const v of message.poolRoutes) {
       ModuleRoute.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.takerFeesTracker !== undefined) {
+      TakerFeesTracker.encode(
+        message.takerFeesTracker,
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    for (const v of message.poolVolumes) {
+      PoolVolume.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    for (const v of message.denomPairTakerFeeStore) {
+      DenomPairTakerFee.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -406,6 +496,20 @@ export const GenesisState = {
         case 3:
           message.poolRoutes.push(ModuleRoute.decode(reader, reader.uint32()));
           break;
+        case 4:
+          message.takerFeesTracker = TakerFeesTracker.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 5:
+          message.poolVolumes.push(PoolVolume.decode(reader, reader.uint32()));
+          break;
+        case 6:
+          message.denomPairTakerFeeStore.push(
+            DenomPairTakerFee.decode(reader, reader.uint32())
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -425,6 +529,16 @@ export const GenesisState = {
         : undefined;
     message.poolRoutes =
       object.poolRoutes?.map((e) => ModuleRoute.fromPartial(e)) || [];
+    message.takerFeesTracker =
+      object.takerFeesTracker !== undefined && object.takerFeesTracker !== null
+        ? TakerFeesTracker.fromPartial(object.takerFeesTracker)
+        : undefined;
+    message.poolVolumes =
+      object.poolVolumes?.map((e) => PoolVolume.fromPartial(e)) || [];
+    message.denomPairTakerFeeStore =
+      object.denomPairTakerFeeStore?.map((e) =>
+        DenomPairTakerFee.fromPartial(e)
+      ) || [];
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -433,6 +547,17 @@ export const GenesisState = {
       params: object?.params ? Params.fromAmino(object.params) : undefined,
       poolRoutes: Array.isArray(object?.pool_routes)
         ? object.pool_routes.map((e: any) => ModuleRoute.fromAmino(e))
+        : [],
+      takerFeesTracker: object?.taker_fees_tracker
+        ? TakerFeesTracker.fromAmino(object.taker_fees_tracker)
+        : undefined,
+      poolVolumes: Array.isArray(object?.pool_volumes)
+        ? object.pool_volumes.map((e: any) => PoolVolume.fromAmino(e))
+        : [],
+      denomPairTakerFeeStore: Array.isArray(object?.denom_pair_taker_fee_store)
+        ? object.denom_pair_taker_fee_store.map((e: any) =>
+            DenomPairTakerFee.fromAmino(e)
+          )
         : [],
     };
   },
@@ -448,6 +573,23 @@ export const GenesisState = {
       );
     } else {
       obj.pool_routes = [];
+    }
+    obj.taker_fees_tracker = message.takerFeesTracker
+      ? TakerFeesTracker.toAmino(message.takerFeesTracker)
+      : undefined;
+    if (message.poolVolumes) {
+      obj.pool_volumes = message.poolVolumes.map((e) =>
+        e ? PoolVolume.toAmino(e) : undefined
+      );
+    } else {
+      obj.pool_volumes = [];
+    }
+    if (message.denomPairTakerFeeStore) {
+      obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore.map((e) =>
+        e ? DenomPairTakerFee.toAmino(e) : undefined
+      );
+    } else {
+      obj.denom_pair_taker_fee_store = [];
     }
     return obj;
   },
@@ -757,6 +899,218 @@ export const TakerFeeDistributionPercentage = {
     return {
       typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeDistributionPercentage",
       value: TakerFeeDistributionPercentage.encode(message).finish(),
+    };
+  },
+};
+function createBaseTakerFeesTracker(): TakerFeesTracker {
+  return {
+    takerFeesToStakers: [],
+    takerFeesToCommunityPool: [],
+    heightAccountingStartsFrom: BigInt(0),
+  };
+}
+export const TakerFeesTracker = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeesTracker",
+  encode(
+    message: TakerFeesTracker,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    for (const v of message.takerFeesToStakers) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.takerFeesToCommunityPool) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.heightAccountingStartsFrom !== BigInt(0)) {
+      writer.uint32(24).int64(message.heightAccountingStartsFrom);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): TakerFeesTracker {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTakerFeesTracker();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.takerFeesToStakers.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.takerFeesToCommunityPool.push(
+            Coin.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.heightAccountingStartsFrom = reader.int64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<TakerFeesTracker>): TakerFeesTracker {
+    const message = createBaseTakerFeesTracker();
+    message.takerFeesToStakers =
+      object.takerFeesToStakers?.map((e) => Coin.fromPartial(e)) || [];
+    message.takerFeesToCommunityPool =
+      object.takerFeesToCommunityPool?.map((e) => Coin.fromPartial(e)) || [];
+    message.heightAccountingStartsFrom =
+      object.heightAccountingStartsFrom !== undefined &&
+      object.heightAccountingStartsFrom !== null
+        ? BigInt(object.heightAccountingStartsFrom.toString())
+        : BigInt(0);
+    return message;
+  },
+  fromAmino(object: TakerFeesTrackerAmino): TakerFeesTracker {
+    return {
+      takerFeesToStakers: Array.isArray(object?.taker_fees_to_stakers)
+        ? object.taker_fees_to_stakers.map((e: any) => Coin.fromAmino(e))
+        : [],
+      takerFeesToCommunityPool: Array.isArray(
+        object?.taker_fees_to_community_pool
+      )
+        ? object.taker_fees_to_community_pool.map((e: any) => Coin.fromAmino(e))
+        : [],
+      heightAccountingStartsFrom: BigInt(object.height_accounting_starts_from),
+    };
+  },
+  toAmino(message: TakerFeesTracker): TakerFeesTrackerAmino {
+    const obj: any = {};
+    if (message.takerFeesToStakers) {
+      obj.taker_fees_to_stakers = message.takerFeesToStakers.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.taker_fees_to_stakers = [];
+    }
+    if (message.takerFeesToCommunityPool) {
+      obj.taker_fees_to_community_pool = message.takerFeesToCommunityPool.map(
+        (e) => (e ? Coin.toAmino(e) : undefined)
+      );
+    } else {
+      obj.taker_fees_to_community_pool = [];
+    }
+    obj.height_accounting_starts_from = message.heightAccountingStartsFrom
+      ? message.heightAccountingStartsFrom.toString()
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: TakerFeesTrackerAminoMsg): TakerFeesTracker {
+    return TakerFeesTracker.fromAmino(object.value);
+  },
+  toAminoMsg(message: TakerFeesTracker): TakerFeesTrackerAminoMsg {
+    return {
+      type: "osmosis/poolmanager/taker-fees-tracker",
+      value: TakerFeesTracker.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: TakerFeesTrackerProtoMsg): TakerFeesTracker {
+    return TakerFeesTracker.decode(message.value);
+  },
+  toProto(message: TakerFeesTracker): Uint8Array {
+    return TakerFeesTracker.encode(message).finish();
+  },
+  toProtoMsg(message: TakerFeesTracker): TakerFeesTrackerProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeesTracker",
+      value: TakerFeesTracker.encode(message).finish(),
+    };
+  },
+};
+function createBasePoolVolume(): PoolVolume {
+  return {
+    poolId: BigInt(0),
+    poolVolume: [],
+  };
+}
+export const PoolVolume = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.PoolVolume",
+  encode(
+    message: PoolVolume,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    for (const v of message.poolVolume) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): PoolVolume {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolVolume();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        case 2:
+          message.poolVolume.push(Coin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<PoolVolume>): PoolVolume {
+    const message = createBasePoolVolume();
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
+    message.poolVolume =
+      object.poolVolume?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: PoolVolumeAmino): PoolVolume {
+    return {
+      poolId: BigInt(object.pool_id),
+      poolVolume: Array.isArray(object?.pool_volume)
+        ? object.pool_volume.map((e: any) => Coin.fromAmino(e))
+        : [],
+    };
+  },
+  toAmino(message: PoolVolume): PoolVolumeAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    if (message.poolVolume) {
+      obj.pool_volume = message.poolVolume.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.pool_volume = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: PoolVolumeAminoMsg): PoolVolume {
+    return PoolVolume.fromAmino(object.value);
+  },
+  toAminoMsg(message: PoolVolume): PoolVolumeAminoMsg {
+    return {
+      type: "osmosis/poolmanager/pool-volume",
+      value: PoolVolume.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: PoolVolumeProtoMsg): PoolVolume {
+    return PoolVolume.decode(message.value);
+  },
+  toProto(message: PoolVolume): Uint8Array {
+    return PoolVolume.encode(message).finish();
+  },
+  toProtoMsg(message: PoolVolume): PoolVolumeProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.PoolVolume",
+      value: PoolVolume.encode(message).finish(),
     };
   },
 };

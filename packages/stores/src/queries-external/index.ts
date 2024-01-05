@@ -3,6 +3,7 @@ export * from "./base";
 export * from "./coingecko-market-charts";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
+export * from "./numia";
 export * from "./pool-fees";
 export * from "./pool-rewards";
 export * from "./pools";
@@ -21,3 +22,5 @@ export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
  */
 export const COINGECKO_API_DEFAULT_BASEURL =
   "https://coingecko.osmosis.zone/api";
+
+export const NUMIA_INDEXER_BASEURL = "https://public-osmosis-api.numia.xyz";

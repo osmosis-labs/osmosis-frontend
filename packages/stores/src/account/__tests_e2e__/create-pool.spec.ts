@@ -1,25 +1,25 @@
 /* eslint-disable */
+import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
   test("weighted - should fail with 0 assets", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       account!.osmosis.sendCreateBalancerPoolMsg("0", [])
@@ -27,7 +27,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - should fail with 1 assets", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       account!.osmosis.sendCreateBalancerPoolMsg("0", [
@@ -47,7 +47,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - should fail with duplicated assets", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       account!.osmosis.sendCreateBalancerPoolMsg(
@@ -83,7 +83,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - with 0 swap fee", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tx = await new Promise<any>((resolve, reject) => {
       account!.osmosis.sendCreateBalancerPoolMsg(
@@ -149,7 +149,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - with swap fee", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tx = await new Promise<any>((resolve, reject) => {
       account!.osmosis
@@ -217,7 +217,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("concentrated - base creation", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise<any>((resolve, reject) => {

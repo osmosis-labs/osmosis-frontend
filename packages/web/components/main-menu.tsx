@@ -1,5 +1,4 @@
 import { Popover } from "@headlessui/react";
-import { isMobile } from "@walletconnect/browser-utils";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,18 +7,78 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { isFunction } from "~/utils/assertion";
+import { MaybeRenderProp, runIfFn } from "~/utils/function";
+
+export const MainMenu: FunctionComponent<{
+  onClickItem?: () => void;
+  menus: MainLayoutMenu[];
+  secondaryMenuItems: MainLayoutMenu[];
+  className?: string;
+}> = ({ menus, onClickItem, className, secondaryMenuItems }) => {
+  return (
+    <ul
+      className={classNames(
+        "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
+        className
+      )}
+    >
+      {menus.map((menu, index) => {
+        const { link, selectionTest, secondaryLogo, showMore } = menu;
+
+        return (
+          <li
+            key={index}
+            className="flex cursor-pointer items-center"
+            onClick={(e) => {
+              onClickItem?.();
+              if (isFunction(link)) link(e);
+            }}
+          >
+            <MenuLink
+              href={link}
+              secondaryLogo={secondaryLogo}
+              selectionTest={selectionTest}
+              showMore={showMore}
+            >
+              {({ showSubTitle, selected }) => (
+                <>
+                  {showMore ? (
+                    <MorePopover
+                      item={menu}
+                      secondaryMenus={secondaryMenuItems}
+                    />
+                  ) : (
+                    <MenuItemContent
+                      menu={menu}
+                      selected={selected}
+                      showSubTitle={showSubTitle}
+                    />
+                  )}
+                </>
+              )}
+            </MenuLink>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
 
 const MenuLink: FunctionComponent<{
   href: string | any;
   secondaryLogo?: React.ReactNode;
-  children: (showSecondary: boolean) => React.ReactNode;
+  children: MaybeRenderProp<{ showSubTitle: boolean; selected: boolean }>;
   selectionTest?: RegExp;
   showMore?: boolean;
 }> = ({ href, children, secondaryLogo, selectionTest, showMore }) => {
-  const [showSecondary, setShowSecondary] = useState(false);
+  const router = useRouter();
+  const [showSubTitle, setShowSubTitle] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  const { isMobile } = useWindowSize();
 
   useEffect(() => {
     setIsMounted(true); // component has mounted. Needed because of NextJS SSR.
@@ -27,32 +86,36 @@ const MenuLink: FunctionComponent<{
 
   const shouldShowHover = !!secondaryLogo;
 
-  const handleLinkClick = (e: React.MouseEvent) => {
-    if (typeof href === "function") {
-      e.preventDefault();
-      href(e);
-    }
+  const onClickLink = (e: React.MouseEvent) => {
     // If href is a string, do nothing and let the Link handle the navigation
+    if (!isFunction(href)) return;
+
+    e.preventDefault();
+    href(e);
   };
 
-  if (isMounted && showMore && isMobile()) {
+  if (isMounted && showMore && isMobile) {
     return null; // Don't render more menu on mobile per discussion with Syed.
   }
+
+  const selected = selectionTest ? selectionTest.test(router.pathname) : false;
 
   return (
     <Link
       href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
-      className="h-full w-full flex-shrink flex-grow"
+      className={classNames("h-full w-full flex-shrink flex-grow", {
+        "rounded-full bg-osmoverse-700": selected,
+      })}
     >
       <div
-        className={`${!showMore && "flex h-12 items-center px-4 py-3"}`}
-        onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
-        onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
-        onClick={handleLinkClick}
+        className={showMore ? undefined : "flex h-12 items-center px-4 py-3"}
+        onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
+        onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
+        onClick={onClickLink}
       >
-        {children(showSecondary)}
+        {runIfFn(children, { showSubTitle, selected })}
       </div>
     </Link>
   );
@@ -66,7 +129,12 @@ const MorePopover: FunctionComponent<{
     <Popover className="relative flex">
       {({ open }) => (
         <>
-          <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
+          <Popover.Button
+            className={classNames(
+              "h-full w-full px-4 py-3 focus:outline-none",
+              open && "rounded-full bg-osmoverse-800"
+            )}
+          >
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
           <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
@@ -80,7 +148,7 @@ const MorePopover: FunctionComponent<{
                   showMore={showMore}
                   key={menu.label}
                 >
-                  {() => <MenuItemContent menu={menu} />}
+                  <MenuItemContent menu={menu} />
                 </MenuLink>
               );
             })}
@@ -93,9 +161,9 @@ const MorePopover: FunctionComponent<{
 
 const MenuItemContent: React.FC<{
   selected?: Boolean;
-  showSecondary?: Boolean;
+  showSubTitle?: Boolean;
   menu: MainLayoutMenu;
-}> = ({ selected, showSecondary, menu }) => {
+}> = ({ selected, showSubTitle, menu }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -128,7 +196,7 @@ const MenuItemContent: React.FC<{
         {/* Main Icon */}
         <div
           className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
-            showSecondary ? "opacity-0" : "opacity-100"
+            showSubTitle ? "opacity-0" : "opacity-100"
           }`}
         >
           {typeof icon === "string" ? (
@@ -145,7 +213,7 @@ const MenuItemContent: React.FC<{
         {/* Secondary Logo */}
         <div
           className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
-            showSecondary ? "opacity-100" : "opacity-0"
+            showSubTitle ? "opacity-100" : "opacity-0"
           }`}
         >
           {secondaryLogo}
@@ -171,7 +239,7 @@ const MenuItemContent: React.FC<{
           <>
             <div
               className={`flex items-center justify-between transition-transform duration-300 ease-in-out ${
-                showSecondary && subtext ? "-translate-y-0.5 transform" : ""
+                showSubTitle && subtext ? "-translate-y-0.5 transform" : ""
               }`}
             >
               {label}
@@ -179,7 +247,7 @@ const MenuItemContent: React.FC<{
             </div>
             <div
               className={`transition-visibility mt-0 transition-opacity duration-300 ease-in-out ${
-                showSecondary && subtext
+                showSubTitle && subtext
                   ? "visible h-5 opacity-100"
                   : "invisible h-0 opacity-0"
               } text-white-opacity-70 text-xs font-medium`}
@@ -190,72 +258,5 @@ const MenuItemContent: React.FC<{
         )}
       </div>
     </div>
-  );
-};
-
-export const MainMenu: FunctionComponent<{
-  onClickItem?: () => void;
-  menus: MainLayoutMenu[];
-  secondaryMenuItems: MainLayoutMenu[];
-  className?: string;
-}> = ({ menus, onClickItem, className, secondaryMenuItems }) => {
-  const router = useRouter();
-
-  return (
-    <ul
-      className={classNames(
-        "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
-        className
-      )}
-    >
-      {menus.map((menu, index) => {
-        const { link, selectionTest, secondaryLogo, showMore } = menu;
-        const selected = selectionTest
-          ? selectionTest.test(router.pathname)
-          : false;
-
-        return (
-          <li
-            key={index}
-            className={classNames("flex cursor-pointer items-center", {
-              "rounded-full bg-osmoverse-700": selected,
-            })}
-            onClick={(e) => {
-              onClickItem?.();
-
-              if (typeof link === "function") {
-                link(e);
-              }
-            }}
-          >
-            <MenuLink
-              href={link}
-              secondaryLogo={secondaryLogo}
-              selectionTest={selectionTest}
-              showMore={showMore}
-            >
-              {(showSecondary: Boolean) => {
-                if (showMore) {
-                  return (
-                    <MorePopover
-                      item={menu}
-                      secondaryMenus={secondaryMenuItems}
-                    />
-                  );
-                } else {
-                  return (
-                    <MenuItemContent
-                      menu={menu}
-                      selected={selected}
-                      showSecondary={showSecondary}
-                    />
-                  );
-                }
-              }}
-            </MenuLink>
-          </li>
-        );
-      })}
-    </ul>
   );
 };

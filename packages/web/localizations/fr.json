@@ -116,7 +116,8 @@
       "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site"
+      "goToSite": "Aller au site",
+      "doNotShowAgain": "Ne montre plus cela"
     }
   },
   "store": {
@@ -171,6 +172,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
@@ -221,7 +223,8 @@
         "symbol": "Devise"
       },
       "title": "Tous les actifs",
-      "withdrawButton": "Retirer"
+      "withdrawButton": "Retirer",
+      "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
     "transfer": {
@@ -229,6 +232,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
@@ -237,7 +241,9 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",
@@ -246,7 +252,12 @@
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "expectedOutput": "Production attendue",
+      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
@@ -444,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
-    "7davg": "(7j moy)",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
@@ -471,7 +481,6 @@
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
-    "numDaysRemaining": "{numDays} jours restants",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "rewardDistribution": "Récompenses distribuées à tous les fournisseurs de liquidités",
@@ -479,6 +488,7 @@
     "sharesAvailableIn": "Disponible dans",
     "showDetails": "Afficher details",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutateur",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
@@ -539,7 +549,14 @@
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans"
+    "rewardDistribution": "Distribution de la récompence dans",
+    "aprBreakdown": {
+      "swapFees": "Frais de swap",
+      "boost": "Booster",
+      "superfluid": "Superfluide",
+      "externalBoost": "Boost externe",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Solde",
@@ -593,9 +610,7 @@
     "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
-    "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
-    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais d'essence.",
-    "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
+    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
@@ -791,6 +806,7 @@
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
     "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
     "pastDaysReturns": "Retours de la journée passée",
@@ -822,5 +838,50 @@
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false »."
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "earnPage": {
+    "title": "Gagner",
+    "position": "Position",
+    "positions": "Postes",
+    "allocation": "Allocation",
+    "tokensCount": "{number} jetons",
+    "strategiesCount": "Stratégies {number}",
+    "value": "Valeur",
+    "method": "Méthode",
+    "platform": "Plate-forme",
+    "scrollToSeeMore": "faites défiler pour en voir plus",
+    "discoverStrategies": "Découvrez les stratégies",
+    "myStrategies": "Mes stratégies",
+    "strategyPlatform": "Stratégie / Plateforme",
+    "apy": "APY",
+    "daily": "Tous les jours",
+    "reward": "Récompense",
+    "lock": "Verrouillage",
+    "days": "jours",
+    "risk": "Risque",
+    "strategyMethod": "Méthode stratégique",
+    "allMethods": "Toutes les méthodes",
+    "platforms": "Plateformes",
+    "allPlatforms": "Toutes les plateformes",
+    "lockingDuration": "Durée de verrouillage",
+    "specialTokens": "Jetons spéciaux",
+    "filters": "Filtres",
+    "resetFilters": "Réinitialiser les filtres",
+    "saveFilters": "Enregistrer les filtres",
+    "rewards": "Récompenses",
+    "estimatedInYearlyRewards": "Estimé en récompenses annuelles",
+    "availableToClaim": "disponible pour réclamer",
+    "claimAllRewards": "Réclamez toutes les récompenses",
+    "join": "Rejoindre",
+    "tokenFilterOptions": {
+      "my": "Mes jetons",
+      "all": "Tous les jetons"
+    },
+    "rewardTypes": {
+      "all": "Tous",
+      "single": "Célibataire",
+      "multi": "Multi"
+    }
+  },
+  "disclaimer": "Clause de non-responsabilité"
 }

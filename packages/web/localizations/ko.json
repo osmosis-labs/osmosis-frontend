@@ -116,7 +116,8 @@
       "externalLink": "Osmosis 앱을 떠나 외부 링크로 이동합니다.",
       "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
       "externalLinkModalTitle": "Osmosis 떠나기",
-      "goToSite": "사이트로 가기"
+      "goToSite": "사이트로 가기",
+      "doNotShowAgain": "다시 표시하지 않음"
     }
   },
   "store": {
@@ -171,6 +172,7 @@
       "title": "전송 내역"
     },
     "ibcTransfer": {
+      "buttonAdd": "추가하다",
       "buttonEdit": "수정",
       "buttonEnter": "입력",
       "channelCongestedDeposit": "입금 (채널 혼잡)",
@@ -221,7 +223,8 @@
         "symbol": "심볼"
       },
       "title": "모든 자산",
-      "withdrawButton": "출금"
+      "withdrawButton": "출금",
+      "activate": "활성화"
     },
     "totalAssets": "총 자산",
     "transfer": {
@@ -229,6 +232,7 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "givePermission": "토큰 사용 권한 부여",
+      "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
@@ -237,7 +241,9 @@
         "seeRequest": "{walletName}에서 요청 사항 확인하기",
         "noQuotesAvailable": "이용 가능한 견적이 없습니다.",
         "unexpectedError": "예기치 않은 오류. 다시 시도해 주세요.",
-        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요."
+        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요.",
+        "invalidAddress": "잘못된 주소",
+        "missingAddress": "누락된 주소"
       },
       "from": "발신 체인",
       "loading": "로딩",
@@ -246,7 +252,12 @@
       "to": "수신 체인",
       "transferFee": "전송 수수료",
       "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
+      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
+      "expectedOutput": "예상 출력",
+      "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
+      "priceImpact": "가격 영향",
+      "sending": "배상...",
+      "transferAnyway": "어쨌든 전송"
     },
     "transferAssetSelect": {
       "buttonNext": "다음",
@@ -344,7 +355,7 @@
     "negativeAmount": "수량이 음수입니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
     "negativeSlippage": "슬리피지가 음수입니다",
-    "negativeSwapFee": "Swap fee is negative",
+    "negativeSwapFee": "교환 수수료가 음수입니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
@@ -444,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
-    "7davg": "(7일 평균)",
     "amountDaysUnbonding": "{numDays}일 연결 해제",
     "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "APR": "APR",
@@ -459,7 +469,7 @@
     "collapseDetails": "닫기",
     "commission": "수수료",
     "currentDailyEarn": "내 일일 보상",
-    "dailyEarnAmount": "{amount} / 일",
+    "dailyEarnAmount": "{amount} /일",
     "day": "일",
     "delegated": "위임된 자산",
     "details": "상세정보",
@@ -471,7 +481,6 @@
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "liquidity": "유동성",
-    "numDaysRemaining": "{numDays}일 남음",
     "putAssetsToWork": "자산을 늘리세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 APR 수익을 벌어보세요. 더 긴 해제 기간을 선택하면, 더 많은 보상을 얻을 수 있어요.",
     "rewardDistribution": "모든 유동성 공급자에게 분배된 보상",
@@ -479,6 +488,7 @@
     "sharesAvailableIn": "이용 가능",
     "showDetails": "자세히 보기",
     "stableswapEnabled": "스테이블 스왑",
+    "transmuter": "트랜스뮤터",
     "superfluidEarnMore": "Superfluid 스테이킹을 하고 {rate}를 더 받으세요",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid 스테이킹",
@@ -539,7 +549,14 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "aprBreakdown": {
+      "swapFees": "스왑 수수료",
+      "boost": "후원",
+      "superfluid": "초유체",
+      "externalBoost": "외부 부스트",
+      "total": "총 연이율"
+    }
   },
   "profile": {
     "balance": "잔액",
@@ -593,9 +610,7 @@
     "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다.",
     "unbondingPeriodTooltip": "잠긴 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
-    "collectRewardsTooltip": "청구하지 않은 보상을 모두 수집하세요. 이 토큰은 Osmosis에서 즉시 사용할 수 있습니다.",
-    "collectRewardsTooltipDisabled": "보상이 너무 적어 수집할 수 없습니다. 가스 비용을 충당할 수 있는 보상이 더 있으면 다시 시도하세요.",
-    "collectAndReinvestTooltip": "한 번의 클릭으로 청구되지 않은 수익을 수집하고 자동으로 다시 스테이킹하세요. 복리는 자산으로 더 많은 수익을 올릴 수 있는 좋은 방법입니다.",
+    "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
     "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
     "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
     "learnMore": {
@@ -791,6 +806,7 @@
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
     "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
     "pastDaysReturns": "지난 날의 수익",
@@ -822,5 +838,50 @@
   },
   "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
   "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
-  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요."
+  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요.",
+  "earnPage": {
+    "title": "벌다",
+    "position": "위치",
+    "positions": "직위",
+    "allocation": "배당",
+    "tokensCount": "{number} 토큰",
+    "strategiesCount": "{number} 전략",
+    "value": "값",
+    "method": "방법",
+    "platform": "플랫폼",
+    "scrollToSeeMore": "더 보려면 스크롤하세요.",
+    "discoverStrategies": "전략 발견",
+    "myStrategies": "내 전략",
+    "strategyPlatform": "전략/플랫폼",
+    "apy": "APY",
+    "daily": "일일",
+    "reward": "보상",
+    "lock": "잠그다",
+    "days": "날",
+    "risk": "위험",
+    "strategyMethod": "전략 방법",
+    "allMethods": "모든 방법",
+    "platforms": "플랫폼",
+    "allPlatforms": "모든 플랫폼",
+    "lockingDuration": "잠금 기간",
+    "specialTokens": "특별 토큰",
+    "filters": "필터",
+    "resetFilters": "필터 재설정",
+    "saveFilters": "필터 저장",
+    "rewards": "보상",
+    "estimatedInYearlyRewards": "연간 보상으로 추정",
+    "availableToClaim": "청구 가능",
+    "claimAllRewards": "모든 보상을 받으세요",
+    "join": "가입하다",
+    "tokenFilterOptions": {
+      "my": "내 토큰",
+      "all": "모든 토큰"
+    },
+    "rewardTypes": {
+      "all": "모두",
+      "single": "하나의",
+      "multi": "다중"
+    }
+  },
+  "disclaimer": "부인 성명"
 }

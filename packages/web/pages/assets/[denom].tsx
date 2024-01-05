@@ -25,13 +25,9 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import {
-  AssetLists,
-  ChainList,
-  COINGECKO_PUBLIC_URL,
-  EventName,
-  TWITTER_PUBLIC_URL,
-} from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -43,7 +39,6 @@ import {
   useFeatureFlags,
   useLocalStorageState,
   useNavBar,
-  useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
@@ -115,8 +110,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       coingeckoCoin?.id
     );
 
-    const { isLoading: isWalletLoading } = useWalletSelect();
-
     useAmplitudeAnalytics({
       onLoadEvent: [
         EventName.TokenInfo.pageViewed,
@@ -146,7 +139,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     });
 
     useUnmount(() => {
-      assetInfoConfig.dispose();
+      if (process.env.NODE_ENV === "production") {
+        assetInfoConfig.dispose();
+      }
     });
 
     const contextValue = useMemo(
@@ -175,7 +170,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
 
-              <YourBalance denom={denom} />
+              <YourBalance
+                denom={denom}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
 
               <TokenDetails
                 denom={denom}
@@ -183,25 +181,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 coingeckoCoin={coingeckoCoin}
               />
 
-              <div className="hidden xl:block">
-                <SwapTool
-                  memoedPools={memoedPools}
-                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
-                  isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  outTokenDenom={denom}
-                  page="Token Info Page"
-                />
-              </div>
-
               <TwitterSection tweets={tweets} />
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">
                 <SwapTool
-                  memoedPools={memoedPools}
-                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
                   sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   outTokenDenom={denom}
@@ -288,7 +273,7 @@ const Navigation = observer((props: NavigationProps) => {
     }
 
     const asset = getAssetFromAssetList({
-      minimalDenom: currency?.coinMinimalDenom,
+      coinMinimalDenom: currency?.coinMinimalDenom,
       assetLists: AssetLists,
     });
 
@@ -327,7 +312,7 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom?.toUpperCase()}</h1>
+        <h1 className="text-h4 font-h4">{denom}</h1>
         {title ? (
           <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
         ) : (
@@ -576,7 +561,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     try {
       cachedTokens = await queryAllTokens();
     } catch (e) {
-      console.error("Failed to retrieved tokens from imperator apif: ", e);
+      console.error("Failed to retrieved tokens from imperator api: ", e);
     }
   }
 
@@ -626,9 +611,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
               const res = await getTokenInfo(tokenDenom, lang.value);
 
               return [lang.value, res];
-            } catch (error) {
-              console.error(error);
-            }
+            } catch (error) {}
 
             return [lang.value, null];
           })

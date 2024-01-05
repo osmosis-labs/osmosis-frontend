@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -32,7 +33,6 @@ import {
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "~/components/table/cells";
-import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
 import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
@@ -41,6 +41,8 @@ import { MenuOptionsModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
+
+import { AprBreakdownCell } from "../table/cells/apr-breakdown";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -73,7 +75,7 @@ export type Pool = [
 ];
 
 const searchPoolsMemoedKeys = [
-  "pool.id",
+  "queryPool.id",
   "poolName",
   "networkNames",
   "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
@@ -188,7 +190,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -301,7 +302,9 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search === "") {
+        const sanitizedSearch = search.replace(/#/g, "");
+
+        if (sanitizedSearch === "") {
           setIsSearching(false);
         } else {
           queriesOsmosis.queryPools.fetchRemainingPools({
@@ -310,7 +313,7 @@ export const AllPoolsTable: FunctionComponent<{
           setIsSearching(true);
         }
         setSorting([]);
-        _setQuery(search);
+        _setQuery(sanitizedSearch);
       },
       [_setQuery, queriesOsmosis.queryPools, setSorting]
     );
@@ -416,46 +419,21 @@ export const AllPoolsTable: FunctionComponent<{
             ) => {
               const pool = props.getValue();
 
-              const inflation = queriesCosmos.queryInflation;
-              /**
-               * If pool APR is 50 times bigger than staking APR, warn user
-               * that pool may be subject to inflation
-               */
-              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
-                ? pool.apr
-                    .toDec()
-                    .gt(
-                      inflation.inflation
-                        .toDec()
-                        .quo(new Dec(100))
-                        .mul(new Dec(100))
-                    )
-                : false;
+              if (!flags._isInitialized) return null;
+
+              let value: ReactNode | null;
+              if (flags.aprBreakdown) {
+                value = <AprBreakdownCell poolId={pool.queryPool.id} />;
+              } else {
+                value = pool.apr.toString();
+              }
 
               return (
                 <MetricLoaderCell
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
-                  value={
-                    // Only display warning when APR is too high
-                    isAPRTooHigh ? (
-                      <Tooltip
-                        className="w-5"
-                        content={t("highPoolInflationWarning")}
-                      >
-                        <p className="flex items-center gap-1.5">
-                          <Icon
-                            id="alert-triangle"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />
-                          {pool.apr.toString()}
-                        </p>
-                      </Tooltip>
-                    ) : (
-                      pool.apr.toString()
-                    )
-                  }
+                  value={value}
                 />
               );
             }
@@ -499,12 +477,13 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
-        queriesCosmos.queryInflation,
         queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,
         t,
+        flags.aprBreakdown,
+        flags._isInitialized,
       ]
     );
 

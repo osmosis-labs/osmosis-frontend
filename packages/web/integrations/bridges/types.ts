@@ -1,6 +1,7 @@
 import { TxReason, TxStatus } from "@osmosis-labs/stores";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
+import { z } from "zod";
 
 export interface BridgeProvider {
   providerName: string;
@@ -28,7 +29,7 @@ export interface BridgeProviderContext {
   cache: LRUCache<string, CacheEntry>;
 }
 
-export interface BridgeChain {
+const bridgeChainSchema = z.object({
   /**
    * EVM chainId or Cosmos chainId
    *
@@ -40,20 +41,22 @@ export interface BridgeChain {
    * - 1 (Ethereum)
    * - 10 (Optimism)
    */
-  chainId: number | string;
+  chainId: z.union([z.string(), z.number()]),
   /**
    * Optional: The human-readable name of the chain.
    */
-  chainName?: string;
+  chainName: z.string().optional(),
   /**
    * Optional: The name of the network to which the chain belongs.
    */
-  networkName?: string;
+  networkName: z.string().optional(),
   /**
    * The type of blockchain, either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains.
    */
-  chainType: "evm" | "cosmos";
-}
+  chainType: z.union([z.literal("evm"), z.literal("cosmos")]),
+});
+
+export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
 export interface BridgeTransferStatus {
   id: string;
@@ -72,21 +75,23 @@ export interface BridgeStatus {
   maintenanceMessage?: string;
 }
 
-export interface BridgeAsset {
+const bridgeAssetSchema = z.object({
   /**
    * The denomination of the asset.
    */
-  denom: string;
+  denom: z.string(),
   /**
    * The address of the asset, represented as an IBC denom or EVM contract address.
    */
-  address: string;
+  address: z.string(),
   /**
    * The number of decimal places for the asset.
    */
-  decimals: number;
-  minimalDenom: string;
-}
+  decimals: z.number(),
+  sourceDenom: z.string(),
+});
+
+export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
 export interface BridgeDepositAddress {
   depositAddress: string;
@@ -118,45 +123,47 @@ export interface GetTransferStatusParams {
   toChainId: BridgeChain["chainId"];
 }
 
-export interface GetBridgeQuoteParams {
+export const getBridgeQuoteSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  fromChain: bridgeChainSchema,
   /**
    * The destination chain information.
    */
-  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  toChain: bridgeChainSchema,
   /**
    * The asset on the originating chain.
    */
-  fromAsset: BridgeAsset;
+  fromAsset: bridgeAssetSchema,
   /**
    * The asset on the destination chain.
    */
-  toAsset: BridgeAsset;
+  toAsset: bridgeAssetSchema,
   /**
    * The amount to be transferred from the originating chain, represented as a string.
    */
-  fromAmount: string;
+  fromAmount: z.string(),
   /**
    * The address on the originating chain from where the assets are transferred.
    */
-  fromAddress: string;
+  fromAddress: z.string(),
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: string;
+  toAddress: z.string(),
   /**
    * Optional: The tolerance for price slippage, represented as a percentage. Valid values are > 0 and < 99.99.
    */
-  slippage?: number;
-}
+  slippage: z.number().optional(),
+});
+
+export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
 export interface BridgeCoin {
   amount: string;
   denom: string;
-  coinMinimalDenom: string;
+  sourceDenom: string;
   decimals: number;
   fiatValue?: {
     currency: "usd";
@@ -197,9 +204,11 @@ export type BridgeTransactionRequest =
   | QRCodeBridgeTransactionRequest;
 
 export interface BridgeQuote {
-  fromAmount: string;
-  toAmount: string;
-  toAmountMin: string;
+  input: Required<BridgeCoin>;
+  expectedOutput: Required<BridgeCoin> & {
+    /** Percentage represented as string. E.g. 10.0, 95.0 */
+    priceImpact: string;
+  };
   fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   /**

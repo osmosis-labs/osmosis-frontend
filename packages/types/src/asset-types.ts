@@ -48,6 +48,7 @@ export interface AssetList {
 interface TraceCounterpartyChain {
   chain_name: string;
   base_denom: string;
+  contract?: string;
 }
 
 interface TestMintageTrace {
@@ -93,7 +94,7 @@ interface TraceChain {
   path: string;
 }
 
-interface IBCTrace {
+export interface IBCTrace {
   type: "ibc";
   counterparty: TraceCounterpartyChain & {
     channel_id: string;
@@ -101,7 +102,7 @@ interface IBCTrace {
   chain: TraceChain;
 }
 
-interface IbcCW20Trace {
+export interface IbcCW20Trace {
   type: "ibc-cw20";
   counterparty: TraceCounterpartyChain & {
     port: string;
@@ -132,11 +133,15 @@ export interface Asset {
     | TestMintageTrace
   )[];
   logo_URIs: LogoURIs;
+  relative_image_url: string;
   coingecko_id?: string;
   keywords?: string[];
   origin_chain_name: string;
   origin_chain_id: string;
-  price_coin_id?: string;
+  price_info?: {
+    dest_coin_minimal_denom: string;
+    pool_id: string;
+  };
 }
 
 export interface AssetDenomUnit {
@@ -196,17 +201,20 @@ interface GasPriceStep {
 export type Currency = KeplrBaseCurrency & {
   originCurrency?: KeplrBaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-    priceCoinId?: string;
   };
 };
 
 export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
-  priceCoinId?: string;
+  base?: string;
   gasPriceStep?: GasPriceStep;
 };
 
 export type FeeCurrency = AppCurrency & {
-  priceCoinId?: string;
   gasPriceStep?: GasPriceStep;
+  base?: string;
+};
+
+export type StakeCurrency = Currency & {
+  base?: string;
 };

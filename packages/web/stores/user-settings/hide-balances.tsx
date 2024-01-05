@@ -26,7 +26,6 @@ export class HideBalancesUserSetting implements UserSetting<HideBalancesState> {
               <Switch
                 isOn={hideBalances}
                 onToggle={() => {
-                  console.log("Setting balances setting to " + !hideBalances);
                   this.setState({ hideBalances: !hideBalances });
                 }}
               />

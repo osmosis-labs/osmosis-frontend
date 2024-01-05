@@ -65,24 +65,21 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [queryPool, isMobile, flags.concentratedLiquidity, router]);
 
-  const memoedPools = useMemo(
-    () => (queryPool ? [queryPool] : []),
-    [queryPool]
-  );
-
   return (
     <>
       <NextSeo
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
-      {showTradeModal && queryPool && (
+      {queryPool && Boolean(poolId) && (
         <TradeTokens
           className="md:!p-0"
           isOpen={showTradeModal}
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={memoedPools}
+          sendTokenDenom={queryPool.poolAssetDenoms[0]}
+          outTokenDenom={queryPool.poolAssetDenoms[1]}
+          forceSwapInPoolId={poolId}
         />
       )}
       {!queryPool ? (

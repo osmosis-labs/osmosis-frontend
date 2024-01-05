@@ -2,7 +2,7 @@ import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { Int } from "@keplr-wallet/unit";
 import { getChain } from "@osmosis-labs/utils";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 import { queryRPCStatus } from "~/server/queries/cosmos";
 
 export async function getTimeoutHeight({

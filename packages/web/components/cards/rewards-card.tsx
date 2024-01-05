@@ -1,49 +1,71 @@
+import classNames from "classnames";
 import React from "react";
 
-import { Icon } from "~/components/assets";
+import { DynamicLottieAnimation } from "~/components/animation";
 import { Button } from "~/components/buttons";
 import { Tooltip } from "~/components/tooltip";
 
 export const RewardsCard: React.FC<{
   title: string;
-  tooltipContent: string;
   disabledTooltipContent?: string;
   onClick: () => void;
-  image?: JSX.Element;
   disabled: boolean;
+  globalLottieFileKey: string;
+  position: "left" | "right";
 }> = ({
   title,
-  tooltipContent,
   disabledTooltipContent,
   onClick,
-  image = null,
   disabled,
+  globalLottieFileKey,
+  position,
 }) => {
+  const ConditionalTooltip: React.FC = ({ children }) =>
+    disabled ? (
+      <Tooltip content={disabledTooltipContent} className="h-full w-full">
+        {children as any}
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
+
+  const positionClasses =
+    position === "right"
+      ? `[mask-image:url('/images/folder-right-tab.svg')] bg-[url('/images/grid-right-tab.svg')]`
+      : `[mask-image:url('/images/folder-left-tab.svg')] bg-[url('/images/grid-left-tab.svg')]`;
+
   return (
     <Button
       disabled={disabled}
       mode="unstyled"
-      className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden rounded-[28px] border-[1px] border-osmoverse-600 bg-osmoverse-800 !p-0 disabled:cursor-not-allowed disabled:opacity-75"
+      className="relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0 disabled:opacity-50"
       onClick={onClick}
     >
-      {image}
-      <div className="z-10 flex items-center gap-2 p-4">
-        <span className="text-osmoverse-white text-sm">{title}</span>
-        {disabled && (
-          <div className="text-osmoverse-600 sm:hidden">
-            <Tooltip content={disabledTooltipContent}>
-              <Icon id="info" height="14px" width="14px" fill="#EF3456" />
-            </Tooltip>
-          </div>
-        )}
-        {!disabled && (
-          <div className="text-osmoverse-600 sm:hidden">
-            <Tooltip content={tooltipContent}>
-              <Icon id="info" height="14px" width="14px" fill="#958FC0" />
-            </Tooltip>
-          </div>
-        )}
-      </div>
+      <ConditionalTooltip>
+        <div
+          className={classNames(
+            "relative h-full w-full bg-cover [mask-size:contain] [mask-repeat:no-repeat]",
+            positionClasses
+          )}
+        ></div>
+        <DynamicLottieAnimation
+          className={classNames(
+            "absolute left-0 top-0 z-20",
+            position === "right" ? "scale-[0.85]" : "scale-1"
+          )}
+          globalLottieFileKey={globalLottieFileKey}
+          importFn={() => import(`./${globalLottieFileKey}.json`)}
+          loop={true}
+        />
+        <div
+          className={classNames(
+            `${position}-0`,
+            "absolute top-0 flex items-center gap-2 py-3 px-2"
+          )}
+        >
+          <span className="text-osmoverse-white z-30 text-sm">{title}</span>
+        </div>
+      </ConditionalTooltip>
     </Button>
   );
 };
