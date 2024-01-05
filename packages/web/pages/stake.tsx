@@ -1,6 +1,8 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -279,12 +281,44 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
+  const fetchAprData = async () => {
+    const response = await axios.get(
+      "https://public-osmosis-api.numia.xyz/apr?start_date=2023-12-29&end_date=2024-02-05",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+        },
+      }
+    );
+
+    console.log("response: ", response);
+    return response.data;
+  };
+
+  const getAverageApr = (data: { labels: string; apr: number }[] = []) => {
+    if (data.length === 0) return 0;
+
+    const sum = data.reduce((acc, item) => acc + item.apr, 0);
+    const average = sum / data.length;
+    return average;
+  };
+
+  const formatAverageApr = (apr: number) => {
+    return new Dec(apr);
+  };
+
+  const { data } = useQuery(["2022-01-05"], fetchAprData);
+
+  console.log("Inflation data: ", data);
+
+  const averageApr = getAverageApr(data);
+
+  const stakingAPR = formatAverageApr(averageApr);
+
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
-
-  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -381,6 +415,7 @@ export const Staking: React.FC = observer(() => {
             isWalletConnected={isWalletConnected}
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
+            stakingAPR={stakingAPR}
           />
         </div>
         <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
