@@ -295,25 +295,19 @@ export const Staking: React.FC = observer(() => {
     return response.data;
   };
 
-  const getAverageApr = (data: { labels: string; apr: number }[] = []) => {
-    if (data.length === 0) return 0;
+  const getAverageApr = (data: { labels: string; apr: number }[] = []): Dec => {
+    if (data.length === 0) return new Dec(0);
 
     const sum = data.reduce((acc, item) => acc + item.apr, 0);
     const average = sum / data.length;
-    return average;
-  };
-
-  const formatAverageApr = (apr: number) => {
-    return new Dec(apr);
+    return new Dec(average);
   };
 
   const { data } = useQuery(["2022-01-05"], fetchAprData);
 
   console.log("Inflation data: ", data);
 
-  const averageApr = getAverageApr(data);
-
-  const stakingAPR = formatAverageApr(averageApr);
+  const stakingAPR = getAverageApr(data);
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded

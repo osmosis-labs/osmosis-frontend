@@ -26,8 +26,8 @@ const PriceCaption: FunctionComponent<{
 );
 
 export const EstimatedEarningCard: FunctionComponent<{
-  stakeAmount?: CoinPretty;
-  stakingAPR?: Dec;
+  stakeAmount: CoinPretty;
+  stakingAPR: Dec;
 }> = observer(({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
   const { chainStore, priceStore } = useStore();
