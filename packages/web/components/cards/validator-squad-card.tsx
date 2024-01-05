@@ -8,10 +8,8 @@ import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
-
-const maxVisibleValidators = 8;
 
 export const ValidatorSquadCard: React.FC<{
   hasInsufficientBalance: boolean;
@@ -29,6 +27,12 @@ export const ValidatorSquadCard: React.FC<{
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
+
+    const { width } = useWindowSize();
+
+    console.log("Width: ", width);
+
+    const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -135,7 +139,7 @@ export const ValidatorSquadCard: React.FC<{
           </span>
         </div>
         <OsmoverseCard containerClasses="!rounded-[28px]">
-          <div className="flex-column flex items-center justify-between">
+          <div className="flex-column flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
               <Button
