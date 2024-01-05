@@ -14,14 +14,15 @@ import { useStore } from "~/stores";
 const maxVisibleValidators = 8;
 
 export const ValidatorSquadCard: React.FC<{
+  hasInsufficientBalance: boolean;
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
 }> = observer(
   ({
+    hasInsufficientBalance,
     setShowValidatorModal,
     validators,
-    // @ts-ignore
     usersValidatorsMap,
   }) => {
     const { t } = useTranslation();
@@ -138,6 +139,7 @@ export const ValidatorSquadCard: React.FC<{
             {validatorBlock}
             <div className="flex items-center">
               <Button
+                disabled={hasInsufficientBalance}
                 mode="bullish-special"
                 size="normal"
                 className="rounded-[19px]"

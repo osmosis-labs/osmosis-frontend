@@ -145,6 +145,9 @@ export const buttonCVA = cva(
           "caption",
           "rounded-xl",
           "p-2",
+          "disabled:hover:bg-osmoverse-800",
+          "disabled:opacity-60",
+          "disabled:cursor-not-allowed",
         ],
         "quaternary-modal": [
           "border-2",
