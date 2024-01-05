@@ -21,19 +21,21 @@ export async function getAverageStakingApr({
   return await cachified({
     cache: averageStakingAprCache,
     ttl: 1000 * 60 * 60, // 60 minutes since APR changes once a day at an unkown time
-    key: "average-staking-apr" + startDate + endDate,
+    key: `average-staking-apr-${startDate}-${endDate}`,
     getFreshValue: async () => {
       try {
         const data = await queryStakingApr({ startDate, endDate });
 
-        if (data.length === 0) return new Dec(0);
+        console.log("data: ", data);
+
+        if (data.length === 0) {
+          throw new Error("No data returned from Numia for Staking APR");
+        }
 
         const sum = data.reduce((acc, item) => acc + item.apr, 0);
         const average = sum / data.length;
         return new Dec(average);
       } catch {
-        // ignore error and return undefined, since market cap rank is non-critical
-        // TODO handle this error
         return new Dec(0);
       }
     },

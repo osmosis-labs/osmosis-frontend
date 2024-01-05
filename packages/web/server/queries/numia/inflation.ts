@@ -1,7 +1,5 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-// import { PRICES_API_URL } from "~/server/queries/coingecko";
-
 const NUMIA_URL = "https://public-osmosis-api.numia.xyz/apr";
 
 interface StakingAprResponse {
