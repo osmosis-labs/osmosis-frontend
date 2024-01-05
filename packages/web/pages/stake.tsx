@@ -1,8 +1,6 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -24,6 +22,7 @@ import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -281,33 +280,14 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
-  const fetchAprData = async () => {
-    const response = await axios.get(
-      "https://public-osmosis-api.numia.xyz/apr?start_date=2023-12-29&end_date=2024-02-05",
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
-        },
-      }
-    );
+  const { data } = api.edge.numia.getStakingApr.useQuery({
+    startDate: "2023-12-29",
+    endDate: "2024-01-05",
+  });
 
-    console.log("response: ", response);
-    return response.data;
-  };
+  const stakingAPR = data || new Dec(0);
 
-  const getAverageApr = (data: { labels: string; apr: number }[] = []): Dec => {
-    if (data.length === 0) return new Dec(0);
-
-    const sum = data.reduce((acc, item) => acc + item.apr, 0);
-    const average = sum / data.length;
-    return new Dec(average);
-  };
-
-  const { data } = useQuery(["2022-01-05"], fetchAprData);
-
-  console.log("Inflation data: ", data);
-
-  const stakingAPR = getAverageApr(data);
+  console.log("stakingAPR: ", stakingAPR.toString());
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
