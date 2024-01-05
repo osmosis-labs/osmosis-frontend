@@ -555,7 +555,13 @@
       "boost": "Zwiększyć",
       "superfluid": "Nadciekły",
       "externalBoost": "Zewnętrzne wzmocnienie",
-      "total": "Całkowita RRSO"
+      "total": "Całkowita RRSO",
+      "explainer": {
+        "title": "Jak obliczane są RRSO?",
+        "p1": "Wszystkie RRSO mają charakter szacunkowy. Oblicza się je, biorąc średnią stopę procentową APR dla płynności w puli.",
+        "p2": "W pulach z doładowaniem większość użytkowników otrzyma niższe nagrody. Dzieje się tak ze względu na bardziej skoncentrowane stanowiska, które przyciągają więcej zachęt.",
+        "p3": "Aby zachować ostrożne szacunki, wszystkie RRSO dzieli się przez współczynnik 3."
+      }
     }
   },
   "profile": {
