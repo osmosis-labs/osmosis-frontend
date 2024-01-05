@@ -26,8 +26,6 @@ export async function getAverageStakingApr({
       try {
         const data = await queryStakingApr({ startDate, endDate });
 
-        console.log("data: ", data);
-
         if (data.length === 0) {
           throw new Error("No data returned from Numia for Staking APR");
         }

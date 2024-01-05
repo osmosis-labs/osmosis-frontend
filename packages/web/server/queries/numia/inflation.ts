@@ -19,5 +19,9 @@ export async function queryStakingApr({
   url.searchParams.append("start_date", startDate);
   url.searchParams.append("end_date", endDate);
 
-  return apiClient<StakingAprResponse[]>(url.toString());
+  const headers = {
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+  };
+
+  return apiClient<StakingAprResponse[]>(url.toString(), { headers });
 }
