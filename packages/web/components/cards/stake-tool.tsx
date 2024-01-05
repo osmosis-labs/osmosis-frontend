@@ -20,7 +20,7 @@ export const StakeTool: React.FC<{
   isHalf?: boolean;
   setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
-  stakeAmount: CoinPretty;
+  stakeAmount: CoinPretty | undefined;
   activeTab: StakeOrUnstake;
   setActiveTab: (tab: StakeOrUnstake) => void;
   isWalletConnected: boolean;
