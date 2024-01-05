@@ -131,7 +131,6 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        {/* <div className="flex w-full flex-row place-content-around space-y-4 py-10 sm:flex-col sm:py-4"> */}
         <div className="flex w-full flex-row place-content-around items-center space-y-0 py-10 sm:flex-col sm:space-y-4 sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}

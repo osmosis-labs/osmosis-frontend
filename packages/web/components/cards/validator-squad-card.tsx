@@ -30,8 +30,6 @@ export const ValidatorSquadCard: React.FC<{
 
     const { width } = useWindowSize();
 
-    console.log("Width: ", width);
-
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
