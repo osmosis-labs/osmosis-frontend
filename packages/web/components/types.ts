@@ -50,20 +50,5 @@ export interface MobileProps {
   isMobile?: boolean;
 }
 
-/** Should match settings in tailwind.config.js
- *
- *  https://tailwindcss.com/docs/responsive-design
- */
-export const enum Breakpoint {
-  SM = 640,
-  MD = 768,
-  LG = 1024,
-  XLG = 1152,
-  XL = 1280,
-  XLHALF = 1408,
-  XXL = 1536,
-  XXXL = 1792,
-}
-
 export type StakeOrUnstake = "Stake" | "Unstake";
 export type StakeOrEdit = "stake" | "edit";

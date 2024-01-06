@@ -172,6 +172,7 @@
       "title": "전송 내역"
     },
     "ibcTransfer": {
+      "buttonAdd": "추가하다",
       "buttonEdit": "수정",
       "buttonEnter": "입력",
       "channelCongestedDeposit": "입금 (채널 혼잡)",
@@ -231,6 +232,7 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "givePermission": "토큰 사용 권한 부여",
+      "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
@@ -239,7 +241,9 @@
         "seeRequest": "{walletName}에서 요청 사항 확인하기",
         "noQuotesAvailable": "이용 가능한 견적이 없습니다.",
         "unexpectedError": "예기치 않은 오류. 다시 시도해 주세요.",
-        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요."
+        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요.",
+        "invalidAddress": "잘못된 주소",
+        "missingAddress": "누락된 주소"
       },
       "from": "발신 체인",
       "loading": "로딩",
@@ -351,7 +355,7 @@
     "negativeAmount": "수량이 음수입니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
     "negativeSlippage": "슬리피지가 음수입니다",
-    "negativeSwapFee": "Swap fee is negative",
+    "negativeSwapFee": "교환 수수료가 음수입니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
-    "7davg": "(7일 평균)",
     "amountDaysUnbonding": "{numDays}일 연결 해제",
     "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "APR": "APR",
@@ -466,7 +469,7 @@
     "collapseDetails": "닫기",
     "commission": "수수료",
     "currentDailyEarn": "내 일일 보상",
-    "dailyEarnAmount": "{amount} / 일",
+    "dailyEarnAmount": "{amount} /일",
     "day": "일",
     "delegated": "위임된 자산",
     "details": "상세정보",
@@ -478,7 +481,6 @@
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "liquidity": "유동성",
-    "numDaysRemaining": "{numDays}일 남음",
     "putAssetsToWork": "자산을 늘리세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 APR 수익을 벌어보세요. 더 긴 해제 기간을 선택하면, 더 많은 보상을 얻을 수 있어요.",
     "rewardDistribution": "모든 유동성 공급자에게 분배된 보상",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "스왑 수수료",
       "boost": "후원",
-      "total": "총 연이율"
+      "superfluid": "초유체",
+      "externalBoost": "외부 부스트",
+      "total": "총 연이율",
+      "explainer": {
+        "title": "APR은 어떻게 계산되나요?",
+        "p1": "모든 APR은 추정치입니다. 이는 풀의 유동성에 대한 평균 APR을 취하여 계산됩니다.",
+        "p2": "슈퍼차지 풀에서는 대부분의 사용자가 더 낮은 보상을 받게 됩니다. 이는 더 많은 인센티브를 포착하는 더 집중된 위치 때문입니다.",
+        "p3": "추정치를 보수적으로 유지하기 위해 모든 APR을 3배로 나눕니다."
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다.",
     "unbondingPeriodTooltip": "잠긴 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
-    "collectRewardsTooltip": "청구하지 않은 보상을 모두 수집하세요. 이 토큰은 Osmosis에서 즉시 사용할 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
-    "collectAndReinvestTooltip": "한 번의 클릭으로 청구되지 않은 수익을 수집하고 자동으로 다시 스테이킹하세요. 복리는 자산으로 더 많은 수익을 올릴 수 있는 좋은 방법입니다.",
     "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
     "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "다중"
     }
   },
-  "disclaimer": "부인 성명",
-  "namada": {
-    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
-    "link": "여기에서 $NAM 자격을 확인하세요!"
-  }
+  "disclaimer": "부인 성명"
 }

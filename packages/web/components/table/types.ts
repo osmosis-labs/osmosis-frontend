@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import { CustomClasses, SortDirection } from "~/components/types";
-import { Breakpoint } from "~/components/types";
+import { Breakpoint } from "~/hooks";
 
 export interface BaseCell {
   /** "Default" value to be rendered.

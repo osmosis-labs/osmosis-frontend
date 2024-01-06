@@ -172,6 +172,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
@@ -239,7 +241,9 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
-    "7davg": "(7j moy)",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
@@ -478,7 +481,6 @@
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
-    "numDaysRemaining": "{numDays} jours restants",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "rewardDistribution": "Récompenses distribuées à tous les fournisseurs de liquidités",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "Frais de swap",
       "boost": "Booster",
-      "total": "TAEG total"
+      "superfluid": "Superfluide",
+      "externalBoost": "Boost externe",
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Comment sont calculés les TAEG ?",
+        "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
+        "p2": "Dans les pools suralimentés, la plupart des utilisateurs recevront des récompenses inférieures. Cela est dû à des positions plus concentrées, qui captent davantage d’incitations.",
+        "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
-    "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
     "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
-    "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Clause de non-responsabilité",
-  "namada": {
-    "description": "Les utilisateurs d'Osmosis peuvent être éligibles pour la demande de lancement de Namada.",
-    "link": "Vérifiez votre éligibilité $NAM ici!"
-  }
+  "disclaimer": "Clause de non-responsabilité"
 }

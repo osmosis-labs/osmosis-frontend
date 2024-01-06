@@ -97,23 +97,9 @@ export class ObservablePoolWithMetric {
 
   @computed
   get apr() {
-    if (
-      this.concentratedPoolDetail &&
-      this.concentratedPoolDetail.queryConcentratedPool &&
-      this.queryPool.concentratedLiquidityPoolInfo
-    ) {
-      return (
-        this.externalQueries.queryPoolAprs.getForPool(this.queryPool.id)
-          ?.totalApr ?? new RatePretty(0)
-      );
-    }
-
     return (
-      this.poolsBonding
-        .get(this.queryPool.id)
-        ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-      this.sharePoolDetail?.swapFeeApr.maxDecimals(0) ??
-      new RatePretty(0)
+      this.externalQueries.queryPoolAprs.getForPool(this.queryPool.id)
+        ?.totalApr ?? new RatePretty(0)
     );
   }
 

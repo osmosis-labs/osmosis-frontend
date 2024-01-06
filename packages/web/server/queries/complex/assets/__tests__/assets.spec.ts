@@ -37,30 +37,22 @@ describe("getAssets", () => {
 
       expect(assets).toEqual([]);
     });
-  });
 
-  describe("sorting", () => {
-    it("should sort assets by coin denom", async () => {
+    it("should filter unverified assets if specified", async () => {
       const assets = await getAssets({
-        sort: { keyPath: "coinDenom" },
         assetList: AssetLists,
+        onlyVerified: true,
       });
 
-      expect(assets.length).toBeTruthy();
-      expect(assets[0].coinDenom).toEqual("A");
-      expect(assets[1].coinDenom).toEqual("ACRE");
-      expect(assets[2].coinDenom).toEqual("AKT");
+      expect(assets.some((asset) => !asset.isVerified)).toBeFalsy();
     });
 
-    it("should sort assets by coinMinimalDenom", async () => {
+    it("should include unverified assets by default", async () => {
       const assets = await getAssets({
-        sort: { keyPath: "coinMinimalDenom" },
         assetList: AssetLists,
       });
 
-      expect(assets.length).toBeTruthy();
-      expect(assets[0].coinDenom).toEqual("IBCX");
-      expect(assets[1].coinDenom).toEqual("ampOSMO");
+      expect(assets.some((asset) => !asset.isVerified)).toBeTruthy();
     });
   });
 });

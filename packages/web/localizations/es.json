@@ -172,6 +172,7 @@
       "title": "Historial de transferencias"
     },
     "ibcTransfer": {
+      "buttonAdd": "Agregar",
       "buttonEdit": "Editar",
       "buttonEnter": "Ingresar",
       "channelCongestedDeposit": "Depositar (Canal impugnado)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
       "givePermission": "Dar permisos para usar tokens",
+      "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
@@ -239,7 +241,9 @@
         "seeRequest": "Ver solicitud en {walletName}",
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
+        "invalidAddress": "Dirección inválida",
+        "missingAddress": "Dirección faltante"
       },
       "from": "De",
       "loading": "Cargando",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
-    "7davg": "(7d Promedio)",
     "amountDaysUnbonding": "{numDays} día para desabonar",
     "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "APR": "TPA",
@@ -478,7 +481,6 @@
     "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "liquidity": "Liquidez",
-    "numDaysRemaining": "{numDays} días restantes",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para obtener TPAs increíbles. Mientras más tiempo sea su período para desabonarse, más generará.",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
-      "total": "TAE total"
+      "superfluid": "superfluido",
+      "externalBoost": "Impulso externo",
+      "total": "TAE total",
+      "explainer": {
+        "title": "¿Cómo se calculan las APR?",
+        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
+        "p2": "En grupos sobrealimentados, la mayoría de los usuarios recibirán recompensas más bajas. Esto se debe a posiciones más concentradas, que captan una mayor parte de los incentivos.",
+        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
-    "collectRewardsTooltip": "Recoge todas tus recompensas no reclamadas. Estos tokens estarán disponibles de inmediato en Osmosis.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Recoge y vuelve a apostar automáticamente tus ganancias no reclamadas con un solo clic. La capitalización es una excelente manera de ganar más con sus activos.",
     "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Descargo de responsabilidad",
-  "namada": {
-    "description": "Los usuarios de Osmosis pueden ser elegibles para la reclamación del lanzamiento de Namada.",
-    "link": "¡Verifica tu elegibilidad para $NAM aquí!"
-  }
+  "disclaimer": "Descargo de responsabilidad"
 }

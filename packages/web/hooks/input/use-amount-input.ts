@@ -14,7 +14,7 @@ import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
 import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
-import { useBalances } from "../queries/cosmos/balances";
+import { useBalances } from "../queries/cosmos/use-balances";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user's currency balance as input. Includes support for debounce on input. */
@@ -83,7 +83,11 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   const inputAmountWithFraction = useMemo(
     () =>
       fraction != null && amount
-        ? new IntPretty(amount).trim(true).toString()
+        ? new IntPretty(amount)
+            .inequalitySymbol(false)
+            .locale(false)
+            .trim(true)
+            .toString()
         : inputAmount,
     [fraction, amount, inputAmount]
   );

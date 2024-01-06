@@ -172,6 +172,7 @@
       "title": "轉移歷史"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "編輯",
       "buttonEnter": "輸入",
       "channelCongestedDeposit": "存入 (通道擁擠中)",
@@ -231,6 +232,7 @@
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的權限",
+      "enterAddress": "{network}位址",
       "errors": {
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
@@ -239,7 +241,9 @@
         "seeRequest": "在{walletName}中檢視請求",
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。"
+        "transactionError": "獲取交易時出錯。請再試一次。",
+        "invalidAddress": "無效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "從",
       "loading": "載入中",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解綁",
     "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
     "APR": "APR",
@@ -466,7 +469,7 @@
     "collapseDetails": "收起詳情",
     "commission": "佣金",
     "currentDailyEarn": "你現在正賺取",
-    "dailyEarnAmount": "{amount} / 日",
+    "dailyEarnAmount": "{amount} /天",
     "day": "日",
     "delegated": "已質押",
     "details": "詳情",
@@ -478,7 +481,6 @@
     "learnMore": "了解更多",
     "level": "等級 {level}",
     "liquidity": "流動性",
-    "numDaysRemaining": "剩下{numDays}日",
     "putAssetsToWork": "讓你的資產為你工作",
     "putAssetsToWorkCaption": "將你的資產加入到此流動性池以解鎖誘人的獎勵，選擇的解鎖時間愈長，賺得愈多",
     "rewardDistribution": "獎勵會被分發給所有流動性提供者",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "掉期費用",
       "boost": "促進",
-      "total": "總年利率"
+      "superfluid": "超流體",
+      "externalBoost": "外部升壓",
+      "total": "總年利率",
+      "explainer": {
+        "title": "年利率是如何計算的？",
+        "p1": "所有年利率均為估計值。它們是透過池中流動性的平均年利率來計算的。",
+        "p2": "在超級礦池中，大多數用戶將獲得較低的獎勵。這是因為職位更集中，能夠獲得更多的激勵。",
+        "p3": "為了保持估計保守，所有年利率均除以 3。"
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "此期間過後，你可以在資產頁籤下訪問你的OSMO",
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
-    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
     "isAPRTooHighTooltip": "此驗證器收取了異常高的傭金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免責聲明",
-  "namada": {
-    "description": "Osmosis 用戶可能有資格參加 Namada 發布申請。",
-    "link": "在此檢查您的 $NAM 資格！"
-  }
+  "disclaimer": "免責聲明"
 }

@@ -6,6 +6,7 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import Spinner from "~/components/spinner";
+import { OsmosisCmsRepo } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
@@ -26,7 +27,7 @@ const NavbarOsmosisUpdates = () => {
    */
   const { data, isLoading } = useQuery(["osmosis-updates"], async () =>
     queryGithubFile<{ iframeUrl: string }>({
-      repo: "osmosis-labs/fe-content",
+      repo: OsmosisCmsRepo,
       filePath: "cms/osmosis-update.json",
     })
   );

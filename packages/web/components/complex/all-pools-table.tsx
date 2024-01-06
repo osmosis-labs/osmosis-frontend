@@ -22,24 +22,17 @@ import {
   useRef,
   useState,
 } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
 import { CheckBox, MenuSelectProps } from "~/components/control";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "~/components/table/cells";
-import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
 import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
@@ -49,7 +42,8 @@ import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
-import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
+import { AprBreakdownCell } from "../table/cells/apr-breakdown";
+import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -197,7 +191,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -427,56 +420,31 @@ export const AllPoolsTable: FunctionComponent<{
             ) => {
               const pool = props.getValue();
 
-              const inflation = queriesCosmos.queryInflation;
-              /**
-               * If pool APR is 50 times bigger than staking APR, warn user
-               * that pool may be subject to inflation
-               */
-              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
-                ? pool.apr
-                    .toDec()
-                    .gt(
-                      inflation.inflation
-                        .toDec()
-                        .quo(new Dec(100))
-                        .mul(new Dec(100))
-                    )
-                : false;
+              if (!flags._isInitialized) return null;
+
+              let value: ReactNode | null;
+              if (flags.aprBreakdown) {
+                value = <AprBreakdownCell poolId={pool.queryPool.id} />;
+              } else {
+                value = pool.apr.toString();
+              }
 
               return (
                 <MetricLoaderCell
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
-                  value={
-                    // Only display warning when APR is too high
-                    isAPRTooHigh ? (
-                      <Tooltip
-                        className="w-5"
-                        content={t("highPoolInflationWarning")}
-                      >
-                        <p className="flex items-center gap-1.5">
-                          <Icon
-                            id="alert-triangle"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />
-                          {pool.apr.toString()}
-                        </p>
-                      </Tooltip>
-                    ) : Boolean(pool.concentratedPoolDetail) ? (
-                      <ClAprBreakdownCell
-                        poolId={pool.queryPool.id}
-                        apr={pool.apr}
-                      />
-                    ) : (
-                      pool.apr.toString()
-                    )
-                  }
+                  value={value}
                 />
               );
             }
           ),
-          header: t("pools.allPools.sort.APRIncentivized"),
+          header: () => (
+            <div className="flex items-center gap-1">
+              <AprDisclaimerTooltip />
+              <span>{t("pools.allPools.sort.APRIncentivized")}</span>
+            </div>
+          ),
           id: "apr",
         }),
         columnHelper.accessor((row) => row, {
@@ -515,12 +483,13 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
-        queriesCosmos.queryInflation,
         queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,
         t,
+        flags.aprBreakdown,
+        flags._isInitialized,
       ]
     );
 
@@ -555,20 +524,6 @@ export const AllPoolsTable: FunctionComponent<{
         }
       },
       manualSorting: true,
-      filterFns: {
-        /**
-         * these filters, even though they are not used in this table instance,
-         * are necessary to suppress errors derived by the "@tanstack/table-core"
-         * module declaration in the earn page.
-         *
-         * @fabryscript
-         */
-        arrLengthEquals,
-        strictEqualFilter,
-        boolEquals,
-        boolEqualsString,
-        listOptionValueEquals,
-      },
     });
 
     const handleFetchRemaining = useCallback(

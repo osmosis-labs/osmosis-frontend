@@ -172,6 +172,7 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
       "channelCongestedDeposit": "存入 (频道争抢)",
@@ -231,6 +232,7 @@
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的权限",
+      "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
@@ -239,7 +241,9 @@
         "seeRequest": "在{walletName}中查看请求",
         "noQuotesAvailable": "无可用报价",
         "unexpectedError": "意外的错误。请再试一次。",
-        "transactionError": "获取交易时出错。请再试一次。"
+        "transactionError": "获取交易时出错。请再试一次。",
+        "invalidAddress": "无效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "从",
       "loading": "加载中",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解绑",
     "amountDaysUnbonding_plural": "{numDays} 天解绑期",
     "APR": "APR",
@@ -466,7 +469,7 @@
     "collapseDetails": "收起详情",
     "commission": "佣金",
     "currentDailyEarn": "您当前正在赚取",
-    "dailyEarnAmount": "{amount} / 天",
+    "dailyEarnAmount": "{amount} /天",
     "day": "天",
     "delegated": "委托",
     "details": "详情",
@@ -478,7 +481,6 @@
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "liquidity": "资金池流动性",
-    "numDaysRemaining": "还剩 {numDays} 天",
     "putAssetsToWork": "让您的资产发挥作用.",
     "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
     "rewardDistribution": "向所有流动性提供者发放奖励",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "掉期费用",
       "boost": "促进",
-      "total": "总年利率"
+      "superfluid": "超流体",
+      "externalBoost": "外部升压",
+      "total": "总年利率",
+      "explainer": {
+        "title": "年利率是如何计算的？",
+        "p1": "所有年利率均为估计值。它们是通过池中流动性的平均年利率来计算的。",
+        "p2": "在超级矿池中，大多数用户将获得较低的奖励。这是因为职位更加集中，能够获得更多的激励。",
+        "p3": "为了保持估计保守，所有年利率均除以 3。"
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
     "estimatedEarningsTooltip": "这些收益是根据当前质押年利率计算的，可能会发生变化。",
-    "collectRewardsTooltip": "收集所有无人认领的奖励。这些代币将立即在 Osmosis 上可供您使用。",
     "collectRewardsTooltipDisabled": "您的奖励太少，无法领取，请在您的无人认领余额达到{collectRewardsMinimumOsmo} OSMO 的最低阈值后重试。",
-    "collectAndReinvestTooltip": "一键收集并自动重新抵押您无人认领的收入。复利是利用资产赚取更多收入的好方法。",
     "isAPRTooHighTooltip": "该验证器收取异常高的佣金。考虑选择不同的验证器。",
     "isVotingPowerTooHighTooltip": "这是具有高投票权的前 10 名验证者。考虑选择不同的验证器来帮助促进去中心化。",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免责声明",
-  "namada": {
-    "description": "Osmosis 用户可能有资格参加 Namada 发布申请。",
-    "link": "在此检查您的 $NAM 资格！"
-  }
+  "disclaimer": "免责声明"
 }

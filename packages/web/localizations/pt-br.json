@@ -172,6 +172,7 @@
       "title": "Histórico de Transferências"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adicionar",
       "buttonEdit": "Editar",
       "buttonEnter": "Entrar",
       "channelCongestedDeposit": "Depositar (Canal congestionada)",
@@ -231,6 +232,7 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "givePermission": "Dê permissões para usar tokens",
+      "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",
@@ -239,7 +241,9 @@
         "seeRequest": "Ver solicitação em {walletName}",
         "noQuotesAvailable": "Nenhuma cotação disponível",
         "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente."
+        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
+        "invalidAddress": "Endereço inválido",
+        "missingAddress": "Endereço ausente"
       },
       "from": "De",
       "loading": "Carregando",
@@ -451,7 +455,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -478,7 +481,6 @@
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",
-    "numDaysRemaining": "{numDays} dias restantes",
     "putAssetsToWork": "Coloque seus ativos para trabalhar",
     "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
     "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
@@ -551,7 +553,15 @@
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
-      "total": "TAEG total"
+      "superfluid": "Superfluido",
+      "externalBoost": "Impulso externo",
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Como as TAEG são calculadas?",
+        "p1": "Todas as APRs são estimativas. Eles são calculados tomando a TAEG média de liquidez no pool.",
+        "p2": "Em pools superalimentados, a maioria dos usuários receberá recompensas mais baixas. Isso se deve a posições mais concentradas, que captam mais incentivos.",
+        "p3": "Para manter as estimativas conservadoras, todas as APRs são divididas pelo fator 3."
+      }
     }
   },
   "profile": {
@@ -606,9 +616,7 @@
     "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
-    "collectRewardsTooltip": "Colete todas as suas recompensas não reclamadas. Esses tokens estarão imediatamente disponíveis para você no Osmosis.",
     "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Colete e reaposte automaticamente seus ganhos não reclamados com um clique. A composição é uma ótima maneira de ganhar mais com seus ativos.",
     "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
     "learnMore": {
@@ -881,9 +889,5 @@
       "multi": "Múltiplo"
     }
   },
-  "disclaimer": "Isenção de responsabilidade",
-  "namada": {
-    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
-    "link": "Verifique sua elegibilidade para $NAM aqui!"
-  }
+  "disclaimer": "Isenção de responsabilidade"
 }

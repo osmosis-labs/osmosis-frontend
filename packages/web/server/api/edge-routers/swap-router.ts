@@ -40,7 +40,9 @@ const routers: {
     name: "tfm",
     router: new TfmRemoteRouter(
       osmosisChainId,
-      tfmBaseUrl ?? "https://api.tfm.com"
+      tfmBaseUrl ?? "https://api.tfm.com",
+      (coinMinimalDenom, amount) =>
+        calcAssetValue({ anyDenom: coinMinimalDenom, amount })
     ),
   },
   {
@@ -178,6 +180,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
+            swapFee: staticPool?.swapFee,
             type: staticPool?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
