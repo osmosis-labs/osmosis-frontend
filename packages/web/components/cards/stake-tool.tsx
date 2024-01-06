@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React from "react";
 import { useMemo } from "react";
 
@@ -27,6 +27,7 @@ export const StakeTool: React.FC<{
   availableAmount?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
+  stakingAPR: Dec;
 }> = ({
   hasInsufficientBalance,
   inputAmount,
@@ -42,6 +43,7 @@ export const StakeTool: React.FC<{
   isWalletConnected,
   onStakeButtonClick,
   disabled,
+  stakingAPR,
 }) => {
   const { t } = useTranslation();
 
@@ -87,7 +89,10 @@ export const StakeTool: React.FC<{
         inputAmount={inputAmount}
       />
       {activeTab === "Stake" ? (
-        <EstimatedEarningCard stakeAmount={stakeAmount} />
+        <EstimatedEarningCard
+          stakeAmount={stakeAmount}
+          stakingAPR={stakingAPR}
+        />
       ) : (
         <UnbondingCard />
       )}
