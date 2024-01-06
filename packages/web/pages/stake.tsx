@@ -8,6 +8,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
@@ -292,7 +293,7 @@ export const Staking: React.FC = observer(() => {
 
   const { startDate, endDate } = getWeekDateRange();
 
-  const { data } = api.edge.staking.getApr.useQuery({
+  const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
     startDate,
     endDate,
   });
@@ -366,19 +367,21 @@ export const Staking: React.FC = observer(() => {
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
-          <AlertBanner
-            className="!rounded-[32px]"
-            title={alertTitle}
-            subtitle={t("stake.alertSubtitle")}
-            image={
-              <div
-                className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
-                style={{
-                  backgroundImage: 'url("/images/staking-apr.svg")',
-                }}
-              />
-            }
-          />
+          <SkeletonLoader isLoaded={!isLoadingApr} className="rounded-[32px]">
+            <AlertBanner
+              className="rounded-[32px]"
+              title={alertTitle}
+              subtitle={t("stake.alertSubtitle")}
+              image={
+                <div
+                  className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
+                  style={{
+                    backgroundImage: 'url("/images/staking-apr.svg")',
+                  }}
+                />
+              }
+            />
+          </SkeletonLoader>
           <StakeTool
             hasInsufficientBalance={hasInsufficientBalance}
             handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
