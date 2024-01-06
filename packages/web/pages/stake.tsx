@@ -24,7 +24,7 @@ import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-const getStakingAprDateRange = () => {
+const getWeekDateRange = () => {
   // Numia APY rate calculated on a 7 day rolling average
   // end date is current day, start date is 7 days beforehand
   const currentDate = new Date();
@@ -290,9 +290,9 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
-  const { startDate, endDate } = getStakingAprDateRange();
+  const { startDate, endDate } = getWeekDateRange();
 
-  const { data } = api.edge.staking.getStakingApr.useQuery({
+  const { data } = api.edge.staking.getApr.useQuery({
     startDate,
     endDate,
   });

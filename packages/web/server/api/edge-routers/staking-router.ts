@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAverageStakingApr } from "~/server/queries/complex/numia/get-average-staking-apr";
 
 export const stakingRouter = createTRPCRouter({
-  getStakingApr: publicProcedure
+  getApr: publicProcedure
     .input(
       z.object({
         startDate: z.string(),
