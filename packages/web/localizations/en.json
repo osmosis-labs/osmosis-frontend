@@ -598,6 +598,7 @@
     "amount": "Amount",
     "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "dashboardStakedOsmo": "staked OSMO",

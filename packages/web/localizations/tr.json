@@ -598,6 +598,7 @@
     "amount": "Miktar",
     "availableIn": "Uygun",
     "day": "gün",
+    "days": "günler",
     "month": "ay",
     "dashboard": "Gösterge Paneli",
     "dashboardStakedOsmo": "kazıklı OSMO",
