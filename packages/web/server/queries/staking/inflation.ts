@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-const NUMIA_URL = "https://public-osmosis-api.numia.xyz/apr";
+import { NUMIA_URL } from ".";
 
 interface StakingAprResponse {
   labels: string;
