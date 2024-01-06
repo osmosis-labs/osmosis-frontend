@@ -292,7 +292,7 @@ export const Staking: React.FC = observer(() => {
 
   const { startDate, endDate } = getStakingAprDateRange();
 
-  const { data } = api.edge.numia.getStakingApr.useQuery({
+  const { data } = api.edge.staking.getStakingApr.useQuery({
     startDate,
     endDate,
   });
