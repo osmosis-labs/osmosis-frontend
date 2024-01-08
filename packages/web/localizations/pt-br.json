@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
       "goToSite": "Ir para o site",
-      "doNotShowAgain": "Não mostre isso novamente"
+      "doNotShowAgain": "Não mostre isso novamente",
+      "chainHalted": "A cadeia de osmose é interrompida, as transações são temporariamente desativadas."
     }
   },
   "store": {

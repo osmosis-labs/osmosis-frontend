@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
       "externalLinkModalTitle": "離開Osmosis",
       "goToSite": "前往網站",
-      "doNotShowAgain": "不要再顯示此內容"
+      "doNotShowAgain": "不要再顯示此內容",
+      "chainHalted": "Osmosis 鏈停止，交易暫時停用。"
     }
   },
   "store": {
