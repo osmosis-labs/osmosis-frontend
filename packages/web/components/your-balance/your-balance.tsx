@@ -173,7 +173,7 @@ const ActionButton = ({
   );
 };
 
-const BalanceStats = (props: YourBalanceProps) => {
+const BalanceStats = observer((props: YourBalanceProps) => {
   const { denom } = props;
   const { t } = useTranslation();
   const { chainStore, accountStore, priceStore } = useStore();
@@ -207,4 +207,4 @@ const BalanceStats = (props: YourBalanceProps) => {
       </div>
     </div>
   );
-};
+});
