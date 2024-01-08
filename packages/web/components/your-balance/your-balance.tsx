@@ -4,13 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactElement, useMemo } from "react";
 
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
+  useDisclosure,
   useTranslation,
 } from "~/hooks";
+import { FiatOnrampSelectionModal } from "~/modals";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -177,6 +181,12 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   const { denom } = props;
   const { t } = useTranslation();
   const { chainStore, accountStore, priceStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
+  const {
+    isOpen: isFiatOnrampSelectionOpen,
+    onOpen: onOpenFiatOnrampSelection,
+    onClose: onCloseFiatOnrampSelection,
+  } = useDisclosure();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
@@ -205,6 +215,47 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           </p>
         </div>
       </div>
+      <div className="flex flex-nowrap items-start gap-3 sm:flex-wrap">
+        <Button size={"sm"} className="!px-10">
+          {t("assets.historyTable.colums.deposit")}
+        </Button>
+        <Button size={"sm"} className="!px-10" mode={"secondary"}>
+          {t("assets.historyTable.colums.withdraw")}
+        </Button>
+        <Button
+          mode={"unstyled"}
+          onClick={onOpenFiatOnrampSelection}
+          className="subtitle1 group flex items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+        >
+          <CreditCardIcon
+            isAnimated
+            classes={{
+              backCard: "group-hover:stroke-[2]",
+              frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+            }}
+          />
+          <span className="whitespace-nowrap">{t("buyTokens")}</span>
+        </Button>
+      </div>
+      <FiatOnrampSelectionModal
+        isOpen={isFiatOnrampSelectionOpen}
+        onRequestClose={onCloseFiatOnrampSelection}
+        onSelectRamp={(ramp) => {
+          if (ramp !== "transak") return;
+          const fiatValue = data?.usdValue;
+          const coinValue = data?.amount;
+
+          logEvent([
+            EventName.ProfileModal.buyTokensClicked,
+            {
+              tokenName: "OSMO",
+              tokenAmount: Number(
+                (fiatValue ?? coinValue)?.maxDecimals(4).toString()
+              ),
+            },
+          ]);
+        }}
+      />
     </div>
   );
 });
