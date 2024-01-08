@@ -21,7 +21,7 @@ import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName, OsmosisCmsRepo } from "~/config";
+import { EventName, OsmosisCmsRepo } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
