@@ -27,18 +27,12 @@ const PriceCaption: FunctionComponent<{
 
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
-}> = observer(({ stakeAmount }) => {
+  stakingAPR: Dec;
+}> = observer(({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
-  const { queriesStore, chainStore, priceStore } = useStore();
-
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const { chainStore, priceStore } = useStore();
 
   const osmo = chainStore.osmosis.stakeCurrency;
-
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-
-  // staking APR, despite the name.
-  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const calculatedInflationAmountPerYear = stakeAmount
     ?.moveDecimalPointRight(osmo.coinDecimals)

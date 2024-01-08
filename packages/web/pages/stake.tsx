@@ -8,6 +8,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
@@ -22,6 +23,17 @@ import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+const getWeekDateRange = () => {
+  // Numia APY rate calculated on a 7 day rolling average
+  // end date is current day, start date is 7 days beforehand
+  const currentDate = new Date();
+  const endDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
+  currentDate.setDate(currentDate.getDate() - 7); // Set to 7 days before
+  const startDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
+  return { startDate, endDate };
+};
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -279,12 +291,19 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
+  const { startDate, endDate } = getWeekDateRange();
+
+  const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
+    startDate,
+    endDate,
+  });
+
+  const stakingAPR = data || new Dec(0);
+
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
-
-  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -348,19 +367,21 @@ export const Staking: React.FC = observer(() => {
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
-          <AlertBanner
-            className="!rounded-[32px]"
-            title={alertTitle}
-            subtitle={t("stake.alertSubtitle")}
-            image={
-              <div
-                className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
-                style={{
-                  backgroundImage: 'url("/images/staking-apr.svg")',
-                }}
-              />
-            }
-          />
+          <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-[32px]">
+            <AlertBanner
+              className="!rounded-[32px]"
+              title={alertTitle}
+              subtitle={t("stake.alertSubtitle")}
+              image={
+                <div
+                  className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
+                  style={{
+                    backgroundImage: 'url("/images/staking-apr.svg")',
+                  }}
+                />
+              }
+            />
+          </SkeletonLoader>
           <StakeTool
             hasInsufficientBalance={hasInsufficientBalance}
             handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
@@ -381,6 +402,7 @@ export const Staking: React.FC = observer(() => {
             isWalletConnected={isWalletConnected}
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
+            stakingAPR={stakingAPR}
           />
         </div>
         <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
