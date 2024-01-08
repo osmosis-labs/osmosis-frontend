@@ -2,6 +2,7 @@ import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -170,15 +171,28 @@ export const NavBar: FunctionComponent<
 
     // announcement banner
     const [_showBanner, setShowBanner] = useLocalStorageState(
-      Announcement ? Announcement?.localStorageKey ?? "" : "",
+      topAnnouncementBannerData
+        ? topAnnouncementBannerData?.banner?.localStorageKey ?? ""
+        : "",
       true
     );
+
+    const isBannerWithinDateRange =
+      topAnnouncementBannerData?.banner &&
+      (topAnnouncementBannerData.banner.startDate ||
+        topAnnouncementBannerData.banner.endDate)
+        ? dayjs().isBetween(
+            topAnnouncementBannerData.banner.startDate,
+            topAnnouncementBannerData.banner.endDate
+          )
+        : true; // if no start and end date, show banner always
 
     const showBanner =
       featureFlags.topAnnouncementBanner &&
       _showBanner &&
       !!topAnnouncementBannerData &&
-      Boolean(topAnnouncementBannerData?.banner);
+      Boolean(topAnnouncementBannerData?.banner) &&
+      isBannerWithinDateRange;
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
