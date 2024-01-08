@@ -598,6 +598,7 @@
     "amount": "Cantitate",
     "availableIn": "Disponibil in",
     "day": "zi",
+    "days": "zile",
     "month": "lună",
     "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",
