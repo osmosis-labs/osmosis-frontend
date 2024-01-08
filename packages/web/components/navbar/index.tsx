@@ -14,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -171,7 +172,7 @@ export const NavBar: FunctionComponent<
 
     // announcement banner
     const defaultBannerLocalStorageKey = "banner";
-    const [_showBanner, setShowBanner] = useLocalStorageState(
+    const [_showBanner, setShowBanner] = useLocalStorage(
       topAnnouncementBannerData?.banner?.localStorageKey ??
         defaultBannerLocalStorageKey,
       true
