@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
       "externalLinkModalTitle": "Osmosis'den Ayrılma",
       "goToSite": "Site'ye Git",
-      "doNotShowAgain": "Bunu tekrar gösterme"
+      "doNotShowAgain": "Bunu tekrar gösterme",
+      "chainHalted": "Osmoz zinciri durduruldu, işlemler geçici olarak devre dışı bırakıldı."
     }
   },
   "store": {

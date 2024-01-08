@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
       "goToSite": "Du-te la site",
-      "doNotShowAgain": "Nu îmi mai arăta asta"
+      "doNotShowAgain": "Nu îmi mai arăta asta",
+      "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
   "store": {

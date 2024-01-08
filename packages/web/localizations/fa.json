@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
       "externalLinkModalTitle": "ترک Osmosis",
       "goToSite": "بازگشت به سایت",
-      "doNotShowAgain": "این را دوباره نشان داده نشود"
+      "doNotShowAgain": "این را دوباره نشان داده نشود",
+      "chainHalted": "زنجیره اسمز متوقف شده است، تراکنش ها به طور موقت غیرفعال می شوند."
     }
   },
   "store": {
