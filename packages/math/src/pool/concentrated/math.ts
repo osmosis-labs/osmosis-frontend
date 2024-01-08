@@ -215,6 +215,8 @@ export function getFeeChargePerSwapStepOutGivenIn(
     feeChargeTotal = new DecWithMulRoundUp(amountIn.toString(), Dec.precision)
       .mulRoundUp(new DecWithMulRoundUp(swapFee.toString(), Dec.precision))
       .quoRoundUp(new Dec(1).sub(swapFee));
+    // Deduct the fee from the amountIn
+    amountIn = amountIn.sub(feeChargeTotal);
   } else {
     feeChargeTotal = amountSpecifiedRemaining.sub(amountIn);
   }
