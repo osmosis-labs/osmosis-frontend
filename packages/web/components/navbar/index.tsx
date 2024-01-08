@@ -170,10 +170,10 @@ export const NavBar: FunctionComponent<
     });
 
     // announcement banner
+    const defaultBannerLocalStorageKey = "banner";
     const [_showBanner, setShowBanner] = useLocalStorageState(
-      topAnnouncementBannerData
-        ? topAnnouncementBannerData?.banner?.localStorageKey ?? ""
-        : "",
+      topAnnouncementBannerData?.banner?.localStorageKey ??
+        defaultBannerLocalStorageKey,
       true
     );
 
