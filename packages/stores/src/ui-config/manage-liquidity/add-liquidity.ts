@@ -497,27 +497,34 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         return poolAssetConfig.sendCurrency.coinMinimalDenom === "uosmo";
       });
 
-	if (osmoIndex !== -1) {
-	const osmoOutAmountInfo = outAmountInfoList.find(
-	  (outAmountInfo) => outAmountInfo.coinMinimalDenom === "uosmo"
-	);
-	if (!osmoOutAmountInfo) return;
-	const osmoBalanceInfo = balancePrettyList.find(
-	  (balance) => balance.currency.coinMinimalDenom === "uosmo"
-	);
-	if (!osmoBalanceInfo) return;
-	
-	// Deduct the fee from the balance before comparing it with the out amount
-	const balanceAfterFee = osmoBalanceInfo.toDec().sub(new Dec(OSMO_MEDIUM_TX_FEE));
-	const osmoOutAmount = balanceAfterFee.lt(osmoOutAmountInfo.outAmount.toDec())
-	  ? balanceAfterFee
-	  : osmoOutAmountInfo.outAmount;
-	
-	return this.setAmountAt(
-	  osmoIndex,
-	  osmoOutAmount.toString(),
-	  true
-	);
+      if (osmoIndex !== -1) {
+        const osmoOutAmountInfo = outAmountInfoList.find(
+          (outAmountInfo) => outAmountInfo.coinMinimalDenom === "uosmo"
+        );
+        if (!osmoOutAmountInfo) return;
+        const osmoBalanceInfo = balancePrettyList.find(
+          (balance) => balance.currency.coinMinimalDenom === "uosmo"
+        );
+        if (!osmoBalanceInfo) return;
+        const osmoOutAmount = osmoBalanceInfo
+          .toDec()
+          .sub(new Dec(OSMO_MEDIUM_TX_FEE))
+          .lt(osmoOutAmountInfo.outAmount.toDec())
+          ? osmoOutAmountInfo.outAmount.sub(new Dec(OSMO_MEDIUM_TX_FEE))
+          : osmoOutAmountInfo.outAmount;
+
+        return this.setAmountAt(
+          osmoIndex,
+          osmoOutAmount
+            .trim(true)
+            .shrink(true)
+            /** osmo is used to pay tx fees, should have some padding left for future tx? if no padding needed maxDecimals to 6 else 2*/
+            .maxDecimals(6)
+            .locale(false)
+            .toString(),
+          true
+        );
+      }
 
       /**TODO: should use cheaper coin to setAmount for higher accuracy*/
       const baseOutAmountInfo = outAmountInfoList.find((outAmountInfo) => {
