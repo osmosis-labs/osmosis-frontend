@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Kup {coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

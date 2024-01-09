@@ -835,7 +835,8 @@
     "tvl": "televisão",
     "backButton": "Todos os tokens",
     "ariaBackButton": "Botão Voltar de todos os tokens",
-    "noData": "DE"
+    "noData": "DE",
+    "buyToken": "Compre {coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Atualizações de osmose!",

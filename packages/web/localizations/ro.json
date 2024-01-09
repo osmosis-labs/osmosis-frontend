@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "Toate jetoanele",
     "ariaBackButton": "Buton înapoi pentru toate jetoanele",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Cumpărați {coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Actualizări pentru osmoză!",

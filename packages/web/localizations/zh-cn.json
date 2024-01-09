@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "所有代币",
     "ariaBackButton": "所有代币后退按钮",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "购买{coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "渗透更新！",
