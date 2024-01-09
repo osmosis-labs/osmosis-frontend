@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
       "externalLinkModalTitle": "Opuszczanie Osmosis",
       "goToSite": "Przejdź do strony",
-      "doNotShowAgain": "Nie pokazuj tego ponownie"
+      "doNotShowAgain": "Nie pokazuj tego ponownie",
+      "chainHalted": "Łańcuch osmozy jest zatrzymany, transakcje są tymczasowo wyłączone."
     }
   },
   "store": {

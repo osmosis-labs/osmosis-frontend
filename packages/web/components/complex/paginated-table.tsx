@@ -11,7 +11,7 @@ import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
-import { getPoolLink } from "./all-pools-table";
+import { getPoolLink } from "./all-pools-table-v1";
 
 function getPoolTypeTarget(poolType: string) {
   if (poolType === "transmuter") {

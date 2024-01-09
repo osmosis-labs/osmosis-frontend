@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
       "goToSite": "Continue to Site",
-      "doNotShowAgain": "Do not show this again"
+      "doNotShowAgain": "Do not show this again",
+      "chainHalted": "Osmosis chain is halted, transactions are temporarily disabled."
     }
   },
   "store": {

@@ -9,3 +9,5 @@ export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
 export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
   process.env.NEXT_PUBLIC_INDEXER_DATA_URL ||
   "https://api-osmosis-chain.imperator.co";
+
+export const NUMIA_INDEXER_BASEURL = "https://public-osmosis-api.numia.xyz";

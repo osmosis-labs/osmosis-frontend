@@ -24,14 +24,14 @@ export function maybeCursorPaginatedItems<TItem>(
   limit = limit || 50;
   const startIndex = cursor;
 
-  // no more items
-  if (startIndex >= items.length - 1) return { items: [], nextCursor: null };
+  // no more items if given an invalid cursor
+  if (startIndex > items.length - 1) return { items: [], nextCursor: null };
 
   // get the page
   const page = items.slice(startIndex, startIndex + limit);
 
   return {
     items: page,
-    nextCursor: Math.min(cursor + limit, items.length - 1),
+    nextCursor: cursor + limit > items.length - 1 ? null : cursor + limit,
   };
 }
