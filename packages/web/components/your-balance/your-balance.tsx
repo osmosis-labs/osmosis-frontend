@@ -199,6 +199,13 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     userOsmoAddress: account?.address,
   });
 
+    const isOsmosis = useMemo(
+      () =>
+        denom.toLowerCase() ===
+        chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
+      [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+    );
+
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
       <div
@@ -238,22 +245,25 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         <Button size={"sm"} className="!px-10 !text-base" mode={"secondary"}>
           {t("assets.historyTable.colums.withdraw")}
         </Button>
-        <Button
-          mode={"unstyled"}
-          onClick={onOpenFiatOnrampSelection}
-          className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
-        >
-          <CreditCardIcon
-            isAnimated
-            classes={{
-              backCard: "group-hover:stroke-[2]",
-              frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-            }}
-          />
-          <span className="whitespace-nowrap">
-            {t("tokenInfos.buyToken", { coinDenom: denom })}
-          </span>
-        </Button>
+          {isOsmosis ? (
+            <Button
+              mode={"unstyled"}
+              onClick={onOpenFiatOnrampSelection}
+              className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+            >
+              <CreditCardIcon
+                isAnimated
+                classes={{
+                  backCard: "group-hover:stroke-[2]",
+                  frontCard:
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                }}
+              />
+              <span className="whitespace-nowrap">
+                {t("tokenInfos.buyToken", { coinDenom: denom })}
+              </span>
+            </Button>
+          ) : null}
       </div>
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
