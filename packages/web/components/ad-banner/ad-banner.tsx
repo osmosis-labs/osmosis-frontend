@@ -34,7 +34,7 @@ export const AdBannerContent: React.FC<
   Ad & { localization: AdBannerProps["localization"] }
 > = memo(
   ({
-    headerOrTranslationKey: headerOrTranslationPath,
+    headerOrTranslationKey,
     subheaderOrTranslationKey,
     iconImageUrl,
     externalUrl,
@@ -76,8 +76,8 @@ export const AdBannerContent: React.FC<
           style={textContainerStyle}
         >
           <h6 className="font-semibold">
-            {getDeepValue(currentLocalization, headerOrTranslationPath) ??
-              headerOrTranslationPath}
+            {getDeepValue(currentLocalization, headerOrTranslationKey) ??
+              headerOrTranslationKey}
           </h6>
           <div className="flex gap-3">
             <p className="text-sm font-light">
