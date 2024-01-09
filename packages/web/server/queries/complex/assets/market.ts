@@ -6,7 +6,7 @@ import { LRUCache } from "lru-cache";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 
-import { queryTokenMarketCaps } from "../../indexer";
+import { queryTokenMarketCaps } from "../../imperator";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { getAssetData, getAssetMarketCapRank } from "./info";

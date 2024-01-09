@@ -15,7 +15,7 @@ import {
   FilteredPoolsResponse,
   PoolToken,
   queryFilteredPools,
-} from "../../../indexer";
+} from "../../../imperator";
 import {
   queryNumPools,
   queryPoolmanagerParams,
