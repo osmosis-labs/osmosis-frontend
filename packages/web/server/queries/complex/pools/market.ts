@@ -2,7 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryFilteredPools } from "../../indexer";
+import { queryFilteredPools } from "../../imperator";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getPools, Pool, PoolFilter } from "./index";
 

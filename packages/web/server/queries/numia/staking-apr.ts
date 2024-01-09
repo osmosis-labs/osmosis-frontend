@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_URL } from ".";
+import { NUMIA_BASE_URL } from ".";
 
 interface StakingAprResponse {
   labels: string;
@@ -14,7 +14,7 @@ export async function queryStakingApr({
   startDate: string;
   endDate: string;
 }): Promise<StakingAprResponse[]> {
-  const url = new URL(NUMIA_URL);
+  const url = new URL(NUMIA_BASE_URL);
 
   url.searchParams.append("start_date", startDate);
   url.searchParams.append("end_date", endDate);

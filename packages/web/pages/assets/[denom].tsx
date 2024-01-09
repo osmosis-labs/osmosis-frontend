@@ -51,7 +51,7 @@ import {
   TokenCMSData,
   Twitter,
 } from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
+import { ImperatorToken, queryAllTokens } from "~/server/queries/imperator";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
