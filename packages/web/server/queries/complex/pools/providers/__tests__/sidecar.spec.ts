@@ -22,12 +22,6 @@ jest.mock("../../../assets", () => ({
 }));
 
 describe("getPoolsFromSidecar", () => {
-  server.use(
-    rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
-      return res(ctx.json(mockSidecarResponse));
-    })
-  );
-
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
@@ -37,6 +31,12 @@ describe("getPoolsFromSidecar", () => {
     (calcAssetValue as jest.Mock).mockImplementation(() => {
       return Promise.resolve(undefined);
     });
+
+    server.use(
+      rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
+        return res(ctx.json(mockSidecarResponse));
+      })
+    );
   });
 
   it("works with caching", async () => {

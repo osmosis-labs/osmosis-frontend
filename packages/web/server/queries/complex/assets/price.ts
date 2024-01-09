@@ -18,7 +18,7 @@ import {
   queryTokenHistoricalChart,
   TimeFrame,
   TokenHistoricalPrice,
-} from "../../indexer/token-historical-chart";
+} from "../../imperator/token-historical-chart";
 import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
