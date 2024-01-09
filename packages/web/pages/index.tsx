@@ -5,9 +5,9 @@ import { AdBanner } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { EventName, OsmosisCmsRepo } from "~/config";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
-import { queryGithubFile } from "~/server/queries/github";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
@@ -82,8 +82,7 @@ const SwapAdsBanner = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["swap-ads-banner"],
     queryFn: () =>
-      queryGithubFile<SwapAdBannerResponse>({
-        repo: OsmosisCmsRepo,
+      queryOsmosisCMS<SwapAdBannerResponse>({
         filePath: "cms/swap-rotating-banner.json",
       }),
     staleTime: 1000 * 60 * 30, // 30 minutes

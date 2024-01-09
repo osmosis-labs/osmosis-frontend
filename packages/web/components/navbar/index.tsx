@@ -23,7 +23,7 @@ import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { EventName, OsmosisCmsRepo } from "~/config";
+import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -45,7 +45,7 @@ import {
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
-import { queryGithubFile } from "~/server/queries/github";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -137,10 +137,8 @@ export const NavBar: FunctionComponent<
     const { data: topAnnouncementBannerData } = useQuery({
       queryKey: ["osmosis-top-announcement-banner"],
       queryFn: async () =>
-        queryGithubFile<TopAnnouncementBannerResponse>({
-          repo: OsmosisCmsRepo,
+        queryOsmosisCMS<TopAnnouncementBannerResponse>({
           filePath: "cms/top-announcement-banner.json",
-          commitHash: "0a9cf6408ed25175b74efbd444435a2c2c4462f0",
         }),
       staleTime: 1000 * 60 * 3, // 3 minutes
       cacheTime: 1000 * 60 * 3, // 3 minutes
