@@ -77,8 +77,8 @@ export type Pagination = {
 
 /** Fetches filtered and paginated pools. */
 export async function queryFilteredPools(
-  filters: Partial<Filters>,
-  pagination: Partial<Pagination>
+  filters?: Partial<Filters>,
+  pagination?: Partial<Pagination>
 ): Promise<FilteredPoolsResponse> {
   // collect params
   const url = new URL(
@@ -86,12 +86,14 @@ export async function queryFilteredPools(
     IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   );
   const queryParams = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    queryParams.append(key, value.toString());
-  });
-  Object.entries(pagination).forEach(([key, value]) => {
-    queryParams.append(key, value.toString());
-  });
+  if (filters)
+    Object.entries(filters).forEach(([key, value]) => {
+      queryParams.append(key, value.toString());
+    });
+  if (pagination)
+    Object.entries(pagination).forEach(([key, value]) => {
+      queryParams.append(key, value.toString());
+    });
   url.search = queryParams.toString();
 
   return await apiClient<FilteredPoolsResponse>(url.toString());
