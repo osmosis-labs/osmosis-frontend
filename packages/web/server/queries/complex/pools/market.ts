@@ -2,8 +2,6 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
-
 import { queryFilteredPools } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getPools, Pool, PoolFilter } from ".";
@@ -15,7 +13,7 @@ export type PoolMarketMetrics = Partial<{
 }>;
 
 /** Get metrics for individual pool. */
-export async function getPoolMarketMetrics(
+export async function getPoolMarketMetric(
   poolId: string
 ): Promise<PoolMarketMetrics | undefined> {
   return getCachedPoolsWithMetricsMap().then((map) => map.get(poolId));
@@ -44,7 +42,7 @@ export async function mapGetPoolMarketMetrics<TPool extends Pool>({
   });
 }
 
-const metricPoolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const metricPoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Get a cached Map with pool IDs mapped to market metrics for that pool. */
 function getCachedPoolsWithMetricsMap(): Promise<
   Map<string, PoolMarketMetrics>
