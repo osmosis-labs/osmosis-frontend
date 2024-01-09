@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
       "goToSite": "Du-te la site",
-      "doNotShowAgain": "Nu îmi mai arăta asta"
+      "doNotShowAgain": "Nu îmi mai arăta asta",
+      "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "Boost",
       "superfluid": "Superfluid",
       "externalBoost": "Boost extern",
-      "total": "DAE totală"
+      "total": "DAE totală",
+      "explainer": {
+        "title": "Cum se calculează APR-urile?",
+        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
+        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
+        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "Cantitate",
     "availableIn": "Disponibil in",
     "day": "zi",
+    "days": "zile",
     "month": "lună",
     "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",

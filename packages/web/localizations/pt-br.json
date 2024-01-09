@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
       "goToSite": "Ir para o site",
-      "doNotShowAgain": "Não mostre isso novamente"
+      "doNotShowAgain": "Não mostre isso novamente",
+      "chainHalted": "A cadeia de osmose é interrompida, as transações são temporariamente desativadas."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "Impulsionar",
       "superfluid": "Superfluido",
       "externalBoost": "Impulso externo",
-      "total": "TAEG total"
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Como as TAEG são calculadas?",
+        "p1": "Todas as APRs são estimativas. Eles são calculados tomando a TAEG média de liquidez no pool.",
+        "p2": "Em pools superalimentados, a maioria dos usuários receberá recompensas mais baixas. Isso se deve a posições mais concentradas, que captam mais incentivos.",
+        "p3": "Para manter as estimativas conservadoras, todas as APRs são divididas pelo fator 3."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "Quantia",
     "availableIn": "Disponível em",
     "day": "dia",
+    "days": "dias",
     "month": "mês",
     "dashboard": "Painel",
     "dashboardStakedOsmo": "OSMO apostado",

@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
       "externalLinkModalTitle": "Osmosis'den Ayrılma",
       "goToSite": "Site'ye Git",
-      "doNotShowAgain": "Bunu tekrar gösterme"
+      "doNotShowAgain": "Bunu tekrar gösterme",
+      "chainHalted": "Osmoz zinciri durduruldu, işlemler geçici olarak devre dışı bırakıldı."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "Artırmak",
       "superfluid": "Süperakışkan",
       "externalBoost": "Harici Güçlendirme",
-      "total": "Toplam Nisan"
+      "total": "Toplam Nisan",
+      "explainer": {
+        "title": "APR'ler nasıl hesaplanır?",
+        "p1": "Tüm APR'ler tahmindir. Havuzdaki likiditenin ortalama APR'si alınarak hesaplanır.",
+        "p2": "Süper şarjlı havuzlarda çoğu kullanıcı daha düşük ödüller alacaktır. Bunun nedeni daha yoğun olan ve daha fazla teşviki yakalayan pozisyonlardır.",
+        "p3": "Tahminleri ihtiyatlı tutmak için tüm APR'ler 3 faktörüne bölünür."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "Miktar",
     "availableIn": "Uygun",
     "day": "gün",
+    "days": "günler",
     "month": "ay",
     "dashboard": "Gösterge Paneli",
     "dashboardStakedOsmo": "kazıklı OSMO",

@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
       "externalLinkModalTitle": "Osmosis 떠나기",
       "goToSite": "사이트로 가기",
-      "doNotShowAgain": "다시 표시하지 않음"
+      "doNotShowAgain": "다시 표시하지 않음",
+      "chainHalted": "Osmosis 체인이 중단되고 거래가 일시적으로 비활성화됩니다."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "후원",
       "superfluid": "초유체",
       "externalBoost": "외부 부스트",
-      "total": "총 연이율"
+      "total": "총 연이율",
+      "explainer": {
+        "title": "APR은 어떻게 계산되나요?",
+        "p1": "모든 APR은 추정치입니다. 이는 풀의 유동성에 대한 평균 APR을 취하여 계산됩니다.",
+        "p2": "슈퍼차지 풀에서는 대부분의 사용자가 더 낮은 보상을 받게 됩니다. 이는 더 많은 인센티브를 포착하는 더 집중된 위치 때문입니다.",
+        "p3": "추정치를 보수적으로 유지하기 위해 모든 APR을 3배로 나눕니다."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "양",
     "availableIn": "가능",
     "day": "낮",
+    "days": "날",
     "month": "월",
     "dashboard": "계기반",
     "dashboardStakedOsmo": "스테이킹된 OSMO",

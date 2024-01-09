@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
       "externalLinkModalTitle": "Saliendo de Osmosis",
       "goToSite": "Ir al sitio",
-      "doNotShowAgain": "No muestres esto de nuevo"
+      "doNotShowAgain": "No muestres esto de nuevo",
+      "chainHalted": "Se detiene la cadena de ósmosis, las transacciones se inhabilitan temporalmente."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "Aumentar",
       "superfluid": "superfluido",
       "externalBoost": "Impulso externo",
-      "total": "TAE total"
+      "total": "TAE total",
+      "explainer": {
+        "title": "¿Cómo se calculan las APR?",
+        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
+        "p2": "En grupos sobrealimentados, la mayoría de los usuarios recibirán recompensas más bajas. Esto se debe a posiciones más concentradas, que captan una mayor parte de los incentivos.",
+        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "Cantidad",
     "availableIn": "Disponible en",
     "day": "día",
+    "days": "días",
     "month": "mes",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "OSMO apostado",

@@ -8,11 +8,12 @@ import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
 import { Icon } from "../assets";
+import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 import { CustomClasses } from "../types";
 
 export const AprBreakdown: FunctionComponent<
-  { poolId: string } & CustomClasses
-> = observer(({ poolId, className }) => {
+  { poolId: string; showDisclaimerTooltip?: boolean } & CustomClasses
+> = observer(({ poolId, className, showDisclaimerTooltip = false }) => {
   const { queriesExternalStore } = useStore();
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
   const { t } = useTranslation();
@@ -61,7 +62,14 @@ export const AprBreakdown: FunctionComponent<
             }
           )}
         >
-          <p>{t("pools.aprBreakdown.total")}</p>
+          {showDisclaimerTooltip ? (
+            <div className="flex items-center gap-1">
+              <p>{t("pools.aprBreakdown.total")}</p>
+              <AprDisclaimerTooltip />
+            </div>
+          ) : (
+            <p>{t("pools.aprBreakdown.total")}</p>
+          )}
           <p>{poolAprs.totalApr.maxDecimals(1).toString()}</p>
         </div>
       )}

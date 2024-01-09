@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+import { NotEnoughQuotedError } from "@osmosis-labs/pools";
 import {
   NoRouteError,
   SplitTokenInQuote,
@@ -53,7 +54,10 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         tokenInFeeAmount: tokenIn.amount.toDec().mul(swapFee).truncate(),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
-          pools: pools.map(({ id }) => ({ id: id.toString() })),
+          pools: pools.map(({ id, spread_factor }) => ({
+            id: id.toString(),
+            swapFee: new Dec(spread_factor),
+          })),
           tokenInDenom: tokenIn.denom,
           tokenOutDenoms: pools.map(({ token_out_denom }) => token_out_denom),
         })),
@@ -62,11 +66,19 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
       // handle error JSON as it comes from sidecar
       const error = e as { data: { message: string } };
 
-      if (error.data?.message?.includes("no routes were provided")) {
+      const errorMessage = error.data?.message;
+
+      if (errorMessage?.includes("no routes were provided")) {
         throw new NoRouteError();
       }
 
-      throw new Error(error.data?.message ?? "Unexpected sidecar router error");
+      if (
+        errorMessage?.includes("amount out is zero, try increasing amount in")
+      ) {
+        throw new NotEnoughQuotedError();
+      }
+
+      throw new Error(errorMessage ?? "Unexpected sidecar router error " + e);
     }
   }
 }

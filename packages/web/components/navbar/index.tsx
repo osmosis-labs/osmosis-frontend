@@ -1,6 +1,8 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -12,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -20,7 +23,7 @@ import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName } from "~/config";
+import { EventName, OsmosisCmsRepo } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -42,6 +45,7 @@ import {
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
+import { queryGithubFile } from "~/server/queries/github";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -71,8 +75,6 @@ export const NavBar: FunctionComponent<
     const { t } = useTranslation();
 
     const featureFlags = useFeatureFlags();
-
-    const { query } = useRouter();
 
     const {
       isOpen: isSettingsOpen,
@@ -127,6 +129,19 @@ export const NavBar: FunctionComponent<
     const router = useRouter();
     const { isLoading: isWalletLoading } = useWalletSelect();
 
+    /**
+     * Fetches the top announcement banner from the osmosis-labs/fe-content repo
+     * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
+     */
+    const { data: topAnnouncementBannerData } = useQuery({
+      queryKey: ["osmosis-top-announcement-banner"],
+      queryFn: async () =>
+        queryGithubFile<TopAnnouncementBannerResponse>({
+          repo: OsmosisCmsRepo,
+          filePath: "cms/top-announcement-banner.json",
+        }),
+    });
+
     useEffect(() => {
       const handler = () => {
         closeMobileMenuRef.current();
@@ -138,14 +153,14 @@ export const NavBar: FunctionComponent<
 
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
-      if (query[UnverifiedAssetsQueryKey] === "true") {
+      if (router.query[UnverifiedAssetsQueryKey] === "true") {
         onOpenFrontierMigration();
         userSettings
           .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
+    }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
 
     const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
@@ -156,15 +171,29 @@ export const NavBar: FunctionComponent<
     });
 
     // announcement banner
-    const [_showBanner, setShowBanner] = useLocalStorageState(
-      Announcement ? Announcement?.localStorageKey ?? "" : "",
+    const defaultBannerLocalStorageKey = "banner";
+    const [_showBanner, setShowBanner] = useLocalStorage(
+      topAnnouncementBannerData?.banner?.localStorageKey ??
+        defaultBannerLocalStorageKey,
       true
     );
 
+    const isBannerWithinDateRange =
+      topAnnouncementBannerData?.banner &&
+      (topAnnouncementBannerData.banner.startDate ||
+        topAnnouncementBannerData.banner.endDate)
+        ? dayjs().isBetween(
+            topAnnouncementBannerData.banner.startDate,
+            topAnnouncementBannerData.banner.endDate
+          )
+        : true; // if no start and end date, show banner always
+
     const showBanner =
+      featureFlags.topAnnouncementBanner &&
       _showBanner &&
-      Announcement &&
-      (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+      !!topAnnouncementBannerData &&
+      Boolean(topAnnouncementBannerData?.banner) &&
+      isBannerWithinDateRange;
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
@@ -401,8 +430,8 @@ export const NavBar: FunctionComponent<
         />
         {showBanner && (
           <AnnouncementBanner
-            {...Announcement!}
             closeBanner={() => setShowBanner(false)}
+            bannerResponse={topAnnouncementBannerData}
           />
         )}
         <FrontierMigrationModal
@@ -512,22 +541,52 @@ const WalletInfo: FunctionComponent<
   );
 });
 
-const AnnouncementBanner: FunctionComponent<
-  typeof Announcement & { closeBanner: () => void }
-> = ({
-  enTextOrLocalizationPath,
-  link,
-  isWarning,
-  persistent,
-  closeBanner,
-  bg,
-}) => {
+interface TopAnnouncementBannerResponse {
+  isChainHalted: boolean;
+  banner: {
+    enTextOrLocalizationPath: string;
+    localStorageKey?: string;
+    pageRoute?: string;
+    link?: {
+      enTextOrLocalizationKey: string;
+      url: string;
+      isExternal: boolean;
+    };
+    isWarning?: boolean;
+    persistent?: boolean;
+    bg?: string;
+    startDate?: string;
+    endDate?: string;
+  } | null;
+}
+
+const AnnouncementBanner: FunctionComponent<{
+  closeBanner: () => void;
+  bannerResponse: TopAnnouncementBannerResponse;
+}> = ({ closeBanner, bannerResponse }) => {
   const { t } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
     onOpen: onOpenLeavingOsmosis,
   } = useDisclosure();
+  const router = useRouter();
+
+  const isChainHalted = bannerResponse?.isChainHalted;
+  const banner: TopAnnouncementBannerResponse["banner"] | null | undefined =
+    isChainHalted
+      ? {
+          enTextOrLocalizationPath: t("app.banner.chainHalted"),
+          isWarning: true,
+        }
+      : bannerResponse?.banner;
+
+  if (!banner) return null;
+
+  // If the banner has a pageRoute, only show it on that page
+  if (banner.pageRoute && router.pathname !== banner.pageRoute) return null;
+
+  const { isWarning, bg, link, persistent } = banner;
 
   const linkText = t(
     link?.enTextOrLocalizationKey ?? "Click here to learn more"
@@ -551,7 +610,7 @@ const AnnouncementBanner: FunctionComponent<
       )}
     >
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(enTextOrLocalizationPath)}</span>
+        <span>{t(banner?.enTextOrLocalizationPath ?? "")}</span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
