@@ -65,7 +65,7 @@ export async function getAssets({
   assetList?: AssetList[];
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
-} & AssetFilter): Promise<Asset[]> {
+} & AssetFilter = {}): Promise<Asset[]> {
   const makeMinimalAssets = (assetList: AssetList[]) => {
     // Create new array with just assets
     const coinMinimalDenomSet = new Set<string>();
