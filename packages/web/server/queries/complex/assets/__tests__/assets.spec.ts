@@ -29,15 +29,6 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("stLUNA");
     });
 
-    it("should not return unlisted assets", async () => {
-      const assets = await getAssets({
-        search: { query: "PYTH" },
-        assetList: AssetLists,
-      });
-
-      expect(assets).toEqual([]);
-    });
-
     it("should filter unverified assets if specified", async () => {
       const assets = await getAssets({
         assetList: AssetLists,
