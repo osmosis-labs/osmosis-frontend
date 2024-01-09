@@ -3,6 +3,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { queryPoolAprs } from "../../indexer/pool-aprs";
+import { getPools, Pool, PoolFilter } from "./index";
 
 export type PoolIncentive = { poolId: string } & Partial<{
   aprBreakdown: Partial<{
@@ -20,9 +21,25 @@ export async function getIncentivizedPool(poolId: string) {
   return map.get(poolId);
 }
 
-export async function getIncentivizedPools() {
-  const map = await getCachedIncentivizedPools();
-  return Array.from(map.values());
+export async function mapGetIncentivizedPools<TPool extends Pool>({
+  pools,
+  params,
+}: {
+  pools?: TPool[];
+  params?: PoolFilter;
+} = {}) {
+  if (!pools) pools = (await getPools(params)) as TPool[];
+
+  const incentives = await getCachedIncentivizedPools();
+
+  return pools.map((pool) => {
+    const poolMetrics = incentives.get(pool.id);
+
+    return {
+      ...pool,
+      ...poolMetrics,
+    };
+  });
 }
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });

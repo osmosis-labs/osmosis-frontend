@@ -4,7 +4,7 @@ import { LRUCache } from "lru-cache";
 
 import { queryFilteredPools } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
-import { getPools, Pool, PoolFilter } from ".";
+import { getPools, Pool, PoolFilter } from "./index";
 
 export type PoolMarketMetrics = Partial<{
   volume7dUsd: PricePretty;
@@ -27,7 +27,7 @@ export async function mapGetPoolMarketMetrics<TPool extends Pool>({
 }: {
   pools?: TPool[];
   params?: PoolFilter;
-}): Promise<(PoolMarketMetrics & TPool)[]> {
+} = {}): Promise<(PoolMarketMetrics & TPool)[]> {
   if (!pools) pools = (await getPools(params)) as TPool[];
 
   const metrics = await getCachedPoolsWithMetricsMap();
