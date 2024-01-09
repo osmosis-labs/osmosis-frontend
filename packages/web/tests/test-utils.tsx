@@ -15,7 +15,7 @@ export const trpcReact = createTRPCReact<AppRouter>();
 
 const queryClient = new QueryClient();
 export const withTRPC = ({ children }: { children: ReactNode }) => (
-  <MultiLanguageProvider>
+  <MultiLanguageProvider defaultLanguage="en">
     <trpcReact.Provider
       client={trpcReact.createClient({
         transformer: SuperJSON,

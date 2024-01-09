@@ -50,6 +50,7 @@ import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
+import { getDeepValue } from "~/utils/object";
 import { formatICNSName, getShortAddress } from "~/utils/string";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -139,7 +140,10 @@ export const NavBar: FunctionComponent<
         queryGithubFile<TopAnnouncementBannerResponse>({
           repo: OsmosisCmsRepo,
           filePath: "cms/top-announcement-banner.json",
+          commitHash: "0a9cf6408ed25175b74efbd444435a2c2c4462f0",
         }),
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 3, // 3 minutes
     });
 
     useEffect(() => {
@@ -558,13 +562,14 @@ interface TopAnnouncementBannerResponse {
     startDate?: string;
     endDate?: string;
   } | null;
+  localization?: Record<string, Record<string, any>>;
 }
 
 const AnnouncementBanner: FunctionComponent<{
   closeBanner: () => void;
   bannerResponse: TopAnnouncementBannerResponse;
 }> = ({ closeBanner, bannerResponse }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
@@ -588,9 +593,13 @@ const AnnouncementBanner: FunctionComponent<{
 
   const { isWarning, bg, link, persistent } = banner;
 
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
+  const currentLanguageTranslations = bannerResponse?.localization?.[language];
+
+  const linkText =
+    getDeepValue<string>(
+      currentLanguageTranslations,
+      link?.enTextOrLocalizationKey
+    ) ?? "Click here to learn more";
 
   const handleLeaveClick = () =>
     handleExternalLink({
@@ -610,7 +619,14 @@ const AnnouncementBanner: FunctionComponent<{
       )}
     >
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(banner?.enTextOrLocalizationPath ?? "")}</span>
+        <span>
+          {isChainHalted
+            ? banner?.enTextOrLocalizationPath ?? ""
+            : getDeepValue<string>(
+                currentLanguageTranslations,
+                banner?.enTextOrLocalizationPath
+              ) ?? banner?.enTextOrLocalizationPath}
+        </span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
