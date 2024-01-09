@@ -234,7 +234,9 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
             }}
           />
-          <span className="whitespace-nowrap">{t("buyTokens")}</span>
+          <span className="whitespace-nowrap">
+            {t("tokenInfos.buyToken", { coinDenom: denom })}
+          </span>
         </Button>
       </div>
       <FiatOnrampSelectionModal

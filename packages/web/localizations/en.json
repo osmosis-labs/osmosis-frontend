@@ -827,7 +827,8 @@
     "tvl": "TVL",
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
-    "noData": "N.D."
+    "noData": "N.D.",
+    "buyToken": "Buy {coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmosis updates!",
