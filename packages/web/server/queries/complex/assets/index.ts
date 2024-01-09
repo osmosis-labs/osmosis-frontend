@@ -79,30 +79,27 @@ function simplifyAssetListForDisplay(
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 
-  const listedAssets = assetList
+  let assetListAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter(
-      (asset) => asset.keywords && !asset.keywords.includes("osmosis-unlisted")
-    );
+    .filter((asset) => {
+      if (params.findMinDenomOrSymbol) {
+        return (
+          params.findMinDenomOrSymbol.toUpperCase() ===
+            asset.base.toUpperCase() ||
+          params.findMinDenomOrSymbol.toUpperCase() ===
+            asset.symbol.toUpperCase()
+        );
+      }
 
-  let assetListAssets = listedAssets.filter((asset) => {
-    if (params.findMinDenomOrSymbol) {
-      return (
-        params.findMinDenomOrSymbol.toUpperCase() ===
-          asset.base.toUpperCase() ||
-        params.findMinDenomOrSymbol.toUpperCase() === asset.symbol.toUpperCase()
-      );
-    }
-
-    // Ensure denoms are unique on Osmosis chain
-    // In the case the asset list has the same asset twice
-    if (coinMinimalDenomSet.has(asset.base)) {
-      return false;
-    } else {
-      coinMinimalDenomSet.add(asset.base);
-      return true;
-    }
-  });
+      // Ensure denoms are unique on Osmosis chain
+      // In the case the asset list has the same asset twice
+      if (coinMinimalDenomSet.has(asset.base)) {
+        return false;
+      } else {
+        coinMinimalDenomSet.add(asset.base);
+        return true;
+      }
+    });
 
   // Search raw asset list before reducing type to minimal Asset type
   if (params.search) {
