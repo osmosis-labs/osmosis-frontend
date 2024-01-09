@@ -1,4 +1,4 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -182,7 +182,7 @@ const ActionButton = ({
 const BalanceStats = observer((props: YourBalanceProps) => {
   const { denom } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore, priceStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const { onOpenWalletSelect } = useWalletSelect();
   const {
@@ -191,7 +191,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const chainName = chainStore.getChainFromCurrency(denom)?.chainName;
 
   const { data } = api.edge.assets.getAssetInfo.useQuery({
@@ -199,12 +198,12 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     userOsmoAddress: account?.address,
   });
 
-    const isOsmosis = useMemo(
-      () =>
-        denom.toLowerCase() ===
-        chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
-      [chainStore.osmosis.stakeCurrency.coinDenom, denom]
-    );
+  const isOsmosis = useMemo(
+    () =>
+      denom.toLowerCase() ===
+      chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
+    [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+  );
 
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
@@ -218,16 +217,20 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         </h6>
         {account?.isWalletConnected ? (
           <div className="flex flex-col items-start gap-1">
-            <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
-              {data?.currentPrice && data.amount && fiat
-                ? formatPretty(
-                    new PricePretty(fiat, data.currentPrice.mul(data.amount))
-                  )
-                : formatPretty(new PricePretty(fiat!, new Dec(0)))}
-            </h4>
-            <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
-              {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
-            </p>
+            {data?.currentPrice && data.amount ? (
+              <>
+                <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                  {formatPretty(data.currentPrice.mul(data.amount))}
+                </h4>
+                <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                  {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+                </p>
+              </>
+            ) : (
+              <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+              </h4>
+            )}
           </div>
         ) : (
           <button
@@ -245,25 +248,24 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         <Button size={"sm"} className="!px-10 !text-base" mode={"secondary"}>
           {t("assets.historyTable.colums.withdraw")}
         </Button>
-          {isOsmosis ? (
-            <Button
-              mode={"unstyled"}
-              onClick={onOpenFiatOnrampSelection}
-              className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
-            >
-              <CreditCardIcon
-                isAnimated
-                classes={{
-                  backCard: "group-hover:stroke-[2]",
-                  frontCard:
-                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-                }}
-              />
-              <span className="whitespace-nowrap">
-                {t("tokenInfos.buyToken", { coinDenom: denom })}
-              </span>
-            </Button>
-          ) : null}
+        {isOsmosis ? (
+          <Button
+            mode={"unstyled"}
+            onClick={onOpenFiatOnrampSelection}
+            className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+          >
+            <CreditCardIcon
+              isAnimated
+              classes={{
+                backCard: "group-hover:stroke-[2]",
+                frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+              }}
+            />
+            <span className="whitespace-nowrap">
+              {t("tokenInfos.buyToken", { coinDenom: denom })}
+            </span>
+          </Button>
+        ) : null}
       </div>
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
