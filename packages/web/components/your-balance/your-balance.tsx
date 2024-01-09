@@ -200,44 +200,44 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   });
 
   return (
-    <div className="flex items-start justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:items-stretch 1.5xl:gap-6 xl:flex-row xl:items-center 1.5md:flex-col 1.5md:items-stretch">
-      <div
-        className={classNames("flex flex-col items-start", {
-          "gap-3": account?.isWalletConnected,
-        })}
-      >
-        <h6 className="text-subtitle1 font-subtitle1 leading-6">
-          {t("tokenInfos.yourBalance")}
-        </h6>
-        {account?.isWalletConnected ? (
-          <div className="flex flex-col items-start gap-1">
-            <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
-              {data?.currentPrice && data.amount && fiat
-                ? formatPretty(
-                    new PricePretty(fiat, data.currentPrice.mul(data.amount))
-                  )
-                : formatPretty(new PricePretty(fiat!, new Dec(0)))}
-            </h4>
-            <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
-              {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
-            </p>
-          </div>
-        ) : (
-          <button
-            onClick={() => onOpenWalletSelect(chainName!)}
-            className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
-          >
-            {t("connectWallet")}
-          </button>
-        )}
-      </div>
-      <div className="flex flex-nowrap items-start gap-3 sm:flex-wrap">
-        <Button size={"sm"} className="!px-10">
-          {t("assets.historyTable.colums.deposit")}
-        </Button>
-        <Button size={"sm"} className="!px-10" mode={"secondary"}>
-          {t("assets.historyTable.colums.withdraw")}
-        </Button>
+      <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
+        <div
+          className={classNames("flex flex-col items-start", {
+            "gap-3": account?.isWalletConnected,
+          })}
+        >
+          <h6 className="text-subtitle1 font-subtitle1 leading-6">
+            {t("tokenInfos.yourBalance")}
+          </h6>
+          {account?.isWalletConnected ? (
+            <div className="flex flex-col items-start gap-1">
+              <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                {data?.currentPrice && data.amount && fiat
+                  ? formatPretty(
+                      new PricePretty(fiat, data.currentPrice.mul(data.amount))
+                    )
+                  : formatPretty(new PricePretty(fiat!, new Dec(0)))}
+              </h4>
+              <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={() => onOpenWalletSelect(chainName!)}
+              className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
+            >
+              {t("connectWallet")}
+            </button>
+          )}
+        </div>
+        <div className="flex flex-nowrap items-start gap-3 sm:flex-wrap">
+          <Button size={"sm"} className="!px-10 !text-base">
+            {t("assets.historyTable.colums.deposit")}
+          </Button>
+          <Button size={"sm"} className="!px-10 !text-base" mode={"secondary"}>
+            {t("assets.historyTable.colums.withdraw")}
+          </Button>
         <Button
           mode={"unstyled"}
           onClick={onOpenFiatOnrampSelection}
