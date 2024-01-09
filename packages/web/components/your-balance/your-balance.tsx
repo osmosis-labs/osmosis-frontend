@@ -197,7 +197,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   });
 
   return (
-    <div className="flex items-start justify-between gap-12 self-stretch 2xl:flex-col 2xl:items-stretch 2xl:gap-6">
+    <div className="flex items-start justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:items-stretch 1.5xl:gap-6 xl:flex-row xl:items-center 1.5md:flex-col 1.5md:items-stretch">
       <div className="flex flex-col items-start gap-3">
         <h6 className="text-subtitle1 font-subtitle1 leading-6">
           {t("tokenInfos.yourBalance")}
