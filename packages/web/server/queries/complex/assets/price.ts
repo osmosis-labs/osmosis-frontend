@@ -12,7 +12,7 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 
 import {
   queryTokenHistoricalChart,
@@ -127,6 +127,9 @@ async function calculatePriceFromPriceId({
     tokenOutAsset.decimals - tokenInAsset.decimals
   );
 
+  // TODO: get spot price from token amounts instead
+  // of instantiating pool models with client
+  // side simulation logic.
   const inSpotPrice = new IntPretty(
     pool
       .getSpotPriceInOverOutWithoutSwapFee(tokenInIbc, tokenOutIbc)

@@ -22,6 +22,7 @@ export type AvailableFlags =
   | "tfmRouter"
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
+  | "newPoolsTable"
   | "topAnnouncementBanner";
 
 type ModifiedFlags =
