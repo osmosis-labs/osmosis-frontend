@@ -18,6 +18,7 @@ import { useStore } from "~/stores";
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
 
 export const StakeDashboard: React.FC<{
+  hasInsufficientBalance: boolean;
   setShowValidatorModal: (val: boolean) => void;
   setShowStakeLearnMoreModal: (val: boolean) => void;
   validators?: Staking.Validator[];
@@ -25,6 +26,7 @@ export const StakeDashboard: React.FC<{
   balance: CoinPretty;
 }> = observer(
   ({
+    hasInsufficientBalance,
     setShowValidatorModal,
     validators,
     usersValidatorsMap,
@@ -129,7 +131,7 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        <div className="flex w-full flex-row place-content-around space-y-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around items-center space-y-0 py-10 sm:flex-col sm:space-y-4 sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -142,6 +144,7 @@ export const StakeDashboard: React.FC<{
           />
         </div>
         <ValidatorSquadCard
+          hasInsufficientBalance={hasInsufficientBalance}
           setShowValidatorModal={setShowValidatorModal}
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}

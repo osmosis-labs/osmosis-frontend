@@ -247,6 +247,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       splitableRoutes.map((r) => routeToString(r))
     );
 
+    // If at least one of the routes is not enough quoted AND
+    // all routes fail, then we assume that this is the main error for the quote overall
+    let isNotEnoughQuoted = false;
+
     const directQuotes = (
       await Promise.all(
         splitableRoutes.map(async (route, index) => {
@@ -258,6 +262,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
               },
             ]);
           } catch (e) {
+            if (e instanceof NotEnoughQuotedError) {
+              isNotEnoughQuoted = true;
+            }
+
             // if there's not enough liquidity, skip this route
             this._logger?.error(
               `Dismissing direct route at index: ${index}:`,
@@ -296,6 +304,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     if (directQuotes.length === 0 && !splitQuote) {
+      if (isNotEnoughQuoted) {
+        throw new NotEnoughQuotedError();
+      }
+
       throw new NoRouteError();
     }
 
@@ -325,7 +337,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
-    const routePoolsSwapFees: Dec[][] = [];
 
     const sumInitialAmount = routes.reduce(
       (sum, route) => sum.add(route.initialAmount),
@@ -348,7 +359,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       let afterSpotPriceInOverOut: Dec = new Dec(1);
       let effectivePriceInOverOut: Dec = new Dec(1);
       let poolsSwapFee: Dec = new Dec(0);
-      const poolsSwapFees: Dec[] = [];
 
       for (let i = 0; i < route.pools.length; i++) {
         const pool = this._sortedPools.find(
@@ -358,7 +368,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         const outDenom = route.tokenOutDenoms[i];
 
-        poolsSwapFees.push(pool.swapFee);
+        if (previousInAmount.isZero()) {
+          throw new NotEnoughQuotedError();
+        }
 
         // calc out given in through pool, cached
         const calcOutGivenInParams = [
@@ -423,7 +435,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           previousInAmount = quoteOut.amount;
         }
       }
-      routePoolsSwapFees.push(poolsSwapFees);
     }
 
     const priceImpactTokenOut = totalBeforeSpotPriceInOverOut.gt(new Dec(0))
@@ -433,14 +444,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       : new Dec(0);
 
     return {
-      split: routes
-        .map((route, i) => ({
-          ...route,
-          effectiveSwapFees: routePoolsSwapFees[i],
-        }))
-        .sort((a, b) =>
-          Number(b.initialAmount.sub(a.initialAmount).toString())
-        ),
+      split: routes.sort((a, b) =>
+        Number(b.initialAmount.sub(a.initialAmount).toString())
+      ),
       amount: totalOutAmount,
       beforeSpotPriceInOverOut: totalBeforeSpotPriceInOverOut,
       beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(

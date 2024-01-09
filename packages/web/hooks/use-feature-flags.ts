@@ -21,7 +21,9 @@ export type AvailableFlags =
   | "legacyRouter"
   | "tfmRouter"
   | "osmosisUpdatesPopUp"
-  | "aprBreakdown";
+  | "aprBreakdown"
+  | "newPoolsTable"
+  | "topAnnouncementBanner";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

@@ -19,7 +19,7 @@ import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types"
 import {
   AvailableRangeValues,
   TimeFrame,
-} from "~/server/queries/indexer/token-historical-chart";
+} from "~/server/queries/imperator/token-historical-chart";
 import { compareDec, compareDefinedMember } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 

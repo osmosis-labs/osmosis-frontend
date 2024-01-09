@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
       "goToSite": "前往网站",
-      "doNotShowAgain": "不要再显示此内容"
+      "doNotShowAgain": "不要再显示此内容",
+      "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "促进",
       "superfluid": "超流体",
       "externalBoost": "外部升压",
-      "total": "总年利率"
+      "total": "总年利率",
+      "explainer": {
+        "title": "年利率是如何计算的？",
+        "p1": "所有年利率均为估计值。它们是通过池中流动性的平均年利率来计算的。",
+        "p2": "在超级矿池中，大多数用户将获得较低的奖励。这是因为职位更加集中，能够获得更多的激励。",
+        "p3": "为了保持估计保守，所有年利率均除以 3。"
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "数量",
     "availableIn": "可用于",
     "day": "天",
+    "days": "天",
     "month": "月",
     "dashboard": "仪表板",
     "dashboardStakedOsmo": "固定 OSMO",

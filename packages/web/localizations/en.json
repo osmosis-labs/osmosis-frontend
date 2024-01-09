@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
       "goToSite": "Continue to Site",
-      "doNotShowAgain": "Do not show this again"
+      "doNotShowAgain": "Do not show this again",
+      "chainHalted": "Osmosis chain is halted, transactions are temporarily disabled."
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "Boost",
       "superfluid": "Superfluid",
       "externalBoost": "External Boost",
-      "total": "Total APR"
+      "total": "Total APR",
+      "explainer": {
+        "title": "How are APRs calculated?",
+        "p1": "All APRs are estimates. They are calculated by taking the average APR for liquidity in the pool.",
+        "p2": "In supercharged pools, most users will receive lower rewards. This is due to positions that are more concentrated, which capture more of the incentives.",
+        "p3": "In order to keep estimates conservative, all APRs are divided by factor of 3."
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "Amount",
     "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "dashboardStakedOsmo": "staked OSMO",

@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
       "externalLinkModalTitle": "離開Osmosis",
       "goToSite": "前往網站",
-      "doNotShowAgain": "不要再顯示此內容"
+      "doNotShowAgain": "不要再顯示此內容",
+      "chainHalted": "Osmosis 鏈停止，交易暫時停用。"
     }
   },
   "store": {
@@ -555,7 +556,13 @@
       "boost": "促進",
       "superfluid": "超流體",
       "externalBoost": "外部升壓",
-      "total": "總年利率"
+      "total": "總年利率",
+      "explainer": {
+        "title": "年利率是如何計算的？",
+        "p1": "所有年利率均為估計值。它們是透過池中流動性的平均年利率來計算的。",
+        "p2": "在超級礦池中，大多數用戶將獲得較低的獎勵。這是因為職位更集中，能夠獲得更多的激勵。",
+        "p3": "為了保持估計保守，所有年利率均除以 3。"
+      }
     }
   },
   "profile": {
@@ -592,6 +599,7 @@
     "amount": "數量",
     "availableIn": "可用於",
     "day": "天",
+    "days": "天",
     "month": "月",
     "dashboard": "儀表板",
     "dashboardStakedOsmo": "固定 OSMO",

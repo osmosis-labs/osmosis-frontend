@@ -16,8 +16,8 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools";
-import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 const osmosisChainId = ChainList[0].chain_id;
 
@@ -180,6 +180,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
+            swapFee: staticPool?.swapFee,
             type: staticPool?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
