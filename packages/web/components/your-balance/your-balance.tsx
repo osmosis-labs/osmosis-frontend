@@ -250,7 +250,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           logEvent([
             EventName.ProfileModal.buyTokensClicked,
             {
-              tokenName: "OSMO",
+              tokenName: denom,
               tokenAmount: Number(
                 (fiatValue ?? coinValue)?.maxDecimals(4).toString()
               ),
