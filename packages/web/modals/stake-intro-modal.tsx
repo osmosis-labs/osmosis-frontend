@@ -16,7 +16,6 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
 export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
   onRequestClose,
   isOpen,
-  isWalletConnected,
   balance,
   stakingApr,
   onOpenFiatOnrampSelection,
@@ -30,12 +29,7 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
 
   const hasOsmo = balance.toDec().gt(new Dec(0));
 
-  const hasOsmoText = (
-    <>
-      Put your available{" "}
-      <span className="text-bullish-400">${displayBalance}</span> to work and{" "}
-    </>
-  );
+  const hasOsmoText = <>Put your available {displayBalance} to work and </>;
   const hasNoOsmoText = (
     <>
       {" "}
@@ -79,18 +73,16 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
         <Image
           width={592}
           height={413}
-          src="/images/staking-release.svg"
+          src="/images/staking-release.webp"
           alt="Staking tool and dashboard view"
+          quality={100}
         />
         <Button
           mode="special-1"
-          onClick={() => {
-            onRequestClose();
-            if (!hasOsmo) onOpenFiatOnrampSelection();
-          }}
+          onClick={onRequestClose}
           className="max-w-[400px]"
         >
-          {hasOsmo ? "Start staking" : "Buy Osmo to start staking"}
+          Start staking
         </Button>
         <p className="mt-4 text-xs text-osmoverse-400">
           * Staking reward value subject to price and APR volatility.

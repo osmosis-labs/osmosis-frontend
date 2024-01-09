@@ -10,6 +10,7 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { Spinner } from "~/components/spinner";
+import StakeOnboarding from "~/components/stake/stake-onboarding";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
 import { StakeOrEdit } from "~/components/types";
@@ -18,15 +19,46 @@ import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
-import { useDisclosure } from "~/hooks/use-disclosure";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
-import { StakeIntroModal } from "~/modals/stake-intro-modal";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+// function useShowStakeIntroModal(
+//   address: string | undefined,
+//   isWalletConnected: boolean,
+//   setShowStakeIntroModal: (show: boolean) => void
+// ) {
+//   const localStorageKey = address ? `show-stake-modal-intro-${address}` : "";
+
+//   // Using a state hook for showStakeModalForWalletAddress
+//   const [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress] =
+//     useLocalStorageState(localStorageKey, true);
+
+//   useEffect(() => {
+//     // The logic inside this useEffect will only run if the address is populated and the wallet is connected
+//     if (address && isWalletConnected) {
+//       console.log(
+//         "showStakeModalForWalletAddress: ",
+//         showStakeModalForWalletAddress
+//       );
+//       if (showStakeModalForWalletAddress) {
+//         setShowStakeIntroModal(true);
+//         setShowStakeModalForWalletAddress(false);
+//       }
+//     }
+//   }, [
+//     address,
+//     isWalletConnected,
+//     showStakeModalForWalletAddress,
+//     setShowStakeModalForWalletAddress,
+//     setShowStakeIntroModal,
+//   ]);
+
+//   return [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress];
+// }
 
 const getWeekDateRange = () => {
   // Numia APY rate calculated on a 7 day rolling average
@@ -48,7 +80,7 @@ export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
-  const [showStakeIntroModal, setShowStakeIntroModal] = useState(true);
+
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -57,12 +89,6 @@ export const Staking: React.FC = observer(() => {
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Stake.pageViewed],
   });
-
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onOpen: onOpenFiatOnrampSelection,
-    onClose: onCloseFiatOnrampSelection,
-  } = useDisclosure();
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
@@ -467,23 +493,15 @@ export const Staking: React.FC = observer(() => {
         isWalletConnected={Boolean(isWalletConnected)}
         setShowValidatorModal={() => setShowValidatorModal(true)}
       />
-      <StakeIntroModal
-        isOpen={showStakeIntroModal}
-        onRequestClose={() => setShowStakeIntroModal(false)}
-        isWalletConnected={Boolean(isWalletConnected)}
-        balance={stakeTabAmountConfig.balance}
-        stakingApr={stakingAPR}
-        onOpenFiatOnrampSelection={onOpenFiatOnrampSelection}
-      />
-      <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
-        onSelectRamp={(ramp) => {
-          if (ramp !== "transak") return;
 
-          logEvent([EventName.Sidebar.buyOsmoClicked]);
-        }}
-      />
+      {isWalletConnected && address && (
+        <StakeOnboarding
+          address={address}
+          isWalletConnected={isWalletConnected}
+          stakingAPR={stakingAPR}
+          amountConfig={stakeTabAmountConfig}
+        />
+      )}
     </main>
   );
 });
