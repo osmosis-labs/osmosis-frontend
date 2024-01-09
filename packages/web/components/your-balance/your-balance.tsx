@@ -66,14 +66,14 @@ const YourBalance = observer(
           denom={denom}
           tokenDetailsByLanguage={tokenDetailsByLanguage}
         />
-        {details?.stakingURL && (
-          <div className="flex flex-col gap-6 self-stretch">
-            <header>
-              <h6 className="text-lg font-h6 leading-6 tracking-wide">
-                {t("tokenInfos.earnWith", { denom })}
-              </h6>
-            </header>
-            <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
+        <div className="flex flex-col gap-6 self-stretch">
+          <header>
+            <h6 className="text-lg font-h6 leading-6 tracking-wide">
+              {t("tokenInfos.earnWith", { denom })}
+            </h6>
+          </header>
+          <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
+            {details?.stakingURL && (
               <Link
                 href={details?.stakingURL}
                 target="_blank"
@@ -107,35 +107,35 @@ const YourBalance = observer(
                   }
                 />
               </Link>
-              <Link
-                href="/pools"
-                passHref
-                className="flex flex-[0.5]"
-                onClick={() =>
-                  logEvent([
-                    EventName.TokenInfo.cardClicked,
-                    { tokenName: denom, title: "Explore Pools" },
-                  ])
+            )}
+            <Link
+              href="/pools"
+              passHref
+              className="flex flex-[0.5]"
+              onClick={() =>
+                logEvent([
+                  EventName.TokenInfo.cardClicked,
+                  { tokenName: denom, title: "Explore Pools" },
+                ])
+              }
+            >
+              <ActionButton
+                title={t("tokenInfos.explorePools")}
+                sub={t("tokenInfos.provideLiquidity")}
+                image={
+                  <Image
+                    src={"/images/explore-pools.svg"}
+                    alt={`Explore pools image`}
+                    className={`overflow-visible object-cover 2xl:object-contain`}
+                    width={189}
+                    height={126}
+                  />
                 }
-              >
-                <ActionButton
-                  title={t("tokenInfos.explorePools")}
-                  sub={t("tokenInfos.provideLiquidity")}
-                  image={
-                    <Image
-                      src={"/images/explore-pools.svg"}
-                      alt={`Explore pools image`}
-                      className={`overflow-visible object-cover 2xl:object-contain`}
-                      width={189}
-                      height={126}
-                    />
-                  }
-                  needsPadding
-                />
-              </Link>
-            </div>
+                needsPadding
+              />
+            </Link>
           </div>
-        )}
+        </div>
       </section>
     );
   }
