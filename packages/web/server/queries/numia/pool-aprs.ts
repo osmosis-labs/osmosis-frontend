@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_INDEXER_BASEURL } from ".";
+import { NUMIA_BASE_URL } from ".";
 
 type PoolApr = {
   pool_id: string;
@@ -13,6 +13,6 @@ type PoolApr = {
 
 /** Queries numia for a breakdown of APRs per pool. */
 export function queryPoolAprs(): Promise<PoolApr[]> {
-  const url = new URL("/pools_apr", NUMIA_INDEXER_BASEURL);
+  const url = new URL("/pools_apr", NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
