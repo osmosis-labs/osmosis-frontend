@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "Tüm jetonlar",
     "ariaBackButton": "Tüm belirteçleri geri düğmesi",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "{coinDenom} satın alın"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmoz güncellemeleri!",

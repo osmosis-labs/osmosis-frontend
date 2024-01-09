@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "Todas las fichas",
     "ariaBackButton": "Botón de retroceso de todos los tokens",
-    "noData": "N.D."
+    "noData": "N.D.",
+    "buyToken": "Comprar {coinDenom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",

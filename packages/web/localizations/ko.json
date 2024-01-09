@@ -835,7 +835,8 @@
     "tvl": "TVL",
     "backButton": "모든 토큰",
     "ariaBackButton": "모든 토큰 뒤로 버튼",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "{coinDenom} 구매"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "삼투 업데이트!",
