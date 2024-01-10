@@ -837,7 +837,8 @@
     "ariaBackButton": "모든 토큰 뒤로 버튼",
     "noData": "ND",
     "buyToken": "{coinDenom} 구매",
-    "staking": "스테이킹"
+    "staking": "스테이킹",
+    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "삼투 업데이트!",

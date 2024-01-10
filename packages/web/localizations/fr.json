@@ -837,7 +837,8 @@
     "ariaBackButton": "Bouton retour de tous les jetons",
     "noData": "ND",
     "buyToken": "Acheter {coinDenom}",
-    "staking": "Jalonnement"
+    "staking": "Jalonnement",
+    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Mises à jour sur l'osmose !",

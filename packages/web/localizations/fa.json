@@ -837,7 +837,8 @@
     "ariaBackButton": "دکمه برگشت همه نشانه ها",
     "noData": "ND",
     "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی"
+    "staking": "شرط بندی",
+    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "به روز رسانی اسمز!",

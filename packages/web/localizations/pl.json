@@ -837,7 +837,8 @@
     "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
     "noData": "ND",
     "buyToken": "Kup {coinDenom}",
-    "staking": "Stawianie"
+    "staking": "Stawianie",
+    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

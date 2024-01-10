@@ -837,7 +837,8 @@
     "ariaBackButton": "所有代币后退按钮",
     "noData": "ND",
     "buyToken": "购买{coinDenom}",
-    "staking": "质押"
+    "staking": "质押",
+    "liquidityInOSMOPools": "{number} {denom}池中的流动性"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "渗透更新！",
