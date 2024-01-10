@@ -10,7 +10,7 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
-import { queryGithubFile } from "~/server/queries/github";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 
 const NavbarOsmosisUpdates = () => {
   const { t } = useTranslation();
@@ -25,8 +25,7 @@ const NavbarOsmosisUpdates = () => {
    * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/osmosis-update.json
    */
   const { data, isLoading } = useQuery(["osmosis-updates"], async () =>
-    queryGithubFile<{ iframeUrl: string }>({
-      repo: "osmosis-labs/fe-content",
+    queryOsmosisCMS<{ iframeUrl: string }>({
       filePath: "cms/osmosis-update.json",
     })
   );

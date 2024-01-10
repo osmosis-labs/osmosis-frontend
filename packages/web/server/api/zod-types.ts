@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+// Only generic types here
+
 /** Include this in your function's input, and return the correct `nextCursor` value
- *  to automatically get pagination support for your query function.
+ *  to automatically get pagination support for your query function via `useInfiniteQuery` tRPC hook.
  *
  *  See: https://trpc.io/docs/client/react/useInfiniteQuery
  */

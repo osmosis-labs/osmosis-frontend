@@ -116,7 +116,9 @@
       "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
-      "goToSite": "Du-te la site"
+      "goToSite": "Du-te la site",
+      "doNotShowAgain": "Nu îmi mai arăta asta",
+      "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "Istoric Transferuri"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adăuga",
       "buttonEdit": "Modifica",
       "buttonEnter": "Intra",
       "channelCongestedDeposit": "Depoziteaza (Channel congested)",
@@ -221,7 +224,8 @@
         "symbol": "Simbol"
       },
       "title": "Active",
-      "withdrawButton": "Retrage"
+      "withdrawButton": "Retrage",
+      "activate": "Activati"
     },
     "totalAssets": "Total",
     "transfer": {
@@ -229,6 +233,7 @@
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "givePermission": "Acordați permisiunea de a folosi jetoane",
+      "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
@@ -237,7 +242,9 @@
         "seeRequest": "Vezi solicitarea în {walletName}",
         "noQuotesAvailable": "Nu există oferte disponibile",
         "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
+        "invalidAddress": "Adresă invalidă",
+        "missingAddress": "Adresa lipsă"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -449,7 +456,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
-    "7davg": "(medie 7z)",
     "amountDaysUnbonding": "{numDays} zile de dezlegare",
     "amountDaysUnbonding_plural": "{numDays} zile blocate",
     "APR": "APR",
@@ -464,7 +470,7 @@
     "collapseDetails": "Ascunde detalii",
     "commission": "comision",
     "currentDailyEarn": "Acum castigi",
-    "dailyEarnAmount": "{amount} / zi",
+    "dailyEarnAmount": "{amount} /zi",
     "day": "zi",
     "delegated": "Delegate",
     "details": "Detalii",
@@ -476,7 +482,6 @@
     "learnMore": "Citeste mai multe",
     "level": "Nivel {level}",
     "liquidity": "Lichiditatea",
-    "numDaysRemaining": "{numDays} zile ramase",
     "putAssetsToWork": "Pune-ti activele la munca.",
     "putAssetsToWorkCaption": "Adauga-ti activele in acest pool pentru a debloca recompense captivante. Cu cat le blochezi mai mult timp, cu atat castigi mai mult.",
     "rewardDistribution": "Recompense distribuite celor ce pun la dispozitie lichiditate",
@@ -545,7 +550,20 @@
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in"
+    "rewardDistribution": "Recompensele se distribuie in",
+    "aprBreakdown": {
+      "swapFees": "Taxe de schimb",
+      "boost": "Boost",
+      "superfluid": "Superfluid",
+      "externalBoost": "Boost extern",
+      "total": "DAE totală",
+      "explainer": {
+        "title": "Cum se calculează APR-urile?",
+        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
+        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
+        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+      }
+    }
   },
   "profile": {
     "balance": "Balanta",
@@ -581,6 +599,7 @@
     "amount": "Cantitate",
     "availableIn": "Disponibil in",
     "day": "zi",
+    "days": "zile",
     "month": "lună",
     "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",
@@ -599,9 +618,7 @@
     "unbondingSubtext": "După ce această perioadă a trecut, vei putea accesa OSMO-ul tău din tab-ul de active",
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
-    "collectRewardsTooltip": "Colectează toate recompensele tale nerevendicate. Aceste token-uri vor fi imediat disponibile pentru tine pe Osmosis.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Colectează și reinvestește automat câștigurile tale nerevendicate cu un singur clic. Reinvestirea este un mod excelent de a câștiga mai mult cu activele tale.",
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
@@ -797,6 +814,7 @@
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
     "pastDaysReturns": "Revenirile din zilele trecute",
@@ -829,5 +847,49 @@
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
   "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
+  "earnPage": {
+    "title": "Câştiga",
+    "position": "Poziţie",
+    "positions": "Poziții",
+    "allocation": "Alocare",
+    "tokensCount": "{number} jetoane",
+    "strategiesCount": "{number} strategii",
+    "value": "Valoare",
+    "method": "Metodă",
+    "platform": "Platformă",
+    "scrollToSeeMore": "derulați pentru a vedea mai multe",
+    "discoverStrategies": "Descoperiți strategiile",
+    "myStrategies": "Strategiile mele",
+    "strategyPlatform": "Strategie / Platformă",
+    "apy": "APY",
+    "daily": "Zilnic",
+    "reward": "Răsplată",
+    "lock": "Lacăt",
+    "days": "zile",
+    "risk": "Risc",
+    "strategyMethod": "Metoda Strategiei",
+    "allMethods": "Toate Metoda",
+    "platforms": "Platforme",
+    "allPlatforms": "Toate platformele",
+    "lockingDuration": "Durata de blocare",
+    "specialTokens": "Jetoane speciale",
+    "filters": "Filtre",
+    "resetFilters": "Resetați filtrele",
+    "saveFilters": "Salvați filtrele",
+    "rewards": "Recompense",
+    "estimatedInYearlyRewards": "Estimat în recompense anuale",
+    "availableToClaim": "disponibil pentru revendicare",
+    "claimAllRewards": "Revendicați toate recompensele",
+    "join": "A te alatura",
+    "tokenFilterOptions": {
+      "my": "Jetoanele mele",
+      "all": "Toate jetoanele"
+    },
+    "rewardTypes": {
+      "all": "Toate",
+      "single": "Singur",
+      "multi": "Multi"
+    }
+  },
   "disclaimer": "Disclaimer"
 }

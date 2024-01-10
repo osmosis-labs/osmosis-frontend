@@ -9,6 +9,7 @@ import { initSuperflow } from "@usesuperflow/client";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
+import isBetween from "dayjs/plugin/isBetween";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
@@ -20,7 +21,7 @@ import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useMount } from "react-use";
 
@@ -33,6 +34,7 @@ import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
   MultiLanguageProvider,
+  useDisclosure,
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
@@ -40,7 +42,7 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
-import { ExternalLinkModal } from "~/modals";
+import { ExternalLinkModal, handleExternalLink } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
@@ -60,6 +62,7 @@ dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
+dayjs.extend(isBetween);
 dayjs.updateLocale("es", dayjsLocaleEs);
 dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
@@ -124,9 +127,16 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
     // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
-    const [showExternalMarsModal, setShowExternalMarsModal] = useState(false);
-    const [showExternalLevanaModal, setShowExternalLevanaModal] =
-      useState(false);
+    const {
+      isOpen: isLeavingOsmosisToMarsOpen,
+      onOpen: onOpenLeavingOsmosisToMars,
+      onClose: onCloseLeavingOsmosisToMars,
+    } = useDisclosure();
+    const {
+      isOpen: isLeavingOsmosisToLevanaOpen,
+      onOpen: onOpenLeavingOsmosisToLevana,
+      onClose: onCloseLeavingOsmosisToLevana,
+    } = useDisclosure();
 
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
@@ -141,7 +151,10 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.margin"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalMarsModal(true);
+              handleExternalLink({
+                url: "https://osmosis.marsprotocol.io/",
+                openModal: onOpenLeavingOsmosisToMars,
+              });
             },
             icon: (
               <Image
@@ -161,7 +174,10 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.perpetuals"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalLevanaModal(true);
+              handleExternalLink({
+                url: "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+                openModal: onOpenLeavingOsmosisToLevana,
+              });
             },
             icon: (
               <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
@@ -182,6 +198,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
         },
+        flags.earnPage
+          ? {
+              label: t("earnPage.title"),
+              link: "/earn",
+              icon: <Icon id="trade" className="h-5 w-5" />,
+              selectionTest: /\/earn/,
+            }
+          : null,
         {
           label: t("menu.assets"),
           link: "/assets",
@@ -236,6 +260,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       levanaGeoblock,
       error,
       t,
+      flags.earnPage,
       flags.staking,
       osmosisWallet?.walletInfo?.stakeUrl,
     ]);
@@ -273,16 +298,16 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         {children}
         <ExternalLinkModal
           url="https://osmosis.marsprotocol.io/"
-          isOpen={showExternalMarsModal}
+          isOpen={isLeavingOsmosisToMarsOpen}
           onRequestClose={() => {
-            setShowExternalMarsModal(false);
+            onCloseLeavingOsmosisToMars();
           }}
         />
         <ExternalLinkModal
           url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
-          isOpen={showExternalLevanaModal}
+          isOpen={isLeavingOsmosisToLevanaOpen}
           onRequestClose={() => {
-            setShowExternalLevanaModal(false);
+            onCloseLeavingOsmosisToLevana();
           }}
         />
       </MainLayout>

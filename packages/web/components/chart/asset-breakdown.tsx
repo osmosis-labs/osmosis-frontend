@@ -2,8 +2,7 @@ import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { Breakpoint } from "~/components/types";
-import { useWindowSize } from "~/hooks";
+import { Breakpoint, useWindowSize } from "~/hooks";
 import { truncateString } from "~/utils/string";
 
 const ColorCycle = [
@@ -64,7 +63,7 @@ export const AssetBreakdownChart: FunctionComponent<{
               {amount.toDec().round().gt(new Int(0))
                 ? amount.maxDecimals(0).hideDenom(true).toString()
                 : amount
-                    .maxDecimals(width < Breakpoint.LG && !isMobile ? 4 : 8)
+                    .maxDecimals(width < Breakpoint.lg && !isMobile ? 4 : 8)
                     .hideDenom(true)
                     .toString()}
             </h6>

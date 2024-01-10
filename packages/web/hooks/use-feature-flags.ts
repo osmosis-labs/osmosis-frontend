@@ -16,8 +16,14 @@ export type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "unlistedAssets"
+  | "earnPage"
   | "sidecarRouter"
-  | "osmosisUpdatesPopUp";
+  | "legacyRouter"
+  | "tfmRouter"
+  | "osmosisUpdatesPopUp"
+  | "aprBreakdown"
+  | "newPoolsTable"
+  | "topAnnouncementBanner";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

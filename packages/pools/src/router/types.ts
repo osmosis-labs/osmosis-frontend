@@ -13,7 +13,8 @@ export interface TokenOutGivenInRouter {
   /** Route, with splits, given an in token and out denom. */
   routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote>;
 }
 
@@ -57,10 +58,7 @@ export type Quote = {
 
 /** Quote with potential split of in token amount across multiple routes. */
 export type SplitTokenInQuote = Quote & {
-  split: (RouteWithInAmount & {
-    /** Orderered array of the effective swap fees possibly including OSMO discount. */
-    effectiveSwapFees?: Dec[];
-  })[];
+  split: RouteWithInAmount[];
   /** In amount after fees paid are subtracted. */
   tokenInFeeAmount?: Int;
   swapFee?: Dec;

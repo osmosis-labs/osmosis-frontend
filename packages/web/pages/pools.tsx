@@ -18,7 +18,8 @@ import { ComponentProps, useCallback, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
-import { AllPoolsTable } from "~/components/complex";
+import { AllPoolsTable as AllPoolsTableV1 } from "~/components/complex/all-pools-table-v1";
+import { AllPoolsTable as AllPoolsTableV2 } from "~/components/complex/all-pools-table-v2";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
@@ -77,7 +78,7 @@ const Pools: NextPage = observer(function () {
   const [convertToStakeRef, { height: convertToStakeHeight }] =
     useDimension<HTMLDivElement>();
 
-  const flags = useFeatureFlags();
+  const featureFlags = useFeatureFlags();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -307,7 +308,7 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {flags.convertToStake &&
+      {featureFlags.convertToStake &&
         convertToStakeConfig.isConvertToStakeFeatureRelevantToUser && (
           <section
             ref={convertToStakeRef}
@@ -320,8 +321,8 @@ const Pools: NextPage = observer(function () {
             />
           </section>
         )}
-      {flags.concentratedLiquidity &&
-        flags.upgrades &&
+      {featureFlags.concentratedLiquidity &&
+        featureFlags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 &&
         !isMobile && (
           <section
@@ -350,7 +351,7 @@ const Pools: NextPage = observer(function () {
             />
           </section>
         )}
-      {flags.concentratedLiquidity &&
+      {featureFlags.concentratedLiquidity &&
         queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
           .positions.length > 0 && (
           <section ref={myPositionsRef}>
@@ -365,16 +366,29 @@ const Pools: NextPage = observer(function () {
       </section>
 
       <section>
-        <AllPoolsTable
-          topOffset={
-            myPositionsHeight +
-            myPoolsHeight +
-            poolsOverviewHeight +
-            superchargeLiquidityHeight +
-            convertToStakeHeight
-          }
-          {...quickActionProps}
-        />
+        {featureFlags.newPoolsTable ? (
+          <AllPoolsTableV2
+            topOffset={
+              myPositionsHeight +
+              myPoolsHeight +
+              poolsOverviewHeight +
+              superchargeLiquidityHeight +
+              convertToStakeHeight
+            }
+            {...quickActionProps}
+          />
+        ) : (
+          <AllPoolsTableV1
+            topOffset={
+              myPositionsHeight +
+              myPoolsHeight +
+              poolsOverviewHeight +
+              superchargeLiquidityHeight +
+              convertToStakeHeight
+            }
+            {...quickActionProps}
+          />
+        )}
       </section>
     </main>
   );
@@ -494,7 +508,7 @@ const MyPoolsSection = observer(() => {
               poolDetail instanceof ObservableSharePoolDetail
                 ? poolBonding.highestBondDuration?.aggregateApr ??
                   new RatePretty(0)
-                : poolDetail.swapFeeApr;
+                : poolDetail.totalApr;
 
             const poolLiquidity = formatPretty(poolDetail.totalValueLocked, {
               maxDecimals: 0,

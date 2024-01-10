@@ -5,18 +5,19 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Info } from "~/components/alert";
-import { Button } from "~/components/buttons";
+import { Button, buttonCVA } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
 import { UNSTABLE_MSG } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { ModalBase, ModalBaseProps } from "~/modals";
-import { useStore } from "~/stores";
+import { ObservableAssets } from "~/stores/assets/assets-store";
 
 /** MOBILE: Pre transfer to select whether to deposit/withdraw */
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
-    selectedToken: CoinPretty;
+    selectedToken: ObservableAssets["unverifiedIbcBalances"][number];
     tokens: CoinPretty[];
     externalDepositUrl?: string;
     externalWithdrawUrl?: string;
@@ -36,21 +37,19 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw,
     onDeposit,
   } = props;
-  const { priceStore } = useStore();
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
-  const tokenValue = priceStore.calculatePrice(
-    selectedToken,
-    priceStore.defaultVsCurrency
-  );
+  const tokenValue = useCoinFiatValue(selectedToken.balance);
+
+  const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";
 
   return (
     <ModalBase
       {...props}
       title={
         <TokenSelect
-          selectedTokenDenom={selectedToken.denom}
+          selectedTokenDenom={selectedToken.balance.denom}
           tokens={tokens}
           onSelect={(coinDenom) => onSelectToken(coinDenom)}
           sortByBalances
@@ -62,7 +61,7 @@ export const PreTransferModal: FunctionComponent<
           <span className="caption text-osmoverse-400">
             {t("assets.table.preTransfer.currentBal")}
           </span>
-          <h6>{selectedToken.trim(true).toString()}</h6>
+          <h6>{selectedToken.balance.trim(true).toString()}</h6>
           {tokenValue && (
             <span className="subtitle2 text-osmoverse-400">
               {tokenValue?.toString()}
@@ -74,10 +73,14 @@ export const PreTransferModal: FunctionComponent<
           {externalWithdrawUrl ? (
             <a
               className={classNames(
-                "flex h-10 w-full items-center justify-center gap-1 rounded-lg border border-wosmongton-200 bg-wosmongton-200/30 text-button font-button",
+                buttonCVA({
+                  className:
+                    "h-10 w-full gap-2 border-wosmongton-200/30 bg-wosmongton-200/30 hover:border-wosmongton-200/40 hover:bg-wosmongton-200/40",
+                  mode: "primary",
+                }),
                 { "opacity-30": isUnstable }
               )}
-              href={externalWithdrawUrl}
+              href={isUnstable ? "" : externalWithdrawUrl}
               rel="noreferrer"
               target="_blank"
               style={
@@ -90,8 +93,8 @@ export const PreTransferModal: FunctionComponent<
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
-                height={8}
-                width={8}
+                height={12}
+                width={12}
               />
             </a>
           ) : (
@@ -104,13 +107,17 @@ export const PreTransferModal: FunctionComponent<
               {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
-          {externalDepositUrl ? (
+          {Boolean(externalDepositUrl) && (
             <a
               className={classNames(
-                "flex h-10 w-full items-center justify-center gap-1 rounded-lg bg-wosmongton-200 text-button font-button",
+                buttonCVA({
+                  className:
+                    "h-10 w-full gap-2 border-wosmongton-300 bg-wosmongton-300",
+                  mode: "primary",
+                }),
                 { "opacity-30": isUnstable }
               )}
-              href={externalDepositUrl}
+              href={isUnstable ? "" : externalDepositUrl}
               rel="noreferrer"
               target="_blank"
               style={
@@ -119,15 +126,16 @@ export const PreTransferModal: FunctionComponent<
                   : undefined
               }
             >
-              {t("assets.table.preTransfer.deposit")}
+              <span>{t("assets.table.preTransfer.deposit")}</span>
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
-                height={8}
-                width={8}
+                height={12}
+                width={12}
               />
             </a>
-          ) : (
+          )}
+          {!isEthAsset && !externalDepositUrl && (
             <Button
               className="h-10 w-full"
               disabled={isUnstable}

@@ -5,6 +5,7 @@ import { rest } from "msw";
 import { MockChainList, TestOsmosisChainId } from "../../tests/mock-data";
 import { server } from "../../tests/msw-server";
 import { RootStore } from "../../tests/test-env";
+import { GasMultiplier } from "../base";
 
 let rootStore: RootStore;
 let accountStore: RootStore["accountStore"];
@@ -37,7 +38,7 @@ describe("getGasAmount", () => {
     const gasLimit = 1000;
     const baseFee = 0.055;
     const chainId = TestOsmosisChainId;
-    const multiplier = 1.5;
+    const multiplier = GasMultiplier;
 
     server.use(
       rest.get(

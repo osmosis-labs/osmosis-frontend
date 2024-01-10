@@ -38,7 +38,7 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
 
   const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");
-    return "Build Stake Squad";
+    return t("stake.validatorNextStep.newUser.button");
   }, [isWalletConnected, t]);
 
   return (

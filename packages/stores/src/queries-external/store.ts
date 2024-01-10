@@ -9,6 +9,7 @@ import {
   COINGECKO_API_DEFAULT_BASEURL,
   IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
   IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
+  NUMIA_INDEXER_BASEURL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
@@ -22,6 +23,7 @@ import { ObservableQueryPriceRangeAprs } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryMarketCaps } from "./mcap";
+import { ObservableQueryPoolAprs } from "./numia";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
@@ -49,6 +51,7 @@ export class QueriesExternalStore {
   public readonly queryCoinGeckoCoinsInfos: DeepReadonly<ObservableQueryCoingeckoCoinsInfos>;
   public readonly queryCoinGeckoMarketChartCoins: DeepReadonly<ObservableQueryCoingeckoMarketChartCoins>;
   public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
+  public readonly queryPoolAprs: DeepReadonly<ObservableQueryPoolAprs>;
 
   constructor(
     kvStore: KVStore,
@@ -143,6 +146,11 @@ export class QueriesExternalStore {
       kvStore,
       timeseriesDataBaseUrl,
       priceStore
+    );
+
+    this.queryPoolAprs = new ObservableQueryPoolAprs(
+      kvStore,
+      NUMIA_INDEXER_BASEURL
     );
   }
 }

@@ -51,7 +51,7 @@ import {
   TokenCMSData,
   Twitter,
 } from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
+import { ImperatorToken, queryAllTokens } from "~/server/queries/imperator";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
@@ -170,7 +170,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
 
-              <YourBalance denom={denom} />
+              <YourBalance
+                denom={denom}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
 
               <TokenDetails
                 denom={denom}
@@ -309,7 +312,7 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom?.toUpperCase()}</h1>
+        <h1 className="text-h4 font-h4">{denom}</h1>
         {title ? (
           <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
         ) : (
@@ -558,7 +561,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     try {
       cachedTokens = await queryAllTokens();
     } catch (e) {
-      console.error("Failed to retrieved tokens from imperator apif: ", e);
+      console.error("Failed to retrieved tokens from imperator api: ", e);
     }
   }
 

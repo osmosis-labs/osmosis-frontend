@@ -15,15 +15,28 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly tfmBaseUrl: string
+    protected readonly tfmBaseUrl: string,
+    protected readonly calcAssetValue: (
+      coinMinimalDenom: string,
+      amount: Int
+    ) => Promise<Dec | undefined>
   ) {
     this.baseUrl = new URL(tfmBaseUrl);
   }
 
   async routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote> {
+    // return empty quote since TFM doesn't support forced swap through a pool
+    if (forcePoolId) {
+      return {
+        amount: new Int(0),
+        split: [],
+      };
+    }
+
     // fetch quote
     const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
     const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
@@ -35,18 +48,22 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
     try {
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
+      const amount = new Int(result.returnAmount);
 
-      const priceImpactTokenOut = new Dec(result.routes[0].priceImpact);
+      const priceImpactTokenOut = await this.calculatePriceImpact(tokenIn, {
+        denom: tokenOutDenom,
+        amount,
+      });
 
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
-      if (priceImpactTokenOut.gt(new Dec(0.5))) {
+      if (priceImpactTokenOut?.gt(new Dec(0.5))) {
         throw new NotEnoughLiquidityError();
       }
 
       // convert quote response to SplitTokenInQuote
       return {
-        amount: new Int(result.returnAmount),
+        amount,
         split: result.routes[0].routes.map(({ inputAmount, operations }) => {
           return {
             initialAmount: new Int(inputAmount),
@@ -58,18 +75,45 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         priceImpactTokenOut,
       };
     } catch (e) {
-      if (e instanceof Error) throw e;
+      // TFM responded with an error as custom formatted JSON
+      const tfmJsonError = e as {
+        data: { error: { code: number; message: string } };
+        status: number;
+        statusText: string;
+      };
 
-      const {
-        data: { error },
-      } = e as { data: { error: { code: number; message: string } } };
+      if (tfmJsonError.status === 504) {
+        throw new Error("TFM timed out");
+      }
 
-      if (error.code === 500) {
+      if (tfmJsonError?.data?.error?.code === 500) {
         // consider a no router error
         throw new NoRouteError();
       }
 
-      throw new Error(error.message);
+      throw new Error(
+        tfmJsonError?.data?.error?.message ?? "Unexpected TFM router error"
+      );
     }
+  }
+
+  protected async calculatePriceImpact(
+    tokenIn: Token,
+    tokenOut: Token
+  ): Promise<Dec | undefined> {
+    const tokenInValue = await this.calcAssetValue(
+      tokenIn.denom,
+      tokenIn.amount
+    );
+    const tokenOutValue = await this.calcAssetValue(
+      tokenOut.denom,
+      tokenOut.amount
+    );
+
+    if (!tokenInValue || !tokenOutValue) {
+      return undefined;
+    }
+
+    return tokenOutValue.sub(tokenInValue).quo(tokenInValue);
   }
 }
