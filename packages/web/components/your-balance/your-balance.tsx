@@ -144,9 +144,13 @@ const YourBalance = observer(
                       ? t("tokenInfos.staking")
                       : t("menu.stake")
                   }
-                  largeTitle={formatPretty(
-                    data?.currentPrice?.mul(balance) || balance
-                  )}
+                  largeTitle={
+                    hasStakingBalance
+                      ? formatPretty(
+                          data?.currentPrice?.mul(balance) || balance
+                        )
+                      : undefined
+                  }
                   shrinkTitle={!Boolean(data?.currentPrice)}
                   sub={
                     hasStakingBalance
