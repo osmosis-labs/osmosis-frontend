@@ -39,10 +39,8 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useGetApr } from "~/hooks/use-get-apr";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
@@ -292,27 +290,7 @@ const MainLayoutWrapper: FunctionComponent<{
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
-
-  const osmo = chainStore.osmosis.stakeCurrency;
-
   const isWalletConnected = Boolean(account?.isWalletConnected);
-
-  const feeConfig = useFakeFeeConfig(
-    chainStore,
-    osmosisChainId,
-    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
-  );
-
-  const stakeTabAmountConfig = useAmountConfig(
-    chainStore,
-    queriesStore,
-    osmosisChainId,
-    address,
-    feeConfig,
-    osmo
-  );
-
-  const { stakingAPR } = useGetApr();
 
   const renderStakeOnboarding =
     showStakeOnboarding && isWalletConnected && address;
@@ -338,8 +316,6 @@ const MainLayoutWrapper: FunctionComponent<{
         <StakeOnboarding
           address={address}
           isWalletConnected={isWalletConnected}
-          stakingAPR={stakingAPR}
-          amountConfig={stakeTabAmountConfig}
         />
       )}
     </MainLayout>

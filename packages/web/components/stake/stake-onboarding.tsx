@@ -1,28 +1,27 @@
-import { Dec } from "@keplr-wallet/unit";
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import { useEffect, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import { useGetApr } from "~/hooks/staking/use-get-apr";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { StakeIntroModal } from "~/modals/stake-intro-modal";
+import { useStore } from "~/stores";
 
 interface StakeOnboardingProps {
   address: string;
   isWalletConnected: boolean;
-  stakingAPR: Dec;
-  amountConfig: AmountConfig;
 }
 
 export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   address,
   isWalletConnected,
-  stakingAPR,
-  amountConfig,
 }) => {
   const [showStakeIntroModal, setShowStakeIntroModal] = useState(false);
+
+  const { accountStore, chainStore, queriesStore } = useStore();
 
   const {
     isOpen: isFiatOnrampSelectionOpen,
@@ -53,6 +52,28 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
     showStakeModalForWalletAddress,
     address,
   ]);
+
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
+
+  const osmo = chainStore.osmosis.stakeCurrency;
+
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    osmosisChainId,
+    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+  );
+
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
+  );
+
+  const { stakingAPR } = useGetApr();
 
   return (
     <>
