@@ -252,7 +252,7 @@ const YourBalance = observer(
             {details?.stakingURL && (
               <Link
                 href={isOsmo ? "/stake" : details?.stakingURL}
-                target="_blank"
+                target={isOsmo ? undefined : "_blank"}
                 className="flex flex-[0.5]"
                 passHref
                 onClick={() =>
