@@ -10,6 +10,7 @@ import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Button } from "~/components/buttons";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
@@ -216,10 +217,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   const tokenChain = chainStore.getChainFromCurrency(denom);
   const chainName = tokenChain?.chainName;
 
-  const { data } = api.edge.assets.getAssetInfo.useQuery({
-    findMinDenomOrSymbol: denom,
-    userOsmoAddress: account?.address,
-  });
+  const { data, isLoading: isCoinDataLoading } =
+    api.edge.assets.getAssetInfo.useQuery({
+      findMinDenomOrSymbol: denom,
+      userOsmoAddress: account?.address,
+    });
 
   const isOsmosis = useMemo(
     () =>
@@ -326,22 +328,24 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           {t("tokenInfos.yourBalance")}
         </h6>
         {account?.isWalletConnected ? (
-          <div className="flex flex-col items-start gap-1">
-            {data?.currentPrice && data.amount ? (
-              <>
+          <SkeletonLoader isLoaded={!isCoinDataLoading}>
+            <div className="flex flex-col items-start gap-1">
+              {data?.currentPrice && data.amount ? (
+                <>
+                  <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                    {formatPretty(data.currentPrice.mul(data.amount))}
+                  </h4>
+                  <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                    {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+                  </p>
+                </>
+              ) : (
                 <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
-                  {formatPretty(data.currentPrice.mul(data.amount))}
-                </h4>
-                <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
                   {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
-                </p>
-              </>
-            ) : (
-              <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
-                {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
-              </h4>
-            )}
-          </div>
+                </h4>
+              )}
+            </div>
+          </SkeletonLoader>
         ) : (
           <button
             onClick={() => onOpenWalletSelect(chainName!)}
