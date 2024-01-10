@@ -40,14 +40,7 @@ const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   const [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress] =
     useLocalStorageState(localStorageKey, defaultValue);
 
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Stake.pageViewed],
-  });
-
-  console.log(
-    "showStakeModalForWalletAddress: ",
-    showStakeModalForWalletAddress
-  );
+  const { logEvent } = useAmplitudeAnalytics({});
 
   useEffect(() => {
     if (isWalletConnected && address && showStakeModalForWalletAddress) {
