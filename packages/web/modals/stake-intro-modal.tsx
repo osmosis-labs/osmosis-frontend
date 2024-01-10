@@ -92,7 +92,7 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
           Start staking
         </Button>
         <p className="mt-4 text-xs text-osmoverse-400">
-          * Staking reward value subject to price and APR volatility.
+          {t("stake.introModal.asterisk")}
         </p>
       </div>
     </ModalBase>

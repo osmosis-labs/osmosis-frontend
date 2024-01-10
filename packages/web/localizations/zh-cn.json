@@ -673,11 +673,15 @@
     },
     "introModal": {
       "callout": "新功能",
+      "title": "Osmosis 质押",
       "description": {
+        "1": "质押是利用资产赚钱的最简单方法之一。现在您可以将您的 OSMO 放在 Osmosis 上。",
         "2": "赚取高达",
+        "3": "每年都有质押奖励！",
         "4": "并付诸实践",
         "button": "买一些OSMO"
-      }
+      },
+      "asterisk": "* 质押奖励价值受价格和年利率波动影响。"
     }
   },
   "superfluidValidator": {

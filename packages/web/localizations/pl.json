@@ -673,11 +673,15 @@
     },
     "introModal": {
       "callout": "Nowa cecha",
+      "title": "Stawianie na osmozę",
       "description": {
+        "1": "Stakowanie to jeden z najłatwiejszych sposobów zarabiania na swoich aktywach. Teraz możesz postawić swoje OSMO bezpośrednio na Osmozie.",
         "2": "zarobić do",
+        "3": "co roku w nagrodach za stakowanie!",
         "4": "i zabierz się do pracy",
         "button": "Kup trochę OSMO"
-      }
+      },
+      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO."
     }
   },
   "superfluidValidator": {

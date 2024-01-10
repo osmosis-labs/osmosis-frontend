@@ -673,11 +673,15 @@
     },
     "introModal": {
       "callout": "Optiune noua",
+      "title": "Miza pe osmoză",
       "description": {
+        "1": "Miza este una dintre cele mai simple modalități de a câștiga cu activele tale. Acum vă puteți miza OSMO chiar pe Osmosis.",
         "2": "castiga pana la",
+        "3": "anual în mizați recompense!",
         "4": "și pune-l la treabă",
         "button": "Cumpără niște OSMO"
-      }
+      },
+      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR."
     }
   },
   "superfluidValidator": {
