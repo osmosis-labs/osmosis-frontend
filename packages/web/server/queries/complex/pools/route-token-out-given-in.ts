@@ -44,7 +44,9 @@ export async function routeTokenOutGivenIn({
   // get quote
   const router = await getRouter(forcePoolId ? 0 : undefined);
   const quote = await router.routeByTokenIn(token, tokenOutDenom, forcePoolId);
-  const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
+  const candidateRoutes = forcePoolId
+    ? []
+    : router.getCandidateRoutes(token.denom, tokenOutDenom);
 
   return {
     quote: {
