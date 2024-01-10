@@ -26,40 +26,6 @@ import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-// function useShowStakeIntroModal(
-//   address: string | undefined,
-//   isWalletConnected: boolean,
-//   setShowStakeIntroModal: (show: boolean) => void
-// ) {
-//   const localStorageKey = address ? `show-stake-modal-intro-${address}` : "";
-
-//   // Using a state hook for showStakeModalForWalletAddress
-//   const [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress] =
-//     useLocalStorageState(localStorageKey, true);
-
-//   useEffect(() => {
-//     // The logic inside this useEffect will only run if the address is populated and the wallet is connected
-//     if (address && isWalletConnected) {
-//       console.log(
-//         "showStakeModalForWalletAddress: ",
-//         showStakeModalForWalletAddress
-//       );
-//       if (showStakeModalForWalletAddress) {
-//         setShowStakeIntroModal(true);
-//         setShowStakeModalForWalletAddress(false);
-//       }
-//     }
-//   }, [
-//     address,
-//     isWalletConnected,
-//     showStakeModalForWalletAddress,
-//     setShowStakeModalForWalletAddress,
-//     setShowStakeIntroModal,
-//   ]);
-
-//   return [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress];
-// }
-
 const getWeekDateRange = () => {
   // Numia APY rate calculated on a 7 day rolling average
   // end date is current day, start date is 7 days beforehand
