@@ -1,4 +1,4 @@
-import { Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -133,6 +133,18 @@ const YourBalance = observer(
       [balance, isOsmo]
     );
 
+    const currency = useMemo(() => {
+      const currencies = ChainList.map(
+        (info) => info.keplrChain.currencies
+      ).reduce((a, b) => [...a, ...b]);
+
+      const currency = currencies.find(
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
+      );
+
+      return currency;
+    }, [denom]);
+
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
     const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
@@ -207,6 +219,28 @@ const YourBalance = observer(
         [queryOsmosis, account, priceStore]
       )
     );
+
+    const assetPoolBalance = useMemo(() => {
+      if (!currency) {
+        return undefined;
+      }
+
+      return dustFilteredPools.reduce((total, nextPool) => {
+        const userPool = nextPool.poolDetail.userPoolAssets.find(
+          ({ asset }) => asset.currency.coinDenom === denom
+        );
+
+        if (userPool) {
+          return userPool.asset.add(total);
+        }
+
+        return total;
+      }, new CoinPretty(currency, 0));
+    }, [currency, denom, dustFilteredPools]);
+
+    const fiatAssetPoolBalance = useMemo(() => {
+      return data?.currentPrice?.mul(assetPoolBalance ?? new Dec(0));
+    }, [assetPoolBalance, data?.currentPrice]);
 
     return (
       <section
@@ -292,10 +326,17 @@ const YourBalance = observer(
                       })
                     : t("tokenInfos.explorePools")
                 }
-                largeTitle="$3,567"
-                sub={
+                largeTitle={
                   dustFilteredPools.length > 0
-                    ? "45.67 OSMO"
+                    ? formatPretty(
+                        fiatAssetPoolBalance ?? assetPoolBalance ?? new Dec(0)
+                      )
+                    : undefined
+                }
+                shrinkTitle={!Boolean(data?.currentPrice)}
+                sub={
+                  dustFilteredPools.length > 0 && assetPoolBalance
+                    ? formatPretty(assetPoolBalance)
                     : t("tokenInfos.provideLiquidity")
                 }
                 image={
