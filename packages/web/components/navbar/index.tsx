@@ -597,7 +597,9 @@ const AnnouncementBanner: FunctionComponent<{
     getDeepValue<string>(
       currentLanguageTranslations,
       link?.enTextOrLocalizationKey
-    ) ?? link?.enTextOrLocalizationKey;
+    ) ??
+    link?.enTextOrLocalizationKey ??
+    "Click here to learn more";
 
   const handleLeaveClick = () =>
     handleExternalLink({
