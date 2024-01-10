@@ -670,6 +670,14 @@
         "buttonKeep": "نگه‌داشتن اعتبارسنج‌های موجود",
         "buttonSelect": "انتخاب اعتبارسنج‌های جدید"
       }
+    },
+    "introModal": {
+      "callout": "خصوصیت جدید",
+      "description": {
+        "2": "کسب درآمد تا",
+        "4": "و آن را به کار انداخت",
+        "button": "مقداری OSMO بخرید"
+      }
     }
   },
   "superfluidValidator": {

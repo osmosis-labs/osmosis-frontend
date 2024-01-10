@@ -670,6 +670,14 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Koru",
         "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
+    },
+    "introModal": {
+      "callout": "Yeni özellik",
+      "description": {
+        "2": "kadar kazanmak",
+        "4": "ve onu işe koy",
+        "button": "Biraz OSMO satın alın"
+      }
     }
   },
   "superfluidValidator": {

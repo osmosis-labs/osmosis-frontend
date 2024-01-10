@@ -670,6 +670,14 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
+    },
+    "introModal": {
+      "callout": "新功能",
+      "description": {
+        "2": "赚取高达",
+        "4": "并付诸实践",
+        "button": "买一些OSMO"
+      }
     }
   },
   "superfluidValidator": {

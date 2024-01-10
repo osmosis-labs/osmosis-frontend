@@ -670,6 +670,14 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
+    },
+    "introModal": {
+      "callout": "Optiune noua",
+      "description": {
+        "2": "castiga pana la",
+        "4": "și pune-l la treabă",
+        "button": "Cumpără niște OSMO"
+      }
     }
   },
   "superfluidValidator": {

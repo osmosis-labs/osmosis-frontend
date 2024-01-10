@@ -678,9 +678,9 @@
         "1": "Staking is one of the easiest ways to earn with your assets. Now you can stake your OSMO right on Osmosis.",
         "2": "earn up to",
         "3": "yearly in staking rewards!",
-        "button": "Buy some OSMO",
         "4": "and put it to work",
-        "5": "Put your available {displayBalance} to work and"
+        "5": "Put your available {displayBalance} to work and",
+        "button": "Buy some OSMO"
       },
       "asterisk": "* Staking reward value subject to price and APR volatility."
     }

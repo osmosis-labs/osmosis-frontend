@@ -670,6 +670,14 @@
         "buttonKeep": "Conservar los validadores existentes",
         "buttonSelect": "Seleccionar nuevos validadores"
       }
+    },
+    "introModal": {
+      "callout": "Nueva caracteristica",
+      "description": {
+        "2": "ganar hasta",
+        "4": "y ponlo a trabajar",
+        "button": "Compra algo de OSMO"
+      }
     }
   },
   "superfluidValidator": {

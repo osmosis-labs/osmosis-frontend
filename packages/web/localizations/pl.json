@@ -670,6 +670,14 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
+    },
+    "introModal": {
+      "callout": "Nowa cecha",
+      "description": {
+        "2": "zarobić do",
+        "4": "i zabierz się do pracy",
+        "button": "Kup trochę OSMO"
+      }
     }
   },
   "superfluidValidator": {

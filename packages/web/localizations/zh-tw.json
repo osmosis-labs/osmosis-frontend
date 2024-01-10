@@ -670,6 +670,14 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
+    },
+    "introModal": {
+      "callout": "新功能",
+      "description": {
+        "2": "賺取高達",
+        "4": "並付諸實踐",
+        "button": "買一些OSMO"
+      }
     }
   },
   "superfluidValidator": {
