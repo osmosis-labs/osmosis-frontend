@@ -3,6 +3,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
+import { ComponentProps } from "react";
+import { useState } from "react";
+import { useCallback } from "react";
 import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -13,10 +16,21 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useDisclosure,
+  useFeatureFlags,
+  useTransferConfig,
   useTranslation,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
-import { FiatOnrampSelectionModal } from "~/modals";
+import {
+  BridgeTransferV1Modal,
+  BridgeTransferV2Modal,
+  FiatOnrampSelectionModal,
+  IbcTransferModal,
+  PreTransferModal,
+  SelectAssetSourceModal,
+  TransferAssetSelectModal,
+} from "~/modals";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -181,8 +195,14 @@ const ActionButton = ({
 
 const BalanceStats = observer((props: YourBalanceProps) => {
   const { denom } = props;
+
+  const [preTransferModalProps, setPreTransferModalProps] =
+    useState<ComponentProps<typeof PreTransferModal> | null>(null);
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const transferConfig = useTransferConfig();
+  const featureFlags = useFeatureFlags();
+  const { isMobile } = useWindowSize();
+  const { chainStore, accountStore, assetsStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const { onOpenWalletSelect } = useWalletSelect();
   const {
@@ -190,8 +210,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     onOpen: onOpenFiatOnrampSelection,
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
+
+  const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const chainName = chainStore.getChainFromCurrency(denom)?.chainName;
+  const tokenChain = chainStore.getChainFromCurrency(denom);
+  const chainName = tokenChain?.chainName;
 
   const { data } = api.edge.assets.getAssetInfo.useQuery({
     findMinDenomOrSymbol: denom,
@@ -203,6 +226,88 @@ const BalanceStats = observer((props: YourBalanceProps) => {
       denom.toLowerCase() ===
       chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
     [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+  );
+
+  const ibcBalance = useMemo(
+    () =>
+      ibcBalances.find(
+        (ibcBalance) =>
+          ibcBalance.balance.denom.toLowerCase() === denom.toLowerCase()
+      ),
+    [ibcBalances, denom]
+  );
+
+  const isChainSupported = Boolean(
+    accountStore.connectedWalletSupportsChain(tokenChain?.chainId ?? "")
+      ?.value ?? true
+  );
+
+  const isDepositSupported =
+    (isChainSupported && ibcBalance?.isVerified) ||
+    Boolean(ibcBalance?.depositUrlOverride);
+  const isWithdrawSupported =
+    (isChainSupported && ibcBalance?.isVerified) ||
+    Boolean(ibcBalance?.withdrawUrlOverride);
+
+  const launchPreTransferModal = useCallback(
+    (coinDenom: string) => {
+      const ibcBalance = ibcBalances.find(
+        (ibcBalance) => ibcBalance.balance.denom === coinDenom
+      );
+
+      if (!ibcBalance) {
+        console.error("launchPreTransferModal: ibcBalance not found");
+        return;
+      }
+
+      setPreTransferModalProps({
+        isOpen: true,
+        selectedToken: ibcBalance,
+        tokens: ibcBalances.map(({ balance }) => balance),
+        externalDepositUrl: ibcBalance.depositUrlOverride,
+        externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
+        isUnstable: ibcBalance.isUnstable,
+        onSelectToken: launchPreTransferModal,
+        onWithdraw: () => {
+          transferConfig?.transferAsset(
+            "withdraw",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onDeposit: () => {
+          transferConfig?.transferAsset(
+            "deposit",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onRequestClose: () => setPreTransferModalProps(null),
+      });
+    },
+    [ibcBalances, transferConfig]
+  );
+
+  const onDeposit = useCallback(
+    (chainId: string, coinDenom: string, externalDepositUrl?: string) => {
+      if (!externalDepositUrl) {
+        isMobile
+          ? launchPreTransferModal(coinDenom)
+          : transferConfig?.transferAsset("deposit", chainId, coinDenom);
+      }
+    },
+    [isMobile, launchPreTransferModal, transferConfig]
+  );
+
+  const onWithdraw = useCallback(
+    (chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
+      if (!externalWithdrawUrl) {
+        transferConfig?.transferAsset("withdraw", chainId, coinDenom);
+      }
+    },
+    [transferConfig]
   );
 
   return (
@@ -242,12 +347,72 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         )}
       </div>
       <div className="flex flex-nowrap items-start gap-3 sm:flex-wrap">
-        <Button size={"sm"} className="!px-10 !text-base">
-          {t("assets.historyTable.colums.deposit")}
-        </Button>
-        <Button size={"sm"} className="!px-10 !text-base" mode={"secondary"}>
-          {t("assets.historyTable.colums.withdraw")}
-        </Button>
+        {ibcBalance?.depositUrlOverride ? (
+          <Link href={ibcBalance.depositUrlOverride} target="_blank">
+            <Button
+              size="sm"
+              className="!px-10 !text-base"
+              disabled={!isDepositSupported || Boolean(ibcBalance?.isUnstable)}
+            >
+              {t("assets.historyTable.colums.deposit")}
+            </Button>
+          </Link>
+        ) : (
+          <Button
+            size="sm"
+            className="!px-10 !text-base"
+            disabled={
+              !tokenChain?.chainId ||
+              !isDepositSupported ||
+              Boolean(ibcBalance?.isUnstable)
+            }
+            onClick={() => {
+              if (tokenChain?.chainId) {
+                onDeposit(
+                  tokenChain.chainId,
+                  denom,
+                  ibcBalance?.depositUrlOverride
+                );
+              }
+            }}
+          >
+            {t("assets.historyTable.colums.deposit")}
+          </Button>
+        )}
+        {ibcBalance?.withdrawUrlOverride ? (
+          <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
+            <Button
+              size="sm"
+              className="!px-10 !text-base"
+              mode="secondary"
+              disabled={!isWithdrawSupported || Boolean(ibcBalance?.isUnstable)}
+            >
+              {t("assets.historyTable.colums.withdraw")}
+            </Button>
+          </Link>
+        ) : (
+          <Button
+            size="sm"
+            className="!px-10 !text-base"
+            disabled={
+              !tokenChain?.chainId ||
+              !isWithdrawSupported ||
+              Boolean(ibcBalance?.isUnstable)
+            }
+            mode="secondary"
+            onClick={() => {
+              if (tokenChain?.chainId) {
+                onWithdraw(
+                  tokenChain.chainId,
+                  denom,
+                  ibcBalance?.withdrawUrlOverride
+                );
+              }
+            }}
+          >
+            {t("assets.historyTable.colums.withdraw")}
+          </Button>
+        )}
         {isOsmosis ? (
           <Button
             mode={"unstyled"}
@@ -267,6 +432,26 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           </Button>
         ) : null}
       </div>
+      {isMobile && preTransferModalProps && (
+        <PreTransferModal {...preTransferModalProps} />
+      )}
+      {transferConfig?.assetSelectModal && (
+        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
+      )}
+      {transferConfig?.selectAssetSourceModal && (
+        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
+      )}
+      {transferConfig?.ibcTransferModal && (
+        <IbcTransferModal {...transferConfig.ibcTransferModal} />
+      )}
+      {transferConfig?.bridgeTransferModal &&
+        (!featureFlags.multiBridgeProviders ||
+        transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
+          ?.bridge === "nomic" ? (
+          <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
+        ) : (
+          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
+        ))}
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
         onRequestClose={onCloseFiatOnrampSelection}
