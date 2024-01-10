@@ -228,6 +228,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     [chainStore.osmosis.stakeCurrency.coinDenom, denom]
   );
 
+  const isNativeAsset = useMemo(
+    () => tokenChain?.chainId === chainStore.osmosis.chainId,
+    [chainStore.osmosis.chainId, tokenChain?.chainId]
+  );
+
   const ibcBalance = useMemo(
     () =>
       ibcBalances.find(
@@ -347,71 +352,81 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         )}
       </div>
       <div className="flex flex-nowrap items-start gap-3 sm:flex-wrap">
-        {ibcBalance?.depositUrlOverride ? (
-          <Link href={ibcBalance.depositUrlOverride} target="_blank">
-            <Button
-              size="sm"
-              className="!px-10 !text-base"
-              disabled={!isDepositSupported || Boolean(ibcBalance?.isUnstable)}
-            >
-              {t("assets.historyTable.colums.deposit")}
-            </Button>
-          </Link>
+        {!isNativeAsset ? (
+          <>
+            {ibcBalance?.depositUrlOverride ? (
+              <Link href={ibcBalance.depositUrlOverride} target="_blank">
+                <Button
+                  size="sm"
+                  className="!px-10 !text-base"
+                  disabled={
+                    !isDepositSupported || Boolean(ibcBalance?.isUnstable)
+                  }
+                >
+                  {t("assets.historyTable.colums.deposit")}
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                size="sm"
+                className="!px-10 !text-base"
+                disabled={
+                  !tokenChain?.chainId ||
+                  !isDepositSupported ||
+                  Boolean(ibcBalance?.isUnstable)
+                }
+                onClick={() => {
+                  if (tokenChain?.chainId) {
+                    onDeposit(
+                      tokenChain.chainId,
+                      denom,
+                      ibcBalance?.depositUrlOverride
+                    );
+                  }
+                }}
+              >
+                {t("assets.historyTable.colums.deposit")}
+              </Button>
+            )}
+            {ibcBalance?.withdrawUrlOverride ? (
+              <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
+                <Button
+                  size="sm"
+                  className="!px-10 !text-base"
+                  mode="secondary"
+                  disabled={
+                    !isWithdrawSupported || Boolean(ibcBalance?.isUnstable)
+                  }
+                >
+                  {t("assets.historyTable.colums.withdraw")}
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                size="sm"
+                className="!px-10 !text-base"
+                disabled={
+                  !tokenChain?.chainId ||
+                  !isWithdrawSupported ||
+                  Boolean(ibcBalance?.isUnstable)
+                }
+                mode="secondary"
+                onClick={() => {
+                  if (tokenChain?.chainId) {
+                    onWithdraw(
+                      tokenChain.chainId,
+                      denom,
+                      ibcBalance?.withdrawUrlOverride
+                    );
+                  }
+                }}
+              >
+                {t("assets.historyTable.colums.withdraw")}
+              </Button>
+            )}
+          </>
         ) : (
-          <Button
-            size="sm"
-            className="!px-10 !text-base"
-            disabled={
-              !tokenChain?.chainId ||
-              !isDepositSupported ||
-              Boolean(ibcBalance?.isUnstable)
-            }
-            onClick={() => {
-              if (tokenChain?.chainId) {
-                onDeposit(
-                  tokenChain.chainId,
-                  denom,
-                  ibcBalance?.depositUrlOverride
-                );
-              }
-            }}
-          >
-            {t("assets.historyTable.colums.deposit")}
-          </Button>
-        )}
-        {ibcBalance?.withdrawUrlOverride ? (
-          <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
-            <Button
-              size="sm"
-              className="!px-10 !text-base"
-              mode="secondary"
-              disabled={!isWithdrawSupported || Boolean(ibcBalance?.isUnstable)}
-            >
-              {t("assets.historyTable.colums.withdraw")}
-            </Button>
-          </Link>
-        ) : (
-          <Button
-            size="sm"
-            className="!px-10 !text-base"
-            disabled={
-              !tokenChain?.chainId ||
-              !isWithdrawSupported ||
-              Boolean(ibcBalance?.isUnstable)
-            }
-            mode="secondary"
-            onClick={() => {
-              if (tokenChain?.chainId) {
-                onWithdraw(
-                  tokenChain.chainId,
-                  denom,
-                  ibcBalance?.withdrawUrlOverride
-                );
-              }
-            }}
-          >
-            {t("assets.historyTable.colums.withdraw")}
-          </Button>
+          false
         )}
         {isOsmosis ? (
           <Button
