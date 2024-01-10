@@ -55,18 +55,18 @@ export const assetsRouter = createTRPCRouter({
       async ({
         input: { search, userOsmoAddress, limit, cursor, onlyVerified },
       }) =>
-        maybeCachePaginatedItems(
-          () =>
+        maybeCachePaginatedItems({
+          getFreshItems: () =>
             mapGetUserAssetInfos({
               search,
               userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
             }),
-          JSON.stringify({ search, userOsmoAddress, onlyVerified }),
+          cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
           cursor,
-          limit
-        )
+          limit,
+        })
     ),
   getAssetPrice: publicProcedure
     .input(
@@ -140,8 +140,8 @@ export const assetsRouter = createTRPCRouter({
           limit,
         },
       }) =>
-        maybeCachePaginatedItems(
-          async () => {
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
             const isDefaultSort = !sortInput && !search;
 
             let assets;
@@ -217,7 +217,7 @@ export const assetsRouter = createTRPCRouter({
             // Can be searching and/or sorting
             return assets;
           },
-          JSON.stringify({
+          cacheKey: JSON.stringify({
             search,
             onlyVerified,
             userOsmoAddress,
@@ -226,8 +226,8 @@ export const assetsRouter = createTRPCRouter({
             onlyPositiveBalances,
           }),
           cursor,
-          limit
-        )
+          limit,
+        })
     ),
   getAssetHistoricalPrice: publicProcedure
     .input(

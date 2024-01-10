@@ -42,15 +42,25 @@ export function maybeCursorPaginatedItems<TItem>(
 }
 
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+export type CachedPaginationParams<TItem> = {
+  getFreshItems: () => Promise<TItem[]>;
+  cacheKey: string;
+  cursor?: number | null | undefined;
+  limit?: number | null | undefined;
+  ttl?: number;
+};
+
 /** Returns cached items while the user is paginating the list.
  *  If the input changes or the cursor is reset, the cache is invalidated.
  *  With useInfiniteQuery, the cursor will be reset to 0 when input to the query changes or the query is invalidated. */
-export async function maybeCachePaginatedItems<TItem>(
-  getFreshItems: () => Promise<TItem[]>,
-  cacheKey: string,
-  cursor: number | null | undefined,
-  limit: number | null | undefined
-): Promise<{
+export async function maybeCachePaginatedItems<TItem>({
+  getFreshItems,
+  cacheKey,
+  cursor,
+  limit,
+  ttl = 30 * 1000, // 30 seconds
+}: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
   nextCursor: number | null;
 }> {
@@ -66,11 +76,8 @@ export async function maybeCachePaginatedItems<TItem>(
   const items = await cachified({
     key: cacheKey,
     cache: paginationCache,
-    ttl: 30 * 1000, // 30 seconds
-    getFreshValue: () => {
-      console.log("Get fresh items", cacheKey);
-      return getFreshItems();
-    },
+    ttl,
+    getFreshValue: getFreshItems,
   });
 
   return maybeCursorPaginatedItems(items, cursor, limit);
