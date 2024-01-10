@@ -441,15 +441,6 @@ export const Staking: React.FC = observer(() => {
         isWalletConnected={Boolean(isWalletConnected)}
         setShowValidatorModal={() => setShowValidatorModal(true)}
       />
-
-      {/* {isWalletConnected && address && (
-        <StakeOnboarding
-          address={address}
-          isWalletConnected={isWalletConnected}
-          stakingAPR={stakingAPR}
-          amountConfig={stakeTabAmountConfig}
-        />
-      )} */}
     </main>
   );
 });
