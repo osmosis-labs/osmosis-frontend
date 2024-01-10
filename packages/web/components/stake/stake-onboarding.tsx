@@ -42,7 +42,7 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   const { logEvent } = useAmplitudeAnalytics({});
 
   useEffect(() => {
-    if (isWalletConnected && address && showStakeModalForWalletAddress) {
+    if (showStakeModalForWalletAddress) {
       setShowStakeIntroModal(true);
       setShowStakeModalForWalletAddress(false);
     }
