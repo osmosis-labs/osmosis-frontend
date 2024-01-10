@@ -47,6 +47,16 @@ interface YourBalanceProps {
   className?: string;
 }
 
+const useGetOsmosisPools = () => {
+  const {
+    chainStore: {
+      osmosis: { chainId },
+    },
+    queriesStore,
+  } = useStore();
+  return queriesStore.get(chainId).osmosis?.queryPools.getAllPools();
+};
+
 const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const { queriesStore, chainStore, accountStore } = useStore();
@@ -109,6 +119,32 @@ const YourBalance = observer(
       () => isOsmo && balance.toDec().gt(new Dec(0)),
       [balance, isOsmo]
     );
+
+    const currency = useMemo(() => {
+      const currencies = ChainList.map(
+        (info) => info.keplrChain.currencies
+      ).reduce((a, b) => [...a, ...b]);
+
+      const currency = currencies.find(
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
+      );
+
+      return currency;
+    }, [denom]);
+
+    const pools = useGetOsmosisPools();
+    const isTokenInPools = useMemo(
+      () =>
+        pools?.filter((pool) =>
+          pool.poolAssetDenoms.includes(currency?.base ?? "")
+        ),
+      [currency?.base, pools]
+    );
+
+    const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+    const { length: ownPoolsLength } =
+      queryOsmosis.queryGammPoolShare.getOwnPools(account?.address ?? "");
 
     return (
       <section
@@ -174,32 +210,46 @@ const YourBalance = observer(
                 />
               </Link>
             )}
-            <Link
-              href="/pools"
-              passHref
-              className="flex flex-[0.5]"
-              onClick={() =>
-                logEvent([
-                  EventName.TokenInfo.cardClicked,
-                  { tokenName: denom, title: "Explore Pools" },
-                ])
-              }
-            >
-              <ActionButton
-                title={t("tokenInfos.explorePools")}
-                sub={t("tokenInfos.provideLiquidity")}
-                image={
-                  <Image
-                    src={"/images/explore-pools.svg"}
-                    alt={`Explore pools image`}
-                    className={`overflow-visible object-cover 2xl:object-contain`}
-                    width={189}
-                    height={126}
-                  />
+            {isTokenInPools ? (
+              <Link
+                href="/pools"
+                passHref
+                className="flex flex-[0.5]"
+                onClick={() =>
+                  logEvent([
+                    EventName.TokenInfo.cardClicked,
+                    { tokenName: denom, title: "Explore Pools" },
+                  ])
                 }
-                needsPadding
-              />
-            </Link>
+              >
+                <ActionButton
+                  title={
+                    ownPoolsLength > 0
+                      ? t("tokenInfos.liquidityInOSMOPools", {
+                          number: ownPoolsLength.toString(),
+                          denom,
+                        })
+                      : t("tokenInfos.explorePools")
+                  }
+                  largeTitle="$3,567"
+                  sub={
+                    ownPoolsLength > 0
+                      ? "45.67 OSMO"
+                      : t("tokenInfos.provideLiquidity")
+                  }
+                  image={
+                    <Image
+                      src={"/images/explore-pools.svg"}
+                      alt={`Explore pools image`}
+                      className={`overflow-visible object-cover 2xl:object-contain`}
+                      width={189}
+                      height={126}
+                    />
+                  }
+                  needsPadding
+                />
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
