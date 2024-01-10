@@ -576,7 +576,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                     !isDepositSupported || Boolean(ibcBalance?.isUnstable)
                   }
                 >
-                  {t("assets.historyTable.colums.deposit")}
+                  {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
               </Link>
             ) : (
@@ -611,7 +611,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                     !isWithdrawSupported || Boolean(ibcBalance?.isUnstable)
                   }
                 >
-                  {t("assets.historyTable.colums.withdraw")}
+                  {t("assets.historyTable.colums.withdraw")} ↗️️
                 </Button>
               </Link>
             ) : (
