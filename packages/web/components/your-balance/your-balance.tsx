@@ -208,6 +208,8 @@ const YourBalance = observer(
         },
         [queryOsmosis, account, priceStore]
       )
+    ).filter((pool) =>
+      pool.queryPool.poolAssetDenoms.includes(currency?.base ?? "")
     );
 
     const assetPoolBalance = useMemo(() => {
