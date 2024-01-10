@@ -249,7 +249,7 @@ const YourBalance = observer(
           <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
             {details?.stakingURL && (
               <Link
-                href={details?.stakingURL}
+                href={isOsmo ? "/stake" : details?.stakingURL}
                 target="_blank"
                 className="flex flex-[0.5]"
                 passHref
