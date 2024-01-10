@@ -1,4 +1,4 @@
-import { IntPretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -17,7 +17,9 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useDisclosure,
+  useFakeFeeConfig,
   useFeatureFlags,
+  useStakedAmountConfig,
   useTransferConfig,
   useTranslation,
   useWalletSelect,
@@ -47,9 +49,30 @@ interface YourBalanceProps {
 
 const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
-    const { queriesStore } = useStore();
+    const { queriesStore, chainStore, accountStore } = useStore();
     const { t } = useTranslation();
     const language = useCurrentLanguage();
+    const osmosisChainId = chainStore.osmosis.chainId;
+    const account = accountStore.getWallet(osmosisChainId);
+    const address = account?.address ?? "";
+    const osmo = chainStore.osmosis.stakeCurrency;
+    const isOsmo = useMemo(
+      () =>
+        denom.toLowerCase() ===
+        chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
+      [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+    );
+
+    const feeConfig = useFakeFeeConfig(
+      chainStore,
+      osmosisChainId,
+      account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+    );
+
+    const { data } = api.edge.assets.getAssetInfo.useQuery({
+      findMinDenomOrSymbol: denom,
+      userOsmoAddress: account?.address,
+    });
 
     const chain = useMemo(
       () =>
@@ -72,6 +95,20 @@ const YourBalance = observer(
     }, [language, tokenDetailsByLanguage]);
 
     const { logEvent } = useAmplitudeAnalytics();
+
+    const { balance } = useStakedAmountConfig(
+      chainStore,
+      queriesStore,
+      osmosisChainId,
+      address,
+      feeConfig,
+      osmo
+    );
+
+    const hasStakingBalance = useMemo(
+      () => isOsmo && balance.toDec().gt(new Dec(0)),
+      [balance, isOsmo]
+    );
 
     return (
       <section
@@ -102,9 +139,19 @@ const YourBalance = observer(
                 }
               >
                 <ActionButton
-                  title={t("menu.stake")}
+                  title={
+                    hasStakingBalance
+                      ? t("tokenInfos.staking")
+                      : t("menu.stake")
+                  }
+                  largeTitle={formatPretty(
+                    data?.currentPrice?.mul(balance) || balance
+                  )}
+                  shrinkTitle={!Boolean(data?.currentPrice)}
                   sub={
-                    inflationApr.toDec().isZero()
+                    hasStakingBalance
+                      ? formatPretty(balance)
+                      : inflationApr.toDec().isZero()
                       ? t("tokenInfos.stakeYourDenomToEarnNoAPR", { denom })
                       : t("tokenInfos.stakeYourDenomToEarn", {
                           denom,
@@ -163,6 +210,8 @@ interface ActionButtonProps {
   sub: string;
   image: ReactElement;
   needsPadding?: boolean;
+  largeTitle?: string;
+  shrinkTitle?: boolean;
 }
 
 const ActionButton = ({
@@ -170,18 +219,31 @@ const ActionButton = ({
   sub,
   image,
   needsPadding,
+  largeTitle,
+  shrinkTitle,
 }: ActionButtonProps) => {
   return (
     <div
       className={`relative flex flex-1 flex-row justify-between overflow-hidden rounded-[20px] bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6`}
     >
       <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
-        <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
-          {title}
-        </h6>
-        <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
-          {sub}
-        </p>
+        {largeTitle && <p className="font-subtitle1">{title}</p>}
+        {largeTitle ? (
+          <h4
+            className={classNames("text-osmoverse-100", {
+              "text-h5 font-h5": shrinkTitle,
+            })}
+          >
+            {largeTitle}
+          </h4>
+        ) : (
+          <h6 className="text-osmoverse-100">{title}</h6>
+        )}
+        {!shrinkTitle && (
+          <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
+            {sub}
+          </p>
+        )}
       </div>
       <div
         className={`z-0 flex h-full overflow-hidden 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
