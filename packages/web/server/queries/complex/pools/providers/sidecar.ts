@@ -55,7 +55,7 @@ function getPoolIdFromSidecarPool(
 
 // since type URL was removed from underlying_pool in sidecar response
 // we use the different shapes of the pool model to derive the pool type
-function getPoolTypeFromSidecarPool(
+export function getPoolTypeFromSidecarPool(
   underlying_pool: SidecarPool["underlying_pool"]
 ): PoolType {
   if ("pool_assets" in underlying_pool) return "weighted";

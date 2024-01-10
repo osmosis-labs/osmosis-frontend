@@ -4,7 +4,7 @@ import { rest } from "msw";
 import { server } from "~/tests/msw";
 
 import { calcAssetValue, getAsset } from "../../../assets";
-import { getPoolsFromSidecar } from "../sidecar";
+import { getPoolsFromSidecar, getPoolTypeFromSidecarPool } from "../sidecar";
 
 export const mockAsset = {
   coinDenom: "mockCoinDenom",
@@ -22,12 +22,6 @@ jest.mock("../../../assets", () => ({
 }));
 
 describe("getPoolsFromSidecar", () => {
-  server.use(
-    rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
-      return res(ctx.json(mockSidecarResponse));
-    })
-  );
-
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
@@ -37,6 +31,12 @@ describe("getPoolsFromSidecar", () => {
     (calcAssetValue as jest.Mock).mockImplementation(() => {
       return Promise.resolve(undefined);
     });
+
+    server.use(
+      rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
+        return res(ctx.json(mockSidecarResponse));
+      })
+    );
   });
 
   it("works with caching", async () => {
@@ -53,6 +53,24 @@ describe("getPoolsFromSidecar", () => {
     expect(pools1).toBeTruthy();
     expect(pools2).toBeTruthy();
     expect(duration2).toBeLessThan(duration1);
+  });
+
+  it("correctly identifies weighted pool type", async () => {
+    const pool = mockSidecarResponse[0];
+    const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
+    expect(poolType).toBe("weighted");
+  });
+
+  it("correctly identifies stable pool type", async () => {
+    const pool = mockSidecarResponse[1];
+    const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
+    expect(poolType).toBe("stable");
+  });
+
+  it("correctly identifies concentrated pool type", async () => {
+    const pool = mockSidecarResponse[2];
+    const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
+    expect(poolType).toBe("concentrated");
   });
 });
 

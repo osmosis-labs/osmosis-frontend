@@ -78,7 +78,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  WBTC: {
+  "WBTC.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,

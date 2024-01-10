@@ -63,16 +63,16 @@ export async function getAssets({
     return cachified({
       cache: minimalAssetsCache,
       key: JSON.stringify(params),
-      getFreshValue: () => reduceAssetList(assetList, params),
+      getFreshValue: () => simplifyAssetListForDisplay(assetList, params),
     });
   }
 
   // otherwise process the given novel asset list
-  return reduceAssetList(assetList, params);
+  return simplifyAssetListForDisplay(assetList, params);
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend. */
-function reduceAssetList(
+function simplifyAssetListForDisplay(
   assetList: AssetList[],
   params: { findMinDenomOrSymbol?: string } & AssetFilter = {}
 ): Asset[] {

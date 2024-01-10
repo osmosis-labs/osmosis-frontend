@@ -12,13 +12,13 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
 
 import {
   queryTokenHistoricalChart,
   TimeFrame,
   TokenHistoricalPrice,
-} from "../../indexer/token-historical-chart";
+} from "../../imperator/token-historical-chart";
 import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);

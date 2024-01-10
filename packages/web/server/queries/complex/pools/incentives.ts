@@ -2,7 +2,7 @@ import { Dec, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryPoolAprs } from "../../indexer/pool-aprs";
+import { queryPoolAprs } from "../../numia/pool-aprs";
 import { getPools, Pool, PoolFilter } from "./index";
 
 export type PoolIncentive = { poolId: string } & Partial<{

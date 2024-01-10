@@ -4,7 +4,7 @@ import { LRUCache } from "lru-cache";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 
 import { queryCoingeckoCoin } from "../../coingecko";
-import { queryAllTokenData, TokenData } from "../../indexer";
+import { queryAllTokenData, TokenData } from "../../imperator";
 
 const marketCapsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Gets the numerical market cap rank given a token symbol/denom.

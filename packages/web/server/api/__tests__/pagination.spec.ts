@@ -1,4 +1,4 @@
-import { maybeCursorPaginatedItems } from "../utils";
+import { maybeCursorPaginatedItems } from "../pagination";
 
 describe("maybeCursorPaginatedItems", () => {
   const items = Array.from({ length: 100 }, (_, i) => i); // Create an array of 100 items

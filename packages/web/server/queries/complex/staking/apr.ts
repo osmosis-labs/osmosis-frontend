@@ -3,7 +3,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
-import { queryStakingApr } from "~/server/queries/staking/inflation";
+import { queryStakingApr } from "~/server/queries/numia/staking-apr";
 
 const averageStakingAprCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
