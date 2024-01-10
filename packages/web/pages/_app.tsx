@@ -127,7 +127,7 @@ const MainLayoutWrapper: FunctionComponent<{
     }
   );
 
-  const { accountStore, chainStore, queriesStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
   // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
   const {
