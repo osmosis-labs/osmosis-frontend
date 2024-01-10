@@ -679,6 +679,7 @@
         "2": "ganar hasta",
         "3": "¡Anualmente en apuestas de recompensas!",
         "4": "y ponlo a trabajar",
+        "5": "Pon tu {displayBalance} a trabajar y",
         "button": "Compra algo de OSMO"
       },
       "asterisk": "* El valor de la recompensa de apuesta está sujeto a la volatilidad del precio y la APR."

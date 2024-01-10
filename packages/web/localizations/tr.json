@@ -679,6 +679,7 @@
         "2": "kadar kazanmak",
         "3": "yıllık stake ödüllerinde!",
         "4": "ve onu işe koy",
+        "5": "Kullanılabilir {displayBalance} çalıştırın ve",
         "button": "Biraz OSMO satın alın"
       },
       "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır."
