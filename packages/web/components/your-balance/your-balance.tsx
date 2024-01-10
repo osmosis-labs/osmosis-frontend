@@ -53,16 +53,6 @@ interface YourBalanceProps {
   className?: string;
 }
 
-const useGetOsmosisPools = () => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    queriesStore,
-  } = useStore();
-  return queriesStore.get(chainId).osmosis?.queryPools.getAllPools();
-};
-
 const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const {
