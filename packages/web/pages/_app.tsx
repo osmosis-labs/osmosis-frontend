@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
     initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
   });
 
-  const showStakeOnboarding = router.pathname !== "/stake";
+  const isStakePage = router.pathname === "/stake";
 
   return (
     <MultiLanguageProvider
@@ -94,7 +94,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
             }}
             transition={Bounce}
           />
-          <MainLayoutWrapper showStakeOnboarding={showStakeOnboarding}>
+          <MainLayoutWrapper isStakePage={isStakePage}>
             <ErrorBoundary fallback={ErrorFallback}>
               {Component && <Component {...pageProps} />}
             </ErrorBoundary>
@@ -112,8 +112,8 @@ interface LevanaGeoBlockedResponse {
 
 const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
-  showStakeOnboarding: boolean;
-}> = observer(({ children, showStakeOnboarding }) => {
+  isStakePage: boolean;
+}> = observer(({ children, isStakePage }) => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const { data: levanaGeoblock, error } = useQuery(
@@ -292,8 +292,8 @@ const MainLayoutWrapper: FunctionComponent<{
   const address = account?.address ?? "";
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
-  const renderStakeOnboarding =
-    showStakeOnboarding && isWalletConnected && address;
+  // should only render not on stake page, and if wallet is connected, and if address is not undefined
+  const renderStakeOnboarding = !isStakePage && isWalletConnected && address;
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>

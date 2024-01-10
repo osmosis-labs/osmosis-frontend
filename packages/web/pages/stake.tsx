@@ -35,7 +35,6 @@ export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
-
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
