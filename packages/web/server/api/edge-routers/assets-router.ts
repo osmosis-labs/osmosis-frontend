@@ -23,7 +23,7 @@ import {
 import { compareDec, compareDefinedMember } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 
-import { maybeCursorPaginatedItems } from "../utils";
+import { maybeCachePaginatedItems } from "../pagination";
 import { InfiniteQuerySchema } from "../zod-types";
 
 const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.and(
@@ -54,16 +54,19 @@ export const assetsRouter = createTRPCRouter({
     .query(
       async ({
         input: { search, userOsmoAddress, limit, cursor, onlyVerified },
-      }) => {
-        const userAssets = await mapGetUserAssetInfos({
-          search,
-          userOsmoAddress,
-          onlyVerified,
-          sortFiatValueDirection: "desc",
-        });
-
-        return maybeCursorPaginatedItems(userAssets, cursor, limit);
-      }
+      }) =>
+        maybeCachePaginatedItems(
+          () =>
+            mapGetUserAssetInfos({
+              search,
+              userOsmoAddress,
+              onlyVerified,
+              sortFiatValueDirection: "desc",
+            }),
+          JSON.stringify({ search, userOsmoAddress, onlyVerified }),
+          cursor,
+          limit
+        )
     ),
   getAssetPrice: publicProcedure
     .input(
@@ -125,7 +128,7 @@ export const assetsRouter = createTRPCRouter({
       )
     )
     .query(
-      async ({
+      ({
         input: {
           search,
           onlyVerified,
@@ -136,80 +139,95 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         },
-      }) => {
-        const isDefaultSort = !sortInput && !search;
+      }) =>
+        maybeCachePaginatedItems(
+          async () => {
+            const isDefaultSort = !sortInput && !search;
 
-        let assets;
-        assets = await mapGetAssetMarketInfos({
-          search,
-          onlyVerified,
-        });
+            let assets;
+            assets = await mapGetAssetMarketInfos({
+              search,
+              onlyVerified,
+            });
 
-        assets = await mapGetUserAssetInfos({
-          assets,
-          userOsmoAddress,
-          sortFiatValueDirection: isDefaultSort
-            ? "desc"
-            : !search && sortInput && sortInput.keyPath === "usdValue"
-            ? sortInput.direction
-            : undefined,
-        });
+            assets = await mapGetUserAssetInfos({
+              assets,
+              userOsmoAddress,
+              sortFiatValueDirection: isDefaultSort
+                ? "desc"
+                : !search && sortInput && sortInput.keyPath === "usdValue"
+                ? sortInput.direction
+                : undefined,
+            });
 
-        if (onlyPositiveBalances) {
-          assets = assets.filter((asset) => asset.amount?.toDec().isPositive());
-        }
-
-        // Default sort (no sort provided):
-        //  1. preferred denoms (from `preferredDenoms`)
-        //  2. fiat balance descending (from `mapGetUserAssetInfos`)
-        //  3. Market cap
-        if (isDefaultSort) {
-          assets = assets.sort((assetA, assetB) => {
-            const isAPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetA.coinDenom) ||
-                preferredDenoms.includes(assetA.coinMinimalDenom));
-            const isBPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetB.coinDenom) ||
-                preferredDenoms.includes(assetB.coinMinimalDenom));
-
-            if (isAPreferred && !isBPreferred) return -1;
-            if (!isAPreferred && isBPreferred) return 1;
-
-            // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
-            const usdValueDefinedCompare = compareDefinedMember(
-              assetA,
-              assetB,
-              "usdValue"
-            );
-            if (usdValueDefinedCompare) return usdValueDefinedCompare;
-
-            // Sort by market cap
-            const marketCapDefinedCompare = compareDefinedMember(
-              assetA,
-              assetB,
-              "marketCap"
-            );
-            if (marketCapDefinedCompare) return marketCapDefinedCompare;
-            if (assetA.marketCap && assetB.marketCap) {
-              const marketCapCompare = compareDec(
-                assetA.marketCap.toDec(),
-                assetB.marketCap.toDec()
+            if (onlyPositiveBalances) {
+              assets = assets.filter((asset) =>
+                asset.amount?.toDec().isPositive()
               );
-              if (marketCapCompare) return marketCapCompare;
             }
-            return 0;
-          });
-        }
 
-        if (sortInput && sortInput.keyPath !== "usdValue") {
-          assets = sort(assets, sortInput.keyPath, sortInput.direction);
-        }
+            // Default sort (no sort provided):
+            //  1. preferred denoms (from `preferredDenoms`)
+            //  2. fiat balance descending (from `mapGetUserAssetInfos`)
+            //  3. Market cap
+            if (isDefaultSort) {
+              assets = assets.sort((assetA, assetB) => {
+                const isAPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetA.coinDenom) ||
+                    preferredDenoms.includes(assetA.coinMinimalDenom));
+                const isBPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetB.coinDenom) ||
+                    preferredDenoms.includes(assetB.coinMinimalDenom));
 
-        // Can be searching and/or sorting
-        return maybeCursorPaginatedItems(assets, cursor, limit);
-      }
+                if (isAPreferred && !isBPreferred) return -1;
+                if (!isAPreferred && isBPreferred) return 1;
+
+                // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
+                const usdValueDefinedCompare = compareDefinedMember(
+                  assetA,
+                  assetB,
+                  "usdValue"
+                );
+                if (usdValueDefinedCompare) return usdValueDefinedCompare;
+
+                // Sort by market cap
+                const marketCapDefinedCompare = compareDefinedMember(
+                  assetA,
+                  assetB,
+                  "marketCap"
+                );
+                if (marketCapDefinedCompare) return marketCapDefinedCompare;
+                if (assetA.marketCap && assetB.marketCap) {
+                  const marketCapCompare = compareDec(
+                    assetA.marketCap.toDec(),
+                    assetB.marketCap.toDec()
+                  );
+                  if (marketCapCompare) return marketCapCompare;
+                }
+                return 0;
+              });
+            }
+
+            if (sortInput && sortInput.keyPath !== "usdValue") {
+              assets = sort(assets, sortInput.keyPath, sortInput.direction);
+            }
+
+            // Can be searching and/or sorting
+            return assets;
+          },
+          JSON.stringify({
+            search,
+            onlyVerified,
+            userOsmoAddress,
+            preferredDenoms,
+            sort: sortInput,
+            onlyPositiveBalances,
+          }),
+          cursor,
+          limit
+        )
     ),
   getAssetHistoricalPrice: publicProcedure
     .input(
