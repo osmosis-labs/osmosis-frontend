@@ -1,4 +1,9 @@
 import { Dec, IntPretty } from "@keplr-wallet/unit";
+import {
+  ObservableConcentratedPoolDetail,
+  ObservableQueryPool,
+  ObservableSharePoolDetail,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -19,6 +24,7 @@ import {
   useDisclosure,
   useFakeFeeConfig,
   useFeatureFlags,
+  useHideDustUserSetting,
   useStakedAmountConfig,
   useTransferConfig,
   useTranslation,
@@ -59,7 +65,14 @@ const useGetOsmosisPools = () => {
 
 const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
-    const { queriesStore, chainStore, accountStore } = useStore();
+    const {
+      queriesStore,
+      chainStore,
+      accountStore,
+      derivedDataStore,
+      priceStore,
+    } = useStore();
+    const featureFlags = useFeatureFlags();
     const { t } = useTranslation();
     const language = useCurrentLanguage();
     const osmosisChainId = chainStore.osmosis.chainId;
@@ -120,31 +133,80 @@ const YourBalance = observer(
       [balance, isOsmo]
     );
 
-    const currency = useMemo(() => {
-      const currencies = ChainList.map(
-        (info) => info.keplrChain.currencies
-      ).reduce((a, b) => [...a, ...b]);
-
-      const currency = currencies.find(
-        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
-      );
-
-      return currency;
-    }, [denom]);
-
-    const pools = useGetOsmosisPools();
-    const isTokenInPools = useMemo(
-      () =>
-        pools?.filter((pool) =>
-          pool.poolAssetDenoms.includes(currency?.base ?? "")
-        ),
-      [currency?.base, pools]
-    );
-
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const { length: ownPoolsLength } =
-      queryOsmosis.queryGammPoolShare.getOwnPools(account?.address ?? "");
+    const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
+      account?.address ?? ""
+    );
+
+    const myPoolDetails = myPoolIds
+      .map<
+        | {
+            queryPool: ObservableQueryPool;
+            poolDetail:
+              | ObservableSharePoolDetail
+              | ObservableConcentratedPoolDetail;
+          }
+        | undefined
+      >((myPoolId) => {
+        const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
+
+        if (!queryPool) return undefined;
+
+        return {
+          queryPool,
+          poolDetail:
+            queryPool.type === "concentrated"
+              ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
+              : derivedDataStore.sharePoolDetails.get(myPoolId),
+        };
+      })
+      .filter(
+        (
+          pool
+        ): pool is {
+          queryPool: ObservableQueryPool;
+          poolDetail:
+            | ObservableSharePoolDetail
+            | ObservableConcentratedPoolDetail;
+        } => {
+          if (pool === undefined) return false;
+
+          // concentrated liquidity liquidity feature flag
+          if (
+            !featureFlags.concentratedLiquidity &&
+            pool.poolDetail instanceof ObservableConcentratedPoolDetail
+          )
+            return false;
+
+          return true;
+        }
+      );
+
+    const dustFilteredPools = useHideDustUserSetting(
+      myPoolDetails,
+      useCallback(
+        (myPool) => {
+          const pool = myPool.poolDetail;
+          // user share value
+          if (pool instanceof ObservableSharePoolDetail) {
+            return pool.totalValueLocked.mul(
+              queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+                account?.address ?? "",
+                (pool as ObservableSharePoolDetail).querySharePool!.pool.id
+              )
+            );
+          }
+          // user positions' assets value
+          if (pool instanceof ObservableConcentratedPoolDetail) {
+            return priceStore.calculateTotalPrice(
+              pool.userPoolAssets.map(({ asset }) => asset)
+            );
+          }
+        },
+        [queryOsmosis, account, priceStore]
+      )
+    );
 
     return (
       <section
@@ -210,46 +272,44 @@ const YourBalance = observer(
                 />
               </Link>
             )}
-            {isTokenInPools ? (
-              <Link
-                href="/pools"
-                passHref
-                className="flex flex-[0.5]"
-                onClick={() =>
-                  logEvent([
-                    EventName.TokenInfo.cardClicked,
-                    { tokenName: denom, title: "Explore Pools" },
-                  ])
+            <Link
+              href="/pools"
+              passHref
+              className="flex flex-[0.5]"
+              onClick={() =>
+                logEvent([
+                  EventName.TokenInfo.cardClicked,
+                  { tokenName: denom, title: "Explore Pools" },
+                ])
+              }
+            >
+              <ActionButton
+                title={
+                  dustFilteredPools.length > 0
+                    ? t("tokenInfos.liquidityInOSMOPools", {
+                        number: dustFilteredPools.length.toString(),
+                        denom,
+                      })
+                    : t("tokenInfos.explorePools")
                 }
-              >
-                <ActionButton
-                  title={
-                    ownPoolsLength > 0
-                      ? t("tokenInfos.liquidityInOSMOPools", {
-                          number: ownPoolsLength.toString(),
-                          denom,
-                        })
-                      : t("tokenInfos.explorePools")
-                  }
-                  largeTitle="$3,567"
-                  sub={
-                    ownPoolsLength > 0
-                      ? "45.67 OSMO"
-                      : t("tokenInfos.provideLiquidity")
-                  }
-                  image={
-                    <Image
-                      src={"/images/explore-pools.svg"}
-                      alt={`Explore pools image`}
-                      className={`overflow-visible object-cover 2xl:object-contain`}
-                      width={189}
-                      height={126}
-                    />
-                  }
-                  needsPadding
-                />
-              </Link>
-            ) : null}
+                largeTitle="$3,567"
+                sub={
+                  dustFilteredPools.length > 0
+                    ? "45.67 OSMO"
+                    : t("tokenInfos.provideLiquidity")
+                }
+                image={
+                  <Image
+                    src={"/images/explore-pools.svg"}
+                    alt={`Explore pools image`}
+                    className={`overflow-visible object-cover 2xl:object-contain`}
+                    width={189}
+                    height={126}
+                  />
+                }
+                needsPadding
+              />
+            </Link>
           </div>
         </div>
       </section>
