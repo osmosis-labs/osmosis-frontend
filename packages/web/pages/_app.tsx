@@ -30,6 +30,7 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
+import { StakeOnboarding } from "~/components/stake/stake-onboarding";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
@@ -38,8 +39,10 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useGetApr } from "~/hooks/use-get-apr";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
@@ -69,12 +72,16 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps, router }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   useMount(() => {
     initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
   });
+
+  const showStakeOnboarding = router.pathname !== "/stake";
+  console.log("router.pathname: ", router.pathname);
+  console.log("showStakeOnboarding: ", showStakeOnboarding);
 
   return (
     <MultiLanguageProvider
@@ -124,7 +131,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       }
     );
 
-    const { accountStore, chainStore } = useStore();
+    const { accountStore, chainStore, queriesStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
     // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
     const {
@@ -293,6 +300,32 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
     ];
 
+    const osmosisChainId = chainStore.osmosis.chainId;
+    const account = accountStore.getWallet(osmosisChainId);
+    const address = account?.address ?? "";
+
+    const osmo = chainStore.osmosis.stakeCurrency;
+
+    const isWalletConnected = Boolean(account?.isWalletConnected);
+
+    // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
+    const feeConfig = useFakeFeeConfig(
+      chainStore,
+      osmosisChainId,
+      account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+    );
+
+    const stakeTabAmountConfig = useAmountConfig(
+      chainStore,
+      queriesStore,
+      osmosisChainId,
+      address,
+      feeConfig,
+      osmo
+    );
+
+    const { stakingAPR } = useGetApr();
+
     return (
       <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
         {children}
@@ -310,6 +343,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             onCloseLeavingOsmosisToLevana();
           }}
         />
+        {isWalletConnected && address && (
+          <StakeOnboarding
+            address={address}
+            isWalletConnected={isWalletConnected}
+            stakingAPR={stakingAPR}
+            amountConfig={stakeTabAmountConfig}
+          />
+        )}
       </MainLayout>
     );
   }

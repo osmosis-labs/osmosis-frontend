@@ -10,7 +10,6 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { Spinner } from "~/components/spinner";
-import StakeOnboarding from "~/components/stake/stake-onboarding";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
 import { StakeOrEdit } from "~/components/types";
@@ -19,22 +18,12 @@ import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
+import { useGetApr } from "~/hooks/use-get-apr";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
-
-const getWeekDateRange = () => {
-  // Numia APY rate calculated on a 7 day rolling average
-  // end date is current day, start date is 7 days beforehand
-  const currentDate = new Date();
-  const endDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
-  currentDate.setDate(currentDate.getDate() - 7); // Set to 7 days before
-  const startDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
-  return { startDate, endDate };
-};
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -293,14 +282,7 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
-  const { startDate, endDate } = getWeekDateRange();
-
-  const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
-    startDate,
-    endDate,
-  });
-
-  const stakingAPR = data || new Dec(0);
+  const { stakingAPR, isLoadingApr } = useGetApr();
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
@@ -460,14 +442,14 @@ export const Staking: React.FC = observer(() => {
         setShowValidatorModal={() => setShowValidatorModal(true)}
       />
 
-      {isWalletConnected && address && (
+      {/* {isWalletConnected && address && (
         <StakeOnboarding
           address={address}
           isWalletConnected={isWalletConnected}
           stakingAPR={stakingAPR}
           amountConfig={stakeTabAmountConfig}
         />
-      )}
+      )} */}
     </main>
   );
 });

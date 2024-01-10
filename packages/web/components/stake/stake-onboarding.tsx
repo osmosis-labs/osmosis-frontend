@@ -16,7 +16,7 @@ interface StakeOnboardingProps {
   amountConfig: AmountConfig;
 }
 
-const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
+export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   address,
   isWalletConnected,
   stakingAPR,
@@ -76,5 +76,3 @@ const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
     </>
   );
 };
-
-export default StakeOnboarding;
