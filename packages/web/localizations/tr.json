@@ -836,7 +836,8 @@
     "backButton": "Tüm jetonlar",
     "ariaBackButton": "Tüm belirteçleri geri düğmesi",
     "noData": "ND",
-    "buyToken": "{coinDenom} satın alın"
+    "buyToken": "{coinDenom} satın alın",
+    "staking": "Staking"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmoz güncellemeleri!",

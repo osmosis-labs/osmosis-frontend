@@ -836,7 +836,8 @@
     "backButton": "همه توکن ها",
     "ariaBackButton": "دکمه برگشت همه نشانه ها",
     "noData": "ND",
-    "buyToken": "خرید {coinDenom}"
+    "buyToken": "خرید {coinDenom}",
+    "staking": "شرط بندی"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "به روز رسانی اسمز!",

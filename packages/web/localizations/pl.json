@@ -836,7 +836,8 @@
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
     "noData": "ND",
-    "buyToken": "Kup {coinDenom}"
+    "buyToken": "Kup {coinDenom}",
+    "staking": "Stawianie"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

@@ -836,7 +836,8 @@
     "backButton": "Toate jetoanele",
     "ariaBackButton": "Buton înapoi pentru toate jetoanele",
     "noData": "ND",
-    "buyToken": "Cumpărați {coinDenom}"
+    "buyToken": "Cumpărați {coinDenom}",
+    "staking": "Miza"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Actualizări pentru osmoză!",

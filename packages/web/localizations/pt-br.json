@@ -836,7 +836,8 @@
     "backButton": "Todos os tokens",
     "ariaBackButton": "Botão Voltar de todos os tokens",
     "noData": "DE",
-    "buyToken": "Compre {coinDenom}"
+    "buyToken": "Compre {coinDenom}",
+    "staking": "Estacamento"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Atualizações de osmose!",

@@ -836,7 +836,8 @@
     "backButton": "Todas las fichas",
     "ariaBackButton": "Botón de retroceso de todos los tokens",
     "noData": "N.D.",
-    "buyToken": "Comprar {coinDenom}"
+    "buyToken": "Comprar {coinDenom}",
+    "staking": "Replanteo"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",

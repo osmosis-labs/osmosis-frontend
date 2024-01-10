@@ -836,7 +836,8 @@
     "backButton": "所有代币",
     "ariaBackButton": "所有代币后退按钮",
     "noData": "ND",
-    "buyToken": "购买{coinDenom}"
+    "buyToken": "购买{coinDenom}",
+    "staking": "质押"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "渗透更新！",
