@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
@@ -20,6 +21,8 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
   stakingApr,
   onOpenFiatOnrampSelection,
 }) => {
+  const { t } = useTranslation();
+
   const displayBalance = balance
     ?.trim(true)
     .maxDecimals(2)
@@ -29,7 +32,9 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
 
   const hasOsmo = balance.toDec().gt(new Dec(0));
 
-  const hasOsmoText = <>Put your available {displayBalance} to work and </>;
+  const hasOsmoText = (
+    <>{(t("stake.introModal.description.5"), { displayBalance })} </>
+  );
   const hasNoOsmoText = (
     <>
       {" "}
@@ -41,9 +46,9 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
         }}
         className="!inline !w-max !p-0 text-wosmongton-300"
       >
-        Buy some OSMO
+        {t("stake.introModal.description.button")}
       </Button>{" "}
-      and put it to work{" "}
+      {t("stake.introModal.description.4")}{" "}
     </>
   );
 
@@ -60,15 +65,17 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
       className="!bg-osmoverse-850"
     >
       <div className="flex flex-col items-center p-8">
-        <div className="mb-4 text-bullish-400">New feature</div>
+        <div className="mb-4 text-bullish-400">
+          {t("stake.introModal.callout")}
+        </div>
         <h1 className="colors-white-full mb-8 text-2xl leading-9">
-          Staking on Osmosis
+          {t("stake.introModal.title")}
         </h1>
         <p className="mb-[2px] max-w-[512px] text-center text-sm text-osmoverse-200">
-          Staking is one of the easiest ways to earn with your assets. Now you
-          can stake your OSMO right on Osmosis.{" "}
-          {hasOsmo ? hasOsmoText : hasNoOsmoText} earn up to {stakingAprText}{" "}
-          yearly in staking rewards!
+          {t("stake.introModal.description.1")}{" "}
+          {hasOsmo ? hasOsmoText : hasNoOsmoText}{" "}
+          {t("stake.introModal.description.2")} {stakingAprText}{" "}
+          {t("stake.introModal.description.3")}
         </p>
         <Image
           width={592}
