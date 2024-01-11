@@ -23,7 +23,7 @@ import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { EventName, OsmosisCmsRepo } from "~/config";
+import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -45,11 +45,12 @@ import {
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
-import { queryGithubFile } from "~/server/queries/github";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
+import { getDeepValue } from "~/utils/object";
 import { formatICNSName, getShortAddress } from "~/utils/string";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -136,10 +137,11 @@ export const NavBar: FunctionComponent<
     const { data: topAnnouncementBannerData } = useQuery({
       queryKey: ["osmosis-top-announcement-banner"],
       queryFn: async () =>
-        queryGithubFile<TopAnnouncementBannerResponse>({
-          repo: OsmosisCmsRepo,
+        queryOsmosisCMS<TopAnnouncementBannerResponse>({
           filePath: "cms/top-announcement-banner.json",
         }),
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 3, // 3 minutes
     });
 
     useEffect(() => {
@@ -558,13 +560,14 @@ interface TopAnnouncementBannerResponse {
     startDate?: string;
     endDate?: string;
   } | null;
+  localization?: Record<string, Record<string, any>>;
 }
 
 const AnnouncementBanner: FunctionComponent<{
   closeBanner: () => void;
   bannerResponse: TopAnnouncementBannerResponse;
 }> = ({ closeBanner, bannerResponse }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
@@ -588,9 +591,15 @@ const AnnouncementBanner: FunctionComponent<{
 
   const { isWarning, bg, link, persistent } = banner;
 
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
+  const currentLanguageTranslations = bannerResponse?.localization?.[language];
+
+  const linkText =
+    getDeepValue<string>(
+      currentLanguageTranslations,
+      link?.enTextOrLocalizationKey
+    ) ??
+    link?.enTextOrLocalizationKey ??
+    "Click here to learn more";
 
   const handleLeaveClick = () =>
     handleExternalLink({
@@ -610,7 +619,14 @@ const AnnouncementBanner: FunctionComponent<{
       )}
     >
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(banner?.enTextOrLocalizationPath ?? "")}</span>
+        <span>
+          {isChainHalted
+            ? banner?.enTextOrLocalizationPath ?? ""
+            : getDeepValue<string>(
+                currentLanguageTranslations,
+                banner?.enTextOrLocalizationPath
+              ) ?? banner?.enTextOrLocalizationPath}
+        </span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
