@@ -1002,15 +1002,11 @@ export const TransferContent: FunctionComponent<
     try {
       if (transactionRequest.type === "evm") {
         await handleEvmTx({ ...selectedQuote, transactionRequest });
-        return;
-      }
-
-      if (transactionRequest.type === "cosmos") {
+      } else if (transactionRequest.type === "cosmos") {
         await handleCosmosTx({
           ...selectedQuote,
           transactionRequest,
         });
-        return;
       }
 
       if (isDeposit) {

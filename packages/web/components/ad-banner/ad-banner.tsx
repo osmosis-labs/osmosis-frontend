@@ -4,57 +4,52 @@ import { memo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Step, Stepper } from "~/components/stepper/index";
+import { useTranslation } from "~/hooks";
+import { SwapAdBannerResponse } from "~/pages";
+import { getDeepValue } from "~/utils/object";
 
-export interface Ad {
-  name: string;
-  start_date: string;
-  end_date: string;
-  header: string;
-  subheader: string;
-  external_url: string;
-  icon_image_url: string;
-  icon_image_alt: string;
-  gradient: string;
-  font_color: string;
-  arrow_color: string;
-  featured: true;
-}
-
+type Ad = SwapAdBannerResponse["banners"][number];
 interface AdBannerProps {
   ads: Ad[];
+  localization: SwapAdBannerResponse["localization"] | undefined;
 }
 
-export const AdBanner: React.FC<AdBannerProps> = memo(({ ads }) => {
-  // const randomAds = useMemo(() => shuffleArray(ads), [ads]);
+export const AdBanner: React.FC<AdBannerProps> = memo(
+  ({ ads, localization }) => {
+    return (
+      <Stepper autoplay={{ delayInMs: 12000, stopOnHover: true }}>
+        {ads.map((ad: Ad) => (
+          <Step
+            key={`${ad.name} ${ad.headerOrTranslationKey} ${ad.subheaderOrTranslationKey}`}
+          >
+            <AdBannerContent {...ad} localization={localization} />
+          </Step>
+        ))}
+      </Stepper>
+    );
+  }
+);
 
-  // temporarily disable random ads for Levana & milkTIA
-  const randomAds = ads;
-
-  return (
-    <Stepper autoplay={{ delayInMs: 12000, stopOnHover: true }}>
-      {randomAds.map((ad: Ad) => (
-        <Step key={`${ad.name} ${ad.header} ${ad.subheader}`}>
-          <AdBannerContent {...ad} />
-        </Step>
-      ))}
-    </Stepper>
-  );
-});
-
-export const AdBannerContent: React.FC<Ad> = memo(
+export const AdBannerContent: React.FC<
+  Ad & { localization: AdBannerProps["localization"] }
+> = memo(
   ({
-    header,
-    subheader,
-    icon_image_url,
-    external_url,
-    icon_image_alt,
-    font_color,
-    arrow_color,
+    headerOrTranslationKey,
+    subheaderOrTranslationKey,
+    iconImageUrl,
+    externalUrl,
+    iconImageAltOrTranslationKey,
+    fontColor,
+    arrowColor,
     gradient,
+    localization,
   }) => {
+    const { language } = useTranslation();
+
     const gradientStyle = { backgroundImage: gradient };
-    const textContainerStyle = { color: font_color };
-    const arrowStyle = { color: arrow_color };
+    const textContainerStyle = { color: fontColor };
+    const arrowStyle = { color: arrowColor };
+    const currentLocalization = localization?.[language];
 
     return (
       <a
@@ -62,11 +57,14 @@ export const AdBannerContent: React.FC<Ad> = memo(
         style={gradientStyle}
         target="_blank"
         rel="noopener noreferrer"
-        href={external_url}
+        href={externalUrl}
       >
         <Image
-          src={icon_image_url}
-          alt={icon_image_alt}
+          src={iconImageUrl}
+          alt={
+            getDeepValue(currentLocalization, iconImageAltOrTranslationKey) ??
+            iconImageAltOrTranslationKey
+          }
           width={64}
           height={72}
           className="object-contain"
@@ -77,9 +75,15 @@ export const AdBannerContent: React.FC<Ad> = memo(
           // https://stackoverflow.com/questions/73797433/custom-colors-with-tailwind-css-and-string-interpolation-react-app-with-api
           style={textContainerStyle}
         >
-          <h6 className="font-semibold">{header}</h6>
+          <h6 className="font-semibold">
+            {getDeepValue(currentLocalization, headerOrTranslationKey) ??
+              headerOrTranslationKey}
+          </h6>
           <div className="flex gap-3">
-            <p className="text-sm font-light">{subheader}</p>
+            <p className="text-sm font-light">
+              {getDeepValue(currentLocalization, subheaderOrTranslationKey) ??
+                subheaderOrTranslationKey}
+            </p>
             <Icon id="arrow-right" style={arrowStyle} />
           </div>
         </div>

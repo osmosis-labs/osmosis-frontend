@@ -16,7 +16,7 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 const osmosisChainId = ChainList[0].chain_id;

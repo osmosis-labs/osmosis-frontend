@@ -26,7 +26,7 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
 }: {
   asset: TAsset;
 }): Promise<TAsset & AssetMarketInfo> {
-  return cachified({
+  const assetMarket = await cachified({
     cache: marketInfoCache,
     key: asset.coinDenom + asset.coinMinimalDenom,
     ttl: 1000 * 60 * 5, // 5 minutes
@@ -45,7 +45,6 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
       const marketCapRank = await getAssetMarketCapRank(asset);
 
       return {
-        ...asset,
         currentPrice: currentPrice
           ? new PricePretty(DEFAULT_VS_CURRENCY, currentPrice)
           : undefined,
@@ -59,6 +58,8 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
       };
     },
   });
+
+  return { ...asset, ...assetMarket };
 }
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.

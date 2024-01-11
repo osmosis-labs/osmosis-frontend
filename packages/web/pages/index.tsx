@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
-import { Ad, AdBanner } from "~/components/ad-banner";
+import { AdBanner } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { EventName, OsmosisCmsRepo } from "~/config";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
-import { queryGithubFile } from "~/server/queries/github";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
@@ -56,6 +56,24 @@ const Home = () => {
   );
 };
 
+export interface SwapAdBannerResponse {
+  banners: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    headerOrTranslationKey: string;
+    subheaderOrTranslationKey: string;
+    externalUrl: string;
+    iconImageUrl: string;
+    iconImageAltOrTranslationKey: string;
+    gradient: string;
+    fontColor: string;
+    arrowColor: string;
+    featured: true;
+  }[];
+  localization: Record<string, Record<string, any>>;
+}
+
 const SwapAdsBanner = () => {
   /**
    * Fetches the latest update from the osmosis-labs/fe-content repo
@@ -64,11 +82,9 @@ const SwapAdsBanner = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["swap-ads-banner"],
     queryFn: () =>
-      queryGithubFile<{ banners: Ad[] }>({
-        repo: OsmosisCmsRepo,
+      queryOsmosisCMS<SwapAdBannerResponse>({
         filePath: "cms/swap-rotating-banner.json",
       }),
-
     staleTime: 1000 * 60 * 30, // 30 minutes
     cacheTime: 1000 * 60 * 30, // 30 minutes
   });
@@ -78,7 +94,7 @@ const SwapAdsBanner = () => {
   return (
     // If there is an error, we don't want to show the banner
     <ErrorBoundary fallback={null}>
-      <AdBanner ads={data.banners} />
+      <AdBanner ads={data.banners} localization={data.localization} />
     </ErrorBoundary>
   );
 };
