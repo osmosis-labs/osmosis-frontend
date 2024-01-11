@@ -2,7 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryFilteredPools } from "../../imperator";
+import { queryFilteredPools, queryPoolsFees } from "../../imperator";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getPools, Pool, PoolFilter } from "./index";
 
@@ -10,6 +10,8 @@ export type PoolMarketMetrics = Partial<{
   volume7dUsd: PricePretty;
   volume24hUsd: PricePretty;
   volume24hChange: RatePretty;
+  feesSpent24hUsd: PricePretty;
+  feesSpent7dUsd: PricePretty;
 }>;
 
 /** Get metrics for individual pool. */
@@ -55,12 +57,23 @@ function getCachedPoolsWithMetricsMap(): Promise<
       const { pools } = await queryFilteredPools({
         min_liquidity: 0,
       });
+      const poolsFees = await queryPoolsFees();
       const map = new Map<string, PoolMarketMetrics>();
       pools.forEach(({ pool_id, volume_24h, volume_7d, volume_24h_change }) => {
+        const { fees_spent_24h, fees_spent_7d } = poolsFees?.data.find(
+          ({ pool_id }) => pool_id === pool_id
+        ) ?? { fees_spent_24h: undefined, fees_spent_7d: undefined };
+
         map.set(pool_id.toString(), {
           volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_24h),
           volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_7d),
           volume24hChange: new RatePretty(volume_24h_change),
+          feesSpent24hUsd: fees_spent_24h
+            ? new PricePretty(DEFAULT_VS_CURRENCY, fees_spent_24h)
+            : undefined,
+          feesSpent7dUsd: fees_spent_7d
+            ? new PricePretty(DEFAULT_VS_CURRENCY, fees_spent_7d)
+            : undefined,
         });
       });
       return map;

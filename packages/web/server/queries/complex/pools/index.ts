@@ -25,7 +25,7 @@ export type Pool = {
  *  Should handle caching in the provider. */
 export type PoolProvider = () => Promise<Pool[]>;
 
-const PoolFilterSchema = z.object({
+export const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
   id: z.string().optional(),
   type: z
