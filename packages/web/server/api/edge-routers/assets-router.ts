@@ -108,7 +108,10 @@ export const assetsRouter = createTRPCRouter({
         asset: userAsset,
       });
 
-      return userMarketInfoAsset;
+      return {
+        ...userAsset,
+        ...userMarketInfoAsset,
+      };
     }),
   getAssetInfos: publicProcedure
     .input(

@@ -832,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",
     "provideLiquidity": "Zapewnij płynność i zarabiaj na opłatach i swapach",
     "yourBalance": "Twój balans",
-    "pastDaysReturns": "Powroty z poprzedniego dnia",
-    "allTimeReturns": "Cały czas powraca",
-    "averagePrice": "Średnia cena",
     "aboutDenom": "Informacje o {name}",
     "ariaView": "Wyświetl {name}",
     "ariaViewOn": "Wyświetl na {name}",
@@ -853,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Kup {coinDenom}",
+    "staking": "Stawianie",
+    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

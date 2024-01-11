@@ -832,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
-    "pastDaysReturns": "Retornos do dia anterior",
-    "allTimeReturns": "Todo o tempo retorna",
-    "averagePrice": "Preço médio",
     "aboutDenom": "Sobre {name}",
     "ariaView": "Visualizar {name}",
     "ariaViewOn": "Visualizar em {name}",
@@ -853,7 +850,10 @@
     "tvl": "televisão",
     "backButton": "Todos os tokens",
     "ariaBackButton": "Botão Voltar de todos os tokens",
-    "noData": "DE"
+    "noData": "DE",
+    "buyToken": "Compre {coinDenom}",
+    "staking": "Estacamento",
+    "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Atualizações de osmose!",
