@@ -578,7 +578,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               <Link href={ibcBalance.depositUrlOverride} target="_blank">
                 <Button
                   size="sm"
-                  className="!px-10 !text-base"
+                  className="whitespace-nowrap !px-10 !text-base"
                   disabled={!isDepositSupported || Boolean(data?.isUnstable)}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
@@ -587,7 +587,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
             ) : (
               <Button
                 size="sm"
-                className="!px-10 !text-base"
+                className="whitespace-nowrap !px-10 !text-base"
                 disabled={
                   !tokenChain?.chainId ||
                   !isDepositSupported ||
@@ -614,7 +614,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
                 <Button
                   size="sm"
-                  className="!px-10 !text-base"
+                  className="whitespace-nowrap !px-10 !text-base"
                   mode="secondary"
                   disabled={
                     !isWithdrawSupported ||
@@ -629,7 +629,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
             ) : (
               <Button
                 size="sm"
-                className="!px-10 !text-base"
+                className="whitespace-nowrap !px-10 !text-base"
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
