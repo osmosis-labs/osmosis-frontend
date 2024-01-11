@@ -89,7 +89,7 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
           onClick={onRequestClose}
           className="max-w-[400px]"
         >
-          Start staking
+          {t("stake.introModal.button")}
         </Button>
         <p className="mt-4 text-xs text-osmoverse-400">
           {t("stake.introModal.asterisk")}

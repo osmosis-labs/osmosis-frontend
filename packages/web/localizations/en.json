@@ -682,7 +682,8 @@
         "5": "Put your available {displayBalance} to work and",
         "button": "Buy some OSMO"
       },
-      "asterisk": "* Staking reward value subject to price and APR volatility."
+      "asterisk": "* Staking reward value subject to price and APR volatility.",
+      "button": "Start staking"
     }
   },
   "superfluidValidator": {
