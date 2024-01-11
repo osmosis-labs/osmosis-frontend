@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { AprBreakdown } from "~/components/cards/apr-breakdown";
+import { AprBreakdownLegacy } from "~/components/cards/apr-breakdown";
 import { Tooltip } from "~/components/tooltip";
 import { useStore } from "~/stores";
 
@@ -16,7 +16,7 @@ export const AprBreakdownCell: FunctionComponent<{
   return (
     <Tooltip
       rootClassNames="!rounded-[20px] drop-shadow-md"
-      content={<AprBreakdown poolId={poolId} />}
+      content={<AprBreakdownLegacy poolId={poolId} />}
     >
       <p
         className={classNames("ml-auto flex items-center gap-1.5", {

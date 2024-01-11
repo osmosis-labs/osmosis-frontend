@@ -5,7 +5,7 @@ import { LRUCache } from "lru-cache";
 import { queryPoolAprs } from "../../numia/pool-aprs";
 import { getPools, Pool, PoolFilter } from "./index";
 
-export type PoolIncentive = { poolId: string } & Partial<{
+export type PoolIncentives = { poolId: string } & Partial<{
   aprBreakdown: Partial<{
     total: RatePretty;
 
@@ -44,7 +44,7 @@ export async function mapGetIncentivizedPools<TPool extends Pool>({
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Get a cached Map with pool IDs mapped to market metrics for that pool. */
-function getCachedIncentivizedPools(): Promise<Map<string, PoolIncentive>> {
+function getCachedIncentivizedPools(): Promise<Map<string, PoolIncentives>> {
   return cachified({
     cache: incentivePoolsCache,
     key: "pools-with-incentives-map",
@@ -65,7 +65,7 @@ function getCachedIncentivizedPools(): Promise<Map<string, PoolIncentive>> {
         });
 
         return map;
-      }, new Map<string, PoolIncentive>());
+      }, new Map<string, PoolIncentives>());
     },
   });
 }
