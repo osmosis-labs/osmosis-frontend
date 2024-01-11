@@ -6,11 +6,18 @@ import { FunctionComponent } from "react";
 import { useState } from "react";
 import { useMeasure } from "react-use";
 
+import TokenPairHistoricalChart, {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
+import Spinner from "~/components/spinner";
 import { useTranslation } from "~/hooks";
+import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 
 import { Icon, PoolAssetsIcon } from "../assets";
-import { Button } from "../buttons";
+import { Button, ChartButton } from "../buttons";
 import { AssetBreakdownChart } from "../chart";
 
 export const BasePoolDetails: FunctionComponent<{
@@ -21,6 +28,13 @@ export const BasePoolDetails: FunctionComponent<{
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
+
+  const chartConfig = useHistoricalAndLiquidityData(
+    chainStore.osmosis.chainId,
+    pool.id
+  );
+
+  const { resetZoom, zoomIn, zoomOut } = chartConfig;
 
   const poolCurrencies = pool.poolAssetDenoms.map((denom) => {
     return osmosisChain.forceFindCurrency(denom);
@@ -92,6 +106,45 @@ export const BasePoolDetails: FunctionComponent<{
                 </div>
               </div>
             </div>
+
+            <div className="flex h-[340px] flex-row">
+              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
+                {chartConfig.queryTokenPairPrice.isFetching ? (
+                  <Spinner className="m-auto" />
+                ) : !chartConfig.historicalChartUnavailable ? (
+                  <>
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
+                  </>
+                ) : (
+                  <ChartUnavailable />
+                )}
+              </div>
+
+              <div className="flex-shrink-1 relative flex w-[229px] flex-col">
+                <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
+                  <ChartButton
+                    alt="refresh"
+                    icon="refresh-ccw"
+                    selected={false}
+                    onClick={() => resetZoom()}
+                  />
+                  <ChartButton
+                    alt="zoom out"
+                    icon="zoom-out"
+                    selected={false}
+                    onClick={zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div ref={poolBreakdownRef}>
               <AssetBreakdownChart
                 assets={poolCoins.map((coin) => ({
@@ -127,5 +180,59 @@ export const BasePoolDetails: FunctionComponent<{
         </div>
       </section>
     </main>
+  );
+});
+
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const {
+    historicalRange,
+    priceDecimal,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+  } = config;
+
+  return (
+    <PriceChartHeader
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDenom}
+      quoteDenom={quoteDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+      classes={{
+        buttons: "sm:hidden",
+        pricesHeaderContainerClass: "sm:flex-col",
+      }}
+    />
+  );
+});
+
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={[]}
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={() => {
+        if (lastChartData) {
+          setHoverPrice(Number(lastChartData.close));
+        }
+      }}
+    />
   );
 });
