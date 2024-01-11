@@ -98,7 +98,7 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   const { stakingAPR } = useGetApr();
 
   const handleClose = () => {
-    () => setShowStakeIntroModal(false);
+    setShowStakeIntroModal(false);
     router.push("/stake");
   };
 
