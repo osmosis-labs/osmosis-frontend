@@ -7,12 +7,15 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
+import Image from "next/image";
+import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo } from "react";
 
 import { useTranslation } from "~/hooks";
+import { theme } from "~/tailwind.config";
 import { api, RouterOutputs } from "~/utils/trpc";
 
-import { Icon } from "../assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
 import Spinner from "../spinner";
 import { Tooltip } from "../tooltip";
@@ -26,6 +29,7 @@ export const AllPoolsTable: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
 }> = ({ topOffset }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const {
     data: poolsPagesData,
@@ -54,6 +58,7 @@ export const AllPoolsTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
+        cell: PoolCompositionCell,
       }),
       columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "0", {
         id: "volume",
@@ -168,6 +173,7 @@ export const AllPoolsTable: FunctionComponent<{
               <tr
                 className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
                 key={row.id}
+                onClick={() => router.push("/pool/" + row.original.id)}
               >
                 {row.getVisibleCells().map((cell, cellIndex, cells) => (
                   <td
@@ -209,6 +215,57 @@ type PoolCellComponent<TProps = {}> = FunctionComponent<
   CellContext<Pool, Pool> & TProps
 >;
 
+const PoolCompositionCell: PoolCellComponent = ({
+  row: {
+    original: { id, type, reserveCoins },
+  },
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center">
+      <PoolAssetsIcon
+        assets={reserveCoins.map((coin) => coin.currency)}
+        size="sm"
+      />
+      <div className="flex items-center gap-1.5 text-ion-400">
+        <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
+          <PoolAssetsName
+            size="sm"
+            assetDenoms={reserveCoins.map((coin) => coin.denom)}
+          />
+          <span className={classNames("text-sm font-caption opacity-60")}>
+            {t("components.table.poolId", { id })}
+          </span>
+        </div>
+        {type === "stable" && (
+          <Image
+            alt=""
+            src="/icons/stableswap-pool.svg"
+            width={24}
+            height={24}
+          />
+        )}
+        {type === "concentrated" && (
+          <Icon
+            color={theme.colors.white.mid}
+            id="lightning-small"
+            height={24}
+            width={24}
+          />
+        )}
+        {type === "cosmwasm-transmuter" && (
+          <Image
+            alt=""
+            src="/icons/stableswap-pool.svg"
+            width={24}
+            height={24}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
 const AprBreakdownCell: PoolCellComponent = ({
   row: {
     original: { aprBreakdown },
@@ -220,7 +277,7 @@ const AprBreakdownCell: PoolCellComponent = ({
       content={<AprBreakdown {...aprBreakdown} />}
     >
       <p
-        className={classNames("ml-auto flex items-center gap-1.5", {
+        className={classNames("flex items-center gap-1.5", {
           "text-bullish-500": Boolean(
             aprBreakdown.boost || aprBreakdown.osmosis
           ),
