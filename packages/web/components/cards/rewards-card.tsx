@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React from "react";
+import React, { useState } from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
 import { Button } from "~/components/buttons";
@@ -34,6 +34,8 @@ export const RewardsCard: React.FC<{
       ? `[mask-image:url('/images/folder-right-tab.svg')] bg-[url('/images/grid-right-tab.svg')]`
       : `[mask-image:url('/images/folder-left-tab.svg')] bg-[url('/images/grid-left-tab.svg')]`;
 
+  const [hover, setHover] = useState(false);
+
   return (
     <Button
       disabled={disabled}
@@ -49,6 +51,8 @@ export const RewardsCard: React.FC<{
           )}
         ></div>
         <DynamicLottieAnimation
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
           className={classNames(
             "absolute left-0 top-0 z-20",
             position === "right" ? "scale-[0.85]" : "scale-1"
@@ -56,6 +60,7 @@ export const RewardsCard: React.FC<{
           globalLottieFileKey={globalLottieFileKey}
           importFn={() => import(`./${globalLottieFileKey}.json`)}
           loop={true}
+          autoplay={hover}
         />
         <div
           className={classNames(

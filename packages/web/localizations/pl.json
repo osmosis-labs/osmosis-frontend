@@ -682,7 +682,8 @@
         "5": "Uruchom dostępny {displayBalance}",
         "button": "Kup trochę OSMO"
       },
-      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO."
+      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO.",
+      "button": "Zacznij obstawiać"
     }
   },
   "superfluidValidator": {
