@@ -1,3 +1,4 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import { useEffect, useState } from "react";
 
 import { EventName } from "~/config";
@@ -18,6 +19,24 @@ interface StakeOnboardingProps {
   isWalletConnected: boolean;
 }
 
+const getDefaultLocalStorageKey = (key: string, defaultValue = true) => {
+  if (typeof window === "undefined") {
+    return defaultValue;
+  }
+
+  const item = window.localStorage.getItem(key);
+  if (item === null) {
+    return defaultValue;
+  }
+
+  try {
+    return JSON.parse(item);
+  } catch (error) {
+    console.error("Error parsing localStorage item:", error);
+    return defaultValue;
+  }
+};
+
 export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
   address,
   isWalletConnected,
@@ -34,10 +53,7 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
 
   const localStorageKey = `show-stake-modal-intro-${address}`;
 
-  const defaultValue =
-    typeof window !== "undefined"
-      ? JSON.parse(window.localStorage.getItem(localStorageKey) || "true")
-      : true;
+  const defaultValue = getDefaultLocalStorageKey(localStorageKey, true);
 
   const [showStakeModalForWalletAddress, setShowStakeModalForWalletAddress] =
     useLocalStorageState(localStorageKey, defaultValue);
@@ -84,7 +100,7 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
         isOpen={showStakeIntroModal}
         onRequestClose={() => setShowStakeIntroModal(false)}
         isWalletConnected={isWalletConnected}
-        balance={amountConfig.balance}
+        balance={amountConfig.balance || new CoinPretty(osmo, 0)}
         stakingApr={stakingAPR}
         onOpenFiatOnrampSelection={onOpenFiatOnrampSelection}
       />

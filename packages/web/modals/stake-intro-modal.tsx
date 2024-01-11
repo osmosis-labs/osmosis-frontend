@@ -33,7 +33,7 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
   const hasOsmo = balance.toDec().gt(new Dec(0));
 
   const hasOsmoText = (
-    <>{(t("stake.introModal.description.5"), { displayBalance })} </>
+    <>{t("stake.introModal.description.5", { displayBalance })} </>
   );
   const hasNoOsmoText = (
     <>
