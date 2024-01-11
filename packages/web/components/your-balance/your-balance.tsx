@@ -608,7 +608,10 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                   className="!px-10 !text-base"
                   mode="secondary"
                   disabled={
-                    !isWithdrawSupported || Boolean(ibcBalance?.isUnstable)
+                    !isWithdrawSupported ||
+                    Boolean(ibcBalance?.isUnstable) ||
+                    !data?.amount?.toDec() ||
+                    data.amount.toDec().isZero()
                   }
                 >
                   {t("assets.historyTable.colums.withdraw")} ↗️️
@@ -621,7 +624,9 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
-                  Boolean(ibcBalance?.isUnstable)
+                  Boolean(ibcBalance?.isUnstable) ||
+                  !data?.amount?.toDec() ||
+                  data.amount.toDec().isZero()
                 }
                 mode="secondary"
                 onClick={() => {
