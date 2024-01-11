@@ -346,7 +346,7 @@ export const Staking: React.FC = observer(() => {
   );
 
   return (
-    <main className="m-auto flex h-full max-w-container flex-col justify-center gap-5 bg-osmoverse-900 p-8 md:p-3">
+    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
           <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-[32px]">
