@@ -135,6 +135,7 @@ export function makeMinimalAsset(assetListAsset: Asset) {
     coinDecimals: decimals,
     coinGeckoId: coingecko_id,
     coinImageUrl: relative_image_url,
+    isUnstable: Boolean(keywords?.includes("osmosis-unstable")),
     isVerified: Boolean(keywords?.includes("osmosis-main")),
   };
 }
