@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
-import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
-import { useGetApr } from "~/hooks/staking/use-get-apr";
-import { useDisclosure } from "~/hooks/use-disclosure";
-import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
+import {
+  useAmountConfig,
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useFakeFeeConfig,
+  useGetApr,
+  useLocalStorageState,
+} from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { StakeIntroModal } from "~/modals/stake-intro-modal";
 import { useStore } from "~/stores";

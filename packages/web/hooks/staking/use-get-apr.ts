@@ -12,7 +12,7 @@ const getWeekDateRange = () => {
   return { startDate, endDate };
 };
 
-export const useGetApr = () => {
+export function useGetApr() {
   const { startDate, endDate } = getWeekDateRange();
 
   const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
@@ -23,4 +23,4 @@ export const useGetApr = () => {
   const stakingAPR = data || new Dec(0);
 
   return { stakingAPR, isLoadingApr };
-};
+}
