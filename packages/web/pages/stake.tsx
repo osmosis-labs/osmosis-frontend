@@ -427,6 +427,7 @@ export const Staking: React.FC = observer(() => {
         queryValidators={queryValidators}
       />
       <ValidatorNextStepModal
+        setShowStakeLearnMoreModal={() => setShowStakeLearnMoreModal(true)}
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
