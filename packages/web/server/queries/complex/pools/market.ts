@@ -70,8 +70,6 @@ function getCachedPoolMarketMetricsMap(): Promise<
         }
       );
 
-      console.log(map.size);
-
       return map;
     },
   });

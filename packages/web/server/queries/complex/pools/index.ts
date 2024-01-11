@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { search, SearchSchema } from "~/utils/search";
@@ -27,6 +27,7 @@ export type PoolProvider = () => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
+  minLiquidityUsd: z.number().default(1_000).optional(),
   type: z
     .enum(["concentrated", "weighted", "stable", "transmuter", "cosmwasm"])
     .optional(),
@@ -52,8 +53,14 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
-  if (params?.type) {
-    pools = pools.filter(({ type }) => type === params.type);
+  if (params?.type || params?.minLiquidityUsd) {
+    pools = pools.filter(
+      ({ type, totalFiatValueLocked }) =>
+        (params?.type ? type === params.type : true) &&
+        (params?.minLiquidityUsd
+          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+          : true)
+    );
   }
 
   // add denoms so user can search them

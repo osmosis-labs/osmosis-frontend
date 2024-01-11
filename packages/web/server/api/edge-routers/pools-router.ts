@@ -30,10 +30,23 @@ export const poolsRouter = createTRPCRouter({
       )
     )
     .query(
-      async ({ input: { search, sort: sortInput, type, cursor, limit } }) =>
+      async ({
+        input: {
+          search,
+          minLiquidityUsd,
+          sort: sortInput,
+          type,
+          cursor,
+          limit,
+        },
+      }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const marketPools = await mapGetPoolMarketMetrics({ search, type });
+            const marketPools = await mapGetPoolMarketMetrics({
+              search,
+              minLiquidityUsd,
+              type,
+            });
             const marketIncentivePools = await mapGetPoolIncentives({
               pools: marketPools,
             });
@@ -44,7 +57,12 @@ export const poolsRouter = createTRPCRouter({
               sortInput.direction
             );
           },
-          cacheKey: JSON.stringify({ search, sortInput, type }),
+          cacheKey: JSON.stringify({
+            search,
+            sortInput,
+            minLiquidityUsd,
+            type,
+          }),
           cursor,
           limit,
         })
