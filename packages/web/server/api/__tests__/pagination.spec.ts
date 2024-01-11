@@ -1,4 +1,4 @@
-import { maybeCursorPaginatedItems } from "../utils";
+import { maybeCursorPaginatedItems } from "../pagination";
 
 describe("maybeCursorPaginatedItems", () => {
   const items = Array.from({ length: 100 }, (_, i) => i); // Create an array of 100 items
@@ -24,6 +24,13 @@ describe("maybeCursorPaginatedItems", () => {
   test("returns last items of page items based on provided cursor and limit", () => {
     const result = maybeCursorPaginatedItems(items, 90, 20);
     expect(result.items).toEqual(items.slice(90, 100));
-    expect(result.nextCursor).toEqual(99);
+    expect(result.nextCursor).toEqual(null);
+  });
+
+  test("returns elements that are less then a single page size", () => {
+    const lessItems = [1, 2, 3];
+    const result = maybeCursorPaginatedItems(lessItems, 0, 20);
+    expect(result.items).toEqual(lessItems);
+    expect(result.nextCursor).toEqual(null);
   });
 });

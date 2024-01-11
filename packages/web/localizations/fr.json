@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
       "goToSite": "Aller au site",
-      "doNotShowAgain": "Ne montre plus cela"
+      "doNotShowAgain": "Ne montre plus cela",
+      "chainHalted": "La chaîne d'osmose est interrompue, les transactions sont temporairement désactivées."
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "Montant",
     "availableIn": "Disponible en",
     "day": "jour",
+    "days": "jours",
     "month": "mois",
     "dashboard": "Tableau de bord",
     "dashboardStakedOsmo": "OSMO jalonné",
@@ -668,6 +670,19 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
+    },
+    "introModal": {
+      "callout": "Nouvelle fonctionnalité",
+      "title": "Miser sur l’osmose",
+      "description": {
+        "1": "Le jalonnement est l’un des moyens les plus simples de gagner de l’argent avec vos actifs. Vous pouvez désormais miser votre OSMO directement sur Osmosis.",
+        "2": "gagner jusqu'à",
+        "3": "chaque année en récompenses de mise !",
+        "4": "et mettez-le au travail",
+        "5": "Mettez votre {displayBalance} à profit et",
+        "button": "Achetez de l'OSMO"
+      },
+      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG."
     }
   },
   "superfluidValidator": {

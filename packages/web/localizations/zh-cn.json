@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
       "goToSite": "前往网站",
-      "doNotShowAgain": "不要再显示此内容"
+      "doNotShowAgain": "不要再显示此内容",
+      "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "数量",
     "availableIn": "可用于",
     "day": "天",
+    "days": "天",
     "month": "月",
     "dashboard": "仪表板",
     "dashboardStakedOsmo": "固定 OSMO",
@@ -668,6 +670,19 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
+    },
+    "introModal": {
+      "callout": "新功能",
+      "title": "Osmosis 质押",
+      "description": {
+        "1": "质押是利用资产赚钱的最简单方法之一。现在您可以将您的 OSMO 放在 Osmosis 上。",
+        "2": "赚取高达",
+        "3": "每年都有质押奖励！",
+        "4": "并付诸实践",
+        "5": "让您可用的{displayBalance}发挥作用并",
+        "button": "买一些OSMO"
+      },
+      "asterisk": "* 质押奖励价值受价格和年利率波动影响。"
     }
   },
   "superfluidValidator": {

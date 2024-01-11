@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
       "externalLinkModalTitle": "Saliendo de Osmosis",
       "goToSite": "Ir al sitio",
-      "doNotShowAgain": "No muestres esto de nuevo"
+      "doNotShowAgain": "No muestres esto de nuevo",
+      "chainHalted": "Se detiene la cadena de ósmosis, las transacciones se inhabilitan temporalmente."
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "Cantidad",
     "availableIn": "Disponible en",
     "day": "día",
+    "days": "días",
     "month": "mes",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "OSMO apostado",
@@ -668,6 +670,19 @@
         "buttonKeep": "Conservar los validadores existentes",
         "buttonSelect": "Seleccionar nuevos validadores"
       }
+    },
+    "introModal": {
+      "callout": "Nueva caracteristica",
+      "title": "Apostando por la ósmosis",
+      "description": {
+        "1": "Apostar es una de las formas más fáciles de ganar con sus activos. Ahora puedes apostar tu OSMO directamente en Osmosis.",
+        "2": "ganar hasta",
+        "3": "¡Anualmente en apuestas de recompensas!",
+        "4": "y ponlo a trabajar",
+        "5": "Pon tu {displayBalance} a trabajar y",
+        "button": "Compra algo de OSMO"
+      },
+      "asterisk": "* El valor de la recompensa de apuesta está sujeto a la volatilidad del precio y la APR."
     }
   },
   "superfluidValidator": {

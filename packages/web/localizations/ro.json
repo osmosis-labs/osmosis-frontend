@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
       "goToSite": "Du-te la site",
-      "doNotShowAgain": "Nu îmi mai arăta asta"
+      "doNotShowAgain": "Nu îmi mai arăta asta",
+      "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "Cantitate",
     "availableIn": "Disponibil in",
     "day": "zi",
+    "days": "zile",
     "month": "lună",
     "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",
@@ -668,6 +670,19 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
+    },
+    "introModal": {
+      "callout": "Optiune noua",
+      "title": "Miza pe osmoză",
+      "description": {
+        "1": "Miza este una dintre cele mai simple modalități de a câștiga cu activele tale. Acum vă puteți miza OSMO chiar pe Osmosis.",
+        "2": "castiga pana la",
+        "3": "anual în mizați recompense!",
+        "4": "și pune-l la treabă",
+        "5": "Puneți {displayBalance} disponibil și",
+        "button": "Cumpără niște OSMO"
+      },
+      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR."
     }
   },
   "superfluidValidator": {

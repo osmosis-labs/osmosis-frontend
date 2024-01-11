@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
       "externalLinkModalTitle": "Opuszczanie Osmosis",
       "goToSite": "Przejdź do strony",
-      "doNotShowAgain": "Nie pokazuj tego ponownie"
+      "doNotShowAgain": "Nie pokazuj tego ponownie",
+      "chainHalted": "Łańcuch osmozy jest zatrzymany, transakcje są tymczasowo wyłączone."
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "Kwota",
     "availableIn": "Dostępne w",
     "day": "dzień",
+    "days": "dni",
     "month": "miesiąc",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "postawione OSMO",
@@ -668,6 +670,19 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
+    },
+    "introModal": {
+      "callout": "Nowa cecha",
+      "title": "Stawianie na osmozę",
+      "description": {
+        "1": "Stakowanie to jeden z najłatwiejszych sposobów zarabiania na swoich aktywach. Teraz możesz postawić swoje OSMO bezpośrednio na Osmozie.",
+        "2": "zarobić do",
+        "3": "co roku w nagrodach za stakowanie!",
+        "4": "i zabierz się do pracy",
+        "5": "Uruchom dostępny {displayBalance}",
+        "button": "Kup trochę OSMO"
+      },
+      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO."
     }
   },
   "superfluidValidator": {

@@ -117,7 +117,8 @@
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
       "goToSite": "Continue to Site",
-      "doNotShowAgain": "Do not show this again"
+      "doNotShowAgain": "Do not show this again",
+      "chainHalted": "Osmosis chain is halted, transactions are temporarily disabled."
     }
   },
   "store": {
@@ -598,6 +599,7 @@
     "amount": "Amount",
     "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "dashboardStakedOsmo": "staked OSMO",
@@ -668,6 +670,19 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
+    },
+    "introModal": {
+      "callout": "New feature",
+      "title": "Staking on Osmosis",
+      "description": {
+        "1": "Staking is one of the easiest ways to earn with your assets. Now you can stake your OSMO right on Osmosis.",
+        "2": "earn up to",
+        "3": "yearly in staking rewards!",
+        "4": "and put it to work",
+        "5": "Put your available {displayBalance} to work and",
+        "button": "Buy some OSMO"
+      },
+      "asterisk": "* Staking reward value subject to price and APR volatility."
     }
   },
   "superfluidValidator": {

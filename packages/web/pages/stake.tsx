@@ -16,24 +16,13 @@ import { StakeOrEdit } from "~/components/types";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useGetApr, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
-
-const getWeekDateRange = () => {
-  // Numia APY rate calculated on a 7 day rolling average
-  // end date is current day, start date is 7 days beforehand
-  const currentDate = new Date();
-  const endDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
-  currentDate.setDate(currentDate.getDate() - 7); // Set to 7 days before
-  const startDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
-  return { startDate, endDate };
-};
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -291,14 +280,7 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
-  const { startDate, endDate } = getWeekDateRange();
-
-  const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
-    startDate,
-    endDate,
-  });
-
-  const stakingAPR = data || new Dec(0);
+  const { stakingAPR, isLoadingApr } = useGetApr();
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
@@ -364,12 +346,12 @@ export const Staking: React.FC = observer(() => {
   );
 
   return (
-    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
+    <main className="m-auto flex h-full max-w-container flex-col justify-center gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
-          <SkeletonLoader isLoaded={!isLoadingApr} className="rounded-[32px]">
+          <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-[32px]">
             <AlertBanner
-              className="rounded-[32px]"
+              className="!rounded-[32px]"
               title={alertTitle}
               subtitle={t("stake.alertSubtitle")}
               image={
