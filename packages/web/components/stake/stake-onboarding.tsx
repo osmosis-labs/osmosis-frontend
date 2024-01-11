@@ -107,6 +107,7 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
       <StakeIntroModal
         isOpen={showStakeIntroModal}
         onRequestClose={handleClose}
+        onRequestSimpleClose={() => setShowStakeIntroModal(false)}
         isWalletConnected={isWalletConnected}
         balance={amountConfig.balance || new CoinPretty(osmo, 0)}
         stakingApr={stakingAPR}

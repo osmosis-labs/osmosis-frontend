@@ -12,10 +12,12 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
   balance: CoinPretty;
   stakingApr: Dec;
   onOpenFiatOnrampSelection: () => void;
+  onRequestSimpleClose: () => void;
 }
 
 export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
   onRequestClose,
+  onRequestSimpleClose,
   isOpen,
   balance,
   stakingApr,
@@ -61,7 +63,7 @@ export const StakeIntroModal: FunctionComponent<ExtendedModalBaseProps> = ({
   return (
     <ModalBase
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onRequestSimpleClose}
       className="!bg-osmoverse-850"
     >
       <div className="flex flex-col items-center p-8">
