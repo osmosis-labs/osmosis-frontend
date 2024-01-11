@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useCallback } from "react";
 import { FunctionComponent } from "react";
 
@@ -12,6 +11,7 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: () => void;
   isNewUser: boolean;
   stakeCall: () => void;
+  setShowStakeLearnMoreModal: () => void;
 }
 
 export const ValidatorNextStepModal: FunctionComponent<
@@ -22,6 +22,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   setShowValidatorModal,
   isNewUser,
   stakeCall,
+  setShowStakeLearnMoreModal,
 }) => {
   const { t } = useTranslation();
 
@@ -62,13 +63,16 @@ export const ValidatorNextStepModal: FunctionComponent<
         <>
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
-            <Link
-              href=""
-              className="text-bullish-200 whitespace-nowrap underline"
+            <Button
+              mode="unstyled"
+              className="!inline !w-max whitespace-nowrap !p-0 !text-bullish-300 underline"
+              onClick={() => {
+                onRequestClose();
+                setShowStakeLearnMoreModal();
+              }}
             >
-              {/* TODO - add link to learn here */}
               {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-            </Link>
+            </Button>
           </p>
           <Button
             mode="primary-bullish"
