@@ -16,7 +16,7 @@ export type PoolType =
 export type Pool = {
   id: string;
   type: PoolType;
-  raw: PoolRawResponse;
+  raw: Omit<PoolRawResponse, "@type">;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
 };
@@ -27,7 +27,6 @@ export type PoolProvider = () => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
-  id: z.string().optional(),
   type: z
     .enum(["concentrated", "weighted", "stable", "transmuter", "cosmwasm"])
     .optional(),
@@ -39,8 +38,8 @@ export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 const searchablePoolKeys = ["id", "type", "coinDenoms"];
 
 export async function getPool(poolId: string): Promise<Pool | undefined> {
-  const pools = await getPools({ id: poolId });
-  return pools[0];
+  const pools = await getPools();
+  return pools.find(({ id }) => id === poolId);
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
@@ -53,9 +52,6 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
-  if (params?.id) {
-    pools = pools.filter(({ id }) => id === params.id);
-  }
   if (params?.type) {
     pools = pools.filter(({ type }) => type === params.type);
   }

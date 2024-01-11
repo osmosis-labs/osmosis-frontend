@@ -7,8 +7,7 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 
 import { useTranslation } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -25,13 +24,15 @@ type Pool =
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
   quickAddLiquidity: (poolId: string) => void;
-}> = observer(({ topOffset }) => {
+}> = ({ topOffset }) => {
   const { t } = useTranslation();
 
   const {
     data: poolsPagesData,
     isLoading,
     isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
       limit: 100,
@@ -80,7 +81,7 @@ export const AllPoolsTable: FunctionComponent<{
         cell: AprBreakdownCell,
       }),
     ],
-    []
+    [columnHelper, t]
   );
 
   const table = useReactTable({
@@ -95,7 +96,7 @@ export const AllPoolsTable: FunctionComponent<{
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 100,
+    estimateSize: () => 50,
     paddingStart: topOffset,
     overscan: 5,
   });
@@ -106,6 +107,20 @@ export const AllPoolsTable: FunctionComponent<{
       ? rowVirtualizer.getTotalSize() -
         (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
+
+  // pagination
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
+  const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+  useEffect(() => {
+    if (
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index === lastVirtualRow.index &&
+      canLoadMore
+    )
+      fetchNextPage();
+  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
     <div className="w-full">
@@ -188,7 +203,7 @@ export const AllPoolsTable: FunctionComponent<{
       </table>
     </div>
   );
-});
+};
 
 type PoolCellComponent<TProps = {}> = FunctionComponent<
   CellContext<Pool, Pool> & TProps
