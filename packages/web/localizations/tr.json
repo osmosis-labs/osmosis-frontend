@@ -682,7 +682,8 @@
         "5": "Kullanılabilir {displayBalance} çalıştırın ve",
         "button": "Biraz OSMO satın alın"
       },
-      "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır."
+      "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır.",
+      "button": "Staking'i başlat"
     }
   },
   "superfluidValidator": {

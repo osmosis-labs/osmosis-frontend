@@ -682,7 +682,8 @@
         "5": "Puneți {displayBalance} disponibil și",
         "button": "Cumpără niște OSMO"
       },
-      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR."
+      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR.",
+      "button": "Începeți să mizați"
     }
   },
   "superfluidValidator": {

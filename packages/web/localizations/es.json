@@ -682,7 +682,8 @@
         "5": "Pon tu {displayBalance} a trabajar y",
         "button": "Compra algo de OSMO"
       },
-      "asterisk": "* El valor de la recompensa de apuesta está sujeto a la volatilidad del precio y la APR."
+      "asterisk": "* El valor de la recompensa de apuesta está sujeto a la volatilidad del precio y la APR.",
+      "button": "Empezar a apostar"
     }
   },
   "superfluidValidator": {

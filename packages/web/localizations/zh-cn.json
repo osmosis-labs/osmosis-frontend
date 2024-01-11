@@ -682,7 +682,8 @@
         "5": "让您可用的{displayBalance}发挥作用并",
         "button": "买一些OSMO"
       },
-      "asterisk": "* 质押奖励价值受价格和年利率波动影响。"
+      "asterisk": "* 质押奖励价值受价格和年利率波动影响。",
+      "button": "开始质押"
     }
   },
   "superfluidValidator": {
