@@ -1,4 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { EventName } from "~/config";
@@ -51,6 +52,8 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
+  const router = useRouter();
+
   const localStorageKey = `show-stake-modal-intro-${address}`;
 
   const defaultValue = getDefaultLocalStorageKey(localStorageKey, true);
@@ -94,11 +97,16 @@ export const StakeOnboarding: React.FC<StakeOnboardingProps> = ({
 
   const { stakingAPR } = useGetApr();
 
+  const handleClose = () => {
+    setShowStakeIntroModal(false);
+    router.push("/stake");
+  };
+
   return (
     <>
       <StakeIntroModal
         isOpen={showStakeIntroModal}
-        onRequestClose={() => setShowStakeIntroModal(false)}
+        onRequestClose={handleClose}
         isWalletConnected={isWalletConnected}
         balance={amountConfig.balance || new CoinPretty(osmo, 0)}
         stakingApr={stakingAPR}
