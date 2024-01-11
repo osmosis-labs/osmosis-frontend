@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "OSMO, USDC'yi destekler",
-      "transakSubtitle": "OSMO'yu destekler"
+      "transakSubtitle": "OSMO'yu destekler",
+      "onrampMoneySubtitle": "OSMO, USDC'yi destekler"
     },
     "incentive": {
       "mobileTitle": "Teşvik",

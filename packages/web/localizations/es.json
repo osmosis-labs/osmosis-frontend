@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
-      "transakSubtitle": "Soporta OSMO"
+      "transakSubtitle": "Soporta OSMO",
+      "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incentivo",

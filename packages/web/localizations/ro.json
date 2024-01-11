@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
       "kadoSubtitle": "Acceptă OSMO, USDC",
-      "transakSubtitle": "Acceptă OSMO"
+      "transakSubtitle": "Acceptă OSMO",
+      "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Stimulent",
