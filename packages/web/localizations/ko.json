@@ -682,7 +682,8 @@
         "5": "사용 가능한 {displayBalance} 작동시키고",
         "button": "OSMO를 구매하세요"
       },
-      "asterisk": "* 스테이킹 보상 가치는 가격 및 APR 변동성에 따라 달라질 수 있습니다."
+      "asterisk": "* 스테이킹 보상 가치는 가격 및 APR 변동성에 따라 달라질 수 있습니다.",
+      "button": "스테이킹 시작"
     }
   },
   "superfluidValidator": {

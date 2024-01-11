@@ -682,7 +682,8 @@
         "5": "Mettez votre {displayBalance} à profit et",
         "button": "Achetez de l'OSMO"
       },
-      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG."
+      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG.",
+      "button": "Commencer à jalonner"
     }
   },
   "superfluidValidator": {

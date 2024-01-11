@@ -682,7 +682,8 @@
         "5": "Coloque seu {displayBalance} para funcionar e",
         "button": "Compre um pouco de OSMO"
       },
-      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG."
+      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG.",
+      "button": "Comece a apostar"
     }
   },
   "superfluidValidator": {
