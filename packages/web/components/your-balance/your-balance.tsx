@@ -32,6 +32,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
+  ActivateUnverifiedTokenConfirmation,
   BridgeTransferV1Modal,
   BridgeTransferV2Modal,
   FiatOnrampSelectionModal,
@@ -42,6 +43,7 @@ import {
 } from "~/modals";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -406,13 +408,15 @@ const ActionButton = ({
 const BalanceStats = observer((props: YourBalanceProps) => {
   const { denom } = props;
 
+  const [confirmUnverifiedTokenDenom, setConfirmUnverifiedTokenDenom] =
+    useState<string | null>(null);
   const [preTransferModalProps, setPreTransferModalProps] =
     useState<ComponentProps<typeof PreTransferModal> | null>(null);
   const { t } = useTranslation();
   const transferConfig = useTransferConfig();
   const featureFlags = useFeatureFlags();
   const { isMobile } = useWindowSize();
-  const { chainStore, accountStore, assetsStore } = useStore();
+  const { chainStore, accountStore, assetsStore, userSettings } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const { onOpenWalletSelect } = useWalletSelect();
   const {
@@ -420,6 +424,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     onOpen: onOpenFiatOnrampSelection,
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
+  const showUnverifiedAssetsSetting =
+    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
+
+  const shouldDisplayUnverifiedAssets =
+    showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
   const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -459,11 +468,9 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   );
 
   const isDepositSupported =
-    (isChainSupported && ibcBalance?.isVerified) ||
-    Boolean(ibcBalance?.depositUrlOverride);
+    isChainSupported || Boolean(ibcBalance?.depositUrlOverride);
   const isWithdrawSupported =
-    (isChainSupported && ibcBalance?.isVerified) ||
-    Boolean(ibcBalance?.withdrawUrlOverride);
+    isChainSupported || Boolean(ibcBalance?.withdrawUrlOverride);
 
   const launchPreTransferModal = useCallback(
     (coinDenom: string) => {
@@ -572,9 +579,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 <Button
                   size="sm"
                   className="!px-10 !text-base"
-                  disabled={
-                    !isDepositSupported || Boolean(ibcBalance?.isUnstable)
-                  }
+                  disabled={!isDepositSupported || Boolean(data?.isUnstable)}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
@@ -586,15 +591,19 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 disabled={
                   !tokenChain?.chainId ||
                   !isDepositSupported ||
-                  Boolean(ibcBalance?.isUnstable)
+                  Boolean(data?.isUnstable)
                 }
                 onClick={() => {
                   if (tokenChain?.chainId) {
-                    onDeposit(
-                      tokenChain.chainId,
-                      denom,
-                      ibcBalance?.depositUrlOverride
-                    );
+                    if (!data?.isVerified && !shouldDisplayUnverifiedAssets) {
+                      setConfirmUnverifiedTokenDenom(denom);
+                    } else {
+                      onDeposit(
+                        tokenChain.chainId,
+                        denom,
+                        ibcBalance?.depositUrlOverride
+                      );
+                    }
                   }
                 }}
               >
@@ -609,7 +618,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                   mode="secondary"
                   disabled={
                     !isWithdrawSupported ||
-                    Boolean(ibcBalance?.isUnstable) ||
+                    Boolean(data?.isUnstable) ||
                     !data?.amount?.toDec() ||
                     data.amount.toDec().isZero()
                   }
@@ -624,7 +633,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
-                  Boolean(ibcBalance?.isUnstable) ||
+                  Boolean(data?.isUnstable) ||
                   !data?.amount?.toDec() ||
                   data.amount.toDec().isZero()
                 }
@@ -665,6 +674,20 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           </Button>
         ) : null}
       </div>
+      <ActivateUnverifiedTokenConfirmation
+        coinDenom={data?.coinDenom}
+        coinImageUrl={data?.coinImageUrl}
+        isOpen={Boolean(confirmUnverifiedTokenDenom)}
+        onConfirm={() => {
+          if (!confirmUnverifiedTokenDenom) return;
+          showUnverifiedAssetsSetting?.setState({
+            showUnverifiedAssets: true,
+          });
+        }}
+        onRequestClose={() => {
+          setConfirmUnverifiedTokenDenom(null);
+        }}
+      />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
