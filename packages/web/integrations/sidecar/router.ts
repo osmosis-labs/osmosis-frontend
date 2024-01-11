@@ -32,8 +32,8 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     queryUrl.searchParams.append("tokenOutDenom", tokenOutDenom);
     if (forcePoolId) {
       // docs: https://github.com/osmosis-labs/osmosis/blob/e4f91eaf6a0ce475dcd13ee337e27c8e67cd939f/ingest/sqs/README.md?plain=1#L221
-      queryUrl.searchParams.append("poolIDs", forcePoolId);
-      queryUrl.pathname = "/router/custom-quote";
+      queryUrl.searchParams.append("poolID", forcePoolId);
+      queryUrl.pathname = "/router/custom-direct-quote";
     }
     try {
       const {
