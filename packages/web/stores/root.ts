@@ -55,6 +55,29 @@ import {
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
 
+const RawAssetLists = AssetLists.map((assetList) => {
+  const assets = assetList.assets.map((asset) => {
+    const ibcTrace = asset.traces.find((trace) => trace.type === "ibc");
+    let base = asset.base;
+
+    if (ibcTrace) {
+      base = ibcTrace.counterparty.base_denom;
+    }
+
+    return {
+      ...asset,
+      base,
+    };
+  });
+
+  return {
+    ...assetList,
+    assets,
+  };
+});
+
+console.log(RawAssetLists.find((el) => el.chain_id === "passage-2"));
+
 export class RootStore {
   public readonly chainStore: ChainStore;
 
@@ -166,7 +189,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       ChainList,
       this.chainStore.osmosis.chainId,
-      AssetLists,
+      RawAssetLists,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
        * @see wallet-select.tsx
