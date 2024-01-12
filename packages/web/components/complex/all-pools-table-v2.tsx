@@ -344,17 +344,18 @@ const TableControls: FunctionComponent<{
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={poolTypesFilter as string[]}
-          options={
-            [
-              { id: "weighted", display: t("components.table.weighted") },
-              { id: "stable", display: t("components.table.stable") },
-              {
-                id: "concentrated",
-                display: t("components.table.concentrated"),
-              },
-              { id: "transmuter", display: t("components.table.transmuter") },
-            ] as { id: PoolTypeFilter; display: string }[]
-          }
+          options={[
+            { id: "weighted", display: t("components.table.weighted") },
+            { id: "stable", display: t("components.table.stable") },
+            {
+              id: "concentrated",
+              display: t("components.table.concentrated"),
+            },
+            {
+              id: "cosmwasm-transmuter",
+              display: t("components.table.transmuter"),
+            },
+          ]}
           onSelect={(poolType) => {
             if (poolTypesFilter.includes(poolType as PoolTypeFilter)) {
               setPoolTypesFilter(
@@ -362,7 +363,7 @@ const TableControls: FunctionComponent<{
                   (type) => type !== (poolType as PoolTypeFilter)
                 )
               );
-            } else {
+            } else if (!poolTypesFilter.includes(poolType as PoolTypeFilter)) {
               setPoolTypesFilter([
                 ...poolTypesFilter,
                 poolType as PoolTypeFilter,
