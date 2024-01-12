@@ -55,11 +55,14 @@ export const poolsRouter = createTRPCRouter({
               pools: marketPools,
             });
 
-            return sort(
-              marketIncentivePools,
-              sortInput.keyPath,
-              sortInput.direction
-            );
+            // won't sort if searching
+            if (search) return marketIncentivePools;
+            else
+              return sort(
+                marketIncentivePools,
+                sortInput.keyPath,
+                sortInput.direction
+              );
           },
           cacheKey: JSON.stringify({
             search,

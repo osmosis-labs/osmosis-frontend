@@ -33,7 +33,7 @@ import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
 type Pool =
   RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
-type SortKey = MarketIncentivePoolSortKey;
+type SortKey = MarketIncentivePoolSortKey | undefined;
 type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 
 export const AllPoolsTable: FunctionComponent<{
@@ -45,10 +45,13 @@ export const AllPoolsTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [sortKey, setSortKey] = useQueryParamState<SortKey>(
+  const [sortKey_, setSortKey] = useQueryParamState<SortKey>(
     "allPoolsSort",
     "volume24hUsd"
   );
+  /** Won't sort when searching is happening. */
+  const sortKey: SortKey = Boolean(searchQuery) ? undefined : sortKey_;
+
   const [sortDirection = "desc", setSortDirection] =
     useQueryParamState<SortDirection>("allPoolsSortDir", "desc");
 
