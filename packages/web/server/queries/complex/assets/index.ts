@@ -27,10 +27,8 @@ export const AssetFilterSchema = z.object({
 /** Params for filtering assets. */
 export type AssetFilter = z.infer<typeof AssetFilterSchema>;
 
-const getAssetCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
-
 /** Get an individual asset explicitly by it's denom (any type) */
 export async function getAsset({
   assetList = AssetLists,
@@ -39,18 +37,8 @@ export async function getAsset({
   assetList?: AssetList[];
   anyDenom: string;
 }): Promise<Asset | undefined> {
-  return cachified({
-    cache: getAssetCache,
-    key: anyDenom,
-    getFreshValue: async () => {
-      const assets = await getAssets({
-        assetList,
-        findMinDenomOrSymbol: anyDenom,
-      });
-      return assets[0];
-    },
-    ttl: 10 * 1000, // 10 seconds
-  });
+  const assets = await getAssets({ assetList, findMinDenomOrSymbol: anyDenom });
+  return assets[0];
 }
 
 const minimalAssetsCache = new LRUCache<string, CacheEntry>(
