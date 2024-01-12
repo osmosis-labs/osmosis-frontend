@@ -18,7 +18,7 @@ export const AprBreakdownCell: FunctionComponent<{
       rootClassNames="!rounded-[20px] drop-shadow-md"
       content={<AprBreakdownLegacy poolId={poolId} />}
     >
-      <p
+      <div
         className={classNames("ml-auto flex items-center gap-1.5", {
           "text-bullish-500": Boolean(poolAprs?.boost || poolAprs?.osmosis),
         })}
@@ -29,7 +29,7 @@ export const AprBreakdownCell: FunctionComponent<{
           </div>
         )}
         {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
-      </p>
+      </div>
     </Tooltip>
   );
 });

@@ -377,7 +377,7 @@ const Pools: NextPage = observer(function () {
             }
             {...quickActionProps}
           />
-        ) : (
+        ) : featureFlags._isInitialized ? (
           <AllPoolsTableV1
             topOffset={
               myPositionsHeight +
@@ -388,7 +388,7 @@ const Pools: NextPage = observer(function () {
             }
             {...quickActionProps}
           />
-        )}
+        ) : null}
       </section>
     </main>
   );
