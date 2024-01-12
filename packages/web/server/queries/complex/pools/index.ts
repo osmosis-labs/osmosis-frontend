@@ -29,7 +29,7 @@ export type PoolProvider = () => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
-  minLiquidityUsd: z.number().default(1_000).optional(),
+  minLiquidityUsd: z.number().optional(),
   types: z
     .array(z.string())
     .default(allPooltypes as unknown as string[])

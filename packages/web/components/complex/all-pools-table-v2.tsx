@@ -83,6 +83,7 @@ export const AllPoolsTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
+      minLiquidityUsd: 1_000,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
