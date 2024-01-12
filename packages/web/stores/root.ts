@@ -19,6 +19,7 @@ import {
   UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
+import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 
 import {
   toastOnBroadcast,
@@ -56,19 +57,10 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
 
 const RawAssetLists = AssetLists.map((assetList) => {
-  const assets = assetList.assets.map((asset) => {
-    const ibcTrace = asset.traces.find((trace) => trace.type === "ibc");
-    let base = asset.base;
-
-    if (ibcTrace) {
-      base = ibcTrace.counterparty.base_denom;
-    }
-
-    return {
-      ...asset,
-      base,
-    };
-  });
+  const assets = assetList.assets.map((asset) => ({
+    ...asset,
+    base: getSourceDenomFromAssetList(asset),
+  }));
 
   return {
     ...assetList,
