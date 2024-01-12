@@ -51,6 +51,7 @@ import { ConvertToStakeModal } from "~/modals/convert-to-stake";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
@@ -62,6 +63,20 @@ const Pools: NextPage = observer(function () {
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getWallet(chainId);
+
+  const {} = api.edge.concentratedLiquidity.getUserPositions.useQuery(
+    {
+      userOsmoAddress: account?.address as string,
+    },
+    {
+      enabled: Boolean(account?.address),
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
+  );
 
   const [poolsOverviewRef, { height: poolsOverviewHeight }] =
     useDimension<HTMLDivElement>();
