@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
       "kadoSubtitle": "Suporta OSMO, USDC",
-      "transakSubtitle": "Suporta OSMO"
+      "transakSubtitle": "Suporta OSMO",
+      "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incentivo",
@@ -670,6 +671,20 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
+    },
+    "introModal": {
+      "callout": "Novo recurso",
+      "title": "Apostando na Osmose",
+      "description": {
+        "1": "O staking é uma das maneiras mais fáceis de ganhar com seus ativos. Agora você pode apostar seu OSMO diretamente no Osmosis.",
+        "2": "ganhe até",
+        "3": "anualmente em apostas de recompensas!",
+        "4": "e colocá-lo para funcionar",
+        "5": "Coloque seu {displayBalance} para funcionar e",
+        "button": "Compre um pouco de OSMO"
+      },
+      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG.",
+      "button": "Comece a apostar"
     }
   },
   "superfluidValidator": {
@@ -817,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
-    "pastDaysReturns": "Retornos do dia anterior",
-    "allTimeReturns": "Todo o tempo retorna",
-    "averagePrice": "Preço médio",
     "aboutDenom": "Sobre {name}",
     "ariaView": "Visualizar {name}",
     "ariaViewOn": "Visualizar em {name}",
@@ -838,7 +850,10 @@
     "tvl": "televisão",
     "backButton": "Todos os tokens",
     "ariaBackButton": "Botão Voltar de todos os tokens",
-    "noData": "DE"
+    "noData": "DE",
+    "buyToken": "Compre {coinDenom}",
+    "staking": "Estacamento",
+    "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Atualizações de osmose!",

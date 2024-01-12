@@ -17,6 +17,7 @@ export type Asset = {
   coinGeckoId: string | undefined;
   coinImageUrl: string;
   isVerified: boolean;
+  isUnstable: boolean;
 };
 
 export const AssetFilterSchema = z.object({

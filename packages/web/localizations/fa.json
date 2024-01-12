@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
-      "transakSubtitle": "پشتیبانی OSMO"
+      "transakSubtitle": "پشتیبانی OSMO",
+      "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "incentive": {
       "mobileTitle": "جایزه",
@@ -670,6 +671,20 @@
         "buttonKeep": "نگه‌داشتن اعتبارسنج‌های موجود",
         "buttonSelect": "انتخاب اعتبارسنج‌های جدید"
       }
+    },
+    "introModal": {
+      "callout": "خصوصیت جدید",
+      "title": "قرار گرفتن روی اسمز",
+      "description": {
+        "1": "شرط بندی یکی از ساده ترین راه ها برای کسب درآمد با دارایی های شما است. اکنون می توانید OSMO خود را مستقیماً روی اسموز قرار دهید.",
+        "2": "کسب درآمد تا",
+        "3": "سالانه در جوایز شرط بندی!",
+        "4": "و آن را به کار انداخت",
+        "5": "{displayBalance} موجود خود را به کار ببندید و",
+        "button": "مقداری OSMO بخرید"
+      },
+      "asterisk": "* ارزش پاداش به شرط قیمت و نوسانات آوریل.",
+      "button": "شروع به شرط بندی کنید"
     }
   },
   "superfluidValidator": {
@@ -817,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
     "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
-    "pastDaysReturns": "بازده روز گذشته",
-    "allTimeReturns": "همه زمان ها برمی گردد",
-    "averagePrice": "قیمت میانگین",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
@@ -838,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "همه توکن ها",
     "ariaBackButton": "دکمه برگشت همه نشانه ها",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "خرید {coinDenom}",
+    "staking": "شرط بندی",
+    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "به روز رسانی اسمز!",

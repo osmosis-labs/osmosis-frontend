@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
       "kadoSubtitle": "Acceptă OSMO, USDC",
-      "transakSubtitle": "Acceptă OSMO"
+      "transakSubtitle": "Acceptă OSMO",
+      "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Stimulent",
@@ -670,6 +671,20 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
+    },
+    "introModal": {
+      "callout": "Optiune noua",
+      "title": "Miza pe osmoză",
+      "description": {
+        "1": "Miza este una dintre cele mai simple modalități de a câștiga cu activele tale. Acum vă puteți miza OSMO chiar pe Osmosis.",
+        "2": "castiga pana la",
+        "3": "anual în mizați recompense!",
+        "4": "și pune-l la treabă",
+        "5": "Puneți {displayBalance} disponibil și",
+        "button": "Cumpără niște OSMO"
+      },
+      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR.",
+      "button": "Începeți să mizați"
     }
   },
   "superfluidValidator": {
@@ -817,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
-    "pastDaysReturns": "Revenirile din zilele trecute",
-    "allTimeReturns": "Tot timpul se întoarce",
-    "averagePrice": "Prețul mediu",
     "aboutDenom": "Despre {name}",
     "ariaView": "Vedeți {name}",
     "ariaViewOn": "Vedeți pe {name}",
@@ -838,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "Toate jetoanele",
     "ariaBackButton": "Buton înapoi pentru toate jetoanele",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Cumpărați {coinDenom}",
+    "staking": "Miza",
+    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Actualizări pentru osmoză!",

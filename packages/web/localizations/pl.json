@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Wybierz rampę Fiat",
       "kadoSubtitle": "Obsługuje OSMO, USDC",
-      "transakSubtitle": "Obsługuje OSMO"
+      "transakSubtitle": "Obsługuje OSMO",
+      "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Motywacja",
@@ -670,6 +671,20 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
+    },
+    "introModal": {
+      "callout": "Nowa cecha",
+      "title": "Stawianie na osmozę",
+      "description": {
+        "1": "Stakowanie to jeden z najłatwiejszych sposobów zarabiania na swoich aktywach. Teraz możesz postawić swoje OSMO bezpośrednio na Osmozie.",
+        "2": "zarobić do",
+        "3": "co roku w nagrodach za stakowanie!",
+        "4": "i zabierz się do pracy",
+        "5": "Uruchom dostępny {displayBalance}",
+        "button": "Kup trochę OSMO"
+      },
+      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO.",
+      "button": "Zacznij obstawiać"
     }
   },
   "superfluidValidator": {
@@ -817,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",
     "provideLiquidity": "Zapewnij płynność i zarabiaj na opłatach i swapach",
     "yourBalance": "Twój balans",
-    "pastDaysReturns": "Powroty z poprzedniego dnia",
-    "allTimeReturns": "Cały czas powraca",
-    "averagePrice": "Średnia cena",
     "aboutDenom": "Informacje o {name}",
     "ariaView": "Wyświetl {name}",
     "ariaViewOn": "Wyświetl na {name}",
@@ -838,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Kup {coinDenom}",
+    "staking": "Stawianie",
+    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

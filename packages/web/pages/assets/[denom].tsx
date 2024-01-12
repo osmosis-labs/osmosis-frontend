@@ -97,7 +97,13 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets, tokenDetailsByLanguage, imperatorDenom, coingeckoCoin }) => {
+  ({
+    tokenDenom,
+    tweets,
+    tokenDetailsByLanguage,
+    imperatorDenom,
+    coingeckoCoin,
+  }) => {
     const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
@@ -155,8 +161,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const memoedPools = routablePools ?? [];
 
     const denom = useMemo(() => {
-      return router.query.denom as string;
-    }, [router.query.denom]);
+      return tokenDenom as string;
+    }, [tokenDenom]);
 
     return (
       <AssetInfoViewProvider value={contextValue}>
@@ -644,7 +650,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom,
+      tokenDenom: token?.coinDenom ?? tokenDenom,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,

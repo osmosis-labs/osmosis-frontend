@@ -13,9 +13,11 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
         txEvents: {
           onBroadcastFailed: () => {
             apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
           },
           onFulfill: () => {
             apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
           },
         },
       })
