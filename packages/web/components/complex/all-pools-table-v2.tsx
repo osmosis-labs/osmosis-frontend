@@ -13,13 +13,16 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslation } from "~/hooks";
+import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
 import { theme } from "~/tailwind.config";
+import type { Search } from "~/utils/search";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
+import { SearchBox } from "../input";
 import Spinner from "../spinner";
 import { PoolQuickActionCell } from "../table/cells";
 import { SortHeader } from "../table/headers/sort";
@@ -37,6 +40,8 @@ export const AllPoolsTable: FunctionComponent<{
   const { t } = useTranslation();
   const router = useRouter();
 
+  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+
   const [sortKey, setSortKey] = useState<SortKey>("totalFiatValueLocked");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -49,6 +54,7 @@ export const AllPoolsTable: FunctionComponent<{
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
       limit: 100,
+      search: searchQuery,
       sort: sortKey
         ? {
             keyPath: sortKey,
@@ -204,6 +210,7 @@ export const AllPoolsTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <TableControls setSearchQuery={setSearchQuery} />
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -282,6 +289,32 @@ export const AllPoolsTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+const TableControls: FunctionComponent<{
+  setSearchQuery: (searchQuery: Search | undefined) => void;
+}> = ({ setSearchQuery }) => {
+  const { t } = useTranslation();
+
+  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
+
+  // Pass search query in an effect to prevent rendering the entire table on every input change
+  // Only on debounced search query input
+  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
+
+  return (
+    <div className="flex h-12 w-full place-content-between items-center gap-5">
+      <h5>{t("pools.allPools.title")}</h5>
+
+      <div className="flex h-12 gap-3">
+        <SearchBox
+          currentValue={searchInput}
+          onInput={setSearchInput}
+          placeholder={t("assets.table.search")}
+        />
+      </div>
     </div>
   );
 };
