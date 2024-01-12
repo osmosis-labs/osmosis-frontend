@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { tickToSqrtPrice } from "@osmosis-labs/math";
+import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -8,8 +8,14 @@ import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
+import { getPool } from "~/server/queries/complex/pools";
 import { queryPositionPerformance } from "~/server/queries/imperator";
-import { queryAddressCLPositions } from "~/server/queries/osmosis/concentrated";
+import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
+import {
+  queryCLPositions,
+  queryCLUnbondingPositions,
+} from "~/server/queries/osmosis/concentratedliquidity";
+import { queryDelegatedClPositions } from "~/server/queries/osmosis/superfluid";
 
 export const concentratedLiquidityRouter = createTRPCRouter({
   getUserPositions: publicProcedure
@@ -21,24 +27,45 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema.required())
     )
     .query(async ({ input: { userOsmoAddress, sortDirection } }) => {
-      const { positions: rawPositions } = await queryAddressCLPositions({
+      const { positions: rawPositions } = await queryCLPositions({
         bech32Address: userOsmoAddress,
       });
 
       // TODO: sort by joinDate
-      const positionsWithPerformance = await getPositionsWithPerformance({
-        userOsmoAddress,
-        positions: rawPositions,
-      });
+      console.time("normalizePositions");
       const result = await normalizePositions({
-        positions: positionsWithPerformance,
+        positions: rawPositions,
+        userOsmoAddress,
       });
+      console.timeEnd("normalizePositions");
       return result;
+    }),
+
+  getPositionPerformance: publicProcedure
+    .input(
+      z.object({
+        positionId: z.string(),
+      })
+    )
+    .query(async ({ input: { positionId } }) => {
+      const performance = await queryPositionPerformance({
+        positionId,
+      });
+
+      return {
+        principalAssets: await mapRawAssetsToCoinPretty({
+          rawAssets: performance.principal.assets,
+        }),
+        totalEarned: getTotalEarned({
+          totalIncentivesRewards: performance.total_incentives_rewards,
+          totalSpreadRewards: performance.total_spread_rewards,
+        }),
+      };
     }),
 });
 
 type LiquidityPosition = Awaited<
-  ReturnType<typeof queryAddressCLPositions>
+  ReturnType<typeof queryCLPositions>
 >["positions"][number];
 type PositionPerformance = Awaited<ReturnType<typeof queryPositionPerformance>>;
 
@@ -114,6 +141,22 @@ async function getPositionAsset({
   return new CoinPretty(asset, amount);
 }
 
+function getPriceFromSqrtPrice({
+  sqrtPrice,
+  baseAsset,
+  quoteAsset,
+}: {
+  baseAsset: CoinPretty;
+  quoteAsset: CoinPretty;
+  sqrtPrice: Dec;
+}) {
+  const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+    baseAsset.currency.coinDecimals - quoteAsset.currency.coinDecimals
+  );
+  const price = sqrtPrice.mul(sqrtPrice).mul(multiplicationQuoteOverBase);
+  return price;
+}
+
 function getClTickPrice({
   tick,
   baseAsset,
@@ -124,11 +167,25 @@ function getClTickPrice({
   quoteAsset: CoinPretty;
 }) {
   const sqrtPrice = tickToSqrtPrice(tick);
-  const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-    baseAsset.currency.coinDecimals - quoteAsset.currency.coinDecimals
-  );
-  const price = sqrtPrice.mul(sqrtPrice).mul(multiplicationQuoteOverBase);
-  return price;
+  return getPriceFromSqrtPrice({
+    baseAsset,
+    quoteAsset,
+    sqrtPrice,
+  });
+}
+
+function isPositionFullRange({
+  lowerTick,
+  upperTick,
+}: {
+  lowerTick: Int;
+  upperTick: Int;
+}): boolean {
+  if (lowerTick?.equals(minTick) && upperTick?.equals(maxTick)) {
+    return true;
+  }
+
+  return false;
 }
 
 async function mapRawAssetsToCoinPretty({
@@ -187,44 +244,102 @@ async function getTotalClaimableRewards({
   );
 }
 
-const positionsWithPerformanceCache = new LRUCache<string, CacheEntry>(
-  DEFAULT_LRU_OPTIONS
-);
+async function getTotalEarned({
+  totalSpreadRewards,
+  totalIncentivesRewards,
+}: {
+  totalSpreadRewards: PositionPerformance["total_spread_rewards"];
+  totalIncentivesRewards: PositionPerformance["total_incentives_rewards"];
+}) {
+  const [spreadRewards, incentivesRewards] = await Promise.all([
+    mapRawAssetsToCoinPretty({
+      rawAssets: totalSpreadRewards,
+    }),
+    mapRawAssetsToCoinPretty({
+      rawAssets: totalIncentivesRewards,
+    }),
+  ]);
 
-async function getPositionsWithPerformance({
+  const earnedCoinDenomMap = new Map<string, CoinPretty>();
+  [...spreadRewards, ...incentivesRewards].forEach((coin) => {
+    const existingCoin = earnedCoinDenomMap.get(coin.currency.coinMinimalDenom);
+    if (existingCoin) {
+      earnedCoinDenomMap.set(
+        coin.currency.coinMinimalDenom,
+        existingCoin.add(coin)
+      );
+    } else {
+      earnedCoinDenomMap.set(coin.currency.coinMinimalDenom, coin);
+    }
+  });
+  return Array.from(earnedCoinDenomMap.values());
+}
+
+const clCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+async function getUserUnbondingPositions({
   userOsmoAddress,
-  positions,
 }: {
   userOsmoAddress: string;
-  positions: LiquidityPosition[];
-}): Promise<(LiquidityPosition & { performance: PositionPerformance })[]> {
+}) {
   return cachified({
-    cache: positionsWithPerformanceCache,
-    key: `${userOsmoAddress}-positions-with-performance`,
+    cache: clCache,
+    key: `${userOsmoAddress}-cl-unbonding-info`,
     getFreshValue: async () => {
-      const positionsWithPerformance = await Promise.all(
-        positions.map(async (position) => {
-          const performance = await queryPositionPerformance({
-            positionId: position.position.position_id,
-          });
-
-          return {
-            ...position,
-            performance,
-          };
-        })
-      );
-
-      return positionsWithPerformance;
+      const { positions_with_period_lock } = await queryCLUnbondingPositions({
+        bech32Address: userOsmoAddress,
+      });
+      return positions_with_period_lock;
     },
-    ttl: 10 * 1000, // 10 seconds
+    ttl: 5 * 1000, // 5 seconds
+  });
+}
+
+async function getUserDelegatedClPositions({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}) {
+  return cachified({
+    cache: clCache,
+    key: `${userOsmoAddress}-cl-delegated-positions`,
+    getFreshValue: async () => {
+      const { cl_pool_user_position_records } = await queryDelegatedClPositions(
+        {
+          bech32Address: userOsmoAddress,
+        }
+      );
+      return cl_pool_user_position_records;
+    },
+    ttl: 5 * 1000, // 5 seconds
+  });
+}
+
+async function getUserUndelegatingClPositions({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}) {
+  return cachified({
+    cache: clCache,
+    key: `${userOsmoAddress}-cl-undelegating-positions`,
+    getFreshValue: async () => {
+      const { cl_pool_user_position_records } = await queryDelegatedClPositions(
+        {
+          bech32Address: userOsmoAddress,
+        }
+      );
+      return cl_pool_user_position_records;
+    },
+    ttl: 5 * 1000, // 5 seconds
   });
 }
 
 async function normalizePositions({
   positions,
+  userOsmoAddress,
 }: {
-  positions: Awaited<ReturnType<typeof getPositionsWithPerformance>>;
+  positions: LiquidityPosition[];
+  userOsmoAddress: string;
 }) {
   try {
     const normalizedPositions = await Promise.all(
@@ -233,7 +348,6 @@ async function normalizePositions({
           asset0,
           asset1,
           position,
-          performance,
           claimable_incentives,
           claimable_spread_rewards,
         }) => {
@@ -258,31 +372,84 @@ async function normalizePositions({
               quoteAsset,
             }),
           ]);
-          const principalAssetsPromise = mapRawAssetsToCoinPretty({
-            rawAssets: performance.principal.assets,
-          });
           const unclaimedRewardsPromise = getTotalClaimableRewards({
             rawClaimableIncentiveRewards: claimable_incentives,
             rawClaimableSpreadRewards: claimable_spread_rewards,
           });
+          const userUnbondingPositionsPromise = getUserUnbondingPositions({
+            userOsmoAddress,
+          });
+          const poolPromise = getPool({ poolId: position.pool_id });
+          const delegatedPositionsPromise = getUserDelegatedClPositions({
+            userOsmoAddress,
+          });
+          const undelegatingPositionsPromise = getUserUndelegatingClPositions({
+            userOsmoAddress,
+          });
 
-          const [priceRange, principalAssets, unclaimedRewards] =
-            await Promise.all([
-              priceRangePromise,
-              principalAssetsPromise,
-              unclaimedRewardsPromise,
-            ]);
+          const [
+            priceRange,
+            unclaimedRewards,
+            userUnbondingPositions,
+            pool,
+            delegatedPositions,
+            undelegatingPositions,
+          ] = await Promise.all([
+            priceRangePromise,
+            unclaimedRewardsPromise,
+            userUnbondingPositionsPromise,
+            poolPromise,
+            delegatedPositionsPromise,
+            undelegatingPositionsPromise,
+          ]);
+
+          if (!pool) {
+            console.error(`Pool (${position.pool_id}) not found`);
+            return undefined;
+          }
+
+          if (pool.type !== "concentrated") {
+            throw new Error("Pool type is not concentrated");
+          }
 
           const liquidity = new Dec(position.liquidity);
           const currentAssets = [baseAsset, quoteAsset];
+          const isUnbonding = userUnbondingPositions.some(
+            ({ position: unbondingPosition }) =>
+              unbondingPosition.position_id === position.position_id
+          );
+          const isSuperfluid = delegatedPositions.some(
+            (delegatedPosition) =>
+              delegatedPosition.position_id === position.position_id
+          );
+          const isSuperfluidUnstaking = undelegatingPositions.some(
+            (undelegatingPosition) =>
+              undelegatingPosition.position_id === position.position_id
+          );
+
+          const status = getPositionStatus({
+            currentPrice: getPriceFromSqrtPrice({
+              sqrtPrice: new Dec(
+                (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
+              ),
+              baseAsset,
+              quoteAsset,
+            }),
+            isFullRange: isPositionFullRange({ lowerTick, upperTick }),
+            isSuperfluid,
+            isSuperfluidUnstaking,
+            isUnbonding,
+            lowerPrice: priceRange[0],
+            upperPrice: priceRange[1],
+          });
 
           return {
             id: position.position_id,
             poolId: position.pool_id,
+            status,
             priceRange,
             liquidity,
             currentAssets,
-            principalAssets,
             unclaimedRewards,
           };
         }

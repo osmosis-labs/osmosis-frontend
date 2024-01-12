@@ -4,7 +4,7 @@ import { ChainList } from "~/config/generated/chain-list";
 
 export type WeightedPoolRawResponse = {
   "@type": "/osmosis.gamm.v1beta1.Pool";
-  id: string;
+  id: number;
   pool_params: {
     // Dec
     swap_fee: string;
@@ -56,7 +56,7 @@ export type WeightedPoolRawResponse = {
 export type StablePoolRawResponse = {
   "@type": "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
   address: string;
-  id: string;
+  id: number;
   pool_params: {
     swap_fee: string;
     exit_fee: string;
@@ -79,7 +79,7 @@ export type ConcentratedPoolRawResponse = {
   address: string;
   incentives_address: string;
   spread_rewards_address: string;
-  id: string;
+  id: number;
   current_tick_liquidity: string;
   token0: string;
   token1: string;
@@ -94,7 +94,7 @@ export type ConcentratedPoolRawResponse = {
 export type CosmwasmPoolRawResponse = {
   "@type": "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contract_address: string;
-  pool_id: string;
+  pool_id: number;
   code_id: string;
   instantiate_msg: string;
 };

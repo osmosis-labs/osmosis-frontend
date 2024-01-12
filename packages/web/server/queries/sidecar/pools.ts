@@ -54,5 +54,5 @@ export type PoolsResponse = {
 
 export async function queryPools() {
   const url = new URL("/pools/all", SIDECAR_BASE_URL);
-  return await apiClient<PoolsResponse>(url.toString());
+  return await apiClient<PoolResponse[]>(url.toString());
 }

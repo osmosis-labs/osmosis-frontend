@@ -4,7 +4,7 @@ import { apiClient } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
 
-import { LiquidityPosition } from "./address-cl-positions";
+import { LiquidityPosition } from "./positions-by-address";
 
 interface PeriodLock {
   ID: string;
@@ -27,7 +27,7 @@ interface AddressUnbondingPositionsResponse {
   positions_with_period_lock: PositionWithPeriodLock[];
 }
 
-export function queryAddressCLUnbondingPositions({
+export function queryCLUnbondingPositions({
   bech32Address,
 }: {
   bech32Address: string;

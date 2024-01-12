@@ -4,7 +4,7 @@ import { z } from "zod";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromSidecar } from "./providers/sidecar";
+import { getPoolFromSidecar, getPoolsFromSidecar } from "./providers/sidecar";
 
 const allPooltypes = [
   "concentrated",
@@ -25,7 +25,8 @@ export type Pool = {
 
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
-export type PoolProvider = () => Promise<Pool[]>;
+export type PoolsProvider = () => Promise<Pool[]>;
+export type PoolProvider = (params: { poolId: string }) => Promise<Pool>;
 
 export const PoolFilterSchema = z.object({
   /** Search pool ID, or denoms. */
@@ -41,9 +42,14 @@ export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
 const searchablePoolKeys = ["id", "coinDenoms"];
 
-export async function getPool(poolId: string): Promise<Pool | undefined> {
-  const pools = await getPools();
-  return pools.find(({ id }) => id === poolId);
+export async function getPool({
+  poolId,
+  poolProvider = getPoolFromSidecar,
+}: {
+  poolId: string;
+  poolProvider?: PoolProvider;
+}): Promise<Pool | undefined> {
+  return await poolProvider({ poolId });
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
@@ -52,9 +58,9 @@ export async function getPool(poolId: string): Promise<Pool | undefined> {
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
   params?: PoolFilter,
-  poolProvider: PoolProvider = getPoolsFromSidecar
+  poolsProvider: PoolsProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
-  let pools = await poolProvider();
+  let pools = await poolsProvider();
 
   if (params?.types || params?.minLiquidityUsd) {
     pools = pools.filter(

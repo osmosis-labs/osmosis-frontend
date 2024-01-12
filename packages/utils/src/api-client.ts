@@ -53,7 +53,25 @@ export async function apiClient<T>(
 
   return fetch(endpoint, config).then(async (response) => {
     try {
-      const data = await response.json();
+      let data: any;
+
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new ApiClientError({
+          message: UNEXPECTED_ERROR_MESSAGE,
+          data:
+            response.status === 500
+              ? {
+                  responseContent: await response.text(),
+                  url: endpoint,
+                }
+              : {
+                  url: endpoint,
+                },
+          response,
+        });
+      }
 
       if (response.ok) {
         // Cosmos chains return a code if there's an error

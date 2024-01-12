@@ -39,7 +39,7 @@ interface AddressPositionsResponse {
   positions: LiquidityPosition[];
 }
 
-export function queryAddressCLPositions({
+export function queryCLPositions({
   bech32Address,
 }: {
   bech32Address: string;

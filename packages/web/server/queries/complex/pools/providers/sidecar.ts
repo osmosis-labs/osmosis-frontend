@@ -4,6 +4,7 @@ import { LRUCache } from "lru-cache";
 
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
+import { queryPool } from "~/server/queries/sidecar/pool";
 
 import { calcAssetValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -26,6 +27,23 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
       return pools.filter(Boolean) as Pool[];
+    },
+  });
+}
+
+/** Lightly cached pool from sidecar service. */
+export function getPoolFromSidecar({
+  poolId,
+}: {
+  poolId: string;
+}): Promise<Pool | undefined> {
+  return cachified({
+    cache: poolsCache,
+    key: `${poolId}-sidecar-pool`,
+    ttl: 1000, // 1 second
+    getFreshValue: async () => {
+      const sidecarPool = await queryPool({ poolId: poolId });
+      return makePoolFromSidecarPool(sidecarPool);
     },
   });
 }
