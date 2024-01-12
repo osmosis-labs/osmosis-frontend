@@ -6,12 +6,14 @@ import { search, SearchSchema } from "~/utils/search";
 import { PoolRawResponse } from "../../osmosis";
 import { getPoolsFromSidecar } from "./providers/sidecar";
 
-export type PoolType =
-  | "weighted"
-  | "stable"
-  | "concentrated"
-  | "cosmwasm-transmuter"
-  | "cosmwasm";
+const poolTypes = [
+  "concentrated",
+  "weighted",
+  "stable",
+  "cosmwasm-transmuter",
+  "cosmwasm",
+] as const;
+export type PoolType = (typeof poolTypes)[number];
 
 export type Pool = {
   id: string;
@@ -28,8 +30,9 @@ export type PoolProvider = () => Promise<Pool[]>;
 export const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
   minLiquidityUsd: z.number().default(1_000).optional(),
-  type: z
-    .enum(["concentrated", "weighted", "stable", "transmuter", "cosmwasm"])
+  types: z
+    .array(z.string())
+    .default(poolTypes as unknown as string[])
     .optional(),
 });
 
@@ -53,10 +56,10 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
-  if (params?.type || params?.minLiquidityUsd) {
+  if (params?.types || params?.minLiquidityUsd) {
     pools = pools.filter(
       ({ type, totalFiatValueLocked }) =>
-        (params?.type ? type === params.type : true) &&
+        (params?.types ? params.types.includes(type) : true) &&
         (params?.minLiquidityUsd
           ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
           : true)

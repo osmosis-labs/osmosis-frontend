@@ -14,6 +14,7 @@ import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslation } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
+import { useQueryParamState } from "~/hooks/window/use-query-param-state";
 import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
 import { theme } from "~/tailwind.config";
 import type { Search } from "~/utils/search";
@@ -22,6 +23,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
+import { CheckboxSelect } from "../control";
 import { SearchBox } from "../input";
 import Spinner from "../spinner";
 import { PoolQuickActionCell } from "../table/cells";
@@ -32,6 +34,7 @@ import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 type Pool =
   RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
 type SortKey = MarketIncentivePoolSortKey;
+type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -42,8 +45,21 @@ export const AllPoolsTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [sortKey, setSortKey] = useState<SortKey>("totalFiatValueLocked");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [sortKey, setSortKey] = useQueryParamState<SortKey>(
+    "allPoolsSort",
+    "volume24hUsd"
+  );
+  const [sortDirection = "desc", setSortDirection] =
+    useQueryParamState<SortDirection>("allPoolsSortDir", "desc");
+
+  const [poolTypesFilter, setPoolTypesFilter] = useQueryParamState<
+    PoolTypeFilter[]
+  >("allPoolsType", [
+    "weighted",
+    "stable",
+    "concentrated",
+    "cosmwasm-transmuter",
+  ]);
 
   const {
     data: poolsPagesData,
@@ -55,6 +71,9 @@ export const AllPoolsTable: FunctionComponent<{
     {
       limit: 100,
       search: searchQuery,
+      types: poolTypesFilter
+        ? (poolTypesFilter as string[]).concat("cosmwasm")
+        : undefined,
       sort: sortKey
         ? {
             keyPath: sortKey,
@@ -88,6 +107,7 @@ export const AllPoolsTable: FunctionComponent<{
           <SortHeader
             label={t("pools.allPools.sort.volume24h")}
             sortKey="volume24hUsd"
+            disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
@@ -105,6 +125,7 @@ export const AllPoolsTable: FunctionComponent<{
             <SortHeader
               label={t("pools.allPools.sort.liquidity")}
               sortKey="totalFiatValueLocked"
+              disabled={isLoading}
               currentSortKey={sortKey}
               currentDirection={sortDirection}
               setSortDirection={setSortDirection}
@@ -121,6 +142,7 @@ export const AllPoolsTable: FunctionComponent<{
           <SortHeader
             label={t("pools.allPools.sort.fees")}
             sortKey="feesSpent7dUsd"
+            disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
@@ -136,6 +158,7 @@ export const AllPoolsTable: FunctionComponent<{
           <SortHeader
             label={t("pools.allPools.sort.APRIncentivized")}
             sortKey="aprBreakdown.total"
+            disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
@@ -165,6 +188,9 @@ export const AllPoolsTable: FunctionComponent<{
       sortKey,
       sortDirection,
       cellGroupEventEmitter,
+      isLoading,
+      setSortKey,
+      setSortDirection,
       t,
       quickAddLiquidity,
     ]
@@ -210,7 +236,11 @@ export const AllPoolsTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <TableControls setSearchQuery={setSearchQuery} />
+      <TableControls
+        poolTypesFilter={poolTypesFilter ?? []}
+        setPoolTypesFilter={setPoolTypesFilter}
+        setSearchQuery={setSearchQuery}
+      />
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -294,8 +324,10 @@ export const AllPoolsTable: FunctionComponent<{
 };
 
 const TableControls: FunctionComponent<{
+  poolTypesFilter: PoolTypeFilter[];
+  setPoolTypesFilter: (poolType: PoolTypeFilter[]) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ setSearchQuery }) => {
+}> = ({ poolTypesFilter, setPoolTypesFilter, setSearchQuery }) => {
   const { t } = useTranslation();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
@@ -309,6 +341,35 @@ const TableControls: FunctionComponent<{
       <h5>{t("pools.allPools.title")}</h5>
 
       <div className="flex h-12 gap-3">
+        <CheckboxSelect
+          label={t("components.pool.title")}
+          selectedOptionIds={poolTypesFilter as string[]}
+          options={
+            [
+              { id: "weighted", display: t("components.table.weighted") },
+              { id: "stable", display: t("components.table.stable") },
+              {
+                id: "concentrated",
+                display: t("components.table.concentrated"),
+              },
+              { id: "transmuter", display: t("components.table.transmuter") },
+            ] as { id: PoolTypeFilter; display: string }[]
+          }
+          onSelect={(poolType) => {
+            if (poolTypesFilter.includes(poolType as PoolTypeFilter)) {
+              setPoolTypesFilter(
+                poolTypesFilter.filter(
+                  (type) => type !== (poolType as PoolTypeFilter)
+                )
+              );
+            } else {
+              setPoolTypesFilter([
+                ...poolTypesFilter,
+                poolType as PoolTypeFilter,
+              ]);
+            }
+          }}
+        />
         <SearchBox
           currentValue={searchInput}
           onInput={setSearchInput}

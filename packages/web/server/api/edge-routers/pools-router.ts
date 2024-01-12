@@ -39,7 +39,7 @@ export const poolsRouter = createTRPCRouter({
           search,
           minLiquidityUsd,
           sort: sortInput,
-          type,
+          types,
           cursor,
           limit,
         },
@@ -49,7 +49,7 @@ export const poolsRouter = createTRPCRouter({
             const marketPools = await mapGetPoolMarketMetrics({
               search,
               minLiquidityUsd,
-              type,
+              types,
             });
             const marketIncentivePools = await mapGetPoolIncentives({
               pools: marketPools,
@@ -65,7 +65,7 @@ export const poolsRouter = createTRPCRouter({
             search,
             sortInput,
             minLiquidityUsd,
-            type,
+            types,
           }),
           cursor,
           limit,

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
-import { CustomClasses } from "~/components/types";
+import { CustomClasses, Disableable } from "~/components/types";
 import type { SortDirection } from "~/utils/sort";
 
 type SortHeaderProps<TSortKey extends string | undefined> = PropsWithChildren<{
@@ -22,13 +22,15 @@ export const SortHeader = <TSortKey extends string | undefined>({
   setSortDirection,
   setSortKey,
   className,
+  disabled,
   children,
-}: SortHeaderProps<TSortKey> & CustomClasses) => (
+}: SortHeaderProps<TSortKey> & CustomClasses & Disableable) => (
   <button
     className={classNames(
       "ml-auto flex h-6 items-center justify-center gap-1",
       className
     )}
+    disabled={disabled}
     onClick={() => {
       if (currentSortKey !== sortKey) {
         // select to sort and start descending
