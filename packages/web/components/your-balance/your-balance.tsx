@@ -655,7 +655,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         ) : (
           false
         )}
-        {isOsmosis ? (
+        {isOsmosis && account?.isWalletConnected ? (
           <Button
             mode={"unstyled"}
             onClick={onOpenFiatOnrampSelection}
