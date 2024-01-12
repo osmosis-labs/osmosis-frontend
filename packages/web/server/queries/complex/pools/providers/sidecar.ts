@@ -22,27 +22,32 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
     ttl: 1000, // 1 second
     getFreshValue: async () => {
       const sidecarPools = await queryPools();
-      return await Promise.all(
+      const pools = await Promise.all(
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
+      return pools.filter(Boolean) as Pool[];
     },
   });
 }
 
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
-): Promise<Pool> {
+): Promise<Pool | undefined> {
   const assetValueDec =
     (await calcAssetValue({
       anyDenom: "uosmo",
       amount: sidecarPool.sqs_model.total_value_locked_uosmo,
     })) ?? new Dec(0);
+  const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
+
+  // contains unlisted assets
+  if (reserveCoins.length === 0) return;
 
   return {
     id: getPoolIdFromSidecarPool(sidecarPool.underlying_pool),
     type: getPoolTypeFromSidecarPool(sidecarPool.underlying_pool),
     raw: makePoolRawResponseFromUnderlyingPool(sidecarPool.underlying_pool),
-    reserveCoins: await getListedReservesFromSidecarPool(sidecarPool),
+    reserveCoins,
     totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, assetValueDec),
   };
 }
@@ -79,7 +84,10 @@ async function getListedReservesFromSidecarPool(
     sidecarPool.sqs_model.pool_denoms.includes(denom)
   );
 
-  return (
+  // for some reason does not contain balances for denoms available in pool
+  if (balances.length !== sidecarPool.sqs_model.pool_denoms.length) return [];
+
+  const listedBalances = (
     await Promise.all(
       balances.map(async (balance) => {
         const asset = await getAsset({ anyDenom: balance.denom }).catch(
@@ -91,6 +99,12 @@ async function getListedReservesFromSidecarPool(
       })
     )
   ).filter(Boolean) as CoinPretty[];
+
+  if (listedBalances.length !== balances.length) {
+    return [];
+  }
+
+  return listedBalances;
 }
 
 /** Sidecar made some type changes to the underlying pool, so we map those changes back to the sidecar type.  */

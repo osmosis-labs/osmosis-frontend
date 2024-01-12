@@ -6,14 +6,14 @@ import { search, SearchSchema } from "~/utils/search";
 import { PoolRawResponse } from "../../osmosis";
 import { getPoolsFromSidecar } from "./providers/sidecar";
 
-const poolTypes = [
+const allPooltypes = [
   "concentrated",
   "weighted",
   "stable",
   "cosmwasm-transmuter",
   "cosmwasm",
 ] as const;
-export type PoolType = (typeof poolTypes)[number];
+export type PoolType = (typeof allPooltypes)[number];
 
 export type Pool = {
   id: string;
@@ -32,7 +32,7 @@ export const PoolFilterSchema = z.object({
   minLiquidityUsd: z.number().default(1_000).optional(),
   types: z
     .array(z.string())
-    .default(poolTypes as unknown as string[])
+    .default(allPooltypes as unknown as string[])
     .optional(),
 });
 
