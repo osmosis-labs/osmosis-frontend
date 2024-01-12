@@ -7,9 +7,10 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
+import { EventEmitter } from "eventemitter3";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
@@ -18,6 +19,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
 import Spinner from "../spinner";
+import { PoolQuickActionCell } from "../table/cells";
 import { Tooltip } from "../tooltip";
 import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
@@ -27,7 +29,7 @@ type Pool =
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
   quickAddLiquidity: (poolId: string) => void;
-}> = ({ topOffset }) => {
+}> = ({ topOffset, quickAddLiquidity }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -53,6 +55,7 @@ export const AllPoolsTable: FunctionComponent<{
 
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
+  const cellGroupEventEmitter = useRef(new EventEmitter()).current;
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row, {
@@ -78,15 +81,26 @@ export const AllPoolsTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "apr",
         header: () => (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-end gap-1">
             <AprDisclaimerTooltip />
             <span>{t("pools.allPools.sort.APRIncentivized")}</span>
           </div>
         ),
         cell: AprBreakdownCell,
       }),
+      columnHelper.accessor((row) => row, {
+        id: "poolQuickActions",
+        header: "",
+        cell: ({ row }) => (
+          <PoolQuickActionCell
+            poolId={row.original.id}
+            cellGroupEventEmitter={cellGroupEventEmitter}
+            onAddLiquidity={() => quickAddLiquidity(row.original.id)}
+          />
+        ),
+      }),
     ],
-    [columnHelper, t]
+    [columnHelper, cellGroupEventEmitter, t, quickAddLiquidity]
   );
 
   const table = useReactTable({
@@ -101,7 +115,7 @@ export const AllPoolsTable: FunctionComponent<{
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 50,
+    estimateSize: () => 69,
     paddingStart: topOffset,
     overscan: 5,
   });
@@ -277,7 +291,7 @@ const AprBreakdownCell: PoolCellComponent = ({
       content={<AprBreakdown {...aprBreakdown} />}
     >
       <p
-        className={classNames("flex items-center gap-1.5", {
+        className={classNames("ml-auto flex items-center gap-1.5", {
           "text-bullish-500": Boolean(
             aprBreakdown.boost || aprBreakdown.osmosis
           ),
