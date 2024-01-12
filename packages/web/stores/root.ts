@@ -76,8 +76,6 @@ const RawAssetLists = AssetLists.map((assetList) => {
   };
 });
 
-console.log(RawAssetLists.find((el) => el.chain_id === "passage-2"));
-
 export class RootStore {
   public readonly chainStore: ChainStore;
 
