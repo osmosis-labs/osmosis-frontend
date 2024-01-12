@@ -189,6 +189,32 @@ export const WalletRegistry: RegistryWallet[] = [
     features: [],
   },
   {
+    ...CosmosKitWalletList["station-extension"],
+    mobileDisabled: true,
+    logo: "/wallets/station.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/station-extension").then(
+        (m) => m.StationExtensionWallet
+      ),
+    windowPropertyName: "station",
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const stationWallet = (window as any)?.station?.keplr as {
+        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
+      };
+
+      if (!stationWallet) return true;
+
+      const chainInfos = await stationWallet.getChainInfosWithoutEndpoints();
+      return chainInfos.some((info) => info.chainId === chainId);
+    },
+    signOptions: {
+      preferNoSetFee: true,
+    },
+    features: [],
+  },
+  {
     ...CosmosKitWalletList["okxwallet-extension"],
     logo: "/wallets/okx.png",
     lazyInstall: () =>
