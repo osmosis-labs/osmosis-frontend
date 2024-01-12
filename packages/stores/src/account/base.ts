@@ -46,7 +46,12 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  getSourceDenomFromAssetList,
+  isNil,
+} from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -149,6 +154,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     >
   ) {
     this._wallets = wallets;
+    /**
+     * We make sure that the 'base' field always has as its value the native chain parameter
+     * and not values derived from the IBC connection with Osmosis
+     */
+    this.assets = assets.map((assetList) => ({
+      ...assetList,
+      assets: assetList.assets.map((asset) => ({
+        ...asset,
+        base: getSourceDenomFromAssetList(asset),
+      })),
+    }));
     this._walletManager = this._createWalletManager(wallets);
     this.accountSetCreators = accountSetCreators;
 

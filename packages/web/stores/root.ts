@@ -19,7 +19,6 @@ import {
   UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
-import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 
 import {
   toastOnBroadcast,
@@ -55,18 +54,6 @@ import {
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
-
-const RawAssetLists = AssetLists.map((assetList) => {
-  const assets = assetList.assets.map((asset) => ({
-    ...asset,
-    base: getSourceDenomFromAssetList(asset),
-  }));
-
-  return {
-    ...assetList,
-    assets,
-  };
-});
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -179,7 +166,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       ChainList,
       this.chainStore.osmosis.chainId,
-      RawAssetLists,
+      AssetLists,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
        * @see wallet-select.tsx
