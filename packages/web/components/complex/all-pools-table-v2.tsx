@@ -371,9 +371,10 @@ const TableControls: FunctionComponent<{
           }}
         />
         <SearchBox
+          size="small"
+          placeholder={t("assets.table.search")}
           currentValue={searchInput}
           onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
         />
       </div>
     </div>
