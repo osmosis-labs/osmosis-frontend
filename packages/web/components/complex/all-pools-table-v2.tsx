@@ -10,21 +10,25 @@ import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslation } from "~/hooks";
+import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
 import { theme } from "~/tailwind.config";
+import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
 import Spinner from "../spinner";
 import { PoolQuickActionCell } from "../table/cells";
+import { SortHeader } from "../table/headers/sort";
 import { Tooltip } from "../tooltip";
 import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
 type Pool =
   RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
+type SortKey = MarketIncentivePoolSortKey;
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -32,6 +36,9 @@ export const AllPoolsTable: FunctionComponent<{
 }> = ({ topOffset, quickAddLiquidity }) => {
   const { t } = useTranslation();
   const router = useRouter();
+
+  const [sortKey, setSortKey] = useState<SortKey>("totalFiatValueLocked");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const {
     data: poolsPagesData,
@@ -42,6 +49,12 @@ export const AllPoolsTable: FunctionComponent<{
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
       limit: 100,
+      sort: sortKey
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -64,27 +77,68 @@ export const AllPoolsTable: FunctionComponent<{
         cell: PoolCompositionCell,
       }),
       columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "0", {
-        id: "volume",
-        header: t("pools.allPools.sort.volume24h"),
+        id: "volume24hUsd",
+        header: () => (
+          <SortHeader
+            label={t("pools.allPools.sort.volume24h")}
+            sortKey="volume24hUsd"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={(key) => {
+              if (key) setSortKey(key);
+            }}
+          />
+        ),
       }),
       columnHelper.accessor(
         (row) => row.totalFiatValueLocked?.toString() ?? "0",
         {
-          id: "liquidity",
-          header: t("pools.allPools.sort.liquidity"),
+          id: "totalFiatValueLocked",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.liquidity")}
+              sortKey="totalFiatValueLocked"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={(key) => {
+                if (key) setSortKey(key);
+              }}
+            />
+          ),
         }
       ),
       columnHelper.accessor((row) => row.feesSpent7dUsd?.toString() ?? "0", {
-        id: "fees",
-        header: t("pools.allPools.sort.fees"),
+        id: "feesSpent7dUsd",
+        header: () => (
+          <SortHeader
+            label={t("pools.allPools.sort.fees")}
+            sortKey="feesSpent7dUsd"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={(key) => {
+              if (key) setSortKey(key);
+            }}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row, {
-        id: "apr",
+        id: "aprBreakdown.total",
         header: () => (
-          <div className="flex items-center justify-end gap-1">
+          <SortHeader
+            label={t("pools.allPools.sort.APRIncentivized")}
+            sortKey="aprBreakdown.total"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={(key) => {
+              if (key) setSortKey(key);
+            }}
+          >
             <AprDisclaimerTooltip />
-            <span>{t("pools.allPools.sort.APRIncentivized")}</span>
-          </div>
+          </SortHeader>
         ),
         cell: AprBreakdownCell,
       }),
@@ -100,7 +154,14 @@ export const AllPoolsTable: FunctionComponent<{
         ),
       }),
     ],
-    [columnHelper, cellGroupEventEmitter, t, quickAddLiquidity]
+    [
+      columnHelper,
+      sortKey,
+      sortDirection,
+      cellGroupEventEmitter,
+      t,
+      quickAddLiquidity,
+    ]
   );
 
   const table = useReactTable({

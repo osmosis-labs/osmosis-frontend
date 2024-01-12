@@ -1,17 +1,18 @@
 import classNames from "classnames";
+import { PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses } from "~/components/types";
 import type { SortDirection } from "~/utils/sort";
 
-type SortHeaderProps<TSortKey extends string | undefined> = {
+type SortHeaderProps<TSortKey extends string | undefined> = PropsWithChildren<{
   label: string;
   sortKey: NonNullable<TSortKey>;
   currentSortKey: TSortKey | undefined;
   currentDirection: SortDirection;
   setSortKey: (key: TSortKey | undefined) => void;
   setSortDirection: (direction: SortDirection) => void;
-};
+}>;
 
 export const SortHeader = <TSortKey extends string | undefined>({
   label,
@@ -21,6 +22,7 @@ export const SortHeader = <TSortKey extends string | undefined>({
   setSortDirection,
   setSortKey,
   className,
+  children,
 }: SortHeaderProps<TSortKey> & CustomClasses) => (
   <button
     className={classNames(
@@ -44,6 +46,7 @@ export const SortHeader = <TSortKey extends string | undefined>({
       }
     }}
   >
+    {children}
     <span>{label}</span>
     {currentSortKey === sortKey && (
       <Icon

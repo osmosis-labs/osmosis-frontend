@@ -11,19 +11,23 @@ import { InfiniteQuerySchema } from "../zod-types";
 
 const GetInfinitePoolsSchema = InfiniteQuerySchema.and(PoolFilterSchema);
 
+const marketIncentivePoolsSortKeys = [
+  "totalFiatValueLocked",
+  "feesSpent7dUsd",
+  "feesSpent24hUsd",
+  "volume7dUsd",
+  "volume24hUsd",
+  "aprBreakdown.total",
+] as const;
+export type MarketIncentivePoolSortKey =
+  (typeof marketIncentivePoolsSortKeys)[number];
+
 export const poolsRouter = createTRPCRouter({
   getMarketIncentivePools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(
         z.object({
-          sort: createSortSchema([
-            "totalFiatValueLocked",
-            "feesSpent7dUsd",
-            "feesSpent24hUsd",
-            "volume7dUsd",
-            "volume24hUsd",
-            "aprBreakdown.total",
-          ] as const)
+          sort: createSortSchema(marketIncentivePoolsSortKeys)
             .optional()
             .default({ keyPath: "totalFiatValueLocked" }),
         })
