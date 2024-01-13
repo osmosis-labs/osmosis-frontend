@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "피아트 온램프 선택",
       "kadoSubtitle": "OSMO, USDC를 지원합니다",
-      "transakSubtitle": "OSMO를 지원합니다"
+      "transakSubtitle": "OSMO를 지원합니다",
+      "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
     "incentive": {
       "mobileTitle": "인센티브",
@@ -831,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
     "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
-    "pastDaysReturns": "지난 날의 수익",
-    "allTimeReturns": "올타임 리턴",
-    "averagePrice": "평균 가격",
     "aboutDenom": "{name} 정보",
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
@@ -852,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "모든 토큰",
     "ariaBackButton": "모든 토큰 뒤로 버튼",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "{coinDenom} 구매",
+    "staking": "스테이킹",
+    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "삼투 업데이트!",

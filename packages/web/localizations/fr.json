@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
       "kadoSubtitle": "Prend en charge OSMO, USDC",
-      "transakSubtitle": "Prend en charge OSMO"
+      "transakSubtitle": "Prend en charge OSMO",
+      "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incitation",
@@ -831,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
     "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
-    "pastDaysReturns": "Retours de la journée passée",
-    "allTimeReturns": "Tous les temps reviennent",
-    "averagePrice": "Prix moyen",
     "aboutDenom": "À propos de {name}",
     "ariaView": "Afficher {name}",
     "ariaViewOn": "Afficher sur {name}",
@@ -852,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "Tous les jetons",
     "ariaBackButton": "Bouton retour de tous les jetons",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "Acheter {coinDenom}",
+    "staking": "Jalonnement",
+    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Mises à jour sur l'osmose !",

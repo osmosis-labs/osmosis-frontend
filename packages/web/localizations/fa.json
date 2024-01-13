@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
-      "transakSubtitle": "پشتیبانی OSMO"
+      "transakSubtitle": "پشتیبانی OSMO",
+      "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "incentive": {
       "mobileTitle": "جایزه",
@@ -831,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
     "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
-    "pastDaysReturns": "بازده روز گذشته",
-    "allTimeReturns": "همه زمان ها برمی گردد",
-    "averagePrice": "قیمت میانگین",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
@@ -852,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "همه توکن ها",
     "ariaBackButton": "دکمه برگشت همه نشانه ها",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "خرید {coinDenom}",
+    "staking": "شرط بندی",
+    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "به روز رسانی اسمز!",

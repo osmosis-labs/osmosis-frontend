@@ -23,7 +23,8 @@ export type AvailableFlags =
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
   | "newPoolsTable"
-  | "topAnnouncementBanner";
+  | "topAnnouncementBanner"
+  | "tfmProTradingNavbarButton";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

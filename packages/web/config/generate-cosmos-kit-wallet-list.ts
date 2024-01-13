@@ -6,6 +6,7 @@ import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
+import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import * as fs from "fs";
 import path from "path";
@@ -21,6 +22,7 @@ const CosmosKitWalletList = [
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
   xdefiExtensionInfo,
+  stationExtensionInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {

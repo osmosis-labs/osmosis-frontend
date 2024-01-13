@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "OSMO, USDC'yi destekler",
-      "transakSubtitle": "OSMO'yu destekler"
+      "transakSubtitle": "OSMO'yu destekler",
+      "onrampMoneySubtitle": "OSMO, USDC'yi destekler"
     },
     "incentive": {
       "mobileTitle": "Teşvik",
@@ -831,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
     "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
-    "pastDaysReturns": "Geçmiş günün getirileri",
-    "allTimeReturns": "Tüm zamanlar geri dönüyor",
-    "averagePrice": "Ortalama fiyat",
     "aboutDenom": "{name} hakkında",
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
@@ -852,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "Tüm jetonlar",
     "ariaBackButton": "Tüm belirteçleri geri düğmesi",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "{coinDenom} satın alın",
+    "staking": "Staking",
+    "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmoz güncellemeleri!",

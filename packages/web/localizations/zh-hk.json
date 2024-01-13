@@ -299,7 +299,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
       "kadoSubtitle": "支援OSMO, USDC",
-      "transakSubtitle": "支援OSMO"
+      "transakSubtitle": "支援OSMO",
+      "onrampMoneySubtitle": "支援OSMO、USDC"
     },
     "incentive": {
       "mobileTitle": "獎勵",
@@ -831,9 +832,6 @@
     "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
     "provideLiquidity": "提供流動性並賺取費用和掉期費用",
     "yourBalance": "您的餘額",
-    "pastDaysReturns": "過去一天的回報",
-    "allTimeReturns": "所有時間返回",
-    "averagePrice": "平均價格",
     "aboutDenom": "關於{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
@@ -852,7 +850,10 @@
     "tvl": "TVL",
     "backButton": "所有代幣",
     "ariaBackButton": "所有代幣後退按鈕",
-    "noData": "ND"
+    "noData": "ND",
+    "buyToken": "購買{coinDenom}",
+    "staking": "質押",
+    "liquidityInOSMOPools": "{number} {denom}池中的流動性"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "滲透更新！",
