@@ -131,6 +131,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
+  /**
+   * We make sure that the 'base' field always has as its value the native chain parameter
+   * and not values derived from the IBC connection with Osmosis
+   */
+  private get _assets() {
+    return this.assets.map((assetList) => ({
+      ...assetList,
+      assets: assetList.assets.map((asset) => ({
+        ...asset,
+        base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
+      })),
+    }));
+  }
+
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
     readonly osmosisChainId: string,
@@ -154,17 +168,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     >
   ) {
     this._wallets = wallets;
-    /**
-     * We make sure that the 'base' field always has as its value the native chain parameter
-     * and not values derived from the IBC connection with Osmosis
-     */
-    this.assets = assets.map((assetList) => ({
-      ...assetList,
-      assets: assetList.assets.map((asset) => ({
-        ...asset,
-        base: getSourceDenomFromAssetList(asset),
-      })),
-    }));
     this._walletManager = this._createWalletManager(wallets);
     this.accountSetCreators = accountSetCreators;
 
@@ -174,7 +177,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets as CosmologyAssetList[],
+      this._assets as CosmologyAssetList[],
       wallets,
       logger,
       true,
