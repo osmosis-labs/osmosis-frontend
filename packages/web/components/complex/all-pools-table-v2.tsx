@@ -34,7 +34,9 @@ import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 type Pool =
   RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
 type SortKey = MarketIncentivePoolSortKey | undefined;
+/** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
+type PoolIncentiveFilter = NonNullable<Pool["incentiveTypes"]>[number];
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -63,6 +65,19 @@ export const AllPoolsTable: FunctionComponent<{
     "concentrated",
     "cosmwasm-transmuter",
   ]);
+  const [poolIncentivesFilter_, setPoolIncentivesFilter] = useQueryParamState<
+    PoolIncentiveFilter[] | string | undefined
+  >("allPoolsIncentive", ["superfluid", "osmosis", "boost", "none"]);
+  // useQueryParamState will return a string if there's a single filter selected
+  const poolIncentivesFilter = useMemo(
+    () =>
+      (!poolIncentivesFilter_
+        ? []
+        : typeof poolIncentivesFilter_ === "string"
+        ? [poolIncentivesFilter_]
+        : poolIncentivesFilter_) as PoolIncentiveFilter[],
+    [poolIncentivesFilter_]
+  );
 
   const {
     data: poolsPagesData,
@@ -75,8 +90,9 @@ export const AllPoolsTable: FunctionComponent<{
       limit: 100,
       search: searchQuery,
       types: poolTypesFilter
-        ? (poolTypesFilter as string[]).concat("cosmwasm")
+        ? poolTypesFilter.concat("cosmwasm" as PoolTypeFilter)
         : undefined,
+      incentiveTypes: poolIncentivesFilter,
       sort: sortKey
         ? {
             keyPath: sortKey,
@@ -243,6 +259,8 @@ export const AllPoolsTable: FunctionComponent<{
       <TableControls
         poolTypesFilter={poolTypesFilter ?? []}
         setPoolTypesFilter={setPoolTypesFilter}
+        poolIncentivesFilter={poolIncentivesFilter ?? []}
+        setPoolIncentivesFilter={setPoolIncentivesFilter}
         setSearchQuery={setSearchQuery}
       />
       <table className="w-full">
@@ -330,8 +348,16 @@ export const AllPoolsTable: FunctionComponent<{
 const TableControls: FunctionComponent<{
   poolTypesFilter: PoolTypeFilter[];
   setPoolTypesFilter: (poolType: PoolTypeFilter[]) => void;
+  poolIncentivesFilter: PoolIncentiveFilter[];
+  setPoolIncentivesFilter: (poolIncentive: PoolIncentiveFilter[]) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ poolTypesFilter, setPoolTypesFilter, setSearchQuery }) => {
+}> = ({
+  poolTypesFilter,
+  setPoolTypesFilter,
+  poolIncentivesFilter,
+  setPoolIncentivesFilter,
+  setSearchQuery,
+}) => {
   const { t } = useTranslation();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
@@ -348,6 +374,7 @@ const TableControls: FunctionComponent<{
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={poolTypesFilter as string[]}
+          atLeastOneSelected
           options={[
             { id: "weighted", display: t("components.table.weighted") },
             { id: "stable", display: t("components.table.stable") },
@@ -371,6 +398,45 @@ const TableControls: FunctionComponent<{
               setPoolTypesFilter([
                 ...poolTypesFilter,
                 poolType as PoolTypeFilter,
+              ]);
+            }
+          }}
+        />
+        <CheckboxSelect
+          label={t("components.incentive.title")}
+          selectedOptionIds={poolIncentivesFilter as string[]}
+          atLeastOneSelected
+          options={[
+            { id: "superfluid", display: t("pools.aprBreakdown.superfluid") },
+            { id: "osmosis", display: t("pools.aprBreakdown.boost") },
+            {
+              id: "boost",
+              display: t("pools.aprBreakdown.externalBoost"),
+            },
+            {
+              id: "none",
+              display: t("components.table.noIncentives"),
+            },
+          ]}
+          onSelect={(incentiveType) => {
+            if (
+              poolIncentivesFilter.includes(
+                incentiveType as PoolIncentiveFilter
+              )
+            ) {
+              setPoolIncentivesFilter(
+                poolIncentivesFilter.filter(
+                  (type) => type !== (incentiveType as PoolIncentiveFilter)
+                )
+              );
+            } else if (
+              !poolIncentivesFilter.includes(
+                incentiveType as PoolIncentiveFilter
+              )
+            ) {
+              setPoolIncentivesFilter([
+                ...poolIncentivesFilter,
+                incentiveType as PoolIncentiveFilter,
               ]);
             }
           }}

@@ -1,9 +1,18 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
+import { z } from "zod";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
 import { getPools, Pool, PoolFilter } from "./index";
+
+const allPoolIncentiveTypes = [
+  "superfluid",
+  "osmosis",
+  "boost",
+  "none",
+] as const;
+export type PoolIncentiveType = (typeof allPoolIncentiveTypes)[number];
 
 export type PoolIncentives = Partial<{
   aprBreakdown: Partial<{
@@ -14,7 +23,16 @@ export type PoolIncentives = Partial<{
     osmosis: RatePretty;
     boost: RatePretty;
   }>;
+  incentiveTypes?: PoolIncentiveType[];
 }>;
+
+export const IncentivePoolFilterSchema = z.object({
+  /** Only include pools of given incentive types.s */
+  incentiveTypes: z.array(z.enum(allPoolIncentiveTypes)).optional(),
+});
+
+/** Params for filtering pools. */
+export type IncentivePoolFilter = z.infer<typeof IncentivePoolFilterSchema>;
 
 export async function getPoolIncentives(poolId: string) {
   const map = await getCachedPoolIncentivesMap();
@@ -28,15 +46,41 @@ export async function mapGetPoolIncentives<TPool extends Pool>({
   ...params
 }: {
   pools?: TPool[];
-} & PoolFilter = {}): Promise<(PoolIncentives & TPool)[]> {
+} & PoolFilter &
+  IncentivePoolFilter = {}): Promise<(PoolIncentives & TPool)[]> {
   if (!pools) pools = (await getPools(params)) as TPool[];
 
   const incentives = await getCachedPoolIncentivesMap();
 
-  return pools.map((pool) => ({
-    ...pool,
-    ...incentives.get(pool.id),
-  }));
+  return pools
+    .map((pool) => {
+      const poolIncentive = incentives.get(pool.id);
+
+      // Filter pools if incentive types are specified.
+      // Any type in the given list of types has to be included at least once in the pool types.
+      if (params.incentiveTypes && poolIncentive) {
+        const hasIncentiveType = params.incentiveTypes.some((type) =>
+          poolIncentive.incentiveTypes?.includes(type)
+        );
+        if (!hasIncentiveType) return;
+      } else if (
+        params.incentiveTypes &&
+        !poolIncentive &&
+        !params.incentiveTypes.includes("none")
+      ) {
+        // "none" is a special case, where it includes pools that
+        // don't have an incentives of any type, where the pool incentives map
+        // returns nothing for that pool.
+        // Though, if numia indexes swap fee rewards, none will be filtered above.
+        return;
+      }
+
+      return {
+        ...pool,
+        ...poolIncentive,
+      };
+    })
+    .filter(Boolean) as (PoolIncentives & TPool)[];
 }
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
@@ -52,14 +96,26 @@ async function getCachedPoolIncentivesMap(): Promise<
       const aprs = await queryPoolAprs();
 
       return aprs.reduce((map, apr) => {
+        const superfluid = maybeMakeRatePretty(apr.superfluid);
+        const osmosis = maybeMakeRatePretty(apr.osmosis);
+        const boost = maybeMakeRatePretty(apr.boost);
+
+        // add list of incentives that are defined
+        const incentiveTypes: PoolIncentiveType[] = [];
+        if (superfluid) incentiveTypes.push("superfluid");
+        if (osmosis) incentiveTypes.push("osmosis");
+        if (boost) incentiveTypes.push("boost");
+        if (!superfluid && !osmosis && !boost) incentiveTypes.push("none");
+
         map.set(apr.pool_id, {
           aprBreakdown: {
             total: maybeMakeRatePretty(apr.total_apr),
             swapFee: maybeMakeRatePretty(apr.swap_fees),
-            superfluid: maybeMakeRatePretty(apr.superfluid),
-            osmosis: maybeMakeRatePretty(apr.osmosis),
-            boost: maybeMakeRatePretty(apr.boost),
+            superfluid,
+            osmosis,
+            boost,
           },
+          incentiveTypes,
         });
 
         return map;

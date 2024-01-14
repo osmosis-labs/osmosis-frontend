@@ -2,14 +2,19 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { PoolFilterSchema } from "~/server/queries/complex/pools";
-import { mapGetPoolIncentives } from "~/server/queries/complex/pools/incentives";
+import {
+  IncentivePoolFilterSchema,
+  mapGetPoolIncentives,
+} from "~/server/queries/complex/pools/incentives";
 import { mapGetPoolMarketMetrics } from "~/server/queries/complex/pools/market";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
 import { InfiniteQuerySchema } from "../zod-types";
 
-const GetInfinitePoolsSchema = InfiniteQuerySchema.and(PoolFilterSchema);
+const GetInfinitePoolsSchema = InfiniteQuerySchema.and(PoolFilterSchema).and(
+  IncentivePoolFilterSchema
+);
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
@@ -40,6 +45,7 @@ export const poolsRouter = createTRPCRouter({
           minLiquidityUsd,
           sort: sortInput,
           types,
+          incentiveTypes,
           cursor,
           limit,
         },
@@ -53,6 +59,7 @@ export const poolsRouter = createTRPCRouter({
             });
             const marketIncentivePools = await mapGetPoolIncentives({
               pools: marketPools,
+              incentiveTypes,
             });
 
             // won't sort if searching
@@ -69,6 +76,7 @@ export const poolsRouter = createTRPCRouter({
             sortInput,
             minLiquidityUsd,
             types,
+            incentiveTypes,
           }),
           cursor,
           limit,

@@ -15,8 +15,16 @@ export const CheckboxSelect: FunctionComponent<
     selectedOptionIds?: string[];
     showDeselectAll?: boolean;
     menuItemsClassName?: string;
+    atLeastOneSelected?: boolean;
   } & Omit<MenuSelectProps, "selectedOptionId" | "defaultSelectedOptionId">
-> = ({ label, selectedOptionIds, options, onSelect, menuItemsClassName }) => {
+> = ({
+  label,
+  selectedOptionIds,
+  options,
+  onSelect,
+  menuItemsClassName,
+  atLeastOneSelected = false,
+}) => {
   const { isMobile } = useWindowSize();
 
   return (
@@ -58,6 +66,11 @@ export const CheckboxSelect: FunctionComponent<
                           "rounded-b-xlinset": index === options.length - 1,
                         }
                       )}
+                      disabled={
+                        atLeastOneSelected &&
+                        selectedOptionIds?.length === 1 &&
+                        selectedOptionIds?.includes(id)
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         onSelect(id);
@@ -67,6 +80,11 @@ export const CheckboxSelect: FunctionComponent<
                         className="w-fit"
                         isOn={Boolean(selectedOptionIds?.includes(id))}
                         onToggle={noop}
+                        disabled={
+                          atLeastOneSelected &&
+                          selectedOptionIds?.length === 1 &&
+                          selectedOptionIds?.includes(id)
+                        }
                       />
                       <span>{display}</span>
                     </button>

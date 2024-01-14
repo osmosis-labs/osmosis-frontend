@@ -28,18 +28,18 @@ export type Pool = {
 export type PoolProvider = () => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
+  /** Search pool ID, or denoms. */
   search: SearchSchema.optional(),
+  /** Filter pool by minimum required USD liquidity. */
   minLiquidityUsd: z.number().optional(),
-  types: z
-    .array(z.string())
-    .default(allPooltypes as unknown as string[])
-    .optional(),
+  /** Only include pools of given type. */
+  types: z.array(z.enum(allPooltypes)).optional(),
 });
 
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "type", "coinDenoms"];
+const searchablePoolKeys = ["id", "coinDenoms"];
 
 export async function getPool(poolId: string): Promise<Pool | undefined> {
   const pools = await getPools();
