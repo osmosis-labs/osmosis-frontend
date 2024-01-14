@@ -135,14 +135,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * We make sure that the 'base' field always has as its value the native chain parameter
    * and not values derived from the IBC connection with Osmosis
    */
-  private get _assets() {
+  private get walletManagerAssets() {
     return this.assets.map((assetList) => ({
       ...assetList,
       assets: assetList.assets.map((asset) => ({
         ...asset,
         base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
       })),
-    }));
+    })) as CosmologyAssetList[];
   }
 
   constructor(
@@ -177,7 +177,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this._assets as CosmologyAssetList[],
+      this.walletManagerAssets,
       wallets,
       logger,
       true,
