@@ -848,8 +848,6 @@
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
-    "backButton": "All tokens",
-    "ariaBackButton": "All tokens back button",
     "noData": "N.D.",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",

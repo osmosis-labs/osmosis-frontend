@@ -848,8 +848,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "backButton": "所有代币",
-    "ariaBackButton": "所有代币后退按钮",
     "noData": "ND",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",

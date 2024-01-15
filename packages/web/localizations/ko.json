@@ -848,8 +848,6 @@
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
-    "backButton": "모든 토큰",
-    "ariaBackButton": "모든 토큰 뒤로 버튼",
     "noData": "ND",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
