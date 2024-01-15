@@ -295,6 +295,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "확인되지 않은 자산 활성화",
+      "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
       "reminder": "언제든지 설정 모달에서 이 설정을 비활성화할 수 있습니다."
     }
   },

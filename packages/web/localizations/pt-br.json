@@ -295,6 +295,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "Ativar ativos não verificados",
+      "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     }
   },

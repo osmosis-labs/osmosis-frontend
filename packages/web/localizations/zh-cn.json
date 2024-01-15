@@ -295,6 +295,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "激活未验证资产",
+      "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
       "reminder": "您始终可以在设置模式中停用此设置。"
     }
   },

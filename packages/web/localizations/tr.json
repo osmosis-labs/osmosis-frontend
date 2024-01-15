@@ -295,6 +295,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
+      "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     }
   },
