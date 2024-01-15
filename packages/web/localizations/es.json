@@ -292,6 +292,11 @@
       "undergoAudit": "mientras se somete a auditoría (finalización estimada en enero de 2024).",
       "warning": "ADVERTENCIA:",
       "loading": "Cargando..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Activar activos no verificados",
+      "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
+      "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     }
   },
   "buyTokens": "Comprar fichas",

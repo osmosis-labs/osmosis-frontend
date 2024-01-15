@@ -292,6 +292,11 @@
       "undergoAudit": "正在接受審核（預計於 2024 年 1 月完成）。",
       "warning": "警告：",
       "loading": "載入中..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "啟動未驗證資產",
+      "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
+      "reminder": "您始終可以在設定模式中停用此設定。"
     }
   },
   "buyTokens": "購買代幣",

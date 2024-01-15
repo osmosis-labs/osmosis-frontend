@@ -292,6 +292,11 @@
       "undergoAudit": "감사 중(2024년 1월 완료 예정)",
       "warning": "경고:",
       "loading": "로딩 중..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "확인되지 않은 자산 활성화",
+      "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
+      "reminder": "언제든지 설정 모달에서 이 설정을 비활성화할 수 있습니다."
     }
   },
   "buyTokens": "토큰 구매",
