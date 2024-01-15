@@ -11,6 +11,8 @@ export const AprBreakdownCell: FunctionComponent<{
   poolId: string;
 }> = observer(({ poolId }) => {
   const { queriesExternalStore } = useStore();
+
+  const fullRangeApr = queriesExternalStore.queryPriceRangeAprs.get(poolId);
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
 
   return (
@@ -28,6 +30,8 @@ export const AprBreakdownCell: FunctionComponent<{
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
         )}
+        {fullRangeApr?.apr?.maxDecimals(1).toString() + " - " ?? ""}
+
         {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
       </p>
     </Tooltip>
