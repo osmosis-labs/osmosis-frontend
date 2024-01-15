@@ -292,6 +292,10 @@
       "undergoAudit": "w trakcie audytu (szacunkowe zakończenie: styczeń 2024 r.).",
       "warning": "OSTRZEŻENIE:",
       "loading": "Wczytywanie..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Aktywuj niezweryfikowane zasoby",
+      "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     }
   },
   "buyTokens": "Kup tokeny",

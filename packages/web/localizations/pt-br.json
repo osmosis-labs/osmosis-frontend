@@ -292,6 +292,10 @@
       "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
       "warning": "AVISO:",
       "loading": "Carregando..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Ativar ativos não verificados",
+      "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     }
   },
   "buyTokens": "Comprar tokens",

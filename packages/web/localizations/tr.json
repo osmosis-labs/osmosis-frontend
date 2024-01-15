@@ -292,6 +292,10 @@
       "undergoAudit": "denetim sırasında (tahmini tamamlanma tarihi Ocak 2024).",
       "warning": "UYARI:",
       "loading": "Yükleniyor..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Doğrulanmamış varlıkları etkinleştirin",
+      "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     }
   },
   "buyTokens": "jeton satın al",

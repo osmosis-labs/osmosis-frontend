@@ -292,6 +292,10 @@
       "undergoAudit": "正在接受审核（预计于 2024 年 1 月完成）。",
       "warning": "警告：",
       "loading": "加载中..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "激活未验证资产",
+      "reminder": "您始终可以在设置模式中停用此设置。"
     }
   },
   "buyTokens": "购买代币",

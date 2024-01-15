@@ -292,6 +292,10 @@
       "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
       "warning": "AVERTISSEMENT:",
       "loading": "Chargement..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Activer les actifs non vérifiés",
+      "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     }
   },
   "buyTokens": "Acheter jetons",
