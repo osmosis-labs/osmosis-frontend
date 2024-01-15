@@ -848,8 +848,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "backButton": "Wszystkie tokeny",
-    "ariaBackButton": "Przycisk powrotu wszystkich tokenów",
     "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",

@@ -848,8 +848,6 @@
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
     "tvl": "TVL",
-    "backButton": "Todas las fichas",
-    "ariaBackButton": "Botón de retroceso de todos los tokens",
     "noData": "N.D.",
     "buyToken": "Comprar {coinDenom}",
     "staking": "Replanteo",

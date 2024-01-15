@@ -848,8 +848,6 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "televisão",
-    "backButton": "Todos os tokens",
-    "ariaBackButton": "Botão Voltar de todos os tokens",
     "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",

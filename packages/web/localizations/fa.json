@@ -848,8 +848,6 @@
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
-    "backButton": "همه توکن ها",
-    "ariaBackButton": "دکمه برگشت همه نشانه ها",
     "noData": "ND",
     "buyToken": "خرید {coinDenom}",
     "staking": "شرط بندی",
