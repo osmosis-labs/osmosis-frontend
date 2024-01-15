@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { InferGetServerSidePropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -110,13 +110,11 @@ const Pool: FunctionComponent<Props> = observer(
   }
 );
 
-export async function getServerSideProps({
+export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
-}: {
-  resolvedUrl: string;
-}) {
+}) => {
   const splitUrl = resolvedUrl.split("/");
   return { props: { poolId: splitUrl.pop() ?? "-" } };
-}
+};
 
 export default Pool;
