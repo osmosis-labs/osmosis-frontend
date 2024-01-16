@@ -29,7 +29,7 @@ import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
 import { removeQueryParam } from "~/utils/url";
 
-import { AprBreakdown } from "../cards/apr-breakdown";
+import { AprBreakdownLegacy } from "../cards/apr-breakdown";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -513,7 +513,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
         </div>
         {featureFlags.aprBreakdown && (
-          <AprBreakdown
+          <AprBreakdownLegacy
             className="shrink-0 rounded-[28px] bg-osmoverse-1000"
             poolId={poolId}
             showDisclaimerTooltip

@@ -29,15 +29,20 @@ export function createSortSchema<
 /** Sorts a list of items by given sort params - a key and sort direction - into a new array.
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
  *  Includes a custom compare function for sorting any other types which will override
- *  default behavior. */
+ *  default behavior including the sort direction. */
 export function sort<TItem extends Record<string, CommonCompareType | any>>(
   list: TItem[],
   keyPath: string,
   direction: SortDirection = "desc",
   compare?: (a: TItem, b: TItem) => number
 ): TItem[] {
-  // validate keypath
-  if (list.length === 0 || !(keyPath in list[0])) {
+  // list is empty or keyPath is not in the list items, return items
+  if (
+    list.length === 0 ||
+    !(keyPath.includes(".")
+      ? Boolean(getDeepValue(list[0], keyPath))
+      : keyPath in list[0])
+  ) {
     return list;
   }
 
