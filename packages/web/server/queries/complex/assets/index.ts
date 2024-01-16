@@ -94,7 +94,7 @@ function simplifyAssetListForDisplay(
     .filter((asset) =>
       params.includeUnlisted
         ? true // Do not filter the unlisted assets
-        : asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+        : !asset.keywords?.includes("osmosis-unlisted")
     );
 
   let assetListAssets = listedAssets.filter((asset) => {
