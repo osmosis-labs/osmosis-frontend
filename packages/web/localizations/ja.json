@@ -4,22 +4,31 @@
   },
   "addLiquidity": {
     "allAssets": "すべての資産",
+    "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
     "available": "利用可能",
+    "scalingFactor": "倍率",
     "scalingFactorController": "コントローラ",
     "scalingFactorControllerWarning_second": "を調整できます",
+    "scalingFactorControllerWarning_third": "ペグのメンテナンスに。現在のスケーリング係数は次のとおりです。",
     "scalingFactorInformation": "この要素により、リキッドステーキングトークンに発生する価値など、予測可能な価格の変化に合わせて曲線を調整することができます。",
+    "singleAsset": "単一の資産",
     "stablecoinWarning": "{denom}に裏付けられたステーブルコインである{mechanism}に流動性を追加しています。",
     "title": "流動性の追加"
   },
   "addConcentratedLiquidity": {
     "step1Title": "ステップ 1: 戦略を選択する",
+    "step2Title": "ステップ 2: 流動性を追加する",
     "managed": "管理された",
+    "manual": "マニュアル",
     "manualDescription": "最大限の効率と報酬を得るために、定期的に管理できるポジションを作成します。",
     "back": "戻る",
     "currentPrice": "現在の価格",
+    "basePerQuote": "{quote} per {base}",
     "selectVolatilityRange": "ボラティリティ戦略を選択する",
     "volatilityAggressiveDescription": "スポット価格の±10%の範囲に集中すると、スワップで大きな利益を得ることができますが、価格が範囲外に変動するリスクがあります。この位置を頻繁に確認してください。",
     "volatilityCustomDescription": "戦略に合ったポジションを作成します。設定した位置に常に注意してください。",
+    "volatilityPassiveDescription": "このフルレンジのポジションは、設定したり忘れたりするのに最適です。スワップでの収益は少なくなりますが、常に範囲内にあります。",
+    "amountToDeposit": "預金の額",
     "buttonCreateAndStake": "ポジションとステークの作成",
     "estimated": "推定"
   },
@@ -27,22 +36,29 @@
     "learnMoreTitle": "流動性のスーパーチャージとは何ですか?",
     "tutorialA": {
       "2": "自分に合った戦略を選択できるようになりました。パッシブ戦略を使用すると、スパン全体に少しずつ分散させることができます。収入は減りますが、範囲を超えることはありません。",
+      "3": "より積極的な戦略を選択すると、より多くの収益を得ることができますが、範囲外になる可能性が高くなります。注意深く観察し、必要に応じてバランスを調整してください。範囲外になるとスワップでの収益が停止します。",
       "4": "従来の AMM と同様に、価格が変動すると、資産はプール内の資産の 1 つに完全に変換されます。ポジションが範囲外になった場合、価格が再び範囲に入るまで、他の資産の 100% を所有することになります。"
     }
   },
   "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
   "convertToStake": {
     "adSubtitle": "一部のポジションは{apr} % APR の OSMO をステーキングする場合よりも収益が低くなります。アップグレードするポジションを表示して選択します。",
+    "title": "ステークOSMOに変換",
     "description": "選択したポジションは完全に OSMO に変換されます。すべての OSMO は、既存のバリデーター セットに自動的にステークされます。",
+    "stakedOsmo": "ステークされたOSMO",
     "currentApr": "現在の年利",
-    "position": "POSITION # {positionId}"
+    "position": "POSITION # {positionId}",
+    "convertAndStake": "変換してステークする"
   },
   "clPositions": {
+    "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
     "outOfRange": "範囲外です",
     "fullRange": "フルレンジ",
+    "unbonding": "結合を解く",
     "superfluidUnstakingStatus": "超流動体の解体",
     "currentAssets": "流動資産",
+    "totalRewardsEarned": "獲得した報酬の合計",
     "unclaimedRewards": "未請求の報酬",
     "roi": "ROI",
     "selectedRange": "選択範囲",
@@ -50,23 +66,34 @@
     "spreadFactor": "スプレッドファクター",
     "maxPrice": "最高価格",
     "minPrice": "最低価格",
+    "collectRewards": "報酬を集める",
+    "collectAllRewards": "すべての報酬を集める",
     "noRewards": "収集するものはありません。すぐにもう一度確認してください",
     "removeLiquidity": "流動性の除去",
+    "increaseLiquidity": "流動性の向上",
+    "yourPositions": "あなたのポジション",
     "yourPosition": "あなたの位置",
     "yourPositionsDesc": "資産を活用して、スワップごとにスプレッドを獲得しましょう。",
     "learnMoreAboutPools": "プールについて詳しく見る",
     "supercharged": "スーパーチャージャー",
+    "createAPosition": "ポジションを作成する",
     "pendingRewards": "保留中の報酬",
     "superfluidValidator": "バリデーター",
+    "superfluidUnstake": "ステーキングが解除されると、 {duration}後に利用可能になります",
     "superfluidUnstaking": "アンステーキング、 {fromNow}で利用可能",
     "superfluidCommission": "手数料",
     "unstake": "流動性のステークを解除する",
     "totalBalance": "総合収支",
+    "numPositions": "{numPositions}位置",
+    "onePosition": "1 ポジション",
     "goToPool": "プール # {poolId}に移動します"
   },
   "app": {
     "banner": {
       "externalLinkDisclaimer": "リンクをクリックすると、Osmosis が異なる ToS を持つ可能性のある外部ページのサービス品質を保証しないことを読み、理解したものとみなされます。",
+      "externalLinkModalTitle": "浸透を離れる",
+      "goToSite": "サイトに進む",
+      "doNotShowAgain": "これ、二度とみせないで",
       "chainHalted": "浸透チェーンが停止し、トランザクションが一時的に無効になります。"
     }
   },
@@ -74,19 +101,22 @@
     "headerSubtitle": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう。",
     "featured": "特徴",
     "searchPlaceholder": "検索",
+    "getFeatured": "注目を集める",
     "featuredDescription": "App Store で起動すると、何千人ものユーザーがアクセスできるようになります。掲載または特集をご希望の場合は、ご連絡ください。ご連絡させていただきます。",
     "applyButton": "適用する",
     "storeDisclaimer": "特定のコンテンツは、Osmosis Labs またはその関連会社と提携していない第三者によって作成されており、Osmosis Labs はそのようなコンテンツについて責任を負いません。 Osmosis Labs は、コンテンツのエラーや遅延、またはコンテンツに依存して行われた行為に対して責任を負いません。情報は情報提供のみを目的として提供されており、投資アドバイスではありません。これは、特定のデジタル資産を売買したり、特定の投資戦略を採用したりすることを推奨するものではありません。 Osmosis Labs は、提供された情報または特定の資産の正確性、適合性、有効性についていかなる表明も行いません。表示されている価格は例示のみを目的としています。実際の暗号通貨の価格および関連する統計は異なる場合があります。提示されたデータは、Osmosis Labs の取引所および一部の他の暗号通貨取引所で取引された資産を反映している可能性があります。",
     "allAppsHeader": "すべてのアプリ"
   },
   "addConcentratedLiquidityPoolCta": {
-    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけでポジションをアップグレードできます。"
+    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけでポジションをアップグレードできます。",
+    "secondaryCta": "30秒で学べる"
   },
   "addConcentratedLiquidityeEarnMore": {
     "title": "流動性からより多くの収益を得る",
     "secondaryCta": "30秒で学べる"
   },
   "createFirstPositionCta": {
+    "title": "最初のスーパーチャージポジションを作成する",
     "caption": "この待望のアップグレードにより、少ない資本でより多くの収益を得ることができます。経験のレベルに関係なく、数分で立ち上げて実行できます。",
     "primaryCta": "ポジションを作成する",
     "secondaryCta": "30秒で学べる"
@@ -102,8 +132,14 @@
         "type": "タイプ",
         "withdraw": "撤回する"
       },
+      "errors": {
+        "insufficientFee": "不十分な料金"
+      },
+      "failed": "失敗した",
       "failedWithReason": "失敗: {reason}",
       "pending": "保留中",
+      "pendingRefunded": "失敗: 返金保留中",
+      "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴"
     },
@@ -111,15 +147,18 @@
       "buttonAdd": "追加",
       "buttonEdit": "編集",
       "buttonEnter": "入力",
+      "channelCongestedDeposit": "デポジット (チャネルが混雑している)",
       "channelCongestedWithdraw": "撤退（チャンネル混雑中）",
       "selectAmount": "金額を選択してください",
+      "titleDeposit": "入金{coinDenom}",
       "titleWithdraw": "出金{coinDenom}",
       "waitTime": "20秒"
     },
     "myPools": "あなたのプール",
     "poolCards": {
       "APR": "4月",
-      "bonded": "保税済み"
+      "bonded": "保税済み",
+      "FeeAPY": "料金APY"
     },
     "selectAssetSource": {
       "installWallet": "{walletName}をインストールします",
@@ -157,11 +196,16 @@
     "totalAssets": "総資産",
     "transfer": {
       "availableMobile": "利用可能",
+      "availableOn": "{network}で利用可能",
+      "approving": "承認中...",
       "givePermission": "トークンを使用する権限を与える",
       "errors": {
         "insufficientFee": "不十分な料金",
+        "reconnectWallet": "{walletName}を再接続します",
         "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
         "unexpectedError": "予期しないエラー。もう一度試してください。",
+        "transactionError": "トランザクション取得エラー。もう一度試してください。",
+        "invalidAddress": "無効なアドレス",
         "missingAddress": "住所がありません"
       },
       "from": "から",
@@ -169,11 +213,15 @@
       "titleWithdraw": "出金{coinDenom}",
       "to": "に",
       "transferFee": "転送料",
+      "waitTime": "{minutes}分",
       "warnDepositAddressDifferent": "警告: {address}で選択したアカウントは、最後に入金したアカウントとは異なります。",
       "expectedOutput": "期待される出力",
-      "sending": "送信..."
+      "sending": "送信...",
+      "transferAnyway": "とにかく転送"
     },
     "transferAssetSelect": {
+      "buttonNext": "次",
+      "deposit": "デポジット",
       "network": "通信網",
       "withdraw": "撤回する"
     },
@@ -189,10 +237,13 @@
       "estimatedTime": "5分",
       "expirationTime": "4日",
       "learnMore": "詳細については、こちらをご覧ください",
+      "lossOfFunds": "この期間を過ぎてアドレスを使用すると資金が失われます。",
+      "minDeposit": "最低入金額",
       "minWithdrawal": "最低出金額",
       "pendingDeposits": "保留中の預金",
       "poweredBy": "搭載",
       "proceed": "進む",
+      "depositExpiration": "この入金アドレスの有効期限は次のとおりです",
       "undergoAudit": "監査を受けている間（完了予定は 2024 年 1 月）。",
       "warning": "警告：",
       "loading": "読み込み中..."
@@ -201,6 +252,7 @@
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     }
   },
+  "buyTokens": "トークンを購入する",
   "components": {
     "fiatOnrampSelection": {
       "kadoSubtitle": "OSMO、USDCをサポート",
@@ -218,6 +270,7 @@
     "searchTokens": "検索",
     "selectToken": {
       "title": "トークンを選択してください",
+      "unverifiedAsset": "このアセットは検証されていません。慎重に作業を進めてください。",
       "clickToActivate": "クリックして有効化します"
     },
     "show": {
@@ -232,6 +285,8 @@
     "table": {
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
+      "transmuter": "トランスミューター",
+      "internal": "社内インセンティブ",
       "external": "外部からのインセンティブ",
       "superfluid": "超流動体",
       "noIncentives": "インセンティブなし"
@@ -242,14 +297,21 @@
     "depositNoBalance": "預ける資産がありません",
     "emptyAmount": "金額が空です",
     "generic": "エラー",
+    "highSwapFee": "スワップ手数料が高すぎる",
+    "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
     "insufficientLiquidity": "不十分な流動性",
     "invalidSlippage": "無効なスリッページ",
+    "invalidSwapFee": "スワップ手数料は無効です",
     "minAssetsCount": "少なくとも{num}アセットが必要です",
     "negativePercentage": "パーセンテージは正の値でなければなりません",
+    "negativeSlippage": "スリッページをマイナスにすることはできません",
     "noAvailableShares": "利用可能な{denom}共有がありません",
+    "noSendCurrency": "送金通貨が設定されていません",
     "notInitialized": "初期化されていません",
     "zeroAmount": "金額はゼロです",
+    "invalidRange": "無効な価格帯",
+    "fallbackText1": "エラーが発生しました",
     "fallbackText2": "を提出してください",
     "fallbackBugReport": "バグレポート",
     "fallbackText3": "または取得します",
@@ -258,12 +320,16 @@
     "invalidAmounts": "無効な金額です"
   },
   "frontierMigration": {
+    "introducingUnverifiedAssets": "未検証のアセットの紹介",
     "frontierHasNowMerged": "フロンティアページは次と統合されました",
+    "commitmentToDecentralization": "分散化とアクセシビリティへの取り組みに沿って、未検証のトークンを処理するオプションも引き続き利用できます。",
     "settingIsNowEnabled": "これで設定が有効になりました。"
   },
   "lockToken": {
     "amountToBond": "保証金額",
     "availableToken": "利用可能",
+    "bondingRequirement": "{numDays}日のボンディング要件",
+    "buttonBond": "つなぐ",
     "buttonBondStake": "債券とステーク",
     "buttonNext": "次",
     "selectPeriod": "剥離期間を選択してください",
@@ -271,6 +337,8 @@
   },
   "menu": {
     "assets": "資産",
+    "help": "サポートラボ",
+    "info": "統計",
     "pools": "プール",
     "stake": "ステーク",
     "store": "アプリ",
@@ -280,22 +348,31 @@
     "trade": "プロトレーディング",
     "margin": "マージン",
     "perpetuals": "永久保存版",
-    "marsSubtext": "火星の力を借りて"
+    "marsSubtext": "火星の力を借りて",
+    "levanaSubtext": "レヴァナが提供する",
+    "more": "もっと",
+    "new": "新しい"
   },
   "notifi": {
     "saveChanges": "変更内容を保存",
     "getStartedHistoryTitle1": "トークンを購入して始めましょう",
+    "getStartedHistoryMessage1": "OSMOを取得して取引を開始する",
+    "getStartedHistoryTitle2": "取引の開始方法",
     "getStartedHistoryMessage2": "この簡単なチュートリアルでは数分で取引できるようになります",
     "getStartedHistoryTitle3": "資金の入金方法",
     "signupDummyHistoryMessage1": "OSMOを取得して取引を開始する",
+    "signupDummyHistoryTitle2": "資産の預け入れ方法",
     "signupDummyHistoryTitle3": "取引の開始方法",
     "outboundTransferHistoryTitle": "浸透アウトバウンド転送",
     "outboundTransferHistoryMessage": "額",
+    "poolExitedHistoryTitle": "浸透プールが終了しました",
     "poolJoinedHistoryTitle": "浸透プールが参加しました",
     "poolJoinedHistoryMessage": "トークン",
+    "swapHistoryMessage": "に交換されました",
     "emptyHistoryTitle": "タイトルなし",
     "emptyHistoryMessage": "メッセージなし",
     "positionOutOfRangeHistoryTitle": "範囲外の位置",
+    "positionOutOfRangeHistoryMessage": "LP の位置が範囲外です",
     "signupPageMessage": "新しいトークンのリストから重要なポジションのステータスまで、重要な更新を見逃すことはもうありません。",
     "signupPageButton": "通知を有効にします",
     "loadMore": "もっと読み込む",
@@ -304,30 +381,40 @@
     "clearAllHistory": "すべてクリア"
   },
   "pool": {
+    "24hrTradingVolume": "24時間取引高",
     "amountDaysUnbonding": "{numDays}日の結合解除",
     "available": "利用可能",
     "bonded": "保税済み",
+    "bondLiquidity": "債券の流動性",
     "bondLiquidityUnavailable": "債券の流動性 (利用不可)",
     "bondShares": "社債株式",
+    "checkBackForBondingRewards": "絆の報酬をもう一度チェックしてください",
     "collapseDetails": "プール構成を非表示にする",
     "commission": "手数料",
     "day": "日",
     "delegated": "委任された",
     "details": "詳細",
+    "earnMore": "ボンディングによってさらに{amount}獲得しましょう",
+    "earnSwapFees": "スワップ手数料を獲得する",
     "earnSwapFeesCaption": "トークンを株式に変換し、交換するたびに収益を上げます。",
     "from": "から",
     "incentives": "インセンティブ",
     "learnMore": "もっと詳しく知る",
     "putAssetsToWork": "資産を活用しましょう。",
+    "putAssetsToWorkCaption": "アセットをこのプールに追加して、APR のロックを解除します。結合を解除する期間が長ければ長いほど、より多くの利益が得られます。",
     "sharesAmount": "{shares}シェア",
     "sharesAvailableIn": "で利用可能",
+    "stableswapEnabled": "ステーブルスワップ",
     "transmuter": "トランスミューター",
     "superfluidStaking": "超流動性ステーキング",
     "swap": "トレードペア",
     "spreadFactor": "スプレッドファクター",
+    "swapFee": "スワップ手数料",
     "title": "プール番号{id}",
     "unbond": "結合を解除する",
     "unbonding": "結合を解く",
+    "undelegating": "委任を解除する",
+    "yourStats": "プール残高",
     "onlyInRangePositions": "範囲内の位置のみ"
   },
   "pools": {
@@ -336,7 +423,9 @@
       "sort": {
         "APRIncentivized": "4月",
         "fees": "料金（7D）",
-        "liquidity": "流動性"
+        "liquidity": "流動性",
+        "poolName": "プール名/番号",
+        "volume24h": "ボリューム(24時間)"
       },
       "title": "プールを発見する"
     },
@@ -352,11 +441,19 @@
       "stablePool": "安定したプール",
       "step": {
         "one": {
+          "stable": "ステップ{step} / {nbStep} - スケーリング係数を設定します",
           "weighted": "ステップ{step} / {nbStep} - トークン比率の設定"
         },
         "two": "ステップ{step} / {nbStep} - 追加する量を入力します"
       },
-      "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。"
+      "swapFee": "スワップ手数料を設定する",
+      "title": "新しいプールの作成",
+      "token": "トークン",
+      "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。",
+      "weightedPool": "加重プール"
+    },
+    "externalIncentivized": {
+      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",
@@ -366,6 +463,8 @@
       "swapFees": "スワップ手数料",
       "boost": "ブースト",
       "superfluid": "超流動体",
+      "externalBoost": "外部ブースト",
+      "total": "合計年利",
       "explainer": {
         "title": "APRはどのように計算されますか?",
         "p2": "スーパーチャージされたプールでは、ほとんどのユーザーが受け取る報酬は低くなります。これは、ポジションがより集中しており、より多くのインセンティブを獲得できるためです。"
@@ -373,6 +472,8 @@
     }
   },
   "profile": {
+    "balance": "バランス",
+    "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
     "wallet": "財布"
   },
@@ -381,13 +482,17 @@
   },
   "requestRejected": "リクエストが拒否されました",
   "settings": {
+    "filterDust": "フィルターダスト",
+    "selectLanguage": "言語を選択する",
     "titleUnverifiedAssets": "未検証のアセット",
     "titleHideDust": "&lt; {fiatSymbol} 0.01 のプールを非表示にする",
-    "titleLanguage": "言語"
+    "titleLanguage": "言語",
+    "titleHideBalances": "プライバシーを考慮したマスクバランス"
   },
   "stake": {
     "available": "利用可能",
     "MAX": "マックス",
+    "stake": "OSMOをステークする",
     "unstake": "OSMOのステークを解除する",
     "estimatedEarnings": "推定収益額",
     "day": "日",
@@ -396,13 +501,21 @@
     "dashboard": "ダッシュボード",
     "dashboardStakedOsmo": "ステークOSMO",
     "rewardsTitle": "未請求の報酬",
+    "stakeBalanceTitle": "賭け金の合計残高",
+    "viewOrEdit": "表示または編集",
     "collectRewards": "報酬を集める",
+    "investRewards": "回収して再投資する",
+    "learn": "もっと詳しく知る",
+    "alertTitleBeginning": "得る",
     "alertTitleEnd": "4月",
     "unbondingHeader": "非結合期間",
+    "unbondingSubtext": "この期間が経過すると、「アセット」タブから OSMO にアクセスできるようになります。",
     "estimatedEarningsTooltip": "これらの収益は現在のステーキング APR に基づいて計算されますが、変更される可能性があります。",
     "isAPRTooHighTooltip": "このバリデーターは異常に高い手数料を取ります。別のバリデーターを選択することを検討してください。",
+    "isVotingPowerTooHighTooltip": "これは、高い投票力を持つトップ 10 のバリデーターです。分散化を促進するために、別のバリデータを選択することを検討してください。",
     "learnMore": {
       "step1": {
+        "title": "ステーキングとは何ですか?",
         "bodyText": "Osmosis は、「プルーフ・オブ・ステーク」と呼ばれるメカニズムを使用して、すべてのトランザクションを検証し、保護します。 OSMO を賭けると、ブロックチェーンが機能し、資産から受動的に収益を得ることができます。"
       },
       "step2": {
@@ -411,14 +524,20 @@
       "step3": {
         "bodyText": "分隊を構築する際、より多くのバリデーターを選択し、彼らの投票権が少なくなるほど、分散化の促進に役立ちます。異常に高い手数料を取るバリデーターに注意してください。"
       },
+      "step4": {
+        "title": "結合解除期間"
+      },
       "step5": {
         "title": "ステーキングを開始する"
       }
     },
     "validatorSquad": {
       "title": "バリデーター分隊",
+      "description": "委任するバリデーターを選択します。完了したら、杭打ちを続けます。バリデータ セットはいつでも編集できます。",
       "button": "分隊を設定する",
+      "noResults": "結果が見つかりません",
       "column": {
+        "validator": "バリデーター",
         "myStake": "私の賭け金",
         "votingPower": "議決権",
         "commission": "手数料"
@@ -430,12 +549,15 @@
         "button": "継続するためにステークチームを編成する"
       },
       "existingUser": {
+        "title": "以前に賭けたことがあるようです",
         "buttonKeep": "既存のバリデータを維持する"
       }
     },
     "introModal": {
       "title": "Osmosis へのステーキング",
       "description": {
+        "1": "ステーキングは、資産を使って稼ぐ最も簡単な方法の 1 つです。これで、OSMO を Osmosis に賭けることができます。",
+        "2": "まで稼ぐ",
         "3": "ステーキング報酬で毎年獲得！",
         "4": "そしてそれを機能させます"
       },
@@ -445,12 +567,17 @@
   },
   "superfluidValidator": {
     "bondedAmount": "保税額",
+    "buttonBond": "債券とステーク",
+    "choose": "Superfluid バリデーターを選択してください",
     "columns": {
+      "commission": "手数料",
       "validator": "バリデーター"
     },
     "estimationInfo": "この委任の値は変動し、プール内の OSMO の量に基づいて推定されます。",
     "estimationMobile": "EST（東部基準時。代表団",
-    "search": "名前で検索"
+    "search": "名前で検索",
+    "title": "超流動バリデーターの選択",
+    "titleMobile": "バリデーターの選択"
   },
   "swap": {
     "autoRouter": "通ったルート",
@@ -463,6 +590,7 @@
     "fee": "スワップ手数料 ( {fee} )",
     "HALF": "半分",
     "MAX": "マックス",
+    "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",
     "pool": "プール番号{id}",
     "priceImpact": "価格への影響",
     "routerTooltipFee": "手数料",
@@ -477,33 +605,42 @@
   "walletSelect": {
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",
     "somethingWentWrong": "何か問題が発生しました",
+    "isNotInstalled": "{walletName}インストールされていません",
     "downloadLinkNotProvided": "ダウンロードリンクは提供されていません。検索してみるか、開発者チームに相談してください。",
+    "requestRejected": "リクエストが拒否されました",
     "connectionDenied": "接続許可が拒否されました。",
     "reconnect": "再接続",
     "connectingWallet": "ウォレットを接続する",
     "initializingWallet": "ウォレットクライアントを初期化しています",
     "clickToRefresh": "クリックして更新します。",
+    "qrCodeExpired": "QRコードの有効期限が切れました",
     "refresh": "リフレッシュ",
     "connectWith": "と接続する",
     "tapThe": "をタップします。",
     "button": "ボタン",
+    "topRightButton": "{wallet}アプリの右上隅にあります。以下の QR コードをスキャンして接続してください。",
     "get": "得る",
+    "mobileWallets": "モバイルウォレット",
     "installedWallets": "インストールされているウォレット",
     "otherWallets": "その他のウォレット",
     "step1Title": "ウォレットとは何ですか?",
     "step1Content": "ウォレットは、OSMO や ATOM などのすべてのデジタル資産の送受信、アクセスに使用されます。",
     "step2Title": "アカウントがありません。パスワードはありません。",
     "step3Content": "Osmosis では、自分のアセットを移動できるのは自分だけです。大きな力には大きな責任が伴います。",
-    "step4Title": "始めるにはウォレットを作成してください"
+    "step4Title": "始めるにはウォレットを作成してください",
+    "step4Content": "最初のウォレットを設定してサインインしてください。アセットを送信、受信、または購入します。"
   },
   "transactionBroadcasting": "トランザクションブロードキャスト",
   "transactionFailed": "処理に失敗しました",
   "transactionSuccessful": "トランザクションが成功しました",
   "unknownError": "不明なエラー",
+  "viewExplorer": "エクスプローラーを表示する",
   "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
   "upgrades": {
     "title": "アップグレードが可能",
+    "positionUpgrade": "ポジションのアップグレード",
     "superchargedLiquidity": "流動性の高まり",
+    "current": "現在",
     "success": "アップグレード成功！",
     "clickHereToView": "ここをクリックしてご覧ください"
   },
@@ -516,29 +653,38 @@
       "title": "500内部サーバーエラー",
       "description": "内部サーバーエラーが発生しました。"
     },
+    "default": {
+      "title": "浸透ゾーンでの貿易"
+    },
     "apps": {
       "title": "Osmosis App Store"
     },
     "assets": {
+      "title": "浸透アセット",
       "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
     },
     "disclaimer": {
       "description": "主要な分散型コスモス取引所である Osmosis の免責事項とプライバシー ポリシーをお読みください。"
     },
     "pools": {
+      "title": "浸透プール",
       "description": "主要な分散型 Cosmos 取引所である Osmosis で流動性プールを発見してください"
     }
   },
   "tokenInfos": {
     "relatedAssets": "関連アセット",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
+    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
     "yourBalance": "あなたのバランス",
+    "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
     "followTheConversation": "会話に従ってください",
     "chart": {
-      "xDay": "{d} D"
+      "xDay": "{d} D",
+      "all": "全て"
     },
+    "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
@@ -546,16 +692,22 @@
     "noData": "ND",
     "liquidityInOSMOPools": "{number} {denom}プールの流動性"
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "浸透圧のアップデート！",
+    "seeWhatsNew": "新機能を見る"
+  },
   "unlistedAssetsEnabled": "非公開アセットの有効化",
   "earnPage": {
     "title": "得る",
     "position": "位置",
     "positions": "ポジション",
     "allocation": "割り当て",
+    "tokensCount": "{number}トークン",
     "value": "価値",
     "method": "方法",
     "platform": "プラットホーム",
     "scrollToSeeMore": "スクロールしてさらに見る",
+    "discoverStrategies": "戦略を発見する",
     "strategyPlatform": "戦略・プラットフォーム",
     "apy": "エイピー",
     "daily": "毎日",
@@ -563,8 +715,13 @@
     "lock": "ロック",
     "days": "日々",
     "risk": "危険",
+    "strategyMethod": "戦略手法",
+    "allMethods": "すべてのメソッド",
     "platforms": "プラットフォーム",
     "allPlatforms": "すべてのプラットフォーム",
+    "lockingDuration": "ロック期間",
+    "specialTokens": "特別なトークン",
+    "filters": "フィルター",
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターの保存",
     "rewards": "報酬",
