@@ -8,36 +8,46 @@
     "available": "ઉપલબ્ધ છે",
     "scalingFactor": "માપન પરિબળ",
     "scalingFactorController": "નિયંત્રક",
+    "scalingFactorControllerWarning_first": "સ્કેલિંગ ફેક્ટર કંટ્રોલર સક્ષમ છે. આ",
     "scalingFactorControllerWarning_second": "સંતુલિત કરી શકે છે",
     "scalingFactorControllerWarning_third": "ખીંટી જાળવવા માટે. વર્તમાન સ્કેલિંગ પરિબળ છે",
     "scalingFactorInformation": "આ પરિબળ વળાંકને અનુમાનિત કિંમતના ફેરફારોને સમાયોજિત કરવાની મંજૂરી આપે છે, જેમ કે લિક્વિડ સ્ટેકિંગ ટોકન પર ઉપાર્જિત મૂલ્ય.",
     "singleAsset": "સિંગલ એસેટ",
     "stablecoinWarning": "તમે {denom} , a {mechanism} -બેક્ડ સ્ટેબલકોઇનમાં પ્રવાહિતા ઉમેરી રહ્યા છો.",
-    "title": "લિક્વિડિટી ઉમેરો"
+    "title": "લિક્વિડિટી ઉમેરો",
+    "titleInPool": "પૂલ # {poolId} માં તરલતા ઉમેરો",
+    "priceImpact": "ભાવની અસર"
   },
   "addConcentratedLiquidity": {
     "step1Title": "પગલું 1: વ્યૂહરચના પસંદ કરો",
     "step2Title": "પગલું 2: લિક્વિડિટી ઉમેરો",
+    "step2TitleManaged": "પગલું 2: પ્રદાતા પસંદ કરો",
     "managed": "વ્યવસ્થાપિત",
     "manual": "મેન્યુઅલ",
     "manualDescription": "મહત્તમ કાર્યક્ષમતા અને પુરસ્કારો માટે તમે નિયમિતપણે મેનેજ કરી શકો તેવી સ્થિતિ બનાવો.",
     "back": "પાછળ",
+    "priceShownIn": "{quote} પ્રતિ {base} માં દર્શાવેલ કિંમતો",
+    "priceRange": "ભાવ શ્રેણી",
     "currentPrice": "વર્તમાન ભાવ",
     "basePerQuote": "{quote} દીઠ {base}",
     "selectVolatilityRange": "વોલેટિલિટી વ્યૂહરચના પસંદ કરો",
+    "volatilityModerateDescription": "સ્પોટ પ્રાઇસની ±25% રેન્જમાં ધ્યાન કેન્દ્રિત કરીને, તમે અદલાબદલી પર વધુ કમાણી કરશો પરંતુ કિંમતને શ્રેણીમાં રાખવા માટે પુનઃસંતુલિત કરીને તમારી સ્થિતિ પર નજર રાખો.",
     "volatilityAggressiveDescription": "સ્પોટ પ્રાઇસની ±10% રેન્જમાં ધ્યાન કેન્દ્રિત કરીને, તમે અદલાબદલી પર ઘણો મોટો સોદો મેળવશો પરંતુ કિંમત શ્રેણીની બહાર જવાનું જોખમ રહે છે. આ સ્થિતિને વારંવાર તપાસો.",
     "volatilityCustomDescription": "તમારી વ્યૂહરચનાને અનુકૂળ હોય તેવી સ્થિતિ બનાવો. તમે સેટ કરેલી કોઈપણ સ્થિતિ પર નજર રાખવાનું યાદ રાખો.",
     "volatilityPassiveDescription": "આ સંપૂર્ણ શ્રેણી સ્થિતિ સેટિંગ અને ભૂલી જવા માટે ઉત્તમ છે. સ્વેપ પર ઓછી કમાણી કરો પરંતુ હંમેશા શ્રેણીમાં રહો.",
     "amountToDeposit": "જમા કરવાની રકમ",
     "buttonCreateAndStake": "પોઝિશન અને હિસ્સો બનાવો",
-    "estimated": "અંદાજિત"
+    "estimated": "અંદાજિત",
+    "estimatedInfo": "આ વર્તમાન પસંદ કરેલ કિંમતો પર આધારિત અંદાજ છે. વાસ્તવિક APR અલગ અલગ હોઈ શકે છે. જો સ્થિતિ શ્રેણીની બહાર જાય, તો APR 0% હશે."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "સુપરચાર્જ્ડ લિક્વિડિટી શું છે?",
     "tutorialA": {
+      "1": "ક્લાસિક પૂલમાં, તરલતા શક્ય કિંમતોની સંપૂર્ણ શ્રેણીમાં વિતરિત કરવામાં આવી હતી. સુપરચાર્જ્ડ પૂલ સાથે, અમે હવે વર્તમાન સ્પોટ પ્રાઇસની આસપાસ તરલતાને કેન્દ્રિત કરી શકીએ છીએ, મૂડી કાર્યક્ષમતામાં મોટા પાયે વધારો કરી શકીએ છીએ.",
       "2": "હવે તમે તમારા માટે અનુકૂળ વ્યૂહરચના પસંદ કરી શકો છો. નિષ્ક્રિય વ્યૂહરચનાઓ તમને સમગ્ર ગાળામાં થોડું વિતરિત કરવાની મંજૂરી આપે છે. તમે ઓછી કમાણી કરો છો, પરંતુ ક્યારેય રેન્જની બહાર જશો નહીં.",
       "3": "વધુ આક્રમક વ્યૂહરચના તમને વધુ કમાણી કરવાની મંજૂરી આપશે, પરંતુ શ્રેણીની બહાર જવાની શક્યતા વધુ છે. તેને નજીકથી જુઓ અને જરૂરિયાત મુજબ ફરીથી સંતુલિત કરો. શ્રેણીની બહાર હોવા પર, તમે સ્વેપ પર કમાણી કરવાનું બંધ કરશો.",
-      "4": "પરંપરાગત AMM ની જેમ, જેમ જેમ કિંમતો વધતી જાય છે તેમ, અસ્કયામતો સંપૂર્ણપણે પૂલમાંની એક સંપત્તિમાં રૂપાંતરિત થાય છે. જો તમારી સ્થિતિ શ્રેણીની બહાર જાય છે, તો જ્યાં સુધી કિંમત તમારી શ્રેણીમાં ફરીથી પ્રવેશ ન કરે ત્યાં સુધી તમારી પાસે અન્ય સંપત્તિના 100% હશે."
+      "4": "પરંપરાગત AMM ની જેમ, જેમ જેમ કિંમતો વધતી જાય છે તેમ, અસ્કયામતો સંપૂર્ણપણે પૂલમાંની એક સંપત્તિમાં રૂપાંતરિત થાય છે. જો તમારી સ્થિતિ શ્રેણીની બહાર જાય છે, તો જ્યાં સુધી કિંમત તમારી શ્રેણીમાં ફરીથી પ્રવેશ ન કરે ત્યાં સુધી તમારી પાસે અન્ય સંપત્તિના 100% હશે.",
+      "5": "LP ના ફ્રી માર્કેટમાં દરેક વ્યક્તિ જુદી જુદી વ્યૂહરચનાઓને અનુસરે છે. લિક્વિડિટી વધુ ગતિશીલ છે, અને વેપારીઓ માટે વધુ સારી રીતે ઑપ્ટિમાઇઝ છે."
     }
   },
   "assetNotCompatible": "આ સંપત્તિ આ વૉલેટ સાથે સુસંગત નથી.",
@@ -46,7 +56,9 @@
     "title": "સ્ટેક્ડ OSMO માં કન્વર્ટ કરો",
     "description": "પસંદ કરેલી જગ્યાઓ સંપૂર્ણપણે OSMO માં રૂપાંતરિત થશે. પછી તમામ OSMO તમારા હાલના વેલિડેટર સેટ પર આપમેળે સ્ટેક થઈ જશે.",
     "stakedOsmo": "સ્ટેક્ડ OSMO",
+    "APR": "APR",
     "currentApr": "વર્તમાન APR",
+    "pool": "POOL # {poolId}",
     "position": "પોઝિશન # {positionId}",
     "convertAndStake": "કન્વર્ટ અને સ્ટેક"
   },
@@ -56,8 +68,10 @@
     "outOfRange": "પહોંચની બહાર",
     "fullRange": "સંપૂર્ણ શ્રેણી",
     "unbonding": "અનબૉન્ડિંગ",
+    "superfluidStaked": "સુપરફ્લુઇડ દાવ પર",
     "superfluidUnstakingStatus": "સુપરફ્લુઇડ અનસ્ટૅકિંગ",
     "currentAssets": "વર્તમાન અસ્કયામતો",
+    "principalAssets": "મુખ્ય સંપત્તિ",
     "totalRewardsEarned": "કુલ પુરસ્કારો કમાયા",
     "unclaimedRewards": "દાવો ન કરેલા પુરસ્કારો",
     "roi": "ROI",
@@ -77,12 +91,15 @@
     "learnMoreAboutPools": "પૂલ વિશે વધુ જાણો",
     "supercharged": "સુપરચાર્જ્ડ",
     "createAPosition": "સ્થિતિ બનાવો",
+    "addMoreLiquidity": "વધુ તરલતા ઉમેરો",
     "pendingRewards": "બાકી પુરસ્કારો",
     "superfluidValidator": "માન્યકર્તા",
     "superfluidUnstake": "એકવાર અનસ્ટેક કર્યા પછી {duration} પછી ઉપલબ્ધ",
     "superfluidUnstaking": "અનસ્ટેકિંગ, {fromNow} માં ઉપલબ્ધ",
     "superfluidCommission": "કમિશન",
     "unstake": "અનસ્ટેક લિક્વિડિટી",
+    "unbondingFromNow": "અનબોન્ડિંગ, {fromNow} માં ઉપલબ્ધ છે",
+    "checkBackForRewards": "પુરસ્કારો માટે પાછા તપાસો",
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
@@ -90,6 +107,8 @@
   },
   "app": {
     "banner": {
+      "backToOsmosis": "ઓસ્મોસિસ પર પાછા જાઓ",
+      "externalLink": "તમે હવે Osmosis ઍપ પર જવા માટે છોડી રહ્યાં છો",
       "externalLinkDisclaimer": "લિંક પર ક્લિક કરીને, તમે સ્વીકારો છો કે તમે વાંચ્યું છે અને સમજ્યું છે કે Osmosis એ બાહ્ય પૃષ્ઠો માટે સેવાની ગુણવત્તાની કોઈ બાંયધરી આપતું નથી કે જેમાં અલગ ToS હોઈ શકે.",
       "externalLinkModalTitle": "ઓસ્મોસિસ છોડીને",
       "goToSite": "સાઇટ પર ચાલુ રાખો",
@@ -98,6 +117,7 @@
     }
   },
   "store": {
+    "headerTitle": "તમારા અનુભવને સુપરચાર્જ કરો",
     "headerSubtitle": "વેપાર એ માત્ર પ્રથમ પગલું છે. તમારી સંપત્તિઓને કામ કરવા માટે મૂકો અને લીવરેજ, વૉલ્ટ્સ અને તેનાથી આગળ ઘણું બધું પૂર્ણ કરો.",
     "featured": "ફીચર્ડ",
     "searchPlaceholder": "શોધો",
@@ -108,11 +128,15 @@
     "allAppsHeader": "બધી એપ્સ"
   },
   "addConcentratedLiquidityPoolCta": {
+    "title": "તમારા {pair} સુપરચાર્જ કરો",
     "caption": "સુપરચાર્જ્ડ પોઝિશન્સ તમને વધારાની ઉપજ મેળવવાની મંજૂરી આપે છે. તે 30 સેકન્ડમાં કેવી રીતે કાર્ય કરે છે તે જાણો અથવા થોડા ક્લિક્સમાં તમારી સ્થિતિને અપગ્રેડ કરો.",
+    "primaryCta": "સુપરચાર્જ્ડ પર અપગ્રેડ કરો",
     "secondaryCta": "30 સેકન્ડમાં શીખો"
   },
   "addConcentratedLiquidityeEarnMore": {
     "title": "તમારી લિક્વિડિટીમાંથી વધુ કમાણી કરો",
+    "caption": "સુપરચાર્જ્ડ પોઝિશન્સ તમને વધારાની ઉપજ મેળવવાની મંજૂરી આપે છે. તે 30 સેકન્ડમાં કેવી રીતે કામ કરે છે તે જાણો અથવા થોડી ક્લિક્સમાં તમારી લિક્વિડિટી અપગ્રેડ કરો.",
+    "primaryCta": "સુપરચાર્જ્ડ પર અપગ્રેડ કરો",
     "secondaryCta": "30 સેકન્ડમાં શીખો"
   },
   "createFirstPositionCta": {
@@ -152,13 +176,16 @@
       "selectAmount": "રકમ પસંદ કરો",
       "titleDeposit": "જમા {coinDenom}",
       "titleWithdraw": "પાછી ખેંચો {coinDenom}",
-      "waitTime": "20 સેકન્ડ"
+      "waitTime": "20 સેકન્ડ",
+      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે.",
+      "provider": "પ્રદાતા"
     },
     "myPools": "તમારા પૂલ",
     "poolCards": {
       "APR": "APR",
       "bonded": "બંધાયેલા",
-      "FeeAPY": "ફી APY"
+      "FeeAPY": "ફી APY",
+      "liquidity": "મારી લિક્વિડિટી"
     },
     "selectAssetSource": {
       "installWallet": "ઇન્સ્ટોલ કરો {walletName}",
@@ -203,6 +230,7 @@
         "insufficientFee": "અપૂરતી ફી",
         "reconnectWallet": "ફરીથી કનેક્ટ કરો {walletName}",
         "wrongNetworkInWallet": "{walletName} માં ખોટું નેટવર્ક",
+        "seeRequest": "{walletName} માં વિનંતી જુઓ",
         "unexpectedError": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
         "transactionError": "વ્યવહાર મેળવવામાં ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
         "invalidAddress": "અમાન્ય સરનામું",
@@ -210,6 +238,7 @@
       },
       "from": "થી",
       "loading": "લોડ કરી રહ્યું છે",
+      "titleDeposit": "જમા {coinDenom}",
       "titleWithdraw": "પાછી ખેંચો {coinDenom}",
       "to": "પ્રતિ",
       "transferFee": "ટ્રાન્સફર ફી",
@@ -229,6 +258,7 @@
     "nomic": {
       "addresses": "સરનામાં",
       "bitcoin": "બિટકોઇન (BTC)",
+      "bitcoinMinerFee": "Bitcoin ખાણિયો ફી",
       "bridgeFee": "નોમિક બ્રિજ ફી",
       "confirmations": "6 પુષ્ટિકરણ",
       "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો",
@@ -240,6 +270,8 @@
       "lossOfFunds": "આ સમય પછી સરનામાના ઉપયોગથી ભંડોળની ખોટ થશે.",
       "minDeposit": "ન્યૂનતમ થાપણ",
       "minWithdrawal": "ન્યૂનતમ ઉપાડ",
+      "nomicCapacityLimit": "નોમિકની ક્ષમતા મર્યાદા છે",
+      "onlyUse": "ફક્ત ઉપયોગ કરો",
       "pendingDeposits": "બાકી થાપણો",
       "poweredBy": "દ્વારા સંચાલિત",
       "proceed": "આગળ વધો",
@@ -255,6 +287,7 @@
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
     "fiatOnrampSelection": {
+      "chooseOnramp": "ફિયાટ ઓનરેમ્પ પસંદ કરો",
       "kadoSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે"
     },
@@ -283,6 +316,7 @@
       "SORTMobile": "સૉર્ટ કરો"
     },
     "table": {
+      "poolId": "પૂલ # {id}",
       "weighted": "ભારિત",
       "concentrated": "સુપરચાર્જ્ડ",
       "transmuter": "ટ્રાન્સમ્યુટર",
@@ -294,6 +328,7 @@
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",
   "errors": {
+    "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
     "emptyAmount": "રકમ ખાલી છે",
     "generic": "ભૂલ",
@@ -303,10 +338,12 @@
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidSlippage": "અમાન્ય સ્લિપેજ",
     "invalidSwapFee": "સ્વેપ ફી અમાન્ય છે",
+    "maxAssetsCount": "મહત્તમ {num} અસ્કયામતોની મંજૂરી છે",
     "minAssetsCount": "ન્યૂનતમ {num} સંપત્તિઓ જરૂરી છે",
     "negativePercentage": "ટકાવારી હકારાત્મક હોવી જોઈએ",
     "negativeSlippage": "સ્લિપેજ નકારાત્મક હોઈ શકતું નથી",
     "noAvailableShares": "કોઈ {denom} શેર ઉપલબ્ધ નથી",
+    "noRoute": "આ વેપાર માટે કોઈ માર્ગ નથી",
     "noSendCurrency": "મોકલવાનું ચલણ સેટ નથી",
     "notInitialized": "આરંભ કરેલ નથી",
     "zeroAmount": "રકમ શૂન્ય છે",
@@ -316,12 +353,14 @@
     "fallbackBugReport": "ક્ષતિ અહેવાલ",
     "fallbackText3": "અથવા મેળવો",
     "fallbackSupport": "આધાર",
+    "chartUnavailable": "ચાર્ટ અનુપલબ્ધ",
     "sequenceNumber": "તમારી પાસે ઘણા બધા સહવર્તી વ્યવહારો છે! તમારા અગાઉના tx સાંકળ પર ઉતર્યા પછી ફરીથી મોકલવાનો પ્રયાસ કરો. (ક્રમ: {sequence} )",
     "invalidAmounts": "અમાન્ય રકમ(ઓ)"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
     "frontierHasNowMerged": "ફ્રન્ટિયર પેજ હવે સાથે મર્જ થઈ ગયું છે",
+    "thisMeansManaging": "આનો અર્થ એ છે કે ટોકન્સનું સંચાલન એક જગ્યાએ સરળતાથી કરી શકાય છે!",
     "commitmentToDecentralization": "વિકેન્દ્રીકરણ અને સુલભતા માટેની પ્રતિબદ્ધતા અનુસાર, વણચકાસાયેલ ટોકન્સને હેન્ડલ કરવાનો વિકલ્પ હજુ પણ ઉપલબ્ધ છે.",
     "settingIsNowEnabled": "સેટિંગ હવે સક્ષમ છે."
   },
@@ -333,7 +372,8 @@
     "buttonBondStake": "બોન્ડ અને હિસ્સો",
     "buttonNext": "આગળ",
     "selectPeriod": "અનબોન્ડિંગ સમયગાળો પસંદ કરો",
-    "superfluidStake": "સુપરફ્લુઇડ સ્ટેકિંગ"
+    "superfluidStake": "સુપરફ્લુઇડ સ્ટેકિંગ",
+    "title": "બોન્ડ એલપી શેર્સ"
   },
   "menu": {
     "assets": "અસ્કયામતો",
@@ -355,6 +395,8 @@
   },
   "notifi": {
     "saveChanges": "ફેરફારો સંગ્રહ",
+    "unsupportedHistoryTitle": "અસમર્થિત સૂચના",
+    "unsupportedHistoryMessage": "અરેરે, કંઈક ખોટું થયું. કૃપા કરીને અમને જણાવો",
     "getStartedHistoryTitle1": "પ્રારંભ કરવા માટે ટોકન્સ ખરીદો",
     "getStartedHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
     "getStartedHistoryTitle2": "વેપાર કેવી રીતે શરૂ કરવો",
@@ -362,17 +404,20 @@
     "getStartedHistoryTitle3": "ભંડોળ કેવી રીતે જમા કરવું",
     "signupDummyHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
     "signupDummyHistoryTitle2": "સંપત્તિ કેવી રીતે જમા કરવી",
+    "signupDummyHistoryMessage2": "ઓસ્મોસિસ પર ફંડ કેવી રીતે ટ્રાન્સફર કરવું તે જાણો",
     "signupDummyHistoryTitle3": "વેપાર કેવી રીતે શરૂ કરવો",
     "outboundTransferHistoryTitle": "ઓસ્મોસિસ આઉટબાઉન્ડ ટ્રાન્સફર",
     "outboundTransferHistoryMessage": "રકમ",
     "poolExitedHistoryTitle": "ઓસ્મોસિસ પૂલ બહાર નીકળ્યો",
     "poolJoinedHistoryTitle": "ઓસ્મોસિસ પૂલ જોડાયા",
     "poolJoinedHistoryMessage": "ટોકન",
+    "swapHistoryTitle": "ઓસ્મોસિસ સ્વેપ પુષ્ટિ",
     "swapHistoryMessage": "માં અદલાબદલી",
     "emptyHistoryTitle": "કોઈ શીર્ષક નથી",
     "emptyHistoryMessage": "કોઈ સંદેશ નથી",
     "positionOutOfRangeHistoryTitle": "શ્રેણીની બહારની સ્થિતિ",
     "positionOutOfRangeHistoryMessage": "તમારી LP સ્થિતિ શ્રેણીની બહાર છે",
+    "signupPageTitle": "સૂચનાઓ હવે ઉપલબ્ધ છે.",
     "signupPageMessage": "નવી ટોકન સૂચિઓથી લઈને નિર્ણાયક સ્થિતિ સ્થિતિઓ સુધી ફરી ક્યારેય મહત્વપૂર્ણ અપડેટ ચૂકશો નહીં.",
     "signupPageButton": "સૂચનાઓ સક્ષમ કરો",
     "loadMore": "વધુ બતાવો",
@@ -386,11 +431,14 @@
     "available": "ઉપલબ્ધ છે",
     "bonded": "બંધાયેલા",
     "bondLiquidity": "બોન્ડ લિક્વિડિટી",
+    "bondLiquidityCaption": "વધુ APR મેળવવા માટે તમારા શેરને લાંબા સમય સુધી લૉક કરો.",
     "bondLiquidityUnavailable": "બોન્ડ લિક્વિડિટી (અનુપલબ્ધ)",
     "bondShares": "બોન્ડ શેર્સ",
+    "bondSuperfluidLiquidityCaption": "મહત્તમ પુરસ્કારો માટે સુપરફ્લુઇડ પર જાઓ.",
     "checkBackForBondingRewards": "બોન્ડિંગ પુરસ્કારો માટે પાછા તપાસો",
     "collapseDetails": "પૂલ રચના છુપાવો",
     "commission": "કમિશન",
+    "currentDailyEarn": "તમે હાલમાં કમાણી કરી રહ્યાં છો",
     "day": "દિવસ",
     "delegated": "સોંપેલ",
     "details": "વિગતો",
@@ -402,8 +450,10 @@
     "learnMore": "વધુ શીખો",
     "putAssetsToWork": "તમારી સંપત્તિને કામ પર મૂકો.",
     "putAssetsToWorkCaption": "APR અનલૉક કરવા માટે તમારી સંપત્તિઓને આ પૂલમાં ઉમેરો. તમારો અનબોન્ડિંગ સમયગાળો જેટલો લાંબો છે, તેટલો વધુ તમે બનાવશો.",
+    "rewardDistribution": "તમામ લિક્વિડિટી પ્રદાતાઓને પુરસ્કારોનું વિતરણ કરવામાં આવ્યું",
     "sharesAmount": "{shares} શેર",
     "sharesAvailableIn": "માં ઉપલબ્ધ છે",
+    "showDetails": "પૂલની રચના બતાવો",
     "stableswapEnabled": "સ્ટેબલસ્વેપ",
     "transmuter": "ટ્રાન્સમ્યુટર",
     "superfluidStaking": "સુપરફ્લુઇડ સ્ટેકિંગ",
@@ -438,6 +488,7 @@
       "buttonCreate": "પૂલ બનાવો",
       "buttonNext": "આગળ",
       "infoCaption": "ઓસ્મોસિસ સમુદાય પૂલમાં સ્થાનાંતરિત",
+      "infoMessage": "પૂલ બનાવવાની ફી",
       "stablePool": "સ્થિર પૂલ",
       "step": {
         "one": {
@@ -458,6 +509,8 @@
     "TVL": "ટીવીએલ",
     "myLiquidity": "મારી લિક્વિડિટી",
     "myPools": "તમારા પૂલ",
+    "poolId": "પૂલ # {id}",
+    "priceOsmo": "OSMO કિંમત",
     "rewardDistribution": "માં પુરસ્કાર વિતરણ",
     "aprBreakdown": {
       "swapFees": "સ્વેપ ફી",
@@ -467,7 +520,8 @@
       "total": "કુલ APR",
       "explainer": {
         "title": "APR ની ગણતરી કેવી રીતે કરવામાં આવે છે?",
-        "p2": "સુપરચાર્જ્ડ પૂલમાં, મોટાભાગના વપરાશકર્તાઓને ઓછા પુરસ્કારો પ્રાપ્ત થશે. આ સ્થિતિને કારણે છે જે વધુ કેન્દ્રિત છે, જે વધુ પ્રોત્સાહનો મેળવે છે."
+        "p2": "સુપરચાર્જ્ડ પૂલમાં, મોટાભાગના વપરાશકર્તાઓને ઓછા પુરસ્કારો પ્રાપ્ત થશે. આ સ્થિતિને કારણે છે જે વધુ કેન્દ્રિત છે, જે વધુ પ્રોત્સાહનો મેળવે છે.",
+        "p3": "અંદાજોને રૂઢિચુસ્ત રાખવા માટે, તમામ APR ને 3 ના અવયવ દ્વારા વિભાજિત કરવામાં આવે છે."
       }
     }
   },
@@ -485,6 +539,8 @@
     "filterDust": "ફિલ્ટર ડસ્ટ",
     "selectLanguage": "ભાષા પસંદ કરો",
     "titleUnverifiedAssets": "ચકાસાયેલ અસ્કયામતો",
+    "unverifiedAssets": "પુલ અને સ્વેપમાં વણચકાસાયેલ અસ્કયામતો દર્શાવો",
+    "title": "વૈશ્વિક સેટિંગ્સ",
     "titleHideDust": "&lt; {fiatSymbol} 0.01 સાથે પૂલ છુપાવો",
     "titleLanguage": "ભાષા",
     "titleHideBalances": "ગોપનીયતા માટે માસ્ક બેલેન્સ"
@@ -495,6 +551,9 @@
     "stake": "સ્ટેક OSMO",
     "unstake": "OSMO ને અનસ્ટેક કરો",
     "estimatedEarnings": "અંદાજિત કમાણી",
+    "unbondingInProgress": "અનસ્ટેકિંગ ચાલુ છે",
+    "amount": "રકમ",
+    "availableIn": "માં ઉપલબ્ધ છે",
     "day": "દિવસ",
     "days": "દિવસ",
     "month": "માસ",
@@ -508,9 +567,13 @@
     "learn": "વધુ શીખો",
     "alertTitleBeginning": "કમાઓ",
     "alertTitleEnd": "APR",
+    "alertSubtitle": "તમારા OSMO ને સ્ટેક કરીને",
+    "mainCardButtonText": "દાવ",
+    "mainCardButtonUnstakeText": "અનસ્ટેક",
     "unbondingHeader": "અનબોન્ડિંગ સમયગાળો",
     "unbondingSubtext": "એકવાર આ સમયગાળો વીતી જાય, પછી તમે સંપત્તિ ટેબ હેઠળ તમારા OSMO ને ઍક્સેસ કરી શકો છો",
     "estimatedEarningsTooltip": "આ કમાણી વર્તમાન સ્ટેકિંગ APRના આધારે ગણવામાં આવે છે, જે ફેરફારને આધીન છે.",
+    "collectRewardsTooltipDisabled": "તમારા પુરસ્કારો એકત્રિત કરવા માટે ખૂબ ઓછા છે, કૃપા કરીને એકવાર ફરી પ્રયાસ કરો જ્યારે તમારું દાવો ન કરાયેલ બેલેન્સ {collectRewardsMinimumOsmo} OSMO ની ન્યૂનતમ થ્રેશોલ્ડ પર પહોંચી જાય.",
     "isAPRTooHighTooltip": "આ વેલિડેટર અસામાન્ય રીતે ઉચ્ચ કમિશન લે છે. એક અલગ વેલિડેટર પસંદ કરવાનું વિચારો.",
     "isVotingPowerTooHighTooltip": "આ ઉચ્ચ મતદાન શક્તિ સાથે ટોચના 10 માન્યકર્તા છે. વિકેન્દ્રીકરણને પ્રોત્સાહન આપવા માટે એક અલગ વેલિડેટર પસંદ કરવાનું વિચારો.",
     "learnMore": {
@@ -525,7 +588,8 @@
         "bodyText": "તમારી ટુકડી બનાવતી વખતે, તમે જેટલા વધુ વેલિડેટર પસંદ કરશો, અને તેમની પાસે મતદાનની શક્તિ ઓછી હશે, તમે વિકેન્દ્રીકરણને પ્રોત્સાહન આપવા માટે વધુ મદદ કરશો. અસાધારણ રીતે ઉચ્ચ કમિશન લેનારા માન્યકર્તાઓનું ધ્યાન રાખો."
       },
       "step4": {
-        "title": "અનબોન્ડિંગ સમયગાળા"
+        "title": "અનબોન્ડિંગ સમયગાળા",
+        "bodyText": "સ્ટેક કરેલા ટોકન્સ 14 દિવસ માટે લૉક કરવામાં આવે છે. તમે કોઈપણ સમયે અનસ્ટેક કરી શકો છો પરંતુ તમારા ટોકન્સ ફરીથી ઉપલબ્ધ થાય તે પહેલા આ સમયગાળાની રાહ જોવી પડશે."
       },
       "step5": {
         "title": "સ્ટેકિંગ શરૂ કરો"
@@ -534,7 +598,9 @@
     "validatorSquad": {
       "title": "વેલિડેટર સ્ક્વોડ",
       "description": "તમે જેને સોંપવા માંગો છો તે માન્યકર્તાઓને પસંદ કરો. એકવાર પૂર્ણ થઈ જાય, દાવ પર ચાલુ રાખો. તમે કોઈપણ સમયે તમારા વેલિડેટર સેટમાં ફેરફાર કરી શકો છો.",
+      "searchPlaceholder": "માન્યકર્તા માટે શોધો",
       "button": "સ્ક્વોડ સેટ કરો",
+      "button2": "સ્ક્વોડ અને હિસ્સો સેટ કરો",
       "noResults": "કોઈ પરિણામો મળ્યા નથી",
       "column": {
         "validator": "માન્યકર્તા",
@@ -550,10 +616,13 @@
       },
       "existingUser": {
         "title": "એવું લાગે છે કે તમે પહેલાં દાવ લગાવ્યો છે",
-        "buttonKeep": "હાલના વેલિડેટર રાખો"
+        "description": "અમે તમારા વૉલેટ સરનામાં સાથે સંકળાયેલ હાલની હિસ્સેદારી ટીમ શોધી કાઢી છે. શું તમે ઓસ્મોસિસ પર સમાન માન્યકર્તાઓ રાખવા માંગો છો?",
+        "buttonKeep": "હાલના વેલિડેટર રાખો",
+        "buttonSelect": "નવા વેલિડેટર પસંદ કરો"
       }
     },
     "introModal": {
+      "callout": "નવી સુવિધા",
       "title": "ઓસ્મોસિસ પર સ્ટેકિંગ",
       "description": {
         "1": "સ્ટેકિંગ એ તમારી અસ્કયામતો વડે કમાણી કરવાની સૌથી સરળ રીતોમાંની એક છે. હવે તમે તમારા OSMO ને ઓસ્મોસિસ પર જ હિસ્સો આપી શકો છો.",
@@ -573,6 +642,7 @@
       "commission": "કમિશન",
       "validator": "માન્યકર્તા"
     },
+    "estimation": "અંદાજિત સુપરફ્લુઇડ પ્રતિનિધિમંડળ",
     "estimationInfo": "આ પ્રતિનિધિમંડળના મૂલ્યમાં વધઘટ થાય છે અને તેનો અંદાજ પૂલમાં OSMO ની માત્રાના આધારે કરવામાં આવે છે.",
     "estimationMobile": "અનુ. પ્રતિનિધિમંડળ",
     "search": "નામ દ્વારા શોધો",
@@ -600,25 +670,32 @@
       "slippageInfo": "જો કિંમત આ ટકાવારી કરતાં વધુ પ્રતિકૂળ રીતે બદલાશે તો તમારો વ્યવહાર પાછો આવશે.",
       "title": "વ્યવહાર સેટિંગ્સ"
     },
-    "title": "સ્વેપ"
+    "title": "સ્વેપ",
+    "promo": {
+      "newOpportunity": "{denom} વડે કમાવાની નવી તક"
+    }
   },
   "walletSelect": {
     "connectionInProgress": "વૉલેટ કનેક્શન પહેલેથી જ ચાલુ છે. સ્થિતિ તપાસવા માટે કૃપા કરીને તમારું એક્સ્ટેંશન ખોલો.",
     "somethingWentWrong": "કંઈક ખોટું થયું",
     "isNotInstalled": "{walletName} ઇન્સ્ટોલ કરેલ નથી",
+    "maybeInstalled": "જો તમારા ઉપકરણ પર {walletName} ઇન્સ્ટોલ કરેલ હોય, તો કૃપા કરીને આ પૃષ્ઠ તાજું કરો અથવા બ્રાઉઝર સૂચનાઓને અનુસરો.",
     "downloadLinkNotProvided": "ડાઉનલોડ લિંક આપવામાં આવી નથી. તેને શોધવાનો પ્રયાસ કરો અથવા વિકાસકર્તા ટીમની સલાહ લો.",
     "requestRejected": "વિનંતી નકારી",
     "connectionDenied": "કનેક્શન પરવાનગી નકારી.",
     "reconnect": "ફરીથી કનેક્ટ કરો",
     "connectingWallet": "વૉલેટ કનેક્ટ કરી રહ્યું છે",
+    "approveWalletConnect": "તમારા મોબાઇલ પર {walletName} કનેક્શન વિનંતીને મંજૂર કરો.",
     "initializingWallet": "વૉલેટ ક્લાયંટ શરૂ કરી રહ્યાં છીએ",
     "clickToRefresh": "તાજું કરવા માટે ક્લિક કરો.",
     "qrCodeExpired": "QR કોડની સમયસીમા સમાપ્ત",
+    "qrCodeError": "QR કોડ ભૂલ",
     "refresh": "તાજું કરો",
     "connectWith": "ની સાથે જોડાઓ",
     "tapThe": "ટેપ કરો",
     "button": "બટન",
     "topRightButton": "તમારી {wallet} એપ્લિકેશનના ઉપરના જમણા ખૂણે. કનેક્ટ કરવા માટે નીચેનો QR કોડ સ્કેન કરો.",
+    "dontHaveThisWallet": "આ પાકીટ નથી?",
     "get": "મેળવો",
     "mobileWallets": "મોબાઇલ વોલેટ્સ",
     "installedWallets": "ઇન્સ્ટોલ કરેલ વૉલેટ",
@@ -626,6 +703,8 @@
     "step1Title": "પાકીટ શું છે?",
     "step1Content": "OSMO અને ATOM જેવી તમારી તમામ ડિજિટલ સંપત્તિઓ મોકલવા, પ્રાપ્ત કરવા અને ઍક્સેસ કરવા માટે વૉલેટનો ઉપયોગ થાય છે.",
     "step2Title": "કોઈ હિસાબ નથી. કોઈ પાસવર્ડ નથી.",
+    "step2Content": "ઘણાં વિવિધ પ્લેટફોર્મ પર સાઇન ઇન કરવા માટે તમારા વૉલેટનો ઉપયોગ કરો. કોઈ અનન્ય એકાઉન્ટ્સ અથવા પાસવર્ડ્સ નથી.",
+    "step3Title": "તમારી ચાવીઓ, તમારા ભંડોળ.",
     "step3Content": "ઓસ્મોસિસ પર, ફક્ત તમે જ તમારી સંપત્તિઓ ખસેડી શકો છો. મહાન શક્તિ સાથે મોટી જવાબદારી આવે છે.",
     "step4Title": "પ્રારંભ કરવા માટે વૉલેટ બનાવો",
     "step4Content": "તમારું પ્રથમ વૉલેટ સેટ કરો અને સાઇન ઇન થાઓ! સંપત્તિ મોકલો, પ્રાપ્ત કરો અથવા ખરીદો."
@@ -635,11 +714,14 @@
   "transactionSuccessful": "વ્યવહાર સફળ",
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
+  "waitingForTransaction": "ટ્રાન્ઝેક્શનને બ્લોકમાં સામેલ કરવાની રાહ જોઈ રહ્યાં છીએ",
   "highPoolInflationWarning": "ઉચ્ચ APR ફુગાવાના પુરસ્કારોથી પરિણમી શકે છે. સાવધાની સાથે આગળ વધો.",
   "upgrades": {
     "title": "અપગ્રેડ ઉપલબ્ધ છે",
     "positionUpgrade": "પોઝિશન અપગ્રેડ",
     "superchargedLiquidity": "સુપરચાર્જ્ડ લિક્વિડિટી",
+    "pool": "પૂલ",
+    "new": "નવું",
     "current": "વર્તમાન",
     "success": "અપગ્રેડ સફળતા!",
     "clickHereToView": "જોવા માટે અહીં ક્લિક કરો"
@@ -654,7 +736,8 @@
       "description": "આંતરિક સર્વર ભૂલ આવી."
     },
     "default": {
-      "title": "ઓસ્મોસિસ ઝોન પર વેપાર"
+      "title": "ઓસ્મોસિસ ઝોન પર વેપાર",
+      "description": "અદલાબદલી કરો, કમાણી કરો અને અગ્રણી વિકેન્દ્રિત કોસ્મોસ એક્સચેન્જ પર બિલ્ડ કરો - સૌથી મોટી ઇન્ટરચેન DEX"
     },
     "apps": {
       "title": "ઓસ્મોસિસ એપ સ્ટોર"
@@ -666,6 +749,9 @@
     "disclaimer": {
       "description": "ઓસ્મોસિસ માટે અસ્વીકરણ અને ગોપનીયતા નીતિ વાંચો - અગ્રણી વિકેન્દ્રિત કોસ્મોસ એક્સચેન્જ"
     },
+    "pool": {
+      "title": "પૂલ # {id}"
+    },
     "pools": {
       "title": "ઓસ્મોસિસ પુલ",
       "description": "ઓસ્મોસિસ પર લિક્વિડિટી પૂલ શોધો - અગ્રણી વિકેન્દ્રિત કોસ્મોસ એક્સચેન્જ"
@@ -675,12 +761,14 @@
     "relatedAssets": "સંબંધિત અસ્કયામતો",
     "stakeYourDenomToEarn": "{denom} કમાવવા માટે તમારું {apr} % APR",
     "stakeYourDenomToEarnNoAPR": "પુરસ્કારો મેળવવા માટે તમારા {denom} હિસ્સો લો",
+    "provideLiquidity": "તરલતા પ્રદાન કરો અને ફી અને સ્વેપ પર કમાણી કરો",
     "yourBalance": "તમારું બેલેન્સ",
     "ariaView": "જુઓ {name}",
     "ariaViewOn": "{name} પર જુઓ",
     "collapse": "સંકુચિત કરો",
     "followTheConversation": "વાતચીત અનુસરો",
     "chart": {
+      "xHour": "{h} H",
       "xDay": "{d} D",
       "all": "બધા"
     },
@@ -690,6 +778,8 @@
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
     "tvl": "ટીવીએલ",
     "noData": "એનડી",
+    "buyToken": "{coinDenom} ખરીદો",
+    "staking": "સ્ટેકિંગ",
     "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"
   },
   "osmosisUpdates": {
@@ -697,17 +787,20 @@
     "seeWhatsNew": "નવું શું છે તે જુઓ"
   },
   "unlistedAssetsEnabled": "અસૂચિબદ્ધ સંપત્તિઓ સક્ષમ",
+  "unlistedAssetsDisabled": "અસૂચિબદ્ધ સંપત્તિઓ અક્ષમ છે",
   "earnPage": {
     "title": "કમાઓ",
     "position": "પદ",
     "positions": "હોદ્દા",
     "allocation": "ફાળવણી",
     "tokensCount": "{number} ટોકન્સ",
+    "strategiesCount": "{number} વ્યૂહરચના",
     "value": "મૂલ્ય",
     "method": "પદ્ધતિ",
     "platform": "પ્લેટફોર્મ",
     "scrollToSeeMore": "વધુ જોવા માટે સ્ક્રોલ કરો",
     "discoverStrategies": "વ્યૂહરચના શોધો",
+    "myStrategies": "મારી વ્યૂહરચનાઓ",
     "strategyPlatform": "વ્યૂહરચના / પ્લેટફોર્મ",
     "apy": "એપીવાય",
     "daily": "દૈનિક",
