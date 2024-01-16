@@ -1,5 +1,6 @@
 export * from "./filtered-pools";
 export * from "./market-cap";
+export * from "./pools-fees";
 export * from "./token-data";
 export * from "./token-historical-chart";
 export * from "./token-pair-historical-chart";

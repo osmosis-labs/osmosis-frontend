@@ -46,13 +46,46 @@ describe("sort function", () => {
       { name: "Bob", age: 25 },
     ];
 
-    const result = sort(list, "name", "asc", (a, b) =>
+    const resultAsc = sort(list, "name", "asc", (a, b) =>
       a.name.localeCompare(b.name)
     );
-    expect(result).toEqual([
+    expect(resultAsc).toEqual([
       { name: "Alice", age: 20 },
       { name: "Bob", age: 25 },
       { name: "John", age: 30 },
+    ]);
+
+    const resultDesc = sort(list, "name", "desc", (a, b) =>
+      b.name.localeCompare(a.name)
+    );
+    expect(resultDesc).toEqual([
+      { name: "John", age: 30 },
+      { name: "Bob", age: 25 },
+      { name: "Alice", age: 20 },
+    ]);
+  });
+
+  it("should sort using a deep key path", () => {
+    const list = [
+      { name: "John", age: { b: 20 } },
+      { name: "Alice", age: { b: 34 } },
+      { name: "Bob", age: { b: 1 } },
+    ];
+
+    // asc
+    const resultAsc = sort(list, "age.b", "asc");
+    expect(resultAsc).toEqual([
+      { name: "Bob", age: { b: 1 } },
+      { name: "John", age: { b: 20 } },
+      { name: "Alice", age: { b: 34 } },
+    ]);
+
+    // desc
+    const resultDesc = sort(list, "age.b", "desc");
+    expect(resultDesc).toEqual([
+      { name: "Alice", age: { b: 34 } },
+      { name: "John", age: { b: 20 } },
+      { name: "Bob", age: { b: 1 } },
     ]);
   });
 });

@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { SIDECAR_BASE_URL } from "~/server/queries/sidecar";
 import { server } from "~/tests/msw";
 
 import { calcAssetValue, getAsset } from "../../../assets";
@@ -33,7 +34,7 @@ describe("getPoolsFromSidecar", () => {
     });
 
     server.use(
-      rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
+      rest.get(`${SIDECAR_BASE_URL}/pools/all`, (_req, res, ctx) => {
         return res(ctx.json(mockSidecarResponse));
       })
     );
@@ -45,6 +46,7 @@ describe("getPoolsFromSidecar", () => {
     const end1 = Date.now();
     const duration1 = end1 - start1;
 
+    // should hit cache now
     const start2 = Date.now();
     const pools2 = await getPoolsFromSidecar();
     const end2 = Date.now();

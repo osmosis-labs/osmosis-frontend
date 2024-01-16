@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { search, SearchSchema } from "~/utils/search";
@@ -6,17 +6,19 @@ import { search, SearchSchema } from "~/utils/search";
 import { PoolRawResponse } from "../../osmosis";
 import { getPoolsFromSidecar } from "./providers/sidecar";
 
-export type PoolType =
-  | "weighted"
-  | "stable"
-  | "concentrated"
-  | "cosmwasm-transmuter"
-  | "cosmwasm";
+const allPooltypes = [
+  "concentrated",
+  "weighted",
+  "stable",
+  "cosmwasm-transmuter",
+  "cosmwasm",
+] as const;
+export type PoolType = (typeof allPooltypes)[number];
 
 export type Pool = {
   id: string;
   type: PoolType;
-  raw: PoolRawResponse;
+  raw: Omit<PoolRawResponse, "@type">;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
 };
@@ -25,22 +27,23 @@ export type Pool = {
  *  Should handle caching in the provider. */
 export type PoolProvider = () => Promise<Pool[]>;
 
-const PoolFilterSchema = z.object({
+export const PoolFilterSchema = z.object({
+  /** Search pool ID, or denoms. */
   search: SearchSchema.optional(),
-  id: z.string().optional(),
-  type: z
-    .enum(["concentrated", "weighted", "stable", "transmuter", "cosmwasm"])
-    .optional(),
+  /** Filter pool by minimum required USD liquidity. */
+  minLiquidityUsd: z.number().optional(),
+  /** Only include pools of given type. */
+  types: z.array(z.enum(allPooltypes)).optional(),
 });
 
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "type", "coinDenoms"];
+const searchablePoolKeys = ["id", "coinDenoms"];
 
 export async function getPool(poolId: string): Promise<Pool | undefined> {
-  const pools = await getPools({ id: poolId });
-  return pools[0];
+  const pools = await getPools();
+  return pools.find(({ id }) => id === poolId);
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
@@ -53,11 +56,14 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
-  if (params?.id) {
-    pools = pools.filter(({ id }) => id === params.id);
-  }
-  if (params?.type) {
-    pools = pools.filter(({ type }) => type === params.type);
+  if (params?.types || params?.minLiquidityUsd) {
+    pools = pools.filter(
+      ({ type, totalFiatValueLocked }) =>
+        (params?.types ? params.types.includes(type) : true) &&
+        (params?.minLiquidityUsd
+          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+          : true)
+    );
   }
 
   // add denoms so user can search them
