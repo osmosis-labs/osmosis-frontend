@@ -524,10 +524,12 @@ const AprBreakdownCell: PoolCellComponent = ({
           ),
         })}
       >
-        {(aprBreakdown.boost || aprBreakdown.osmosis) && (
+        {aprBreakdown.boost || aprBreakdown.osmosis ? (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
+        ) : (
+          <Icon id="info" className="h-4 w-4" />
         )}
         {aprBreakdown.total?.maxDecimals(0).toString() ?? ""}
       </p>
