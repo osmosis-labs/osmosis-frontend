@@ -52,7 +52,7 @@ export const AssetsInfoTable: FunctionComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
-  const { chainStore, accountStore, userSettings, assetsStore } = useStore();
+  const { chainStore, accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
