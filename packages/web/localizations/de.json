@@ -1,0 +1,584 @@
+{
+  "404": {
+    "title": "Nicht gefunden"
+  },
+  "addLiquidity": {
+    "allAssets": "Alle Vermögenswerte",
+    "available": "Verfügbar",
+    "scalingFactorController": "Regler",
+    "scalingFactorControllerWarning_second": "kann die anpassen",
+    "scalingFactorInformation": "Dieser Faktor ermöglicht es der Kurve, sich an vorhersehbare Preisänderungen anzupassen, beispielsweise an den Wert, der einem liquiden Einsatztoken zukommt.",
+    "stablecoinWarning": "Sie fügen Liquidität zu {denom} , einem {mechanism} unterstützten Stablecoin.",
+    "title": "Liquidität hinzufügen"
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "Schritt 1: Wählen Sie eine Strategie",
+    "managed": "Gelang es",
+    "manualDescription": "Schaffen Sie eine Position, die Sie regelmäßig verwalten können, um maximale Effizienz und Belohnungen zu erzielen.",
+    "back": "Zurück",
+    "currentPrice": "derzeitiger Preis",
+    "selectVolatilityRange": "Wählen Sie eine Volatilitätsstrategie",
+    "volatilityAggressiveDescription": "Wenn Sie sich auf einen Spotpreisbereich von ±10 % konzentrieren, verdienen Sie mit Swaps viel, riskieren aber, dass der Preis außerhalb des Bereichs gerät. Überprüfen Sie diese Position regelmäßig.",
+    "volatilityCustomDescription": "Schaffen Sie eine Position, die zu Ihrer Strategie passt. Denken Sie daran, jede von Ihnen eingestellte Position im Auge zu behalten.",
+    "buttonCreateAndStake": "Erstellen Sie Position und Einsatz",
+    "estimated": "Geschätzt"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "Was ist aufgeladene Liquidität?",
+    "tutorialA": {
+      "2": "Jetzt können Sie eine Strategie auswählen, die zu Ihnen passt. Passive Strategien ermöglichen es Ihnen, ein wenig über die gesamte Spanne zu verteilen. Sie verdienen weniger, geraten aber nie aus dem Rahmen.",
+      "4": "Wie bei einem herkömmlichen AMM werden Vermögenswerte bei Preisschwankungen vollständig in einen der Vermögenswerte im Pool umgewandelt. Wenn Ihre Position außerhalb der Spanne liegt, verfügen Sie über 100 % des anderen Vermögenswerts, bis der Preis wieder in Ihre Spanne fällt."
+    }
+  },
+  "assetNotCompatible": "Dieses Asset ist nicht mit dieser Wallet kompatibel.",
+  "convertToStake": {
+    "adSubtitle": "Einige Ihrer Positionen verdienen weniger, als Sie verdienen würden, wenn Sie OSMO für einen effektiven Jahreszins von {apr} % einsetzen würden. Sehen Sie sich Positionen zum Upgrade an und wählen Sie sie aus.",
+    "description": "Ausgewählte Positionen werden vollständig auf OSMO umgestellt. Alle OSMO werden dann automatisch in Ihr bestehendes Validator-Set eingebunden.",
+    "currentApr": "Aktueller Jahreszins",
+    "position": "POSITION # {positionId}"
+  },
+  "clPositions": {
+    "nearBounds": "IN DER NÄHE DER GRENZEN",
+    "outOfRange": "AUSSER REICHWEITE",
+    "fullRange": "VOLLSTÄNDIGE PALETTE",
+    "superfluidUnstakingStatus": "SUPERFLÜSSIGE ENTSTEHUNG",
+    "currentAssets": "Umlaufvermögen",
+    "unclaimedRewards": "Nicht beanspruchte Belohnungen",
+    "roi": "ROI",
+    "selectedRange": "Ausgewählter Bereich",
+    "myLiquidity": "Meine Liquidität",
+    "spreadFactor": "Spread-Faktor",
+    "maxPrice": "Maximaler Preis",
+    "minPrice": "Mindestpreis",
+    "noRewards": "Nichts zum Sammeln, schauen Sie bald noch einmal vorbei",
+    "removeLiquidity": "Liquidität entfernen",
+    "yourPosition": "Dein Standpunkt",
+    "yourPositionsDesc": "Setzen Sie Ihr Vermögen ein und verdienen Sie bei jedem Swap einen Spread.",
+    "learnMoreAboutPools": "Erfahren Sie mehr über Pools",
+    "supercharged": "Aufgeladen",
+    "pendingRewards": "Ausstehende Belohnungen",
+    "superfluidValidator": "Validator",
+    "superfluidUnstaking": "Absteckung aufheben, verfügbar in {fromNow}",
+    "superfluidCommission": "Kommission",
+    "unstake": "Liquidität entziehen",
+    "totalBalance": "Gesamtsaldo",
+    "goToPool": "Gehen Sie zu Pool # {poolId}"
+  },
+  "app": {
+    "banner": {
+      "externalLinkDisclaimer": "Indem Sie auf den Link klicken, bestätigen Sie, dass Sie gelesen und verstanden haben, dass Osmosis keine Garantien für die Servicequalität für externe Seiten übernimmt, für die möglicherweise andere Nutzungsbedingungen gelten.",
+      "chainHalted": "Die Osmosekette wird angehalten, Transaktionen werden vorübergehend deaktiviert."
+    }
+  },
+  "store": {
+    "headerSubtitle": "Der Handel ist nur der erste Schritt. Setzen Sie Ihr Vermögen ein und erreichen Sie mit Leverage, Tresoren und vielem mehr noch viel mehr.",
+    "featured": "Hervorgehoben",
+    "searchPlaceholder": "Suchen",
+    "featuredDescription": "Starten Sie im App Store und erhalten Sie Zugriff auf Tausende von Benutzern. Wenn Sie gelistet oder vorgestellt werden möchten, kontaktieren Sie uns und wir werden uns mit Ihnen in Verbindung setzen.",
+    "applyButton": "Anwenden",
+    "storeDisclaimer": "Bestimmte Inhalte wurden von Dritten erstellt, die nicht mit Osmosis Labs oder einem seiner verbundenen Unternehmen verbunden sind, und Osmosis Labs ist für diese Inhalte nicht verantwortlich. Osmosis Labs haftet nicht für Fehler oder Verzögerungen im Inhalt oder für Maßnahmen, die im Vertrauen auf Inhalte ergriffen werden. Die Informationen dienen ausschließlich Informationszwecken und stellen keine Anlageberatung dar. Dies ist keine Empfehlung zum Kauf oder Verkauf eines bestimmten digitalen Vermögenswerts oder zur Anwendung einer bestimmten Anlagestrategie. Osmosis Labs übernimmt keine Gewähr für die Genauigkeit, Eignung oder Gültigkeit der bereitgestellten Informationen oder für einen bestimmten Vermögenswert. Die angezeigten Preise dienen nur zur Veranschaulichung. Die tatsächlichen Kryptowährungspreise und zugehörigen Statistiken können variieren. Die dargestellten Daten können Vermögenswerte widerspiegeln, die an der Börse von Osmosis Labs und ausgewählten anderen Kryptowährungsbörsen gehandelt werden.",
+    "allAppsHeader": "Alle Apps"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "caption": "Durch aufgeladene Positionen können Sie zusätzliche Erträge erzielen. Erfahren Sie in 30 Sekunden, wie es funktioniert, oder verbessern Sie Ihre Position mit wenigen Klicks."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Verdienen Sie mehr aus Ihrer Liquidität",
+    "secondaryCta": "Lernen Sie in 30 Sekunden"
+  },
+  "createFirstPositionCta": {
+    "caption": "Dieses lang erwartete Upgrade ermöglicht es Ihnen, mit weniger Kapital mehr zu verdienen. Unabhängig von Ihrem Erfahrungsstand können Sie in wenigen Minuten loslegen.",
+    "primaryCta": "Erstellen Sie eine Stelle",
+    "secondaryCta": "Lernen Sie in 30 Sekunden"
+  },
+  "assets": {
+    "bondedAssets": "Gebunden",
+    "historyTable": {
+      "colums": {
+        "amount": "Menge",
+        "deposit": "Kaution",
+        "status": "Status",
+        "transactionHash": "Transaktions-Hash",
+        "type": "Typ",
+        "withdraw": "Zurückziehen"
+      },
+      "failedWithReason": "Fehlgeschlagen: {reason}",
+      "pending": "Ausstehend",
+      "success": "Erfolg",
+      "title": "Übertragungsverlauf"
+    },
+    "ibcTransfer": {
+      "buttonAdd": "Hinzufügen",
+      "buttonEdit": "Bearbeiten",
+      "buttonEnter": "Eingeben",
+      "channelCongestedWithdraw": "Zurückziehen (Kanal überlastet)",
+      "selectAmount": "Wählen Sie Betrag aus",
+      "titleWithdraw": "Abheben {coinDenom}",
+      "waitTime": "20 Sekunden"
+    },
+    "myPools": "Ihre Pools",
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Gebunden"
+    },
+    "selectAssetSource": {
+      "installWallet": "Installieren Sie {walletName}",
+      "next": "Nächste",
+      "titleDeposit": "Einzahlung ab",
+      "titleWithdraw": "Sich zurückziehen"
+    },
+    "stakedAssets": "Abgestecktes OSMO",
+    "table": {
+      "columns": {
+        "assetChain": "Vermögenswert/Kette",
+        "balance": "Gleichgewicht",
+        "deposit": "Kaution",
+        "transfer": "Überweisen",
+        "withdraw": "Zurückziehen"
+      },
+      "depositButton": "Kaution",
+      "hideZero": "Nullsalden ausblenden",
+      "hideBalances": "Maskierte Salden",
+      "preTransfer": {
+        "currentBal": "Aktueller Kontostand",
+        "deposit": "Kaution",
+        "withdraw": "Zurückziehen"
+      },
+      "search": "Suchen",
+      "sort": {
+        "balance": "Gleichgewicht",
+        "network": "Netzwerk",
+        "symbol": "Symbol"
+      },
+      "title": "Alle Vermögenswerte",
+      "withdrawButton": "Zurückziehen",
+      "activate": "aktivieren Sie"
+    },
+    "totalAssets": "Gesamtvermögen",
+    "transfer": {
+      "availableMobile": "Verfügbar",
+      "givePermission": "Erteilen Sie Berechtigungen zur Verwendung von Token",
+      "errors": {
+        "insufficientFee": "Unzureichende Gebühr",
+        "wrongNetworkInWallet": "Falsches Netzwerk in {walletName}",
+        "unexpectedError": "Unerwarteter Fehler. Bitte versuche es erneut.",
+        "missingAddress": "Fehlende Adresse"
+      },
+      "from": "Aus",
+      "loading": "Wird geladen",
+      "titleWithdraw": "Abheben {coinDenom}",
+      "to": "Zu",
+      "transferFee": "Ablöse",
+      "warnDepositAddressDifferent": "Warnung: Das ausgewählte Konto in {address} unterscheidet sich von dem Konto, auf das Sie zuletzt eingezahlt haben.",
+      "expectedOutput": "Erwartete Ausgabe",
+      "sending": "Senden..."
+    },
+    "transferAssetSelect": {
+      "network": "Netzwerk",
+      "withdraw": "Zurückziehen"
+    },
+    "unbondedAssets": "Verfügbar",
+    "nomic": {
+      "addresses": "Adressen.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bridgeFee": "Nomic Bridge-Gebühr",
+      "confirmations": "6 Bestätigungen",
+      "enterBitcoinAddress": "Geben Sie die Bitcoin-Adresse ein",
+      "estimatedArrival": "Voraussichtliche Ankunft",
+      "estimatedTimeTag": "Geschätzte Zeit",
+      "estimatedTime": "5 Minuten",
+      "expirationTime": "4 Tage",
+      "learnMore": "Erfahren Sie mehr unter",
+      "minWithdrawal": "Mindestauszahlung",
+      "pendingDeposits": "Ausstehende Einzahlungen",
+      "poweredBy": "Angetrieben von",
+      "proceed": "Fortfahren",
+      "undergoAudit": "während der Prüfung (voraussichtlicher Abschluss: Januar 2024).",
+      "warning": "WARNUNG:",
+      "loading": "Wird geladen..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
+    }
+  },
+  "components": {
+    "fiatOnrampSelection": {
+      "kadoSubtitle": "Unterstützt OSMO, USDC",
+      "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
+    },
+    "incentive": {
+      "mobileTitle": "Anreiz",
+      "title": "Anreizarten"
+    },
+    "MAX": "MAX",
+    "pool": {
+      "mobileTitle": "Schwimmbad",
+      "title": "Pooltypen"
+    },
+    "searchTokens": "Suchen",
+    "selectToken": {
+      "title": "Wählen Sie einen Token aus",
+      "clickToActivate": "Klicken Sie zum Aktivieren"
+    },
+    "show": {
+      "less": "Weniger anzeigen",
+      "more": "Mehr sehen"
+    },
+    "sort": {
+      "mobileMenu": "Sortiere nach",
+      "SORT": "Sortiere nach",
+      "SORTMobile": "Sortieren"
+    },
+    "table": {
+      "weighted": "Gewichtet",
+      "concentrated": "Aufgeladen",
+      "external": "Externe Anreize",
+      "superfluid": "Superflüssig",
+      "noIncentives": "Keine Anreize"
+    }
+  },
+  "connectWallet": "Wallet verbinden",
+  "errors": {
+    "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
+    "emptyAmount": "Der Betrag ist leer",
+    "generic": "Fehler",
+    "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientLiquidity": "Unzureichende Liquidität",
+    "invalidSlippage": "Ungültiger Schlupf",
+    "minAssetsCount": "Es sind mindestens {num} Assets erforderlich",
+    "negativePercentage": "Der Prozentsatz muss positiv sein",
+    "noAvailableShares": "Keine verfügbaren {denom} Freigaben",
+    "notInitialized": "Nicht initialisiert",
+    "zeroAmount": "Betrag ist Null",
+    "fallbackText2": "Bitte senden Sie eine",
+    "fallbackBugReport": "Fehlerbericht",
+    "fallbackText3": "oder bekommen",
+    "fallbackSupport": "Unterstützung",
+    "sequenceNumber": "Sie haben zu viele gleichzeitige Transaktionen! Versuchen Sie es erneut zu senden, nachdem Ihre vorherige Sendung in der Kette gelandet ist. (Sequenz: {sequence} )",
+    "invalidAmounts": "Ungültige(r) Betrag(e)"
+  },
+  "frontierMigration": {
+    "frontierHasNowMerged": "Die Frontier-Seite wurde jetzt mit zusammengeführt",
+    "settingIsNowEnabled": "Die Einstellung ist jetzt aktiviert."
+  },
+  "lockToken": {
+    "amountToBond": "Zu verpfändender Betrag",
+    "availableToken": "Verfügbar",
+    "buttonBondStake": "Anleihe &amp; Anteil",
+    "buttonNext": "Nächste",
+    "selectPeriod": "Wählen Sie den Entbindungszeitraum",
+    "superfluidStake": "Superflüssiges Abstecken"
+  },
+  "menu": {
+    "assets": "Vermögenswerte",
+    "pools": "Pools",
+    "stake": "Einsatz",
+    "store": "Apps",
+    "swap": "Tauschen",
+    "vote": "Abstimmung",
+    "featureRequests": "Funktionsanfragen",
+    "trade": "Profi-Handel",
+    "margin": "Marge",
+    "perpetuals": "Dauerbrenner",
+    "marsSubtext": "Angetrieben vom Mars"
+  },
+  "notifi": {
+    "saveChanges": "Änderungen speichern",
+    "getStartedHistoryTitle1": "Kaufen Sie Token, um loszulegen",
+    "getStartedHistoryMessage2": "Mit diesem kurzen Tutorial können Sie in wenigen Minuten handeln",
+    "getStartedHistoryTitle3": "So zahlen Sie Geld ein",
+    "signupDummyHistoryMessage1": "Erwerben Sie OSMO, um mit dem Handel zu beginnen",
+    "signupDummyHistoryTitle3": "So beginnen Sie mit dem Handel",
+    "outboundTransferHistoryTitle": "Osmose-Ausgangstransfer",
+    "outboundTransferHistoryMessage": "Menge",
+    "poolJoinedHistoryTitle": "Osmosebecken angeschlossen",
+    "poolJoinedHistoryMessage": "Zeichen",
+    "emptyHistoryTitle": "Kein Titel",
+    "emptyHistoryMessage": "Keine Nachricht",
+    "positionOutOfRangeHistoryTitle": "Position außerhalb des Bereichs",
+    "signupPageMessage": "Verpassen Sie nie wieder ein wichtiges Update, von neuen Token-Auflistungen bis hin zu kritischen Positionsstatus.",
+    "signupPageButton": "Benachrichtigungen aktivieren",
+    "loadMore": "Mehr laden",
+    "unsavedChangeModalInfo": "Du hast nicht gespeicherte Änderungen. Möchten Sie gerne",
+    "discardButton": "Änderungen verwerfen",
+    "clearAllHistory": "Alles löschen"
+  },
+  "pool": {
+    "amountDaysUnbonding": "{numDays} Tag der Aufhebung der Bindung",
+    "available": "Verfügbar",
+    "bonded": "Gebunden",
+    "bondLiquidityUnavailable": "Anleiheliquidität (nicht verfügbar)",
+    "bondShares": "Anleihenaktien",
+    "collapseDetails": "Poolzusammensetzung ausblenden",
+    "commission": "Kommission",
+    "day": "Tag",
+    "delegated": "delegiert",
+    "details": "Einzelheiten",
+    "earnSwapFeesCaption": "Wandeln Sie Ihre Token in Aktien um und verdienen Sie bei jedem Tausch.",
+    "from": "aus",
+    "incentives": "Anreize",
+    "learnMore": "Erfahren Sie mehr",
+    "putAssetsToWork": "Setzen Sie Ihr Vermögen ein.",
+    "sharesAmount": "{shares} Aktien",
+    "sharesAvailableIn": "verfügbar in",
+    "transmuter": "Transmuter",
+    "superfluidStaking": "Superfluid-Absteckung",
+    "swap": "Handelspaar",
+    "spreadFactor": "Spread-Faktor",
+    "title": "Pool # {id}",
+    "unbond": "Bindung lösen",
+    "unbonding": "sich lösen",
+    "onlyInRangePositions": "Nur für Positionen in Reichweite"
+  },
+  "pools": {
+    "allPools": {
+      "search": "Suchpools",
+      "sort": {
+        "APRIncentivized": "APR",
+        "fees": "Gebühren (7D)",
+        "liquidity": "Liquidität"
+      },
+      "title": "Entdecken Sie Pools"
+    },
+    "APR": "APR",
+    "bonded": "Gebunden",
+    "createPool": {
+      "amount": "Menge",
+      "available": "Verfügbar",
+      "buttonAddToken": "Neues Token hinzufügen",
+      "buttonCreate": "Pool erstellen",
+      "buttonNext": "Nächste",
+      "infoCaption": "Übertragen auf den Osmose-Gemeinschaftspool",
+      "stablePool": "Stabiler Pool",
+      "step": {
+        "one": {
+          "weighted": "Schritt {step} / {nbStep} – Token-Verhältnisse festlegen"
+        },
+        "two": "Schritt {step} / {nbStep} – Geben Sie den hinzuzufügenden Betrag ein"
+      },
+      "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird."
+    },
+    "TVL": "TVL",
+    "myLiquidity": "Meine Liquidität",
+    "myPools": "Ihre Pools",
+    "rewardDistribution": "Belohnungsverteilung in",
+    "aprBreakdown": {
+      "swapFees": "Swap-Gebühren",
+      "boost": "Schub",
+      "superfluid": "Superflüssig",
+      "explainer": {
+        "title": "Wie werden effektive Jahreszinsen berechnet?",
+        "p2": "In Supercharged-Pools erhalten die meisten Benutzer geringere Belohnungen. Dies ist auf konzentriertere Positionen zurückzuführen, die mehr Anreize nutzen."
+      }
+    }
+  },
+  "profile": {
+    "viewAllAssets": "Alle Assets anzeigen",
+    "wallet": "Geldbörse"
+  },
+  "removeLiquidity": {
+    "titleInPool": "Liquidität aus Pool entfernen # {poolId}"
+  },
+  "requestRejected": "Anfrage zurückgewiesen",
+  "settings": {
+    "titleUnverifiedAssets": "Nicht verifizierte Vermögenswerte",
+    "titleHideDust": "Pools ausblenden mit &lt; {fiatSymbol} 0.01",
+    "titleLanguage": "Sprache"
+  },
+  "stake": {
+    "available": "Verfügbar",
+    "MAX": "MAX",
+    "unstake": "Entsperren Sie OSMO",
+    "estimatedEarnings": "Geschätzter Gewinn",
+    "day": "Tag",
+    "days": "Tage",
+    "month": "Monat",
+    "dashboard": "Armaturenbrett",
+    "dashboardStakedOsmo": "abgestecktes OSMO",
+    "rewardsTitle": "Nicht beanspruchte Belohnungen",
+    "collectRewards": "Sammle Belohnungen",
+    "alertTitleEnd": "APR",
+    "unbondingHeader": "Entbindungszeitraum",
+    "estimatedEarningsTooltip": "Diese Einnahmen werden auf der Grundlage des aktuellen effektiven Jahreszinses berechnet, der sich ändern kann.",
+    "isAPRTooHighTooltip": "Dieser Validator verlangt eine ungewöhnlich hohe Provision. Erwägen Sie die Auswahl eines anderen Validators.",
+    "learnMore": {
+      "step1": {
+        "bodyText": "Osmosis verwendet einen Mechanismus namens „Proof of Stake“, um alle Transaktionen zu überprüfen und zu sichern. Wenn Sie Ihr OSMO einsetzen, setzt die Blockchain es in Gang, sodass Sie passiv mit Ihrem Vermögen verdienen können."
+      },
+      "step2": {
+        "title": "Validatoren"
+      },
+      "step3": {
+        "bodyText": "Je mehr Validatoren Sie beim Aufbau Ihres Kaders auswählen und je weniger Stimmrecht sie haben, desto mehr tragen Sie zur Dezentralisierung bei. Seien Sie vorsichtig bei Validatoren, die ungewöhnlich hohe Provisionen verlangen."
+      },
+      "step5": {
+        "title": "Beginnen Sie mit dem Abstecken"
+      }
+    },
+    "validatorSquad": {
+      "title": "Validator-Trupp",
+      "button": "Trupp festlegen",
+      "column": {
+        "myStake": "Mein Anteil",
+        "votingPower": "Stimmrecht",
+        "commission": "Kommission"
+      }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "learnMore": "Klicken Sie hier, um zu erfahren, wie das Abstecken funktioniert",
+        "button": "Stellen Sie einen Pfahltrupp zusammen, um fortzufahren"
+      },
+      "existingUser": {
+        "buttonKeep": "Behalten Sie vorhandene Validatoren bei"
+      }
+    },
+    "introModal": {
+      "title": "Setzen Sie auf Osmose",
+      "description": {
+        "3": "jährliche Einsatzprämien!",
+        "4": "und es in die Tat umsetzen"
+      },
+      "asterisk": "* Der Wert der Einsatzprämie unterliegt der Preis- und effektiven Jahreszinsvolatilität.",
+      "button": "Beginnen Sie mit dem Abstecken"
+    }
+  },
+  "superfluidValidator": {
+    "bondedAmount": "Kautionsbetrag",
+    "columns": {
+      "validator": "Validator"
+    },
+    "estimationInfo": "Der Wert dieser Delegation schwankt und wird basierend auf der Menge an OSMO im Pool geschätzt.",
+    "estimationMobile": "Europäische Sommerzeit. Delegation",
+    "search": "Suche mit Name"
+  },
+  "swap": {
+    "autoRouter": "Route genommen",
+    "autoRouterToggle": {
+      "hide": "Verstecken",
+      "show": "Zeigen"
+    },
+    "available": "Verfügbar",
+    "button": "Tauschen",
+    "fee": "Swap-Gebühr ( {fee} )",
+    "HALF": "HALB",
+    "MAX": "MAX",
+    "pool": "Pool # {id}",
+    "priceImpact": "Preisauswirkungen",
+    "routerTooltipFee": "Gebühr",
+    "routerTooltipSpreadFactor": "Spread-Faktor",
+    "settings": {
+      "slippage": "Rutschtoleranz",
+      "slippageInfo": "Ihre Transaktion wird rückgängig gemacht, wenn sich der Preis um mehr als diesen Prozentsatz ungünstig ändert.",
+      "title": "Transaktionseinstellungen"
+    },
+    "title": "Tauschen"
+  },
+  "walletSelect": {
+    "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",
+    "somethingWentWrong": "Etwas ist schief gelaufen",
+    "downloadLinkNotProvided": "Download-Link nicht angegeben. Suchen Sie danach oder wenden Sie sich an das Entwicklerteam.",
+    "connectionDenied": "Verbindungsberechtigung verweigert.",
+    "reconnect": "Wieder verbinden",
+    "connectingWallet": "Wallet verbinden",
+    "initializingWallet": "Wallet-Client wird initialisiert",
+    "clickToRefresh": "Klicken Sie zum Aktualisieren.",
+    "refresh": "Aktualisierung",
+    "connectWith": "Verbinden mit",
+    "tapThe": "Tippen Sie auf die",
+    "button": "Taste",
+    "get": "Erhalten",
+    "installedWallets": "Installierte Wallets",
+    "otherWallets": "Andere Geldbörsen",
+    "step1Title": "Was sind Geldbörsen?",
+    "step1Content": "Wallets werden zum Senden, Empfangen und Zugreifen auf alle Ihre digitalen Assets wie OSMO und ATOM verwendet.",
+    "step2Title": "Keine Konten. Keine Passwörter.",
+    "step3Content": "Auf Osmosis können nur Sie Ihr Vermögen bewegen. Mit großer Macht kommt große Verantwortung.",
+    "step4Title": "Erstellen Sie zunächst eine Wallet"
+  },
+  "transactionBroadcasting": "Transaktionsübertragung",
+  "transactionFailed": "Transaktion fehlgeschlagen",
+  "transactionSuccessful": "Transaktion Erfolgreich",
+  "unknownError": "Unbekannter Fehler",
+  "highPoolInflationWarning": "Hohe effektive Jahreszinsen können aus inflationären Belohnungen resultieren. Mit Vorsicht fortfahren.",
+  "upgrades": {
+    "title": "Upgrades verfügbar",
+    "superchargedLiquidity": "Überhöhte Liquidität",
+    "success": "Upgrade-Erfolg!",
+    "clickHereToView": "Klicke hier, um anzusehen"
+  },
+  "seo": {
+    "404": {
+      "title": "404 Seite nicht gefunden",
+      "description": "Die gesuchte Seite existiert nicht."
+    },
+    "500": {
+      "title": "500 – Interner Serverfehler",
+      "description": "Es ist ein interner Serverfehler aufgetreten."
+    },
+    "apps": {
+      "title": "Osmose-App-Store"
+    },
+    "assets": {
+      "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
+    },
+    "disclaimer": {
+      "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"
+    },
+    "pools": {
+      "description": "Entdecken Sie Liquiditätspools auf Osmosis – der führenden dezentralen Cosmos-Börse"
+    }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Zugehörige Vermögenswerte",
+    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
+    "yourBalance": "Dein Kontostand",
+    "ariaViewOn": "Ansicht auf {name}",
+    "collapse": "Zusammenbruch",
+    "followTheConversation": "Verfolgen Sie das Gespräch",
+    "chart": {
+      "xDay": "{d} D"
+    },
+    "marketCapRank": "Marktkapitalisierungsrang",
+    "marketCap": "Marktkapitalisierung",
+    "circulatingSupply": "Umlaufversorgung",
+    "tvl": "TVL",
+    "noData": "ND",
+    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools"
+  },
+  "unlistedAssetsEnabled": "Nicht gelistete Assets aktiviert",
+  "earnPage": {
+    "title": "Verdienen",
+    "position": "Position",
+    "positions": "Positionen",
+    "allocation": "Zuweisung",
+    "value": "Wert",
+    "method": "Methode",
+    "platform": "Plattform",
+    "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
+    "strategyPlatform": "Strategie / Plattform",
+    "apy": "APY",
+    "daily": "Täglich",
+    "reward": "Belohnen",
+    "lock": "Sperren",
+    "days": "Tage",
+    "risk": "Risiko",
+    "platforms": "Plattformen",
+    "allPlatforms": "Alle Plattformen",
+    "resetFilters": "Filter zurücksetzen",
+    "saveFilters": "Filter speichern",
+    "rewards": "Belohnung",
+    "claimAllRewards": "Fordern Sie alle Belohnungen an",
+    "join": "Verbinden",
+    "tokenFilterOptions": {
+      "my": "Meine Token",
+      "all": "Alle Token"
+    },
+    "rewardTypes": {
+      "all": "Alle",
+      "single": "Einzel",
+      "multi": "Multi"
+    }
+  },
+  "disclaimer": "Haftungsausschluss"
+}
