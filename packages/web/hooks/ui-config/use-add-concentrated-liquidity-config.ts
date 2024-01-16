@@ -27,7 +27,6 @@ import {
 import {
   FakeFeeConfig,
   IPriceStore,
-  ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
@@ -62,8 +61,7 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore, queriesExternalStore } =
-    useStore();
+  const { accountStore, queriesStore, priceStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -81,7 +79,6 @@ export function useAddConcentratedLiquidityConfig(
         address,
         queriesStore,
         queriesStore.get(osmosisChainId).queryBalances,
-        queriesExternalStore.queryTokenPairHistoricalChart,
         priceStore
       )
   );
@@ -361,7 +358,6 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this._pool?.type !== "concentrated") return null;
 
     const [base, quote] = this._pool.reserveCoins;
-    console.log(base, quote);
     const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
       (base.currency.coinDecimals ?? 0) - (quote.currency.coinDecimals ?? 0)
     );
@@ -775,7 +771,6 @@ export class ObservableAddConcentratedLiquidityConfig {
     sender: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart,
     protected readonly priceStore: IPriceStore
   ) {
     this.chainId = initialChainId;
@@ -977,13 +972,9 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     this._pool = pool;
 
-    const [baseDenom, quoteDenom] = pool.reserveCoins.map((coin) => coin.denom);
-    const baseCurrency = this.chainGetter
-      .getChain(this.chainId)
-      .forceFindCurrency(baseDenom);
-    const quoteCurrency = this.chainGetter
-      .getChain(this.chainId)
-      .forceFindCurrency(quoteDenom);
+    const [baseCurrency, quoteCurrency] = pool.reserveCoins.map(
+      (coin) => coin.currency
+    );
 
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
