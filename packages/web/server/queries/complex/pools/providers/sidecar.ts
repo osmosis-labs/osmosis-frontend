@@ -2,6 +2,7 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 
 import { calcAssetValue, getAsset } from "../../assets";
@@ -21,27 +22,32 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
     ttl: 1000, // 1 second
     getFreshValue: async () => {
       const sidecarPools = await queryPools();
-      return await Promise.all(
+      const pools = await Promise.all(
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
+      return pools.filter(Boolean) as Pool[];
     },
   });
 }
 
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
-): Promise<Pool> {
+): Promise<Pool | undefined> {
   const assetValueDec =
     (await calcAssetValue({
       anyDenom: "uosmo",
       amount: sidecarPool.sqs_model.total_value_locked_uosmo,
     })) ?? new Dec(0);
+  const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
+
+  // contains unlisted assets
+  if (reserveCoins.length === 0) return;
 
   return {
     id: getPoolIdFromSidecarPool(sidecarPool.underlying_pool),
     type: getPoolTypeFromSidecarPool(sidecarPool.underlying_pool),
-    raw: sidecarPool.underlying_pool,
-    reserveCoins: await getListedReservesFromSidecarPool(sidecarPool),
+    raw: makePoolRawResponseFromUnderlyingPool(sidecarPool.underlying_pool),
+    reserveCoins,
     totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, assetValueDec),
   };
 }
@@ -49,8 +55,9 @@ async function makePoolFromSidecarPool(
 function getPoolIdFromSidecarPool(
   underlying_pool: SidecarPool["underlying_pool"]
 ): string {
-  if ("pool_id" in underlying_pool) return underlying_pool.pool_id;
-  else return underlying_pool.id;
+  return (
+    "pool_id" in underlying_pool ? underlying_pool.pool_id : underlying_pool.id
+  ).toString();
 }
 
 // since type URL was removed from underlying_pool in sidecar response
@@ -62,7 +69,7 @@ export function getPoolTypeFromSidecarPool(
   if ("scaling_factors" in underlying_pool) return "stable";
   if ("current_sqrt_price" in underlying_pool) return "concentrated";
   if ("code_id" in underlying_pool) {
-    if (TransmuterPoolCodeIds.includes(underlying_pool.code_id))
+    if (TransmuterPoolCodeIds.includes(underlying_pool.code_id.toString()))
       return "cosmwasm-transmuter";
     else return "cosmwasm";
   }
@@ -72,21 +79,45 @@ export function getPoolTypeFromSidecarPool(
 async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
-  const balances = sidecarPool.sqs_model.balances.filter(({ denom }) =>
-    // only include balances in pool, as anyone can send arbitrary tokens to a pool account
-    sidecarPool.sqs_model.pool_denoms.includes(denom)
-  );
-
-  return (
+  const listedBalances = (
     await Promise.all(
-      balances.map(async (balance) => {
-        const asset = await getAsset({ anyDenom: balance.denom }).catch(
-          () => null
-        );
+      sidecarPool.sqs_model.pool_denoms.map(async (denom) => {
+        const asset = await getAsset({ anyDenom: denom }).catch(() => null);
         // not listed
         if (!asset) return;
-        return new CoinPretty(asset, balance.amount);
+
+        const amount = sidecarPool.sqs_model.balances.find(
+          (balance) => balance.denom === denom
+        )?.amount;
+        // no balance
+        if (!amount) return;
+
+        return new CoinPretty(asset, amount);
       })
     )
   ).filter(Boolean) as CoinPretty[];
+
+  if (listedBalances.length !== sidecarPool.sqs_model.balances.length) {
+    return [];
+  }
+
+  return listedBalances;
+}
+
+/** Sidecar made some type changes to the underlying pool, so we map those changes back to the sidecar type.  */
+function makePoolRawResponseFromUnderlyingPool(
+  underlyingPool: SidecarPool["underlying_pool"]
+): PoolRawResponse {
+  if ("id" in underlyingPool) {
+    return {
+      ...underlyingPool,
+      id: underlyingPool.id.toString(),
+    } as PoolRawResponse;
+  }
+
+  return {
+    ...underlyingPool,
+    pool_id: underlyingPool.pool_id.toString(),
+    code_id: underlyingPool.code_id.toString(),
+  } as PoolRawResponse;
 }

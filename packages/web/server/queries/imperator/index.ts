@@ -1,6 +1,8 @@
 export * from "./filtered-pools";
 export * from "./market-cap";
+export * from "./pools-fees";
 export * from "./token-data";
+export * from "./token-historical-chart";
 export * from "./tokens";
 
 export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
