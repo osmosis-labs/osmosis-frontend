@@ -324,7 +324,7 @@ export function getPoolAssetPairHistoricalPrice({
   quoteCoinMinimalDenom: string;
   baseCoinMinimalDenom: string;
   timeDuration: TimeDuration;
-}): Promise<TokenPairHistoricalPrice[]> {
+}): Promise<{ prices: TokenPairHistoricalPrice[]; min: number; max: number }> {
   return cachified({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
@@ -335,11 +335,13 @@ export function getPoolAssetPairHistoricalPrice({
         quoteCoinMinimalDenom,
         baseCoinMinimalDenom,
         timeDuration
-      ).then((prices) =>
-        prices.map((price) => ({
+      ).then((prices) => ({
+        prices: prices.map((price) => ({
           ...price,
           time: price.time * 1000,
-        }))
-      ),
+        })),
+        min: Math.min(...prices.map((price) => price.close)),
+        max: Math.max(...prices.map((price) => price.close)),
+      })),
   });
 }
