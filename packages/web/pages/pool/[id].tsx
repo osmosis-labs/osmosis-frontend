@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -14,6 +14,7 @@ import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
+import { queryNumPools } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 
 interface Props {
@@ -21,7 +22,7 @@ interface Props {
 }
 
 const Pool: FunctionComponent<Props> = observer(
-  ({ poolId }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  ({ poolId }: InferGetStaticPropsType<typeof getStaticProps>) => {
     const router = useRouter();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
@@ -110,11 +111,20 @@ const Pool: FunctionComponent<Props> = observer(
   }
 );
 
-export const getServerSideProps: GetServerSideProps = async ({
-  resolvedUrl,
-}) => {
-  const splitUrl = resolvedUrl.split("/");
-  return { props: { poolId: splitUrl.pop() ?? "-" } };
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { num_pools } = await queryNumPools();
+  let paths: { params: { id: string } }[] = [];
+
+  for (let i = 0; i <= Number(num_pools); i++) {
+    paths.push({ params: { id: String(i + 1) } });
+  }
+
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const id = params?.id as string;
+  return { props: { poolId: id ?? "-" } };
 };
 
 export default Pool;
