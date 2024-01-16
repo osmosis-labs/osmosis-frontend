@@ -226,7 +226,7 @@ const StakeBalances: React.FC<{
           flashOsmo ? "animate-flash" : ""
         )}
       >
-        {osmoAmount?.toString() ?? ""}
+        {osmoAmount?.trim(true)?.toString() ?? ""}
       </span>
     </div>
   );
