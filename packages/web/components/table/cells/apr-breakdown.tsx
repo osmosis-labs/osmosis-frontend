@@ -30,7 +30,6 @@ export const AprBreakdownCell: FunctionComponent<{
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
         )}
-        test
         {fullRangeApr?.apr?.maxDecimals(1).toString() + " - " ?? ""}
         {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
       </div>
