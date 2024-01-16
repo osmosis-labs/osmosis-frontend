@@ -61,9 +61,14 @@ export const StakeDashboard: React.FC<{
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
     const LearnMoreIconText = (
-      <div className="flex cursor-pointer items-center justify-center text-bullish-500">
+      <div className="flex cursor-pointer items-center justify-center text-wosmongton-300">
         <div className="mr-2 flex self-center">
-          <Icon id="open-book" height="14px" width="14px" />
+          <Icon
+            id="open-book"
+            height="14px"
+            width="14px"
+            className="text-wosmongton-300"
+          />
         </div>
         <span className="caption text-sm">{t("stake.learn")}</span>
       </div>
