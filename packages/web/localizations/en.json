@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Available",
+    "staked": "Staked",
     "MAX": "MAX",
     "validatorHeader": "Stake squad",
     "stake": "Stake OSMO",
