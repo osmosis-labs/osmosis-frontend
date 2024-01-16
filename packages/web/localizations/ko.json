@@ -437,7 +437,7 @@
     "outboundTransferHistoryMessage": "양",
     "poolExitedHistoryTitle": "Osmosis 풀 종료됨",
     "poolExitedHistoryMessage": "풀 ID",
-    "poolJoinedHistoryTitle": "Osmosis 풀 합류",
+    "poolJoinedHistoryTitle": "오스모시스 풀 합류",
     "poolJoinedHistoryMessage": "토큰",
     "swapHistoryTitle": "오스모시스 스왑 확인",
     "swapHistoryMessage": "로 바꿨다",
