@@ -18,11 +18,11 @@ import { queryNumPools } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 
 interface Props {
-  poolId: string;
+  id: string;
 }
 
 const Pool: FunctionComponent<Props> = observer(
-  ({ poolId }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  ({ id: poolId }: InferGetStaticPropsType<typeof getStaticProps>) => {
     const router = useRouter();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
@@ -124,7 +124,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const id = params?.id as string;
-  return { props: { poolId: id ?? "-" } };
+  return { props: { id: id ?? "-" } };
 };
 
 export default Pool;
