@@ -129,6 +129,9 @@ export const ValidatorSquadCard: React.FC<{
       );
     }
 
+    const viewOrEditButtonDisabled =
+      hasInsufficientBalance && validators?.length === 0;
+
     return (
       <>
         <div className="mx-2 flex items-center">
@@ -141,13 +144,11 @@ export const ValidatorSquadCard: React.FC<{
             {validatorBlock}
             <div className="flex items-center">
               <Button
-                disabled={hasInsufficientBalance}
+                disabled={viewOrEditButtonDisabled}
                 mode="bullish-special"
                 size="normal"
                 className="rounded-[19px]"
-                onClick={() => {
-                  setShowValidatorModal(true);
-                }}
+                onClick={() => setShowValidatorModal(true)}
               >
                 {t("stake.viewOrEdit")}
               </Button>
