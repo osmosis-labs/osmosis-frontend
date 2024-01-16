@@ -113,11 +113,10 @@ const Pool: FunctionComponent<Props> = observer(
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const { num_pools } = await queryNumPools();
-  let paths: { params: { id: string } }[] = [];
 
-  for (let i = 0; i <= Number(num_pools); i++) {
-    paths.push({ params: { id: String(i + 1) } });
-  }
+  const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
+    params: { id: String(i + 1) },
+  }));
 
   return { paths, fallback: "blocking" };
 };
