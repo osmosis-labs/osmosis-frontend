@@ -10,6 +10,7 @@ import {
   getAssetHistoricalPrice,
   getAssetMarketInfo,
   getAssetPrice,
+  getPoolAssetPairHistoricalPrice,
   getUserAssetInfo,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
@@ -18,8 +19,10 @@ import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import {
   AvailableRangeValues,
+  AvailableTimeDurations,
   TimeFrame,
-} from "~/server/queries/imperator/token-historical-chart";
+} from "~/server/queries/imperator";
+import { TimeDuration } from "~/server/queries/imperator";
 import { compareDec, compareDefinedMember } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 
@@ -259,5 +262,32 @@ export const assetsRouter = createTRPCRouter({
               numRecentFrames?: number;
             })),
       })
+    ),
+  getAssetPairHistoricalPrice: publicProcedure
+    .input(
+      z.object({
+        poolId: z.string(),
+        quoteCoinMinimalDenom: z.string(),
+        baseCoinMinimalDenom: z.string(),
+        timeDuration: z
+          .string()
+          .refine((td) => AvailableTimeDurations.includes(td as TimeDuration)),
+      })
+    )
+    .query(
+      ({
+        input: {
+          poolId,
+          quoteCoinMinimalDenom,
+          baseCoinMinimalDenom,
+          timeDuration,
+        },
+      }) =>
+        getPoolAssetPairHistoricalPrice({
+          poolId,
+          quoteCoinMinimalDenom,
+          baseCoinMinimalDenom,
+          timeDuration: timeDuration as TimeDuration,
+        })
     ),
 });

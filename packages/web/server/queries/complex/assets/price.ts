@@ -16,9 +16,12 @@ import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/im
 
 import {
   queryTokenHistoricalChart,
+  queryTokenPairHistoricalChart,
+  TimeDuration,
   TimeFrame,
   TokenHistoricalPrice,
-} from "../../imperator/token-historical-chart";
+  TokenPairHistoricalPrice,
+} from "../../imperator";
 import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -302,6 +305,41 @@ export function getAssetHistoricalPrice({
         timeFrameMinutes: timeFrame as TimeFrame,
       }).then((prices) =>
         numRecentFrames ? prices.slice(-numRecentFrames) : prices
+      ),
+  });
+}
+
+const tokenPairPriceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+/** Gets the relative price of two tokens in a specified pool over a given duration.
+ *  Lightly cached. */
+export function getPoolAssetPairHistoricalPrice({
+  poolId,
+  quoteCoinMinimalDenom,
+  baseCoinMinimalDenom,
+  timeDuration,
+}: {
+  poolId: string;
+  quoteCoinMinimalDenom: string;
+  baseCoinMinimalDenom: string;
+  timeDuration: TimeDuration;
+}): Promise<TokenPairHistoricalPrice[]> {
+  return cachified({
+    cache: tokenPairPriceCache,
+    key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
+    ttl: 1000 * 60 * 3, // 3 minutes,
+    getFreshValue: () =>
+      queryTokenPairHistoricalChart(
+        poolId,
+        quoteCoinMinimalDenom,
+        baseCoinMinimalDenom,
+        timeDuration
+      ).then((prices) =>
+        prices.map((price) => ({
+          ...price,
+          time: price.time * 1000,
+        }))
       ),
   });
 }
