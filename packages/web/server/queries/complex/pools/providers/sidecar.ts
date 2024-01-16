@@ -79,28 +79,25 @@ export function getPoolTypeFromSidecarPool(
 async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
-  const balances = sidecarPool.sqs_model.balances.filter(({ denom }) =>
-    // only include balances in pool, as anyone can send arbitrary tokens to a pool account
-    sidecarPool.sqs_model.pool_denoms.includes(denom)
-  );
-
-  // for some reason does not contain balances for denoms available in pool
-  if (balances.length !== sidecarPool.sqs_model.pool_denoms.length) return [];
-
   const listedBalances = (
     await Promise.all(
-      balances.map(async (balance) => {
-        const asset = await getAsset({ anyDenom: balance.denom }).catch(
-          () => null
-        );
+      sidecarPool.sqs_model.pool_denoms.map(async (denom) => {
+        const asset = await getAsset({ anyDenom: denom }).catch(() => null);
         // not listed
         if (!asset) return;
-        return new CoinPretty(asset, balance.amount);
+
+        const amount = sidecarPool.sqs_model.balances.find(
+          (balance) => balance.denom === denom
+        )?.amount;
+        // no balance
+        if (!amount) return;
+
+        return new CoinPretty(asset, amount);
       })
     )
   ).filter(Boolean) as CoinPretty[];
 
-  if (listedBalances.length !== balances.length) {
+  if (listedBalances.length !== sidecarPool.sqs_model.balances.length) {
     return [];
   }
 
