@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Dostępny",
+    "staked": "Postawione",
     "MAX": "MAKS",
     "validatorHeader": "Ekipa walidatorów",
     "stake": "Stawka OSMO",

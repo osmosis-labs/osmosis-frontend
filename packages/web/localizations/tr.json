@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Mevcut",
+    "staked": "Kazıklı",
     "MAX": "MAKS.",
     "validatorHeader": "Doğrulayıcı ekibi",
     "stake": "OSMO'yu Stake Edin",

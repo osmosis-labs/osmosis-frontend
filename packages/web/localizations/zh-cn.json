@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "可用的",
+    "staked": "固定",
     "MAX": "最大限度",
     "validatorHeader": "验证者小队",
     "stake": "OSMO 股份",

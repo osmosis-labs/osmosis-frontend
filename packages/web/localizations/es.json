@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Disponible",
+    "staked": "Apostado",
     "MAX": "MÁX.",
     "validatorHeader": "escuadrón validador",
     "stake": "Estaca OSMO",

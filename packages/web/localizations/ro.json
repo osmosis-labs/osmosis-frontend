@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Disponibil",
+    "staked": "Mizat",
     "MAX": "MAX",
     "validatorHeader": "Echipa de validatori",
     "stake": "Miza OSMO",
