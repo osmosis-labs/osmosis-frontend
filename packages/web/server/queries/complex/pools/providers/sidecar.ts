@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -52,6 +52,7 @@ async function makePoolFromSidecarPool(
     id: getPoolIdFromSidecarPool(sidecarPool.underlying_pool),
     type: getPoolTypeFromSidecarPool(sidecarPool.underlying_pool),
     raw: makePoolRawResponseFromUnderlyingPool(sidecarPool.underlying_pool),
+    spreadFactor: new RatePretty(sidecarPool.sqs_model.spread_factor),
     reserveCoins,
     totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, assetValueDec),
   };
