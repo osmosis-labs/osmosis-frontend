@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Disponible",
+    "staked": "Jalonné",
     "MAX": "MAX",
     "validatorHeader": "Escouade de validation",
     "stake": "Piquetage OSMO",

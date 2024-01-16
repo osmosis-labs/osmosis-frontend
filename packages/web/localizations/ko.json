@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "사용 가능",
+    "staked": "스테이킹된",
     "MAX": "MAX",
     "validatorHeader": "유효성 검사기 분대",
     "stake": "OSMO 스테이킹",

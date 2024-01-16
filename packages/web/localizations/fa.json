@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "دسترس",
+    "staked": "شرط بندی",
     "MAX": "حداکثر",
     "validatorHeader": "گروه اعتبارسنجی",
     "stake": "وارد کردن OSMO",
