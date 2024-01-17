@@ -37,6 +37,9 @@
     "volatilityCustomDescription": "戦略に合ったポジションを作成します。設定した位置に常に注意してください。",
     "volatilityPassiveDescription": "このフルレンジのポジションは、設定したり忘れたりするのに最適です。スワップでの収益は少なくなりますが、常に範囲内にあります。",
     "amountToDeposit": "預金の額",
+    "outOfRangeWarning": "市場価格が指定した価格範囲外です。単一資産の入金のみ。",
+    "high": "高い",
+    "low": "低い",
     "buttonCreateAndStake": "ポジションとステークの作成",
     "estimated": "推定",
     "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。"
@@ -235,6 +238,7 @@
         "reconnectWallet": "{walletName}を再接続します",
         "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
         "seeRequest": "{walletName}リクエストを参照してください。",
+        "noQuotesAvailable": "利用可能な見積もりはありません",
         "unexpectedError": "予期しないエラー。もう一度試してください。",
         "transactionError": "トランザクション取得エラー。もう一度試してください。",
         "invalidAddress": "無効なアドレス",
@@ -288,6 +292,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "未検証のアセットをアクティブ化する",
+      "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     }
   },
@@ -353,6 +358,7 @@
     "negativeAmount": "金額がマイナスです",
     "negativePercentage": "パーセンテージは正の値でなければなりません",
     "negativeSlippage": "スリッページをマイナスにすることはできません",
+    "negativeSwapFee": "スワップ手数料はマイナスです",
     "noAvailableShares": "利用可能な{denom}共有がありません",
     "noRoute": "この取引にはルートがありません",
     "noSendCurrency": "送金通貨が設定されていません",
@@ -376,7 +382,10 @@
     "frontierHasNowMerged": "フロンティアページは次と統合されました",
     "thisMeansManaging": "つまり、トークンの管理を 1 か所で簡単に行うことができます。",
     "commitmentToDecentralization": "分散化とアクセシビリティへの取り組みに沿って、未検証のトークンを処理するオプションも引き続き利用できます。",
-    "settingIsNowEnabled": "これで設定が有効になりました。"
+    "settingIsNowEnabled": "これで設定が有効になりました。",
+    "youMayDisable": "この設定は、設定モーダルでいつでも無効にすることができます。",
+    "openSettings": "設定を開く",
+    "proceed": "進む"
   },
   "lockToken": {
     "amountToBond": "保証金額",
@@ -432,6 +441,8 @@
     "swapHistoryMessage": "に交換されました",
     "emptyHistoryTitle": "タイトルなし",
     "emptyHistoryMessage": "メッセージなし",
+    "assetReceivedHistoryTitle": "資産を受け取りました",
+    "assetReceivedHistoryMessage": "額",
     "positionOutOfRangeHistoryTitle": "範囲外の位置",
     "positionOutOfRangeHistoryMessage": "LP の位置が範囲外です",
     "signupPageTitle": "通知が利用できるようになりました。",
@@ -477,6 +488,8 @@
     "showDetails": "プールの構成を表示する",
     "stableswapEnabled": "ステーブルスワップ",
     "transmuter": "トランスミューター",
+    "superfluidEarnMore": "さらに{rate}獲得しましょう。超流動体に行く",
+    "superfluidEnabled": "超流動体",
     "superfluidStaking": "超流動性ステーキング",
     "swap": "トレードペア",
     "spreadFactor": "スプレッドファクター",
@@ -543,6 +556,7 @@
       "total": "合計年利",
       "explainer": {
         "title": "APRはどのように計算されますか?",
+        "p1": "すべての年利は推定値です。これらは、プール内の流動性の平均 APR を取得して計算されます。",
         "p2": "スーパーチャージされたプールでは、ほとんどのユーザーが受け取る報酬は低くなります。これは、ポジションがより集中しており、より多くのインセンティブを獲得できるためです。",
         "p3": "見積もりを控えめに保つために、すべての APR は 3 の係数で除算されます。"
       }
@@ -608,7 +622,8 @@
         "bodyText": "Osmosis は、「プルーフ・オブ・ステーク」と呼ばれるメカニズムを使用して、すべてのトランザクションを検証し、保護します。 OSMO を賭けると、ブロックチェーンが機能し、資産から受動的に収益を得ることができます。"
       },
       "step2": {
-        "title": "バリデーター"
+        "title": "バリデーター",
+        "bodyText": "ステーキングするときは、バリデーターのチームにトークンを託します。バリデーターはトランザクションが到着すると処理し、報酬として新しく生成されたトークンを少し受け取ります。彼らはこれらの収益をあなたと共有します。"
       },
       "step3": {
         "bodyText": "分隊を構築する際、より多くのバリデーターを選択し、彼らの投票権が少なくなるほど、分散化の促進に役立ちます。異常に高い手数料を取るバリデーターに注意してください。"
@@ -638,6 +653,7 @@
     },
     "validatorNextStep": {
       "newUser": {
+        "title": "ここに来たのは初めてのようですね",
         "learnMore": "ステーキングの仕組みについてはここをクリックしてください",
         "button": "継続するためにステークチームを編成する"
       },
@@ -686,6 +702,8 @@
     },
     "available": "利用可能",
     "button": "スワップ",
+    "buttonError": "とにかく交換する",
+    "expectedOutput": "期待される出力",
     "fee": "スワップ手数料 ( {fee} )",
     "HALF": "半分",
     "MAX": "マックス",
@@ -728,6 +746,7 @@
     "topRightButton": "{wallet}アプリの右上隅にあります。以下の QR コードをスキャンして接続してください。",
     "dontHaveThisWallet": "この財布をお持ちではありませんか?",
     "get": "得る",
+    "scanThis": "これを携帯電話でスキャンしてダウンロードしてください",
     "mobileWallets": "モバイルウォレット",
     "installedWallets": "インストールされているウォレット",
     "otherWallets": "その他のウォレット",
@@ -758,7 +777,8 @@
     "new": "新しい",
     "current": "現在",
     "success": "アップグレード成功！",
-    "clickHereToView": "ここをクリックしてご覧ください"
+    "clickHereToView": "ここをクリックしてご覧ください",
+    "foundHere": "アップグレードはここで見つけることができます"
   },
   "seo": {
     "404": {
@@ -774,7 +794,8 @@
       "description": "主要な分散型 Cosmos 取引所 - 最大のインターチェーン DEX を交換し、獲得し、構築します"
     },
     "apps": {
-      "title": "Osmosis App Store"
+      "title": "Osmosis App Store",
+      "description": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう"
     },
     "assets": {
       "title": "浸透アセット",
@@ -806,6 +827,7 @@
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "全て"
     },
     "watchlist": "ウォッチリスト",

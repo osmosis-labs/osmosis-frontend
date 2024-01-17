@@ -37,6 +37,9 @@
     "volatilityCustomDescription": "Schaffen Sie eine Position, die zu Ihrer Strategie passt. Denken Sie daran, jede von Ihnen eingestellte Position im Auge zu behalten.",
     "volatilityPassiveDescription": "Diese Full-Range-Position eignet sich hervorragend zum Einstellen und Vergessen. Mit Swaps weniger verdienen, aber immer im Rahmen bleiben.",
     "amountToDeposit": "Einzuzahlender Betrag",
+    "outOfRangeWarning": "Der Marktpreis liegt außerhalb Ihrer angegebenen Preisspanne. Nur Einzelvermögenseinzahlung.",
+    "high": "hoch",
+    "low": "niedrig",
     "buttonCreateAndStake": "Erstellen Sie Position und Einsatz",
     "estimated": "Geschätzt",
     "estimatedInfo": "Hierbei handelt es sich um eine Schätzung basierend auf den aktuell ausgewählten Preisen. Der tatsächliche effektive Jahreszins kann variieren. Wenn die Position außerhalb des Bereichs liegt, beträgt der effektive Jahreszins 0 %."
@@ -235,6 +238,7 @@
         "reconnectWallet": "Erneut verbinden {walletName}",
         "wrongNetworkInWallet": "Falsches Netzwerk in {walletName}",
         "seeRequest": "Siehe Anfrage in {walletName}",
+        "noQuotesAvailable": "Keine Angebote verfügbar",
         "unexpectedError": "Unerwarteter Fehler. Bitte versuche es erneut.",
         "transactionError": "Fehler beim Abrufen der Transaktion. Bitte versuche es erneut.",
         "invalidAddress": "Ungültige Adresse",
@@ -288,6 +292,7 @@
     },
     "activateUnverifiedAssetsModal": {
       "activate": "Aktivieren Sie nicht verifizierte Assets",
+      "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     }
   },
@@ -353,6 +358,7 @@
     "negativeAmount": "Betrag ist negativ",
     "negativePercentage": "Der Prozentsatz muss positiv sein",
     "negativeSlippage": "Slippage kann nicht negativ sein",
+    "negativeSwapFee": "Die Swap-Gebühr ist negativ",
     "noAvailableShares": "Keine verfügbaren {denom} Freigaben",
     "noRoute": "Keine Route für diesen Handel",
     "noSendCurrency": "Die zu sendende Währung ist nicht festgelegt",
@@ -376,7 +382,10 @@
     "frontierHasNowMerged": "Die Frontier-Seite wurde jetzt mit zusammengeführt",
     "thisMeansManaging": "Das bedeutet, dass die Token-Verwaltung bequem an einem Ort erfolgen kann!",
     "commitmentToDecentralization": "Im Einklang mit dem Engagement für Dezentralisierung und Zugänglichkeit besteht weiterhin die Möglichkeit, mit nicht verifizierten Token umzugehen.",
-    "settingIsNowEnabled": "Die Einstellung ist jetzt aktiviert."
+    "settingIsNowEnabled": "Die Einstellung ist jetzt aktiviert.",
+    "youMayDisable": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren.",
+    "openSettings": "Einstellungen öffnen",
+    "proceed": "Fortfahren"
   },
   "lockToken": {
     "amountToBond": "Zu verpfändender Betrag",
@@ -432,6 +441,8 @@
     "swapHistoryMessage": "getauscht",
     "emptyHistoryTitle": "Kein Titel",
     "emptyHistoryMessage": "Keine Nachricht",
+    "assetReceivedHistoryTitle": "Erhaltener Vermögenswert",
+    "assetReceivedHistoryMessage": "Menge",
     "positionOutOfRangeHistoryTitle": "Position außerhalb des Bereichs",
     "positionOutOfRangeHistoryMessage": "Ihre LP-Position liegt außerhalb des Bereichs",
     "signupPageTitle": "Benachrichtigungen sind jetzt verfügbar.",
@@ -477,6 +488,8 @@
     "showDetails": "Poolzusammensetzung anzeigen",
     "stableswapEnabled": "Stalltausch",
     "transmuter": "Transmuter",
+    "superfluidEarnMore": "Verdienen Sie {rate} mehr. Werden Sie superflüssig",
+    "superfluidEnabled": "Superflüssig",
     "superfluidStaking": "Superfluid-Absteckung",
     "swap": "Handelspaar",
     "spreadFactor": "Spread-Faktor",
@@ -543,6 +556,7 @@
       "total": "Gesamter effektiver Jahreszins",
       "explainer": {
         "title": "Wie werden effektive Jahreszinsen berechnet?",
+        "p1": "Alle effektiven Jahreszinsen sind Schätzungen. Sie werden anhand des durchschnittlichen effektiven Jahreszinses für die Liquidität im Pool berechnet.",
         "p2": "In Supercharged-Pools erhalten die meisten Benutzer geringere Belohnungen. Dies ist auf konzentriertere Positionen zurückzuführen, die mehr Anreize nutzen.",
         "p3": "Um die Schätzungen konservativ zu halten, werden alle effektiven Jahreszinsen durch den Faktor 3 dividiert."
       }
@@ -608,7 +622,8 @@
         "bodyText": "Osmosis verwendet einen Mechanismus namens „Proof of Stake“, um alle Transaktionen zu überprüfen und zu sichern. Wenn Sie Ihr OSMO einsetzen, setzt die Blockchain es in Gang, sodass Sie passiv mit Ihrem Vermögen verdienen können."
       },
       "step2": {
-        "title": "Validatoren"
+        "title": "Validatoren",
+        "bodyText": "Beim Abstecken vertrauen Sie Ihre Token einer Gruppe von Validatoren an. Validatoren verarbeiten eingehende Transaktionen und werden mit einigen neu geprägten Token belohnt. Sie teilen diese Einnahmen mit Ihnen."
       },
       "step3": {
         "bodyText": "Je mehr Validatoren Sie beim Aufbau Ihres Kaders auswählen und je weniger Stimmrecht sie haben, desto mehr tragen Sie zur Dezentralisierung bei. Seien Sie vorsichtig bei Validatoren, die ungewöhnlich hohe Provisionen verlangen."
@@ -638,6 +653,7 @@
     },
     "validatorNextStep": {
       "newUser": {
+        "title": "Es sieht so aus, als wärst du neu hier",
         "learnMore": "Klicken Sie hier, um zu erfahren, wie das Abstecken funktioniert",
         "button": "Stellen Sie einen Pfahltrupp zusammen, um fortzufahren"
       },
@@ -686,6 +702,8 @@
     },
     "available": "Verfügbar",
     "button": "Tauschen",
+    "buttonError": "Trotzdem tauschen",
+    "expectedOutput": "Erwartete Ausgabe",
     "fee": "Swap-Gebühr ( {fee} )",
     "HALF": "HALB",
     "MAX": "MAX",
@@ -728,6 +746,7 @@
     "topRightButton": "in der oberen rechten Ecke Ihrer {wallet} App. Scannen Sie den QR-Code unten, um eine Verbindung herzustellen.",
     "dontHaveThisWallet": "Sie haben dieses Portemonnaie nicht?",
     "get": "Erhalten",
+    "scanThis": "Scannen Sie dies auf Ihrem Telefon, um es herunterzuladen",
     "mobileWallets": "Mobile Geldbörsen",
     "installedWallets": "Installierte Wallets",
     "otherWallets": "Andere Geldbörsen",
@@ -758,7 +777,8 @@
     "new": "NEU",
     "current": "AKTUELL",
     "success": "Upgrade-Erfolg!",
-    "clickHereToView": "Klicke hier, um anzusehen"
+    "clickHereToView": "Klicke hier, um anzusehen",
+    "foundHere": "Upgrades finden Sie hier"
   },
   "seo": {
     "404": {
@@ -774,7 +794,8 @@
       "description": "Tauschen, verdienen und bauen Sie auf der führenden dezentralen Cosmos-Börse – dem größten Interchain-DEX"
     },
     "apps": {
-      "title": "Osmose-App-Store"
+      "title": "Osmose-App-Store",
+      "description": "Der Handel ist nur der erste Schritt. Setzen Sie Ihr Vermögen ein und erreichen Sie mit Leverage, Tresoren und vielem mehr noch viel mehr"
     },
     "assets": {
       "title": "Osmose-Vermögenswerte",
@@ -806,6 +827,7 @@
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "ALLE"
     },
     "watchlist": "Beobachtungsliste",
