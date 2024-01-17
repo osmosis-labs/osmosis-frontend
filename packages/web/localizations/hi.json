@@ -178,6 +178,8 @@
       "buttonEnter": "प्रवेश करना",
       "channelCongestedDeposit": "जमा (चैनल भीड़भाड़)",
       "channelCongestedWithdraw": "वापस लेना (चैनल भीड़भाड़ वाला)",
+      "checkboxVerify": "मैं सत्यापित करता हूं कि मैं विनिमय पते पर नहीं भेज रहा हूं।",
+      "estimatedTime": "अनुमानित समय",
       "selectAmount": "राशि चुनें",
       "titleDeposit": "जमा करें {coinDenom}",
       "titleWithdraw": "{coinDenom} वापस लें",
@@ -351,6 +353,7 @@
     "insufficientBal": "अपर्याप्त शेषराशि",
     "insufficientLiquidity": "अपर्याप्त तरलता",
     "invalidNumberAmount": "संख्या का अमान्य रूप",
+    "invalidScalingFactorControllerAddress": "अमान्य स्केलिंग फ़ैक्टर नियंत्रक पता",
     "invalidSlippage": "अमान्य फिसलन",
     "invalidSwapFee": "स्वैप शुल्क अमान्य है",
     "maxAssetsCount": "अधिकतम {num} संपत्तियों की अनुमति",
@@ -426,6 +429,7 @@
     "getStartedHistoryTitle2": "ट्रेडिंग कैसे शुरू करें",
     "getStartedHistoryMessage2": "यह त्वरित ट्यूटोरियल आपको मिनटों में ट्रेडिंग करवा देगा",
     "getStartedHistoryTitle3": "धनराशि कैसे जमा करें",
+    "getStartedHistoryMessage3": "ऑस्मोसिस पर धनराशि जमा करने का तरीका जानें",
     "signupDummyHistoryMessage1": "ट्रेडिंग शुरू करने के लिए OSMO प्राप्त करें",
     "signupDummyHistoryTitle2": "संपत्ति कैसे जमा करें",
     "signupDummyHistoryMessage2": "ऑस्मोसिस पर फंड ट्रांसफर करना सीखें",
@@ -469,6 +473,7 @@
     "collapseDetails": "पूल संरचना छिपाएँ",
     "commission": "आयोग",
     "currentDailyEarn": "आप वर्तमान में कमा रहे हैं",
+    "dailyEarnAmount": "{amount} / दिन",
     "day": "दिन",
     "delegated": "प्रत्यायोजित",
     "details": "विवरण",
@@ -582,11 +587,13 @@
     "title": "वैश्विक सेटिंग्स",
     "titleHideDust": "&lt; {fiatSymbol} 0.01 के साथ पूल छुपाएं",
     "titleLanguage": "भाषा",
-    "titleHideBalances": "गोपनीयता के लिए मुखौटा संतुलन"
+    "titleHideBalances": "गोपनीयता के लिए मुखौटा संतुलन",
+    "hideBalances": "नकाबपोश संतुलन"
   },
   "stake": {
     "available": "उपलब्ध",
     "MAX": "मैक्स",
+    "validatorHeader": "हिस्सेदारी दस्ता",
     "stake": "स्टेक ओएसएमओ",
     "unstake": "ओएसएमओ को अनस्टेक करें",
     "estimatedEarnings": "अनुमानित आय",
@@ -626,6 +633,7 @@
         "bodyText": "दांव लगाते समय, आप अपने टोकन सत्यापनकर्ताओं के एक दल को सौंपते हैं। सत्यापनकर्ता लेन-देन आते ही संसाधित करते हैं और उन्हें कुछ नए बनाए गए टोकन से पुरस्कृत किया जाता है। वे इस कमाई को आपके साथ साझा करते हैं।"
       },
       "step3": {
+        "title": "सत्यापनकर्ता चुनना",
         "bodyText": "अपनी टीम का निर्माण करते समय, आप जितने अधिक सत्यापनकर्ताओं का चयन करेंगे, और उनके पास मतदान की शक्ति जितनी कम होगी, आप विकेंद्रीकरण को बढ़ावा देने में उतनी ही अधिक मदद करेंगे। उन सत्यापनकर्ताओं से सावधान रहें जो असामान्य रूप से उच्च कमीशन लेते हैं।"
       },
       "step4": {
@@ -729,6 +737,7 @@
     "isNotInstalled": "{walletName} स्थापित नहीं है",
     "maybeInstalled": "यदि आपके डिवाइस पर {walletName} इंस्टॉल है, तो कृपया इस पेज को रीफ्रेश करें या ब्राउज़र निर्देशों का पालन करें।",
     "downloadLinkNotProvided": "डाउनलोड लिंक उपलब्ध नहीं कराया गया. इसे खोजने का प्रयास करें या डेवलपर टीम से परामर्श लें।",
+    "installWallet": "{walletName} इंस्टॉल करें",
     "requestRejected": "अनुरोध अस्वीकृत",
     "connectionDenied": "कनेक्शन की अनुमति अस्वीकृत.",
     "reconnect": "रिकनेक्ट",
@@ -778,7 +787,8 @@
     "current": "मौजूदा",
     "success": "अपग्रेड सफलता!",
     "clickHereToView": "देखने के लिए यहां क्लिक करें",
-    "foundHere": "उन्नयन यहां पाया जा सकता है"
+    "foundHere": "उन्नयन यहां पाया जा सकता है",
+    "availableHereCaption": "उपलब्ध अपग्रेड यहां देखे जा सकते हैं. आप किसी भी समय अपग्रेड करना चुन सकते हैं."
   },
   "seo": {
     "404": {
@@ -877,6 +887,7 @@
     "resetFilters": "फ़िल्टर रीसेट करें",
     "saveFilters": "फ़िल्टर सहेजें",
     "rewards": "पुरस्कार",
+    "estimatedInYearlyRewards": "वार्षिक पुरस्कारों में अनुमानित",
     "claimAllRewards": "सभी पुरस्कारों का दावा करें",
     "join": "जोड़ना",
     "tokenFilterOptions": {

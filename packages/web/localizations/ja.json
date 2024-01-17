@@ -178,6 +178,8 @@
       "buttonEnter": "入力",
       "channelCongestedDeposit": "デポジット (チャネルが混雑している)",
       "channelCongestedWithdraw": "撤退（チャンネル混雑中）",
+      "checkboxVerify": "交換用アドレスに送信していないことを確認しました。",
+      "estimatedTime": "予定時刻",
       "selectAmount": "金額を選択してください",
       "titleDeposit": "入金{coinDenom}",
       "titleWithdraw": "出金{coinDenom}",
@@ -351,6 +353,7 @@
     "insufficientBal": "残高不足",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
+    "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
     "invalidSlippage": "無効なスリッページ",
     "invalidSwapFee": "スワップ手数料は無効です",
     "maxAssetsCount": "最大{num}アセットが許可されます",
@@ -426,6 +429,7 @@
     "getStartedHistoryTitle2": "取引の開始方法",
     "getStartedHistoryMessage2": "この簡単なチュートリアルでは数分で取引できるようになります",
     "getStartedHistoryTitle3": "資金の入金方法",
+    "getStartedHistoryMessage3": "Osmosis に資金を入金する方法を学ぶ",
     "signupDummyHistoryMessage1": "OSMOを取得して取引を開始する",
     "signupDummyHistoryTitle2": "資産の預け入れ方法",
     "signupDummyHistoryMessage2": "Osmosis に資金を送金する方法を学ぶ",
@@ -469,6 +473,7 @@
     "collapseDetails": "プール構成を非表示にする",
     "commission": "手数料",
     "currentDailyEarn": "あなたは現在稼いでいます",
+    "dailyEarnAmount": "{amount} / 日",
     "day": "日",
     "delegated": "委任された",
     "details": "詳細",
@@ -582,11 +587,13 @@
     "title": "全体設定",
     "titleHideDust": "&lt; {fiatSymbol} 0.01 のプールを非表示にする",
     "titleLanguage": "言語",
-    "titleHideBalances": "プライバシーを考慮したマスクバランス"
+    "titleHideBalances": "プライバシーを考慮したマスクバランス",
+    "hideBalances": "マスクされた残高"
   },
   "stake": {
     "available": "利用可能",
     "MAX": "マックス",
+    "validatorHeader": "ステーク分隊",
     "stake": "OSMOをステークする",
     "unstake": "OSMOのステークを解除する",
     "estimatedEarnings": "推定収益額",
@@ -626,6 +633,7 @@
         "bodyText": "ステーキングするときは、バリデーターのチームにトークンを託します。バリデーターはトランザクションが到着すると処理し、報酬として新しく生成されたトークンを少し受け取ります。彼らはこれらの収益をあなたと共有します。"
       },
       "step3": {
+        "title": "バリデータの選択",
         "bodyText": "分隊を構築する際、より多くのバリデーターを選択し、彼らの投票権が少なくなるほど、分散化の促進に役立ちます。異常に高い手数料を取るバリデーターに注意してください。"
       },
       "step4": {
@@ -729,6 +737,7 @@
     "isNotInstalled": "{walletName}インストールされていません",
     "maybeInstalled": "{walletName}デバイスにインストールされている場合は、このページを更新するか、ブラウザの指示に従ってください。",
     "downloadLinkNotProvided": "ダウンロードリンクは提供されていません。検索してみるか、開発者チームに相談してください。",
+    "installWallet": "{walletName}をインストールします",
     "requestRejected": "リクエストが拒否されました",
     "connectionDenied": "接続許可が拒否されました。",
     "reconnect": "再接続",
@@ -778,7 +787,8 @@
     "current": "現在",
     "success": "アップグレード成功！",
     "clickHereToView": "ここをクリックしてご覧ください",
-    "foundHere": "アップグレードはここで見つけることができます"
+    "foundHere": "アップグレードはここで見つけることができます",
+    "availableHereCaption": "利用可能なアップグレードはここで確認できます。いつでもアップグレードを選択できます。"
   },
   "seo": {
     "404": {
@@ -877,6 +887,7 @@
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターの保存",
     "rewards": "報酬",
+    "estimatedInYearlyRewards": "年間報酬で見積もる",
     "claimAllRewards": "すべての報酬を受け取りましょう",
     "join": "参加する",
     "tokenFilterOptions": {

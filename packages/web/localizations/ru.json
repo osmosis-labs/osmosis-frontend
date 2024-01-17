@@ -178,6 +178,8 @@
       "buttonEnter": "Входить",
       "channelCongestedDeposit": "Депозит (канал перегружен)",
       "channelCongestedWithdraw": "Вывод (канал перегружен)",
+      "checkboxVerify": "Я подтверждаю, что не отправляю деньги на адрес обмена.",
+      "estimatedTime": "Расчетное время",
       "selectAmount": "Выберите сумму",
       "titleDeposit": "Депозит {coinDenom}",
       "titleWithdraw": "Вывести {coinDenom}",
@@ -351,6 +353,7 @@
     "insufficientBal": "Недостаточный баланс",
     "insufficientLiquidity": "Недостаточная ликвидность",
     "invalidNumberAmount": "Неверная форма номера",
+    "invalidScalingFactorControllerAddress": "Неверный адрес контроллера коэффициента масштабирования.",
     "invalidSlippage": "Недопустимое проскальзывание",
     "invalidSwapFee": "Комиссия за своп недействительна.",
     "maxAssetsCount": "Разрешено максимальное количество ресурсов {num}",
@@ -426,6 +429,7 @@
     "getStartedHistoryTitle2": "Как начать торговать",
     "getStartedHistoryMessage2": "Это краткое руководство поможет вам торговать за считанные минуты.",
     "getStartedHistoryTitle3": "Как внести средства",
+    "getStartedHistoryMessage3": "Узнайте, как внести средства на Osmosis",
     "signupDummyHistoryMessage1": "Приобретите OSMO, чтобы начать торговать",
     "signupDummyHistoryTitle2": "Как внести активы",
     "signupDummyHistoryMessage2": "Узнайте, как перевести средства на Osmosis",
@@ -469,6 +473,7 @@
     "collapseDetails": "Скрыть состав пула",
     "commission": "комиссия",
     "currentDailyEarn": "В настоящее время вы зарабатываете",
+    "dailyEarnAmount": "{amount} / день",
     "day": "день",
     "delegated": "делегирован",
     "details": "Подробности",
@@ -582,11 +587,13 @@
     "title": "Глобальные настройки",
     "titleHideDust": "Скрыть пулы с &lt; {fiatSymbol} 0.01",
     "titleLanguage": "Язык",
-    "titleHideBalances": "Баланс масок для конфиденциальности"
+    "titleHideBalances": "Баланс масок для конфиденциальности",
+    "hideBalances": "Маскированные балансы"
   },
   "stake": {
     "available": "Доступный",
     "MAX": "МАКС",
+    "validatorHeader": "Отряд кола",
     "stake": "Ставка ОСМО",
     "unstake": "Анстейк OSMO",
     "estimatedEarnings": "Расчетный доход",
@@ -626,6 +633,7 @@
         "bodyText": "Делая ставку, вы доверяете свои токены команде валидаторов. Валидаторы обрабатывают транзакции по мере их поступления и награждаются небольшим количеством вновь выпущенных токенов. Они делятся этими доходами с вами."
       },
       "step3": {
+        "title": "Выбор валидаторов",
         "bodyText": "При формировании своей команды чем больше валидаторов вы выбираете и чем меньше у них голосов, тем больше вы помогаете продвигать децентрализацию. Будьте осторожны с валидаторами, которые берут аномально высокие комиссии."
       },
       "step4": {
@@ -729,6 +737,7 @@
     "isNotInstalled": "{walletName} не установлено",
     "maybeInstalled": "Если на вашем устройстве установлено {walletName} , обновите эту страницу или следуйте инструкциям браузера.",
     "downloadLinkNotProvided": "Ссылка на скачивание не предоставлена. Попробуйте выполнить поиск или проконсультироваться с командой разработчиков.",
+    "installWallet": "Установите {walletName}",
     "requestRejected": "Запрос отклонен",
     "connectionDenied": "Разрешение на подключение отклонено.",
     "reconnect": "Восстановить соединение",
@@ -778,7 +787,8 @@
     "current": "ТЕКУЩИЙ",
     "success": "Обновление успешно!",
     "clickHereToView": "Нажмите здесь, чтобы просмотреть",
-    "foundHere": "Обновления можно найти здесь"
+    "foundHere": "Обновления можно найти здесь",
+    "availableHereCaption": "Доступные обновления можно просмотреть здесь. Вы можете выбрать обновление в любое время."
   },
   "seo": {
     "404": {
@@ -877,6 +887,7 @@
     "resetFilters": "Сбросить фильтры",
     "saveFilters": "Сохранить фильтры",
     "rewards": "Награды",
+    "estimatedInYearlyRewards": "Расчетное годовое вознаграждение",
     "claimAllRewards": "Получите все награды",
     "join": "Присоединиться",
     "tokenFilterOptions": {

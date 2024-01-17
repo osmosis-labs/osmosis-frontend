@@ -178,6 +178,8 @@
       "buttonEnter": "દાખલ કરો",
       "channelCongestedDeposit": "ડિપોઝિટ (ચેનલ ગીચ)",
       "channelCongestedWithdraw": "ઉપાડ (ચેનલ ગીચ)",
+      "checkboxVerify": "હું ચકાસો છું કે હું એક્સચેન્જ એડ્રેસ પર મોકલી રહ્યો નથી.",
+      "estimatedTime": "અંદાજિત સમય",
       "selectAmount": "રકમ પસંદ કરો",
       "titleDeposit": "જમા {coinDenom}",
       "titleWithdraw": "પાછી ખેંચો {coinDenom}",
@@ -351,6 +353,7 @@
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
+    "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",
     "invalidSlippage": "અમાન્ય સ્લિપેજ",
     "invalidSwapFee": "સ્વેપ ફી અમાન્ય છે",
     "maxAssetsCount": "મહત્તમ {num} અસ્કયામતોની મંજૂરી છે",
@@ -426,6 +429,7 @@
     "getStartedHistoryTitle2": "વેપાર કેવી રીતે શરૂ કરવો",
     "getStartedHistoryMessage2": "આ ઝડપી ટ્યુટોરીયલ તમને મિનિટોમાં ટ્રેડિંગ કરાવશે",
     "getStartedHistoryTitle3": "ભંડોળ કેવી રીતે જમા કરવું",
+    "getStartedHistoryMessage3": "ઓસ્મોસિસ પર ફંડ કેવી રીતે જમા કરવું તે જાણો",
     "signupDummyHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
     "signupDummyHistoryTitle2": "સંપત્તિ કેવી રીતે જમા કરવી",
     "signupDummyHistoryMessage2": "ઓસ્મોસિસ પર ફંડ કેવી રીતે ટ્રાન્સફર કરવું તે જાણો",
@@ -469,6 +473,7 @@
     "collapseDetails": "પૂલ રચના છુપાવો",
     "commission": "કમિશન",
     "currentDailyEarn": "તમે હાલમાં કમાણી કરી રહ્યાં છો",
+    "dailyEarnAmount": "{amount} / દિવસ",
     "day": "દિવસ",
     "delegated": "સોંપેલ",
     "details": "વિગતો",
@@ -582,11 +587,13 @@
     "title": "વૈશ્વિક સેટિંગ્સ",
     "titleHideDust": "&lt; {fiatSymbol} 0.01 સાથે પૂલ છુપાવો",
     "titleLanguage": "ભાષા",
-    "titleHideBalances": "ગોપનીયતા માટે માસ્ક બેલેન્સ"
+    "titleHideBalances": "ગોપનીયતા માટે માસ્ક બેલેન્સ",
+    "hideBalances": "માસ્ક કરેલ બેલેન્સ"
   },
   "stake": {
     "available": "ઉપલબ્ધ છે",
     "MAX": "MAX",
+    "validatorHeader": "હિસ્સો ટુકડી",
     "stake": "સ્ટેક OSMO",
     "unstake": "OSMO ને અનસ્ટેક કરો",
     "estimatedEarnings": "અંદાજિત કમાણી",
@@ -626,6 +633,7 @@
         "bodyText": "સ્ટેક કરતી વખતે, તમે તમારા ટોકન્સને માન્યકર્તાઓની ટુકડીને સોંપો છો. વેલિડેટર્સ વ્યવહારો પર પ્રક્રિયા કરે છે કારણ કે તેઓ આવે છે અને તેમને થોડા નવા ટંકશાળિત ટોકન્સ સાથે પુરસ્કાર આપવામાં આવે છે. તેઓ આ કમાણી તમારી સાથે શેર કરે છે."
       },
       "step3": {
+        "title": "વેલિડેટર પસંદ કરી રહ્યા છીએ",
         "bodyText": "તમારી ટુકડી બનાવતી વખતે, તમે જેટલા વધુ વેલિડેટર પસંદ કરશો, અને તેમની પાસે મતદાનની શક્તિ ઓછી હશે, તમે વિકેન્દ્રીકરણને પ્રોત્સાહન આપવા માટે વધુ મદદ કરશો. અસાધારણ રીતે ઉચ્ચ કમિશન લેનારા માન્યકર્તાઓનું ધ્યાન રાખો."
       },
       "step4": {
@@ -729,6 +737,7 @@
     "isNotInstalled": "{walletName} ઇન્સ્ટોલ કરેલ નથી",
     "maybeInstalled": "જો તમારા ઉપકરણ પર {walletName} ઇન્સ્ટોલ કરેલ હોય, તો કૃપા કરીને આ પૃષ્ઠ તાજું કરો અથવા બ્રાઉઝર સૂચનાઓને અનુસરો.",
     "downloadLinkNotProvided": "ડાઉનલોડ લિંક આપવામાં આવી નથી. તેને શોધવાનો પ્રયાસ કરો અથવા વિકાસકર્તા ટીમની સલાહ લો.",
+    "installWallet": "ઇન્સ્ટોલ કરો {walletName}",
     "requestRejected": "વિનંતી નકારી",
     "connectionDenied": "કનેક્શન પરવાનગી નકારી.",
     "reconnect": "ફરીથી કનેક્ટ કરો",
@@ -778,7 +787,8 @@
     "current": "વર્તમાન",
     "success": "અપગ્રેડ સફળતા!",
     "clickHereToView": "જોવા માટે અહીં ક્લિક કરો",
-    "foundHere": "સુધારાઓ અહીં મળી શકે છે"
+    "foundHere": "સુધારાઓ અહીં મળી શકે છે",
+    "availableHereCaption": "ઉપલબ્ધ સુધારાઓ અહીં જોઈ શકાય છે. તમે કોઈપણ સમયે અપગ્રેડ કરવાનું પસંદ કરી શકો છો."
   },
   "seo": {
     "404": {
@@ -877,6 +887,7 @@
     "resetFilters": "ફિલ્ટર્સ રીસેટ કરો",
     "saveFilters": "ફિલ્ટર્સ સાચવો",
     "rewards": "પારિતોષિકો",
+    "estimatedInYearlyRewards": "વાર્ષિક પુરસ્કારોમાં અંદાજિત",
     "claimAllRewards": "બધા પુરસ્કારોનો દાવો કરો",
     "join": "જોડાઓ",
     "tokenFilterOptions": {

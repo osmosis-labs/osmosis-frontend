@@ -178,6 +178,8 @@
       "buttonEnter": "Eingeben",
       "channelCongestedDeposit": "Kaution (Kanal überlastet)",
       "channelCongestedWithdraw": "Zurückziehen (Kanal überlastet)",
+      "checkboxVerify": "Ich bestätige, dass ich nicht an eine Exchange-Adresse sende.",
+      "estimatedTime": "Geschätzte Zeit",
       "selectAmount": "Wählen Sie Betrag aus",
       "titleDeposit": "Einzahlung {coinDenom}",
       "titleWithdraw": "Abheben {coinDenom}",
@@ -351,6 +353,7 @@
     "insufficientBal": "Mangelhaftes Gleichgewicht",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
+    "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
     "invalidSlippage": "Ungültiger Schlupf",
     "invalidSwapFee": "Die Swap-Gebühr ist ungültig",
     "maxAssetsCount": "Maximal {num} Assets zulässig",
@@ -426,6 +429,7 @@
     "getStartedHistoryTitle2": "So beginnen Sie mit dem Handel",
     "getStartedHistoryMessage2": "Mit diesem kurzen Tutorial können Sie in wenigen Minuten handeln",
     "getStartedHistoryTitle3": "So zahlen Sie Geld ein",
+    "getStartedHistoryMessage3": "Erfahren Sie, wie Sie Geld bei Osmosis einzahlen",
     "signupDummyHistoryMessage1": "Erwerben Sie OSMO, um mit dem Handel zu beginnen",
     "signupDummyHistoryTitle2": "So hinterlegen Sie Vermögenswerte",
     "signupDummyHistoryMessage2": "Erfahren Sie, wie Sie Gelder auf Osmosis überweisen",
@@ -469,6 +473,7 @@
     "collapseDetails": "Poolzusammensetzung ausblenden",
     "commission": "Kommission",
     "currentDailyEarn": "Sie verdienen derzeit",
+    "dailyEarnAmount": "{amount} / Tag",
     "day": "Tag",
     "delegated": "delegiert",
     "details": "Einzelheiten",
@@ -582,11 +587,13 @@
     "title": "Globale Einstellungen",
     "titleHideDust": "Pools ausblenden mit &lt; {fiatSymbol} 0.01",
     "titleLanguage": "Sprache",
-    "titleHideBalances": "Maskenbilanzen für Privatsphäre"
+    "titleHideBalances": "Maskenbilanzen für Privatsphäre",
+    "hideBalances": "Maskierte Salden"
   },
   "stake": {
     "available": "Verfügbar",
     "MAX": "MAX",
+    "validatorHeader": "Pfahltrupp",
     "stake": "Setzen Sie OSMO ein",
     "unstake": "Entsperren Sie OSMO",
     "estimatedEarnings": "Geschätzter Gewinn",
@@ -626,6 +633,7 @@
         "bodyText": "Beim Abstecken vertrauen Sie Ihre Token einer Gruppe von Validatoren an. Validatoren verarbeiten eingehende Transaktionen und werden mit einigen neu geprägten Token belohnt. Sie teilen diese Einnahmen mit Ihnen."
       },
       "step3": {
+        "title": "Validatoren auswählen",
         "bodyText": "Je mehr Validatoren Sie beim Aufbau Ihres Kaders auswählen und je weniger Stimmrecht sie haben, desto mehr tragen Sie zur Dezentralisierung bei. Seien Sie vorsichtig bei Validatoren, die ungewöhnlich hohe Provisionen verlangen."
       },
       "step4": {
@@ -729,6 +737,7 @@
     "isNotInstalled": "{walletName} ist nicht installiert",
     "maybeInstalled": "Wenn {walletName} auf Ihrem Gerät installiert ist, aktualisieren Sie bitte diese Seite oder folgen Sie den Browseranweisungen.",
     "downloadLinkNotProvided": "Download-Link nicht angegeben. Suchen Sie danach oder wenden Sie sich an das Entwicklerteam.",
+    "installWallet": "Installieren Sie {walletName}",
     "requestRejected": "Anfrage zurückgewiesen",
     "connectionDenied": "Verbindungsberechtigung verweigert.",
     "reconnect": "Wieder verbinden",
@@ -778,7 +787,8 @@
     "current": "AKTUELL",
     "success": "Upgrade-Erfolg!",
     "clickHereToView": "Klicke hier, um anzusehen",
-    "foundHere": "Upgrades finden Sie hier"
+    "foundHere": "Upgrades finden Sie hier",
+    "availableHereCaption": "Verfügbare Upgrades können hier eingesehen werden. Sie können sich jederzeit für ein Upgrade entscheiden."
   },
   "seo": {
     "404": {
@@ -877,6 +887,7 @@
     "resetFilters": "Filter zurücksetzen",
     "saveFilters": "Filter speichern",
     "rewards": "Belohnung",
+    "estimatedInYearlyRewards": "Geschätzte jährliche Prämie",
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
