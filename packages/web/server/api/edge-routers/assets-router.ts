@@ -83,7 +83,9 @@ export const assetsRouter = createTRPCRouter({
     }),
   getRecommendedAssets: publicProcedure.query(async () => {
     const assets = await Promise.all(
-      RecommendedSwapDenoms.map((denom) => getAsset({ anyDenom: denom }))
+      RecommendedSwapDenoms.map((denom) =>
+        getAsset({ anyDenom: denom }).catch(() => null)
+      )
     );
 
     return assets.filter((a): a is Asset => !!a);
