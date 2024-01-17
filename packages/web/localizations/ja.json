@@ -532,6 +532,7 @@
       "buttonNext": "次",
       "infoCaption": "Osmosis コミュニティプールに転送",
       "infoMessage": "プール作成料金",
+      "scalingFactorController": "スケーリング係数コントローラーの設定 (オプション)",
       "stablePool": "安定したプール",
       "step": {
         "one": {

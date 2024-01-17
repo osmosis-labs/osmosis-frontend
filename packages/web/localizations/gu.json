@@ -532,6 +532,7 @@
       "buttonNext": "આગળ",
       "infoCaption": "ઓસ્મોસિસ સમુદાય પૂલમાં સ્થાનાંતરિત",
       "infoMessage": "પૂલ બનાવવાની ફી",
+      "scalingFactorController": "સ્કેલિંગ ફેક્ટર કંટ્રોલર સેટ કરો (વૈકલ્પિક)",
       "stablePool": "સ્થિર પૂલ",
       "step": {
         "one": {

@@ -532,6 +532,7 @@
       "buttonNext": "अगला",
       "infoCaption": "ऑस्मोसिस सामुदायिक पूल में स्थानांतरित किया गया",
       "infoMessage": "पूल निर्माण शुल्क",
+      "scalingFactorController": "स्केलिंग फ़ैक्टर नियंत्रक सेट करें (वैकल्पिक)",
       "stablePool": "स्थिर पूल",
       "step": {
         "one": {

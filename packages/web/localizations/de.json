@@ -532,6 +532,7 @@
       "buttonNext": "Nächste",
       "infoCaption": "Übertragen auf den Osmose-Gemeinschaftspool",
       "infoMessage": "Gebühr für die Poolerstellung",
+      "scalingFactorController": "Skalierungsfaktorregler einstellen (optional)",
       "stablePool": "Stabiler Pool",
       "step": {
         "one": {
