@@ -266,16 +266,9 @@ export const AssetsInfoTable: FunctionComponent<{
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="bg-transparent" key={headerGroup.id}>
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
-                  className={classNames("subtitle1", {
-                    "w-96 !text-left": header.index === 0,
-                    "text-right": header.index > 0,
-                  })}
-                  key={header.id}
-                  colSpan={header.colSpan}
-                >
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -288,7 +281,7 @@ export const AssetsInfoTable: FunctionComponent<{
           ))}
         </thead>
         <tbody>
-          {paddingTop > 0 && (
+          {paddingTop > 0 && paddingTop - topOffset > 0 && (
             <tr>
               <td style={{ height: paddingTop - topOffset }} />
             </tr>
@@ -300,32 +293,21 @@ export const AssetsInfoTable: FunctionComponent<{
               </td>
             </tr>
           )}
-          {virtualRows.map((virtualRow) => {
-            const row = rows[virtualRow.index];
-
-            return (
-              <tr
-                className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell, cellIndex, cells) => (
-                  <td
-                    className={classNames(
-                      "transition-colors duration-200 ease-in-out",
-                      {
-                        "rounded-l-3xl text-left": cellIndex === 0,
-                        "text-right": cellIndex > 0,
-                        "rounded-r-3xl": cellIndex === cells.length - 1,
-                      }
-                    )}
-                    key={cell.id}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+          {virtualRows.map((virtualRow) => (
+            <tr
+              className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+              key={rows[virtualRow.index].id}
+            >
+              {rows[virtualRow.index].getVisibleCells().map((cell) => (
+                <td
+                  className="transition-colors duration-200 ease-in-out"
+                  key={cell.id}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
           {isFetchingNextPage && (
             <tr>
               <td className="text-center" colSpan={columns.length}>
