@@ -40,7 +40,7 @@ export async function getAsset({
 }): Promise<Asset> {
   const assets = await getAssets({ assetList, findMinDenomOrSymbol: anyDenom });
   const asset = assets[0];
-  if (!asset) throw new Error(anyDenom + " not found");
+  if (!asset) throw new Error(anyDenom + " not found in asset list");
   return asset;
 }
 
