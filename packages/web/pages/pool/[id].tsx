@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -14,7 +14,6 @@ import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
-import { queryNumPools } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 
 interface Props {
@@ -111,15 +110,15 @@ const Pool: FunctionComponent<Props> = observer(
   }
 );
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const { num_pools } = await queryNumPools();
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const { num_pools } = await queryNumPools();
 
-  const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
-    params: { id: String(i + 1) },
-  }));
+//   const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
+//     params: { id: String(i + 1) },
+//   }));
 
-  return { paths, fallback: "blocking" };
-};
+//   return { paths, fallback: "blocking" };
+// };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const id = params?.id as string;
