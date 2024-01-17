@@ -1,9 +1,5 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  ObservableQueryPool,
-  QuasarVault,
-} from "@osmosis-labs/stores";
+import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -33,8 +29,11 @@ import { InputBox } from "~/components/input";
 import Spinner from "~/components/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  useAmplitudeAnalytics,
+  useTranslation,
+} from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
@@ -416,7 +415,7 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex w-full gap-1">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {chartConfig.queryTokenPairPrice.isFetching ? (
+            {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
