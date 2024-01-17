@@ -254,8 +254,6 @@ export async function calcAssetValue({
 }): Promise<Dec | undefined> {
   const asset = await getAsset({ anyDenom });
 
-  if (!asset) throw new Error(anyDenom + " not found in asset list");
-
   const price = await getAssetPrice({
     asset,
     currency,
