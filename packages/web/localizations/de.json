@@ -271,6 +271,7 @@
       "addresses": "Adressen.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Bitcoin-Miner-Gebühr",
+      "bridgeAtCapacity": "Die Brücke ist derzeit voll. Bitte versuchen Sie es später noch einmal.",
       "bridgeFee": "Nomic Bridge-Gebühr",
       "confirmations": "6 Bestätigungen",
       "enterBitcoinAddress": "Geben Sie die Bitcoin-Adresse ein",
@@ -377,6 +378,7 @@
     "fallbackSupport": "Unterstützung",
     "chartUnavailable": "Diagramm nicht verfügbar",
     "sequenceNumber": "Sie haben zu viele gleichzeitige Transaktionen! Versuchen Sie es erneut zu senden, nachdem Ihre vorherige Sendung in der Kette gelandet ist. (Sequenz: {sequence} )",
+    "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
     "invalidAmounts": "Ungültige(r) Betrag(e)"
   },
   "frontierMigration": {
@@ -430,6 +432,7 @@
     "getStartedHistoryMessage2": "Mit diesem kurzen Tutorial können Sie in wenigen Minuten handeln",
     "getStartedHistoryTitle3": "So zahlen Sie Geld ein",
     "getStartedHistoryMessage3": "Erfahren Sie, wie Sie Geld bei Osmosis einzahlen",
+    "signupDummyHistoryTitle1": "Kaufen Sie Token, um loszulegen",
     "signupDummyHistoryMessage1": "Erwerben Sie OSMO, um mit dem Handel zu beginnen",
     "signupDummyHistoryTitle2": "So hinterlegen Sie Vermögenswerte",
     "signupDummyHistoryMessage2": "Erfahren Sie, wie Sie Gelder auf Osmosis überweisen",
@@ -662,6 +665,7 @@
     "validatorNextStep": {
       "newUser": {
         "title": "Es sieht so aus, als wärst du neu hier",
+        "description": "Wählen Sie eine Gruppe von Validatoren aus, um mit dem Abstecken zu beginnen. Sie sind sich nicht sicher, was Validatoren sind?",
         "learnMore": "Klicken Sie hier, um zu erfahren, wie das Abstecken funktioniert",
         "button": "Stellen Sie einen Pfahltrupp zusammen, um fortzufahren"
       },
@@ -778,6 +782,7 @@
   "highPoolInflationWarning": "Hohe effektive Jahreszinsen können aus inflationären Belohnungen resultieren. Mit Vorsicht fortfahren.",
   "upgrades": {
     "title": "Upgrades verfügbar",
+    "detected": "Wir haben Upgrades für die unten aufgeführten Vermögenswerte oder Positionen festgestellt.",
     "positionUpgrade": "Positionsverbesserung",
     "superchargedLiquidity": "Überhöhte Liquidität",
     "newSuperchargedPool": "Dieser neue Pool bietet ein höheres Verdienstpotenzial und einen höchsten geschätzten effektiven Jahreszins.",
@@ -825,6 +830,8 @@
   },
   "tokenInfos": {
     "relatedAssets": "Zugehörige Vermögenswerte",
+    "earnWith": "Verdienen Sie mit {denom}",
+    "explorePools": "Entdecken Sie Pools",
     "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
     "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
     "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
@@ -888,6 +895,7 @@
     "saveFilters": "Filter speichern",
     "rewards": "Belohnung",
     "estimatedInYearlyRewards": "Geschätzte jährliche Prämie",
+    "availableToClaim": "zur Inanspruchnahme verfügbar",
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {

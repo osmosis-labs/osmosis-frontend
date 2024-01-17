@@ -271,6 +271,7 @@
       "addresses": "पते.",
       "bitcoin": "बिटकॉइन (बीटीसी)",
       "bitcoinMinerFee": "बिटकॉइन माइनर शुल्क",
+      "bridgeAtCapacity": "पुल वर्तमान में क्षमता पर है। कृपया बाद में पुन: प्रयास करें।",
       "bridgeFee": "नॉमिक ब्रिज शुल्क",
       "confirmations": "6 पुष्टिकरण",
       "enterBitcoinAddress": "बिटकॉइन पता दर्ज करें",
@@ -377,6 +378,7 @@
     "fallbackSupport": "सहायता",
     "chartUnavailable": "चार्ट अनुपलब्ध",
     "sequenceNumber": "आपके पास बहुत अधिक समवर्ती लेन-देन हैं! आपकी पिछली टीएक्स श्रृंखला पर आने के बाद पुनः भेजने का प्रयास करें। (अनुक्रम: {sequence} )",
+    "swapSlippage": "फिसलन के कारण {coinDenom} के लिए स्वैप विफल रहा। फिसलन सहनशीलता बढ़ाने का प्रयास करें।",
     "invalidAmounts": "अमान्य राशि"
   },
   "frontierMigration": {
@@ -430,6 +432,7 @@
     "getStartedHistoryMessage2": "यह त्वरित ट्यूटोरियल आपको मिनटों में ट्रेडिंग करवा देगा",
     "getStartedHistoryTitle3": "धनराशि कैसे जमा करें",
     "getStartedHistoryMessage3": "ऑस्मोसिस पर धनराशि जमा करने का तरीका जानें",
+    "signupDummyHistoryTitle1": "आरंभ करने के लिए टोकन खरीदें",
     "signupDummyHistoryMessage1": "ट्रेडिंग शुरू करने के लिए OSMO प्राप्त करें",
     "signupDummyHistoryTitle2": "संपत्ति कैसे जमा करें",
     "signupDummyHistoryMessage2": "ऑस्मोसिस पर फंड ट्रांसफर करना सीखें",
@@ -662,6 +665,7 @@
     "validatorNextStep": {
       "newUser": {
         "title": "ऐसा लगता है जैसे आप यहाँ नये हैं",
+        "description": "स्टेकिंग शुरू करने के लिए सत्यापनकर्ताओं की एक टीम का चयन करें। निश्चित नहीं हैं कि सत्यापनकर्ता क्या हैं?",
         "learnMore": "स्टेकिंग कैसे काम करती है यह जानने के लिए यहां क्लिक करें",
         "button": "जारी रखने के लिए स्टेक स्क्वाड बनाएं"
       },
@@ -778,6 +782,7 @@
   "highPoolInflationWarning": "उच्च एपीआर मुद्रास्फीतिकारी पुरस्कारों के परिणामस्वरूप हो सकते हैं। सावधानी के साथ आगे बढ़ना।",
   "upgrades": {
     "title": "अपग्रेड उपलब्ध हैं",
+    "detected": "हमने नीचे सूचीबद्ध परिसंपत्तियों या पदों के लिए उन्नयन का पता लगाया है।",
     "positionUpgrade": "पद उन्नयन",
     "superchargedLiquidity": "सुपरचार्ज्ड तरलता",
     "newSuperchargedPool": "यह नया पूल उच्च कमाई क्षमता और उच्चतम अनुमानित एपीआर के साथ आता है।",
@@ -825,6 +830,8 @@
   },
   "tokenInfos": {
     "relatedAssets": "संबंधित संपत्ति",
+    "earnWith": "{denom} से कमाएं",
+    "explorePools": "तालों का अन्वेषण करें",
     "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
     "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",
     "provideLiquidity": "तरलता प्रदान करें और फीस और स्वैप पर कमाई करें",
@@ -888,6 +895,7 @@
     "saveFilters": "फ़िल्टर सहेजें",
     "rewards": "पुरस्कार",
     "estimatedInYearlyRewards": "वार्षिक पुरस्कारों में अनुमानित",
+    "availableToClaim": "दावा करने के लिए उपलब्ध है",
     "claimAllRewards": "सभी पुरस्कारों का दावा करें",
     "join": "जोड़ना",
     "tokenFilterOptions": {

@@ -271,6 +271,7 @@
       "addresses": "સરનામાં",
       "bitcoin": "બિટકોઇન (BTC)",
       "bitcoinMinerFee": "Bitcoin ખાણિયો ફી",
+      "bridgeAtCapacity": "બ્રિજ હાલમાં ક્ષમતા પર છે. પછીથી ફરી પ્રયત્ન કરો.",
       "bridgeFee": "નોમિક બ્રિજ ફી",
       "confirmations": "6 પુષ્ટિકરણ",
       "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો",
@@ -377,6 +378,7 @@
     "fallbackSupport": "આધાર",
     "chartUnavailable": "ચાર્ટ અનુપલબ્ધ",
     "sequenceNumber": "તમારી પાસે ઘણા બધા સહવર્તી વ્યવહારો છે! તમારા અગાઉના tx સાંકળ પર ઉતર્યા પછી ફરીથી મોકલવાનો પ્રયાસ કરો. (ક્રમ: {sequence} )",
+    "swapSlippage": "સ્લિપેજને કારણે {coinDenom} માટે સ્વેપ નિષ્ફળ થયું. સ્લિપેજ સહિષ્ણુતા વધારવાનો પ્રયાસ કરો.",
     "invalidAmounts": "અમાન્ય રકમ(ઓ)"
   },
   "frontierMigration": {
@@ -430,6 +432,7 @@
     "getStartedHistoryMessage2": "આ ઝડપી ટ્યુટોરીયલ તમને મિનિટોમાં ટ્રેડિંગ કરાવશે",
     "getStartedHistoryTitle3": "ભંડોળ કેવી રીતે જમા કરવું",
     "getStartedHistoryMessage3": "ઓસ્મોસિસ પર ફંડ કેવી રીતે જમા કરવું તે જાણો",
+    "signupDummyHistoryTitle1": "પ્રારંભ કરવા માટે ટોકન્સ ખરીદો",
     "signupDummyHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
     "signupDummyHistoryTitle2": "સંપત્તિ કેવી રીતે જમા કરવી",
     "signupDummyHistoryMessage2": "ઓસ્મોસિસ પર ફંડ કેવી રીતે ટ્રાન્સફર કરવું તે જાણો",
@@ -662,6 +665,7 @@
     "validatorNextStep": {
       "newUser": {
         "title": "એવું લાગે છે કે તમે અહીં નવા છો",
+        "description": "સ્ટેકિંગ શરૂ કરવા માટે માન્યકર્તાઓની ટુકડી પસંદ કરો. ખાતરી નથી કે માન્યકર્તાઓ શું છે?",
         "learnMore": "સ્ટેકિંગ કેવી રીતે કામ કરે છે તે જાણવા માટે અહીં ક્લિક કરો",
         "button": "ચાલુ રાખવા માટે હિસ્સો ટુકડી બનાવો"
       },
@@ -778,6 +782,7 @@
   "highPoolInflationWarning": "ઉચ્ચ APR ફુગાવાના પુરસ્કારોથી પરિણમી શકે છે. સાવધાની સાથે આગળ વધો.",
   "upgrades": {
     "title": "અપગ્રેડ ઉપલબ્ધ છે",
+    "detected": "અમે નીચે સૂચિબદ્ધ અસ્કયામતો અથવા સ્થિતિઓ માટે અપગ્રેડ શોધી કાઢ્યા છે.",
     "positionUpgrade": "પોઝિશન અપગ્રેડ",
     "superchargedLiquidity": "સુપરચાર્જ્ડ લિક્વિડિટી",
     "newSuperchargedPool": "આ નવો પૂલ ઉચ્ચ કમાણી સંભવિત અને સૌથી વધુ અંદાજિત APR સાથે આવે છે.",
@@ -825,6 +830,8 @@
   },
   "tokenInfos": {
     "relatedAssets": "સંબંધિત અસ્કયામતો",
+    "earnWith": "{denom} વડે કમાઓ",
+    "explorePools": "પૂલનું અન્વેષણ કરો",
     "stakeYourDenomToEarn": "{denom} કમાવવા માટે તમારું {apr} % APR",
     "stakeYourDenomToEarnNoAPR": "પુરસ્કારો મેળવવા માટે તમારા {denom} હિસ્સો લો",
     "provideLiquidity": "તરલતા પ્રદાન કરો અને ફી અને સ્વેપ પર કમાણી કરો",
@@ -888,6 +895,7 @@
     "saveFilters": "ફિલ્ટર્સ સાચવો",
     "rewards": "પારિતોષિકો",
     "estimatedInYearlyRewards": "વાર્ષિક પુરસ્કારોમાં અંદાજિત",
+    "availableToClaim": "દાવો કરવા માટે ઉપલબ્ધ છે",
     "claimAllRewards": "બધા પુરસ્કારોનો દાવો કરો",
     "join": "જોડાઓ",
     "tokenFilterOptions": {

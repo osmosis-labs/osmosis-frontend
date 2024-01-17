@@ -271,6 +271,7 @@
       "addresses": "アドレス。",
       "bitcoin": "ビットコイン (BTC)",
       "bitcoinMinerFee": "ビットコインマイナー手数料",
+      "bridgeAtCapacity": "橋は現在満杯です。後でもう一度試してください。",
       "bridgeFee": "ノミックブリッジ料金",
       "confirmations": "6件の確認",
       "enterBitcoinAddress": "ビットコインアドレスを入力してください",
@@ -377,6 +378,7 @@
     "fallbackSupport": "サポート",
     "chartUnavailable": "チャートは使用できません",
     "sequenceNumber": "同時トランザクションが多すぎます。前の tx がチェーンに到達した後に再送信してみてください。 (シーケンス: {sequence}",
+    "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です"
   },
   "frontierMigration": {
@@ -430,6 +432,7 @@
     "getStartedHistoryMessage2": "この簡単なチュートリアルでは数分で取引できるようになります",
     "getStartedHistoryTitle3": "資金の入金方法",
     "getStartedHistoryMessage3": "Osmosis に資金を入金する方法を学ぶ",
+    "signupDummyHistoryTitle1": "トークンを購入して始めましょう",
     "signupDummyHistoryMessage1": "OSMOを取得して取引を開始する",
     "signupDummyHistoryTitle2": "資産の預け入れ方法",
     "signupDummyHistoryMessage2": "Osmosis に資金を送金する方法を学ぶ",
@@ -662,6 +665,7 @@
     "validatorNextStep": {
       "newUser": {
         "title": "ここに来たのは初めてのようですね",
+        "description": "ステーキングを開始するバリデーターの分隊を選択します。バリデーターが何なのかわからないですか?",
         "learnMore": "ステーキングの仕組みについてはここをクリックしてください",
         "button": "継続するためにステークチームを編成する"
       },
@@ -778,6 +782,7 @@
   "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
   "upgrades": {
     "title": "アップグレードが可能",
+    "detected": "以下にリストされている資産またはポジションのアップグレードが検出されました。",
     "positionUpgrade": "ポジションのアップグレード",
     "superchargedLiquidity": "流動性の高まり",
     "newSuperchargedPool": "この新しいプールには、より高い収益の可能性があり、推定年利も最も高くなります。",
@@ -825,6 +830,8 @@
   },
   "tokenInfos": {
     "relatedAssets": "関連アセット",
+    "earnWith": "{denom}で獲得",
+    "explorePools": "プールを探索する",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
     "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
     "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
@@ -888,6 +895,7 @@
     "saveFilters": "フィルターの保存",
     "rewards": "報酬",
     "estimatedInYearlyRewards": "年間報酬で見積もる",
+    "availableToClaim": "請求可能",
     "claimAllRewards": "すべての報酬を受け取りましょう",
     "join": "参加する",
     "tokenFilterOptions": {
