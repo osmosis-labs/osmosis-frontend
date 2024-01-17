@@ -41,9 +41,13 @@ export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
 const searchablePoolKeys = ["id", "coinDenoms"];
 
-export async function getPool(poolId: string): Promise<Pool | undefined> {
+/** Get's an individual pool by ID.
+ *  @throws If pool not found. */
+export async function getPool(poolId: string): Promise<Pool> {
   const pools = await getPools();
-  return pools.find(({ id }) => id === poolId);
+  const pool = pools.find(({ id }) => id === poolId);
+  if (!pool) throw new Error(poolId + " not found");
+  return pool;
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
