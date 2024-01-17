@@ -202,7 +202,15 @@ export class OsmosisAccountImpl {
     }
 
     // Construct reward messages
-    const msgs = [];
+    type CollectMessageType =
+      | ReturnType<
+          (typeof osmosisMsgOpts)["clCollectPositionsIncentivesRewards"]["messageComposer"]
+        >
+      | ReturnType<
+          (typeof osmosisMsgOpts)["clCollectPositionsSpreadRewards"]["messageComposer"]
+        >;
+    const msgs: CollectMessageType[] = [];
+
     if (spreadRewardPositions.length > 0) {
       const spreadRewardsMsg =
         this.msgOpts.clCollectPositionsSpreadRewards.messageComposer({
