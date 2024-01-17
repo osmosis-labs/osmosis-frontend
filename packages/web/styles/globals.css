@@ -100,36 +100,34 @@
     @apply caret-osmoverse-100;
   }
 
+  /* Global table style */
+
   table {
     @apply table-auto border-collapse text-left md:w-screen;
   }
 
   thead > tr {
-    @apply bg-osmoverse-800 text-osmoverse-300;
-  }
-
-  thead > tr > th:first-child {
-    @apply justify-start rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
+    @apply subtitle1 mb-1 border-b-2 border-osmoverse-800 text-osmoverse-300;
   }
 
   thead > tr > th {
-    @apply justify-end p-3 py-[18px] font-body2;
+    @apply py-2 font-semibold;
   }
 
-  thead > tr > th:last-child {
-    @apply rounded-tr-lg py-[18px] pl-3 pr-10 lg:pr-4 md:rounded-none;
-  }
-
-  tbody > tr > td:first-child {
-    @apply py-3 pl-10 pr-3;
+  tbody > tr {
+    @apply rounded-3xl;
   }
 
   tbody > tr > td {
-    @apply p-3 text-right;
+    @apply p-4 text-right;
+  }
+
+  tbody > tr > td:first-child {
+    @apply rounded-l-3xl text-left;
   }
 
   tbody > tr > td:last-child {
-    @apply py-2 pl-3 pr-0 lg:pr-4;
+    @apply rounded-r-3xl;
   }
 
   .grid-cards {
