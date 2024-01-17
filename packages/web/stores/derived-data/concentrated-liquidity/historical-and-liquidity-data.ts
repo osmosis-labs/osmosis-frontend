@@ -11,14 +11,16 @@ import {
   ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryLiquidityPerTickRange,
   OsmosisQueries,
-  TokenPairHistoricalPrice,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
 import type { Pool } from "~/server/queries/complex/pools";
-import type { TimeDuration } from "~/server/queries/imperator";
+import type {
+  TimeDuration,
+  TokenPairHistoricalPrice,
+} from "~/server/queries/imperator";
 import type { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 
 const INITIAL_ZOOM = 1.05;
