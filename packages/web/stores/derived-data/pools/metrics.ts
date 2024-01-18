@@ -10,7 +10,6 @@ import {
   ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
-  ObservableQueryTokensPairHistoricalChart,
   ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
@@ -34,7 +33,6 @@ export class ObservablePoolWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore
@@ -136,7 +134,6 @@ export class ObservablePoolsWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
@@ -263,7 +260,6 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,

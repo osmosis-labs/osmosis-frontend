@@ -21,10 +21,3 @@ export class NoAvailableSharesError extends Error {
     Object.setPrototypeOf(this, NoAvailableSharesError.prototype);
   }
 }
-
-export class InvalidRangeError extends Error {
-  constructor(m: string) {
-    super(m);
-    Object.setPrototypeOf(this, InvalidRangeError.prototype);
-  }
-}

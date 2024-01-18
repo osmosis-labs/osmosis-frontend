@@ -10,19 +10,29 @@ import { SIDECAR_BASE_URL } from ".";
 
 // overwrite types from node pool type
 
-type UnderlyingWeightedPool = Omit<WeightedPoolRawResponse, "id" | "@type"> & {
-  id: number;
-};
-type UnderlyingStablePool = Omit<StablePoolRawResponse, "id" | "@type"> & {
-  id: number;
-};
-type UnderlyingConcentratedPool = Omit<
-  ConcentratedPoolRawResponse,
+export type UnderlyingWeightedPool = Omit<
+  WeightedPoolRawResponse,
   "id" | "@type"
 > & {
   id: number;
 };
-type UnderlyingCosmwasmPool = Omit<
+export type UnderlyingStablePool = Omit<
+  StablePoolRawResponse,
+  "id" | "@type" | "scaling_factors"
+> & {
+  id: number;
+  scaling_factors: number[];
+};
+export type UnderlyingConcentratedPool = Omit<
+  ConcentratedPoolRawResponse,
+  "id" | "@type" | "current_tick" | "tick_spacing" | "exponent_at_price_one"
+> & {
+  id: number;
+  current_tick: number;
+  tick_spacing: number;
+  exponent_at_price_one: number;
+};
+export type UnderlyingCosmwasmPool = Omit<
   CosmwasmPoolRawResponse,
   "pool_id" | "code_id" | "@type"
 > & {

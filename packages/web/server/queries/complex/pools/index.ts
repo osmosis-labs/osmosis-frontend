@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { search, SearchSchema } from "~/utils/search";
@@ -19,6 +19,7 @@ export type Pool = {
   id: string;
   type: PoolType;
   raw: Omit<PoolRawResponse, "@type">;
+  spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
 };

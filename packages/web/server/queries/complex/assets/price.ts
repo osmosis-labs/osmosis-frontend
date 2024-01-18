@@ -16,9 +16,12 @@ import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/im
 
 import {
   queryTokenHistoricalChart,
+  queryTokenPairHistoricalChart,
+  TimeDuration,
   TimeFrame,
   TokenHistoricalPrice,
-} from "../../imperator/token-historical-chart";
+  TokenPairHistoricalPrice,
+} from "../../imperator";
 import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -268,6 +271,41 @@ export async function calcAssetValue({
   return amount.toDec().quo(tokenDivision).mul(price);
 }
 
+/** Calculate and sum the value of multiple assets. */
+export async function calcSumAssetsValue({
+  assets,
+  currency = "usd",
+}: {
+  assets: {
+    anyDenom: string;
+    amount: Int | string;
+  }[];
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  return (
+    (
+      await Promise.all(
+        assets.map(async (asset) => {
+          const price = await calcAssetValue({
+            ...asset,
+            currency,
+          });
+
+          if (!price) return undefined;
+
+          return price;
+        })
+      )
+    ).filter(Boolean) as NonNullable<
+      Awaited<ReturnType<typeof calcAssetValue>>
+    >[]
+  ).reduce((acc, price) => {
+    if (!price) return acc;
+
+    return acc.add(price);
+  }, new Dec(0));
+}
+
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
@@ -326,5 +364,42 @@ export function getAssetHistoricalPrice({
       }).then((prices) =>
         numRecentFrames ? prices.slice(-numRecentFrames) : prices
       ),
+  });
+}
+
+const tokenPairPriceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+/** Gets the relative price of two tokens in a specified pool over a given duration.
+ *  Lightly cached. */
+export function getPoolAssetPairHistoricalPrice({
+  poolId,
+  quoteCoinMinimalDenom,
+  baseCoinMinimalDenom,
+  timeDuration,
+}: {
+  poolId: string;
+  quoteCoinMinimalDenom: string;
+  baseCoinMinimalDenom: string;
+  timeDuration: TimeDuration;
+}): Promise<{ prices: TokenPairHistoricalPrice[]; min: number; max: number }> {
+  return cachified({
+    cache: tokenPairPriceCache,
+    key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
+    ttl: 1000 * 60 * 3, // 3 minutes,
+    getFreshValue: () =>
+      queryTokenPairHistoricalChart(
+        poolId,
+        quoteCoinMinimalDenom,
+        baseCoinMinimalDenom,
+        timeDuration
+      ).then((prices) => ({
+        prices: prices.map((price) => ({
+          ...price,
+          time: price.time * 1000,
+        })),
+        min: Math.min(...prices.map((price) => price.close)),
+        max: Math.max(...prices.map((price) => price.close)),
+      })),
   });
 }
