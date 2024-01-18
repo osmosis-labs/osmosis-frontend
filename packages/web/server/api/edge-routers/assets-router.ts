@@ -42,8 +42,6 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-      if (!asset) throw new Error("Asset not found " + findMinDenomOrSymbol);
-
       return await getUserAssetInfo({
         asset,
         userOsmoAddress,
@@ -93,7 +91,9 @@ export const assetsRouter = createTRPCRouter({
     }),
   getRecommendedAssets: publicProcedure.query(async () => {
     const assets = await Promise.all(
-      RecommendedSwapDenoms.map((denom) => getAsset({ anyDenom: denom }))
+      RecommendedSwapDenoms.map((denom) =>
+        getAsset({ anyDenom: denom }).catch(() => null)
+      )
     );
 
     return assets.filter((a): a is Asset => !!a);
@@ -108,8 +108,6 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
-
-      if (!asset) throw new Error("Asset not found " + findMinDenomOrSymbol);
 
       const userAsset = await getUserAssetInfo({ asset, userOsmoAddress });
       const userMarketInfoAsset = await getAssetMarketInfo({
