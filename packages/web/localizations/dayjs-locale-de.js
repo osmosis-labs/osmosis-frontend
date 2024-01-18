@@ -9,6 +9,28 @@
           : e || self).dayjs_locale_en = n());
 })(this, function () {
   "use strict";
+
+  const texts = {
+    s: "ein paar Sekunden",
+    m: ["eine Minute", "einer Minute"],
+    mm: "%d Minuten",
+    h: ["eine Stunde", "einer Stunde"],
+    hh: "%d Stunden",
+    d: ["ein Tag", "einem Tag"],
+    dd: ["%d Tage", "%d Tagen"],
+    M: ["ein Monat", "einem Monat"],
+    MM: ["%d Monate", "%d Monaten"],
+    y: ["ein Jahr", "einem Jahr"],
+    yy: ["%d Jahre", "%d Jahren"],
+  };
+
+  function relativeTimeFormatter(number, withoutSuffix, key) {
+    let l = texts[key];
+    if (Array.isArray(l)) {
+      l = l[withoutSuffix ? 0 : 1];
+    }
+    return l.replace("%d", number);
+  }
   return {
     name: "de",
     weekdays:
