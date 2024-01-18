@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -10,7 +10,7 @@ import {
   UnderlyingWeightedPool,
 } from "~/server/queries/sidecar";
 
-import { calcAssetValue, getAsset } from "../../assets";
+import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { TransmuterPoolCodeIds } from "../env";
 import { Pool, PoolType } from "../index";
@@ -35,14 +35,10 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
   });
 }
 
+/** Converts a single SQS pool model response to the standard and more useful Pool type. */
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<Pool | undefined> {
-  const assetValueDec =
-    (await calcAssetValue({
-      anyDenom: "uosmo",
-      amount: sidecarPool.sqs_model.total_value_locked_uosmo,
-    })) ?? new Dec(0);
   const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
 
   // contains unlisted or invalid assets
@@ -54,7 +50,9 @@ async function makePoolFromSidecarPool(
     raw: makePoolRawResponseFromUnderlyingPool(sidecarPool.underlying_pool),
     spreadFactor: new RatePretty(sidecarPool.sqs_model.spread_factor),
     reserveCoins,
-    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, assetValueDec),
+    totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
+      reserveCoins
+    ),
   };
 }
 
@@ -185,4 +183,15 @@ function makePoolRawResponseFromUnderlyingPool(
     pool_id: underlyingPool.pool_id?.toString(),
     code_id: underlyingPool.code_id?.toString(),
   } as PoolRawResponse;
+}
+
+function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
+  const assets = reserve.map((coin) => ({
+    anyDenom: coin.currency.coinMinimalDenom,
+    amount: coin.toCoin().amount,
+  }));
+
+  return calcSumAssetsValue({ assets }).then(
+    (value) => new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0)
+  );
 }

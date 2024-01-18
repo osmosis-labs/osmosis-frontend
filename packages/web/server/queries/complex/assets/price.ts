@@ -248,6 +248,41 @@ export async function calcAssetValue({
   return amount.toDec().quo(tokenDivision).mul(price);
 }
 
+/** Calculate and sum the value of multiple assets. */
+export async function calcSumAssetsValue({
+  assets,
+  currency = "usd",
+}: {
+  assets: {
+    anyDenom: string;
+    amount: Int | string;
+  }[];
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  return (
+    (
+      await Promise.all(
+        assets.map(async (asset) => {
+          const price = await calcAssetValue({
+            ...asset,
+            currency,
+          });
+
+          if (!price) return undefined;
+
+          return price;
+        })
+      )
+    ).filter(Boolean) as NonNullable<
+      Awaited<ReturnType<typeof calcAssetValue>>
+    >[]
+  ).reduce((acc, price) => {
+    if (!price) return acc;
+
+    return acc.add(price);
+  }, new Dec(0));
+}
+
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
