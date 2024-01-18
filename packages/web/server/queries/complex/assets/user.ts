@@ -67,6 +67,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
         amount: balance.amount,
       }).catch(() => {
         console.error(asset.coinMinimalDenom, "likely missing price config");
+        return undefined;
       });
 
       return {

@@ -30,7 +30,8 @@ export type AssetFilter = z.infer<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
-/** Get an individual asset explicitly by it's denom (any type) */
+/** Get an individual asset explicitly by it's denom (any type).
+ *  @throws If asset not found. */
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
@@ -38,14 +39,16 @@ export async function getAsset({
 }: {
   assetList?: AssetList[];
   anyDenom: string;
-} & AssetFilter): Promise<Asset | undefined> {
+}): Promise<Asset> {
   const assets = await getAssets({
     assetList,
     findMinDenomOrSymbol: anyDenom,
     includeUnlisted: true,
     ...params,
   });
-  return assets[0];
+  const asset = assets[0];
+  if (!asset) throw new Error(anyDenom + " not found in asset list");
+  return asset;
 }
 
 const minimalAssetsCache = new LRUCache<string, CacheEntry>(
