@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { SIDECAR_BASE_URL } from "~/server/queries/sidecar";
 import { server } from "~/tests/msw";
 
 import { calcAssetValue, getAsset } from "../../../assets";
@@ -33,7 +34,7 @@ describe("getPoolsFromSidecar", () => {
     });
 
     server.use(
-      rest.get("https://sqs.osmosis.zone/pools/all", (_req, res, ctx) => {
+      rest.get(`${SIDECAR_BASE_URL}/pools/all`, (_req, res, ctx) => {
         return res(ctx.json(mockSidecarResponse));
       })
     );
@@ -45,6 +46,7 @@ describe("getPoolsFromSidecar", () => {
     const end1 = Date.now();
     const duration1 = end1 - start1;
 
+    // should hit cache now
     const start2 = Date.now();
     const pools2 = await getPoolsFromSidecar();
     const end2 = Date.now();
@@ -71,6 +73,18 @@ describe("getPoolsFromSidecar", () => {
     const pool = mockSidecarResponse[2];
     const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
     expect(poolType).toBe("concentrated");
+  });
+
+  it("correctly identifies cosmwasm pool type", async () => {
+    const pool = mockSidecarResponse[3];
+    const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
+    expect(poolType).toBe("cosmwasm-transmuter");
+  });
+
+  it("correctly identifies cosmwasm pool type", async () => {
+    const pool = mockSidecarResponse[4];
+    const poolType = getPoolTypeFromSidecarPool(pool.underlying_pool as any);
+    expect(poolType).toBe("cosmwasm");
   });
 });
 
@@ -227,6 +241,26 @@ export const mockSidecarResponse = [
         "osmo15ns40n0pctl80d7l7praluufcywderupvgcl8xjg4gzvvhgv4vqq78vk7n",
       pool_id: 1175,
       code_id: 148,
+      instantiate_msg:
+        "eyJwb29sX2Fzc2V0X2Rlbm9tcyI6WyJ7cG9vbF9hc3NldF9kZW5vbXM6W2liYy84MjQyQUQyNDAwODAzMkU0NTdEMkUxMkQ0NjU4OEZEMzlGQjU0RkIyOTY4MEM2Qzc2NjNEMjk2QjM4M0MzN0M0IiwiaWJjLzRBQkJFRjRDODkyNkREREIzMjBBRTUxODhDRkQ2MzI2N0FCQkNFRkMwNTgzRTRBRTA1RDZFNUFBMjQwMUREQUJdIiwiYWRtaW46b3NtbzFkNmg5bWw5OW53cGVkeGUzZ2hqZ3lxbmN3emV5dGR6NTA3ZTlmNHNzc2tlajZ5dzltbWdzMzlzdDk4fSJdfQ==",
+    },
+    sqs_model: {
+      total_value_locked_uosmo: "0",
+      balances: [],
+      pool_denoms: [
+        "admin:osmo1d6h9ml99nwpedxe3ghjgyqncwzeytdz507e9f4ssskej6yw9mmgs39st98}",
+        "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB]",
+        "{pool_asset_denoms:[ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4",
+      ],
+      spread_factor: "0.000000000000000000",
+    },
+  },
+  {
+    underlying_pool: {
+      contract_address:
+        "osmo15ns40n0pctl80d7l7praluufcywderupvgcl8xjg4gzvvhgv4vqq78vk7n",
+      pool_id: 1178,
+      code_id: 155,
       instantiate_msg:
         "eyJwb29sX2Fzc2V0X2Rlbm9tcyI6WyJ7cG9vbF9hc3NldF9kZW5vbXM6W2liYy84MjQyQUQyNDAwODAzMkU0NTdEMkUxMkQ0NjU4OEZEMzlGQjU0RkIyOTY4MEM2Qzc2NjNEMjk2QjM4M0MzN0M0IiwiaWJjLzRBQkJFRjRDODkyNkREREIzMjBBRTUxODhDRkQ2MzI2N0FCQkNFRkMwNTgzRTRBRTA1RDZFNUFBMjQwMUREQUJdIiwiYWRtaW46b3NtbzFkNmg5bWw5OW53cGVkeGUzZ2hqZ3lxbmN3emV5dGR6NTA3ZTlmNHNzc2tlajZ5dzltbWdzMzlzdDk4fSJdfQ==",
     },
