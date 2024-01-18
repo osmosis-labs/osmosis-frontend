@@ -478,30 +478,33 @@ const PoolCompositionCell: PoolCellComponent = ({
             {t("components.table.poolId", { id })}
           </span>
         </div>
-        {type === "stable" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
-        {type === "concentrated" && (
-          <Icon
-            color={theme.colors.white.mid}
-            id="lightning-small"
-            height={24}
-            width={24}
-          />
-        )}
-        {type === "cosmwasm-transmuter" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
+
+        <div className="rounded-full bg-[#003F4780]">
+          {type === "stable" && (
+            <Image
+              alt=""
+              src="/icons/stableswap-pool.svg"
+              width={24}
+              height={24}
+            />
+          )}
+          {type === "concentrated" && (
+            <Icon
+              color={theme.colors.white.mid}
+              id="lightning-small"
+              height={24}
+              width={24}
+            />
+          )}
+          {type === "cosmwasm-transmuter" && (
+            <Image
+              alt=""
+              src="/icons/stableswap-pool.svg"
+              width={24}
+              height={24}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
