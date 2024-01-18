@@ -22,10 +22,10 @@ export type Asset = {
 
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
-  onlyVerified: z.boolean().default(false).optional(),
+  onlyVerified: z.boolean().default(false),
 });
 /** Params for filtering assets. */
-export type AssetFilter = z.infer<typeof AssetFilterSchema>;
+export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];

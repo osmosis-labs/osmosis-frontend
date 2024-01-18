@@ -8,21 +8,25 @@ import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
-import { getPool } from "~/server/queries/complex/pools";
+import { getPools } from "~/server/queries/complex/pools";
 import { queryPositionPerformance } from "~/server/queries/imperator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   queryCLPositions,
   queryCLUnbondingPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
-import { queryDelegatedClPositions } from "~/server/queries/osmosis/superfluid";
+import {
+  queryDelegatedClPositions,
+  queryUndelegatingClPositions,
+} from "~/server/queries/osmosis/superfluid";
+import { sort } from "~/utils/sort";
 
 export const concentratedLiquidityRouter = createTRPCRouter({
   getUserPositions: publicProcedure
     .input(
       z
         .object({
-          sortDirection: z.enum(["asc", "desc"]).default("desc").optional(),
+          sortDirection: z.enum(["asc", "desc"]).default("desc"),
         })
         .merge(UserOsmoAddressSchema.required())
     )
@@ -31,14 +35,14 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       });
 
-      // TODO: sort by joinDate
+      // TODO: sort by joinTime
       console.time("normalizePositions");
       const result = await normalizePositions({
         positions: rawPositions,
         userOsmoAddress,
       });
       console.timeEnd("normalizePositions");
-      return result;
+      return sort(result, "joinTime", sortDirection);
     }),
 
   getPositionPerformance: publicProcedure
@@ -323,11 +327,10 @@ async function getUserUndelegatingClPositions({
     cache: clCache,
     key: `${userOsmoAddress}-cl-undelegating-positions`,
     getFreshValue: async () => {
-      const { cl_pool_user_position_records } = await queryDelegatedClPositions(
-        {
+      const { cl_pool_user_position_records } =
+        await queryUndelegatingClPositions({
           bech32Address: userOsmoAddress,
-        }
-      );
+        });
       return cl_pool_user_position_records;
     },
     ttl: 5 * 1000, // 5 seconds
@@ -342,6 +345,9 @@ async function normalizePositions({
   userOsmoAddress: string;
 }) {
   try {
+    const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
+    const pools = await getPools({ poolIds: poolIds });
+
     const normalizedPositions = await Promise.all(
       positions.map(
         async ({
@@ -356,7 +362,12 @@ async function normalizePositions({
             getPositionAsset(asset1),
           ]);
 
-          if (!baseAsset || !quoteAsset) return undefined;
+          if (!baseAsset || !quoteAsset) {
+            console.info(
+              `Error finding assets for position ${position.position_id}`
+            );
+            return undefined;
+          }
 
           const lowerTick = new Int(position.lower_tick);
           const upperTick = new Int(position.upper_tick);
@@ -379,29 +390,31 @@ async function normalizePositions({
           const userUnbondingPositionsPromise = getUserUnbondingPositions({
             userOsmoAddress,
           });
-          const poolPromise = getPool({ poolId: position.pool_id });
           const delegatedPositionsPromise = getUserDelegatedClPositions({
             userOsmoAddress,
           });
           const undelegatingPositionsPromise = getUserUndelegatingClPositions({
             userOsmoAddress,
           });
+          const stakeCurrencyPromise = getAsset({ anyDenom: "OSMO" });
 
           const [
             priceRange,
             unclaimedRewards,
             userUnbondingPositions,
-            pool,
             delegatedPositions,
             undelegatingPositions,
+            stakeCurrency,
           ] = await Promise.all([
             priceRangePromise,
             unclaimedRewardsPromise,
             userUnbondingPositionsPromise,
-            poolPromise,
             delegatedPositionsPromise,
             undelegatingPositionsPromise,
+            stakeCurrencyPromise,
           ]);
+
+          const pool = pools.find((pool) => pool.id === position.pool_id);
 
           if (!pool) {
             console.error(`Pool (${position.pool_id}) not found`);
@@ -418,14 +431,49 @@ async function normalizePositions({
             ({ position: unbondingPosition }) =>
               unbondingPosition.position_id === position.position_id
           );
-          const isSuperfluid = delegatedPositions.some(
+
+          const rawDelegatedSuperfluidPosition = delegatedPositions.find(
             (delegatedPosition) =>
               delegatedPosition.position_id === position.position_id
           );
-          const isSuperfluidUnstaking = undelegatingPositions.some(
+          const rawUndelegatingSuperfluidPosition = undelegatingPositions.find(
             (undelegatingPosition) =>
               undelegatingPosition.position_id === position.position_id
           );
+          const isSuperfluid = !!rawDelegatedSuperfluidPosition;
+          const isSuperfluidUnstaking = !!rawUndelegatingSuperfluidPosition;
+
+          if (!stakeCurrency)
+            throw new Error(`Stake currency (OSMO) not found`);
+
+          const delegatedSuperfluidPosition = isSuperfluid
+            ? {
+                positionId: rawDelegatedSuperfluidPosition.position_id,
+                validatorAddress:
+                  rawDelegatedSuperfluidPosition.validator_address,
+                lockId: rawDelegatedSuperfluidPosition.lock_id,
+                equivalentStakedAmount: new CoinPretty(
+                  stakeCurrency,
+                  rawDelegatedSuperfluidPosition.equivalent_staked_amount.amount
+                ),
+              }
+            : undefined;
+
+          const undelegatingSuperfluidPosition = isSuperfluidUnstaking
+            ? {
+                positionId: rawUndelegatingSuperfluidPosition.position_id,
+                validatorAddress:
+                  rawUndelegatingSuperfluidPosition.validator_address,
+                lockId: rawUndelegatingSuperfluidPosition.lock_id,
+                equivalentStakedAmount: new CoinPretty(
+                  stakeCurrency,
+                  rawUndelegatingSuperfluidPosition.equivalent_staked_amount.amount
+                ),
+                endTime: new Date(
+                  rawUndelegatingSuperfluidPosition.synthetic_lock.end_time
+                ),
+              }
+            : undefined;
 
           const status = getPositionStatus({
             currentPrice: getPriceFromSqrtPrice({
@@ -442,6 +490,30 @@ async function normalizePositions({
             lowerPrice: priceRange[0],
             upperPrice: priceRange[1],
           });
+          const joinTime = new Date(position.join_time);
+
+          let superfluidData: Record<any, any> | undefined = undefined;
+          if (isSuperfluid && delegatedSuperfluidPosition) {
+            superfluidData = {
+              // validatorName,
+              // validatorImgSrc,
+              equivalentStakedAmount:
+                delegatedSuperfluidPosition.equivalentStakedAmount,
+              // validatorCommission,
+              // superfluidApr,
+              // stakeDuration,
+            };
+          } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
+            superfluidData = {
+              // validatorName,
+              // validatorImgSrc,
+              equivalentStakedAmount:
+                undelegatingSuperfluidPosition.equivalentStakedAmount,
+              // validatorCommission,
+              // superfluidApr,
+              // stakeDuration,
+            };
+          }
 
           return {
             id: position.position_id,
@@ -451,6 +523,8 @@ async function normalizePositions({
             liquidity,
             currentAssets,
             unclaimedRewards,
+            joinTime,
+            ...(superfluidData ? { superfluidData } : undefined),
           };
         }
       )

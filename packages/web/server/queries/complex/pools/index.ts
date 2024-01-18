@@ -25,10 +25,15 @@ export type Pool = {
 
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
-export type PoolsProvider = () => Promise<Pool[]>;
-export type PoolProvider = (params: { poolId: string }) => Promise<Pool>;
+export type PoolsProvider = (params?: {
+  poolIds?: string[];
+}) => Promise<Pool[]>;
+export type PoolProvider = (params: {
+  poolId: string;
+}) => Promise<Pool | undefined>;
 
 export const PoolFilterSchema = z.object({
+  poolIds: z.array(z.string()).optional(),
   /** Search pool ID, or denoms. */
   search: SearchSchema.optional(),
   /** Filter pool by minimum required USD liquidity. */
@@ -60,7 +65,7 @@ export async function getPools(
   params?: PoolFilter,
   poolsProvider: PoolsProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
-  let pools = await poolsProvider();
+  let pools = await poolsProvider({ poolIds: params?.poolIds });
 
   if (params?.types || params?.minLiquidityUsd) {
     pools = pools.filter(

@@ -28,11 +28,13 @@ export async function queryPaginatedPools({
   limit,
   minimumLiquidity,
   poolId: poolIdParam,
+  poolIds: poolIdsParam,
 }: {
   page?: number;
   limit?: number;
   minimumLiquidity?: number;
   poolId?: string;
+  poolIds?: string[];
 }): Promise<{
   status: number;
   pools: PoolRaw[];
@@ -58,6 +60,14 @@ export async function queryPaginatedPools({
       throw { status: 404, pools: [] };
     }
     return { status: 200, pools: [pool], totalNumberOfPools };
+  }
+
+  // Handle the case where specific pool IDs are requested
+  if (poolIdsParam) {
+    const pools = allPools.filter((pool) =>
+      poolIdsParam.includes("pool_id" in pool ? pool.pool_id : pool.id)
+    );
+    return { status: 200, pools, totalNumberOfPools };
   }
 
   // Pagination

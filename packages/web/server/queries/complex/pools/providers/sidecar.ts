@@ -16,13 +16,24 @@ type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 
 /** Lightly cached pools from sidecar service. */
-export function getPoolsFromSidecar(): Promise<Pool[]> {
+export function getPoolsFromSidecar({
+  poolIds,
+}: { poolIds?: string[] } = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: "sidecar-pools",
     ttl: 1000, // 1 second
     getFreshValue: async () => {
-      const sidecarPools = await queryPools();
+      let sidecarPools = await queryPools();
+
+      // Only compute pools with given ids
+      if (poolIds) {
+        sidecarPools = sidecarPools.filter((sidecarPool) => {
+          const poolId = getPoolIdFromSidecarPool(sidecarPool.underlying_pool);
+          return poolIds.includes(poolId);
+        });
+      }
+
       const pools = await Promise.all(
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
