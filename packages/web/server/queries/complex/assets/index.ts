@@ -23,6 +23,7 @@ export type Asset = {
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
+  includeUnlisted: z.boolean().default(false).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.infer<typeof AssetFilterSchema>;
@@ -34,11 +35,17 @@ const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
+  ...params
 }: {
   assetList?: AssetList[];
   anyDenom: string;
 }): Promise<Asset> {
-  const assets = await getAssets({ assetList, findMinDenomOrSymbol: anyDenom });
+  const assets = await getAssets({
+    assetList,
+    findMinDenomOrSymbol: anyDenom,
+    includeUnlisted: true,
+    ...params,
+  });
   const asset = assets[0];
   if (!asset) throw new Error(anyDenom + " not found in asset list");
   return asset;
@@ -78,15 +85,19 @@ export async function getAssets({
 /** Transform given asset list into an array of minimal asset types for user in frontend. */
 function simplifyAssetListForDisplay(
   assetList: AssetList[],
-  params: { findMinDenomOrSymbol?: string } & AssetFilter = {}
+  params: {
+    findMinDenomOrSymbol?: string;
+  } & AssetFilter = {}
 ): Asset[] {
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter(
-      (asset) => asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+    .filter((asset) =>
+      params.includeUnlisted
+        ? true // Do not filter the unlisted assets
+        : !asset.keywords?.includes("osmosis-unlisted")
     );
 
   let assetListAssets = listedAssets.filter((asset) => {

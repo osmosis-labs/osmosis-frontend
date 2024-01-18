@@ -30,6 +30,7 @@ export async function getUserAssetInfo<TAsset extends Asset>({
     assetList,
     assets: [asset],
     userOsmoAddress,
+    includeUnlisted: true,
   });
   return userAssets[0];
 }

@@ -26,9 +26,9 @@ import { createSortSchema, sort } from "~/utils/sort";
 import { maybeCachePaginatedItems } from "../pagination";
 import { InfiniteQuerySchema } from "../zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.and(
+const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
   AssetFilterSchema
-).and(UserOsmoAddressSchema);
+).merge(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
   getAsset: publicProcedure
@@ -37,7 +37,7 @@ export const assetsRouter = createTRPCRouter({
         .object({
           findMinDenomOrSymbol: z.string(),
         })
-        .and(UserOsmoAddressSchema)
+        .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
@@ -51,7 +51,14 @@ export const assetsRouter = createTRPCRouter({
     .input(GetInfiniteAssetsInputSchema)
     .query(
       async ({
-        input: { search, userOsmoAddress, limit, cursor, onlyVerified },
+        input: {
+          search,
+          userOsmoAddress,
+          limit,
+          cursor,
+          onlyVerified,
+          includeUnlisted,
+        },
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
@@ -60,6 +67,7 @@ export const assetsRouter = createTRPCRouter({
               userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
+              includeUnlisted,
             }),
           cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
           cursor,
@@ -96,7 +104,7 @@ export const assetsRouter = createTRPCRouter({
         .object({
           findMinDenomOrSymbol: z.string(),
         })
-        .and(UserOsmoAddressSchema)
+        .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
@@ -113,7 +121,7 @@ export const assetsRouter = createTRPCRouter({
     }),
   getAssetInfos: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.and(
+      GetInfiniteAssetsInputSchema.merge(
         z.object({
           /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
@@ -139,6 +147,7 @@ export const assetsRouter = createTRPCRouter({
           onlyPositiveBalances,
           cursor,
           limit,
+          includeUnlisted,
         },
       }) =>
         maybeCachePaginatedItems({
@@ -149,11 +158,13 @@ export const assetsRouter = createTRPCRouter({
             assets = await mapGetAssetMarketInfos({
               search,
               onlyVerified,
+              includeUnlisted,
             });
 
             assets = await mapGetUserAssetInfos({
               assets,
               userOsmoAddress,
+              includeUnlisted,
               sortFiatValueDirection: isDefaultSort
                 ? "desc"
                 : !search && sortInput && sortInput.keyPath === "usdValue"
@@ -225,6 +236,7 @@ export const assetsRouter = createTRPCRouter({
             preferredDenoms,
             sort: sortInput,
             onlyPositiveBalances,
+            includeUnlisted,
           }),
           cursor,
           limit,
