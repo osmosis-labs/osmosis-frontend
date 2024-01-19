@@ -1,9 +1,18 @@
 import { NextPage } from "next";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-import { CheckBox } from "~/components/control/checkbox";
-import { CheckboxSelect } from "~/components/control/checkbox-select";
-import { Radio } from "~/components/control/radio";
+import { Button } from "~/components/buttons";
+import {
+  CheckBox,
+  CheckboxSelect,
+  MenuDropdown,
+  Radio,
+  Slider,
+  StakeTab,
+  Switch,
+} from "~/components/control";
+import { useConst } from "~/hooks/use-const";
+import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 
 const Card: React.FC<{
   title: string;
@@ -20,6 +29,12 @@ const Components: NextPage = () => {
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState("a");
   const [checkboxSelect, setCheckboxSelect] = useState(["1"]);
+  const [slider, setSlider] = useState(0);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [stakeTab, setStakeTab] = useState("stake");
+  const [selectedTimeFrame, setSelectedTimeFrame] =
+    useState<CommonPriceChartTimeFrame>("1D");
+  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
 
   const handleToggle = () => setChecked(!checked);
 
@@ -137,19 +152,65 @@ const Components: NextPage = () => {
           }}
         />
       </Card>
+      <Card title="Slider">
+        <Slider
+          className="my-8 w-full"
+          currentValue={slider}
+          onInput={(value) => setSlider(value)}
+          min={0}
+          max={100}
+          step={1}
+        />
+      </Card>
+      <Card title="Switch">
+        <Switch isOn={isSwitchOn} onToggle={() => setIsSwitchOn(!isSwitchOn)} />
+      </Card>
+      <Card title="Stake Tab">
+        <StakeTab
+          active={stakeTab === "Stake"}
+          onClick={() => setStakeTab("Stake")}
+        >
+          Stake
+        </StakeTab>
+        <StakeTab
+          active={stakeTab === "Unstake"}
+          onClick={() => setStakeTab("Unstake")}
+        >
+          Unstake
+        </StakeTab>
+      </Card>
+      <Card title="Menu Dropdown">
+        <div className="relative w-full">
+          <Button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}>
+            Open Menu Dropdown
+          </Button>
+          <MenuDropdown
+            className="w-full"
+            options={useConst([
+              { id: "1H", display: "1H" },
+              { id: "1D", display: "1D" },
+              { id: "1W", display: "1W" },
+              { id: "1M", display: "1M" },
+            ] as { id: CommonPriceChartTimeFrame; display: string }[])}
+            selectedOptionId={selectedTimeFrame}
+            onSelect={useCallback(
+              (id: string) => {
+                setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
+                  setIsMenuDropdownOpen(false);
+              },
+              [setSelectedTimeFrame]
+            )}
+            isOpen={isMenuDropdownOpen}
+          />
+        </div>
+      </Card>
       <ul>
         <li>Language Select</li>
-        <li>Menu Dropdown</li>
         <li>Menu Toggle</li>
-        <li>Page List</li>
         <li>Pool Token Select</li>
         <li>Select Menu</li>
-        <li>Slider</li>
         <li>Sort Menu</li>
-        <li>Stake Tab</li>
-        <li>Switch</li>
         <li>Tab Box</li>
-        <li>Toggle</li>
         <li>Token Select With Drawer</li>
         <li>Token Select</li>
       </ul>
