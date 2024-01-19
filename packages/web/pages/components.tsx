@@ -1,73 +1,9 @@
-// import { NextPage } from "next";
-// import { useState } from "react";
-
-// import { CheckBox } from "~/components/control/checkbox";
-// import { useTranslation } from "~/hooks";
-
-// const Components: NextPage = () => {
-//   const { t } = useTranslation();
-
-//   const [checked, setChecked] = useState(false);
-
-//   return (
-//     <div className="flex flex-col">
-//       <h3>Control</h3>
-//       <h4>Checkbox</h4>
-//       regular
-//       <CheckBox isOn={checked} onToggle={() => setChecked(!checked)} />
-//       indeterminate
-//       <CheckBox
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//         isIndeterminate={true}
-//       />
-//       disabled
-//       <CheckBox
-//         disabled={true}
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//       />
-//       children
-//       <CheckBox
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//         isIndeterminate={true}
-//       >
-//         <div>child component</div>
-//       </CheckBox>
-//       superfluid
-//       <CheckBox
-//         borderStyles="border-superfluid"
-//         backgroundStyles="bg-superfluid"
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//       />
-//       rust-700
-//       <CheckBox
-//         borderStyles="border-rust-700"
-//         backgroundStyles="bg-gradient-negative"
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//       />
-//       wosmongton-200
-//       <CheckBox
-//         backgroundStyles="bg-wosmongton-200"
-//         borderStyles="border-wosmongton-200"
-//         isOn={checked}
-//         onToggle={() => setChecked(!checked)}
-//       />
-//     </div>
-//   );
-// };
-
-// export default Components;
-
 import { NextPage } from "next";
 import { useState } from "react";
 
 import { CheckBox } from "~/components/control/checkbox";
+import { CheckboxSelect } from "~/components/control/checkbox-select";
 import { Radio } from "~/components/control/radio";
-import { useTranslation } from "~/hooks";
 
 const Card: React.FC<{
   title: string;
@@ -81,14 +17,12 @@ const Card: React.FC<{
 );
 
 const Components: NextPage = () => {
-  const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState("a");
+  const [checkboxSelect, setCheckboxSelect] = useState(["1"]);
 
-  // Function to handle the checkbox state toggle
   const handleToggle = () => setChecked(!checked);
 
-  // Component for rendering each checkbox variant
   const Component = ({
     title,
     children,
@@ -183,6 +117,25 @@ const Components: NextPage = () => {
             disabled
           />
         </Component>
+      </Card>
+      <Card title="Checkbox Select">
+        <CheckboxSelect
+          label="checkbox select"
+          options={[
+            { id: "1", display: "option 1" },
+            { id: "2", display: "option 2" },
+          ]}
+          selectedOptionIds={checkboxSelect}
+          onSelect={(id) => {
+            if (checkboxSelect.includes(id)) {
+              setCheckboxSelect(
+                checkboxSelect.filter((selectedId) => selectedId !== id)
+              );
+            } else {
+              setCheckboxSelect([...checkboxSelect, id]);
+            }
+          }}
+        />
       </Card>
     </div>
   );
