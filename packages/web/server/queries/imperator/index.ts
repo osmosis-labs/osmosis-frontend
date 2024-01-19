@@ -4,6 +4,7 @@ export * from "./pools-fees";
 export * from "./position-performance";
 export * from "./token-data";
 export * from "./token-historical-chart";
+export * from "./token-pair-historical-chart";
 export * from "./tokens";
 
 export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =

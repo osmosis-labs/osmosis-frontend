@@ -1,10 +1,10 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolFromSidecar, getPoolsFromSidecar } from "./providers/sidecar";
+import { getPoolsFromSidecar } from "./providers/sidecar";
 
 const allPooltypes = [
   "concentrated",
@@ -19,6 +19,7 @@ export type Pool = {
   id: string;
   type: PoolType;
   raw: Omit<PoolRawResponse, "@type">;
+  spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
 };
@@ -47,14 +48,13 @@ export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
 const searchablePoolKeys = ["id", "coinDenoms"];
 
-export async function getPool({
-  poolId,
-  poolProvider = getPoolFromSidecar,
-}: {
-  poolId: string;
-  poolProvider?: PoolProvider;
-}): Promise<Pool | undefined> {
-  return await poolProvider({ poolId });
+/** Get's an individual pool by ID.
+ *  @throws If pool not found. */
+export async function getPool(poolId: string): Promise<Pool> {
+  const pools = await getPools();
+  const pool = pools.find(({ id }) => id === poolId);
+  if (!pool) throw new Error(poolId + " not found");
+  return pool;
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
