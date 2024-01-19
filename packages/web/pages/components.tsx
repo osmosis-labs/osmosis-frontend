@@ -66,11 +66,13 @@ import { NextPage } from "next";
 import { useState } from "react";
 
 import { CheckBox } from "~/components/control/checkbox";
+import { Radio } from "~/components/control/radio";
 import { useTranslation } from "~/hooks";
 
 const Components: NextPage = () => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
+  const [radio, setRadio] = useState("a");
 
   // Function to handle the checkbox state toggle
   const handleToggle = () => setChecked(!checked);
@@ -92,9 +94,9 @@ const Components: NextPage = () => {
   return (
     <div className="flex flex-col p-4">
       <h1>Components Library</h1>
-      <h2>Control</h2>
+      <h4>Control</h4>
       <div className="flex flex-col gap-2">
-        <h3>Checkbox</h3>
+        <h5>Checkbox</h5>
         <Component title="Regular">
           <CheckBox isOn={checked} onToggle={handleToggle} />
         </Component>
@@ -145,6 +147,31 @@ const Components: NextPage = () => {
             borderStyles="border-wosmongton-200"
             isOn={checked}
             onToggle={handleToggle}
+          />
+        </Component>
+      </div>
+      <h4>Radio</h4>
+      <div className="flex flex-col gap-2">
+        <Component title="Regular">
+          <>
+            <Radio
+              value="a"
+              onSelectRadio={() => setRadio("a")}
+              groupValue={radio}
+            />
+            <Radio
+              value="b"
+              onSelectRadio={() => setRadio("b")}
+              groupValue={radio}
+            />
+          </>
+        </Component>
+        <Component title="Disabled">
+          <Radio
+            value="c"
+            onSelectRadio={() => setRadio("c")}
+            groupValue={radio}
+            disabled
           />
         </Component>
       </div>
