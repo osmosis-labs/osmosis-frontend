@@ -364,10 +364,10 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="flex w-full place-content-between items-center gap-5 lg:flex-col lg:items-start">
+    <div className="flex w-full place-content-between items-center gap-5 1.5lg:flex-col 1.5lg:items-start">
       <h5>{t("pools.allPools.title")}</h5>
 
-      <div className="flex h-12 flex-wrap gap-3 lg:h-fit">
+      <div className="flex h-12 flex-wrap gap-3 1.5lg:h-fit">
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={poolTypesFilter as string[]}
