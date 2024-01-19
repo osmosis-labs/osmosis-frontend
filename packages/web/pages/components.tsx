@@ -137,6 +137,22 @@ const Components: NextPage = () => {
           }}
         />
       </Card>
+      <ul>
+        <li>Language Select</li>
+        <li>Menu Dropdown</li>
+        <li>Menu Toggle</li>
+        <li>Page List</li>
+        <li>Pool Token Select</li>
+        <li>Select Menu</li>
+        <li>Slider</li>
+        <li>Sort Menu</li>
+        <li>Stake Tab</li>
+        <li>Switch</li>
+        <li>Tab Box</li>
+        <li>Toggle</li>
+        <li>Token Select With Drawer</li>
+        <li>Token Select</li>
+      </ul>
     </div>
   );
 };
