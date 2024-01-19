@@ -26,9 +26,7 @@ export type Pool = {
 
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
-export type PoolsProvider = (params?: {
-  poolIds?: string[];
-}) => Promise<Pool[]>;
+export type PoolsProvider = (params: { poolIds?: string[] }) => Promise<Pool[]>;
 export type PoolProvider = (params: {
   poolId: string;
 }) => Promise<Pool | undefined>;
