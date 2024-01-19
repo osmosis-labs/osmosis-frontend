@@ -15,10 +15,14 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
-const Pool: FunctionComponent = observer(() => {
+interface Props {
+  id: string;
+}
+
+const Pool: FunctionComponent<Props> = observer(() => {
   const router = useRouter();
+  const poolId = router.query.id as string;
   const { chainStore, queriesStore } = useStore();
-  const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
@@ -65,24 +69,19 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [queryPool, isMobile, flags.concentratedLiquidity, router]);
 
-  const memoedPools = useMemo(
-    () => (queryPool ? [queryPool] : []),
-    [queryPool]
-  );
-
   return (
     <>
-      <NextSeo
-        title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
-      />
-      {showTradeModal && queryPool && (
+      <NextSeo title={t("seo.pool.title", { id: poolId })} />
+      {queryPool && Boolean(poolId) && (
         <TradeTokens
           className="md:!p-0"
           isOpen={showTradeModal}
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={memoedPools}
+          sendTokenDenom={queryPool.poolAssetDenoms[0]}
+          outTokenDenom={queryPool.poolAssetDenoms[1]}
+          forceSwapInPoolId={poolId}
         />
       )}
       {!queryPool ? (
@@ -108,5 +107,20 @@ const Pool: FunctionComponent = observer(() => {
     </>
   );
 });
+
+/* export const getStaticPaths: GetStaticPaths = async () => {
+  const { num_pools } = await queryNumPools();
+
+  const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
+    params: { id: String(i + 1) },
+  }));
+
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const id = params?.id as string;
+  return { props: { id: id ?? "-" } };
+}; */
 
 export default Pool;

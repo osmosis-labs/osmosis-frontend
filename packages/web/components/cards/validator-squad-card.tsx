@@ -8,26 +8,29 @@ import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
-const maxVisibleValidators = 8;
-
 export const ValidatorSquadCard: React.FC<{
+  hasInsufficientBalance: boolean;
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
 }> = observer(
   ({
+    hasInsufficientBalance,
     setShowValidatorModal,
     validators,
-    // @ts-ignore
     usersValidatorsMap,
   }) => {
     const { t } = useTranslation();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
+
+    const { width } = useWindowSize();
+
+    const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -128,16 +131,17 @@ export const ValidatorSquadCard: React.FC<{
 
     return (
       <>
-        <div className="mx-2 flex items-center">
+        <div className="flex items-center">
           <span className="caption text-sm text-osmoverse-200 md:text-xs">
             {t("stake.validatorHeader")}
           </span>
         </div>
         <OsmoverseCard containerClasses="!rounded-[28px]">
-          <div className="flex-column flex items-center justify-between">
+          <div className="flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
               <Button
+                disabled={hasInsufficientBalance}
                 mode="bullish-special"
                 size="normal"
                 className="rounded-[19px]"

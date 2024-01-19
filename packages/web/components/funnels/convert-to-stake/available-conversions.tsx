@@ -136,7 +136,8 @@ export const BalancerShareConversionRow: FunctionComponent<
     >
       <div className="flex items-center gap-5">
         <CheckBox
-          className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-wosmongton-200 after:!bg-transparent checked:after:border-none checked:after:!bg-wosmongton-200"
+          backgroundStyles="bg-wosmongton-200"
+          borderStyles="border-wosmongton-200"
           isOn={isSelected}
           disabled={disabled}
           onToggle={onToggle}
@@ -205,7 +206,8 @@ export const ClPositionConversionRow: FunctionComponent<
       >
         <div className="flex items-center gap-5">
           <CheckBox
-            className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-wosmongton-200 after:!bg-transparent checked:after:border-none checked:after:!bg-wosmongton-200"
+            borderStyles="border-wosmongton-200"
+            backgroundStyles="bg-wosmongton-200"
             isOn={isSelected}
             disabled={disabled}
             onToggle={onToggle}

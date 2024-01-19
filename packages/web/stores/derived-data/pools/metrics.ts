@@ -1,27 +1,22 @@
-import { Dec, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
-import {
-  priceToTick,
-  roundPriceToNearestTick,
-  roundToNearestDivisible,
-} from "@osmosis-labs/math";
 import {
   ChainStore,
   IPriceStore,
-  MODERATE_STRATEGY_MULTIPLIER,
   ObservableConcentratedPoolDetails,
   ObservablePoolsBonding,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
+  ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
-  ObservableQueryTokensPairHistoricalChart,
   ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
+import { IS_TESTNET } from "~/config";
 import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
@@ -39,7 +34,7 @@ export class ObservablePoolWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore
   ) {
@@ -101,58 +96,9 @@ export class ObservablePoolWithMetric {
 
   @computed
   get apr() {
-    if (
-      this.concentratedPoolDetail &&
-      this.concentratedPoolDetail.queryConcentratedPool &&
-      this.queryPool.concentratedLiquidityPoolInfo
-    ) {
-      // use moderate price range APR
-      const queryHistoricalPrice =
-        this.externalQueries.queryTokenPairHistoricalChart.get(
-          this.queryPool.pool.id,
-          "7d",
-          this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms[0],
-          this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms[1]
-        );
-
-      const minPrice1Mo = new Dec(queryHistoricalPrice.min);
-      const maxPrice1Mo = new Dec(queryHistoricalPrice.max);
-      let priceDiff = maxPrice1Mo
-        .sub(minPrice1Mo)
-        .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
-
-      const tickSpacing =
-        this.queryPool.concentratedLiquidityPoolInfo.tickSpacing;
-
-      const priceRange = [
-        roundPriceToNearestTick(minPrice1Mo.sub(priceDiff), tickSpacing, true),
-        roundPriceToNearestTick(maxPrice1Mo.add(priceDiff), tickSpacing, false),
-      ];
-
-      const tickDivisor = new Int(1000);
-      const tickRange = [
-        roundToNearestDivisible(priceToTick(priceRange[0]), tickDivisor),
-        roundToNearestDivisible(priceToTick(priceRange[1]), tickDivisor),
-      ];
-
-      if (tickRange[0].equals(tickRange[1])) {
-        tickRange[0] = tickRange[0].sub(tickDivisor);
-        tickRange[1] = tickRange[1].add(tickDivisor);
-      }
-
-      return (
-        this.externalQueries.queryPriceRangeAprs
-          .get(this.queryPool.id, tickRange[0], tickRange[1])
-          .apr?.maxDecimals(0) ?? new RatePretty(0)
-      );
-    }
-
     return (
-      this.poolsBonding
-        .get(this.queryPool.id)
-        ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-      this.sharePoolDetail?.swapFeeApr.maxDecimals(0) ??
-      new RatePretty(0)
+      this.externalQueries.queryPoolAprs.getForPool(this.queryPool.id)
+        ?.totalApr ?? new RatePretty(0)
     );
   }
 
@@ -189,7 +135,7 @@ export class ObservablePoolsWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
     protected readonly userSettings: UserSettings
@@ -209,7 +155,8 @@ export class ObservablePoolsWithMetric {
       forceShowUnverified?: boolean,
       concentratedLiquidityFeature?: boolean
     ) => {
-      const showUnverified = this.showUnverified || forceShowUnverified;
+      const showUnverified =
+        this.showUnverified || forceShowUnverified || IS_TESTNET;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -315,7 +262,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
     protected readonly userSettings: UserSettings

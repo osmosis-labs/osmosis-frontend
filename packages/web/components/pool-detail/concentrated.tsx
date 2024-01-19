@@ -3,7 +3,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useEffect } from "react";
 import { FunctionComponent, useState } from "react";
+import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -16,7 +18,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
@@ -25,6 +27,9 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
+import { removeQueryParam } from "~/utils/url";
+
+import { AprBreakdownLegacy } from "../cards/apr-breakdown";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -34,6 +39,8 @@ const TokenPairHistoricalChart = dynamic(
   () => import("~/components/chart/token-pair-historical"),
   { ssr: false }
 );
+
+const OpenCreatePositionSearchParam = "open_create_position";
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
@@ -45,9 +52,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       accountStore,
       derivedDataStore,
     } = useStore();
+    const { t } = useTranslation();
+    const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
+
     const { chainId } = chainStore.osmosis;
     const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
-    const { t } = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
@@ -67,6 +76,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const {
       pool,
+      currentPrice,
       xRange,
       yRange,
       lastChartData,
@@ -81,11 +91,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         poolId,
         priceStore
       ).volume24h;
-    const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
-
-    const currentPrice = pool?.concentratedLiquidityPoolInfo
-      ? pool.concentratedLiquidityPoolInfo.currentPrice
-      : undefined;
+    const poolLiquidity = pool?.totalFiatValueLocked;
 
     const userPositionsInPool = osmosisQueries.queryAccountsPositions
       .get(account?.address ?? "")
@@ -119,9 +125,8 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       const liquidityUSD = poolLiquidity
         ? Number(poolLiquidity?.toDec().toString())
         : undefined;
-      const poolName = pool?.poolAssets
-        ?.map((poolAsset) => poolAsset.amount.denom)
-        .join(" / ");
+      const poolAssetDenoms = pool?.reserveCoins.map((coin) => coin.denom);
+      const poolName = poolAssetDenoms?.join(" / ");
       const positionCount = userPositionsInPool.length;
 
       logEvent([
@@ -157,6 +162,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         .catch(console.error);
     };
 
+    useEffect(() => {
+      if (openCreatePosition === "true") {
+        setActiveModal("add-liquidity");
+        removeQueryParam(OpenCreatePositionSearchParam);
+      }
+    }, [openCreatePosition]);
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         {pool && activeModal === "add-liquidity" && (
@@ -173,21 +185,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="flex flex-wrap items-center gap-2">
                   <PoolAssetsIcon
                     className="!w-[78px]"
-                    assets={pool?.poolAssets.map((poolAsset) => ({
-                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    assets={pool?.reserveCoins.map((coin) => ({
+                      coinImageUrl: coin.currency.coinImageUrl,
+                      coinDenom: coin.currency.coinDenom,
                     }))}
                   />
                   <div className="flex flex-wrap gap-x-2">
                     <PoolAssetsName
                       size="md"
                       className="text-h5 font-h5"
-                      assetDenoms={pool?.poolAssets.map(
-                        (asset) => asset.amount.currency.coinDenom
+                      assetDenoms={pool?.reserveCoins.map(
+                        (asset) => asset.currency.coinDenom
                       )}
                     />
                     <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
-                      {pool?.swapFee ? pool.swapFee.toString() : "0%"}{" "}
+                      {pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"}{" "}
                       {t("clPositions.spreadFactor")}
                     </span>
                   </div>
@@ -225,14 +237,16 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="lg:hidden">
                   <PoolDataGroup
                     label={t("clPositions.spreadFactor")}
-                    value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
+                    value={
+                      pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"
+                    }
                   />
                 </div>
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {chartConfig.queryTokenPairPrice.isFetching ? (
+                {chartConfig.isHistoricalDataLoading ? (
                   <Spinner className="m-auto" />
                 ) : !chartConfig.historicalChartUnavailable ? (
                   <>
@@ -449,6 +463,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { derivedDataStore } = useStore();
     const { t } = useTranslation();
+    const featureFlags = useFeatureFlags();
 
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
@@ -456,7 +471,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
     return (
-      <div className="flex h-40 gap-4">
+      <div className="flex flex-wrap gap-4">
         <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
@@ -495,6 +510,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             ))}
           </div>
         </div>
+        {featureFlags.aprBreakdown && (
+          <AprBreakdownLegacy
+            className="shrink-0 rounded-[28px] bg-osmoverse-1000"
+            poolId={poolId}
+            showDisclaimerTooltip
+          />
+        )}
+
         {hasIncentives && (
           <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">

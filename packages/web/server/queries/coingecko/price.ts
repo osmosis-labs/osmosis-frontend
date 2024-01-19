@@ -1,5 +1,6 @@
+import { apiClient } from "@osmosis-labs/utils";
+
 import { PRICES_API_URL } from "~/server/queries/coingecko";
-import { apiClient } from "~/utils/api-client";
 
 export type CoingeckoVsCurrencies = "usd";
 

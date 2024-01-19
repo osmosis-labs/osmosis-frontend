@@ -1,16 +1,11 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { BondDuration } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import {
-  ButtonHTMLAttributes,
-  FunctionComponent,
-  useMemo,
-  useState,
-} from "react";
+import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { FallbackImg, Icon } from "~/components/assets";
@@ -38,7 +33,6 @@ export const BondCard: FunctionComponent<
   userUnlockingShares,
   aggregateApr,
   swapFeeApr,
-  swapFeeDailyReward,
   superfluid,
   incentivesBreakdown,
   onUnbond,
@@ -163,7 +157,6 @@ export const BondCard: FunctionComponent<
           aggregateApr={aggregateApr}
           userShares={userShares}
           swapFeeApr={swapFeeApr}
-          swapFeeDailyReward={swapFeeDailyReward}
           incentivesBreakdown={incentivesBreakdown}
           superfluid={superfluid}
           drawerUp={drawerUp}
@@ -183,7 +176,6 @@ const Drawer: FunctionComponent<{
   duration: Duration;
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
-  swapFeeDailyReward: PricePretty;
   userShares: CoinPretty;
   incentivesBreakdown: BondDuration["incentivesBreakdown"];
   superfluid: BondDuration["superfluid"];
@@ -195,7 +187,6 @@ const Drawer: FunctionComponent<{
     duration,
     aggregateApr,
     swapFeeApr,
-    swapFeeDailyReward,
     incentivesBreakdown,
     superfluid,
     drawerUp,
@@ -207,16 +198,6 @@ const Drawer: FunctionComponent<{
         osmosis: { chainId },
       },
     } = useStore();
-    const uniqueCoinImages = useMemo(() => {
-      const imgSrcDenomMap = new Map<string, string>();
-      incentivesBreakdown.forEach((breakdown) => {
-        const currency = breakdown.dailyPoolReward.currency;
-        if (currency.coinImageUrl) {
-          imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
-        }
-      });
-      return Array.from(imgSrcDenomMap.values());
-    }, [incentivesBreakdown]);
     const { t } = useTranslation();
 
     const queriesCosmos = queriesStore.get(chainId).cosmos;
@@ -228,7 +209,7 @@ const Drawer: FunctionComponent<{
      */
     const isAPRTooHigh = aggregateApr
       .toDec()
-      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(50)));
+      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(100)));
 
     return (
       <div
@@ -273,29 +254,6 @@ const Drawer: FunctionComponent<{
               >
                 {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
               </h5>
-              <div
-                className={classNames(
-                  "flex items-center gap-1 transition-opacity duration-300",
-                  drawerUp ? "opacity-0" : "opacity-100"
-                )}
-              >
-                {uniqueCoinImages.map((coinImageUrl, index) => (
-                  <div key={index}>
-                    {index === 2 && incentivesBreakdown.length > 3 ? (
-                      <span className="caption text-osmoverse-400">
-                        +{incentivesBreakdown.length - 2}
-                      </span>
-                    ) : index < 2 ? (
-                      <Image
-                        alt="incentive icon"
-                        src={coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
           <button
@@ -338,10 +296,7 @@ const Drawer: FunctionComponent<{
             {incentivesBreakdown.map((breakdown, index) => (
               <IncentiveBreakdownRow key={index} {...breakdown} />
             ))}
-            <SwapFeeBreakdownRow
-              swapFeeApr={swapFeeApr}
-              swapFeeDailyReward={swapFeeDailyReward}
-            />
+            <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
           </div>
           <span className="caption text-center text-osmoverse-400">
             {t("pool.rewardDistribution")}
@@ -417,36 +372,35 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
 
 const IncentiveBreakdownRow: FunctionComponent<
   BondDuration["incentivesBreakdown"][0]
-> = ({ dailyPoolReward, apr, numDaysRemaining }) => {
+> = ({ apr, type }) => {
   const { t } = useTranslation();
+
+  let label;
+  if (type === "swapFees") {
+    label = t("pools.aprBreakdown.swapFees");
+  } else if (type === "osmosis") {
+    label = "Osmosis";
+  } else if (type === "boost") {
+    label = t("pools.aprBreakdown.boost");
+  }
+
   return (
     <div className="flex place-content-between items-start">
       <div className="flex shrink-0 items-center gap-2">
         <span className="subtitle1 text-white">
           +{apr.maxDecimals(0).toString()}
         </span>
-        {dailyPoolReward.currency.coinImageUrl && (
+        {type === "osmosis" && (
           <Image
             alt="token icon"
-            src={dailyPoolReward.currency.coinImageUrl}
+            src={"/tokens/generated/osmo.svg"}
             height={20}
             width={20}
           />
         )}
       </div>
       <div className="flex flex-col text-right">
-        <span className="text-osmoverse-100">
-          {t("pool.dailyEarnAmount", {
-            amount: formatPretty(dailyPoolReward),
-          })}
-        </span>
-        {numDaysRemaining && (
-          <span className="caption text-osmoverse-400">
-            {t("pool.numDaysRemaining", {
-              numDays: numDaysRemaining.toString(),
-            })}
-          </span>
-        )}
+        <span className="text-osmoverse-100">{label}</span>
       </div>
     </div>
   );
@@ -454,8 +408,7 @@ const IncentiveBreakdownRow: FunctionComponent<
 
 const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
-  swapFeeDailyReward: PricePretty;
-}> = ({ swapFeeApr, swapFeeDailyReward }) => {
+}> = ({ swapFeeApr }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   return (
@@ -467,9 +420,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
       </div>
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
-          {t("pool.dailyEarnAmount", {
-            amount: formatPretty(swapFeeDailyReward),
-          })}
+          {t("pools.aprBreakdown.swapFees")}
         </span>
         <span className="caption text-osmoverse-400">
           {`${t("pool.from")} `}
@@ -481,11 +432,10 @@ const SwapFeeBreakdownRow: FunctionComponent<{
                 EventName.PoolDetail.CardDetail.swapFeesLinkOutClicked,
               ]);
             }}
-            href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
+            href="https://docs.osmosis.zone/overview/educate/getting-started/#adding-liquidity-to-a-pool"
           >
             <u>{t("pool.swapFees")}</u>
-          </a>{" "}
-          {t("pool.7davg")}
+          </a>
         </span>
       </div>
     </div>

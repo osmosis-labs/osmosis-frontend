@@ -1,9 +1,5 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  ObservableQueryPool,
-  QuasarVault,
-} from "@osmosis-labs/stores";
+import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -33,8 +29,11 @@ import { InputBox } from "~/components/input";
 import Spinner from "~/components/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  useAmplitudeAnalytics,
+  useTranslation,
+} from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
@@ -416,7 +415,7 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex w-full gap-1">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {chartConfig.queryTokenPairPrice.isFetching ? (
+            {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
@@ -546,7 +545,8 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
             <CheckBox
-              className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+              borderStyles="border-superfluid"
+              backgroundStyles="bg-superfluid"
               isOn={shouldBeSuperfluidStaked}
               onToggle={() => {
                 setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
@@ -977,6 +977,18 @@ const PriceInputBox: FunctionComponent<{
   const isFullRange =
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
+  /** to allow decimals, display the raw string value while typing
+   otherwise, display the nearest tick rounded price. 
+    All values have currency decimals adjusted for display. */
+  const currentValue = isFocused
+    ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+    : formatPretty(
+        addConcLiquidityConfig.rangeWithCurrencyDecimals[forPriceIndex],
+        {
+          maxDecimals: 8,
+        }
+      );
+
   return (
     <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
@@ -1000,20 +1012,7 @@ const PriceInputBox: FunctionComponent<{
             !isFullRange &&
             addConcLiquidityConfig.currentStrategy === null
           }
-          currentValue={
-            // to allow decimals, display the raw string value while typing
-            // otherwise, display the nearest tick rounded price
-            isFocused
-              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
-              : formatPretty(
-                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
-                    forPriceIndex
-                  ],
-                  {
-                    maxDecimals: 8,
-                  }
-                )
-          }
+          currentValue={currentValue}
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
             forPriceIndex === 0

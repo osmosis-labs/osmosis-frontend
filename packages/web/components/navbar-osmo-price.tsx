@@ -1,5 +1,4 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -20,10 +19,10 @@ import {
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { getLastDayChartData } from "~/utils/chart";
+import { api } from "~/utils/trpc";
 
 const NavbarOsmoPrice = observer(() => {
-  const { accountStore, priceStore, chainStore, assetsStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const flags = useFeatureFlags();
@@ -34,19 +33,15 @@ const NavbarOsmoPrice = observer(() => {
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
-  const { nativeBalances } = assetsStore;
-
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const osmoCurrency = chainStore.osmosis.stakeCurrency;
-  const osmoPrice = priceStore.calculatePrice(
-    new CoinPretty(
-      chainStore.osmosis.stakeCurrency,
-      DecUtils.getTenExponentNInPrecisionRange(
-        chainStore.osmosis.stakeCurrency.coinDecimals
-      )
-    )
+  const { data: osmoCurrency } = api.edge.assets.getAsset.useQuery({
+    findMinDenomOrSymbol: "OSMO",
+  });
+  const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
+    osmoCurrency!,
+    { enabled: Boolean(osmoCurrency) }
   );
 
   if (!osmoPrice || !osmoCurrency) return null;
@@ -72,9 +67,7 @@ const NavbarOsmoPrice = observer(() => {
           </div>
         </SkeletonLoader>
 
-        {flags.sidebarOsmoChangeAndChart && (
-          <OsmoPriceAndChart isOsmoPriceReady={osmoPrice.isReady} />
-        )}
+        {flags.sidebarOsmoChangeAndChart && <OsmoPriceAndChart />}
       </div>
 
       {wallet?.walletStatus === WalletStatus.Connected && (
@@ -111,73 +104,51 @@ const NavbarOsmoPrice = observer(() => {
         onRequestClose={onCloseFiatOnrampSelection}
         onSelectRamp={(ramp) => {
           if (ramp !== "transak") return;
-          const tokenName = "OSMO";
 
-          const cryptoBalance = nativeBalances.find(
-            (coin) =>
-              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
-          );
-
-          logEvent([
-            EventName.Sidebar.buyOsmoClicked,
-            {
-              tokenName,
-              tokenAmount: Number(
-                (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
-                  ?.maxDecimals(4)
-                  .toString()
-              ),
-            },
-          ]);
+          logEvent([EventName.Sidebar.buyOsmoClicked]);
         }}
       />
     </div>
   );
 });
 
-const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
-  observer(({ isOsmoPriceReady }) => {
-    const { chainStore, queriesExternalStore } = useStore();
+const OsmoPriceAndChart: FunctionComponent = () => {
+  const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
+    api.edge.assets.getAssetInfo.useQuery({
+      findMinDenomOrSymbol: "OSMO",
+    });
 
-    const tokenChartQuery = queriesExternalStore.queryTokenHistoricalChart.get(
-      chainStore.osmosis.stakeCurrency.coinDenom,
-      60
-    );
-    const tokenDataQuery = queriesExternalStore.queryTokenData.get(
-      chainStore.osmosis.stakeCurrency.coinDenom
-    );
+  const { data: recentPrices = [], isLoading: isLoadingHistoricalPrices } =
+    api.edge.assets.getAssetHistoricalPrice.useQuery({
+      coinDenom: "OSMO",
+      timeFrame: "1D",
+    });
 
-    const isNumberGoUp = tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0));
+  const isNumberGoUp = assetMarketInfo?.priceChange24h?.toDec().isPositive();
 
-    return (
-      <SkeletonLoader
-        isLoaded={
-          !tokenDataQuery.isFetching &&
-          !tokenChartQuery.isFetching &&
-          isOsmoPriceReady
+  return (
+    <SkeletonLoader
+      isLoaded={!isLoadingAssetInfo && !isLoadingHistoricalPrices}
+      className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
+    >
+      <Sparkline
+        data={recentPrices.map((price) => price.close)}
+        width={25}
+        height={24}
+        lineWidth={2}
+        color={
+          isNumberGoUp ? theme.colors.bullish[400] : theme.colors.osmoverse[500]
         }
-        className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
-      >
-        <Sparkline
-          data={getLastDayChartData(tokenChartQuery?.getChartPrices)}
-          width={25}
-          height={24}
-          lineWidth={2}
-          color={
-            isNumberGoUp
-              ? theme.colors.bullish[400]
-              : theme.colors.osmoverse[500]
-          }
-        />
+      />
 
-        <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
-          {tokenDataQuery.get24hrChange
-            ?.maxDecimals(2)
-            .inequalitySymbol(false)
-            .toString()}
-        </p>
-      </SkeletonLoader>
-    );
-  });
+      <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
+        {assetMarketInfo?.priceChange24h
+          ?.maxDecimals(2)
+          .inequalitySymbol(false)
+          .toString() ?? ""}
+      </p>
+    </SkeletonLoader>
+  );
+};
 
 export default NavbarOsmoPrice;

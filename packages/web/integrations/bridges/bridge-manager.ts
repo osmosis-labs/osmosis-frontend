@@ -1,8 +1,9 @@
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/config";
-import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridge-provider";
+import { IS_TESTNET } from "~/config/env";
+import { AxelarBridgeProvider } from "~/integrations/bridges/axelar";
+import { SkipBridgeProvider } from "~/integrations/bridges/skip";
 import { SquidBridgeProvider } from "~/integrations/bridges/squid";
 import { BridgeProviderContext } from "~/integrations/bridges/types";
 
@@ -12,6 +13,7 @@ export class BridgeManager {
   public readonly bridges: {
     [SquidBridgeProvider.providerName]: SquidBridgeProvider;
     [AxelarBridgeProvider.providerName]: AxelarBridgeProvider;
+    [SkipBridgeProvider.providerName]: SkipBridgeProvider;
   };
 
   constructor(
@@ -34,6 +36,7 @@ export class BridgeManager {
         context
       ),
       [AxelarBridgeProvider.providerName]: new AxelarBridgeProvider(context),
+      [SkipBridgeProvider.providerName]: new SkipBridgeProvider(context),
     };
   }
 }

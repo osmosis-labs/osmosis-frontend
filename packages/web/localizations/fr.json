@@ -116,7 +116,9 @@
       "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site"
+      "goToSite": "Aller au site",
+      "doNotShowAgain": "Ne montre plus cela",
+      "chainHalted": "La chaîne d'osmose est interrompue, les transactions sont temporairement désactivées."
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
+      "buttonAdd": "Ajouter",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
@@ -208,6 +211,7 @@
       },
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
+      "hideBalances": "Soldes masqués",
       "preTransfer": {
         "currentBal": "solde actuel",
         "deposit": "Déposer",
@@ -220,7 +224,8 @@
         "symbol": "Devise"
       },
       "title": "Tous les actifs",
-      "withdrawButton": "Retirer"
+      "withdrawButton": "Retirer",
+      "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
     "transfer": {
@@ -228,6 +233,7 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
+      "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
@@ -236,7 +242,9 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
+        "invalidAddress": "Adresse invalide",
+        "missingAddress": "Adresse manquante"
       },
       "from": "De",
       "loading": "Chargement",
@@ -245,7 +253,12 @@
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "expectedOutput": "Production attendue",
+      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
@@ -279,6 +292,11 @@
       "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
       "warning": "AVERTISSEMENT:",
       "loading": "Chargement..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Activer les actifs non vérifiés",
+      "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
+      "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     }
   },
   "buyTokens": "Acheter jetons",
@@ -286,7 +304,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
       "kadoSubtitle": "Prend en charge OSMO, USDC",
-      "transakSubtitle": "Prend en charge OSMO"
+      "transakSubtitle": "Prend en charge OSMO",
+      "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incitation",
@@ -317,6 +336,7 @@
       "stable": "Stableswap",
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
+      "transmuter": "Transmutateur",
       "internal": "Incitations internes",
       "external": "Incitations externes",
       "superfluid": "Superfluid",
@@ -442,7 +462,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
-    "7davg": "(7j moy)",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
@@ -470,7 +489,6 @@
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
-    "numDaysRemaining": "{numDays} jours restants",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "rewardDistribution": "Récompenses distribuées à tous les fournisseurs de liquidités",
@@ -478,6 +496,7 @@
     "sharesAvailableIn": "Disponible dans",
     "showDetails": "Afficher details",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutateur",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
@@ -538,7 +557,20 @@
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans"
+    "rewardDistribution": "Distribution de la récompence dans",
+    "aprBreakdown": {
+      "swapFees": "Frais de swap",
+      "boost": "Booster",
+      "superfluid": "Superfluide",
+      "externalBoost": "Boost externe",
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Comment sont calculés les TAEG ?",
+        "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
+        "p2": "Dans les pools suralimentés, la plupart des utilisateurs recevront des récompenses inférieures. Cela est dû à des positions plus concentrées, qui captent davantage d’incitations.",
+        "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
+      }
+    }
   },
   "profile": {
     "balance": "Solde",
@@ -559,10 +591,13 @@
     "unverifiedAssets": "Afficher les actifs non vérifiés dans les pools et l'échange",
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
-    "titleLanguage": "Langue"
+    "titleLanguage": "Langue",
+    "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
+    "hideBalances": "Soldes masqués"
   },
   "stake": {
     "available": "Disponible",
+    "staked": "Jalonné",
     "MAX": "MAX",
     "validatorHeader": "Escouade de validation",
     "stake": "Piquetage OSMO",
@@ -572,6 +607,7 @@
     "amount": "Montant",
     "availableIn": "Disponible en",
     "day": "jour",
+    "days": "jours",
     "month": "mois",
     "dashboard": "Tableau de bord",
     "dashboardStakedOsmo": "OSMO jalonné",
@@ -590,9 +626,7 @@
     "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
-    "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
-    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais d'essence.",
-    "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
+    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
@@ -644,6 +678,20 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
+    },
+    "introModal": {
+      "callout": "Nouvelle fonctionnalité",
+      "title": "Miser sur l’osmose",
+      "description": {
+        "1": "Le jalonnement est l’un des moyens les plus simples de gagner de l’argent avec vos actifs. Vous pouvez désormais miser votre OSMO directement sur Osmosis.",
+        "2": "gagner jusqu'à",
+        "3": "chaque année en récompenses de mise !",
+        "4": "et mettez-le au travail",
+        "5": "Mettez votre {displayBalance} à profit et",
+        "button": "Achetez de l'OSMO"
+      },
+      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG.",
+      "button": "Commencer à jalonner"
     }
   },
   "superfluidValidator": {
@@ -735,10 +783,6 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "margined": {
-    "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
-    "link": "Explorez $sqOSMO et plus ici!"
-  },
   "upgrades": {
     "title": "Mises à niveau disponibles",
     "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
@@ -789,22 +833,20 @@
   },
   "tokenInfos": {
     "relatedAssets": "Actifs associés",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Gagnez avec {denom}",
+    "explorePools": "Explorez les piscines",
+    "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
+    "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
+    "yourBalance": "Votre solde",
     "aboutDenom": "À propos de {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Afficher {name}",
+    "ariaViewOn": "Afficher sur {name}",
+    "collapse": "Effondrement",
     "followTheConversation": "Suivez la conversation",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
       "xYear": "{y}Oui",
       "all": "TOUS"
     },
@@ -813,8 +855,61 @@
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
-    "backButton": "Tous les jetons",
-    "ariaBackButton": "All tokens back button",
-    "noData": "ND"
-  }
+    "noData": "ND",
+    "buyToken": "Acheter {coinDenom}",
+    "staking": "Jalonnement",
+    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Mises à jour sur l'osmose !",
+    "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
+  },
+  "unlistedAssetsEnabled": "Actifs non répertoriés activés",
+  "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "earnPage": {
+    "title": "Gagner",
+    "position": "Position",
+    "positions": "Postes",
+    "allocation": "Allocation",
+    "tokensCount": "{number} jetons",
+    "strategiesCount": "Stratégies {number}",
+    "value": "Valeur",
+    "method": "Méthode",
+    "platform": "Plate-forme",
+    "scrollToSeeMore": "faites défiler pour en voir plus",
+    "discoverStrategies": "Découvrez les stratégies",
+    "myStrategies": "Mes stratégies",
+    "strategyPlatform": "Stratégie / Plateforme",
+    "apy": "APY",
+    "daily": "Tous les jours",
+    "reward": "Récompense",
+    "lock": "Verrouillage",
+    "days": "jours",
+    "risk": "Risque",
+    "strategyMethod": "Méthode stratégique",
+    "allMethods": "Toutes les méthodes",
+    "platforms": "Plateformes",
+    "allPlatforms": "Toutes les plateformes",
+    "lockingDuration": "Durée de verrouillage",
+    "specialTokens": "Jetons spéciaux",
+    "filters": "Filtres",
+    "resetFilters": "Réinitialiser les filtres",
+    "saveFilters": "Enregistrer les filtres",
+    "rewards": "Récompenses",
+    "estimatedInYearlyRewards": "Estimé en récompenses annuelles",
+    "availableToClaim": "disponible pour réclamer",
+    "claimAllRewards": "Réclamez toutes les récompenses",
+    "join": "Rejoindre",
+    "tokenFilterOptions": {
+      "my": "Mes jetons",
+      "all": "Tous les jetons"
+    },
+    "rewardTypes": {
+      "all": "Tous",
+      "single": "Célibataire",
+      "multi": "Multi"
+    }
+  },
+  "disclaimer": "Clause de non-responsabilité"
 }

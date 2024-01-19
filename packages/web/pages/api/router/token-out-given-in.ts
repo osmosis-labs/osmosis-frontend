@@ -1,23 +1,8 @@
-import { Dec, Int } from "@keplr-wallet/unit";
-import {
-  ConcentratedLiquidityPool,
-  ConcentratedLiquidityPoolRaw,
-  CosmwasmPoolRaw,
-  FetchTickDataProvider,
-  OptimizedRoutes,
-  Route,
-  SplitTokenInQuote,
-  StablePool,
-  StablePoolRaw,
-  TransmuterPool,
-  WeightedPool,
-  WeightedPoolRaw,
-} from "@osmosis-labs/pools";
+import { Int } from "@keplr-wallet/unit";
+import { Route, SplitTokenInQuote } from "@osmosis-labs/pools";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainList } from "~/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools";
-import { queryNumPools } from "~/server/queries/osmosis";
+import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 type Response = {
   amount: string;
@@ -57,95 +42,18 @@ export default async function routeTokenOutGivenIn(
   }
 
   // get quote
-  const router = await getRouter();
-  const quote = await router.routeByTokenIn(
-    { amount: new Int(tokenInAmount), denom: tokenInDenom },
-    tokenOutDenom
-  );
-  const candidateRoutes = router.getCandidateRoutes(
-    tokenInDenom,
-    tokenOutDenom
-  );
+  try {
+    const { quote, candidateRoutes } = await _routeTokenOutGivenIn({
+      token: { denom: tokenInDenom, amount: new Int(tokenInAmount) },
+      tokenOutDenom,
+    });
 
-  // return response
-  const quoteResponse = quoteToResponse(quote, candidateRoutes);
-  res.status(200).json(quoteResponse);
-}
-
-async function getRouter(): Promise<OptimizedRoutes> {
-  // fetch pool data
-  const numPoolsResponse = await queryNumPools();
-  const poolsResponse = await queryPaginatedPools({
-    page: 1,
-    limit: Number(numPoolsResponse.num_pools),
-    minimumLiquidity: 1000,
-  });
-
-  // create routable pool impls from response
-  const routablePools = poolsResponse.pools
-    .map((pool) => {
-      if (pool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool") {
-        pool = pool as ConcentratedLiquidityPoolRaw;
-        return new ConcentratedLiquidityPool(
-          pool,
-          new FetchTickDataProvider(ChainList[0].apis.rest[0].address, pool.id)
-        );
-      }
-
-      if (pool["@type"] === "/osmosis.gamm.v1beta1.Pool") {
-        return new WeightedPool(pool as WeightedPoolRaw);
-      }
-
-      if (
-        pool["@type"] === "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
-      ) {
-        return new StablePool(pool as StablePoolRaw);
-      }
-
-      if (pool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool") {
-        return new TransmuterPool(pool as CosmwasmPoolRaw);
-      }
-    })
-    .filter(
-      (
-        pool
-      ): pool is
-        | ConcentratedLiquidityPool
-        | WeightedPool
-        | StablePool
-        | TransmuterPool => pool !== undefined
-    );
-
-  // prep router params
-  const preferredPoolIds = routablePools.reduce((preferredPoolIds, pool) => {
-    if (pool.type === "concentrated") {
-      preferredPoolIds.push(pool.id);
-    }
-    if (pool.type === "transmuter") {
-      preferredPoolIds.unshift(pool.id);
-    }
-
-    return preferredPoolIds;
-  }, [] as string[]);
-  const getPoolTotalValueLocked = (poolId: string) => {
-    const pool = poolsResponse.pools.find((pool) =>
-      "pool_id" in pool ? pool.pool_id : pool.id === poolId
-    );
-    if (!pool) {
-      console.warn("No pool found for pool", poolId);
-      return new Dec(0);
-    }
-    if (!pool.liquidityUsd) {
-      console.warn("No TVL found for pool", poolId);
-      return new Dec(0);
-    } else return new Dec(pool.liquidityUsd.toString());
-  };
-
-  return new OptimizedRoutes({
-    pools: routablePools,
-    preferredPoolIds,
-    getPoolTotalValueLocked,
-  });
+    // return response
+    const quoteResponse = quoteToResponse(quote, candidateRoutes);
+    res.status(200).json(quoteResponse);
+  } catch (e: any) {
+    res.status(500).send(e.message);
+  }
 }
 
 function quoteToResponse(

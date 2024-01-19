@@ -1,9 +1,14 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.preferences.importModuleSpecifierEnding": "minimal"
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "tailwindCSS.experimental.classRegex": [
+    ["classes\\=([^;]*);", "'([^']*)'"],
+    ["classes\\=([^;]*);", "\"([^\"]*)\""],
+    ["classes\\=([^;]*);", "\\`([^\\`]*)\\`"]
+  ]
 }

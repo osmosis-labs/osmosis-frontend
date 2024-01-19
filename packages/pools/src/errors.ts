@@ -1,17 +1,20 @@
 import { BasePool } from "./interface";
 
 export class NotEnoughLiquidityError extends Error {
+  static readonly defaultMessage = "Not enough liquidity";
   constructor(string?: string) {
-    super(string ?? "Not enough liquidity");
+    super(
+      NotEnoughLiquidityError.defaultMessage + (string ? ": " + string : "")
+    );
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, NotEnoughLiquidityError.prototype);
   }
 }
 
 export class NotEnoughQuotedError extends Error {
+  static readonly defaultMessage = "Not enough quoted. Try increasing amount.";
   constructor(string?: string) {
-    const defaultMessage = "Not enough quoted. Try increasing amount.";
-    super(string ? defaultMessage + " " + string : defaultMessage);
+    super(NotEnoughQuotedError.defaultMessage + (string ? ": " + string : ""));
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, NotEnoughQuotedError.prototype);
   }

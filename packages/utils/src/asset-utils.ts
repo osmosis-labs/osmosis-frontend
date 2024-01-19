@@ -1,22 +1,37 @@
-import type { Asset, AssetList } from "@osmosis-labs/types";
+import type {
+  Asset,
+  AssetList,
+  IbcCW20Trace,
+  IBCTrace,
+} from "@osmosis-labs/types";
 
-export function getMinimalDenomFromAssetList({
+export function getLastIbcTrace(
+  traces: Asset["traces"]
+): IbcCW20Trace | IBCTrace | undefined {
+  const ibcTraces = traces.filter(
+    (trace): trace is IBCTrace | IbcCW20Trace =>
+      trace.type === "ibc-cw20" || trace.type === "ibc"
+  );
+  return ibcTraces[ibcTraces.length - 1];
+}
+
+export function getSourceDenomFromAssetList({
   traces,
-  symbol,
   base,
-}: Pick<Asset, "traces" | "symbol" | "base">) {
-  /** It's an Osmosis Asset */
+}: Pick<Asset, "traces" | "base">) {
+  /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
   if (traces?.length === 0) {
     return base;
   }
 
-  const lastTrace = traces[traces.length - 1];
+  const ibcTrace = getLastIbcTrace(traces);
 
-  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
-    throw new Error(`Unknown trace type ${lastTrace?.type}. Asset ${symbol}`);
+  /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
+  if (!ibcTrace) {
+    return base;
   }
 
-  return lastTrace.counterparty.base_denom;
+  return ibcTrace.counterparty.base_denom;
 }
 
 export function getDisplayDecimalsFromAsset({
@@ -32,68 +47,95 @@ export function getDisplayDecimalsFromAsset({
   return displayDenomUnits.exponent;
 }
 
+/** Find asset in asset list config given any of the available identifiers. */
 export function getAssetFromAssetList({
-  minimalDenom,
-  coingeckoId,
+  /** Denom as it exists on source chain. */
+  sourceDenom,
+  coinMinimalDenom,
+  coinGeckoId,
   assetLists,
 }: {
-  minimalDenom?: string;
-  coingeckoId?: string;
+  sourceDenom?: string;
+  coinMinimalDenom?: string;
+  coinGeckoId?: string;
   assetLists: AssetList[];
 }) {
-  if (!minimalDenom && !coingeckoId) return undefined;
-
-  let asset: Asset | undefined;
-
-  for (const assetList of assetLists) {
-    const walletAsset = assetList.assets.find(
-      (asset) =>
-        hasMatchingMinimalDenom(asset, minimalDenom ?? "") ||
-        (asset.coingecko_id ? asset.coingecko_id === coingeckoId : false)
-    );
-
-    if (walletAsset) {
-      asset = walletAsset;
-      break;
-    }
+  if (!sourceDenom && !coinGeckoId && !coinMinimalDenom) {
+    return undefined;
   }
+
+  const asset = assetLists
+    .flatMap(({ assets }) => assets)
+    .find(
+      (asset) =>
+        (sourceDenom && hasMatchingSourceDenom(asset, sourceDenom)) ||
+        (asset.coingecko_id ? asset.coingecko_id === coinGeckoId : false) ||
+        asset.base === coinMinimalDenom
+    );
 
   if (!asset) return undefined;
 
+  const decimals = getDisplayDecimalsFromAsset(asset);
+
   return {
-    minimalDenom: minimalDenom,
+    sourceDenom: getSourceDenomFromAssetList(asset),
+    coinMinimalDenom: asset.base,
     symbol: asset.symbol,
-    coingeckoId: asset.coingecko_id,
-    priceCoinId: asset.price_coin_id,
-    decimals: asset.denom_units.find((a) => a.denom === asset?.display)
-      ?.exponent,
+    coinGeckoId: asset.coingecko_id,
+    priceInfo: asset.price_info,
+    decimals,
     rawAsset: asset,
+    currency: {
+      coinDenom: asset.symbol,
+      coinMinimalDenom: asset.base,
+      coinDecimals: decimals,
+      coinImageUrl: asset.relative_image_url,
+    },
   };
 }
 
-export const hasMatchingMinimalDenom = (
+/** Finds by denom as it exists on source chain by last IBC hop trace. i.e. `pstake` or `uatom`. Not
+ *  the IBC denom on Osmosis. */
+export const hasMatchingSourceDenom = (
   asset: Pick<Asset, "denom_units" | "traces" | "symbol" | "base">,
   denomToSearch: string
 ) => {
-  return getMinimalDenomFromAssetList(asset) === denomToSearch;
+  return getSourceDenomFromAssetList(asset) === denomToSearch;
 };
 
 export function getChannelInfoFromAsset(
   asset: Pick<Asset, "traces" | "symbol">
 ) {
-  const lastTrace = asset.traces[asset.traces.length - 1];
+  const ibcTrace = getLastIbcTrace(asset.traces);
 
-  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
-    throw new Error(
-      `Unknown trace type ${lastTrace?.type}. Asset ${asset.symbol}`
-    );
+  if (!ibcTrace) {
+    throw new Error(`Asset ${asset.symbol} does not have an IBC trace.`);
   }
 
-  const sourceChannelId = lastTrace.chain.channel_id;
-  const destChannelId = lastTrace.counterparty.channel_id;
+  const sourceChannelId = ibcTrace.chain.channel_id;
+  const destChannelId = ibcTrace.counterparty.channel_id;
 
   return {
     sourceChannelId,
     destChannelId,
+  };
+}
+
+/** Convert an asset list asset into an asset with minimal content and that
+ *  is compliant with the `Currency` type. */
+export function makeMinimalAsset(assetListAsset: Asset) {
+  const { symbol, base, relative_image_url, coingecko_id, name, keywords } =
+    assetListAsset;
+  const decimals = getDisplayDecimalsFromAsset(assetListAsset);
+
+  return {
+    coinDenom: symbol,
+    coinName: name,
+    coinMinimalDenom: base,
+    coinDecimals: decimals,
+    coinGeckoId: coingecko_id,
+    coinImageUrl: relative_image_url,
+    isUnstable: Boolean(keywords?.includes("osmosis-unstable")),
+    isVerified: Boolean(keywords?.includes("osmosis-main")),
   };
 }

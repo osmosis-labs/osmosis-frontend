@@ -1,12 +1,16 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import ClipboardButton from "~/components/buttons/clipboard-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { CoingeckoCoin } from "~/server/queries/coingecko/detail";
@@ -77,7 +81,9 @@ const TokenDetails = ({
   const marketCapRank = coingeckoCoinInfo?.marketCapRank;
   const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
   const circulatingSupply = coingeckoCoinInfo?.circulatingSupply;
-  const marketCap = queriesExternalStore.queryMarketCaps.get(denom);
+  const marketCap =
+    queriesExternalStore.queryMarketCaps.get(denom) ??
+    coingeckoCoinInfo?.marketCap;
 
   const toggleExpand = () => {
     logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);
@@ -103,15 +109,58 @@ const TokenDetails = ({
       coingeckoCoin?.links?.homepage &&
       coingeckoCoin.links.homepage.length > 0
     ) {
-      return coingeckoCoin.links.homepage[0];
+      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
     }
   }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
 
   const coingeckoURL = useMemo(() => {
-    if (coingeckoCoin?.id) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coingeckoCoin.id}`;
+    if (coinGeckoId) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
     }
-  }, [coingeckoCoin?.id]);
+  }, [coinGeckoId]);
+
+  const currency = useMemo(() => {
+    const currencies = ChainList.map(
+      (info) => info.keplrChain.currencies
+    ).reduce((a, b) => [...a, ...b]);
+
+    const currency = currencies.find(
+      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
+    );
+
+    return currency;
+  }, [denom]);
+
+  const name = useMemo(() => {
+    if (details) {
+      return details.name;
+    }
+
+    if (!currency) {
+      return undefined;
+    }
+
+    const asset = getAssetFromAssetList({
+      coinMinimalDenom: currency?.coinMinimalDenom,
+      assetLists: AssetLists,
+    });
+
+    return asset?.rawAsset.name;
+  }, [details, currency]);
+
+  const shortBase = useMemo(() => {
+    if (currency?.base) {
+      if (!currency.base.includes("/")) {
+        return currency.base;
+      }
+
+      const [prefix, ...rest] = currency.base.split("/");
+
+      const hash = rest.join("");
+
+      return `${prefix}/${hash.slice(0, 2)}...${hash.slice(-5)}`;
+    }
+  }, [currency]);
 
   return (
     <section
@@ -124,17 +173,18 @@ const TokenDetails = ({
         totalValueLocked={totalValueLocked}
         circulatingSupply={circulatingSupply}
       />
-      {details?.name && details?.description && (
+      {name && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
-            <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:gap-4">
+            <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-                {t("tokenInfos.aboutDenom", { name: details.name })}
+                {t("tokenInfos.aboutDenom", { name })}
               </h6>
               <div className="flex items-center gap-2">
                 {twitterUrl && (
                   <LinkIconButton
                     href={twitterUrl}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -146,6 +196,7 @@ const TokenDetails = ({
                 {websiteURL && (
                   <LinkIconButton
                     href={websiteURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
@@ -157,6 +208,7 @@ const TokenDetails = ({
                 {coingeckoURL && (
                   <LinkIconButton
                     href={coingeckoURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", {
@@ -170,39 +222,54 @@ const TokenDetails = ({
                     }
                   />
                 )}
+                {shortBase ? (
+                  <ClipboardButton
+                    aria-label="Clipboard"
+                    defaultIcon="code"
+                    value={currency?.base}
+                  >
+                    {shortBase}
+                  </ClipboardButton>
+                ) : (
+                  false
+                )}
               </div>
             </div>
-            <div
-              className={`${
-                !isExpanded && isExpandable && "tokendetailshadow"
-              } relative self-stretch`}
-            >
-              <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
-                <Markdown>{expandedText ?? ""}</Markdown>
+            {details?.description ? (
+              <div
+                className={`${
+                  !isExpanded && isExpandable && "tokendetailshadow"
+                } relative self-stretch`}
+              >
+                <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
+                  <Markdown>{expandedText ?? ""}</Markdown>
+                </div>
+                {isExpandable && (
+                  <button
+                    className={`${
+                      !isExpanded && "bottom-0"
+                    } absolute z-10 flex items-center gap-1 self-stretch`}
+                    onClick={toggleExpand}
+                  >
+                    <p className="font-base leading-6 text-wosmongton-300">
+                      {isExpanded
+                        ? t("tokenInfos.collapse")
+                        : t("components.show.more")}
+                    </p>
+                    <div className={`${isExpanded && "rotate-180"}`}>
+                      <Icon
+                        id="caret-down"
+                        className="text-wosmongton-300"
+                        height={24}
+                        width={24}
+                      />
+                    </div>
+                  </button>
+                )}
               </div>
-              {isExpandable && (
-                <button
-                  className={`${
-                    !isExpanded && "bottom-0"
-                  } absolute z-10 flex items-center gap-1 self-stretch`}
-                  onClick={toggleExpand}
-                >
-                  <p className="font-base leading-6 text-wosmongton-300">
-                    {isExpanded
-                      ? t("tokenInfos.collapse")
-                      : t("components.show.more")}
-                  </p>
-                  <div className={`${isExpanded && "rotate-180"}`}>
-                    <Icon
-                      id="caret-down"
-                      className="text-wosmongton-300"
-                      height={24}
-                      width={24}
-                    />
-                  </div>
-                </button>
-              )}
-            </div>
+            ) : (
+              false
+            )}
           </div>
         </div>
       )}
@@ -221,13 +288,7 @@ interface TokenStatsProps {
 }
 
 const TokenStats: FunctionComponent<TokenStatsProps> = observer(
-  ({
-    usdFiat,
-    marketCap,
-    marketCapRank,
-    totalValueLocked,
-    circulatingSupply,
-  }) => {
+  ({ usdFiat, marketCap, marketCapRank, circulatingSupply }) => {
     const { t } = useTranslation();
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
@@ -254,14 +315,16 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
             {t("tokenInfos.circulatingSupply")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
-            {circulatingSupply && usdFiat
-              ? formatPretty(
-                  new PricePretty(usdFiat, new Dec(circulatingSupply))
-                )
+            {circulatingSupply
+              ? formatPretty(new Dec(circulatingSupply), {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                  compactDisplay: "short",
+                })
               : t("tokenInfos.noData")}
           </h5>
         </li>
-        <li className="flex flex-col items-start gap-3">
+        {/* <li className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
             {t("tokenInfos.tvl")}
           </p>
@@ -272,7 +335,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
                 )
               : t("tokenInfos.noData")}
           </h5>
-        </li>
+        </li> */}
       </ul>
     );
   }

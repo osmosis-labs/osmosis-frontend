@@ -1,45 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
-import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
+import { AdBanner } from "~/components/ad-banner";
+import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
-import adCMSData from "~/config/ads-banner.json";
-import { useAmplitudeAnalytics } from "~/hooks";
-import { useRoutablePools } from "~/hooks/data/use-routable-pools";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
-interface HomeProps {
-  ads: Ad[];
-}
-
-// Create an Axios instance with a 30-second timeout
-// const axiosInstance = axios.create({
-//   timeout: 30000, // 30 seconds
-// });
-
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  let ads: Ad[] = [];
-
-  const adCMS = adCMSData as AdCMS;
-
-  try {
-    // const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
-    //   ADS_BANNER_URL
-    // );
-    ads = adCMS.banners.filter(({ featured }) => featured);
-  } catch (error) {
-    console.error("Error fetching ads:", error);
-  }
-
-  return { props: { ads } };
-};
-
-const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const routablePools = useRoutablePools();
+const Home = () => {
+  const featureFlags = useFeatureFlags();
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -57,26 +28,74 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref="/images/Margined-frontend.png"
-              xlinkHref="/images/Margined-frontend.png"
-              x="0"
+              lowResXlinkHref="/images/osmosis-home-bg-low.png"
+              xlinkHref="/images/osmosis-home-bg.png"
+              x="56"
               y="220"
-              width="778.7462"
-              height="851.0703"
+              width="578.7462"
+              height="725.6817"
+            />
+            <ProgressiveSvgImage
+              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
+              xlinkHref={"/images/osmosis-home-fg.png"}
+              x={"61"}
+              y={"682"}
+              width={"448.8865"}
+              height={"285.1699"}
             />
           </g>
         </svg>
       </div>
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool
-            memoedPools={routablePools ?? []}
-            isDataLoading={!Boolean(routablePools) || isWalletLoading}
-            ads={ads}
-          />
+          {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          <SwapTool />
         </div>
       </div>
     </main>
+  );
+};
+
+export interface SwapAdBannerResponse {
+  banners: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    headerOrTranslationKey: string;
+    subheaderOrTranslationKey: string;
+    externalUrl: string;
+    iconImageUrl: string;
+    iconImageAltOrTranslationKey: string;
+    gradient: string;
+    fontColor: string;
+    arrowColor: string;
+    featured: true;
+  }[];
+  localization: Record<string, Record<string, any>>;
+}
+
+const SwapAdsBanner = () => {
+  /**
+   * Fetches the latest update from the osmosis-labs/fe-content repo
+   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/swap-rotating-banner.json
+   */
+  const { data, isLoading } = useQuery({
+    queryKey: ["swap-ads-banner"],
+    queryFn: () =>
+      queryOsmosisCMS<SwapAdBannerResponse>({
+        filePath: "cms/swap-rotating-banner.json",
+      }),
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
+  });
+
+  if (!data?.banners || isLoading) return null;
+
+  return (
+    // If there is an error, we don't want to show the banner
+    <ErrorBoundary fallback={null}>
+      <AdBanner ads={data.banners} localization={data.localization} />
+    </ErrorBoundary>
   );
 };
 

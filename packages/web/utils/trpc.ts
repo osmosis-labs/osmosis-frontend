@@ -1,15 +1,34 @@
-import { httpBatchLink, loggerLink } from "@trpc/client";
+import "~/utils/superjson";
+
+import { httpBatchLink, httpLink, loggerLink, splitLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
-import superjson from "superjson";
 
 import { type AppRouter } from "~/server/api/root";
+import { superjson } from "~/utils/superjson";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
+
+/** Provides ability to skip batching given a new custom query option context: `skipBatch: boolean` */
+const makeSkipBatchLink = (url: string) =>
+  splitLink({
+    condition(op) {
+      // check for context property `skipBatch`
+      return op.context.skipBatch === true;
+    },
+    // when condition is true, use normal request
+    true: httpLink({
+      url,
+    }),
+    // when condition is false, use batching
+    false: httpBatchLink({
+      url,
+    }),
+  });
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
@@ -44,12 +63,10 @@ export const api = createTRPCNext<AppRouter>({
          * We'll use the node server for things that require the node.js api (E.g. Creating transactions).
          */
         (runtime) => {
-          // initialize the different links for different targets
+          // initialize the different links for different targets (edge and node)
           const servers = {
-            node: httpBatchLink({ url: `${getBaseUrl()}/api/trpc` })(runtime),
-            edge: httpBatchLink({ url: `${getBaseUrl()}/api/edge-trpc` })(
-              runtime
-            ),
+            node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
+            edge: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc`)(runtime),
           };
 
           return (ctx) => {
@@ -90,7 +107,7 @@ export const api = createTRPCNext<AppRouter>({
    *
    * @see https://trpc.io/docs/nextjs#ssr-boolean-default-false
    */
-  ssr: true,
+  ssr: false,
 });
 
 /**

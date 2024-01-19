@@ -116,7 +116,9 @@
       "externalLink": "您现在正在离开Osmosis应用程序去",
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
-      "goToSite": "前往网站"
+      "goToSite": "前往网站",
+      "doNotShowAgain": "不要再显示此内容",
+      "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
       "channelCongestedDeposit": "存入 (频道争抢)",
@@ -208,6 +211,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隐藏0余额",
+      "hideBalances": "隐藏余额",
       "preTransfer": {
         "currentBal": "当前余额",
         "deposit": "存入",
@@ -220,7 +224,8 @@
         "symbol": "符号"
       },
       "title": "所有资产",
-      "withdrawButton": "提币"
+      "withdrawButton": "提币",
+      "activate": "启用"
     },
     "totalAssets": "总资产",
     "transfer": {
@@ -228,6 +233,7 @@
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的权限",
+      "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
@@ -236,7 +242,9 @@
         "seeRequest": "在{walletName}中查看请求",
         "noQuotesAvailable": "无可用报价",
         "unexpectedError": "意外的错误。请再试一次。",
-        "transactionError": "获取交易时出错。请再试一次。"
+        "transactionError": "获取交易时出错。请再试一次。",
+        "invalidAddress": "无效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "从",
       "loading": "加载中",
@@ -245,7 +253,12 @@
       "to": "至",
       "transferFee": "转账费",
       "waitTime": "{minutes} 分钟",
-      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
+      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同.",
+      "expectedOutput": "预期输出",
+      "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
+      "priceImpact": "价格影响",
+      "sending": "正在发送...",
+      "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",
@@ -279,6 +292,11 @@
       "undergoAudit": "正在接受审核（预计于 2024 年 1 月完成）。",
       "warning": "警告：",
       "loading": "加载中..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "激活未验证资产",
+      "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
+      "reminder": "您始终可以在设置模式中停用此设置。"
     }
   },
   "buyTokens": "购买代币",
@@ -286,7 +304,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "选择法币入口",
       "kadoSubtitle": "支持OSMO, USDC",
-      "transakSubtitle": "支持OSMO"
+      "transakSubtitle": "支持OSMO",
+      "onrampMoneySubtitle": "支持OSMO、USDC"
     },
     "incentive": {
       "mobileTitle": "獎勵",
@@ -317,6 +336,7 @@
       "stable": "稳定兑换",
       "weighted": "加权",
       "concentrated": "流动性集中",
+      "transmuter": "转化器",
       "internal": "内部激励",
       "external": "外部激励",
       "superfluid": "超流体",
@@ -442,7 +462,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解绑",
     "amountDaysUnbonding_plural": "{numDays} 天解绑期",
     "APR": "APR",
@@ -458,7 +477,7 @@
     "collapseDetails": "收起详情",
     "commission": "佣金",
     "currentDailyEarn": "您当前正在赚取",
-    "dailyEarnAmount": "{amount} / 天",
+    "dailyEarnAmount": "{amount} /天",
     "day": "天",
     "delegated": "委托",
     "details": "详情",
@@ -470,7 +489,6 @@
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "liquidity": "资金池流动性",
-    "numDaysRemaining": "还剩 {numDays} 天",
     "putAssetsToWork": "让您的资产发挥作用.",
     "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
     "rewardDistribution": "向所有流动性提供者发放奖励",
@@ -478,6 +496,7 @@
     "sharesAvailableIn": "可用",
     "showDetails": "显示详情",
     "stableswapEnabled": "稳定交换",
+    "transmuter": "转化器",
     "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
     "superfluidEnabled": "超流",
     "superfluidStaking": "超流质押",
@@ -538,7 +557,20 @@
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配"
+    "rewardDistribution": "奖励分配",
+    "aprBreakdown": {
+      "swapFees": "掉期费用",
+      "boost": "促进",
+      "superfluid": "超流体",
+      "externalBoost": "外部升压",
+      "total": "总年利率",
+      "explainer": {
+        "title": "年利率是如何计算的？",
+        "p1": "所有年利率均为估计值。它们是通过池中流动性的平均年利率来计算的。",
+        "p2": "在超级矿池中，大多数用户将获得较低的奖励。这是因为职位更加集中，能够获得更多的激励。",
+        "p3": "为了保持估计保守，所有年利率均除以 3。"
+      }
+    }
   },
   "profile": {
     "balance": "结余",
@@ -559,10 +591,13 @@
     "unverifiedAssets": "在池和交换中显示未经验证的资产",
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
-    "titleLanguage": "语言"
+    "titleLanguage": "语言",
+    "titleHideBalances": "屏蔽余额以保护隐私",
+    "hideBalances": "隐藏余额"
   },
   "stake": {
     "available": "可用的",
+    "staked": "固定",
     "MAX": "最大限度",
     "validatorHeader": "验证者小队",
     "stake": "OSMO 股份",
@@ -572,6 +607,7 @@
     "amount": "数量",
     "availableIn": "可用于",
     "day": "天",
+    "days": "天",
     "month": "月",
     "dashboard": "仪表板",
     "dashboardStakedOsmo": "固定 OSMO",
@@ -590,9 +626,7 @@
     "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
     "estimatedEarningsTooltip": "这些收益是根据当前质押年利率计算的，可能会发生变化。",
-    "collectRewardsTooltip": "收集所有无人认领的奖励。这些代币将立即在 Osmosis 上可供您使用。",
-    "collectRewardsTooltipDisabled": "您的奖励太低，无法领取，请在您有更多奖励来支付 Gas 费用后重试。",
-    "collectAndReinvestTooltip": "一键收集并自动重新抵押您无人认领的收入。复利是利用资产赚取更多收入的好方法。",
+    "collectRewardsTooltipDisabled": "您的奖励太少，无法领取，请在您的无人认领余额达到{collectRewardsMinimumOsmo} OSMO 的最低阈值后重试。",
     "isAPRTooHighTooltip": "该验证器收取异常高的佣金。考虑选择不同的验证器。",
     "isVotingPowerTooHighTooltip": "这是具有高投票权的前 10 名验证者。考虑选择不同的验证器来帮助促进去中心化。",
     "learnMore": {
@@ -644,6 +678,20 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
+    },
+    "introModal": {
+      "callout": "新功能",
+      "title": "Osmosis 质押",
+      "description": {
+        "1": "质押是利用资产赚钱的最简单方法之一。现在您可以将您的 OSMO 放在 Osmosis 上。",
+        "2": "赚取高达",
+        "3": "每年都有质押奖励！",
+        "4": "并付诸实践",
+        "5": "让您可用的{displayBalance}发挥作用并",
+        "button": "买一些OSMO"
+      },
+      "asterisk": "* 质押奖励价值受价格和年利率波动影响。",
+      "button": "开始质押"
     }
   },
   "superfluidValidator": {
@@ -735,10 +783,6 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "margined": {
-    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
-    "link": "在这里探索 $sqOSMO 和更多内容！"
-  },
   "upgrades": {
     "title": "可升级",
     "detected": "我们检测到下列资产或头寸的升级。",
@@ -789,23 +833,21 @@
   },
   "tokenInfos": {
     "relatedAssets": "相关资产",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "通过{denom}赚钱",
+    "explorePools": "探索泳池",
+    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
+    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
+    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
+    "yourBalance": "您的余额",
     "aboutDenom": "关于{name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "查看{name}",
+    "ariaViewOn": "查看{name}",
+    "collapse": "坍塌",
     "followTheConversation": "关注对话",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "全部"
     },
     "watchlist": "关注列表",
@@ -813,8 +855,61 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "backButton": "所有代币",
-    "ariaBackButton": "All tokens back button",
-    "noData": "ND"
-  }
+    "noData": "ND",
+    "buyToken": "购买{coinDenom}",
+    "staking": "质押",
+    "liquidityInOSMOPools": "{number} {denom}池中的流动性"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "渗透更新！",
+    "seeWhatsNew": "看看有什么新鲜事"
+  },
+  "unlistedAssetsEnabled": "启用非上市资产",
+  "unlistedAssetsDisabled": "非上市资产已禁用",
+  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
+  "earnPage": {
+    "title": "赚",
+    "position": "位置",
+    "positions": "职位",
+    "allocation": "分配",
+    "tokensCount": "{number}标记",
+    "strategiesCount": "{number}策略",
+    "value": "价值",
+    "method": "方法",
+    "platform": "平台",
+    "scrollToSeeMore": "滚动查看更多",
+    "discoverStrategies": "发现策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "apy": "平均年产量",
+    "daily": "日常的",
+    "reward": "报酬",
+    "lock": "锁",
+    "days": "天",
+    "risk": "风险",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "platforms": "平台",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "锁定时间",
+    "specialTokens": "特殊代币",
+    "filters": "过滤器",
+    "resetFilters": "重置过滤器",
+    "saveFilters": "保存过滤器",
+    "rewards": "奖励",
+    "estimatedInYearlyRewards": "预计每年奖励",
+    "availableToClaim": "可索赔",
+    "claimAllRewards": "领取所有奖励",
+    "join": "加入",
+    "tokenFilterOptions": {
+      "my": "我的代币",
+      "all": "所有代币"
+    },
+    "rewardTypes": {
+      "all": "全部",
+      "single": "单身的",
+      "multi": "多"
+    }
+  },
+  "disclaimer": "免责声明"
 }

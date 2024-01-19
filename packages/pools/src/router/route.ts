@@ -1,10 +1,19 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { Currency } from "@osmosis-labs/types";
+import { PoolType } from "src/types";
 
-import { RoutablePool } from "./types";
+export interface ResultPool {
+  id: string;
+
+  swapFee?: Dec;
+  type?: PoolType;
+  inCurrency?: Currency;
+  outCurrency?: Currency;
+}
 
 /** Single route through pools. */
 export interface Route {
-  pools: RoutablePool[];
+  pools: ResultPool[];
   // tokenOutDenoms means the token to come out from each pool.
   // This should the same length with the pools.
   // Route consists of token in -> pool -> token out -> pool -> token out...

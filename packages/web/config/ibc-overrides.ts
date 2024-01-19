@@ -17,13 +17,13 @@ type AdditionalDataValue = {
 
   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
   withdrawUrlOverride?: string;
-  isUnstable?: boolean;
 
   /** Alternative chain name to display as the source chain */
   sourceChainNameOverride?: string;
   originBridgeInfo?: OriginBridgeInfo;
   /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
   fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
+  sourceSymbolOverride?: string;
 };
 
 type AdditionalData = Partial<
@@ -50,6 +50,15 @@ const TestnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
+  ETH: {
+    sourceChainNameOverride: "Goerli Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+    },
+  },
 };
 
 const MainnetIBCAdditionalData: Partial<
@@ -69,7 +78,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  WBTC: {
+  "WBTC.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -96,7 +105,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.wbnb.binance],
     },
   },
-  wstETH: {
+  "wstETH.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -110,10 +119,8 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
   DOT: {
-    depositUrlOverride:
-      "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
   },
   MATIC: {
     sourceChainNameOverride: "Polygon",
@@ -160,15 +167,6 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
     },
   },
-  UNI: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.uni.ethereum],
-    },
-  },
   BUSD: {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
@@ -178,7 +176,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.busd.ethereum],
     },
   },
-  axlFIL: {
+  FIL: {
     sourceChainNameOverride: "Filecoin",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -234,15 +232,6 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
-    },
-  },
-  AXS: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.axs.ethereum],
     },
   },
   INJ: {
@@ -305,10 +294,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
   KSM: {
-    depositUrlOverride:
-      "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
   },
   LUNC: {
     depositUrlOverride: "https://bridge.terra.money",
@@ -386,16 +373,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.evmos.org/assets",
     withdrawUrlOverride: "https://app.evmos.org/assets",
   },
-  XCN: {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.xcn.ethereum],
-    },
-  },
-  Bonk: {
+  BONK: {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
@@ -433,10 +411,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
   },
   PICA: {
-    depositUrlOverride:
-      "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
   },
   "WBTC.grv": {
     depositUrlOverride:
@@ -468,30 +444,15 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
-  ROWAN: {
-    isUnstable: true,
-  },
-  TICK: {
-    isUnstable: true,
-  },
-  DIG: {
-    isUnstable: true,
-  },
   SILK: {
     depositUrlOverride: "https://dash.scrt.network/ibc",
   },
   SIENNA: {
     depositUrlOverride: "https://wrap.scrt.network",
   },
-  CRBRUS: {
-    isUnstable: true,
-  },
   ECH: {
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
-  },
-  LUMEN: {
-    isUnstable: true,
   },
   ALTER: {
     depositUrlOverride: "https://wrap.scrt.network",
@@ -512,9 +473,6 @@ const MainnetIBCAdditionalData: Partial<
   CNTO: {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
-  },
-  ARKH: {
-    isUnstable: true,
   },
   ROAR: {
     depositUrlOverride:
@@ -550,6 +508,10 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
+  PYTH: {
+    depositUrlOverride: "https://portalbridge.com/cosmos/",
+    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
   YieldETH: {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
@@ -571,6 +533,12 @@ const MainnetIBCAdditionalData: Partial<
   FX: {
     depositUrlOverride:
       "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=FX",
+  },
+  NINJA: {
+    depositUrlOverride:
+      "https://tfm.com/bridge?chainFrom=injective-1&chainTo=osmosis-1&token0=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja&token1=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3",
+    withdrawUrlOverride:
+      "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
   },
 };
 

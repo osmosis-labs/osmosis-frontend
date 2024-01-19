@@ -1,6 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 /** Manages user input of decimal values, and includes currency decimals in price calculation. */
@@ -27,6 +27,15 @@ export class PriceConfig {
     makeObservable(this);
   }
 
+  /** Use this value with quo or mul to adjust a price for currencies decimals.
+   *  Calculations are performed without currency decimals, whereas they're included for display. */
+  @computed
+  get multiplicationQuoteOverBase() {
+    return DecUtils.getTenExponentN(
+      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
+    );
+  }
+
   @action
   setBaseCurrency(baseCurrency: AppCurrency) {
     this._baseCurrency = baseCurrency;
@@ -50,18 +59,13 @@ export class PriceConfig {
     }
   }
 
-  /** Price, converted to base asset decimals. */
+  /** Price where decimal adjustment is removed and converted to base asset decimals.
+   *  Intended for performing computation. */
   readonly toDec = computedFn(() => {
-    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
-    );
-
     if (this._decRaw.endsWith(".")) {
-      return new Dec(this._decRaw.slice(0, -1)).quo(
-        multiplicationQuoteOverBase
-      );
+      return this.removeCurrencyDecimals(this._decRaw.slice(0, -1));
     }
-    return new Dec(this._decRaw).quo(multiplicationQuoteOverBase);
+    return this.removeCurrencyDecimals(this._decRaw);
   });
 
   /** Current price adjusted based on base and quote currency decimals. */
@@ -69,18 +73,29 @@ export class PriceConfig {
     return new Dec(this._decRaw);
   });
 
-  /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed. */
+  /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed.
+   *  Includes currency decimals for display. */
   toString() {
     if (new Dec(this._decRaw).isZero()) return this._decRaw;
     return trimZerosFromEnd(this._decRaw);
   }
 
-  addCurrencyDecimals(price: Dec): Dec {
-    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
-    );
+  addCurrencyDecimals(price: Dec | string | number): Dec {
+    price =
+      typeof price === "string" || typeof price === "number"
+        ? new Dec(price)
+        : price;
 
-    return price.mul(multiplicationQuoteOverBase);
+    return price.mul(this.multiplicationQuoteOverBase);
+  }
+
+  removeCurrencyDecimals(price: Dec | string | number): Dec {
+    price =
+      typeof price === "string" || typeof price === "number"
+        ? new Dec(price)
+        : price;
+
+    return price.quo(this.multiplicationQuoteOverBase);
   }
 }
 

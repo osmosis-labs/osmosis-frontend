@@ -12,7 +12,6 @@ import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { CheckBox } from "~/components/control";
-import { InputBox } from "~/components/input";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
@@ -119,47 +118,11 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-4 p-3.5 md:p-2.5">
-          <div className="flex place-content-between items-center rounded-2xl">
-            <span className="md:subtitle2">
-              {t("pools.createPool.swapFee")}
-            </span>
-            <div className="flex items-center gap-4 md:gap-1">
-              <InputBox
-                className="w-44 md:w-20"
-                type="number"
-                inputClassName="text-right text-h6 font-h6 md:subtitle1"
-                currentValue={config.swapFee}
-                onInput={(value) => config.setSwapFee(value)}
-                placeholder=""
-                trailingSymbol="%"
-              />
-            </div>
-          </div>
-          {config.poolType === "stable" && (
-            <div className="flex place-content-between items-center rounded-2xl">
-              <span className="md:subtitle2">
-                {t("pools.createPool.scalingFactorController")}
-              </span>
-              <div className="flex items-center gap-4 md:gap-1">
-                <InputBox
-                  className="w-44 md:w-20"
-                  type="text"
-                  inputClassName="text-right text-h6 font-h6 md:subtitle1"
-                  currentValue={config.scalingFactorControllerAddress}
-                  onInput={(value) =>
-                    config.setScalingFactorControllerAddress(value)
-                  }
-                  placeholder="osmo..."
-                />
-              </div>
-            </div>
-          )}
-        </div>
         <div className="md:caption rounded-xl bg-gradient-negative p-[2px]">
           <div className="flex items-center justify-center gap-2 rounded-xlinset bg-osmoverse-800 p-3.5 md:px-12">
             <CheckBox
-              className="after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-rust-700 after:!bg-transparent checked:after:border-none checked:after:bg-gradient-negative"
+              borderStyles="border-rust-700"
+              backgroundStyles="bg-gradient-negative"
               isOn={config.acknowledgeFee}
               onToggle={() => (config.acknowledgeFee = !config.acknowledgeFee)}
             >

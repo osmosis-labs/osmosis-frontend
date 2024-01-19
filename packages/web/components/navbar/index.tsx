@@ -1,6 +1,8 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -12,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -20,13 +23,14 @@ import ClientOnly from "~/components/client-only";
 import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName } from "~/config";
+import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
 } from "~/hooks";
+import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import {
@@ -35,14 +39,20 @@ import {
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
-import { ExternalLinkModal } from "~/modals/external-links-modal";
+import {
+  ExternalLinkModal,
+  handleExternalLink,
+} from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
+import { getDeepValue } from "~/utils/object";
 import { formatICNSName, getShortAddress } from "~/utils/string";
+import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
@@ -55,7 +65,6 @@ export const NavBar: FunctionComponent<
 > = observer(
   ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
     const {
-      queriesExternalStore,
       navBarStore,
       chainStore: {
         osmosis: { chainId },
@@ -67,8 +76,6 @@ export const NavBar: FunctionComponent<
     const { t } = useTranslation();
 
     const featureFlags = useFeatureFlags();
-
-    const { query } = useRouter();
 
     const {
       isOpen: isSettingsOpen,
@@ -123,6 +130,20 @@ export const NavBar: FunctionComponent<
     const router = useRouter();
     const { isLoading: isWalletLoading } = useWalletSelect();
 
+    /**
+     * Fetches the top announcement banner from the osmosis-labs/fe-content repo
+     * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
+     */
+    const { data: topAnnouncementBannerData } = useQuery({
+      queryKey: ["osmosis-top-announcement-banner"],
+      queryFn: async () =>
+        queryOsmosisCMS<TopAnnouncementBannerResponse>({
+          filePath: "cms/top-announcement-banner.json",
+        }),
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 3, // 3 minutes
+    });
+
     useEffect(() => {
       const handler = () => {
         closeMobileMenuRef.current();
@@ -134,32 +155,47 @@ export const NavBar: FunctionComponent<
 
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
-      if (query[UnverifiedAssetsQueryKey] === "true") {
+      if (router.query[UnverifiedAssetsQueryKey] === "true") {
         onOpenFrontierMigration();
         userSettings
           .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
+    }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
 
-    const account = accountStore.getWallet(chainId);
+    const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
-      account?.walletInfo?.features?.includes("notifications");
-    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      account?.address ?? ""
-    );
+      wallet?.walletInfo?.features?.includes("notifications");
+
+    const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
+      address: wallet?.address ?? "",
+    });
 
     // announcement banner
-    const [_showBanner, setShowBanner] = useLocalStorageState(
-      Announcement ? Announcement?.localStorageKey ?? "" : "",
+    const defaultBannerLocalStorageKey = "banner";
+    const [_showBanner, setShowBanner] = useLocalStorage(
+      topAnnouncementBannerData?.banner?.localStorageKey ??
+        defaultBannerLocalStorageKey,
       true
     );
 
+    const isBannerWithinDateRange =
+      topAnnouncementBannerData?.banner &&
+      (topAnnouncementBannerData.banner.startDate ||
+        topAnnouncementBannerData.banner.endDate)
+        ? dayjs().isBetween(
+            topAnnouncementBannerData.banner.startDate,
+            topAnnouncementBannerData.banner.endDate
+          )
+        : true; // if no start and end date, show banner always
+
     const showBanner =
+      featureFlags.topAnnouncementBanner &&
       _showBanner &&
-      Announcement &&
-      (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+      !!topAnnouncementBannerData &&
+      Boolean(topAnnouncementBannerData?.banner) &&
+      isBannerWithinDateRange;
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
@@ -202,7 +238,7 @@ export const NavBar: FunctionComponent<
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      if (!account) return;
+                      if (!wallet) return;
                       onOpenNotifi();
                       closeMobileMainMenu();
                     },
@@ -274,26 +310,28 @@ export const NavBar: FunctionComponent<
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-            <div className="group">
-              <a href="https://pro.osmosis.zone">
-                <Button
-                  className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
-                  mode="icon-primary"
-                  size="unstyled"
-                  style={{ maxWidth: "180px" }}
-                  onClick={handleTradeClicked}
-                >
-                  <Image
-                    className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
-                    height={24}
-                    src="/images/tfm-logo.png"
-                    width={24}
-                    alt="TFM Logo"
-                  />
-                  {t("menu.trade")}
-                </Button>
-              </a>
-            </div>
+            {featureFlags.tfmProTradingNavbarButton && (
+              <div className="group">
+                <a href="https://pro.osmosis.zone">
+                  <Button
+                    className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                    mode="icon-primary"
+                    size="unstyled"
+                    style={{ maxWidth: "180px" }}
+                    onClick={handleTradeClicked}
+                  >
+                    <Image
+                      className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
+                      height={24}
+                      src="/images/tfm-logo.png"
+                      width={24}
+                      alt="TFM Logo"
+                    />
+                    {t("menu.trade")}
+                  </Button>
+                </a>
+              </div>
+            )}
             {featureFlags.upgrades && userUpgrades.hasUpgradeAvailable && (
               <div className="relative">
                 {showUpgradesFyi && (
@@ -370,7 +408,13 @@ export const NavBar: FunctionComponent<
               onRequestClose={onCloseSettings}
             />
             <ClientOnly>
-              <SkeletonLoader isLoaded={!isWalletLoading}>
+              <SkeletonLoader
+                isLoaded={
+                  wallet?.isWalletConnected
+                    ? !isWalletLoading && !isLoadingICNSQuery
+                    : !isWalletLoading
+                }
+              >
                 <WalletInfo
                   className="md:hidden"
                   icnsName={icnsQuery?.primaryName}
@@ -390,8 +434,8 @@ export const NavBar: FunctionComponent<
         />
         {showBanner && (
           <AnnouncementBanner
-            {...Announcement!}
             closeBanner={() => setShowBanner(false)}
+            bannerResponse={topAnnouncementBannerData}
           />
         )}
         <FrontierMigrationModal
@@ -417,7 +461,6 @@ const WalletInfo: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
-    navBarStore,
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
@@ -429,11 +472,23 @@ const WalletInfo: FunctionComponent<
   const wallet = accountStore.getWallet(chainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
+  const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
+    api.edge.assets.getAsset.useQuery(
+      {
+        findMinDenomOrSymbol: "OSMO",
+        userOsmoAddress: wallet?.address as string,
+      },
+      {
+        enabled:
+          Boolean(wallet?.address) && typeof wallet?.address === "string",
+      }
+    );
+
   return (
     <div className={className}>
       {!walletConnected ? (
         <Button
-          className="!h-10 w-40 lg:w-36 md:w-full"
+          className="!h-[42px] w-40 lg:w-36 md:w-full"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect(chainId);
@@ -442,67 +497,117 @@ const WalletInfo: FunctionComponent<
           <span className="button mx-auto">{t("connectWallet")}</span>
         </Button>
       ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenProfile();
-          }}
-          className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-        >
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-            {profileStore.currentAvatar === "ammelia" ? (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-ammelia.png"
-                height={32}
-                width={32}
-              />
-            ) : (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-woz.png"
-                height={32}
-                width={32}
-              />
-            )}
-          </div>
+        <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProfile();
+            }}
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+          >
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+              {profileStore.currentAvatar === "ammelia" ? (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-ammelia.png"
+                  height={32}
+                  width={32}
+                />
+              ) : (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-woz.png"
+                  height={32}
+                  width={32}
+                />
+              )}
+            </div>
 
-          <div className="flex w-full  flex-col truncate text-right leading-tight">
-            <span className="body2 font-bold leading-4" title={icnsName}>
-              {Boolean(icnsName)
-                ? formatICNSName(icnsName)
-                : getShortAddress(wallet?.address!)}
-            </span>
-            <span className="caption font-medium tracking-wider text-osmoverse-200">
-              {navBarStore.walletInfo.balance.toString()}
-            </span>
-          </div>
-        </button>
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span className="body2 font-bold leading-4" title={icnsName}>
+                {Boolean(icnsName)
+                  ? formatICNSName(icnsName)
+                  : getShortAddress(wallet?.address!)}
+              </span>
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
+                {userOsmoAsset?.amount
+                  ?.trim(true)
+                  .maxDecimals(2)
+                  .shrink(true)
+                  .upperCase(true)
+                  .toString()}
+              </span>
+            </div>
+          </button>
+        </SkeletonLoader>
       )}
     </div>
   );
 });
 
-const AnnouncementBanner: FunctionComponent<
-  typeof Announcement & { closeBanner: () => void }
-> = ({
-  enTextOrLocalizationPath,
-  link,
-  isWarning,
-  persistent,
-  closeBanner,
-  bg,
-}) => {
-  const { t } = useTranslation();
+interface TopAnnouncementBannerResponse {
+  isChainHalted: boolean;
+  banner: {
+    enTextOrLocalizationPath: string;
+    localStorageKey?: string;
+    pageRoute?: string;
+    link?: {
+      enTextOrLocalizationKey: string;
+      url: string;
+      isExternal: boolean;
+    };
+    isWarning?: boolean;
+    persistent?: boolean;
+    bg?: string;
+    startDate?: string;
+    endDate?: string;
+  } | null;
+  localization?: Record<string, Record<string, any>>;
+}
+
+const AnnouncementBanner: FunctionComponent<{
+  closeBanner: () => void;
+  bannerResponse: TopAnnouncementBannerResponse;
+}> = ({ closeBanner, bannerResponse }) => {
+  const { t, language } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
     onOpen: onOpenLeavingOsmosis,
   } = useDisclosure();
+  const router = useRouter();
 
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
+  const isChainHalted = bannerResponse?.isChainHalted;
+  const banner: TopAnnouncementBannerResponse["banner"] | null | undefined =
+    isChainHalted
+      ? {
+          enTextOrLocalizationPath: t("app.banner.chainHalted"),
+          isWarning: true,
+        }
+      : bannerResponse?.banner;
+
+  if (!banner) return null;
+
+  // If the banner has a pageRoute, only show it on that page
+  if (banner.pageRoute && router.pathname !== banner.pageRoute) return null;
+
+  const { isWarning, bg, link, persistent } = banner;
+
+  const currentLanguageTranslations = bannerResponse?.localization?.[language];
+
+  const linkText =
+    getDeepValue<string>(
+      currentLanguageTranslations,
+      link?.enTextOrLocalizationKey
+    ) ??
+    link?.enTextOrLocalizationKey ??
+    "Click here to learn more";
+
+  const handleLeaveClick = () =>
+    handleExternalLink({
+      url: link?.url ?? "",
+      openModal: onOpenLeavingOsmosis,
+    });
 
   return (
     <div
@@ -516,11 +621,18 @@ const AnnouncementBanner: FunctionComponent<
       )}
     >
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(enTextOrLocalizationPath)}</span>
+        <span>
+          {isChainHalted
+            ? banner?.enTextOrLocalizationPath ?? ""
+            : getDeepValue<string>(
+                currentLanguageTranslations,
+                banner?.enTextOrLocalizationPath
+              ) ?? banner?.enTextOrLocalizationPath}
+        </span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
-              <button className="underline" onClick={onOpenLeavingOsmosis}>
+              <button className="underline" onClick={handleLeaveClick}>
                 {linkText}
               </button>
             ) : (

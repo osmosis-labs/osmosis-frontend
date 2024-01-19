@@ -1,5 +1,6 @@
 export * from "./data";
 export * from "./language";
+export * from "./staking/use-get-apr";
 export * from "./ui-config";
 export * from "./use-amplitude-analytics";
 export * from "./use-boolean-with-window-event";
@@ -13,9 +14,7 @@ export * from "./use-nav-bar";
 export * from "./use-previous-when";
 export * from "./user-settings";
 export * from "./wallet-select";
-export * from "./window/use-background-refresh";
 export * from "./window/use-localstorage-state";
-export * from "./window/use-token-swap-query-params";
 export * from "./window/use-visibility-state";
 export * from "./window/use-window-key-actions";
 export * from "./window/use-window-scroll";

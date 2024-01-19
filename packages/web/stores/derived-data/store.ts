@@ -6,9 +6,9 @@ import {
   IPriceStore,
   ObservableQueryActiveGauges,
   ObservableQueryClPoolAvgAprs,
+  ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
-  ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
@@ -36,7 +36,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
+      queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,

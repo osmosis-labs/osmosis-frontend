@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 
 class SimulateTxError extends Error {
   code: string;

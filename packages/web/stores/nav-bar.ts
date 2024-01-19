@@ -1,11 +1,10 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
-import { computed, makeObservable, observable, runInAction } from "mobx";
+import { makeObservable, observable, runInAction } from "mobx";
 import { ReactNode } from "react";
 
 export type CallToAction = {
@@ -45,28 +44,5 @@ export class NavBarStore {
   /** Use `useEffect` hook to apply currrent page's CTAs. */
   set callToActionButtons(buttons: CallToAction[]) {
     runInAction(() => (this._callToActionButtons = buttons));
-  }
-
-  @computed
-  get walletInfo(): {
-    name: string;
-    logoUrl: string;
-    balance: CoinPretty;
-  } {
-    const wallet = this.accountStore.getWallet(this.chainId);
-
-    const balance = this.queriesStore
-      .get(this.chainId)
-      .queryBalances.getQueryBech32Address(wallet?.address ?? "")
-      .stakable.balance.trim(true)
-      .maxDecimals(2)
-      .shrink(true)
-      .upperCase(true);
-
-    return {
-      name: wallet?.walletName ?? "",
-      logoUrl: wallet?.walletInfo.logo ?? "/",
-      balance,
-    };
   }
 }

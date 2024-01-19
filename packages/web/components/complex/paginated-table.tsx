@@ -11,13 +11,22 @@ import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
-type Props = {
+import { getPoolLink } from "./all-pools-table-v1";
+
+function getPoolTypeTarget(poolType: string) {
+  if (poolType === "transmuter") {
+    return "_blank";
+  }
+  return "";
+}
+
+interface PaginatedTableProps {
   mobileSize?: number;
   paginate: () => void;
   size: number;
   table: Table<ObservablePoolWithMetric>;
   topOffset: number;
-};
+}
 
 export const PaginatedTable = ({
   mobileSize,
@@ -25,7 +34,7 @@ export const PaginatedTable = ({
   size,
   table,
   topOffset,
-}: Props) => {
+}: PaginatedTableProps) => {
   const { isMobile } = useWindowSize();
 
   const { rows } = table.getRowModel();
@@ -76,10 +85,12 @@ export const PaginatedTable = ({
       >
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+          const target = getPoolTypeTarget(row.original.queryPool.type);
           return (
             <Link
               key={row.original.queryPool.id}
-              href={`/pool/${row.original.queryPool.id}`}
+              href={getPoolLink(row.original.queryPool)}
+              target={target}
               passHref
               legacyBehavior
             >
@@ -153,18 +164,24 @@ export const PaginatedTable = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+          const target = getPoolTypeTarget(row.original.queryPool.type);
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
+              onClick={() => {
+                target != ""
+                  ? window.open(getPoolLink(row.original.queryPool), target)
+                  : router.push(getPoolLink(row.original.queryPool));
+              }}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>
                     <Link
-                      href={`/pool/${row.original.queryPool.id}`}
+                      href={getPoolLink(row.original.queryPool)}
                       key={virtualRow.index}
+                      target={target}
                       passHref
                       onClick={(e) => e.stopPropagation()}
                     >

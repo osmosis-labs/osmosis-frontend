@@ -1,4 +1,3 @@
-export * from "./add-concentrated-liquidity";
 export * from "./add-liquidity";
 export * from "./base";
 export * from "./remove-concentrated-liquidity";

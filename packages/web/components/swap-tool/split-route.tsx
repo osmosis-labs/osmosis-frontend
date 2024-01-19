@@ -71,7 +71,7 @@ export const SplitRoute: FunctionComponent<
         </button>
       </div>
 
-      {isOpen && (
+      {isOpen && !isLoading && (
         <div className="flex flex-col gap-2">
           {splitWithPercentages.map((route) => (
             <RouteLane
@@ -103,7 +103,7 @@ const RouteLane: FunctionComponent<{
       <div className="flex shrink-0 items-center text-center">
         {route.percentage && (
           <span className="subtitle1 px-2 text-osmoverse-200">
-            {route.percentage.maxDecimals(0).toString()}
+            {route.percentage.inequalitySymbol(false).maxDecimals(0).toString()}
           </span>
         )}
         <div className="h-7">
@@ -138,124 +138,113 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
   />
 );
 
-const Pools: FunctionComponent<Route> = observer(
-  ({ pools, tokenInDenom, tokenOutDenoms, effectiveSwapFees }) => {
-    const { isMobile } = useWindowSize();
+const Pools: FunctionComponent<Route> = observer(({ pools }) => {
+  const { isMobile } = useWindowSize();
 
-    const { chainStore, queriesStore } = useStore();
-    const { t } = useTranslation();
-    /** Share same tippy instance to handle animation */
-    const [source, target] = useSingleton();
+  const { t } = useTranslation();
+  /** Share same tippy instance to handle animation */
+  const [source, target] = useSingleton();
 
-    const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
-    const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
-      .osmosis!;
+  return (
+    <>
+      <Tooltip
+        singleton={source}
+        moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
+        content=""
+      />
+      <div className="absolute mx-4 flex w-full justify-evenly">
+        {pools.map(({ id, type, inCurrency, outCurrency, swapFee }, index) => {
+          const fee = swapFee ? new RatePretty(swapFee) : undefined;
+          if (!inCurrency || !outCurrency) return null;
 
-    return (
-      <>
-        <Tooltip
-          singleton={source}
-          moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
-          content=""
-        />
-        <div className="absolute mx-4 flex w-full justify-evenly">
-          {pools.map(({ id }, index) => {
-            const fee = new RatePretty(effectiveSwapFees[index]);
-            const inCurrency =
-              index === 0
-                ? osmosisChain.findCurrency(tokenInDenom)
-                : osmosisChain.findCurrency(tokenOutDenoms[index - 1]);
-            const outCurrency = osmosisChain.findCurrency(
-              tokenOutDenoms[index]
-            );
-            if (!inCurrency || !outCurrency) return null;
+          const currencies = [inCurrency, outCurrency];
 
-            const queryPool = osmosisQueries.queryPools.getPool(id);
-
-            const currencies = [inCurrency, outCurrency];
-
-            return (
-              <Tooltip
-                key={id}
-                singleton={target}
-                content={
-                  <div className="space-y-3">
-                    <div className="flex space-x-2">
-                      <div className="flex">
-                        <div className="h-[20px] w-[20px]">
-                          <DenomImage currency={currencies[0]} size={20} />
-                        </div>
-                        <div className="-ml-3 h-[20px] w-[20px]">
-                          <DenomImage currency={currencies[1]} size={20} />
-                        </div>
+          return (
+            <Tooltip
+              key={`${id}${index}`}
+              singleton={target}
+              content={
+                <div className="space-y-3">
+                  <div className="flex space-x-2">
+                    <div className="flex">
+                      <div className="h-[20px] w-[20px]">
+                        <DenomImage currency={currencies[0]} size={20} />
                       </div>
-
-                      <p className="space-x-1.5 text-base font-semibold">
-                        <span>{currencies[0].coinDenom}</span>
-                        <span className="text-osmoverse-400">/</span>
-                        <span>{currencies[1].coinDenom}</span>
-                      </p>
+                      <div className="-ml-3 h-[20px] w-[20px]">
+                        <DenomImage currency={currencies[1]} size={20} />
+                      </div>
                     </div>
 
-                    <div className="flex justify-center space-x-1 text-center text-xs font-medium">
+                    <p className="space-x-1.5 text-base font-semibold">
+                      <span>{currencies[0].coinDenom}</span>
+                      <span className="text-osmoverse-400">/</span>
+                      <span>{currencies[1].coinDenom}</span>
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center space-x-1 text-center text-xs font-medium">
+                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
+                      {t("swap.pool", { id })}
+                    </p>
+                    {fee && (
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.pool", { id })}
-                      </p>
-                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {queryPool?.type === "concentrated"
+                        {type === "concentrated"
                           ? t("swap.routerTooltipSpreadFactor")
                           : t("swap.routerTooltipFee")}{" "}
                         {fee.maxDecimals(2).toString()}
                       </p>
-                    </div>
-                    {(queryPool?.type === "concentrated" ||
-                      queryPool?.type === "stable") && (
-                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
-                        {queryPool.type === "concentrated" && (
-                          <Icon id="lightning-small" height={16} width={16} />
-                        )}
-                        {queryPool?.type === "stable" && (
-                          <Image
-                            alt="stable-pool"
-                            src="/icons/stableswap-pool.svg"
-                            width={16}
-                            height={16}
-                          />
-                        )}
-                        {t(
-                          queryPool?.type === "concentrated"
-                            ? "clPositions.supercharged"
-                            : "pool.stableswapEnabled"
-                        )}
-                      </div>
                     )}
                   </div>
-                }
-              >
-                <div className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700">
-                  <div className="flex">
-                    <div className="h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[0]} />
+                  {(type === "concentrated" ||
+                    type === "stable" ||
+                    type === "transmuter") && (
+                    <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                      {type === "concentrated" && (
+                        <Icon id="lightning-small" height={16} width={16} />
+                      )}
+                      {(type === "stable" || type === "transmuter") && (
+                        <Image
+                          alt="stable-pool"
+                          src="/icons/stableswap-pool.svg"
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      {t(
+                        type === "concentrated"
+                          ? "clPositions.supercharged"
+                          : type === "transmuter"
+                          ? "pool.transmuter"
+                          : "pool.stableswapEnabled"
+                      )}
                     </div>
-                    <div className="-ml-3 h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[1]} />
-                    </div>
-                  </div>
-
-                  {pools.length < 4 && !isMobile && (
-                    <p className="text-caption">
-                      {fee.maxDecimals(1).toString()}
-                    </p>
                   )}
                 </div>
-              </Tooltip>
-            );
-          })}
-        </div>
-      </>
-    );
-  }
-);
+              }
+            >
+              <div className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700">
+                <div className="flex">
+                  <div className="h-[20px] w-[20px]">
+                    <DenomImage currency={currencies[0]} />
+                  </div>
+                  <div className="-ml-3 h-[20px] w-[20px]">
+                    <DenomImage currency={currencies[1]} />
+                  </div>
+                </div>
+
+                {pools.length < 4 && !isMobile && fee && (
+                  <p className="text-caption">
+                    {fee.maxDecimals(1).toString()}
+                  </p>
+                )}
+              </div>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </>
+  );
+});
 
 const DenomImage: FunctionComponent<{
   currency: AppCurrency | Currency;

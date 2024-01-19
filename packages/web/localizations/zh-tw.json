@@ -116,7 +116,9 @@
       "externalLink": "您現在正離開Osmosis應用程式去",
       "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
       "externalLinkModalTitle": "離開Osmosis",
-      "goToSite": "前往網站"
+      "goToSite": "前往網站",
+      "doNotShowAgain": "不要再顯示此內容",
+      "chainHalted": "Osmosis 鏈停止，交易暫時停用。"
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "轉移歷史"
     },
     "ibcTransfer": {
+      "buttonAdd": "添加",
       "buttonEdit": "編輯",
       "buttonEnter": "輸入",
       "channelCongestedDeposit": "存入 (通道擁擠中)",
@@ -208,6 +211,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隱藏結餘為零的項目",
+      "hideBalances": "隱藏餘額",
       "preTransfer": {
         "currentBal": "目前結餘",
         "deposit": "存入",
@@ -220,7 +224,8 @@
         "symbol": "符號"
       },
       "title": "所有資產",
-      "withdrawButton": "轉出"
+      "withdrawButton": "轉出",
+      "activate": "啟用"
     },
     "totalAssets": "總資產",
     "transfer": {
@@ -228,6 +233,7 @@
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "givePermission": "授予使用令牌的權限",
+      "enterAddress": "{network}位址",
       "errors": {
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
@@ -236,7 +242,9 @@
         "seeRequest": "在{walletName}中檢視請求",
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。"
+        "transactionError": "獲取交易時出錯。請再試一次。",
+        "invalidAddress": "無效地址",
+        "missingAddress": "缺少地址"
       },
       "from": "從",
       "loading": "載入中",
@@ -245,7 +253,12 @@
       "to": "到",
       "transferFee": "交易費",
       "waitTime": "{minutes} 分鐘",
-      "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同"
+      "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同",
+      "expectedOutput": "預期輸出",
+      "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
+      "priceImpact": "價格影響",
+      "sending": "正在發送...",
+      "transferAnyway": "無論如何轉移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",
@@ -279,6 +292,11 @@
       "undergoAudit": "正在接受審核（預計於 2024 年 1 月完成）。",
       "warning": "警告：",
       "loading": "載入中..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "啟動未驗證資產",
+      "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
+      "reminder": "您始終可以在設定模式中停用此設定。"
     }
   },
   "buyTokens": "購買代幣",
@@ -286,7 +304,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
       "kadoSubtitle": "支援OSMO, USDC",
-      "transakSubtitle": "支援OSMO"
+      "transakSubtitle": "支援OSMO",
+      "onrampMoneySubtitle": "支援OSMO、USDC"
     },
     "incentive": {
       "mobileTitle": "獎勵",
@@ -317,6 +336,7 @@
       "stable": "穩定兌換",
       "weighted": "加權",
       "concentrated": "集中流動性",
+      "transmuter": "轉換器",
       "internal": "內部激勵",
       "external": "外部激勵",
       "superfluid": "超流體",
@@ -442,7 +462,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
-    "7davg": "(7日平均)",
     "amountDaysUnbonding": "{numDays} 天解綁",
     "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
     "APR": "APR",
@@ -458,7 +477,7 @@
     "collapseDetails": "收起詳情",
     "commission": "佣金",
     "currentDailyEarn": "你現在正賺取",
-    "dailyEarnAmount": "{amount} / 日",
+    "dailyEarnAmount": "{amount} /天",
     "day": "日",
     "delegated": "已質押",
     "details": "詳情",
@@ -470,7 +489,6 @@
     "learnMore": "了解更多",
     "level": "等級 {level}",
     "liquidity": "流動性",
-    "numDaysRemaining": "剩下{numDays}日",
     "putAssetsToWork": "讓你的資產為你工作",
     "putAssetsToWorkCaption": "將你的資產加入到此流動性池以解鎖誘人的獎勵，選擇的解鎖時間愈長，賺得愈多",
     "rewardDistribution": "獎勵會被分發給所有流動性提供者",
@@ -478,6 +496,7 @@
     "sharesAvailableIn": "距份額解鎖還有",
     "showDetails": "顯示詳情",
     "stableswapEnabled": "穩定交換",
+    "transmuter": "轉換器",
     "superfluidEarnMore": "要賺取額外 {rate}，啟用超流體質押",
     "superfluidEnabled": "超流",
     "superfluidStaking": "超流體質押",
@@ -538,7 +557,20 @@
     "myPools": "我的流動性池",
     "poolId": "流動性池 #{id}",
     "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發還有"
+    "rewardDistribution": "距下次獎勵分發還有",
+    "aprBreakdown": {
+      "swapFees": "掉期費用",
+      "boost": "促進",
+      "superfluid": "超流體",
+      "externalBoost": "外部升壓",
+      "total": "總年利率",
+      "explainer": {
+        "title": "年利率是如何計算的？",
+        "p1": "所有年利率均為估計值。它們是透過池中流動性的平均年利率來計算的。",
+        "p2": "在超級礦池中，大多數用戶將獲得較低的獎勵。這是因為職位更集中，能夠獲得更多的激勵。",
+        "p3": "為了保持估計保守，所有年利率均除以 3。"
+      }
+    }
   },
   "profile": {
     "balance": "結餘",
@@ -559,10 +591,13 @@
     "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
-    "titleLanguage": "語言"
+    "titleLanguage": "語言",
+    "titleHideBalances": "屏蔽餘額以保護隱私",
+    "hideBalances": "隱藏餘額"
   },
   "stake": {
     "available": "可用的",
+    "staked": "固定",
     "MAX": "最大限度",
     "validatorHeader": "驗證者小隊",
     "stake": "OSMO 股份",
@@ -572,6 +607,7 @@
     "amount": "數量",
     "availableIn": "可用於",
     "day": "天",
+    "days": "天",
     "month": "月",
     "dashboard": "儀表板",
     "dashboardStakedOsmo": "固定 OSMO",
@@ -590,9 +626,7 @@
     "unbondingSubtext": "此期間過後，你可以在資產頁籤下訪問你的OSMO",
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
-    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
-    "collectRewardsTooltipDisabled": "你的獎勵太低，無法領取，請等你有更多的獎勵以覆蓋手續費後再試。",
-    "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
+    "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
     "isAPRTooHighTooltip": "此驗證器收取了異常高的傭金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
@@ -644,6 +678,20 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
+    },
+    "introModal": {
+      "callout": "新功能",
+      "title": "Osmosis 質押",
+      "description": {
+        "1": "質押是利用資產賺錢最簡單的方法之一。現在您可以將您的 OSMO 放在 Osmosis 上。",
+        "2": "賺取高達",
+        "3": "每年都有質押獎勵！",
+        "4": "並付諸實踐",
+        "5": "讓您可用的{displayBalance}發揮作用並",
+        "button": "買一些OSMO"
+      },
+      "asterisk": "* 質押獎勵價值受價格和年利率波動影響。",
+      "button": "開始質押"
     }
   },
   "superfluidValidator": {
@@ -735,10 +783,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "margined": {
-    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
-    "link": "在这里探索 $sqOSMO 和更多内容！"
-  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -789,23 +833,21 @@
   },
   "tokenInfos": {
     "relatedAssets": "相關資產",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "透過{denom}賺錢",
+    "explorePools": "探索泳池",
+    "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
+    "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
+    "provideLiquidity": "提供流動性並賺取費用和掉期費用",
+    "yourBalance": "您的餘額",
     "aboutDenom": "關於{name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "查看{name}",
+    "ariaViewOn": "查看{name}",
+    "collapse": "坍塌",
     "followTheConversation": "關注對話",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "全部"
     },
     "watchlist": "注意列表",
@@ -813,8 +855,61 @@
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
-    "backButton": "所有代幣",
-    "ariaBackButton": "All tokens back button",
-    "noData": "ND"
-  }
+    "noData": "ND",
+    "buyToken": "購買{coinDenom}",
+    "staking": "質押",
+    "liquidityInOSMOPools": "{number} {denom}池中的流動性"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "滲透更新！",
+    "seeWhatsNew": "看看有什麼新鮮事"
+  },
+  "unlistedAssetsEnabled": "啟用非上市資產",
+  "unlistedAssetsDisabled": "非上市資產已停用",
+  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "earnPage": {
+    "title": "賺",
+    "position": "位置",
+    "positions": "職位",
+    "allocation": "分配",
+    "tokensCount": "{number}標記",
+    "strategiesCount": "{number}策略",
+    "value": "價值",
+    "method": "方法",
+    "platform": "平台",
+    "scrollToSeeMore": "捲動查看更多",
+    "discoverStrategies": "發現策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "apy": "平均年產量",
+    "daily": "日常的",
+    "reward": "報酬",
+    "lock": "鎖",
+    "days": "天",
+    "risk": "風險",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "platforms": "平台",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "鎖定時間",
+    "specialTokens": "特殊代幣",
+    "filters": "過濾器",
+    "resetFilters": "重置過濾器",
+    "saveFilters": "保存過濾器",
+    "rewards": "獎勵",
+    "estimatedInYearlyRewards": "預計每年獎勵",
+    "availableToClaim": "可索賠",
+    "claimAllRewards": "領取所有獎勵",
+    "join": "加入",
+    "tokenFilterOptions": {
+      "my": "我的代幣",
+      "all": "所有代幣"
+    },
+    "rewardTypes": {
+      "all": "全部",
+      "single": "單身的",
+      "multi": "多"
+    }
+  },
+  "disclaimer": "免責聲明"
 }

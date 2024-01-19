@@ -1,8 +1,10 @@
 import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
-import { sha256 } from "sha.js";
+import {
+  getLastIbcTrace,
+  getSourceDenomFromAssetList,
+} from "@osmosis-labs/utils";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -33,28 +35,32 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       chainInfoInner.registerCurrencyRegistrar(this.unsafeRegisterIbcCurrency);
     });
 
-    // calculate the hash based on the given IBC assets' channel id and coin minimal denom
+    // calculate the hash based on the given IBC assets' channel id and coin source denom
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
     const ibcCache = new Map<string, OriginChainCurrencyInfo>();
     assets
-      .filter((asset) => asset.traces.length > 0) // Filter Osmosis assets
+      .filter((asset) =>
+        asset.traces.some(
+          (trace) => trace.type === "ibc" || trace.type === "ibc-cw20"
+        )
+      ) // Filter Osmosis assets
       .forEach((ibcAsset) => {
-        const lastTrace = ibcAsset.traces[ibcAsset.traces.length - 1];
+        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
         const ibcDenom = ibcAsset.base; // The IBC denom will also be the multihop hash when needed
 
-        if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+        if (!ibcTrace) {
           throw new Error(
-            `Unknown trace type ${lastTrace?.type}. Asset ${ibcAsset.symbol}`
+            `Invalid IBC asset config: ${JSON.stringify(ibcAsset)}`
           );
         }
 
-        const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
+        const sourceDenom = getSourceDenomFromAssetList(ibcAsset);
 
-        const channels = lastTrace.chain.path.match(/channel-(\d+)/g);
+        const channels = ibcTrace.chain.path.match(/channel-(\d+)/g);
         const paths = [];
 
         if (!channels) {
-          throw new Error(`Invalid IBC path ${lastTrace.chain.path}`);
+          throw new Error(`Invalid IBC path ${ibcTrace.chain.path}`);
         }
 
         for (const channel of channels) {
@@ -64,7 +70,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           });
         }
 
-        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, minimalDenom, paths]);
+        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, sourceDenom, paths]);
       });
 
     this._configuredIbcHashToOriginChainAndCoinMinimalDenom = ibcCache;
@@ -118,21 +124,3 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     }
   };
 }
-
-export function makeIBCMinimalDenom(
-  sourceChannelId: string,
-  coinMinimalDenom: string
-): string {
-  return (
-    "ibc/" +
-    Buffer.from(
-      sha256_fn(Buffer.from(`transfer/${sourceChannelId}/${coinMinimalDenom}`))
-    )
-      .toString("hex")
-      .toUpperCase()
-  );
-}
-
-const sha256_fn = (data: Uint8Array): Uint8Array => {
-  return new Uint8Array(new sha256().update(data).digest());
-};

@@ -1,12 +1,12 @@
 /* eslint-disable */
 import { ObservableQueryPool } from "../../queries-external/pools";
 import {
-  chainId,
   RootStore,
   waitAccountLoaded,
   getLatestQueryPool,
   initAccount,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Exit Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
@@ -14,8 +14,8 @@ describe("Exit Pool Tx", () => {
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
@@ -51,11 +51,11 @@ describe("Exit Pool Tx", () => {
     );
 
     // get latest pool
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   test("should fail with 0 share in amount", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       account?.osmosis.sendExitPoolMsg(queryPool!.id, "0")
@@ -63,7 +63,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("succeed with 50 share in amount without slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
@@ -78,7 +78,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("succeed with 50 share in amount with slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
@@ -93,7 +93,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("should fail with more max share in amount than in account", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
