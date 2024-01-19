@@ -288,7 +288,7 @@ export const AllPoolsTable: FunctionComponent<{
           )}
           {isLoading && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={columns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -315,7 +315,7 @@ export const AllPoolsTable: FunctionComponent<{
           })}
           {isFetchingNextPage && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={columns.length}>
                 <Spinner />
               </td>
             </tr>

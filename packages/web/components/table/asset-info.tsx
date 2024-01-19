@@ -288,7 +288,7 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {isLoading && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={columns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -310,7 +310,7 @@ export const AssetsInfoTable: FunctionComponent<{
           ))}
           {isFetchingNextPage && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={columns.length}>
                 <Spinner />
               </td>
             </tr>
