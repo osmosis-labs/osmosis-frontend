@@ -65,6 +65,7 @@
 import { NextPage } from "next";
 import { useState } from "react";
 
+import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { CheckBox } from "~/components/control/checkbox";
 import { Radio } from "~/components/control/radio";
 import { useTranslation } from "~/hooks";
@@ -92,11 +93,10 @@ const Components: NextPage = () => {
   );
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
       <h4>Control</h4>
-      <div className="flex flex-col gap-2">
-        <h5>Checkbox</h5>
+      <GenericMainCard title="Checkbox">
         <Component title="Regular">
           <CheckBox isOn={checked} onToggle={handleToggle} />
         </Component>
@@ -149,9 +149,8 @@ const Components: NextPage = () => {
             onToggle={handleToggle}
           />
         </Component>
-      </div>
-      <h4>Radio</h4>
-      <div className="flex flex-col gap-2">
+      </GenericMainCard>
+      <GenericMainCard title="Radio">
         <Component title="Regular">
           <>
             <Radio
@@ -174,7 +173,7 @@ const Components: NextPage = () => {
             disabled
           />
         </Component>
-      </div>
+      </GenericMainCard>
     </div>
   );
 };
