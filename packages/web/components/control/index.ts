@@ -8,6 +8,5 @@ export * from "./slider";
 export * from "./sort-menu";
 export * from "./stake-tab";
 export * from "./switch";
-export * from "./tab-box";
 export * from "./token-select";
 export * from "./types";

@@ -19,7 +19,7 @@ const Card: React.FC<{
 }> = ({ title, children }) => (
   <div className="flex flex-col gap-4 rounded-[32px] bg-osmoverse-850 p-6">
     <h6 className="text-center">{title}</h6>
-    <div className="flex w-full items-start justify-start gap-4">
+    <div className="flex w-full flex-wrap items-start justify-start gap-4">
       {children}
     </div>
   </div>
@@ -27,16 +27,22 @@ const Card: React.FC<{
 
 const Components: NextPage = () => {
   const [checked, setChecked] = useState(false);
+  const handleCheckboxToggle = () => setChecked(!checked);
+
   const [radio, setRadio] = useState("a");
+
   const [checkboxSelect, setCheckboxSelect] = useState(["1"]);
+
   const [slider, setSlider] = useState(0);
+
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+
   const [stakeTab, setStakeTab] = useState("stake");
+
   const [selectedTimeFrame, setSelectedTimeFrame] =
     useState<CommonPriceChartTimeFrame>("1D");
-  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
 
-  const handleToggle = () => setChecked(!checked);
+  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
 
   const Component = ({
     title,
@@ -57,25 +63,29 @@ const Components: NextPage = () => {
       <h4>Control</h4>
       <Card title="Checkbox">
         <Component title="Regular">
-          <CheckBox isOn={checked} onToggle={handleToggle} />
+          <CheckBox isOn={checked} onToggle={handleCheckboxToggle} />
         </Component>
 
         <Component title="Indeterminate">
           <CheckBox
             isOn={checked}
-            onToggle={handleToggle}
+            onToggle={handleCheckboxToggle}
             isIndeterminate={true}
           />
         </Component>
 
         <Component title="Disabled">
-          <CheckBox disabled={true} isOn={checked} onToggle={handleToggle} />
+          <CheckBox
+            disabled={true}
+            isOn={checked}
+            onToggle={handleCheckboxToggle}
+          />
         </Component>
 
         <Component title="With Children">
           <CheckBox
             isOn={checked}
-            onToggle={handleToggle}
+            onToggle={handleCheckboxToggle}
             isIndeterminate={true}
           >
             <div>child component</div>
@@ -87,7 +97,7 @@ const Components: NextPage = () => {
             borderStyles="border-superfluid"
             backgroundStyles="bg-superfluid"
             isOn={checked}
-            onToggle={handleToggle}
+            onToggle={handleCheckboxToggle}
           />
         </Component>
 
@@ -96,7 +106,7 @@ const Components: NextPage = () => {
             borderStyles="border-rust-700"
             backgroundStyles="bg-gradient-negative"
             isOn={checked}
-            onToggle={handleToggle}
+            onToggle={handleCheckboxToggle}
           />
         </Component>
 
@@ -105,7 +115,7 @@ const Components: NextPage = () => {
             backgroundStyles="bg-wosmongton-200"
             borderStyles="border-wosmongton-200"
             isOn={checked}
-            onToggle={handleToggle}
+            onToggle={handleCheckboxToggle}
           />
         </Component>
       </Card>
@@ -204,13 +214,124 @@ const Components: NextPage = () => {
           />
         </div>
       </Card>
+
+      <h4>Buttons</h4>
+      <Card title="Buttons">
+        <Component title="Regular">
+          <Button onClick={() => console.log("clicked")}>Click</Button>
+        </Component>
+        <Component title="Disabled">
+          <Button disabled onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Primary">
+          <Button mode="primary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Primary Bullish">
+          <Button mode="primary-bullish" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Primary Warning">
+          <Button mode="primary-warning" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Secondary">
+          <Button mode="secondary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Secondary Bullish">
+          <Button
+            mode="secondary-bullish"
+            onClick={() => console.log("clicked")}
+          >
+            Click
+          </Button>
+        </Component>
+        <Component title="Tertiary">
+          <Button mode="tertiary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Text">
+          <Button mode="text" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Text White">
+          <Button mode="text-white" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Framed Primary">
+          <Button mode="framed-primary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Framed Secondary">
+          <Button
+            mode="framed-secondary"
+            onClick={() => console.log("clicked")}
+          >
+            Click
+          </Button>
+        </Component>
+        <Component title="Amount">
+          <Button mode="amount" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Special 1">
+          <Button mode="special-1" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Icon Primary">
+          <Button mode="icon-primary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Icon Social">
+          <Button mode="icon-social" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Bullish Special">
+          <Button mode="bullish-special" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Quaternary Modal">
+          <Button
+            mode="quaternary-modal"
+            onClick={() => console.log("clicked")}
+          >
+            Click
+          </Button>
+        </Component>
+        <Component title="Quaternary">
+          <Button mode="quaternary" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+        <Component title="Unstyled">
+          <Button mode="unstyled" onClick={() => console.log("clicked")}>
+            Click
+          </Button>
+        </Component>
+      </Card>
+
       <ul>
         <li>Language Select</li>
         <li>Menu Toggle</li>
         <li>Pool Token Select</li>
         <li>Select Menu</li>
         <li>Sort Menu</li>
-        <li>Tab Box</li>
         <li>Token Select With Drawer</li>
         <li>Token Select</li>
       </ul>
