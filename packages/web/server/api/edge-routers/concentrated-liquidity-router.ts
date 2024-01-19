@@ -9,6 +9,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { getPools } from "~/server/queries/complex/pools";
+import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { queryPositionPerformance } from "~/server/queries/imperator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
@@ -494,24 +495,26 @@ async function normalizePositions({
 
           let superfluidData: Record<any, any> | undefined = undefined;
           if (isSuperfluid && delegatedSuperfluidPosition) {
+            const validatorInfo = await getValidatorInfo({
+              validatorBech32Address:
+                delegatedSuperfluidPosition.validatorAddress,
+            });
             superfluidData = {
-              // validatorName,
-              // validatorImgSrc,
+              ...validatorInfo,
               equivalentStakedAmount:
                 delegatedSuperfluidPosition.equivalentStakedAmount,
-              // validatorCommission,
               // superfluidApr,
-              // stakeDuration,
             };
           } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
+            const validatorInfo = await getValidatorInfo({
+              validatorBech32Address:
+                undelegatingSuperfluidPosition.validatorAddress,
+            });
             superfluidData = {
-              // validatorName,
-              // validatorImgSrc,
+              ...validatorInfo,
               equivalentStakedAmount:
                 undelegatingSuperfluidPosition.equivalentStakedAmount,
-              // validatorCommission,
               // superfluidApr,
-              // stakeDuration,
             };
           }
 
