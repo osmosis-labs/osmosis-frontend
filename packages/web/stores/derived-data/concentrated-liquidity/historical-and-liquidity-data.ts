@@ -1,8 +1,8 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   ActiveLiquidityPerTickRange,
+  BigDec,
   maxSpotPrice,
   minSpotPrice,
   priceToTick,
@@ -10,25 +10,37 @@ import {
 import {
   ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryLiquidityPerTickRange,
-  ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
-  PriceRange,
-  TokenPairHistoricalPrice,
 } from "@osmosis-labs/stores";
+import { Currency } from "@osmosis-labs/types";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
+import type { Pool } from "~/server/queries/complex/pools";
+import type {
+  TimeDuration,
+  TokenPairHistoricalPrice,
+} from "~/server/queries/imperator";
+import type { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
+
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
-
-// TODO: move to stores package
 
 export class ObservableHistoricalAndLiquidityData {
   /*
    Used to get historical range for price chart
   */
   @observable
-  protected _historicalRange: PriceRange = "7d";
+  protected _historicalRange: TimeDuration = "7d";
+
+  @observable.ref
+  protected _historicalData: TokenPairHistoricalPrice[] = [];
+
+  @observable
+  protected _historicalDataError: boolean = false;
+
+  @observable
+  protected _isHistoricalDataLoading: boolean = false;
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
@@ -39,6 +51,9 @@ export class ObservableHistoricalAndLiquidityData {
   @observable
   protected _priceRange: [Dec, Dec] | null = null;
 
+  @observable.ref
+  protected _pool: Pool | null = null;
+
   protected _disposers: (() => void)[] = [];
 
   constructor(
@@ -47,8 +62,7 @@ export class ObservableHistoricalAndLiquidityData {
     readonly poolId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryRange: DeepReadonly<ObservableQueryLiquidityPerTickRange>,
-    protected readonly queryCfmmClLink: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>,
-    protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
+    protected readonly queryCfmmClLink: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>
   ) {
     makeObservable(this);
 
@@ -63,7 +77,13 @@ export class ObservableHistoricalAndLiquidityData {
   @computed
   get currentPrice(): Dec {
     if (!this.pool || this.pool.type !== "concentrated") return new Dec(0);
-    return this.pool.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+    const clPoolRaw = this.pool.raw as ConcentratedPoolRawResponse;
+    const currentSqrtPrice = new BigDec(clPoolRaw.current_sqrt_price);
+
+    return currentSqrtPrice
+      .mul(currentSqrtPrice)
+      .toDec()
+      .mul(this.multiplicationQuoteOverBase);
   }
 
   @computed
@@ -75,66 +95,54 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get pool() {
-    return this.queries.queryPools.getPool(this.poolId);
+    if (!this._pool) return null;
+
+    return {
+      ...this._pool,
+      poolAssetDenoms: this._pool?.reserveCoins.map(
+        (c) => c.currency.coinMinimalDenom
+      ),
+    };
   }
 
   @computed
   get historicalChartUnavailable(): boolean {
-    return (
-      !this.queryTokenPairPrice.isFetching &&
-      this.historicalChartData.length === 0
-    );
+    return this._historicalDataError;
+  }
+
+  @computed
+  get isHistoricalDataLoading(): boolean {
+    return this._isHistoricalDataLoading;
   }
 
   get baseDenom(): string {
-    return this.pool?.poolAssetDenoms
-      ? this.chainGetter
-          .getChain(this.chainId)
-          .forceFindCurrency(this.pool.poolAssetDenoms[0]).coinDenom
-      : "";
+    return this.pool?.reserveCoins?.[0].denom ?? "";
   }
 
   get quoteDenom(): string {
-    return this.pool?.poolAssetDenoms
-      ? this.chainGetter
-          .getChain(this.chainId)
-          .forceFindCurrency(this.pool.poolAssetDenoms[1]).coinDenom
-      : "";
+    return this.pool?.reserveCoins?.[1].denom ?? "";
   }
 
-  get baseCurrency(): AppCurrency | undefined {
-    const baseDenom = this.pool?.poolAssetDenoms[0];
-
-    if (!baseDenom) return undefined;
-
-    return this.chainGetter.getChain(this.chainId).findCurrency(baseDenom);
+  get baseCurrency(): Currency | undefined {
+    return this.pool?.reserveCoins?.[0].currency;
   }
 
-  get quoteCurrency(): AppCurrency | undefined {
-    const quoteDenom = this.pool?.poolAssetDenoms[1];
-
-    if (!quoteDenom) return undefined;
-
-    return this.chainGetter
-      .getChain(this.chainId)
-      .forceFindCurrency(quoteDenom);
+  get quoteCurrency(): Currency | undefined {
+    return this.pool?.reserveCoins?.[1].currency;
   }
 
   @computed
   protected get multiplicationQuoteOverBase(): Dec {
-    if (!this.pool || this.pool.type !== "concentrated") return new Dec(0);
-    return (
-      this.pool.concentratedLiquidityPoolInfo?.multiplicationQuoteOverBase ??
-      new Dec(1)
+    return DecUtils.getTenExponentN(
+      (this.baseCurrency?.coinDecimals ?? 0) -
+        (this.quoteCurrency?.coinDecimals ?? 0)
     );
   }
 
   /** Use pool current price as last/current chart price. */
   @computed
   get lastChartData(): TokenPairHistoricalPrice | null {
-    const price = Number(
-      this.pool?.concentratedLiquidityPoolInfo?.currentPrice ?? 0
-    );
+    const price = Number(this.currentPrice.toString() ?? 0);
 
     if (price === 0) return null;
 
@@ -148,11 +156,11 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   @action
-  setHistoricalRange = (range: PriceRange) => {
+  setHistoricalRange = (range: TimeDuration) => {
     this._historicalRange = range;
   };
 
-  get historicalRange(): PriceRange {
+  get historicalRange(): TimeDuration {
     return this._historicalRange;
   }
 
@@ -210,25 +218,7 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get historicalChartData(): TokenPairHistoricalPrice[] {
-    return this.queryTokenPairPrice.getChartPrices;
-  }
-
-  @computed
-  get queryTokenPairPrice() {
-    const linkedCfmmPoolId = this.queryCfmmClLink.getLinkedCfmmPoolId(
-      this.poolId
-    );
-
-    return this.queryTokenPairHistoricalPrice.get(
-      typeof linkedCfmmPoolId === "string"
-        ? linkedCfmmPoolId
-        : linkedCfmmPoolId === false
-        ? this.poolId
-        : "", // prevent querying prices until link is resolved
-      this.historicalRange,
-      this.baseCurrency?.coinMinimalDenom,
-      this.quoteCurrency?.coinMinimalDenom
-    );
+    return this._historicalData;
   }
 
   get range(): [Dec, Dec] | null {
@@ -323,6 +313,27 @@ export class ObservableHistoricalAndLiquidityData {
   dispose() {
     this._disposers.forEach((dispose) => dispose());
   }
+
+  @action
+  readonly setHistoricalData = (data: TokenPairHistoricalPrice[]) => {
+    this._historicalData = data;
+  };
+
+  /** What exactly happened isn't important, just that an error occured */
+  @action
+  readonly setHistoricalDataError = (error: boolean) => {
+    this._historicalDataError = error;
+  };
+
+  @action
+  readonly setIsHistoricalDataLoading = (isLoading: boolean) => {
+    this._isHistoricalDataLoading = isLoading;
+  };
+
+  @action
+  readonly setPool = (pool: Pool) => {
+    this._pool = pool;
+  };
 }
 
 function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
