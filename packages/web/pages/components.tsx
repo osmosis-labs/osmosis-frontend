@@ -109,11 +109,7 @@ const Checkboxes = () => {
       </Component>
 
       <Component title="With Children">
-        <CheckBox
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-          isIndeterminate={true}
-        >
+        <CheckBox isOn={checked} onToggle={handleCheckboxToggle}>
           <span className="rounded-lg bg-osmoverse-700 p-2">child</span>
         </CheckBox>
       </Component>
