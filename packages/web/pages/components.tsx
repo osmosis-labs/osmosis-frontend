@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useCallback, useState } from "react";
 
 import { Button } from "~/components/buttons";
@@ -401,3 +402,24 @@ const Components: NextPage = () => {
 };
 
 export default Components;
+
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { req } = context;
+
+  // get host or host from proxy
+  const host = req.headers["x-forwarded-host"] || req.headers["host"];
+
+  // redirect on production
+  if (host === "osmosis.zone") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
