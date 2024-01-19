@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useQueryParamState } from "~/hooks/window/use-query-param-state";
 import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
@@ -44,6 +44,7 @@ export const AllPoolsTable: FunctionComponent<{
 }> = ({ topOffset, quickAddLiquidity }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { width } = useWindowSize();
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
@@ -216,9 +217,19 @@ export const AllPoolsTable: FunctionComponent<{
     ]
   );
 
+  /** Columns collapsed for screen size responsiveness. */
+  const collapsedColumns = useMemo(() => {
+    const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
+    if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
+    if (width < Breakpoint.lg) collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
+    return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
+  }, [columns, width]);
+
   const table = useReactTable({
     data: poolsData,
-    columns,
+    columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
     manualPagination: true,
@@ -288,7 +299,7 @@ export const AllPoolsTable: FunctionComponent<{
           )}
           {isLoading && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -315,7 +326,7 @@ export const AllPoolsTable: FunctionComponent<{
           })}
           {isFetchingNextPage && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -353,10 +364,10 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="flex h-12 w-full place-content-between items-center gap-5">
+    <div className="flex w-full place-content-between items-center gap-5 lg:flex-col lg:items-start">
       <h5>{t("pools.allPools.title")}</h5>
 
-      <div className="flex h-12 gap-3">
+      <div className="flex h-12 flex-wrap gap-3 lg:h-fit">
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={poolTypesFilter as string[]}
