@@ -508,7 +508,8 @@
     "unbonding": "çözülüyor",
     "undelegating": "delegasyonu bozulan",
     "yourStats": "Havuz bakiyeniz",
-    "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için"
+    "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için",
+    "custom": "Gelenek"
   },
   "pools": {
     "allPools": {

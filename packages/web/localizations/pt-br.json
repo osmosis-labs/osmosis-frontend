@@ -508,7 +508,8 @@
     "unbonding": "destravando",
     "undelegating": "removendo delegação",
     "yourStats": "O saldo da sua piscina",
-    "onlyInRangePositions": "Apenas para posições no intervalo"
+    "onlyInRangePositions": "Apenas para posições no intervalo",
+    "custom": "Personalizado"
   },
   "pools": {
     "allPools": {

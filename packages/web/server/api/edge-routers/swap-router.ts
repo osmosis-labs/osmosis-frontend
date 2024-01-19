@@ -3,7 +3,6 @@ import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
-import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -16,7 +15,7 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
+import { getPool } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 const osmosisChainId = ChainList[0].chain_id;
@@ -157,10 +156,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
       const poolsWithInfos = await Promise.all(
         pools.map(async (pool, index) => {
           const { id } = pool;
-          const poolRaw = (await queryPaginatedPools({ poolId: id }))?.pools[0];
-          const staticPool = poolRaw
-            ? makeStaticPoolFromRaw(poolRaw)
-            : undefined;
+          const pool_ = await getPool(id).catch(() => null);
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
@@ -170,8 +166,8 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
-            swapFee: staticPool?.swapFee,
-            type: staticPool?.type,
+            spreadFactor: pool_?.spreadFactor,
+            type: pool_?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
           };
