@@ -9,7 +9,11 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { getPools } from "~/server/queries/complex/pools";
-import { getSuperfluidPoolAPR } from "~/server/queries/complex/pools/apr";
+import {
+  getConcentratedRangePoolApr,
+  getSuperfluidPoolAPR,
+} from "~/server/queries/complex/pools/apr";
+import { getLockableDurations } from "~/server/queries/complex/pools/incentives";
 import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { queryPositionPerformance } from "~/server/queries/imperator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
@@ -399,6 +403,11 @@ async function normalizePositions({
             userOsmoAddress,
           });
           const stakeCurrencyPromise = getAsset({ anyDenom: "OSMO" });
+          const initialRangeAprPromise = getConcentratedRangePoolApr({
+            lowerTick: lowerTick.toString(),
+            upperTick: upperTick.toString(),
+            poolId: position.pool_id,
+          });
 
           const [
             priceRange,
@@ -407,6 +416,7 @@ async function normalizePositions({
             delegatedPositions,
             undelegatingPositions,
             stakeCurrency,
+            initialRangeApr,
           ] = await Promise.all([
             priceRangePromise,
             unclaimedRewardsPromise,
@@ -414,6 +424,7 @@ async function normalizePositions({
             delegatedPositionsPromise,
             undelegatingPositionsPromise,
             stakeCurrencyPromise,
+            initialRangeAprPromise,
           ]);
 
           const pool = pools.find(
@@ -482,14 +493,16 @@ async function normalizePositions({
               }
             : undefined;
 
+          const currentPrice = getPriceFromSqrtPrice({
+            sqrtPrice: new Dec(
+              (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
+            ),
+            baseAsset,
+            quoteAsset,
+          });
+
           const status = getPositionStatus({
-            currentPrice: getPriceFromSqrtPrice({
-              sqrtPrice: new Dec(
-                (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
-              ),
-              baseAsset,
-              quoteAsset,
-            }),
+            currentPrice,
             isFullRange: isPositionFullRange({ lowerTick, upperTick }),
             isSuperfluid,
             isSuperfluidUnstaking,
@@ -499,28 +512,35 @@ async function normalizePositions({
           });
           const joinTime = new Date(position.join_time);
 
-          let superfluidData:
-            | (Awaited<ReturnType<typeof getValidatorInfo>> & {
-                equivalentStakedAmount: CoinPretty;
-                superfluidApr: RatePretty;
-              })
-            | undefined = undefined;
-
           let superfluidApr: RatePretty | undefined = undefined;
           if (isSuperfluid || isSuperfluidUnstaking) {
             superfluidApr = await getSuperfluidPoolAPR({ poolId: pool.id });
           }
 
+          let superfluidData:
+            | (Awaited<ReturnType<typeof getValidatorInfo>> & {
+                equivalentStakedAmount: CoinPretty;
+                superfluidApr: RatePretty;
+                endTime?: Date;
+                humanizedStakeDuration?: string;
+              })
+            | undefined = undefined;
+
           if (isSuperfluid && delegatedSuperfluidPosition) {
+            const lockableDurations = await getLockableDurations();
+            const longestLockDuration =
+              lockableDurations[lockableDurations.length - 1];
             const validatorInfo = await getValidatorInfo({
               validatorBech32Address:
                 delegatedSuperfluidPosition.validatorAddress,
             });
+
             superfluidData = {
               ...validatorInfo,
               equivalentStakedAmount:
                 delegatedSuperfluidPosition.equivalentStakedAmount,
               superfluidApr: superfluidApr!,
+              humanizedStakeDuration: longestLockDuration.humanize(),
             };
           } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
             const validatorInfo = await getValidatorInfo({
@@ -529,21 +549,27 @@ async function normalizePositions({
             });
             superfluidData = {
               ...validatorInfo,
+              endTime: undelegatingSuperfluidPosition.endTime,
               equivalentStakedAmount:
                 undelegatingSuperfluidPosition.equivalentStakedAmount,
               superfluidApr: superfluidApr!,
             };
           }
 
+          const rangeApr = initialRangeApr?.add(superfluidApr ?? new Dec(0));
+
           return {
             id: position.position_id,
             poolId: position.pool_id,
+            spreadFactor: pool.spreadFactor,
+            currentPrice,
             status,
             priceRange,
             liquidity,
             currentAssets,
             unclaimedRewards,
             joinTime,
+            rangeApr,
             ...(superfluidData ? { superfluidData } : undefined),
           };
         }

@@ -1,10 +1,18 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
+import { queryLockableDurations } from "~/server/queries/osmosis";
+
 import { queryPoolAprs } from "../../numia/pool-aprs";
 import { getPools, Pool, PoolFilter } from "./index";
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 const allPoolIncentiveTypes = [
   "superfluid",
@@ -131,4 +139,24 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
   }
 
   return new RatePretty(new Dec(value).quo(new Dec(100)));
+}
+
+export function getLockableDurations() {
+  return cachified({
+    cache: incentivePoolsCache,
+    key: "lockable-durations",
+    ttl: 30 * 1000, // 30 seconds
+    getFreshValue: async () => {
+      const { lockable_durations } = await queryLockableDurations();
+
+      return lockable_durations
+        .map((durationStr: string) => {
+          return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
+        })
+        .slice()
+        .sort((v1, v2) => {
+          return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
+        });
+    },
+  });
 }
