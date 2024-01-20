@@ -1,3 +1,4 @@
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -6,6 +7,7 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { calcAssetValue } from "~/server/queries/complex/assets/price";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -137,6 +139,40 @@ function simplifyAssetListForDisplay(
 
   // Transform into a more compact object
   return assetListAssets.map(makeMinimalAsset);
+}
+
+export async function mapRawAssetsToCoinPretty({
+  rawAssets,
+  calculatePrice,
+}: {
+  rawAssets?: {
+    amount: string | number;
+    denom: string;
+  }[];
+  calculatePrice?: boolean;
+}): Promise<(CoinPretty & { fiatValue?: Dec })[]> {
+  if (!rawAssets) return [];
+  const result = await Promise.all(
+    rawAssets.map(async ({ amount, denom }) => {
+      const asset = await getAsset({
+        anyDenom: denom,
+      });
+
+      if (!asset) return undefined;
+
+      const coin = new CoinPretty(asset, amount);
+      if (calculatePrice) {
+        (coin as CoinPretty & { fiatValue?: Dec }).fiatValue =
+          await calcAssetValue({
+            amount: coin.toString(),
+            anyDenom: denom,
+          });
+      }
+
+      return coin;
+    })
+  );
+  return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 export * from "./info";
