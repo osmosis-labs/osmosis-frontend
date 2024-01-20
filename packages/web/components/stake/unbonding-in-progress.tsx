@@ -19,22 +19,30 @@ export const UnbondingInProgress: React.FC<{
   ): { amountOsmo: string; amountUSD: string; remainingTime: string }[] {
     const currentDate = new Date();
 
-    return unbondings
-      .map((unbonding) => {
-        const completionDate = new Date(unbonding.completionTime);
-        const timeDiff = dayjs.duration(
-          completionDate.getTime() - currentDate.getTime()
-        );
+    return (
+      unbondings
+        // Sort by completionTime
+        .sort(
+          (a, b) =>
+            new Date(a.completionTime).getTime() -
+            new Date(b.completionTime).getTime()
+        )
+        .map((unbonding) => {
+          const completionDate = new Date(unbonding.completionTime);
+          const timeDiff = dayjs.duration(
+            completionDate.getTime() - currentDate.getTime()
+          );
 
-        const prettifiedAmount = unbonding.balance;
-        return {
-          amountOsmo: prettifiedAmount.trim(true).toString(),
-          amountUSD:
-            priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
-          remainingTime: timeDiff.humanize(),
-        };
-      })
-      .filter((entry) => parseInt(entry.remainingTime) > 0); // Filter out entries with completion time in the past
+          const prettifiedAmount = unbonding.balance;
+          return {
+            amountOsmo: prettifiedAmount.trim(true).toString(),
+            amountUSD:
+              priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
+            remainingTime: timeDiff.humanize(),
+          };
+        })
+        .filter((entry) => parseInt(entry.remainingTime) > 0)
+    ); // Filter out entries with completion time in the past
   }
 
   const formattedUnbondings = formatUnbondings(unbondings);
