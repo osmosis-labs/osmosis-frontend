@@ -20,3 +20,20 @@ export function getChain<Chain extends ChainType>({
     );
   });
 }
+
+export function getChainStakeTokenSourceDenom({
+  chainId,
+  chainList,
+}: {
+  chainId: string;
+  chainList: ChainType[];
+}): string | undefined {
+  const chain = getChain({ chainId, chainList });
+
+  if (!chain) {
+    console.info(`Chain ${chainId} not found`);
+    return undefined;
+  }
+
+  return chain.staking.staking_tokens[0].denom;
+}

@@ -16,6 +16,7 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
+import { IS_TESTNET } from "~/config";
 import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
@@ -154,7 +155,8 @@ export class ObservablePoolsWithMetric {
       forceShowUnverified?: boolean,
       concentratedLiquidityFeature?: boolean
     ) => {
-      const showUnverified = this.showUnverified || forceShowUnverified;
+      const showUnverified =
+        this.showUnverified || forceShowUnverified || IS_TESTNET;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);

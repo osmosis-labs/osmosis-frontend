@@ -1,5 +1,5 @@
 import { BondStatus } from "@osmosis-labs/types";
-import { apiClient } from "@osmosis-labs/utils";
+import { apiClient, getChain } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
 
@@ -51,10 +51,16 @@ type Validators = {
 export async function queryValidators({
   status,
   paginationLimit = 1000,
+  chainId = ChainList[0].chain_id,
 }: {
   status: BondStatus;
   paginationLimit?: number;
+  chainId?: string;
 }): Promise<Validators> {
+  const chain = getChain({ chainId, chainList: ChainList });
+
+  if (!chain) throw new Error(`Chain ${chainId} not found`);
+
   const url = new URL(
     `/cosmos/staking/v1beta1/validators?pagination.limit=${paginationLimit}&status=${(() => {
       switch (status) {

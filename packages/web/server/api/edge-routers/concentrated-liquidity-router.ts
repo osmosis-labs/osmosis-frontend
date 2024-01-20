@@ -1,6 +1,5 @@
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
-import { ConcentratedLiquidityPoolRaw } from "@osmosis-labs/pools";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -9,9 +8,11 @@ import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
+import { getPools } from "~/server/queries/complex/pools";
+import { getSuperfluidPoolAPR } from "~/server/queries/complex/pools/apr";
 import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { queryPositionPerformance } from "~/server/queries/imperator";
+import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   queryCLPositions,
   queryCLUnbondingPositions,
@@ -347,7 +348,7 @@ async function normalizePositions({
 }) {
   try {
     const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
-    const { pools } = await queryPaginatedPools({ poolIds: poolIds });
+    const pools = await getPools({ poolIds: poolIds });
 
     const normalizedPositions = await Promise.all(
       positions.map(
@@ -425,7 +426,7 @@ async function normalizePositions({
             return undefined;
           }
 
-          if (pool["@type"] !== "/osmosis.concentratedliquidity.v1beta1.Pool") {
+          if (pool.type !== "concentrated") {
             throw new Error(
               `Pool type is not concentrated. Pool: ${JSON.stringify(pool)}`
             );
@@ -484,7 +485,7 @@ async function normalizePositions({
           const status = getPositionStatus({
             currentPrice: getPriceFromSqrtPrice({
               sqrtPrice: new Dec(
-                (pool as ConcentratedLiquidityPoolRaw).current_sqrt_price
+                (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
               ),
               baseAsset,
               quoteAsset,
@@ -501,8 +502,14 @@ async function normalizePositions({
           let superfluidData:
             | (Awaited<ReturnType<typeof getValidatorInfo>> & {
                 equivalentStakedAmount: CoinPretty;
+                superfluidApr: RatePretty;
               })
             | undefined = undefined;
+
+          let superfluidApr: RatePretty | undefined = undefined;
+          if (isSuperfluid || isSuperfluidUnstaking) {
+            superfluidApr = await getSuperfluidPoolAPR({ poolId: pool.id });
+          }
 
           if (isSuperfluid && delegatedSuperfluidPosition) {
             const validatorInfo = await getValidatorInfo({
@@ -513,7 +520,7 @@ async function normalizePositions({
               ...validatorInfo,
               equivalentStakedAmount:
                 delegatedSuperfluidPosition.equivalentStakedAmount,
-              // superfluidApr,
+              superfluidApr: superfluidApr!,
             };
           } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
             const validatorInfo = await getValidatorInfo({
@@ -524,7 +531,7 @@ async function normalizePositions({
               ...validatorInfo,
               equivalentStakedAmount:
                 undelegatingSuperfluidPosition.equivalentStakedAmount,
-              // superfluidApr,
+              superfluidApr: superfluidApr!,
             };
           }
 

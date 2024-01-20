@@ -1,7 +1,7 @@
 import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -139,7 +139,7 @@ async function calculatePriceFromPriceId({
 
   const pool = makeStaticPoolFromRaw(rawPool);
 
-  if (!tokenOutAsset.decimals || !tokenInAsset.decimals)
+  if (isNil(tokenOutAsset.decimals) || isNil(tokenInAsset.decimals))
     throw new Error(
       "Invalid decimals in " +
         tokenOutAsset.symbol +

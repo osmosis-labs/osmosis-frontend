@@ -10,20 +10,20 @@ import { SIDECAR_BASE_URL } from ".";
 
 // overwrite types from node pool type
 
-export type UnderlyingWeightedPool = Omit<
+export type ChainWeightedPool = Omit<
   WeightedPoolRawResponse,
   "id" | "@type"
 > & {
   id: number;
 };
-export type UnderlyingStablePool = Omit<
+export type ChainStablePool = Omit<
   StablePoolRawResponse,
   "id" | "@type" | "scaling_factors"
 > & {
   id: number;
   scaling_factors: number[];
 };
-export type UnderlyingConcentratedPool = Omit<
+export type ChainConcentratedPool = Omit<
   ConcentratedPoolRawResponse,
   "id" | "@type" | "current_tick" | "tick_spacing" | "exponent_at_price_one"
 > & {
@@ -32,7 +32,7 @@ export type UnderlyingConcentratedPool = Omit<
   tick_spacing: number;
   exponent_at_price_one: number;
 };
-export type UnderlyingCosmwasmPool = Omit<
+export type ChainCosmwasmPool = Omit<
   CosmwasmPoolRawResponse,
   "pool_id" | "code_id" | "@type"
 > & {
@@ -42,27 +42,26 @@ export type UnderlyingCosmwasmPool = Omit<
 
 /** For some reason the shape is the same but the IDs are changed to number
  *  and the type URL is removed. */
-export type UnderlyingPool =
-  | UnderlyingWeightedPool
-  | UnderlyingStablePool
-  | UnderlyingConcentratedPool
-  | UnderlyingCosmwasmPool;
+export type ChainPool =
+  | ChainWeightedPool
+  | ChainStablePool
+  | ChainConcentratedPool
+  | ChainCosmwasmPool;
 
 export type PoolsResponse = {
   /** Sidecar returns the same pool models as the node. */
-  underlying_pool: UnderlyingPool;
-  sqs_model: {
-    total_value_locked_uosmo: string;
-    balances: {
-      denom: string;
-      amount: string;
-    }[];
-    pool_denoms: string[];
-    spread_factor: string;
-  };
+  chain_model: ChainPool;
+  balances: {
+    denom: string;
+    amount: string;
+  }[];
+  spread_factor: string;
 }[];
 
-export async function queryPools() {
-  const url = new URL("/pools/all", SIDECAR_BASE_URL);
-  return await apiClient<PoolResponse[]>(url.toString());
+export async function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
+  const url = new URL(
+    poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools/all",
+    SIDECAR_BASE_URL
+  );
+  return await apiClient<PoolsResponse>(url.toString());
 }

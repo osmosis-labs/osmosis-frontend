@@ -1,5 +1,5 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
@@ -39,7 +39,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
   const account = accountStore.getWallet(chainId);
   const queries = queriesStore.get(chainId);
   const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+    BondStatus.Bonded
   );
 
   const activeValidators = queryValidators.validators;
