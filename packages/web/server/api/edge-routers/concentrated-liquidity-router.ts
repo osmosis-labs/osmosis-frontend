@@ -31,13 +31,10 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       });
 
-      // TODO: sort by joinTime
-      console.time("normalizePositions");
       const result = await normalizePositions({
         positions: rawPositions,
         userOsmoAddress,
       });
-      console.timeEnd("normalizePositions");
       return sort(result, "joinTime", sortDirection);
     }),
 
