@@ -60,7 +60,7 @@ export type PoolsResponse = {
 
 export async function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
   const url = new URL(
-    poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools/all",
+    poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools",
     SIDECAR_BASE_URL
   );
   return await apiClient<PoolsResponse>(url.toString());
