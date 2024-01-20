@@ -39,7 +39,7 @@ describe("getPoolsFromSidecar", () => {
     });
 
     server.use(
-      rest.get(`${SIDECAR_BASE_URL}/pools/all`, (_req, res, ctx) => {
+      rest.get(`${SIDECAR_BASE_URL}/pools`, (_req, res, ctx) => {
         return res(ctx.json(mockSidecarResponse));
       })
     );
