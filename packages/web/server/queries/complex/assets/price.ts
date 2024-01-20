@@ -237,7 +237,9 @@ export async function getAssetPrice({
 
   if (!id) {
     throw new Error(
-      `Asset ${asset.sourceDenom} has no identifier for pricing.`
+      `Asset ${
+        asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
+      } has no identifier for pricing.`
     );
   }
 
