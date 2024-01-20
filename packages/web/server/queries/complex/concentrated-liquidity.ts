@@ -372,10 +372,7 @@ export async function normalizePositions({
             initialRangeAprPromise,
           ]);
 
-          const pool = pools.find(
-            (pool) =>
-              ("pool_id" in pool ? pool.pool_id : pool.id) === position.pool_id
-          );
+          const pool = pools.find((pool) => pool.id === position.pool_id);
 
           if (!pool) {
             console.error(`Pool (${position.pool_id}) not found`);
