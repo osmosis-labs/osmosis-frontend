@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { useCallback, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 
 import { Button } from "~/components/buttons";
 import {
@@ -17,6 +17,7 @@ import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets"
 
 const Card: React.FC<{
   title: string;
+  children: ReactNode;
 }> = ({ title, children }) => (
   <div className="flex flex-col gap-4 rounded-[32px] bg-osmoverse-850 p-6">
     <h6 className="text-center">{title}</h6>
