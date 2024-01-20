@@ -19,7 +19,7 @@ export function getPoolsFromSidecar({
   poolIds,
 }: {
   poolIds?: string[];
-}): Promise<Pool[]> {
+} = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
