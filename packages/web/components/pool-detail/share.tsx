@@ -1,9 +1,9 @@
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@osmosis-labs/keplr-stores";
 import {
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
+import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
@@ -290,7 +290,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
           ...baseEventInfo,
           unbondingPeriod: 14,
           validatorName: queryCosmos.queryValidators
-            .getQueryStatus(Staking.BondStatus.Bonded)
+            .getQueryStatus(BondStatus.Bonded)
             .getValidator(validatorAddress)?.description.moniker,
           isSuperfluidEnabled,
         };

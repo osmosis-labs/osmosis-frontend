@@ -16,8 +16,8 @@ export type Asset = {
   coinName: string;
   coinMinimalDenom: string;
   coinDecimals: number;
-  coinGeckoId: string | undefined;
-  coinImageUrl: string;
+  coinGeckoId?: string | undefined;
+  coinImageUrl?: string;
   isVerified: boolean;
   isUnstable: boolean;
 };
