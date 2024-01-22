@@ -2,7 +2,6 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
-import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
@@ -12,14 +11,13 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
     onConfirm: () => void;
   } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ coinDenom, coinImageUrl, onConfirm, ...modalBaseProps }) => {
-  const { t } = useTranslation();
   if (!coinDenom || !coinImageUrl) {
     return null;
   }
 
   return (
     <ModalBase
-      title={t("assets.activateUnverifiedAssetsModal.activate")}
+      title="Activate unverified assets"
       className="!max-w-[480px]"
       {...modalBaseProps}
     >
@@ -38,12 +36,13 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
 
           <div>
             <p className="body2 rounded-2xl text-osmoverse-100">
-              <span className="font-semibold">{coinDenom}</span>{" "}
-              {t("assets.activateUnverifiedAssetsModal.description")}
+              <span className="font-semibold">{coinDenom}</span> is an
+              unverified token. Do you wish to activate it? Be sure to research
+              thoroughly before trading.
             </p>
 
             <p className="body2 border-gradient-neutral mt-5 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
-              {t("assets.activateUnverifiedAssetsModal.reminder")}
+              You can always deactivate this setting in the settings modal.
             </p>
           </div>
         </div>
@@ -57,7 +56,7 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
               modalBaseProps.onRequestClose?.();
             }}
           >
-            {t("assets.table.activate")}
+            Activate
           </Button>
         </div>
       </div>

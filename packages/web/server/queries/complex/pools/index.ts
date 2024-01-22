@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { search, SearchSchema } from "~/utils/search";
@@ -6,20 +6,17 @@ import { search, SearchSchema } from "~/utils/search";
 import { PoolRawResponse } from "../../osmosis";
 import { getPoolsFromSidecar } from "./providers/sidecar";
 
-const allPooltypes = [
-  "concentrated",
-  "weighted",
-  "stable",
-  "cosmwasm-transmuter",
-  "cosmwasm",
-] as const;
-export type PoolType = (typeof allPooltypes)[number];
+export type PoolType =
+  | "weighted"
+  | "stable"
+  | "concentrated"
+  | "cosmwasm-transmuter"
+  | "cosmwasm";
 
 export type Pool = {
   id: string;
   type: PoolType;
-  raw: Omit<PoolRawResponse, "@type">;
-  spreadFactor: RatePretty;
+  raw: PoolRawResponse;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
 };
@@ -28,27 +25,22 @@ export type Pool = {
  *  Should handle caching in the provider. */
 export type PoolProvider = () => Promise<Pool[]>;
 
-export const PoolFilterSchema = z.object({
-  /** Search pool ID, or denoms. */
+const PoolFilterSchema = z.object({
   search: SearchSchema.optional(),
-  /** Filter pool by minimum required USD liquidity. */
-  minLiquidityUsd: z.number().optional(),
-  /** Only include pools of given type. */
-  types: z.array(z.enum(allPooltypes)).optional(),
+  id: z.string().optional(),
+  type: z
+    .enum(["concentrated", "weighted", "stable", "transmuter", "cosmwasm"])
+    .optional(),
 });
 
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "coinDenoms"];
+const searchablePoolKeys = ["id", "type", "coinDenoms"];
 
-/** Get's an individual pool by ID.
- *  @throws If pool not found. */
-export async function getPool(poolId: string): Promise<Pool> {
-  const pools = await getPools();
-  const pool = pools.find(({ id }) => id === poolId);
-  if (!pool) throw new Error(poolId + " not found");
-  return pool;
+export async function getPool(poolId: string): Promise<Pool | undefined> {
+  const pools = await getPools({ id: poolId });
+  return pools[0];
 }
 
 /** Fetches cached pools from node and returns them as a more useful and simplified TS type.
@@ -61,14 +53,11 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
-  if (params?.types || params?.minLiquidityUsd) {
-    pools = pools.filter(
-      ({ type, totalFiatValueLocked }) =>
-        (params?.types ? params.types.includes(type) : true) &&
-        (params?.minLiquidityUsd
-          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-          : true)
-    );
+  if (params?.id) {
+    pools = pools.filter(({ id }) => id === params.id);
+  }
+  if (params?.type) {
+    pools = pools.filter(({ type }) => type === params.type);
   }
 
   // add denoms so user can search them

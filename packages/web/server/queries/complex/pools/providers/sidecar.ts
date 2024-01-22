@@ -1,11 +1,10 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 
-import { calcSumAssetsValue, getAsset } from "../../assets";
+import { calcAssetValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { TransmuterPoolCodeIds } from "../env";
 import { Pool, PoolType } from "../index";
@@ -22,148 +21,72 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
     ttl: 1000, // 1 second
     getFreshValue: async () => {
       const sidecarPools = await queryPools();
-      const pools = await Promise.all(
+      return await Promise.all(
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
-      return pools.filter(Boolean) as Pool[];
     },
   });
 }
 
-/** Converts a single SQS pool model response to the standard and more useful Pool type. */
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
-): Promise<Pool | undefined> {
-  const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
-
-  // contains unlisted or invalid assets
-  if (reserveCoins.length === 0) return;
+): Promise<Pool> {
+  const assetValueDec =
+    (await calcAssetValue({
+      anyDenom: "uosmo",
+      amount: sidecarPool.sqs_model.total_value_locked_uosmo,
+    })) ?? new Dec(0);
 
   return {
-    id: getPoolIdFromChainPool(sidecarPool.chain_model),
-    type: getPoolTypeFromChainPool(sidecarPool.chain_model),
-    raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
-    spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
-      reserveCoins
-    ),
+    id: getPoolIdFromSidecarPool(sidecarPool.underlying_pool),
+    type: getPoolTypeFromSidecarPool(sidecarPool.underlying_pool),
+    raw: sidecarPool.underlying_pool,
+    reserveCoins: await getListedReservesFromSidecarPool(sidecarPool),
+    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, assetValueDec),
   };
 }
 
-function getPoolIdFromChainPool(
-  chain_model: SidecarPool["chain_model"]
+function getPoolIdFromSidecarPool(
+  underlying_pool: SidecarPool["underlying_pool"]
 ): string {
-  return (
-    "pool_id" in chain_model ? chain_model.pool_id : chain_model.id
-  ).toString();
+  if ("pool_id" in underlying_pool) return underlying_pool.pool_id;
+  else return underlying_pool.id;
 }
 
-// since type URL was removed from chain_model in sidecar response
+// since type URL was removed from underlying_pool in sidecar response
 // we use the different shapes of the pool model to derive the pool type
-export function getPoolTypeFromChainPool(
-  chain_model: SidecarPool["chain_model"]
+export function getPoolTypeFromSidecarPool(
+  underlying_pool: SidecarPool["underlying_pool"]
 ): PoolType {
-  if ("pool_assets" in chain_model) return "weighted";
-  if ("scaling_factors" in chain_model) return "stable";
-  if ("current_sqrt_price" in chain_model) return "concentrated";
-  if ("code_id" in chain_model) {
-    if (TransmuterPoolCodeIds.includes(chain_model.code_id.toString()))
+  if ("pool_assets" in underlying_pool) return "weighted";
+  if ("scaling_factors" in underlying_pool) return "stable";
+  if ("current_sqrt_price" in underlying_pool) return "concentrated";
+  if ("code_id" in underlying_pool) {
+    if (TransmuterPoolCodeIds.includes(underlying_pool.code_id))
       return "cosmwasm-transmuter";
     else return "cosmwasm";
   }
-  throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
+  throw new Error("Unknown pool type: " + JSON.stringify(underlying_pool));
 }
 
-export async function getListedReservesFromSidecarPool(
+async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
-  const poolDenoms = getPoolDenomsFromSidecarPool(sidecarPool);
-  const listedBalances = await Promise.all(
-    poolDenoms.map(async (denom) => {
-      const asset = await getAsset({ anyDenom: denom }).catch(() => null);
-      // not listed
-      if (!asset) return;
-
-      const amount = sidecarPool.balances.find(
-        (balance) => balance.denom === denom
-      )?.amount;
-      // no balance
-      if (!amount) return;
-
-      return new CoinPretty(asset, amount);
-    })
+  const balances = sidecarPool.sqs_model.balances.filter(({ denom }) =>
+    // only include balances in pool, as anyone can send arbitrary tokens to a pool account
+    sidecarPool.sqs_model.pool_denoms.includes(denom)
   );
 
-  // something is wrong with the token asset balances
-  if (listedBalances.some((balance) => !balance)) return [];
-
-  return listedBalances as CoinPretty[];
-}
-
-function getPoolDenomsFromSidecarPool({ chain_model, balances }: SidecarPool) {
-  if ("pool_assets" in chain_model) {
-    return chain_model.pool_assets.map((asset) => asset.token.denom);
-  }
-
-  if ("pool_liquidity" in chain_model) {
-    return chain_model.pool_liquidity.map(({ denom }) => denom);
-  }
-
-  if ("token0" in chain_model) {
-    return [chain_model.token0, chain_model.token1];
-  }
-
-  // this only works if balances from endpoint only contain balances for assets
-  // traded in that pool
-  return balances.map(({ denom }) => denom);
-}
-
-/** Sidecar made some type changes to the underlying pool, so we map those changes back to the sidecar type.  */
-function makePoolRawResponseFromChainPool(
-  chainPool: SidecarPool["chain_model"]
-): PoolRawResponse {
-  if ("current_tick_liquidity" in chainPool) {
-    return {
-      ...chainPool,
-      id: chainPool.id?.toString(),
-      current_tick: chainPool.current_tick?.toString(),
-      tick_spacing: chainPool.tick_spacing?.toString(),
-      exponent_at_price_one: chainPool.exponent_at_price_one?.toString(),
-    } as PoolRawResponse;
-  }
-
-  if ("scaling_factors" in chainPool) {
-    return {
-      ...chainPool,
-      id: chainPool.id?.toString(),
-      scaling_factors: chainPool.scaling_factors?.map((factor) =>
-        factor.toString()
-      ),
-    } as PoolRawResponse;
-  }
-
-  if ("id" in chainPool) {
-    return {
-      ...chainPool,
-      id: chainPool.id?.toString(),
-    } as PoolRawResponse;
-  }
-
-  return {
-    ...chainPool,
-    pool_id: chainPool.pool_id?.toString(),
-    code_id: chainPool.code_id?.toString(),
-  } as PoolRawResponse;
-}
-
-function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
-  const assets = reserve.map((coin) => ({
-    anyDenom: coin.currency.coinMinimalDenom,
-    amount: coin.toCoin().amount,
-  }));
-
-  return calcSumAssetsValue({ assets })
-    .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0))
-    .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, 0));
+  return (
+    await Promise.all(
+      balances.map(async (balance) => {
+        const asset = await getAsset({ anyDenom: balance.denom }).catch(
+          () => null
+        );
+        // not listed
+        if (!asset) return;
+        return new CoinPretty(asset, balance.amount);
+      })
+    )
+  ).filter(Boolean) as CoinPretty[];
 }

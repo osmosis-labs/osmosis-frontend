@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { useTranslation } from "~/hooks";
-import type { PoolIncentives } from "~/server/queries/complex/pools/incentives";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
@@ -12,81 +11,54 @@ import { Icon } from "../assets";
 import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 import { CustomClasses } from "../types";
 
-/** @deprecated uses Mobx query stores, do not use */
-export const AprBreakdownLegacy: FunctionComponent<
+export const AprBreakdown: FunctionComponent<
   { poolId: string; showDisclaimerTooltip?: boolean } & CustomClasses
-> = observer(({ poolId, className, showDisclaimerTooltip }) => {
+> = observer(({ poolId, className, showDisclaimerTooltip = false }) => {
   const { queriesExternalStore } = useStore();
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
-
-  return (
-    <AprBreakdown
-      total={poolAprs?.totalApr}
-      swapFee={poolAprs?.swapFees}
-      superfluid={poolAprs?.superfluid}
-      osmosis={poolAprs?.osmosis}
-      boost={poolAprs?.boost}
-      className={className}
-      showDisclaimerTooltip={showDisclaimerTooltip}
-    />
-  );
-});
-
-export const AprBreakdown: FunctionComponent<
-  PoolIncentives["aprBreakdown"] &
-    CustomClasses & { showDisclaimerTooltip?: boolean }
-> = ({
-  total,
-  swapFee,
-  superfluid,
-  osmosis,
-  boost,
-  className,
-  showDisclaimerTooltip = false,
-}) => {
   const { t } = useTranslation();
 
   return (
     <div className={classNames("flex w-60 flex-col gap-4 p-5", className)}>
       <div className="flex flex-col gap-2">
-        {swapFee && (
+        {poolAprs?.swapFees && (
           <BreakdownRow
             label={t("pools.aprBreakdown.swapFees")}
-            value={swapFee}
+            value={poolAprs.swapFees}
           />
         )}
-        {osmosis && (
+        {poolAprs?.osmosis && (
           <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
             <div className="flex place-content-between items-center gap-1">
               <p>OSMO {t("pools.aprBreakdown.boost")}</p>
               <Icon id="boost" color={theme.colors.bullish[500]} />
             </div>
-            <p>{osmosis.maxDecimals(1).toString()}</p>
+            <p>{poolAprs.osmosis.maxDecimals(1).toString()}</p>
           </div>
         )}
-        {superfluid && (
+        {poolAprs?.superfluid && (
           <BreakdownRow
             label={t("pools.aprBreakdown.superfluid")}
-            value={superfluid}
+            value={poolAprs.superfluid}
           />
         )}
-        {boost && (
+        {poolAprs?.boost && (
           <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
             <div className="flex place-content-between items-center gap-1">
               <p>{t("pools.aprBreakdown.externalBoost")}</p>
               <Icon id="boost" color={theme.colors.bullish[500]} />
             </div>
-            <p>{boost.maxDecimals(1).toString()}</p>
+            <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
           </div>
         )}
       </div>
 
-      {total && (
+      {poolAprs?.totalApr && (
         <div
           className={classNames(
             "subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3",
             {
-              "text-bullish-500": Boolean(boost),
+              "text-bullish-500": Boolean(poolAprs?.boost),
             }
           )}
         >
@@ -98,12 +70,12 @@ export const AprBreakdown: FunctionComponent<
           ) : (
             <p>{t("pools.aprBreakdown.total")}</p>
           )}
-          <p>{total.maxDecimals(1).toString()}</p>
+          <p>{poolAprs.totalApr.maxDecimals(1).toString()}</p>
         </div>
       )}
     </div>
   );
-};
+});
 
 const BreakdownRow: FunctionComponent<{
   label: string;

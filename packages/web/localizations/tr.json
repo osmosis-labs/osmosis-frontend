@@ -292,11 +292,6 @@
       "undergoAudit": "denetim sırasında (tahmini tamamlanma tarihi Ocak 2024).",
       "warning": "UYARI:",
       "loading": "Yükleniyor..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "Doğrulanmamış varlıkları etkinleştirin",
-      "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
-      "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     }
   },
   "buyTokens": "jeton satın al",
@@ -596,7 +591,6 @@
   },
   "stake": {
     "available": "Mevcut",
-    "staked": "Kazıklı",
     "MAX": "MAKS.",
     "validatorHeader": "Doğrulayıcı ekibi",
     "stake": "OSMO'yu Stake Edin",
@@ -854,6 +848,8 @@
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "tvl": "TVL",
+    "backButton": "Tüm jetonlar",
+    "ariaBackButton": "Tüm belirteçleri geri düğmesi",
     "noData": "ND",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",

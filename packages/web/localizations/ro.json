@@ -292,11 +292,6 @@
       "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
       "warning": "AVERTIZARE:",
       "loading": "Se încarcă..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "Activați activele neverificate",
-      "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
-      "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     }
   },
   "buyTokens": "Cumpărați jetoane",
@@ -596,7 +591,6 @@
   },
   "stake": {
     "available": "Disponibil",
-    "staked": "Mizat",
     "MAX": "MAX",
     "validatorHeader": "Echipa de validatori",
     "stake": "Miza OSMO",
@@ -854,6 +848,8 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
+    "backButton": "Toate jetoanele",
+    "ariaBackButton": "Buton înapoi pentru toate jetoanele",
     "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",

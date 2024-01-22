@@ -87,7 +87,6 @@ export const StakeTool: React.FC<{
         availableAmount={availableAmount}
         setInputAmount={setInputAmount}
         inputAmount={inputAmount}
-        activeTab={activeTab}
       />
       {activeTab === "Stake" ? (
         <EstimatedEarningCard

@@ -103,7 +103,17 @@ export const swapRouter = createTRPCRouter({
         );
         const timeMs = Date.now() - startTime;
 
+        // validate assets
+        if (!(await getAsset({ anyDenom: tokenInDenom }))) {
+          throw new Error(
+            `Token in denom is not configured in asset list: ${tokenInDenom}`
+          );
+        }
         const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
+        if (!tokenOutAsset)
+          throw new Error(
+            `Token out denom is not configured in asset list: ${tokenOutDenom}`
+          );
 
         // calculate fiat value of amounts
         // get fiat value

@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { Fragment, FunctionComponent } from "react";
 
@@ -39,17 +38,9 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
 const SettingsContent = observer(() => {
   const { userSettings } = useStore();
   const { t } = useTranslation();
-  const languageSetting = userSettings.getUserSettingById(
-    "language"
-  ) as LanguageUserSetting;
 
   return (
-    <div
-      className={classNames("relative mt-8", {
-        "overflow-auto": !languageSetting.state.isControlOpen,
-        "overflow-hidden": languageSetting.state.isControlOpen,
-      })}
-    >
+    <div className="relative mt-8 overflow-auto">
       {userSettings.userSettings.map((setting) => (
         <Fragment key={setting.getLabel(t)}>
           {setting.controlComponent(setting.state as any, setting.setState)}

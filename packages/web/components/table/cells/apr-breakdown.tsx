@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { AprBreakdownLegacy } from "~/components/cards/apr-breakdown";
+import { AprBreakdown } from "~/components/cards/apr-breakdown";
 import { Tooltip } from "~/components/tooltip";
 import { useStore } from "~/stores";
 
@@ -16,9 +16,9 @@ export const AprBreakdownCell: FunctionComponent<{
   return (
     <Tooltip
       rootClassNames="!rounded-[20px] drop-shadow-md"
-      content={<AprBreakdownLegacy poolId={poolId} />}
+      content={<AprBreakdown poolId={poolId} />}
     >
-      <div
+      <p
         className={classNames("ml-auto flex items-center gap-1.5", {
           "text-bullish-500": Boolean(poolAprs?.boost || poolAprs?.osmosis),
         })}
@@ -29,7 +29,7 @@ export const AprBreakdownCell: FunctionComponent<{
           </div>
         )}
         {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
-      </div>
+      </p>
     </Tooltip>
   );
 });

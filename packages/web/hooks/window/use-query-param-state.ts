@@ -13,27 +13,23 @@ type QueryParamValue =
 
 /** Emulates `React.useState` but uses next/router to store state in URL query params.
  *  Only sets from `defaultValue` if it's not present in the query params. */
-export function useQueryParamState<TValue extends QueryParamValue>(
+export function useQueryParamState(
   key: string,
-  defaultValue?: TValue
-): [TValue | undefined, (value: TValue) => void] {
+  defaultValue?: QueryParamValue
+): [QueryParamValue | undefined, (value: QueryParamValue) => void] {
   const router = useRouter();
   const { query: queryParams } = router;
-  const queryParamValue = queryParams[key] as TValue;
+  const queryParamValue = queryParams[key];
 
   const setQueryParam = useCallback(
-    (value: TValue) => {
+    (value: QueryParamValue) => {
       if (queryParams[key] === value) return;
-      router.push(
-        {
-          query: {
-            ...queryParams,
-            [key]: value,
-          },
+      router.push({
+        query: {
+          ...queryParams,
+          [key]: value,
         },
-        undefined,
-        { scroll: false }
-      );
+      });
     },
     [router, queryParams, key]
   );
