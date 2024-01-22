@@ -11,6 +11,7 @@ export const GenericMainCard: React.FC<
     title?: string;
     titleIcon?: ReactNode;
     titleIconAction?: () => void;
+    className?: string;
   } & CustomClasses
 > = ({ children, title, titleIcon, titleIconAction, className }) => {
   return (
