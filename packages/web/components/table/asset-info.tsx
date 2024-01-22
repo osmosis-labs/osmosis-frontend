@@ -24,6 +24,7 @@ import {
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
+import { useShowUnlistedAssets } from "~/hooks/use-show-unlisted-assets";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -39,7 +40,7 @@ import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../spinner";
-import { CustomClasses } from "../types";
+import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
@@ -76,6 +77,8 @@ export const AssetsInfoTable: FunctionComponent<{
   const showUnverifiedAssets =
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
+  const { showUnlistedAssets } = useShowUnlistedAssets();
+
   // Query
   const {
     data: assetPagesData,
@@ -90,6 +93,7 @@ export const AssetsInfoTable: FunctionComponent<{
       limit: 20,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
+      includeUnlisted: showUnlistedAssets,
       sort: sortKey
         ? {
             keyPath: sortKey,
@@ -498,63 +502,6 @@ const BalanceCell: AssetInfoCellComponent = ({
       <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
     )}
   </div>
-);
-
-const SortHeader: FunctionComponent<
-  {
-    label: string;
-    sortKey: NonNullable<SortKey>;
-    currentSortKey: SortKey;
-    currentDirection: SortDirection;
-    setSortKey: (key: SortKey) => void;
-    setSortDirection: (direction: SortDirection) => void;
-  } & CustomClasses
-> = ({
-  label,
-  sortKey,
-  currentSortKey,
-  currentDirection,
-  setSortDirection,
-  setSortKey,
-  className,
-}) => (
-  <button
-    className={classNames(
-      "ml-auto flex h-6 items-center justify-center gap-1",
-      className
-    )}
-    onClick={() => {
-      if (currentSortKey !== sortKey) {
-        // select to sort and start descending
-        setSortKey(sortKey as SortKey);
-        setSortDirection("desc");
-        return;
-      } else if (currentSortKey === sortKey && currentDirection === "desc") {
-        // toggle sort direction
-        setSortDirection("asc");
-        return;
-      } else if (currentSortKey === sortKey && currentDirection === "asc") {
-        // deselect
-        setSortKey(undefined);
-        setSortDirection("desc");
-      }
-    }}
-  >
-    <span>{label}</span>
-    {currentSortKey === sortKey && (
-      <Icon
-        width={10}
-        height={6}
-        className={classNames(
-          "ml-1 transform text-osmoverse-400 transition-transform",
-          {
-            "rotate-180": currentDirection === "asc",
-          }
-        )}
-        id="triangle-down"
-      />
-    )}
-  </button>
 );
 
 export const AssetActionsCell: AssetInfoCellComponent<{

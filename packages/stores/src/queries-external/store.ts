@@ -30,7 +30,6 @@ import { ObservableQueryPositionsPerformanceMetrics } from "./position-performan
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryMarketCap } from "./token-market-cap";
-import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
@@ -39,7 +38,6 @@ export class QueriesExternalStore {
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
-  public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -90,12 +88,6 @@ export class QueriesExternalStore {
       priceStore,
       timeseriesDataBaseUrl
     );
-    this.queryTokenPairHistoricalChart =
-      new ObservableQueryTokensPairHistoricalChart(
-        kvStore,
-        priceStore,
-        timeseriesDataBaseUrl
-      );
     this.queryPriceRangeAprs = new ObservableQueryPriceRangeAprs(
       kvStore,
       indexerDataBaseUrl

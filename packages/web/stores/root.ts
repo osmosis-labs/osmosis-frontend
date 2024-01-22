@@ -113,7 +113,8 @@ export class RootStore {
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
         BlacklistedPoolIds,
-        TransmuterPoolCodeIds
+        TransmuterPoolCodeIds,
+        IS_TESTNET
       )
     );
 

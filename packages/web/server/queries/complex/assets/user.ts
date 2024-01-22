@@ -30,6 +30,7 @@ export async function getUserAssetInfo<TAsset extends Asset>({
     assetList,
     assets: [asset],
     userOsmoAddress,
+    includeUnlisted: true,
   });
   return userAssets[0];
 }
@@ -66,6 +67,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
         amount: balance.amount,
       }).catch(() => {
         console.error(asset.coinMinimalDenom, "likely missing price config");
+        return undefined;
       });
 
       return {

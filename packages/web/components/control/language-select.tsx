@@ -80,7 +80,7 @@ const ListBoxContent: FunctionComponent<
   }, [languageSetting, open]);
 
   return (
-    <Listbox.Options className="absolute inset-0 z-50 bg-osmoverse-800 outline-none">
+    <Listbox.Options className="absolute inset-0 z-50 overflow-auto bg-osmoverse-800 outline-none">
       {options.map((option) => (
         <Listbox.Option
           key={option.value}
