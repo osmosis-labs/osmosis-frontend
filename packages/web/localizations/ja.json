@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "利用可能",
+    "staked": "杭打ち",
     "MAX": "マックス",
     "validatorHeader": "ステーク分隊",
     "stake": "OSMOをステークする",

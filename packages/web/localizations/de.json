@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Verfügbar",
+    "staked": "Abgesteckt",
     "MAX": "MAX",
     "validatorHeader": "Pfahltrupp",
     "stake": "Setzen Sie OSMO ein",

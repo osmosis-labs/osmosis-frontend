@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "Доступный",
+    "staked": "Ставка",
     "MAX": "МАКС",
     "validatorHeader": "Отряд кола",
     "stake": "Ставка ОСМО",

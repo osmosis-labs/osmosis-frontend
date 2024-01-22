@@ -596,6 +596,7 @@
   },
   "stake": {
     "available": "ઉપલબ્ધ છે",
+    "staked": "દાવ પર લગાવ્યો",
     "MAX": "MAX",
     "validatorHeader": "હિસ્સો ટુકડી",
     "stake": "સ્ટેક OSMO",
