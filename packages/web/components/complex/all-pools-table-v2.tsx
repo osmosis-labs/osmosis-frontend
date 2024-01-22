@@ -105,6 +105,11 @@ export const AllPoolsTable: FunctionComponent<{
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       enabled: isQueryParamsReady,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
   const poolsData = useMemo(
