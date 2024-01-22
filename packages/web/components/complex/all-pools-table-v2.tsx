@@ -54,7 +54,7 @@ export const AllPoolsTable: FunctionComponent<{
   /** Won't sort when searching is happening. */
   const sortKey: SortKey = Boolean(searchQuery) ? undefined : sortKey_;
 
-  const [sortDirection = "desc", setSortDirection] =
+  const [sortDirection = "desc", setSortDirection, isQueryParamsReady] =
     useQueryParamState<SortDirection>("allPoolsSortDir", "desc");
 
   const [poolTypesFilter, setPoolTypesFilter] = useQueryParamState<
@@ -104,6 +104,7 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      enabled: isQueryParamsReady,
     }
   );
   const poolsData = useMemo(
