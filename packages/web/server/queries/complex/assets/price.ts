@@ -191,59 +191,66 @@ export async function getAssetPrice({
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
-  const assetListAsset = getAssetFromAssetList({
-    sourceDenom: asset.sourceDenom,
-    coinMinimalDenom: asset.coinMinimalDenom,
-    assetLists: AssetLists,
+  return cachified({
+    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    cache: pricesCache,
+    ttl: 1000, // 1 second
+    getFreshValue: async () => {
+      const assetListAsset = getAssetFromAssetList({
+        sourceDenom: asset.sourceDenom,
+        coinMinimalDenom: asset.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      if (!assetListAsset) {
+        throw new Error(
+          `Asset ${asset.sourceDenom} not found on asset list registry.`
+        );
+      }
+
+      let coingeckoAsset:
+        | NonNullable<
+            Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
+          >[number]
+        | undefined;
+
+      const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
+
+      /**
+       * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
+       */
+      try {
+        if (
+          (!assetListAsset || !assetListAsset.coinGeckoId) &&
+          !shouldCalculateUsingPools &&
+          asset.coinDenom
+        ) {
+          coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
+        }
+      } catch (e) {
+        console.error("Failed to fetch asset from coingecko registry", e);
+      }
+
+      const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
+
+      if (shouldCalculateUsingPools && assetListAsset) {
+        return await calculatePriceFromPriceId({
+          asset: assetListAsset.rawAsset,
+          currency,
+        });
+      }
+
+      if (!id) {
+        throw new Error(
+          `Asset ${
+            asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
+          } has no identifier for pricing.`
+        );
+      }
+
+      return await getCoingeckoPrice({ coingeckoId: id, currency });
+    },
   });
-
-  if (!assetListAsset) {
-    throw new Error(
-      `Asset ${asset.sourceDenom} not found on asset list registry.`
-    );
-  }
-
-  let coingeckoAsset:
-    | NonNullable<
-        Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
-      >[number]
-    | undefined;
-
-  const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
-
-  /**
-   * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
-   */
-  try {
-    if (
-      (!assetListAsset || !assetListAsset.coinGeckoId) &&
-      !shouldCalculateUsingPools &&
-      asset.coinDenom
-    ) {
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
-    }
-  } catch (e) {
-    console.error("Failed to fetch asset from coingecko registry", e);
-  }
-
-  const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
-
-  if (shouldCalculateUsingPools && assetListAsset) {
-    return await calculatePriceFromPriceId({
-      asset: assetListAsset.rawAsset,
-      currency,
-    });
-  }
-
-  if (!id) {
-    throw new Error(
-      `Asset ${
-        asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
-      } has no identifier for pricing.`
-    );
-  }
-
-  return await getCoingeckoPrice({ coingeckoId: id, currency });
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.
