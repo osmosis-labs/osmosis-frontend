@@ -46,12 +46,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import {
-  apiClient,
-  ApiClientError,
-  getSourceDenomFromAssetList,
-  isNil,
-} from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -131,20 +126,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
-  /**
-   * We make sure that the 'base' field always has as its value the native chain parameter
-   * and not values derived from the IBC connection with Osmosis
-   */
-  private get walletManagerAssets() {
-    return this.assets.map((assetList) => ({
-      ...assetList,
-      assets: assetList.assets.map((asset) => ({
-        ...asset,
-        base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
-      })),
-    })) as CosmologyAssetList[];
-  }
-
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
     readonly osmosisChainId: string,
@@ -177,7 +158,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.walletManagerAssets,
+      this.assets as CosmologyAssetList[],
       wallets,
       logger,
       true,

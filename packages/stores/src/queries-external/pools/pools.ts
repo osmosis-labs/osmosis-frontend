@@ -40,7 +40,6 @@ export class ObservableQueryPools
     readonly queryNumPools: ObservableQueryNumPools,
     protected readonly poolIdBlacklist: string[] = [],
     protected readonly transmuterCodeIds: string[] = [],
-    protected readonly isTestnet = false,
     pagination = {
       page: 1,
       limit: 300,
@@ -52,11 +51,11 @@ export class ObservableQueryPools
       ObservableQueryPools.makeUrl({
         page: pagination.page,
         limit: pagination.limit,
-        minLiquidity: isTestnet ? 0 : 1_000,
+        minLiquidity: 1_000,
       })
     );
 
-    this._queryParams = { minLiquidity: isTestnet ? 0 : 1_000, ...pagination };
+    this._queryParams = { minLiquidity: 1_000, ...pagination };
 
     makeObservable(this);
   }

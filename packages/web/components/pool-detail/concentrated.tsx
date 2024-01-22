@@ -29,7 +29,7 @@ import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
 import { removeQueryParam } from "~/utils/url";
 
-import { AprBreakdownLegacy } from "../cards/apr-breakdown";
+import { AprBreakdown } from "../cards/apr-breakdown";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -76,7 +76,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const {
       pool,
-      currentPrice,
       xRange,
       yRange,
       lastChartData,
@@ -91,7 +90,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         poolId,
         priceStore
       ).volume24h;
-    const poolLiquidity = pool?.totalFiatValueLocked;
+    const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
+
+    const currentPrice = pool?.concentratedLiquidityPoolInfo
+      ? pool.concentratedLiquidityPoolInfo.currentPrice
+      : undefined;
 
     const userPositionsInPool = osmosisQueries.queryAccountsPositions
       .get(account?.address ?? "")
@@ -125,8 +128,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       const liquidityUSD = poolLiquidity
         ? Number(poolLiquidity?.toDec().toString())
         : undefined;
-      const poolAssetDenoms = pool?.reserveCoins.map((coin) => coin.denom);
-      const poolName = poolAssetDenoms?.join(" / ");
+      const poolName = pool?.poolAssets
+        ?.map((poolAsset) => poolAsset.amount.denom)
+        .join(" / ");
       const positionCount = userPositionsInPool.length;
 
       logEvent([
@@ -185,21 +189,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="flex flex-wrap items-center gap-2">
                   <PoolAssetsIcon
                     className="!w-[78px]"
-                    assets={pool?.reserveCoins.map((coin) => ({
-                      coinImageUrl: coin.currency.coinImageUrl,
-                      coinDenom: coin.currency.coinDenom,
+                    assets={pool?.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
                     }))}
                   />
                   <div className="flex flex-wrap gap-x-2">
                     <PoolAssetsName
                       size="md"
                       className="text-h5 font-h5"
-                      assetDenoms={pool?.reserveCoins.map(
-                        (asset) => asset.currency.coinDenom
+                      assetDenoms={pool?.poolAssets.map(
+                        (asset) => asset.amount.currency.coinDenom
                       )}
                     />
                     <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
-                      {pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"}{" "}
+                      {pool?.swapFee ? pool.swapFee.toString() : "0%"}{" "}
                       {t("clPositions.spreadFactor")}
                     </span>
                   </div>
@@ -237,16 +241,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="lg:hidden">
                   <PoolDataGroup
                     label={t("clPositions.spreadFactor")}
-                    value={
-                      pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"
-                    }
+                    value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
                   />
                 </div>
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {chartConfig.isHistoricalDataLoading ? (
+                {chartConfig.queryTokenPairPrice.isFetching ? (
                   <Spinner className="m-auto" />
                 ) : !chartConfig.historicalChartUnavailable ? (
                   <>
@@ -511,7 +513,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
         </div>
         {featureFlags.aprBreakdown && (
-          <AprBreakdownLegacy
+          <AprBreakdown
             className="shrink-0 rounded-[28px] bg-osmoverse-1000"
             poolId={poolId}
             showDisclaimerTooltip

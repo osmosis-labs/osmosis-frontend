@@ -292,11 +292,6 @@
       "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
       "warning": "AVISO:",
       "loading": "Carregando..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "Ativar ativos não verificados",
-      "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
-      "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     }
   },
   "buyTokens": "Comprar tokens",
@@ -596,7 +591,6 @@
   },
   "stake": {
     "available": "Disponível",
-    "staked": "Apostado",
     "MAX": "MAX",
     "validatorHeader": "Esquadrão validador",
     "stake": "Estaca OSMO",
@@ -854,6 +848,8 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "televisão",
+    "backButton": "Todos os tokens",
+    "ariaBackButton": "Botão Voltar de todos os tokens",
     "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",

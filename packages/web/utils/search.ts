@@ -11,12 +11,11 @@ export const SearchSchema = z.object({
 export function search<TItem extends object>(
   data: TItem[],
   keys: string[],
-  search: Search,
-  threshold = 0.4
+  search: Search
 ): TItem[] {
   const fuse = new Fuse(data, {
     keys,
-    threshold,
+    threshold: 0.4,
   });
 
   return fuse

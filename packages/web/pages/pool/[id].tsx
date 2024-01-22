@@ -15,14 +15,10 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
-interface Props {
-  id: string;
-}
-
-const Pool: FunctionComponent<Props> = observer(() => {
+const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
-  const poolId = router.query.id as string;
   const { chainStore, queriesStore } = useStore();
+  const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
@@ -71,7 +67,9 @@ const Pool: FunctionComponent<Props> = observer(() => {
 
   return (
     <>
-      <NextSeo title={t("seo.pool.title", { id: poolId })} />
+      <NextSeo
+        title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
+      />
       {queryPool && Boolean(poolId) && (
         <TradeTokens
           className="md:!p-0"
@@ -107,20 +105,5 @@ const Pool: FunctionComponent<Props> = observer(() => {
     </>
   );
 });
-
-/* export const getStaticPaths: GetStaticPaths = async () => {
-  const { num_pools } = await queryNumPools();
-
-  const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
-    params: { id: String(i + 1) },
-  }));
-
-  return { paths, fallback: "blocking" };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const id = params?.id as string;
-  return { props: { id: id ?? "-" } };
-}; */
 
 export default Pool;

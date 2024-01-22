@@ -292,11 +292,6 @@
       "undergoAudit": "正在接受审核（预计于 2024 年 1 月完成）。",
       "warning": "警告：",
       "loading": "加载中..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "激活未验证资产",
-      "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
-      "reminder": "您始终可以在设置模式中停用此设置。"
     }
   },
   "buyTokens": "购买代币",
@@ -596,7 +591,6 @@
   },
   "stake": {
     "available": "可用的",
-    "staked": "固定",
     "MAX": "最大限度",
     "validatorHeader": "验证者小队",
     "stake": "OSMO 股份",
@@ -854,6 +848,8 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
+    "backButton": "所有代币",
+    "ariaBackButton": "所有代币后退按钮",
     "noData": "ND",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",

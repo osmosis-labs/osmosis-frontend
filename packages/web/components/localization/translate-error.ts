@@ -15,6 +15,7 @@ import {
   DepositNoBalanceError,
   HighSwapFeeError,
   InsufficientBalanceError,
+  InvalidRangeError,
   InvalidScalingFactorControllerAddress,
   InvalidSlippageError,
   InvalidSwapFeeError,
@@ -30,7 +31,6 @@ import {
   ScalingFactorTooLowError,
 } from "@osmosis-labs/stores";
 
-import { InvalidRangeError } from "~/hooks";
 import { t } from "~/hooks";
 
 /** Returns localization key given a custom Error subclass, typically from UI configs. */

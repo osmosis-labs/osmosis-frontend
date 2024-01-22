@@ -57,13 +57,13 @@
   "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "convertToStake": {
     "adTitle": "더 나은 수익 전략을 발견했습니다.",
-    "adSubtitle": "귀하의 포지션 중 일부는 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다.",
+    "adSubtitle": "귀하의 직책 중 일부는 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다.",
     "title": "스테이킹된 OSMO로 전환",
     "description": "선택한 직책은 OSMO로 완전히 전환됩니다. 그러면 모든 OSMO가 기존 검증자 세트에 자동으로 스테이킹됩니다.",
     "stakedOsmo": "스테이킹된 OSMO",
     "APR": "4월",
     "currentApr": "현재 4월",
-    "pool": "유동성 풀 #{poolId}",
+    "pool": "수영장 #{poolId}",
     "position": "위치 # {positionId}",
     "convertAndStake": "변환 및 스테이킹"
   },
@@ -73,11 +73,11 @@
     "outOfRange": "범위를 벗어남",
     "fullRange": "전체 범위",
     "unbonding": "언본딩",
-    "superfluidStaked": "슈퍼플루이드 스테이킹",
-    "superfluidUnstakingStatus": "슈퍼플루이드 언스테이킹",
+    "superfluidStaked": "초유체 고정",
+    "superfluidUnstakingStatus": "초유동체 언스테이킹",
     "currentAssets": "유동 자산",
     "principalAssets": "주요 자산",
-    "totalRewardsEarned": "총 획득 보상",
+    "totalRewardsEarned": "총 보상 획득",
     "unclaimedRewards": "청구되지 않은 보상",
     "roi": "ROI",
     "selectedRange": "선택한 범위",
@@ -102,13 +102,13 @@
     "superfluidUnstake": "스테이킹 해제 후 사용 가능",
     "superfluidUnstaking": "언스테이킹, 사용 가능",
     "superfluidCommission": "수수료",
-    "unstake": "유동성 언스테이킹",
+    "unstake": "언스테이크 유동성",
     "unbondingFromNow": "언본딩, 사용 가능",
     "checkBackForRewards": "리워드를 다시 확인하세요.",
-    "totalBalance": "전체 자산",
+    "totalBalance": "전체 균형",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동"
+    "goToPool": "수영장 번호로 이동"
   },
   "app": {
     "banner": {
@@ -211,7 +211,7 @@
       },
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
-      "hideBalances": "자산 숨기기",
+      "hideBalances": "마스크 잔액",
       "preTransfer": {
         "currentBal": "현재 수량",
         "deposit": "입금",
@@ -257,8 +257,8 @@
       "expectedOutput": "예상 출력",
       "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
-      "sending": "전송중...",
-      "transferAnyway": "무시하고 전송"
+      "sending": "배상...",
+      "transferAnyway": "어쨌든 전송"
     },
     "transferAssetSelect": {
       "buttonNext": "다음",
@@ -289,14 +289,9 @@
       "poweredBy": "제공:",
       "proceed": "진행하다",
       "depositExpiration": "이 입금 주소는 다음 날짜에 만료됩니다.",
-      "undergoAudit": "감사 진행중",
+      "undergoAudit": "감사 중(2024년 1월 완료 예정)",
       "warning": "경고:",
       "loading": "로딩 중..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "확인되지 않은 자산 활성화",
-      "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
-      "reminder": "언제든지 설정 모달에서 이 설정을 비활성화할 수 있습니다."
     }
   },
   "buyTokens": "토큰 구매",
@@ -378,7 +373,7 @@
     "fallbackSupport": "지원하다",
     "chartUnavailable": "차트를 사용할 수 없음",
     "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
-    "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
+    "swapSlippage": "미끄러짐으로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 미끄러짐 내성을 높여보세요.",
     "invalidAmounts": "잘못된 금액"
   },
   "frontierMigration": {
@@ -423,7 +418,7 @@
     "new": "새로운"
   },
   "notifi": {
-    "saveChanges": "변경 사항 저장",
+    "saveChanges": "변경 사항을 저장하다",
     "unsupportedHistoryTitle": "지원되지 않는 알림",
     "unsupportedHistoryMessage": "아차! 문제가 발생했습니다. 알려주세요",
     "getStartedHistoryTitle1": "시작하려면 토큰 구매",
@@ -437,14 +432,14 @@
     "signupDummyHistoryTitle2": "자산 입금 방법",
     "signupDummyHistoryMessage2": "Osmosis로 자금을 이체하는 방법 알아보기",
     "signupDummyHistoryTitle3": "거래를 시작하는 방법",
-    "signupDummyHistoryMessage3": "이 빠른 가이드를 통해 몇 분 안에 거래할 수 있습니다.",
+    "signupDummyHistoryMessage3": "이 빠른 자습서를 통해 몇 분 안에 거래할 수 있습니다.",
     "outboundTransferHistoryTitle": "Osmosis 아웃바운드 전송",
     "outboundTransferHistoryMessage": "양",
     "poolExitedHistoryTitle": "Osmosis 풀 종료됨",
     "poolExitedHistoryMessage": "풀 ID",
-    "poolJoinedHistoryTitle": "오스모시스 풀 합류",
+    "poolJoinedHistoryTitle": "삼투 풀 합류",
     "poolJoinedHistoryMessage": "토큰",
-    "swapHistoryTitle": "오스모시스 스왑 확인",
+    "swapHistoryTitle": "삼투 스왑 확인",
     "swapHistoryMessage": "로 바꿨다",
     "emptyHistoryTitle": "제목 없음",
     "emptyHistoryMessage": "메시지 없음",
@@ -455,9 +450,9 @@
     "signupPageTitle": "이제 알림을 사용할 수 있습니다.",
     "signupPageMessage": "새로운 토큰 목록에서 중요한 위치 상태에 이르기까지 중요한 업데이트를 다시는 놓치지 마십시오.",
     "signupPageButton": "알림 활성화",
-    "loadMore": "더보기",
-    "unsavedChangeModalInfo": "저장되지 않은 변경사항이 있습니다. 진행하시겠습니까?",
-    "discardButton": "변경 사항 취소",
+    "loadMore": "더 로드",
+    "unsavedChangeModalInfo": "저장되지 않은 변경사항이 있습니다. 하시겠습니까?",
+    "discardButton": "변경 사항을 취소",
     "clearAllHistory": "모두 지우기"
   },
   "pool": {
@@ -560,7 +555,7 @@
     "aprBreakdown": {
       "swapFees": "스왑 수수료",
       "boost": "후원",
-      "superfluid": "슈퍼플루이드",
+      "superfluid": "초유체",
       "externalBoost": "외부 부스트",
       "total": "총 연이율",
       "explainer": {
@@ -592,23 +587,22 @@
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어",
     "titleHideBalances": "개인정보 보호를 위한 마스크 잔액",
-    "hideBalances": "잔액 숨기기"
+    "hideBalances": "마스크된 잔액"
   },
   "stake": {
     "available": "사용 가능",
-    "staked": "스테이킹된",
     "MAX": "MAX",
     "validatorHeader": "유효성 검사기 분대",
-    "stake": "OSMO 스테이킹",
+    "stake": "스테이킹 OSMO",
     "unstake": "OSMO 언스테이킹",
     "estimatedEarnings": "예상 수입",
     "unbondingInProgress": "언스테이킹 진행 중",
     "amount": "양",
     "availableIn": "가능",
-    "day": "일",
-    "days": "일",
+    "day": "낮",
+    "days": "날",
     "month": "월",
-    "dashboard": "대시보드",
+    "dashboard": "계기반",
     "dashboardStakedOsmo": "스테이킹된 OSMO",
     "rewardsTitle": "미수령 보상",
     "stakeBalanceTitle": "총 스테이크 잔액",
@@ -619,11 +613,11 @@
     "alertTitleBeginning": "벌다",
     "alertTitleEnd": "4월",
     "alertSubtitle": "OSMO를 스테이킹하여",
-    "mainCardButtonText": "스테이킹",
-    "mainCardButtonUnstakeText": "언스테이킹",
+    "mainCardButtonText": "말뚝",
+    "mainCardButtonUnstakeText": "언스테이크",
     "unbondingHeader": "언본딩 기간",
     "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다.",
-    "unbondingPeriodTooltip": "락업된 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
+    "unbondingPeriodTooltip": "잠긴 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
     "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
@@ -651,15 +645,15 @@
       }
     },
     "validatorSquad": {
-      "title": "밸리데이터 스쿼드",
-      "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 밸리데이터 세트를 편집할 수 있습니다.",
-      "searchPlaceholder": "밸리데이터 검색",
+      "title": "유효성 검사기 분대",
+      "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 유효성 검사기 세트를 편집할 수 있습니다.",
+      "searchPlaceholder": "유효성 검사기 검색",
       "button": "스쿼드 설정",
-      "button2": "스쿼드 및 스테이킹 설정",
+      "button2": "스쿼드 및 스테이크 설정",
       "noResults": "검색 결과가 없습니다",
       "column": {
-        "validator": "밸리데이터",
-        "myStake": "내 스테이킹",
+        "validator": "유효성 검사기",
+        "myStake": "내 스테이크",
         "votingPower": "투표권",
         "commission": "수수료"
       }
@@ -667,20 +661,20 @@
     "validatorNextStep": {
       "newUser": {
         "title": "이곳에 새로 오신 것 같습니다.",
-        "description": "스테이킹을 시작할 검증인 분대를 선택하세요. 밸리데이터가 무엇인지 잘 모르시겠습니까?",
+        "description": "스테이킹을 시작할 검증인 분대를 선택하세요. 유효성 검사기가 무엇인지 잘 모르시겠습니까?",
         "learnMore": "스테이킹 작동 방식을 알아보려면 여기를 클릭하십시오.",
         "button": "계속하려면 스테이크 스쿼드를 구성하세요."
       },
       "existingUser": {
         "title": "이전에 스테이킹한 것 같습니다.",
         "description": "귀하의 지갑 주소와 관련된 기존 스테이크 스쿼드를 감지했습니다. Osmosis에서 동일한 유효성 검사기를 유지하시겠습니까?",
-        "buttonKeep": "기존 밸리데이터 유지",
-        "buttonSelect": "새 밸리데이터 선택"
+        "buttonKeep": "기존 유효성 검사기 유지",
+        "buttonSelect": "새 유효성 검사기 선택"
       }
     },
     "introModal": {
       "callout": "새로운 기능",
-      "title": "오스모시스에 스테이킹하기",
+      "title": "삼투압에 스테이킹하기",
       "description": {
         "1": "스테이킹은 자산으로 돈을 벌 수 있는 가장 쉬운 방법 중 하나입니다. 이제 Osmosis에 바로 OSMO를 스테이킹할 수 있습니다.",
         "2": "최대 적립",
@@ -789,7 +783,7 @@
     "superchargedLiquidity": "강력한 유동성",
     "newSuperchargedPool": "이 새로운 풀은 더 높은 수익 잠재력과 가장 높은 추정 APR을 제공합니다.",
     "upgrade": "업그레이드",
-    "pool": "풀",
+    "pool": "수영장",
     "new": "새로운",
     "current": "현재의",
     "success": "업그레이드 성공!",
@@ -811,22 +805,22 @@
       "description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축"
     },
     "apps": {
-      "title": "오스모시스 앱 스토어",
+      "title": "삼투 앱 스토어",
       "description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오."
     },
     "assets": {
-      "title": "오스모시스 자산",
+      "title": "삼투 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
     },
     "disclaimer": {
-      "title": "오스모시스 면책 조항",
+      "title": "삼투 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
     },
     "pool": {
-      "title": "풀 #"
+      "title": "수영장 #"
     },
     "pools": {
-      "title": "오스모시스 풀",
+      "title": "삼투 풀",
       "description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소"
     }
   },
@@ -854,13 +848,15 @@
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
+    "backButton": "모든 토큰",
+    "ariaBackButton": "모든 토큰 뒤로 버튼",
     "noData": "ND",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
     "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
   },
   "osmosisUpdates": {
-    "osmosisUpdates": "오스모시스 업데이트!",
+    "osmosisUpdates": "삼투 업데이트!",
     "seeWhatsNew": "새로운 소식 보기"
   },
   "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",

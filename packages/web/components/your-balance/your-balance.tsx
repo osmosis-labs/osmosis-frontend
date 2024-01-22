@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -24,7 +24,6 @@ import {
   useDisclosure,
   useFakeFeeConfig,
   useFeatureFlags,
-  useGetApr,
   useHideDustUserSetting,
   useStakedAmountConfig,
   useTransferConfig,
@@ -67,7 +66,6 @@ const YourBalance = observer(
     } = useStore();
     const featureFlags = useFeatureFlags();
     const { t } = useTranslation();
-    const { stakingAPR } = useGetApr();
     const language = useCurrentLanguage();
     const osmosisChainId = chainStore.osmosis.chainId;
     const account = accountStore.getWallet(osmosisChainId);
@@ -90,6 +88,20 @@ const YourBalance = observer(
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
+
+    const chain = useMemo(
+      () =>
+        ChainList.find((chain) =>
+          chain.keplrChain.currencies.find(
+            (currency) => currency.coinDenom === denom.toUpperCase()
+          )
+        ),
+      [denom]
+    );
+
+    const inflationApr = chain
+      ? queriesStore.get(chain.chain_id).cosmos.queryInflation.inflation
+      : new IntPretty(0);
 
     const details = useMemo(() => {
       return tokenDetailsByLanguage
@@ -269,11 +281,11 @@ const YourBalance = observer(
                   sub={
                     hasStakingBalance
                       ? formatPretty(balance)
-                      : !isOsmo
+                      : inflationApr.toDec().isZero()
                       ? t("tokenInfos.stakeYourDenomToEarnNoAPR", { denom })
                       : t("tokenInfos.stakeYourDenomToEarn", {
                           denom,
-                          apr: stakingAPR.truncate().toString(),
+                          apr: inflationApr.maxDecimals(1).toString(),
                         })
                   }
                   image={

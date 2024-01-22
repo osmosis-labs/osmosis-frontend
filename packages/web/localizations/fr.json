@@ -292,11 +292,6 @@
       "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
       "warning": "AVERTISSEMENT:",
       "loading": "Chargement..."
-    },
-    "activateUnverifiedAssetsModal": {
-      "activate": "Activer les actifs non vérifiés",
-      "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
-      "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     }
   },
   "buyTokens": "Acheter jetons",
@@ -596,7 +591,6 @@
   },
   "stake": {
     "available": "Disponible",
-    "staked": "Jalonné",
     "MAX": "MAX",
     "validatorHeader": "Escouade de validation",
     "stake": "Piquetage OSMO",
@@ -854,6 +848,8 @@
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
+    "backButton": "Tous les jetons",
+    "ariaBackButton": "Bouton retour de tous les jetons",
     "noData": "ND",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",

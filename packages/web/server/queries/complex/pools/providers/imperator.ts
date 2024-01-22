@@ -55,7 +55,7 @@ export async function queryPaginatedPools({
       (pool) => ("pool_id" in pool ? pool.pool_id : pool.id) === poolIdParam
     );
     if (!pool) {
-      throw new Error("Pool not found: " + poolIdParam);
+      throw { status: 404, pools: [] };
     }
     return { status: 200, pools: [pool], totalNumberOfPools };
   }
