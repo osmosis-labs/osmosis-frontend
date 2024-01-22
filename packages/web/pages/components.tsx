@@ -439,15 +439,15 @@ const Components: NextPage = () => {
         <p className="text-osmoverse-300">osmoverse-300</p>
         <p className="text-osmoverse-400">osmoverse-400</p>
         <p className="text-osmoverse-500">osmoverse-500</p>
-        <p className="text-osmoverse-600">osmoverse-600</p>
-        <p className="text-osmoverse-700">osmoverse-700</p>
-        <p className="text-osmoverse-800">osmoverse-800</p>
-        <p className="text-osmoverse-810">osmoverse-810</p>
-        <p className="text-osmoverse-825">osmoverse-825</p>
-        <p className="text-osmoverse-850">osmoverse-850</p>
-        <p className="text-osmoverse-860">osmoverse-860</p>
-        <p className="text-osmoverse-900">osmoverse-900</p>
-        <p className="text-osmoverse-1000">osmoverse-1000</p>
+        <p className="bg-white-full text-osmoverse-600">osmoverse-600</p>
+        <p className="bg-white-full text-osmoverse-700">osmoverse-700</p>
+        <p className="bg-white-full text-osmoverse-800">osmoverse-800</p>
+        <p className="bg-white-full text-osmoverse-810">osmoverse-810</p>
+        <p className="bg-white-full text-osmoverse-825">osmoverse-825</p>
+        <p className="bg-white-full text-osmoverse-850">osmoverse-850</p>
+        <p className="bg-white-full text-osmoverse-860">osmoverse-860</p>
+        <p className="bg-white-full text-osmoverse-900">osmoverse-900</p>
+        <p className="bg-white-full text-osmoverse-1000">osmoverse-1000</p>
         <p className="text-ammelia-400">ammelia-400</p>
         <p className="text-ammelia-600">ammelia-600</p>
         <p className="text-rust-200">rust-200</p>
@@ -456,20 +456,23 @@ const Components: NextPage = () => {
         <p className="text-rust-600">rust-600</p>
         <p className="text-rust-700">rust-700</p>
         <p className="text-rust-800">rust-800</p>
-        <p className="text-wireframes-darkGrey">wireframes-darkGrey</p>
+        <p className="bg-white-full text-wireframes-darkGrey">
+          wireframes-darkGrey
+        </p>
         <p className="text-wireframes-grey">wireframes-grey</p>
         <p className="text-wireframes-lightGrey">wireframes-lightGrey</p>
         <p className="text-error">error</p>
         <p className="text-missionError">missionError</p>
         <p className="text-superfluid">superfluid</p>
         <p className="text-supercharged">supercharged</p>
-        <p className="text-transparent">transparent</p>
-        <p className="text-black">black</p>
+        <p className="bg-white-full text-black">black</p>
         <p className="text-inherit">inherit</p>
         <p className="text-barFill">barFill</p>
         <p className="text-chartGradientPrimary">chartGradientPrimary</p>
         <p className="text-chartGradientSecondary">chartGradientSecondary</p>
-        <p className="text-yourBalanceActionButton">yourBalanceActionButton</p>
+        <p className="bg-white-full text-yourBalanceActionButton">
+          yourBalanceActionButton
+        </p>
       </Card>
       <h4>Control</h4>
       <Checkboxes />
