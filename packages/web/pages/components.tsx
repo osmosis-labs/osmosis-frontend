@@ -179,7 +179,6 @@ const Radios = () => {
 const Buttons = () => {
   return (
     <Card title="Buttons">
-      <Component title="Typography"></Component>
       <Component title="Regular">
         <Button onClick={() => console.log("clicked")}>Click</Button>
       </Component>
