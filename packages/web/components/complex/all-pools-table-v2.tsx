@@ -9,6 +9,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
@@ -318,7 +319,19 @@ export const AllPoolsTable: FunctionComponent<{
                     className="transition-colors duration-200 ease-in-out"
                     key={cell.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <Link
+                      href={getPoolLink(row.original)}
+                      key={virtualRow.index}
+                      target={getPoolTypeTarget(row.original)}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                      prefetch={false}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
                   </td>
                 ))}
               </tr>
@@ -533,3 +546,18 @@ const AprBreakdownCell: PoolCellComponent = ({
     </Tooltip>
   )) ??
   null;
+
+function getPoolLink(pool: Pool): string {
+  if (pool.type === "cosmwasm-transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
+  }
+
+  return `/pool/${pool.id}`;
+}
+
+function getPoolTypeTarget(pool: Pool) {
+  if (pool.type === "cosmwasm-transmuter") {
+    return "_blank";
+  }
+  return "";
+}
