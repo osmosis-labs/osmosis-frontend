@@ -828,15 +828,6 @@ export class ObservableAddConcentratedLiquidityConfig {
               (this._quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
           );
 
-          console.log("setting", {
-            min: this.moderatePriceRange[0]
-              .mul(multiplicationQuoteOverBase)
-              .toString(),
-            max: this.moderatePriceRange[1]
-              .mul(multiplicationQuoteOverBase)
-              .toString(),
-          });
-
           // Set the initial range to be the moderate range
           this.setMinRange(
             this.moderatePriceRange[0]
