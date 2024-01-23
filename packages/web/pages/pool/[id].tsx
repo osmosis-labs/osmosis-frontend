@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -108,19 +109,11 @@ const Pool: FunctionComponent<Props> = observer(() => {
   );
 });
 
-/* export const getStaticPaths: GetStaticPaths = async () => {
-  const { num_pools } = await queryNumPools();
-
-  const paths = Array.from({ length: Number(num_pools) + 1 }, (_, i) => ({
-    params: { id: String(i + 1) },
-  }));
-
-  return { paths, fallback: "blocking" };
+export const getServerSideProps: GetServerSideProps = async ({
+  resolvedUrl,
+}) => {
+  const splitUrl = resolvedUrl.split("/");
+  return { props: { poolId: splitUrl.pop() ?? "-" } };
 };
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const id = params?.id as string;
-  return { props: { id: id ?? "-" } };
-}; */
 
 export default Pool;
