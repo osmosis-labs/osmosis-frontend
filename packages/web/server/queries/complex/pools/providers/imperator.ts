@@ -33,20 +33,29 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
+const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
+
 /** Get pools from imperator that are listed in asset list. */
 export async function getPoolsFromImperator(): Promise<Pool[]> {
-  const numPools = await queryNumPools();
-  const { pools } = await queryFilteredPools(
-    {
-      min_liquidity: 1_000,
-      order_by: "desc",
-      order_key: "liquidity",
+  return cachified({
+    cache: poolsCache,
+    key: "imperator-pools",
+    ttl: 1000, // 1 second
+    getFreshValue: async () => {
+      const numPools = await queryNumPools();
+      const { pools } = await queryFilteredPools(
+        {
+          min_liquidity: 1_000,
+          order_by: "desc",
+          order_key: "liquidity",
+        },
+        { offset: 0, limit: Number(numPools.num_pools) }
+      );
+      return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
+        (pool): pool is Pool => !!pool
+      );
     },
-    { offset: 0, limit: Number(numPools.num_pools) }
-  );
-  return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
-    (pool): pool is Pool => !!pool
-  );
+  });
 }
 
 /** @deprecated Fetches pools from indexer. */
