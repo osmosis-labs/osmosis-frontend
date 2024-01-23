@@ -549,13 +549,22 @@ const Icons = () => (
 const Tooltips = () => (
   <Card title="Tooltip">
     <Component title="Tooltip Text">
-      <Tooltip content="tooltip content">
-        <span className="border-2 border-osmoverse-500 p-2">Hover Me</span>
+      <Tooltip
+        content="tooltip content"
+        className="h-8 w-32 border-2 border-osmoverse-500"
+      >
+        <span className="m-auto">Hover Me</span>
       </Tooltip>
     </Component>
     <Component title="Tooltip Icon">
-      <Tooltip content="tooltip content">
-        <Icon id={"alert-circle" as SpriteIconId} className="text-white-full" />
+      <Tooltip
+        content="tooltip content"
+        className="h-8 w-32 border-2 border-osmoverse-500"
+      >
+        <Icon
+          id={"alert-circle" as SpriteIconId}
+          className="m-auto text-white-full"
+        />
       </Tooltip>
     </Component>
   </Card>
