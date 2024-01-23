@@ -34,10 +34,12 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<Pool | undefined> {
-  const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
+  const reserveCoins = await getListedReservesFromSidecarPool(
+    sidecarPool
+  ).catch(() => null);
 
   // contains unlisted or invalid assets
-  if (reserveCoins.length === 0) return;
+  if (!reserveCoins) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
@@ -75,6 +77,7 @@ export function getPoolTypeFromChainPool(
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
+/** @throws if an asset is unlisted */
 export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
@@ -83,20 +86,17 @@ export async function getListedReservesFromSidecarPool(
     poolDenoms.map(async (denom) => {
       const asset = await getAsset({ anyDenom: denom }).catch(() => null);
       // not listed
-      if (!asset) return;
+      if (!asset) throw new Error("Asset not listed: " + denom);
 
       const amount = sidecarPool.balances.find(
         (balance) => balance.denom === denom
       )?.amount;
       // no balance
-      if (!amount) return;
+      if (!amount) throw new Error("No balance for asset: " + denom);
 
       return new CoinPretty(asset, amount);
     })
   );
-
-  // something is wrong with the token asset balances
-  if (listedBalances.some((balance) => !balance)) return [];
 
   return listedBalances as CoinPretty[];
 }

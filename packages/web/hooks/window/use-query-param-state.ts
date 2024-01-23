@@ -16,7 +16,7 @@ type QueryParamValue =
 export function useQueryParamState<TValue extends QueryParamValue>(
   key: string,
   defaultValue?: TValue
-): [TValue | undefined, (value: TValue) => void] {
+): [TValue | undefined, (value: TValue) => void, boolean] {
   const router = useRouter();
   const { query: queryParams } = router;
   const queryParamValue = queryParams[key] as TValue;
@@ -45,5 +45,5 @@ export function useQueryParamState<TValue extends QueryParamValue>(
     }
   }, [setQueryParam, defaultValue, queryParamValue, router.isReady]);
 
-  return [queryParamValue, setQueryParam];
+  return [queryParamValue, setQueryParam, router.isReady];
 }
