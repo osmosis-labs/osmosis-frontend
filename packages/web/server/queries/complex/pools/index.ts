@@ -4,7 +4,7 @@ import { z } from "zod";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromSidecar } from "./providers/sidecar";
+import { getPoolsFromImperator } from "./providers/imperator";
 
 const allPooltypes = [
   "concentrated",
@@ -57,7 +57,7 @@ export async function getPool(poolId: string): Promise<Pool> {
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
   params?: PoolFilter,
-  poolProvider: PoolProvider = getPoolsFromSidecar
+  poolProvider: PoolProvider = getPoolsFromImperator
 ): Promise<Pool[]> {
   let pools = await poolProvider();
 
