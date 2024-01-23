@@ -13,6 +13,7 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -477,74 +478,88 @@ const Color = () => (
   </Card>
 );
 
-const Icons = () => {
-  return (
-    <Card title="Icons">
-      {[
-        "search",
-        "up-down-arrow",
-        "chevron-up",
-        "chevron-down",
-        "chevron-left",
-        "chevron-right",
-        "setting",
-        "info",
-        "hamburger",
-        "close",
-        "close-thin",
-        "globe",
-        "dust-broom",
-        "arrow-right",
-        "close-small",
-        "tune",
-        "help-circle",
-        "kado-logo",
-        "transak-logo",
-        "more-menu",
-        "sort-up",
-        "sort-down",
-        "check-mark",
-        "minus",
-        "walletconnect",
-        "alert-triangle",
-        "twitter",
-        "medium",
-        "github",
-        "wallet",
-        "lightning",
-        "lightning-small",
-        "left-right-arrow",
-        "sandbox",
-        "arrow-right",
-        "zoom-in",
-        "zoom-out",
-        "refresh-ccw",
-        "superfluid-osmo",
-        "bell",
-        "email",
-        "telegram",
-        "smartphone",
-        "open-book",
-        "pie-chart",
-        "gift",
-        "down-arrow",
-        "swap",
-        "alert-circle",
-        "chart",
-        "vote",
-        "external-link",
-        "web",
-        "X",
-        "star",
-        "sleep-bell",
-      ].map((icon) => (
-        <Component key={icon} title={icon}>
-          <Icon id={icon as SpriteIconId} className="text-white-full" />
-        </Component>
-      ))}
-    </Card>
-  );
-};
+// TODO dynamically pull the sprite IDs from sprite.svg
+const Icons = () => (
+  <Card title="Icons">
+    {[
+      "search",
+      "up-down-arrow",
+      "chevron-up",
+      "chevron-down",
+      "chevron-left",
+      "chevron-right",
+      "setting",
+      "info",
+      "hamburger",
+      "close",
+      "close-thin",
+      "globe",
+      "dust-broom",
+      "arrow-right",
+      "close-small",
+      "tune",
+      "help-circle",
+      "kado-logo",
+      "transak-logo",
+      "more-menu",
+      "sort-up",
+      "sort-down",
+      "check-mark",
+      "minus",
+      "walletconnect",
+      "alert-triangle",
+      "twitter",
+      "medium",
+      "github",
+      "wallet",
+      "lightning",
+      "lightning-small",
+      "left-right-arrow",
+      "sandbox",
+      "arrow-right",
+      "zoom-in",
+      "zoom-out",
+      "refresh-ccw",
+      "superfluid-osmo",
+      "bell",
+      "email",
+      "telegram",
+      "smartphone",
+      "open-book",
+      "pie-chart",
+      "gift",
+      "down-arrow",
+      "swap",
+      "alert-circle",
+      "chart",
+      "vote",
+      "external-link",
+      "web",
+      "X",
+      "star",
+      "sleep-bell",
+    ].map((icon) => (
+      <Component key={icon} title={icon}>
+        <Icon id={icon as SpriteIconId} className="text-white-full" />
+      </Component>
+    ))}
+  </Card>
+);
+
+const Tooltips = () => (
+  <Card title="Tooltip">
+    <Component title="Tooltip Text">
+      <Tooltip content="tooltip content">
+        <span className="border-2 border-osmoverse-500 p-2">Hover Me</span>
+      </Tooltip>
+    </Component>
+    <Component title="Tooltip Icon">
+      <Tooltip content="tooltip content">
+        <Icon id={"alert-circle" as SpriteIconId} className="text-white-full" />
+      </Tooltip>
+    </Component>
+  </Card>
+);
 
 const Components: NextPage = () => {
   return (
@@ -555,6 +570,8 @@ const Components: NextPage = () => {
       <Color />
       <h4>Icons</h4>
       <Icons />
+      <h4>Tooltip</h4>
+      <Tooltips />
       <h4>Control</h4>
       <Checkboxes />
       <Radios />
