@@ -261,7 +261,7 @@ export async function calcAssetValue({
   currency = "usd",
 }: {
   anyDenom: string;
-  amount: Int | string;
+  amount: Int | Dec | string;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
   const asset = await getAsset({ anyDenom });
@@ -277,7 +277,9 @@ export async function calcAssetValue({
 
   if (typeof amount === "string") amount = new Int(amount);
 
-  return amount.toDec().quo(tokenDivision).mul(price);
+  return (amount instanceof Dec ? amount : amount.toDec())
+    .quo(tokenDivision)
+    .mul(price);
 }
 
 /** Calculate and sum the value of multiple assets. */

@@ -60,15 +60,9 @@ export async function apiClient<T>(
       } catch (e) {
         throw new ApiClientError({
           message: UNEXPECTED_ERROR_MESSAGE,
-          data:
-            response.status === 500
-              ? {
-                  responseContent: await response.text(),
-                  url: endpoint,
-                }
-              : {
-                  url: endpoint,
-                },
+          data: {
+            url: endpoint,
+          },
           response,
         });
       }

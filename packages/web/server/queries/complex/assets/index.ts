@@ -175,14 +175,15 @@ export async function mapRawAssetsToCoinPretty({
       const coin = new CoinPretty(asset, amount);
       if (calculatePrice) {
         const fiatValue = await calcAssetValue({
-          amount: coin.toString(),
+          amount: coin.toDec(),
           anyDenom: denom,
         });
 
-        if (fiatValue) {
-          (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
-            new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
-        }
+        if (!fiatValue)
+          throw new Error(`Could not calculate price for ${denom}`);
+
+        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
+          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
       }
 
       return coin;

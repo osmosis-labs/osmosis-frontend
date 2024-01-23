@@ -41,7 +41,7 @@ type PositionStatus =
   | "superfluidStaked"
   | "superfluidUnstaking";
 
-function getPositionStatus({
+export function getPositionStatus({
   lowerPrice,
   upperPrice,
   currentPrice,
@@ -105,7 +105,7 @@ export async function getPositionAsset({
   return new CoinPretty(asset, amount);
 }
 
-function getPriceFromSqrtPrice({
+export function getPriceFromSqrtPrice({
   sqrtPrice,
   baseAsset,
   quoteAsset,
@@ -174,20 +174,19 @@ export async function getTotalClaimableRewards({
     ]
   );
 
+  type AssetMap = Map<
+    string,
+    Awaited<ReturnType<typeof mapRawAssetsToCoinPretty>>[number]
+  >;
+
   return Array.from(
     [...claimableSpreadRewards, ...claimableIncentiveRewards]
-      .reduce<
-        Map<
-          string,
-          Awaited<ReturnType<typeof mapRawAssetsToCoinPretty>>[number]
-        >
-      >((sumByDenoms, coin) => {
+      .reduce<AssetMap>((sumByDenoms, coin) => {
         const current = sumByDenoms.get(coin.currency.coinMinimalDenom);
-        if (current) {
-          sumByDenoms.set(coin.currency.coinMinimalDenom, current.add(coin));
-        } else {
-          sumByDenoms.set(coin.currency.coinMinimalDenom, coin);
-        }
+        sumByDenoms.set(
+          coin.currency.coinMinimalDenom,
+          current ? current.add(coin) : coin
+        );
         return sumByDenoms;
       }, new Map())
       .values()
@@ -339,6 +338,7 @@ export async function mapGetPositionDetails({
             rawClaimableIncentiveRewards: claimable_incentives,
             rawClaimableSpreadRewards: claimable_spread_rewards,
           });
+
           const userUnbondingPositionsPromise = getUserUnbondingPositions({
             userOsmoAddress,
           });
