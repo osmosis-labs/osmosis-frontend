@@ -61,9 +61,14 @@ export const StakeDashboard: React.FC<{
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
     const LearnMoreIconText = (
-      <div className="flex cursor-pointer items-center justify-center text-bullish-500">
+      <div className="flex cursor-pointer items-center justify-center text-wosmongton-300">
         <div className="mr-2 flex self-center">
-          <Icon id="open-book" height="14px" width="14px" />
+          <Icon
+            id="open-book"
+            height="14px"
+            width="14px"
+            className="text-wosmongton-300"
+          />
         </div>
         <span className="caption text-sm">{t("stake.learn")}</span>
       </div>
@@ -131,7 +136,7 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        <div className="flex w-full flex-row place-content-around items-center space-y-0 py-10 sm:flex-col sm:space-y-4 sm:py-4">
+        <div className="flex w-full flex-row gap-2 py-10 sm:flex-col sm:gap-6 sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -203,7 +208,7 @@ const StakeBalances: React.FC<{
   }, [osmoAmount]);
 
   return (
-    <div className="flex flex-col items-start justify-center gap-1 text-left">
+    <div className="flex w-full flex-col items-start justify-center gap-1 text-left xl:items-center">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
@@ -221,7 +226,7 @@ const StakeBalances: React.FC<{
           flashOsmo ? "animate-flash" : ""
         )}
       >
-        {osmoAmount?.toString() ?? ""}
+        {osmoAmount?.trim(true)?.toString() ?? ""}
       </span>
     </div>
   );

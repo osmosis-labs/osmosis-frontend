@@ -10,13 +10,13 @@ import {
   ObservableQueryPoolAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
-  ObservableQueryTokensPairHistoricalChart,
   ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
+import { IS_TESTNET } from "~/config";
 import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
@@ -34,7 +34,6 @@ export class ObservablePoolWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore
@@ -136,7 +135,6 @@ export class ObservablePoolsWithMetric {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
@@ -157,7 +155,8 @@ export class ObservablePoolsWithMetric {
       forceShowUnverified?: boolean,
       concentratedLiquidityFeature?: boolean
     ) => {
-      const showUnverified = this.showUnverified || forceShowUnverified;
+      const showUnverified =
+        this.showUnverified || forceShowUnverified || IS_TESTNET;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -263,7 +262,6 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly priceStore: IPriceStore,
