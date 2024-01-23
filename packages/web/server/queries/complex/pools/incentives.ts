@@ -96,6 +96,8 @@ async function getCachedPoolIncentivesMap(): Promise<
       const aprs = await queryPoolAprs();
 
       return aprs.reduce((map, apr) => {
+        const total = maybeMakeRatePretty(apr.total_apr);
+        const swapFee = maybeMakeRatePretty(apr.swap_fees);
         const superfluid = maybeMakeRatePretty(apr.superfluid);
         const osmosis = maybeMakeRatePretty(apr.osmosis);
         const boost = maybeMakeRatePretty(apr.boost);
@@ -106,15 +108,19 @@ async function getCachedPoolIncentivesMap(): Promise<
         if (osmosis) incentiveTypes.push("osmosis");
         if (boost) incentiveTypes.push("boost");
         if (!superfluid && !osmosis && !boost) incentiveTypes.push("none");
+        const hasBreakdownData =
+          total || swapFee || superfluid || osmosis || boost;
 
         map.set(apr.pool_id, {
-          aprBreakdown: {
-            total: maybeMakeRatePretty(apr.total_apr),
-            swapFee: maybeMakeRatePretty(apr.swap_fees),
-            superfluid,
-            osmosis,
-            boost,
-          },
+          aprBreakdown: hasBreakdownData
+            ? {
+                total,
+                swapFee,
+                superfluid,
+                osmosis,
+                boost,
+              }
+            : undefined,
           incentiveTypes,
         });
 
