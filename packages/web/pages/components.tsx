@@ -13,6 +13,8 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { MetricLoader } from "~/components/loaders";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
@@ -42,6 +44,21 @@ const Component = ({
     {children}
   </div>
 );
+
+const Loaders = () => {
+  return (
+    <Card title="Loaders">
+      <Component title="Metric Loader">
+        <MetricLoader isLoading />
+      </Component>
+      <Component title="Skeleton Loader">
+        <SkeletonLoader isLoaded={false}>
+          <div className="h-4 w-full bg-osmoverse-700" />
+        </SkeletonLoader>
+      </Component>
+    </Card>
+  );
+};
 
 const Sliders = () => {
   const [slider, setSlider] = useState(0);
@@ -578,6 +595,7 @@ const Components: NextPage = () => {
       <Color />
       <Icons />
       <Tooltips />
+      <Loaders />
       <Checkboxes />
       <Radios />
       <Switches />
