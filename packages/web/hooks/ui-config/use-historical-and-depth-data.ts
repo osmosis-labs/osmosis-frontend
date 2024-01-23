@@ -34,9 +34,18 @@ export function useHistoricalAndLiquidityData(
     [config]
   );
 
-  const { data: pool } = api.edge.pools.getPool.useQuery({
-    poolId,
-  });
+  const { data: pool } = api.edge.pools.getPool.useQuery(
+    {
+      poolId,
+    },
+    {
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
+  );
   if (pool) config.setPool(pool);
 
   const {
@@ -52,7 +61,14 @@ export function useHistoricalAndLiquidityData(
         pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
       timeDuration: config.historicalRange,
     },
-    { enabled: Boolean(pool) }
+    {
+      enabled: Boolean(pool),
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
   );
   if (historicalPriceData) config.setHistoricalData(historicalPriceData.prices);
   config.setIsHistoricalDataLoading(isLoading);
