@@ -33,11 +33,15 @@ describe("useQueryParamState", () => {
       result.current[1]("newValue");
     });
 
-    expect(pushMock).toHaveBeenCalledWith({
-      query: {
-        testKey: "newValue",
+    expect(pushMock).toHaveBeenCalledWith(
+      {
+        query: {
+          testKey: "newValue",
+        },
       },
-    });
+      undefined,
+      { scroll: false }
+    );
   });
 
   it("should set default value if query param is not present", () => {
@@ -50,10 +54,14 @@ describe("useQueryParamState", () => {
 
     renderHook(() => useQueryParamState("testKey", "defaultValue"));
 
-    expect(pushMock).toHaveBeenCalledWith({
-      query: {
-        testKey: "defaultValue",
+    expect(pushMock).toHaveBeenCalledWith(
+      {
+        query: {
+          testKey: "defaultValue",
+        },
       },
-    });
+      undefined,
+      { scroll: false }
+    );
   });
 });

@@ -136,8 +136,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={t("tokenInfos.backButton")}
-          ariaLabel={t("tokenInfos.ariaBackButton")}
+          label={t("menu.assets")}
+          ariaLabel={t("menu.assets")}
           href="/assets"
         />
       ),
@@ -167,6 +167,21 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     return (
       <AssetInfoViewProvider value={contextValue}>
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
+          <LinkButton
+            className="mr-auto hidden md:flex"
+            icon={
+              <Image
+                alt="left"
+                src="/icons/arrow-left.svg"
+                width={24}
+                height={24}
+                className="text-osmoverse-200"
+              />
+            }
+            label={t("menu.assets")}
+            ariaLabel={t("menu.assets")}
+            href="/assets"
+          />
           <Navigation
             denom={denom}
             tokenDetailsByLanguage={tokenDetailsByLanguage}

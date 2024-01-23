@@ -62,12 +62,10 @@ describe("getAsset", () => {
     const asset = await getAsset({ anyDenom: "ACRE" });
 
     expect(asset).toBeTruthy();
-    expect(asset?.coinDenom).toEqual("ACRE");
+    expect(asset.coinDenom).toEqual("ACRE");
   });
 
-  it("should return undefined if no asset matches the provided denom", async () => {
-    const asset = await getAsset({ anyDenom: "NON_EXISTING_DENOM" });
-
-    expect(asset).toBeUndefined();
+  it("should throw if no asset matches the provided denom", () => {
+    expect(getAsset({ anyDenom: "NON_EXISTING_DENOM" })).rejects.toBeDefined();
   });
 });

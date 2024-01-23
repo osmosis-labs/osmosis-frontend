@@ -3,11 +3,18 @@ import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
 import { IPriceStore } from "../price";
-import {
-  PriceRange,
-  QueriesExternalStore,
-  TimeFrame,
-} from "../queries-external";
+import { QueriesExternalStore, TimeFrame } from "../queries-external";
+
+export const AvailablePriceRanges = [
+  "1h",
+  "1d",
+  "7d",
+  "1mo",
+  "1y",
+  "all",
+] as const;
+
+export type PriceRange = (typeof AvailablePriceRanges)[number];
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
