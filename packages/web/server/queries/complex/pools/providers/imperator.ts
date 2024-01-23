@@ -28,11 +28,13 @@ export async function queryPaginatedPools({
   limit,
   minimumLiquidity,
   poolId: poolIdParam,
+  poolIds: poolIdsParam,
 }: {
   page?: number;
   limit?: number;
   minimumLiquidity?: number;
   poolId?: string;
+  poolIds?: string[];
 }): Promise<{
   status: number;
   pools: PoolRaw[];
@@ -58,6 +60,14 @@ export async function queryPaginatedPools({
       throw new Error("Pool not found: " + poolIdParam);
     }
     return { status: 200, pools: [pool], totalNumberOfPools };
+  }
+
+  // Handle the case where specific pool IDs are requested
+  if (poolIdsParam) {
+    const pools = allPools.filter((pool) =>
+      poolIdsParam.includes("pool_id" in pool ? pool.pool_id : pool.id)
+    );
+    return { status: 200, pools, totalNumberOfPools };
   }
 
   // Pagination
@@ -316,9 +326,9 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
     if (
       responsePool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool"
     ) {
-      const { balances: clBalances } = await queryBalances(
-        responsePool.address
-      );
+      const { balances: clBalances } = await queryBalances({
+        bech32Address: responsePool.address,
+      });
 
       const token0Amount = clBalances.find((balance) => {
         return balance.denom === responsePool.token0;
@@ -339,7 +349,9 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
     if (
       responsePool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool"
     ) {
-      const { balances } = await queryBalances(responsePool.contract_address);
+      const { balances } = await queryBalances({
+        bech32Address: responsePool.contract_address,
+      });
 
       return {
         ...responsePool,

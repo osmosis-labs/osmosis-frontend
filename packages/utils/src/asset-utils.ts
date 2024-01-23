@@ -1,6 +1,7 @@
 import type {
   Asset,
   AssetList,
+  Currency,
   IbcCW20Trace,
   IBCTrace,
 } from "@osmosis-labs/types";
@@ -123,7 +124,12 @@ export function getChannelInfoFromAsset(
 
 /** Convert an asset list asset into an asset with minimal content and that
  *  is compliant with the `Currency` type. */
-export function makeMinimalAsset(assetListAsset: Asset) {
+export function makeMinimalAsset(assetListAsset: Asset): Currency & {
+  coinGeckoId: string | undefined;
+  coinName: string;
+  isUnstable: boolean;
+  isVerified: boolean;
+} {
   const { symbol, base, relative_image_url, coingecko_id, name, keywords } =
     assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);

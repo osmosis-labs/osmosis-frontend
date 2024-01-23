@@ -58,7 +58,10 @@ export type PoolsResponse = {
   spread_factor: string;
 }[];
 
-export async function queryPools() {
-  const url = new URL("/pools", SIDECAR_BASE_URL);
+export async function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
+  const url = new URL(
+    poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools",
+    SIDECAR_BASE_URL
+  );
   return await apiClient<PoolsResponse>(url.toString());
 }

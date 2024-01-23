@@ -1,5 +1,6 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
@@ -33,7 +34,7 @@ export const ValidatorSquadCard: React.FC<{
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
+      BondStatus.Bonded
     );
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
