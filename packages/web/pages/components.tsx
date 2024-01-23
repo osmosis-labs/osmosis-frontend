@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { ReactNode, useCallback, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import {
   CheckBox,
@@ -12,6 +13,7 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 
@@ -380,100 +382,179 @@ const MenuDropdowns = () => {
   );
 };
 
+const FontSize = () => (
+  <Card title="Font Size">
+    <p className="text-xss">text-xss</p>
+    <p className="text-xs">text-xs</p>
+    <p className="text-sm">text-sm</p>
+    <p className="text-base">text-base</p>
+    <p className="text-base">text-base</p>
+    <p className="text-lg">text-lg</p>
+    <p className="text-xl">text-xl</p>
+    <p className="text-2xl">text-2xl</p>
+    <p className="text-3xl">text-3xl</p>
+    <p className="text-4xl">text-4xl</p>
+    <p className="text-5xl">text-5xl</p>
+    <h1>h1</h1>
+    <h2>h2</h2>
+    <h3>h3</h3>
+    <h4>h4</h4>
+    <h5>h5</h5>
+    <h6>h6</h6>
+    <p className="subtitle1">subtitle1</p>
+    <p className="subtitle2">subtitle2</p>
+    <p className="body1">body1</p>
+    <p className="body2">body2</p>
+    <p className="button">button</p>
+    <p className="caption">caption</p>
+    <p className="override">override</p>
+  </Card>
+);
+
+const Color = () => (
+  <Card title="Color">
+    <p className="text-white-full">white-full</p>
+    <p className="text-white-high">white-high</p>
+    <p className="text-white-emphasis">white-emphasis</p>
+    <p className="text-white-mid">white-mid</p>
+    <p className="text-white-disabled">white-disabled</p>
+    <p className="text-white-faint">white-faint</p>
+    <p className="text-wosmongton-100">wosmongton-100</p>
+    <p className="text-wosmongton-200">wosmongton-200</p>
+    <p className="text-wosmongton-300">wosmongton-300</p>
+    <p className="text-wosmongton-400">wosmongton-400</p>
+    <p className="text-wosmongton-500">wosmongton-500</p>
+    <p className="text-wosmongton-700">wosmongton-700</p>
+    <p className="text-ion-100">ion-100</p>
+    <p className="text-ion-300">ion-300</p>
+    <p className="text-ion-400">ion-400</p>
+    <p className="text-ion-500">ion-500</p>
+    <p className="text-ion-700">ion-700</p>
+    <p className="text-bullish-100">bullish-100</p>
+    <p className="text-bullish-300">bullish-300</p>
+    <p className="text-bullish-400">bullish-400</p>
+    <p className="text-bullish-500">bullish-500</p>
+    <p className="text-bullish-600">bullish-600</p>
+    <p className="text-osmoverse-100">osmoverse-100</p>
+    <p className="text-osmoverse-200">osmoverse-200</p>
+    <p className="text-osmoverse-300">osmoverse-300</p>
+    <p className="text-osmoverse-400">osmoverse-400</p>
+    <p className="text-osmoverse-500">osmoverse-500</p>
+    <p className="bg-white-full text-osmoverse-600">osmoverse-600</p>
+    <p className="bg-white-full text-osmoverse-700">osmoverse-700</p>
+    <p className="bg-white-full text-osmoverse-800">osmoverse-800</p>
+    <p className="bg-white-full text-osmoverse-810">osmoverse-810</p>
+    <p className="bg-white-full text-osmoverse-825">osmoverse-825</p>
+    <p className="bg-white-full text-osmoverse-850">osmoverse-850</p>
+    <p className="bg-white-full text-osmoverse-860">osmoverse-860</p>
+    <p className="bg-white-full text-osmoverse-900">osmoverse-900</p>
+    <p className="bg-white-full text-osmoverse-1000">osmoverse-1000</p>
+    <p className="text-ammelia-400">ammelia-400</p>
+    <p className="text-ammelia-600">ammelia-600</p>
+    <p className="text-rust-200">rust-200</p>
+    <p className="text-rust-300">rust-300</p>
+    <p className="text-rust-500">rust-500</p>
+    <p className="text-rust-600">rust-600</p>
+    <p className="text-rust-700">rust-700</p>
+    <p className="text-rust-800">rust-800</p>
+    <p className="bg-white-full text-wireframes-darkGrey">
+      wireframes-darkGrey
+    </p>
+    <p className="text-wireframes-grey">wireframes-grey</p>
+    <p className="text-wireframes-lightGrey">wireframes-lightGrey</p>
+    <p className="text-error">error</p>
+    <p className="text-missionError">missionError</p>
+    <p className="text-superfluid">superfluid</p>
+    <p className="text-supercharged">supercharged</p>
+    <p className="bg-white-full text-black">black</p>
+    <p className="text-inherit">inherit</p>
+    <p className="text-barFill">barFill</p>
+    <p className="text-chartGradientPrimary">chartGradientPrimary</p>
+    <p className="text-chartGradientSecondary">chartGradientSecondary</p>
+    <p className="bg-white-full text-yourBalanceActionButton">
+      yourBalanceActionButton
+    </p>
+  </Card>
+);
+
+const Icons = () => {
+  return (
+    <Card title="Icons">
+      {[
+        "search",
+        "up-down-arrow",
+        "chevron-up",
+        "chevron-down",
+        "chevron-left",
+        "chevron-right",
+        "setting",
+        "info",
+        "hamburger",
+        "close",
+        "close-thin",
+        "globe",
+        "dust-broom",
+        "arrow-right",
+        "close-small",
+        "tune",
+        "help-circle",
+        "kado-logo",
+        "transak-logo",
+        "more-menu",
+        "sort-up",
+        "sort-down",
+        "check-mark",
+        "minus",
+        "walletconnect",
+        "alert-triangle",
+        "twitter",
+        "medium",
+        "github",
+        "wallet",
+        "lightning",
+        "lightning-small",
+        "left-right-arrow",
+        "sandbox",
+        "arrow-right",
+        "zoom-in",
+        "zoom-out",
+        "refresh-ccw",
+        "superfluid-osmo",
+        "bell",
+        "email",
+        "telegram",
+        "smartphone",
+        "open-book",
+        "pie-chart",
+        "gift",
+        "down-arrow",
+        "swap",
+        "alert-circle",
+        "chart",
+        "vote",
+        "external-link",
+        "web",
+        "X",
+        "star",
+        "sleep-bell",
+      ].map((icon) => (
+        <Component key={icon} title={icon}>
+          <Icon id={icon as SpriteIconId} className="text-white-full" />
+        </Component>
+      ))}
+    </Card>
+  );
+};
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
       <h4>Typography</h4>
-      <Card title="Font Size">
-        <p className="text-xss">text-xss</p>
-        <p className="text-xs">text-xs</p>
-        <p className="text-sm">text-sm</p>
-        <p className="text-base">text-base</p>
-        <p className="text-base">text-base</p>
-        <p className="text-lg">text-lg</p>
-        <p className="text-xl">text-xl</p>
-        <p className="text-2xl">text-2xl</p>
-        <p className="text-3xl">text-3xl</p>
-        <p className="text-4xl">text-4xl</p>
-        <p className="text-5xl">text-5xl</p>
-        <h1>h1</h1>
-        <h2>h2</h2>
-        <h3>h3</h3>
-        <h4>h4</h4>
-        <h5>h5</h5>
-        <h6>h6</h6>
-        <p className="subtitle1">subtitle1</p>
-        <p className="subtitle2">subtitle2</p>
-        <p className="body1">body1</p>
-        <p className="body2">body2</p>
-        <p className="button">button</p>
-        <p className="caption">caption</p>
-        <p className="override">override</p>
-      </Card>
-      <Card title="Color">
-        <p className="text-white-full">white-full</p>
-        <p className="text-white-high">white-high</p>
-        <p className="text-white-emphasis">white-emphasis</p>
-        <p className="text-white-mid">white-mid</p>
-        <p className="text-white-disabled">white-disabled</p>
-        <p className="text-white-faint">white-faint</p>
-        <p className="text-wosmongton-100">wosmongton-100</p>
-        <p className="text-wosmongton-200">wosmongton-200</p>
-        <p className="text-wosmongton-300">wosmongton-300</p>
-        <p className="text-wosmongton-400">wosmongton-400</p>
-        <p className="text-wosmongton-500">wosmongton-500</p>
-        <p className="text-wosmongton-700">wosmongton-700</p>
-        <p className="text-ion-100">ion-100</p>
-        <p className="text-ion-300">ion-300</p>
-        <p className="text-ion-400">ion-400</p>
-        <p className="text-ion-500">ion-500</p>
-        <p className="text-ion-700">ion-700</p>
-        <p className="text-bullish-100">bullish-100</p>
-        <p className="text-bullish-300">bullish-300</p>
-        <p className="text-bullish-400">bullish-400</p>
-        <p className="text-bullish-500">bullish-500</p>
-        <p className="text-bullish-600">bullish-600</p>
-        <p className="text-osmoverse-100">osmoverse-100</p>
-        <p className="text-osmoverse-200">osmoverse-200</p>
-        <p className="text-osmoverse-300">osmoverse-300</p>
-        <p className="text-osmoverse-400">osmoverse-400</p>
-        <p className="text-osmoverse-500">osmoverse-500</p>
-        <p className="bg-white-full text-osmoverse-600">osmoverse-600</p>
-        <p className="bg-white-full text-osmoverse-700">osmoverse-700</p>
-        <p className="bg-white-full text-osmoverse-800">osmoverse-800</p>
-        <p className="bg-white-full text-osmoverse-810">osmoverse-810</p>
-        <p className="bg-white-full text-osmoverse-825">osmoverse-825</p>
-        <p className="bg-white-full text-osmoverse-850">osmoverse-850</p>
-        <p className="bg-white-full text-osmoverse-860">osmoverse-860</p>
-        <p className="bg-white-full text-osmoverse-900">osmoverse-900</p>
-        <p className="bg-white-full text-osmoverse-1000">osmoverse-1000</p>
-        <p className="text-ammelia-400">ammelia-400</p>
-        <p className="text-ammelia-600">ammelia-600</p>
-        <p className="text-rust-200">rust-200</p>
-        <p className="text-rust-300">rust-300</p>
-        <p className="text-rust-500">rust-500</p>
-        <p className="text-rust-600">rust-600</p>
-        <p className="text-rust-700">rust-700</p>
-        <p className="text-rust-800">rust-800</p>
-        <p className="bg-white-full text-wireframes-darkGrey">
-          wireframes-darkGrey
-        </p>
-        <p className="text-wireframes-grey">wireframes-grey</p>
-        <p className="text-wireframes-lightGrey">wireframes-lightGrey</p>
-        <p className="text-error">error</p>
-        <p className="text-missionError">missionError</p>
-        <p className="text-superfluid">superfluid</p>
-        <p className="text-supercharged">supercharged</p>
-        <p className="bg-white-full text-black">black</p>
-        <p className="text-inherit">inherit</p>
-        <p className="text-barFill">barFill</p>
-        <p className="text-chartGradientPrimary">chartGradientPrimary</p>
-        <p className="text-chartGradientSecondary">chartGradientSecondary</p>
-        <p className="bg-white-full text-yourBalanceActionButton">
-          yourBalanceActionButton
-        </p>
-      </Card>
+      <FontSize />
+      <Color />
+      <h4>Icons</h4>
+      <Icons />
       <h4>Control</h4>
       <Checkboxes />
       <Radios />
