@@ -9,10 +9,11 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useQueryParamState } from "~/hooks/window/use-query-param-state";
 import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
@@ -44,6 +45,7 @@ export const AllPoolsTable: FunctionComponent<{
 }> = ({ topOffset, quickAddLiquidity }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { width } = useWindowSize();
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
@@ -222,9 +224,19 @@ export const AllPoolsTable: FunctionComponent<{
     ]
   );
 
+  /** Columns collapsed for screen size responsiveness. */
+  const collapsedColumns = useMemo(() => {
+    const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
+    if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
+    if (width < Breakpoint.lg) collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
+    return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
+  }, [columns, width]);
+
   const table = useReactTable({
     data: poolsData,
-    columns,
+    columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
     manualPagination: true,
@@ -272,16 +284,9 @@ export const AllPoolsTable: FunctionComponent<{
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="bg-transparent" key={headerGroup.id}>
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
-                  className={classNames("subtitle1", {
-                    "w-96 !text-left": header.index === 0,
-                    "text-right": header.index > 0,
-                  })}
-                  key={header.id}
-                  colSpan={header.colSpan}
-                >
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -294,14 +299,14 @@ export const AllPoolsTable: FunctionComponent<{
           ))}
         </thead>
         <tbody>
-          {paddingTop > 0 && (
+          {paddingTop > 0 && paddingTop - topOffset > 0 && (
             <tr>
               <td style={{ height: paddingTop - topOffset }} />
             </tr>
           )}
           {isLoading && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -311,23 +316,28 @@ export const AllPoolsTable: FunctionComponent<{
 
             return (
               <tr
-                className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
                 key={row.id}
                 onClick={() => router.push("/pool/" + row.original.id)}
               >
-                {row.getVisibleCells().map((cell, cellIndex, cells) => (
+                {row.getVisibleCells().map((cell) => (
                   <td
-                    className={classNames(
-                      "transition-colors duration-200 ease-in-out",
-                      {
-                        "rounded-l-3xl text-left": cellIndex === 0,
-                        "text-right": cellIndex > 0,
-                        "rounded-r-3xl": cellIndex === cells.length - 1,
-                      }
-                    )}
+                    className="transition-colors duration-200 ease-in-out"
                     key={cell.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <Link
+                      href={getPoolLink(row.original)}
+                      key={virtualRow.index}
+                      target={getPoolTypeTarget(row.original)}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                      prefetch={false}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
                   </td>
                 ))}
               </tr>
@@ -335,7 +345,7 @@ export const AllPoolsTable: FunctionComponent<{
           })}
           {isFetchingNextPage && (
             <tr>
-              <td className="text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -373,10 +383,10 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="flex h-12 w-full place-content-between items-center gap-5">
+    <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
       <h5>{t("pools.allPools.title")}</h5>
 
-      <div className="flex h-12 gap-3">
+      <div className="flex h-12 flex-wrap gap-3 xl:h-fit">
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={poolTypesFilter as string[]}
@@ -542,3 +552,18 @@ const AprBreakdownCell: PoolCellComponent = ({
     </Tooltip>
   )) ??
   null;
+
+function getPoolLink(pool: Pool): string {
+  if (pool.type === "cosmwasm-transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
+  }
+
+  return `/pool/${pool.id}`;
+}
+
+function getPoolTypeTarget(pool: Pool) {
+  if (pool.type === "cosmwasm-transmuter") {
+    return "_blank";
+  }
+  return "";
+}
