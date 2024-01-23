@@ -5,7 +5,7 @@ import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
@@ -24,19 +24,19 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   return cachified({
     cache: pricesCache,
     key: `coingecko-coin-${denom}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const { coins } = await queryCoingeckoSearch(denom);
       return coins?.find(
         ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
       );
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 
@@ -50,12 +50,12 @@ async function getCoingeckoPrice({
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const prices = await querySimplePrice([coingeckoId], [currency]);
       const price = prices[coingeckoId]?.[currency];
       return price ? new Dec(price) : undefined;
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 

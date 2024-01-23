@@ -8,3 +8,11 @@ export const DEFAULT_LRU_OPTIONS: LRUCache.Options<
 > = {
   max: 500,
 };
+
+export const LARGE_LRU_OPTIONS: LRUCache.Options<
+  string,
+  CacheEntry<unknown>,
+  unknown
+> = {
+  max: 1_500,
+};
