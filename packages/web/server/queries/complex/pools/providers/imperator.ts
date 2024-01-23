@@ -407,7 +407,7 @@ export async function makePoolFromImperatorPool(
     spreadFactor: RatePretty;
     totalFiatValueLocked: PricePretty;
   } = {
-    spreadFactor: new RatePretty(filteredPool.spread_factor),
+    spreadFactor: new RatePretty(filteredPool.swap_fees),
     totalFiatValueLocked: new PricePretty(
       DEFAULT_VS_CURRENCY,
       filteredPool.liquidity
@@ -448,8 +448,8 @@ export async function makePoolFromImperatorPool(
         new CoinPretty(token0Asset, filteredPool.pool_tokens.asset0.amount),
         new CoinPretty(token1Asset, filteredPool.pool_tokens.asset0.amount),
       ],
-
       ...basePool,
+      spreadFactor: new RatePretty(filteredPool.spread_factor),
     };
   }
 
