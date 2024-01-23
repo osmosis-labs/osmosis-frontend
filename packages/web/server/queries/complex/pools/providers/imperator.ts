@@ -326,9 +326,9 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
     if (
       responsePool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool"
     ) {
-      const { balances: clBalances } = await queryBalances(
-        responsePool.address
-      );
+      const { balances: clBalances } = await queryBalances({
+        bech32Address: responsePool.address,
+      });
 
       const token0Amount = clBalances.find((balance) => {
         return balance.denom === responsePool.token0;
@@ -349,7 +349,9 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
     if (
       responsePool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool"
     ) {
-      const { balances } = await queryBalances(responsePool.contract_address);
+      const { balances } = await queryBalances({
+        bech32Address: responsePool.contract_address,
+      });
 
       return {
         ...responsePool,

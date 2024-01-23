@@ -52,7 +52,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   if (!assets) assets = (await getAssets(params)) as TAsset[];
   if (!userOsmoAddress) return assets;
 
-  const { balances } = await queryBalances(userOsmoAddress);
+  const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
   const eventualUserAssets = assets
     .map(async (asset) => {
