@@ -1,8 +1,6 @@
 // "/osmosis/concentratedliquidity/v1beta1"/positions/${bech32Address}?pagination.limit=10000
 
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 import { LiquidityPosition } from "./positions-by-address";
 
@@ -27,15 +25,12 @@ interface AddressUnbondingPositionsResponse {
   positions_with_period_lock: PositionWithPeriodLock[];
 }
 
-export function queryCLUnbondingPositions({
-  bech32Address,
-}: {
-  bech32Address: string;
-}): Promise<AddressUnbondingPositionsResponse> {
-  const url = new URL(
+export const queryCLUnbondingPositions = createNodeQuery<
+  AddressUnbondingPositionsResponse,
+  {
+    bech32Address: string;
+  }
+>({
+  path: ({ bech32Address }) =>
     `/osmosis/concentratedliquidity/v1beta1/user_unbonding_positions/${bech32Address}`,
-    ChainList[0].apis.rest[0].address
-  );
-
-  return apiClient<AddressUnbondingPositionsResponse>(url.toString());
-}
+});

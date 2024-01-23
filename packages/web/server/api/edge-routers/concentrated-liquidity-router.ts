@@ -1,4 +1,4 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -15,6 +15,7 @@ import {
   queryCLPosition,
   queryCLPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
+import { sum } from "~/utils/math";
 import { sort } from "~/utils/sort";
 
 export const concentratedLiquidityRouter = createTRPCRouter({
@@ -75,21 +76,21 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         }),
       ]);
 
-      const totalPrincipalValue = principalAssets.reduce(
-        (sum, asset) => sum.add(asset.fiatValue ?? new Dec(0)),
-        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      const totalPrincipalValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        sum(principalAssets)
       );
-      const currentPositionValue = currentPositionAssets.reduce(
-        (sum, asset) => sum.add(asset.fiatValue ?? new Dec(0)),
-        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      const currentPositionValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        sum(currentPositionAssets)
       );
-      const unclaimedRewardsValue = unclaimedRewards.reduce(
-        (sum, asset) => sum.add(asset.fiatValue ?? new Dec(0)),
-        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      const unclaimedRewardsValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        sum(unclaimedRewards)
       );
-      const totalEarnedValue = totalEarned.reduce(
-        (sum, asset) => sum.add(asset.fiatValue ?? new Dec(0)),
-        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      const totalEarnedValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        sum(totalEarned)
       );
 
       const roi = new RatePretty(

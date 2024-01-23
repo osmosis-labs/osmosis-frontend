@@ -1,7 +1,6 @@
 import { BondStatus } from "@osmosis-labs/types";
-import { apiClient, getChain } from "@osmosis-labs/utils";
 
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 type Validator = {
   operator_address: string;
@@ -48,21 +47,15 @@ type Validators = {
   validators: Validator[];
 };
 
-export async function queryValidators({
-  status,
-  paginationLimit = 1000,
-  chainId = ChainList[0].chain_id,
-}: {
-  status: BondStatus;
-  paginationLimit?: number;
-  chainId?: string;
-}): Promise<Validators> {
-  const chain = getChain({ chainId, chainList: ChainList });
-
-  if (!chain) throw new Error(`Chain ${chainId} not found`);
-
-  const url = new URL(
-    `/cosmos/staking/v1beta1/validators?pagination.limit=${paginationLimit}&status=${(() => {
+export const queryValidators = createNodeQuery<
+  Validators,
+  {
+    status: BondStatus;
+    paginationLimit?: number;
+  }
+>({
+  path: ({ status, paginationLimit = 1000 }) => {
+    return `/cosmos/staking/v1beta1/validators?pagination.limit=${paginationLimit}&status=${(() => {
       switch (status) {
         case BondStatus.Bonded:
           return "BOND_STATUS_BONDED";
@@ -73,9 +66,6 @@ export async function queryValidators({
         default:
           return "BOND_STATUS_UNSPECIFIED";
       }
-    })()}`,
-    ChainList[0].apis.rest[0].address
-  );
-
-  return apiClient<Validators>(url.toString());
-}
+    })()}`;
+  },
+});

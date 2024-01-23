@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 export type SuperfluidParams = {
   params: {
@@ -8,10 +6,6 @@ export type SuperfluidParams = {
   };
 };
 
-export async function querySuperfluidParams(): Promise<SuperfluidParams> {
-  const url = new URL(
-    "/osmosis/superfluid/v1beta1/params",
-    ChainList[0].apis.rest[0].address
-  );
-  return apiClient<SuperfluidParams>(url.toString());
-}
+export const querySuperfluidParams = createNodeQuery<SuperfluidParams>({
+  path: "/osmosis/superfluid/v1beta1/params",
+});

@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 import { ConcentratedPoolAccountPositionRecord } from "./types";
 
@@ -17,14 +15,10 @@ type AccountUndelegatingClPositionsResponse = {
   })[];
 };
 
-export function queryUndelegatingClPositions({
-  bech32Address,
-}: {
-  bech32Address: string;
-}): Promise<AccountUndelegatingClPositionsResponse> {
-  const url = new URL(
+export const queryUndelegatingClPositions = createNodeQuery<
+  AccountUndelegatingClPositionsResponse,
+  { bech32Address: string }
+>({
+  path: ({ bech32Address }) =>
     `/osmosis/superfluid/v1beta1/account_undelegating_cl_positions/${bech32Address}`,
-    ChainList[0].apis.rest[0].address
-  );
-  return apiClient<AccountUndelegatingClPositionsResponse>(url.toString());
-}
+});

@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { calcAssetValue } from "~/server/queries/complex/assets/price";
 import { search, SearchSchema } from "~/utils/search";
 
@@ -141,6 +142,17 @@ function simplifyAssetListForDisplay(
   return assetListAssets.map(makeMinimalAsset);
 }
 
+/**
+ * This function maps raw assets to a CoinPretty. This is useful for
+ * converting raw assets returned from chain. It also optionally
+ * calculates the fiat value of the asset if the 'calculatePrice'
+ * parameter is true.
+ *
+ * @param {Array} rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
+ * @param {boolean} calculatePrice A boolean indicating whether to calculate the price of the asset.
+ *
+ * @returns {Promise<Array>} A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
+ */
 export async function mapRawAssetsToCoinPretty({
   rawAssets,
   calculatePrice,
@@ -150,7 +162,7 @@ export async function mapRawAssetsToCoinPretty({
     denom: string;
   }[];
   calculatePrice?: boolean;
-}): Promise<(CoinPretty & { fiatValue?: Dec })[]> {
+}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
   if (!rawAssets) return [];
   const result = await Promise.all(
     rawAssets.map(async ({ amount, denom }) => {
@@ -162,11 +174,15 @@ export async function mapRawAssetsToCoinPretty({
 
       const coin = new CoinPretty(asset, amount);
       if (calculatePrice) {
-        (coin as CoinPretty & { fiatValue?: Dec }).fiatValue =
-          await calcAssetValue({
-            amount: coin.toString(),
-            anyDenom: denom,
-          });
+        const fiatValue = await calcAssetValue({
+          amount: coin.toString(),
+          anyDenom: denom,
+        });
+
+        if (fiatValue) {
+          (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
+            new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
+        }
       }
 
       return coin;

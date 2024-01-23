@@ -1,8 +1,6 @@
 // "/osmosis/concentratedliquidity/v1beta1"/positions/${bech32Address}?pagination.limit=10000
 
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 interface PositionAsset {
   amount: string;
@@ -39,17 +37,12 @@ interface AddressPositionsResponse {
   positions: LiquidityPosition[];
 }
 
-export function queryCLPositions({
-  bech32Address,
-}: {
-  bech32Address: string;
-}): Promise<AddressPositionsResponse> {
-  const url = new URL(
-    `/osmosis/concentratedliquidity/v1beta1/positions/${bech32Address}`,
-    ChainList[0].apis.rest[0].address
-  );
-
-  url.searchParams.append("pagination.limit", "10000");
-
-  return apiClient<AddressPositionsResponse>(url.toString());
-}
+export const queryCLPositions = createNodeQuery<
+  AddressPositionsResponse,
+  {
+    bech32Address: string;
+  }
+>({
+  path: ({ bech32Address }) =>
+    `/osmosis/concentratedliquidity/v1beta1/positions/${bech32Address}?pagination.limit=10000`,
+});

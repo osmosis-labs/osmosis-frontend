@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 interface MintParams {
   params: {
@@ -18,10 +16,6 @@ interface MintParams {
   };
 }
 
-export async function queryOsmosisMintParams(): Promise<MintParams> {
-  const url = new URL(
-    "/osmosis/mint/v1beta1/params",
-    ChainList[0].apis.rest[0].address
-  );
-  return apiClient<MintParams>(url.toString());
-}
+export const queryOsmosisMintParams = createNodeQuery<MintParams>({
+  path: "/osmosis/mint/v1beta1/params",
+});

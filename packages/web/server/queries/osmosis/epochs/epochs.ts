@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 interface Epochs {
   epochs: [
@@ -16,10 +14,6 @@ interface Epochs {
   ];
 }
 
-export async function queryEpochs(): Promise<Epochs> {
-  const url = new URL(
-    "/osmosis/epochs/v1beta1/epochs",
-    ChainList[0].apis.rest[0].address
-  );
-  return apiClient<Epochs>(url.toString());
-}
+export const queryEpochs = createNodeQuery<Epochs>({
+  path: "/osmosis/epochs/v1beta1/epochs",
+});
