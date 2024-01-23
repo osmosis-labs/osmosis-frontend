@@ -62,8 +62,7 @@ export async function getEpoch({ identifier }: { identifier: string }) {
 
   const epoch = epochs.find((epoch) => epoch.identifier === identifier);
   if (!epoch) {
-    console.info(`Epoch ${identifier} not found`);
-    return undefined;
+    throw new Error(`Epoch ${identifier} not found`);
   }
 
   const duration = parseInt(epoch.duration.replace("s", ""));

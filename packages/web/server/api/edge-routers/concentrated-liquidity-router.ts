@@ -7,7 +7,7 @@ import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   getTotalClaimableRewards,
   getTotalEarned,
-  normalizePositions,
+  mapGetPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { queryPositionPerformance } from "~/server/queries/imperator";
@@ -32,7 +32,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       });
 
-      const result = await normalizePositions({
+      const result = await mapGetPositionDetails({
         positions: rawPositions,
         userOsmoAddress,
       });

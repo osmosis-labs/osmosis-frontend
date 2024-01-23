@@ -4,6 +4,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { ChainList } from "~/config/generated/chain-list";
 import {
   getAsset,
   mapRawAssetsToCoinPretty,
@@ -11,9 +12,9 @@ import {
 import { getPools } from "~/server/queries/complex/pools";
 import {
   getConcentratedRangePoolApr,
-  getSuperfluidPoolAPR,
-} from "~/server/queries/complex/pools/apr";
-import { getLockableDurations } from "~/server/queries/complex/pools/incentives";
+  getLockableDurations,
+  getPoolIncentives,
+} from "~/server/queries/complex/pools/incentives";
 import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { queryPositionPerformance } from "~/server/queries/imperator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
@@ -89,15 +90,16 @@ function getPositionStatus({
   return status;
 }
 
-async function getPositionAsset({
+export async function getPositionAsset({
   amount,
   denom,
 }: LiquidityPosition["asset0"] & LiquidityPosition["asset1"]) {
+  if (!amount || !denom) return undefined;
+
   const asset = await getAsset({
     anyDenom: denom,
   });
 
-  if (!amount || !denom) return undefined;
   if (!asset) throw new Error("Asset not found " + denom);
 
   return new CoinPretty(asset, amount);
@@ -119,7 +121,7 @@ function getPriceFromSqrtPrice({
   return price;
 }
 
-function getClTickPrice({
+export function getClTickPrice({
   tick,
   baseAsset,
   quoteAsset,
@@ -288,7 +290,7 @@ async function getUserUndelegatingClPositions({
   });
 }
 
-export async function normalizePositions({
+export async function mapGetPositionDetails({
   positions,
   userOsmoAddress,
 }: {
@@ -299,7 +301,7 @@ export async function normalizePositions({
     const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
     const pools = await getPools({ poolIds: poolIds });
 
-    const normalizedPositions = await Promise.all(
+    const positionDetails = await Promise.all(
       positions.map(
         async ({
           asset0,
@@ -314,10 +316,9 @@ export async function normalizePositions({
           ]);
 
           if (!baseAsset || !quoteAsset) {
-            console.info(
+            throw new Error(
               `Error finding assets for position ${position.position_id}`
             );
-            return undefined;
           }
 
           const lowerTick = new Int(position.lower_tick);
@@ -347,7 +348,9 @@ export async function normalizePositions({
           const undelegatingPositionsPromise = getUserUndelegatingClPositions({
             userOsmoAddress,
           });
-          const stakeCurrencyPromise = getAsset({ anyDenom: "OSMO" });
+          const stakeCurrencyPromise = getAsset({
+            anyDenom: ChainList[0].staking.staking_tokens[0].denom,
+          });
           const initialRangeAprPromise = getConcentratedRangePoolApr({
             lowerTick: lowerTick.toString(),
             upperTick: upperTick.toString(),
@@ -375,8 +378,7 @@ export async function normalizePositions({
           const pool = pools.find((pool) => pool.id === position.pool_id);
 
           if (!pool) {
-            console.error(`Pool (${position.pool_id}) not found`);
-            return undefined;
+            throw new Error(`Pool (${position.pool_id}) not found`);
           }
 
           if (pool.type !== "concentrated") {
@@ -456,7 +458,8 @@ export async function normalizePositions({
 
           let superfluidApr: RatePretty | undefined = undefined;
           if (isSuperfluid || isSuperfluidUnstaking) {
-            superfluidApr = await getSuperfluidPoolAPR({ poolId: pool.id });
+            superfluidApr = (await getPoolIncentives(pool.id))?.aprBreakdown
+              ?.superfluid;
           }
 
           let superfluidData:
@@ -518,7 +521,7 @@ export async function normalizePositions({
       )
     );
 
-    return normalizedPositions.filter((p): p is NonNullable<typeof p> => !!p);
+    return positionDetails.filter((p): p is NonNullable<typeof p> => !!p);
   } catch (e) {
     console.error(e);
     throw e;

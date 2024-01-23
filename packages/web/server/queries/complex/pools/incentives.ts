@@ -6,6 +6,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { queryLockableDurations } from "~/server/queries/osmosis";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
@@ -128,6 +130,38 @@ async function getCachedPoolIncentivesMap(): Promise<
 
         return map;
       }, new Map<string, PoolIncentives>());
+    },
+  });
+}
+
+const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+export function getConcentratedRangePoolApr({
+  poolId,
+  upperTick,
+  lowerTick,
+}: {
+  poolId: string;
+  lowerTick: string;
+  upperTick: string;
+}): Promise<RatePretty | undefined> {
+  return cachified({
+    cache: aprCache,
+    key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
+    ttl: 30 * 1000, // 30 seconds
+    getFreshValue: async () => {
+      try {
+        const { APR } = await queryPriceRangeApr({
+          lowerTickIndex: lowerTick,
+          upperTickIndex: upperTick,
+          poolId: poolId,
+        });
+        const apr = APR / 100;
+        if (isNaN(apr)) return;
+        return new RatePretty(apr);
+      } catch {
+        return undefined;
+      }
     },
   });
 }
