@@ -389,7 +389,7 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
   return pools.filter((pool): pool is PoolRaw => !!pool);
 }
 
-async function makePoolFromImperatorPool(
+export async function makePoolFromImperatorPool(
   filteredPool: FilteredPoolsResponse["pools"][number]
 ): Promise<Pool | undefined> {
   // deny pools containing tokens with gamm denoms
