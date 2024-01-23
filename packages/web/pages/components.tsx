@@ -547,7 +547,7 @@ const Icons = () => (
 );
 
 const Tooltips = () => (
-  <Card title="Tooltip">
+  <Card title="Tooltips">
     <Component title="Tooltip Text">
       <Tooltip
         content="tooltip content"
@@ -574,14 +574,10 @@ const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
-      <h4>Typography</h4>
       <FontSize />
       <Color />
-      <h4>Icons</h4>
       <Icons />
-      <h4>Tooltip</h4>
       <Tooltips />
-      <h4>Control</h4>
       <Checkboxes />
       <Radios />
       <Switches />
@@ -589,7 +585,6 @@ const Components: NextPage = () => {
       <CheckboxSelects />
       <StakeTabs />
       <MenuDropdowns />
-      <h4>Buttons</h4>
       <Buttons />
     </div>
   );

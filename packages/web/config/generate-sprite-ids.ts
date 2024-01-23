@@ -9,7 +9,7 @@ import * as prettier from "prettier";
  * Generate a properly formatted TypeScript file sprite-ids.ts containing all the available
  * ids defines in sprite.svg. This is used by the Icon component to render the svg.
  */
-export async function generateSpriteIds() {
+async function generateSpriteIds() {
   const svgFile = fs.readFileSync("public/icons/sprite.svg", "utf-8");
 
   const dom = new JSDOM(svgFile);
