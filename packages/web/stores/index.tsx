@@ -5,20 +5,23 @@ import { api } from "~/utils/trpc";
 
 const storeContext = React.createContext<RootStore | null>(null);
 
+/** Once data is invalidated, React Query will automatically refetch data
+ *  when the dependent component becomes visible. */
+function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
+  apiUtils.edge.assets.getUserAsset.invalidate(); // Invalidate user balance
+  apiUtils.edge.assets.getUserAssets.invalidate(); // Invalidate user balance
+  apiUtils.edge.assets.getUserMarketAsset.invalidate(); // Invalidate user balance and market data
+  apiUtils.edge.assets.getUserMarketAssets.invalidate(); // Invalidate user balance and market data
+}
+
 export const StoreProvider: FunctionComponent = ({ children }) => {
   const apiUtils = api.useUtils();
   const [rootStore] = useState(
     () =>
       new RootStore({
         txEvents: {
-          onBroadcastFailed: () => {
-            apiUtils.edge.assets.getUserAsset.invalidate(); // Invalidate user balance
-            apiUtils.edge.assets.getUserMarketAsset.invalidate(); // Invalidate user balance and info
-          },
-          onFulfill: () => {
-            apiUtils.edge.assets.getUserAsset.invalidate(); // Invalidate user balance
-            apiUtils.edge.assets.getUserMarketAsset.invalidate(); // Invalidate user balance and info
-          },
+          onBroadcastFailed: () => invalidateQueryData(apiUtils),
+          onFulfill: () => invalidateQueryData(apiUtils),
         },
       })
   );
