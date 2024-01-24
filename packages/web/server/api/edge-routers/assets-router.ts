@@ -34,7 +34,7 @@ const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
 ).merge(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
-  getAsset: publicProcedure
+  getUserAsset: publicProcedure
     .input(
       z
         .object({
@@ -50,7 +50,7 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress,
       });
     }),
-  getAssets: publicProcedure
+  getUserAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(
       async ({
@@ -101,7 +101,7 @@ export const assetsRouter = createTRPCRouter({
 
     return assets.filter((a): a is Asset => !!a);
   }),
-  getAssetInfo: publicProcedure
+  getUserMarketAsset: publicProcedure
     .input(
       z
         .object({
@@ -122,7 +122,7 @@ export const assetsRouter = createTRPCRouter({
         ...userMarketInfoAsset,
       };
     }),
-  getAssetInfos: publicProcedure
+  getUserMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({

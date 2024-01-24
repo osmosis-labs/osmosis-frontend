@@ -12,12 +12,12 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
       new RootStore({
         txEvents: {
           onBroadcastFailed: () => {
-            apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
-            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
+            apiUtils.edge.assets.getUserAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getUserMarketAsset.invalidate(); // Invalidate user balance and info
           },
           onFulfill: () => {
-            apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
-            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
+            apiUtils.edge.assets.getUserAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getUserMarketAsset.invalidate(); // Invalidate user balance and info
           },
         },
       })

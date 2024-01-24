@@ -36,7 +36,7 @@ const NavbarOsmoPrice = observer(() => {
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: osmoCurrency } = api.edge.assets.getAsset.useQuery({
+  const { data: osmoCurrency } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: "OSMO",
   });
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
@@ -114,7 +114,7 @@ const NavbarOsmoPrice = observer(() => {
 
 const OsmoPriceAndChart: FunctionComponent = () => {
   const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
-    api.edge.assets.getAssetInfo.useQuery({
+    api.edge.assets.getUserMarketAsset.useQuery({
       findMinDenomOrSymbol: "OSMO",
     });
 
