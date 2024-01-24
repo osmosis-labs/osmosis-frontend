@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { useStore } from "~/stores";
 

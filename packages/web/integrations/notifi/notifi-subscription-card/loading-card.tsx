@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 
 export const LoadingCard: FunctionComponent = () => {
   return (

@@ -26,7 +26,7 @@ import {
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
 import {

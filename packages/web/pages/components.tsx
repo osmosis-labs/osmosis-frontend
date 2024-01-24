@@ -1,9 +1,17 @@
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import Image from "next/image";
 import { ReactNode, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
+import { ArrowButton, Button, ChartButton } from "~/components/buttons";
+import ClipboardButton from "~/components/buttons/clipboard-button";
+import { CloseButton } from "~/components/buttons/close-button";
+import IconButton from "~/components/buttons/icon-button";
+import LinkButton from "~/components/buttons/link-button";
+import LinkIconButton from "~/components/buttons/link-icon-button";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckBox,
   CheckboxSelect,
@@ -14,7 +22,8 @@ import {
   Switch,
 } from "~/components/control";
 import { MetricLoader } from "~/components/loaders";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import Spinner from "~/components/loaders/spinner";
 import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
@@ -55,6 +64,9 @@ const Loaders = () => {
         <SkeletonLoader isLoaded={false}>
           <div className="h-4 w-full bg-osmoverse-700" />
         </SkeletonLoader>
+      </Component>
+      <Component title="Spinner">
+        <Spinner />
       </Component>
     </Card>
   );
@@ -296,6 +308,96 @@ const Buttons = () => {
         <Button mode="unstyled" onClick={() => console.log("clicked")}>
           Click
         </Button>
+      </Component>
+    </Card>
+  );
+};
+
+const CustomButtons = () => {
+  const [showMoreButton, setShowMoreButton] = useState(false);
+  return (
+    <Card title="Custom Buttons">
+      <Component title="Arrow">
+        <ArrowButton onClick={() => console.log("clicked")}>Click</ArrowButton>
+      </Component>
+      <Component title="Chart">
+        <ChartButton
+          alt="refresh"
+          icon="refresh-ccw"
+          selected={false}
+          onClick={() => console.log("clicked")}
+        />
+      </Component>
+      <Component title="Clipboard">
+        <ClipboardButton
+          aria-label="clipboard-button"
+          onClick={() => console.log("clicked")}
+        >
+          Click
+        </ClipboardButton>
+      </Component>
+      <Component title="Close">
+        <CloseButton
+          onClick={() => console.log("clicked")}
+          className="bg-osmoverse-600"
+        />
+      </Component>
+      <Component title="Icon">
+        <IconButton
+          aria-label="clipboard-button"
+          onClick={() => console.log("clicked")}
+          icon={
+            <Icon
+              id="close"
+              className="text-osmoverse-400 hover:text-white-full"
+              width={32}
+              height={32}
+            />
+          }
+        />
+      </Component>
+      <Component title="Link">
+        <LinkButton
+          className="mr-auto md:invisible"
+          icon={
+            <Image
+              alt="right"
+              src="/icons/arrow-right.svg"
+              width={24}
+              height={24}
+              className="text-osmoverse-200"
+            />
+          }
+          label="Label"
+          ariaLabel="Aria Label"
+          href=""
+        />
+      </Component>
+      <Component title="Link Icon">
+        <LinkIconButton
+          href=""
+          mode="icon-social"
+          size="md-icon-social"
+          target="_blank"
+          rel="external"
+          aria-label="X"
+          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
+        />
+      </Component>
+      <Component title="Show More">
+        <ShowMoreButton
+          isOn={showMoreButton}
+          onToggle={() => setShowMoreButton(!showMoreButton)}
+          className="m-auto"
+        >
+          Click
+        </ShowMoreButton>
+      </Component>
+      <Component title="Switch Wallet">
+        <SwitchWalletButton
+          selectedWalletIconUrl="wallets/keplr.svg"
+          onClick={() => console.log("clicked")}
+        />
       </Component>
     </Card>
   );
@@ -604,6 +706,7 @@ const Components: NextPage = () => {
       <StakeTabs />
       <MenuDropdowns />
       <Buttons />
+      <CustomButtons />
     </div>
   );
 };
