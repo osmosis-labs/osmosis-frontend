@@ -5,7 +5,11 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
-import { Asset, AssetFilter, getAssets } from ".";
+import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
+import { getUserUnderlyingAssetsFromClPositions } from "../concentrated-liquidity";
+import { getGammShareUnderlyingAssets } from "../pools/share";
+import { getUserTotalDelegatedAsset } from "../staking/user";
+import { Asset, AssetFilter, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -108,4 +112,84 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   }
 
   return userAssets;
+}
+
+/** Lists of all of a user's underlying assets that are listed in asset list.
+ *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
+export async function getUserAggregateUnderlyingAssets(address: {
+  userOsmoAddress: string;
+}): Promise<CoinPretty[]> {
+  const userAssets = (
+    await Promise.all([
+      getUserUnderlyingAssetsFromBank(address),
+      getUserUnderlyingAssetsFromClPositions(address),
+      getUserUnderlyingAssetsFromLocks(address),
+      getUserTotalDelegatedAsset(address).then((coin) => [coin]),
+    ])
+  ).flat();
+
+  // aggregate user assets by coin denom
+  const aggregatedUserAssets = userAssets.reduce((coinMap, coin) => {
+    const existingCoin = coinMap.get(coin.currency.coinMinimalDenom);
+    if (existingCoin) {
+      coinMap.set(coin.currency.coinMinimalDenom, existingCoin.add(coin));
+    } else {
+      coinMap.set(coin.currency.coinMinimalDenom, coin);
+    }
+    return coinMap;
+  }, new Map<string, CoinPretty>());
+
+  return Array.from(aggregatedUserAssets.values());
+}
+
+/** Lists all of a user's underlying assets in bank module.
+ *  Includes underlying GAMM share assets as well as available assets. */
+export async function getUserUnderlyingAssetsFromBank({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}): Promise<CoinPretty[]> {
+  // get bank balances
+  const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
+
+  // get underlying assets from GAMM shares as well as available assets
+  // only those that are listed in asset list
+  const eventualUserBankAssets = balances.map(async ({ denom, amount }) => {
+    if (denom.includes("gamm")) {
+      return await getGammShareUnderlyingAssets({
+        denom,
+        amount,
+      }).catch(() => undefined);
+    }
+
+    const asset = await getAsset({ anyDenom: denom }).catch(() => undefined);
+    if (!asset) return;
+
+    return [new CoinPretty(asset, amount)];
+  });
+
+  return (await Promise.all(eventualUserBankAssets))
+    .flat()
+    .filter((a): a is CoinPretty => !!a);
+}
+
+/** Lists all of a user's assets contained within locks. */
+export async function getUserUnderlyingAssetsFromLocks({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}): Promise<CoinPretty[]> {
+  const lockedCoins = await queryAccountLockedCoins({
+    bech32Address: userOsmoAddress,
+  });
+
+  const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
+    if (coin.denom.includes("gamm")) {
+      return await getGammShareUnderlyingAssets(coin).catch(() => undefined);
+    }
+  });
+
+  return (await Promise.all(eventualUserLockedAssets))
+    .filter((a): a is CoinPretty[] => !!a)
+    .flat();
 }

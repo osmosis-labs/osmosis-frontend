@@ -7,14 +7,11 @@ import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   getTotalClaimableRewards,
   getTotalEarned,
-  mapGetPositionDetails,
+  mapGetUserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { queryPositionPerformance } from "~/server/queries/imperator";
-import {
-  queryCLPosition,
-  queryCLPositions,
-} from "~/server/queries/osmosis/concentratedliquidity";
+import { queryCLPosition } from "~/server/queries/osmosis/concentratedliquidity";
 import { sum } from "~/utils/math";
 import { sort } from "~/utils/sort";
 
@@ -28,12 +25,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema.required())
     )
     .query(async ({ input: { userOsmoAddress, sortDirection } }) => {
-      const { positions: rawPositions } = await queryCLPositions({
-        bech32Address: userOsmoAddress,
-      });
-
-      const result = await mapGetPositionDetails({
-        positions: rawPositions,
+      const result = await mapGetUserPositionDetails({
         userOsmoAddress,
       });
       return sort(result, "joinTime", sortDirection);

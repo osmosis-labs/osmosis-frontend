@@ -6,11 +6,13 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
   AssetFilterSchema,
+  calcSumAssetsValue,
   getAsset,
   getAssetHistoricalPrice,
   getAssetMarketInfo,
   getAssetPrice,
   getPoolAssetPairHistoricalPrice,
+  getUserAggregateUnderlyingAssets,
   getUserAssetInfo,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
@@ -241,6 +243,24 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
+  getUserTotalAssetsValue: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input: userOsmoAddress }) => {
+      const aggregatedAssets = await getUserAggregateUnderlyingAssets(
+        userOsmoAddress
+      );
+
+      const value = await calcSumAssetsValue({
+        assets: aggregatedAssets
+          .map((coin) => coin.toCoin())
+          .map((coin) => ({ anyDenom: coin.denom, amount: coin.amount })),
+      });
+      if (!value)
+        throw new Error("Problem calculating value of user underlying assets");
+
+      return new PricePretty(DEFAULT_VS_CURRENCY, value);
+    }),
+
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

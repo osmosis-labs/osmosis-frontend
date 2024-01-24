@@ -106,6 +106,13 @@ export const AssetsInfoTable: FunctionComponent<{
       enabled: !isLoadingWallet,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
   const assetsData = useMemo(

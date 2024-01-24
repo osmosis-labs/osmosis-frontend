@@ -282,7 +282,8 @@ export async function calcAssetValue({
     .mul(price);
 }
 
-/** Calculate and sum the value of multiple assets. */
+/** Calculate and sum the value of multiple assets.
+ *  Will only include listed assets as part of sum. */
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",
