@@ -199,37 +199,23 @@ export const assetsRouter = createTRPCRouter({
                 if (isAPreferred && !isBPreferred) return -1;
                 if (!isAPreferred && isBPreferred) return 1;
 
-                // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
-                const usdValueDefinedCompare = compareDefinedMember(
-                  assetA,
-                  assetB,
-                  "usdValue"
-                );
-                console.log({
-                  a: assetA.usdValue?.toString(),
-                  b: assetB.usdValue?.toString(),
-                  usdValueDefinedCompare,
-                });
-                if (usdValueDefinedCompare) return usdValueDefinedCompare;
-
                 // Sort by market cap as long as there's no user fiat balance
-                if (
-                  assetA.marketCap &&
-                  !assetA.usdValue &&
-                  assetB.marketCap &&
-                  !assetB.usdValue
-                ) {
+                // Assets with fiat balances will remain sorted as they are
+                if (!assetA.usdValue && !assetB.usdValue) {
                   const marketCapDefinedCompare = compareDefinedMember(
                     assetA,
                     assetB,
                     "marketCap"
                   );
                   if (marketCapDefinedCompare) return marketCapDefinedCompare;
-                  const marketCapCompare = compareDec(
-                    assetA.marketCap.toDec(),
-                    assetB.marketCap.toDec()
-                  );
-                  if (marketCapCompare) return marketCapCompare;
+
+                  if (assetA.marketCap && assetB.marketCap) {
+                    const marketCapCompare = compareDec(
+                      assetA.marketCap.toDec(),
+                      assetB.marketCap.toDec()
+                    );
+                    if (marketCapCompare) return marketCapCompare;
+                  }
                 }
                 return 0;
               });
