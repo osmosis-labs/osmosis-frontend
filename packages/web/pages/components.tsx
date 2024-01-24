@@ -45,6 +45,7 @@ import { MetricLoader } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
+import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
@@ -974,6 +975,47 @@ const QRCodes = () => (
   </Card>
 );
 
+const Steppers = () => {
+  const steps = ["step1", "step2", "step3"];
+  return (
+    <Card title="Steppers">
+      <Component title="Stepper">
+        <Stepper autoplay={{ delayInMs: 1000 }}>
+          {steps.map((step) => (
+            <Step key={step}>
+              <span className="b-wosmongton-700 m-2 rounded-xl border-2 p-2">
+                {step}
+              </span>
+            </Step>
+          ))}
+        </Stepper>
+      </Component>
+      <Component title="Stepper Stop On Hover">
+        <Stepper autoplay={{ delayInMs: 1000, stopOnHover: true }}>
+          {steps.map((step) => (
+            <Step key={step}>
+              <span className="b-wosmongton-700 m-2 rounded-xl border-2 p-2">
+                {step}
+              </span>
+            </Step>
+          ))}
+        </Stepper>
+      </Component>
+      <Component title="Stepper Stop On Last Slide">
+        <Stepper autoplay={{ delayInMs: 1000, stopOnLastSlide: true }}>
+          {steps.map((step) => (
+            <Step key={step}>
+              <span className="b-wosmongton-700 m-2 rounded-xl border-2 p-2">
+                {step}
+              </span>
+            </Step>
+          ))}
+        </Stepper>
+      </Component>
+    </Card>
+  );
+};
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -997,6 +1039,7 @@ const Components: NextPage = () => {
       <CheckboxSelects />
       <StakeTabs />
       <QRCodes />
+      <Steppers />
     </div>
   );
 };
