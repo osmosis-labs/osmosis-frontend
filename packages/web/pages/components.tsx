@@ -219,7 +219,7 @@ const RadiosWithOptions = () => {
 
     return (
       <Card title="Radio with Options">
-        <Component title="Primary">
+        <Component title="Primary Small">
           <RadioWithOptions
             mode="primary"
             variant="small"
@@ -228,10 +228,28 @@ const RadiosWithOptions = () => {
             options={rewardTypes}
           />
         </Component>
-        <Component title="Secondary">
+        <Component title="Primary Large">
+          <RadioWithOptions
+            mode="primary"
+            variant="large"
+            value={filters?.rewardType || "all"}
+            onChange={(value) => setFilter("rewardType", value)}
+            options={rewardTypes}
+          />
+        </Component>
+        <Component title="Secondary Small">
           <RadioWithOptions
             mode="secondary"
             variant="small"
+            value={filters?.rewardType || "all"}
+            onChange={(value) => setFilter("rewardType", value)}
+            options={rewardTypes}
+          />
+        </Component>
+        <Component title="Secondary Large">
+          <RadioWithOptions
+            mode="secondary"
+            variant="large"
             value={filters?.rewardType || "all"}
             onChange={(value) => setFilter("rewardType", value)}
             options={rewardTypes}
