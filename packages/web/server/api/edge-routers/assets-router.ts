@@ -205,16 +205,26 @@ export const assetsRouter = createTRPCRouter({
                   assetB,
                   "usdValue"
                 );
+                console.log({
+                  a: assetA.usdValue?.toString(),
+                  b: assetB.usdValue?.toString(),
+                  usdValueDefinedCompare,
+                });
                 if (usdValueDefinedCompare) return usdValueDefinedCompare;
 
-                // Sort by market cap
-                const marketCapDefinedCompare = compareDefinedMember(
-                  assetA,
-                  assetB,
-                  "marketCap"
-                );
-                if (marketCapDefinedCompare) return marketCapDefinedCompare;
-                if (assetA.marketCap && assetB.marketCap) {
+                // Sort by market cap as long as there's no user fiat balance
+                if (
+                  assetA.marketCap &&
+                  !assetA.usdValue &&
+                  assetB.marketCap &&
+                  !assetB.usdValue
+                ) {
+                  const marketCapDefinedCompare = compareDefinedMember(
+                    assetA,
+                    assetB,
+                    "marketCap"
+                  );
+                  if (marketCapDefinedCompare) return marketCapDefinedCompare;
                   const marketCapCompare = compareDec(
                     assetA.marketCap.toDec(),
                     assetB.marketCap.toDec()
