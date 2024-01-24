@@ -1,9 +1,26 @@
+import { RatePretty } from "@keplr-wallet/unit";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useState } from "react";
 
-import { Icon } from "~/components/assets";
+import { PoolAssetsIcon } from "~/components/assets";
+import {
+  CopyIcon,
+  ExternalLinkIcon,
+  FallbackImg,
+  Icon,
+  LogOutIcon,
+  PoolAssetsName,
+  QRIcon,
+} from "~/components/assets";
+import { RateRing } from "~/components/assets";
+import { Token } from "~/components/assets";
+import { CoinsIcon } from "~/components/assets/coins-icon";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { GradientView } from "~/components/assets/gradient-view";
+import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
+import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { ArrowButton, Button, ChartButton } from "~/components/buttons";
 import ClipboardButton from "~/components/buttons/clipboard-button";
 import { CloseButton } from "~/components/buttons/close-button";
@@ -689,6 +706,93 @@ const Tooltips = () => (
   </Card>
 );
 
+const Assets = () => (
+  <Card title="Assets">
+    <Component title="Copy">
+      <CopyIcon />
+    </Component>
+    <Component title="Credit Card">
+      <CreditCardIcon />
+    </Component>
+    <Component title="External Link">
+      <ExternalLinkIcon />
+    </Component>
+    <Component title="Logout">
+      <LogOutIcon />
+    </Component>
+    <Component title="QR">
+      <QRIcon />
+    </Component>
+    <Component title="Right Arrow">
+      <RightArrowIcon />
+    </Component>
+    <Component title="Unlock">
+      <UnlockIcon />
+    </Component>
+    <Component title="Fallback Image">
+      <FallbackImg
+        src=""
+        fallbacksrc="/icons/superfluid-osmo.svg"
+        className="h-16"
+      />
+    </Component>
+    <Component title="Gradient View">
+      <GradientView />
+    </Component>
+
+    <Component title="Pool Assets">
+      <PoolAssetsIcon
+        assets={[
+          {
+            coinDenom: "Osmo",
+            coinImageUrl: "/icons/superfluid-osmo.svg",
+            networkName: "osmosis-1",
+            poolShare: new RatePretty(0.5),
+          },
+          {
+            coinDenom: "Osmo",
+            coinImageUrl: "/icons/superfluid-osmo.svg",
+            networkName: "osmosis-1",
+            poolShare: new RatePretty(0.5),
+          },
+          {
+            coinDenom: "Osmo",
+            coinImageUrl: "/icons/superfluid-osmo.svg",
+            networkName: "osmosis-1",
+            poolShare: new RatePretty(0.5),
+          },
+        ]}
+      />
+    </Component>
+    <Component title="Pool Assets Name">
+      <PoolAssetsName assetDenoms={["OSMO", "BTC"]} />
+    </Component>
+    <Component title="Coins">
+      <CoinsIcon className="h-32" />
+    </Component>
+    <Component title="Rate Ring 25%">
+      <RateRing className="my-auto" percentage={new RatePretty(0.25)} />
+    </Component>
+    <Component title="Rate Ring 50%">
+      <RateRing className="my-auto" percentage={new RatePretty(0.5)} />
+    </Component>
+    <Component title="Rate Ring 75%">
+      <RateRing className="my-auto" percentage={new RatePretty(0.75)} />
+    </Component>
+    <Component title="Rate Ring 100%">
+      <RateRing className="my-auto" percentage={new RatePretty(1)} />
+    </Component>
+    <Component title="Token">
+      <Token
+        coinDenom="Osmo"
+        coinImageUrl="/icons/superfluid-osmo.svg"
+        networkName="osmosis-1"
+        poolShare={new RatePretty(0.5)}
+      />
+    </Component>
+  </Card>
+);
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -696,6 +800,7 @@ const Components: NextPage = () => {
       <FontSize />
       <Color />
       <Icons />
+      <Assets />
       <Tooltips />
       <Loaders />
       <Checkboxes />

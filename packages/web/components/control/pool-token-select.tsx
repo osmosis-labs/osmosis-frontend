@@ -88,17 +88,20 @@ const TokensDropdown: FunctionComponent<
   } & MobileProps
 > = ({ tokens, onSelect, isMobile = false }) => (
   <div className="absolute z-40 flex w-64 flex-col rounded-b-xl bg-osmoverse-700 md:w-52">
-    {tokens.map((token, index) => (
-      <button
-        className={classNames(
-          "cursor-pointer border-t border-dashed border-white-faint p-5 transition-colors hover:bg-white-faint md:p-2",
-          { "rounded-b-xl": index === tokens.length - 1 }
-        )}
-        key={token.coinDenom}
-        onClick={() => onSelect(token.coinDenom)}
-      >
-        <Token {...token} ringColorIndex={index} isMobile={isMobile} />
-      </button>
-    ))}
+    {tokens.map((token, index) => {
+      console.log("tokens: ", tokens);
+      return (
+        <button
+          className={classNames(
+            "cursor-pointer border-t border-dashed border-white-faint p-5 transition-colors hover:bg-white-faint md:p-2",
+            { "rounded-b-xl": index === tokens.length - 1 }
+          )}
+          key={token.coinDenom}
+          onClick={() => onSelect(token.coinDenom)}
+        >
+          <Token {...token} ringColorIndex={index} isMobile={isMobile} />
+        </button>
+      );
+    })}
   </div>
 );
