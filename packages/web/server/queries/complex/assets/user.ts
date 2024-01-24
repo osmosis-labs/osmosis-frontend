@@ -88,7 +88,9 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
       if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
       if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;
       if (!Boolean(a.usdValue) && Boolean(b.usdValue)) return 1;
+      if (!a.isVerified && b.isVerified) return 1;
 
+      // sort by USD value respecting given sort direction
       if (sortFiatValueDirection === "desc") {
         const n = Number(
           b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString()
