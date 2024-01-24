@@ -1,9 +1,8 @@
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { isNil } from "@osmosis-labs/utils";
-import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
@@ -12,9 +11,24 @@ import { CheckBox } from "~/components/control";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { Authenticator } from "~/server/queries/osmosis/authenticators";
+import { useAddAuthenticator } from "~/hooks/mutations/osmosis/add-authenticator";
+import { useRemoveAuthenticator } from "~/hooks/mutations/osmosis/remove-authenticator";
 import { useStore } from "~/stores";
 import { api, RouterOutputs } from "~/utils/trpc";
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  if (process.env.NODE_ENV !== "development") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: true,
+      },
+      props: {},
+    };
+  }
+
+  return { props: {} };
+};
 
 const SmartAccounts: NextPage = observer(function () {
   const { chainStore, accountStore } = useStore();
@@ -46,42 +60,21 @@ const SmartAccounts: NextPage = observer(function () {
       }
     );
 
-  const removeAuthenticator = useMutation(async ({ id }: { id: string }) => {
-    if (!account?.osmosis) {
-      throw new Error("Osmosis account not found");
-    }
-
-    return await account.osmosis
-      .sendRemoveAuthenticatorMsg(id, "", (tx: any) => {
-        if (tx.code === 0) {
-          refetchAuthenticators();
-        } else {
-          alert("fail");
-        }
-      })
-      .catch(console.error);
+  const removeAuthenticator = useRemoveAuthenticator({
+    queryOptions: {
+      onSuccess: () => {
+        refetchAuthenticators();
+      },
+    },
   });
 
-  const addAuthenticator = useMutation(
-    async (authenticator: {
-      type: Authenticator["type"];
-      data: Uint8Array | number[];
-    }) => {
-      if (!account?.osmosis) {
-        throw new Error("Osmosis account not found");
-      }
-
-      return await account.osmosis
-        .sendAddAuthenticatorMsg(authenticator, "", (tx: any) => {
-          if (tx.code === 0) {
-            refetchAuthenticators();
-          } else {
-            alert("fail");
-          }
-        })
-        .catch(console.error);
-    }
-  );
+  const addAuthenticator = useAddAuthenticator({
+    queryOptions: {
+      onSuccess: () => {
+        refetchAuthenticators();
+      },
+    },
+  });
 
   const onCreateFirstAuthenticator = async (e: any) => {
     if (!cosmosAccount) {
