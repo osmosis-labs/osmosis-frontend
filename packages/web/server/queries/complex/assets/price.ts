@@ -1,11 +1,11 @@
 import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
@@ -16,24 +16,27 @@ import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/im
 
 import {
   queryTokenHistoricalChart,
+  queryTokenPairHistoricalChart,
+  TimeDuration,
   TimeFrame,
   TokenHistoricalPrice,
-} from "../../imperator/token-historical-chart";
+  TokenPairHistoricalPrice,
+} from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   return cachified({
     cache: pricesCache,
     key: `coingecko-coin-${denom}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const { coins } = await queryCoingeckoSearch(denom);
       return coins?.find(
         ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
       );
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 
@@ -47,12 +50,12 @@ async function getCoingeckoPrice({
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const prices = await querySimplePrice([coingeckoId], [currency]);
       const price = prices[coingeckoId]?.[currency];
       return price ? new Dec(price) : undefined;
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 
@@ -65,6 +68,8 @@ async function getCoingeckoPrice({
  * 3. Calculated the price of the destination coin recursively (i.e. usd-coin or another pool like uosmo)
  *
  * Note: For now only "usd" is supported.
+ *
+ * @throws If the asset is not found in the asset list registry or the asset's price info is not found.
  */
 async function calculatePriceFromPriceId({
   asset,
@@ -73,8 +78,8 @@ async function calculatePriceFromPriceId({
   asset: Pick<Asset, "base" | "price_info" | "coingecko_id">;
   currency: "usd";
 }): Promise<Dec | undefined> {
-  if (!asset) return undefined;
-  if (!asset.price_info && !asset.coingecko_id) return undefined;
+  if (!asset.price_info && !asset.coingecko_id)
+    throw new Error("No price info or coingecko id for " + asset.base);
 
   /**
    * Fetch directly from coingecko if there's no price info.
@@ -86,7 +91,7 @@ async function calculatePriceFromPriceId({
     });
   }
 
-  if (!asset.price_info) return undefined;
+  if (!asset.price_info) throw new Error("No price info for " + asset.base);
 
   const poolPriceRoute = {
     destCoinMinimalDenom: asset.price_info.dest_coin_minimal_denom,
@@ -94,7 +99,7 @@ async function calculatePriceFromPriceId({
     sourceCoinMinimalDenom: asset.base,
   };
 
-  if (!poolPriceRoute) return undefined;
+  if (!poolPriceRoute) throw new Error("No pool price route for " + asset.base);
 
   const tokenInIbc = poolPriceRoute.sourceCoinMinimalDenom;
   const tokenOutIbc = poolPriceRoute.destCoinMinimalDenom;
@@ -109,7 +114,17 @@ async function calculatePriceFromPriceId({
     assetLists: AssetLists,
   });
 
-  if (!tokenInAsset || !tokenOutAsset) return undefined;
+  if (!tokenInAsset)
+    throw new Error(
+      poolPriceRoute.sourceCoinMinimalDenom +
+        " price source coin not in asset list."
+    );
+
+  if (!tokenOutAsset)
+    throw new Error(
+      poolPriceRoute.destCoinMinimalDenom +
+        " price dest coin not in asset list."
+    );
 
   const rawPool: PoolRaw = (
     await queryPaginatedPools({
@@ -117,11 +132,20 @@ async function calculatePriceFromPriceId({
     })
   )?.pools[0];
 
-  if (!rawPool) return undefined;
+  if (!rawPool)
+    throw new Error(
+      "Pool " + poolPriceRoute.poolId + " not found for calculating price."
+    );
 
   const pool = makeStaticPoolFromRaw(rawPool);
 
-  if (!tokenOutAsset.decimals || !tokenInAsset.decimals) return undefined;
+  if (isNil(tokenOutAsset.decimals) || isNil(tokenInAsset.decimals))
+    throw new Error(
+      "Invalid decimals in " +
+        tokenOutAsset.symbol +
+        " or " +
+        tokenInAsset.symbol
+    );
 
   const multiplication = DecUtils.getTenExponentN(
     tokenOutAsset.decimals - tokenInAsset.decimals
@@ -145,12 +169,17 @@ async function calculatePriceFromPriceId({
     currency,
   });
 
-  if (!destCoinPrice) return undefined;
+  if (!destCoinPrice)
+    throw new Error(
+      "No destination coin price found for " + tokenOutAsset.symbol
+    );
 
   return spotPriceDec.mul(destCoinPrice);
 }
 
-/** Finds the fiat value of a single unit of a given asset for a given fiat currency. */
+/** Finds the fiat value of a single unit of a given asset for a given fiat currency.
+ *  @throws If the asset is not found in the asset list registry or the asset's price info is not found.
+ */
 export async function getAssetPrice({
   asset,
   currency = "usd",
@@ -162,87 +191,130 @@ export async function getAssetPrice({
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
-  const assetListAsset = getAssetFromAssetList({
-    sourceDenom: asset.sourceDenom,
-    coinMinimalDenom: asset.coinMinimalDenom,
-    assetLists: AssetLists,
+  return cachified({
+    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    cache: pricesCache,
+    ttl: 3_000, // 3 seconds
+    getFreshValue: async () => {
+      const assetListAsset = getAssetFromAssetList({
+        sourceDenom: asset.sourceDenom,
+        coinMinimalDenom: asset.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      if (!assetListAsset) {
+        throw new Error(
+          `Asset ${asset.sourceDenom} not found on asset list registry.`
+        );
+      }
+
+      let coingeckoAsset:
+        | NonNullable<
+            Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
+          >[number]
+        | undefined;
+
+      const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
+
+      /**
+       * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
+       */
+      try {
+        if (
+          (!assetListAsset || !assetListAsset.coinGeckoId) &&
+          !shouldCalculateUsingPools &&
+          asset.coinDenom
+        ) {
+          coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
+        }
+      } catch (e) {
+        console.error("Failed to fetch asset from coingecko registry", e);
+      }
+
+      const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
+
+      if (shouldCalculateUsingPools && assetListAsset) {
+        return await calculatePriceFromPriceId({
+          asset: assetListAsset.rawAsset,
+          currency,
+        });
+      }
+
+      if (!id) {
+        throw new Error(
+          `Asset ${
+            asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
+          } has no identifier for pricing.`
+        );
+      }
+
+      return await getCoingeckoPrice({ coingeckoId: id, currency });
+    },
   });
-
-  let coingeckoAsset:
-    | NonNullable<
-        Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
-      >[number]
-    | undefined;
-
-  if (!assetListAsset) {
-    console.error(
-      `Asset ${asset.sourceDenom} not found on asset list registry.`
-    );
-  }
-
-  const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
-
-  /**
-   * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
-   */
-  try {
-    if (
-      (!assetListAsset || !assetListAsset.coinGeckoId) &&
-      !shouldCalculateUsingPools &&
-      asset.coinDenom
-    ) {
-      console.warn(
-        "Searching on Coingecko registry for asset",
-        asset.coinDenom
-      );
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
-    }
-  } catch (e) {
-    console.error("Failed to fetch asset from coingecko registry", e);
-  }
-
-  const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
-
-  if (shouldCalculateUsingPools && assetListAsset) {
-    return await calculatePriceFromPriceId({
-      asset: assetListAsset.rawAsset,
-      currency,
-    });
-  }
-
-  if (!id) {
-    return undefined;
-  }
-
-  return await getCoingeckoPrice({ coingeckoId: id, currency });
 }
 
-/** Calculates the fiat value of an asset given any denom and base amount. */
+/** Calculates the fiat value of an asset given any denom and base amount.
+ *  @throws If the asset is not found in the asset list registry or the asset's price info is not found. */
 export async function calcAssetValue({
   anyDenom,
   amount,
   currency = "usd",
 }: {
   anyDenom: string;
-  amount: Int | string;
+  amount: Int | Dec | string;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
   const asset = await getAsset({ anyDenom });
-
-  if (!asset) return;
 
   const price = await getAssetPrice({
     asset,
     currency,
   });
 
-  if (!price) return;
+  if (!price) throw new Error(anyDenom + " price not available");
 
   const tokenDivision = DecUtils.getTenExponentN(asset.coinDecimals);
 
   if (typeof amount === "string") amount = new Int(amount);
 
-  return amount.toDec().quo(tokenDivision).mul(price);
+  return (amount instanceof Dec ? amount : amount.toDec())
+    .quo(tokenDivision)
+    .mul(price);
+}
+
+/** Calculate and sum the value of multiple assets. */
+export async function calcSumAssetsValue({
+  assets,
+  currency = "usd",
+}: {
+  assets: {
+    anyDenom: string;
+    amount: Int | string;
+  }[];
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  return (
+    (
+      await Promise.all(
+        assets.map(async (asset) => {
+          const price = await calcAssetValue({
+            ...asset,
+            currency,
+          });
+
+          if (!price) return undefined;
+
+          return price;
+        })
+      )
+    ).filter(Boolean) as NonNullable<
+      Awaited<ReturnType<typeof calcAssetValue>>
+    >[]
+  ).reduce((acc, price) => {
+    if (!price) return acc;
+
+    return acc.add(price);
+  }, new Dec(0));
 }
 
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(
@@ -303,5 +375,42 @@ export function getAssetHistoricalPrice({
       }).then((prices) =>
         numRecentFrames ? prices.slice(-numRecentFrames) : prices
       ),
+  });
+}
+
+const tokenPairPriceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+/** Gets the relative price of two tokens in a specified pool over a given duration.
+ *  Lightly cached. */
+export function getPoolAssetPairHistoricalPrice({
+  poolId,
+  quoteCoinMinimalDenom,
+  baseCoinMinimalDenom,
+  timeDuration,
+}: {
+  poolId: string;
+  quoteCoinMinimalDenom: string;
+  baseCoinMinimalDenom: string;
+  timeDuration: TimeDuration;
+}): Promise<{ prices: TokenPairHistoricalPrice[]; min: number; max: number }> {
+  return cachified({
+    cache: tokenPairPriceCache,
+    key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
+    ttl: 1000 * 60 * 3, // 3 minutes,
+    getFreshValue: () =>
+      queryTokenPairHistoricalChart(
+        poolId,
+        quoteCoinMinimalDenom,
+        baseCoinMinimalDenom,
+        timeDuration
+      ).then((prices) => ({
+        prices: prices.map((price) => ({
+          ...price,
+          time: price.time * 1000,
+        })),
+        min: Math.min(...prices.map((price) => price.close)),
+        max: Math.max(...prices.map((price) => price.close)),
+      })),
   });
 }

@@ -1,6 +1,7 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -283,7 +284,7 @@ export const Staking: React.FC = observer(() => {
   const { stakingAPR, isLoadingApr } = useGetApr();
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
-    StakingType.BondStatus.Bonded
+    BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
 

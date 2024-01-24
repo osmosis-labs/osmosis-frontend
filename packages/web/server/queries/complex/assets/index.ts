@@ -1,3 +1,4 @@
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -6,6 +7,8 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { calcAssetValue } from "~/server/queries/complex/assets/price";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -15,7 +18,7 @@ export type Asset = {
   coinMinimalDenom: string;
   coinDecimals: number;
   coinGeckoId: string | undefined;
-  coinImageUrl: string;
+  coinImageUrl?: string;
   isVerified: boolean;
   isUnstable: boolean;
 };
@@ -23,22 +26,32 @@ export type Asset = {
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
+  includeUnlisted: z.boolean().default(false).optional(),
 });
 /** Params for filtering assets. */
-export type AssetFilter = z.infer<typeof AssetFilterSchema>;
+export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
-/** Get an individual asset explicitly by it's denom (any type) */
+/** Get an individual asset explicitly by it's denom (any type).
+ *  @throws If asset not found. */
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
+  ...params
 }: {
   assetList?: AssetList[];
   anyDenom: string;
-}): Promise<Asset | undefined> {
-  const assets = await getAssets({ assetList, findMinDenomOrSymbol: anyDenom });
-  return assets[0];
+}): Promise<Asset> {
+  const assets = await getAssets({
+    assetList,
+    findMinDenomOrSymbol: anyDenom,
+    includeUnlisted: true,
+    ...params,
+  });
+  const asset = assets[0];
+  if (!asset) throw new Error(anyDenom + " not found in asset list");
+  return asset;
 }
 
 const minimalAssetsCache = new LRUCache<string, CacheEntry>(
@@ -75,15 +88,19 @@ export async function getAssets({
 /** Transform given asset list into an array of minimal asset types for user in frontend. */
 function simplifyAssetListForDisplay(
   assetList: AssetList[],
-  params: { findMinDenomOrSymbol?: string } & AssetFilter = {}
+  params: {
+    findMinDenomOrSymbol?: string;
+  } & AssetFilter = {}
 ): Asset[] {
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter(
-      (asset) => asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+    .filter((asset) =>
+      params.includeUnlisted
+        ? true // Do not filter the unlisted assets
+        : !asset.keywords?.includes("osmosis-unlisted")
     );
 
   let assetListAssets = listedAssets.filter((asset) => {
@@ -123,6 +140,56 @@ function simplifyAssetListForDisplay(
 
   // Transform into a more compact object
   return assetListAssets.map(makeMinimalAsset);
+}
+
+/**
+ * This function maps raw assets to a CoinPretty. This is useful for
+ * converting raw assets returned from chain. It also optionally
+ * calculates the fiat value of the asset if the 'calculatePrice'
+ * parameter is true.
+ *
+ * @param {Array} rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
+ * @param {boolean} calculatePrice A boolean indicating whether to calculate the price of the asset.
+ *
+ * @returns {Promise<Array>} A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
+ */
+export async function mapRawAssetsToCoinPretty({
+  rawAssets,
+  calculatePrice,
+}: {
+  rawAssets?: {
+    amount: string | number;
+    denom: string;
+  }[];
+  calculatePrice?: boolean;
+}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
+  if (!rawAssets) return [];
+  const result = await Promise.all(
+    rawAssets.map(async ({ amount, denom }) => {
+      const asset = await getAsset({
+        anyDenom: denom,
+      });
+
+      if (!asset) return undefined;
+
+      const coin = new CoinPretty(asset, amount);
+      if (calculatePrice) {
+        const fiatValue = await calcAssetValue({
+          amount: coin.toDec(),
+          anyDenom: denom,
+        });
+
+        if (!fiatValue)
+          throw new Error(`Could not calculate price for ${denom}`);
+
+        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
+          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
+      }
+
+      return coin;
+    })
+  );
+  return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 export * from "./info";

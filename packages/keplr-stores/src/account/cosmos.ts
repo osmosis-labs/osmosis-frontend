@@ -36,7 +36,6 @@ import {
   ChainIdHelper,
   TendermintTxTracer,
 } from "@keplr-wallet/cosmos";
-import { BondStatus } from "../query/cosmos/staking/types";
 import { QueriesSetBase, IQueriesStore, CosmosQueries } from "../query";
 import { DeepPartial, DeepReadonly } from "utility-types";
 import { ChainGetter } from "../common";
@@ -47,6 +46,7 @@ import { Buffer } from "buffer/";
 import { MakeTxResponse, ProtoMsgsOrWithAminoMsgs } from "./types";
 import { txEventsWithPreOnFulfill } from "./utils";
 import Long from "long";
+import { BondStatus } from "@osmosis-labs/types";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;

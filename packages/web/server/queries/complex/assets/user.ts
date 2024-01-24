@@ -30,6 +30,7 @@ export async function getUserAssetInfo<TAsset extends Asset>({
     assetList,
     assets: [asset],
     userOsmoAddress,
+    includeUnlisted: true,
   });
   return userAssets[0];
 }
@@ -51,7 +52,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   if (!assets) assets = (await getAssets(params)) as TAsset[];
   if (!userOsmoAddress) return assets;
 
-  const { balances } = await queryBalances(userOsmoAddress);
+  const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
   const eventualUserAssets = assets
     .map(async (asset) => {
@@ -66,6 +67,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
         amount: balance.amount,
       }).catch(() => {
         console.error(asset.coinMinimalDenom, "likely missing price config");
+        return undefined;
       });
 
       return {

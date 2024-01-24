@@ -20,6 +20,7 @@ export type PoolRaw =
   | ConcentratedLiquidityPoolRaw
   | CosmwasmPoolRaw;
 
+/** @deprecated */
 export type PoolType =
   | "concentrated"
   | "weighted"

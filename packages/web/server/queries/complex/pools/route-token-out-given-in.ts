@@ -20,6 +20,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
 
 import { queryNumPools } from "../../osmosis";
@@ -64,7 +65,7 @@ const routerCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Gets pools and returns a cached router instance. */
 export async function getRouter(
-  minLiquidityUsd = 1000,
+  minLiquidityUsd = IS_TESTNET ? 0 : 1000,
   routerCacheTtl = 30 * 1000
 ): Promise<OptimizedRoutes> {
   return cachified({

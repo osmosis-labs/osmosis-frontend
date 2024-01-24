@@ -1,10 +1,20 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { queryPriceRangeApr } from "~/server/queries/imperator";
+import { queryLockableDurations } from "~/server/queries/osmosis";
+
 import { queryPoolAprs } from "../../numia/pool-aprs";
 import { getPools, Pool, PoolFilter } from "./index";
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 const allPoolIncentiveTypes = [
   "superfluid",
@@ -96,6 +106,8 @@ async function getCachedPoolIncentivesMap(): Promise<
       const aprs = await queryPoolAprs();
 
       return aprs.reduce((map, apr) => {
+        const total = maybeMakeRatePretty(apr.total_apr);
+        const swapFee = maybeMakeRatePretty(apr.swap_fees);
         const superfluid = maybeMakeRatePretty(apr.superfluid);
         const osmosis = maybeMakeRatePretty(apr.osmosis);
         const boost = maybeMakeRatePretty(apr.boost);
@@ -106,20 +118,56 @@ async function getCachedPoolIncentivesMap(): Promise<
         if (osmosis) incentiveTypes.push("osmosis");
         if (boost) incentiveTypes.push("boost");
         if (!superfluid && !osmosis && !boost) incentiveTypes.push("none");
+        const hasBreakdownData =
+          total || swapFee || superfluid || osmosis || boost;
 
         map.set(apr.pool_id, {
-          aprBreakdown: {
-            total: maybeMakeRatePretty(apr.total_apr),
-            swapFee: maybeMakeRatePretty(apr.swap_fees),
-            superfluid,
-            osmosis,
-            boost,
-          },
+          aprBreakdown: hasBreakdownData
+            ? {
+                total,
+                swapFee,
+                superfluid,
+                osmosis,
+                boost,
+              }
+            : undefined,
           incentiveTypes,
         });
 
         return map;
       }, new Map<string, PoolIncentives>());
+    },
+  });
+}
+
+const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+export function getConcentratedRangePoolApr({
+  poolId,
+  upperTick,
+  lowerTick,
+}: {
+  poolId: string;
+  lowerTick: string;
+  upperTick: string;
+}): Promise<RatePretty | undefined> {
+  return cachified({
+    cache: aprCache,
+    key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
+    ttl: 30 * 1000, // 30 seconds
+    getFreshValue: async () => {
+      try {
+        const { APR } = await queryPriceRangeApr({
+          lowerTickIndex: lowerTick,
+          upperTickIndex: upperTick,
+          poolId: poolId,
+        });
+        const apr = APR / 100;
+        if (isNaN(apr)) return;
+        return new RatePretty(apr);
+      } catch {
+        return undefined;
+      }
     },
   });
 }
@@ -131,4 +179,24 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
   }
 
   return new RatePretty(new Dec(value).quo(new Dec(100)));
+}
+
+export function getLockableDurations() {
+  return cachified({
+    cache: incentivePoolsCache,
+    key: "lockable-durations",
+    ttl: 30 * 1000, // 30 seconds
+    getFreshValue: async () => {
+      const { lockable_durations } = await queryLockableDurations();
+
+      return lockable_durations
+        .map((durationStr: string) => {
+          return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
+        })
+        .slice()
+        .sort((v1, v2) => {
+          return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
+        });
+    },
+  });
 }

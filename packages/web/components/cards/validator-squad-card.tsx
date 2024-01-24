@@ -1,5 +1,6 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
@@ -33,7 +34,7 @@ export const ValidatorSquadCard: React.FC<{
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
+      BondStatus.Bonded
     );
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
@@ -131,13 +132,13 @@ export const ValidatorSquadCard: React.FC<{
 
     return (
       <>
-        <div className="mx-2 flex items-center">
+        <div className="flex items-center">
           <span className="caption text-sm text-osmoverse-200 md:text-xs">
             {t("stake.validatorHeader")}
           </span>
         </div>
         <OsmoverseCard containerClasses="!rounded-[28px]">
-          <div className="flex-column flex items-center justify-between space-x-2">
+          <div className="flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
               <Button

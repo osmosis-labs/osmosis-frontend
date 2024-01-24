@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { PoolFilterSchema } from "~/server/queries/complex/pools";
+import { getPool, PoolFilterSchema } from "~/server/queries/complex/pools";
 import {
   IncentivePoolFilterSchema,
   mapGetPoolIncentives,
@@ -28,13 +28,16 @@ export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
 
 export const poolsRouter = createTRPCRouter({
+  getPool: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId } }) => getPool({ poolId })),
   getMarketIncentivePools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(
         z.object({
-          sort: createSortSchema(marketIncentivePoolsSortKeys)
-            .optional()
-            .default({ keyPath: "totalFiatValueLocked" }),
+          sort: createSortSchema(marketIncentivePoolsSortKeys).default({
+            keyPath: "totalFiatValueLocked",
+          }),
         })
       )
     )
