@@ -89,7 +89,6 @@ const TokensDropdown: FunctionComponent<
 > = ({ tokens, onSelect, isMobile = false }) => (
   <div className="absolute z-40 flex w-64 flex-col rounded-b-xl bg-osmoverse-700 md:w-52">
     {tokens.map((token, index) => {
-      console.log("tokens: ", tokens);
       return (
         <button
           className={classNames(
