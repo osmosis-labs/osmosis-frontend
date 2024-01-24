@@ -1,4 +1,4 @@
-import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
@@ -253,6 +253,13 @@ export async function getAssetPrice({
   });
 }
 
+export function calcCoinValue(coin: CoinPretty) {
+  return calcAssetValue({
+    anyDenom: coin.currency.coinMinimalDenom,
+    amount: coin.toCoin().amount,
+  });
+}
+
 /** Calculates the fiat value of an asset given any denom and base amount.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found. */
 export async function calcAssetValue({
@@ -280,6 +287,14 @@ export async function calcAssetValue({
   return (amount instanceof Dec ? amount : amount.toDec())
     .quo(tokenDivision)
     .mul(price);
+}
+
+export function calcSumCoinsValue(coins: CoinPretty[]) {
+  return calcSumAssetsValue({
+    assets: coins
+      .map((coin) => coin.toCoin())
+      .map((coin) => ({ anyDenom: coin.denom, amount: coin.amount })),
+  });
 }
 
 /** Calculate and sum the value of multiple assets.

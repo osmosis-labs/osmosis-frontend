@@ -2,6 +2,7 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { aggregateCoinsByDenom } from "~/utils/coin";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
@@ -9,7 +10,14 @@ import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coi
 import { getUserUnderlyingAssetsFromClPositions } from "../concentrated-liquidity";
 import { getGammShareUnderlyingAssets } from "../pools/share";
 import { getUserTotalDelegatedAsset } from "../staking/user";
-import { Asset, AssetFilter, getAsset, getAssets } from ".";
+import {
+  Asset,
+  AssetFilter,
+  calcCoinValue,
+  calcSumCoinsValue,
+  getAsset,
+  getAssets,
+} from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -114,66 +122,111 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   return userAssets;
 }
 
-/** Lists of all of a user's underlying assets that are listed in asset list.
+/** Lists of all of a user's underlying assets that are listed in asset list, along with their total fiat values.
+ *  Broken down by delegated/staked, pooled (CL and GAMM shares), and available assets (not CL assets).
  *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
-export async function getUserAggregateUnderlyingAssets(address: {
+export async function getUserAssetsBreakdown(address: {
   userOsmoAddress: string;
-}): Promise<CoinPretty[]> {
-  const userAssets = (
-    await Promise.all([
-      getUserUnderlyingAssetsFromBank(address),
-      getUserUnderlyingAssetsFromClPositions(address),
-      getUserUnderlyingAssetsFromLocks(address),
-      getUserTotalDelegatedAsset(address).then((coin) => [coin]),
-    ])
-  ).flat();
+}): Promise<{
+  delegated: CoinPretty;
+  delegatedValue: PricePretty;
 
-  // aggregate user assets by coin denom
-  const aggregatedUserAssets = userAssets.reduce((coinMap, coin) => {
-    const existingCoin = coinMap.get(coin.currency.coinMinimalDenom);
-    if (existingCoin) {
-      coinMap.set(coin.currency.coinMinimalDenom, existingCoin.add(coin));
-    } else {
-      coinMap.set(coin.currency.coinMinimalDenom, coin);
-    }
-    return coinMap;
-  }, new Map<string, CoinPretty>());
+  pooled: CoinPretty[];
+  pooledValue: PricePretty;
 
-  return Array.from(aggregatedUserAssets.values());
+  available: CoinPretty[];
+  availableValue: PricePretty;
+
+  aggregated: CoinPretty[];
+  aggregatedValue: PricePretty;
+}> {
+  // Use Promise.all to send concurrent requests.
+  const assets = await Promise.all([
+    getUserAssetsFromBank(address),
+    getUserUnderlyingAssetsFromClPositions(address),
+    getUserUnderlyingAssetsFromLocks(address),
+    getUserTotalDelegatedAsset(address),
+  ]);
+
+  const { underlyingGammShareAssets, available } = assets[0];
+  const bankAssets = [...underlyingGammShareAssets, ...available];
+  const clAssets = assets[1];
+  const lockAssets = assets[2];
+  const delegatedAsset = assets[3];
+
+  const pooledAssets = [...underlyingGammShareAssets, ...clAssets];
+  const allAssets = [...bankAssets, ...clAssets, ...lockAssets, delegatedAsset];
+
+  const delegatedValue = await calcCoinValue(delegatedAsset);
+  const pooledValue = await calcSumCoinsValue(pooledAssets);
+  const availableValue = await calcSumCoinsValue(available);
+  const aggregatedValue = await calcSumCoinsValue(allAssets);
+
+  return {
+    delegated: delegatedAsset, // Should be OSMO
+    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue ?? 0),
+
+    pooled: aggregateCoinsByDenom(pooledAssets),
+    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue ?? 0),
+
+    available: aggregateCoinsByDenom(available),
+    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue ?? 0),
+
+    aggregated: aggregateCoinsByDenom(allAssets),
+    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue ?? 0),
+  };
 }
 
 /** Lists all of a user's underlying assets in bank module.
- *  Includes underlying GAMM share assets as well as available assets. */
-export async function getUserUnderlyingAssetsFromBank({
+ *  Only includes assets in asset list.
+ *  Returns breakdown by underlying assets in GAMM pools as well as available assets. */
+export async function getUserAssetsFromBank({
   userOsmoAddress,
 }: {
   userOsmoAddress: string;
-}): Promise<CoinPretty[]> {
+}): Promise<{
+  underlyingGammShareAssets: CoinPretty[];
+  available: CoinPretty[];
+}> {
   // get bank balances
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
-  // get underlying assets from GAMM shares as well as available assets
-  // only those that are listed in asset list
-  const eventualUserBankAssets = balances.map(async ({ denom, amount }) => {
+  const eventualShareAssets: Promise<CoinPretty[] | undefined>[] = [];
+  const eventualAvailableAssets: Promise<CoinPretty | undefined>[] = [];
+
+  // Get available listed assets and GAMM shares
+  balances.forEach(({ denom, amount }) => {
     if (denom.includes("gamm")) {
-      return await getGammShareUnderlyingAssets({
-        denom,
-        amount,
-      }).catch(() => undefined);
+      eventualShareAssets.push(
+        getGammShareUnderlyingAssets({
+          denom,
+          amount,
+        }).catch(() => undefined)
+      );
+    } else {
+      eventualAvailableAssets.push(
+        getAsset({ anyDenom: denom })
+          .then((asset) => new CoinPretty(asset, amount))
+          .catch(() => undefined)
+      );
     }
-
-    const asset = await getAsset({ anyDenom: denom }).catch(() => undefined);
-    if (!asset) return;
-
-    return [new CoinPretty(asset, amount)];
   });
 
-  return (await Promise.all(eventualUserBankAssets))
-    .flat()
-    .filter((a): a is CoinPretty => !!a);
+  const shareAssets = (await Promise.all(eventualShareAssets))
+    .filter((coins) => !!coins)
+    .flat() as CoinPretty[];
+  const availableAssets = (await Promise.all(eventualAvailableAssets)).filter(
+    (coins) => !!coins
+  ) as CoinPretty[];
+
+  return {
+    underlyingGammShareAssets: aggregateCoinsByDenom(shareAssets),
+    available: aggregateCoinsByDenom(availableAssets),
+  };
 }
 
-/** Lists all of a user's assets contained within locks. */
+/** Lists all of a user's assets contained within locks.
+ *  NOTE: only considers locked GAMM shares. */
 export async function getUserUnderlyingAssetsFromLocks({
   userOsmoAddress,
 }: {
