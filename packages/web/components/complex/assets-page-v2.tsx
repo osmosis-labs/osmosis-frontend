@@ -31,13 +31,13 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <h2>Total Value {value?.aggregatedValue.toString()}</h2>
-      <span>{value?.aggregated.map((c) => c.toString()).join(", ")}</span>
+      <span>{value?.aggregated.map((c) => c.toString()).join("______")}</span>
 
       <h2>Pooled Value {value?.pooledValue.toString()}</h2>
-      <span>{value?.pooled.map((c) => c.toString()).join(", ")}</span>
+      <span>{value?.pooled.map((c) => c.toString()).join("______")}</span>
 
       <h2>Available Value {value?.availableValue.toString()}</h2>
-      <span>{value?.available.map((c) => c.toString()).join(", ")}</span>
+      <span>{value?.available.map((c) => c.toString()).join("______")}</span>
 
       <h2>Delegated Value {value?.delegatedValue.toString()}</h2>
       <span>{value?.delegated.toString()}</span>
