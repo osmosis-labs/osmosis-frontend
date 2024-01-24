@@ -862,6 +862,21 @@ const Inputs = () => {
       <Component title="Input Box Right Entry">
         <InputBox currentValue={inputBox} onInput={setInputBox} rightEntry />
       </Component>
+      <Component title="Input Box Label Buttons">
+        <InputBox
+          currentValue={inputBox}
+          onInput={setInputBox}
+          labelButtons={[
+            {
+              label: "Enter",
+              className:
+                "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
+              onClick: () => console.log("clicked"),
+              disabled: false,
+            },
+          ]}
+        />
+      </Component>
     </Card>
   );
 };
