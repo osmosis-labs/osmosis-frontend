@@ -818,6 +818,9 @@
       "title": "滲透資產",
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
     },
+    "asset": {
+      "title": "滲透資產 - {name}"
+    },
     "disclaimer": {
       "title": "滲透免責聲明",
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"

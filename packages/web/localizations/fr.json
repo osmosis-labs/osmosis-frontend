@@ -818,6 +818,9 @@
       "title": "Actifs d'osmose",
       "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
     },
+    "asset": {
+      "title": "Actifs d'osmose - {name}"
+    },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",
       "description": "Lisez la clause de non-responsabilité et la politique de confidentialité d'Osmosis - le principal échange Cosmos décentralisé"

@@ -818,6 +818,9 @@
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
+    "asset": {
+      "title": "Active de osmoză - {name}"
+    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"

@@ -818,6 +818,9 @@
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
     },
+    "asset": {
+      "title": "渗透资产 - {name}"
+    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
