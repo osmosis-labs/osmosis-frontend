@@ -881,6 +881,18 @@ const Inputs = () => {
   );
 };
 
+import QRCode from "~/components/qrcode";
+
+const QRCodes = () => (
+  <Card title="QR Codes">
+    <Component title="QR Code">
+      <div className="w-[180px] rounded-lg bg-white-full p-2">
+        <QRCode value="cosmos14crmqa4yng28rdlzn3fsdq0rkykgqhz62mysq3" />
+      </div>
+    </Component>
+  </Card>
+);
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -902,6 +914,7 @@ const Components: NextPage = () => {
       <MenuDropdowns />
       <CheckboxSelects />
       <StakeTabs />
+      <QRCodes />
     </div>
   );
 };
