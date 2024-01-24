@@ -2,7 +2,7 @@ import { RatePretty } from "@keplr-wallet/unit";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useContext, useState } from "react";
 
 import { PoolAssetsIcon } from "~/components/assets";
 import {
@@ -38,10 +38,13 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { FilterProvider } from "~/components/earn/filters/filter-context";
+import { FilterContext } from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
+import { RadioWithOptions } from "~/components/radio-with-options";
 import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
@@ -192,6 +195,66 @@ const Checkboxes = () => {
         />
       </Component>
     </Card>
+  );
+};
+
+const RadiosWithOptions = () => {
+  const rewardTypes = [
+    {
+      value: "all",
+      label: "All",
+    },
+    {
+      value: "single",
+      label: "Single",
+    },
+    {
+      value: "multi",
+      label: "Multi",
+    },
+  ];
+
+  const RadiosWithOptionsWithContext = () => {
+    const { filters, setFilter } = useContext(FilterContext);
+
+    return (
+      <Card title="Radio with Options">
+        <Component title="Primary">
+          <RadioWithOptions
+            mode="primary"
+            variant="small"
+            value={filters?.rewardType || "all"}
+            onChange={(value) => setFilter("rewardType", value)}
+            options={rewardTypes}
+          />
+        </Component>
+        <Component title="Secondary">
+          <RadioWithOptions
+            mode="secondary"
+            variant="small"
+            value={filters?.rewardType || "all"}
+            onChange={(value) => setFilter("rewardType", value)}
+            options={rewardTypes}
+          />
+        </Component>
+      </Card>
+    );
+  };
+
+  return (
+    <FilterProvider
+      defaultFilters={{
+        tokenHolder: "all",
+        strategyMethod: { label: "All", value: "" },
+        platform: { label: "All", value: "" },
+        noLockingDuration: false,
+        search: "",
+        specialTokens: [],
+        rewardType: "all",
+      }}
+    >
+      <RadiosWithOptionsWithContext />
+    </FilterProvider>
   );
 };
 
@@ -909,6 +972,7 @@ const Components: NextPage = () => {
       <Loaders />
       <Checkboxes />
       <Radios />
+      <RadiosWithOptions />
       <Switches />
       <Sliders />
       <MenuDropdowns />
