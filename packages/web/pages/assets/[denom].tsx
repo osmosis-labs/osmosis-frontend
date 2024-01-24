@@ -18,9 +18,9 @@ import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import Spinner from "~/components/loaders/spinner";
 import RelatedAssets from "~/components/related-assets/related-assets";
-import SkeletonLoader from "~/components/skeleton-loader";
-import Spinner from "~/components/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";

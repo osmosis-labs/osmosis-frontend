@@ -34,7 +34,7 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "~/components/drawers";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";

@@ -15,7 +15,7 @@ import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Button } from "~/components/buttons";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {

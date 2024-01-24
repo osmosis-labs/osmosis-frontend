@@ -39,7 +39,7 @@ import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
