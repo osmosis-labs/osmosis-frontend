@@ -15,13 +15,17 @@ type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 
 /** Lightly cached pools from sidecar service. */
-export function getPoolsFromSidecar(): Promise<Pool[]> {
+export function getPoolsFromSidecar({
+  poolIds,
+}: {
+  poolIds?: string[];
+} = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: "sidecar-pools",
+    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
     ttl: 1000, // 1 second
     getFreshValue: async () => {
-      const sidecarPools = await queryPools();
+      const sidecarPools = await queryPools({ poolIds });
       const pools = await Promise.all(
         sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
       );
@@ -34,10 +38,12 @@ export function getPoolsFromSidecar(): Promise<Pool[]> {
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<Pool | undefined> {
-  const reserveCoins = await getListedReservesFromSidecarPool(sidecarPool);
+  const reserveCoins = await getListedReservesFromSidecarPool(
+    sidecarPool
+  ).catch(() => null);
 
   // contains unlisted or invalid assets
-  if (reserveCoins.length === 0) return;
+  if (!reserveCoins) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
@@ -75,6 +81,7 @@ export function getPoolTypeFromChainPool(
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
+/** @throws if an asset is unlisted */
 export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
@@ -83,20 +90,17 @@ export async function getListedReservesFromSidecarPool(
     poolDenoms.map(async (denom) => {
       const asset = await getAsset({ anyDenom: denom }).catch(() => null);
       // not listed
-      if (!asset) return;
+      if (!asset) throw new Error("Asset not listed: " + denom);
 
       const amount = sidecarPool.balances.find(
         (balance) => balance.denom === denom
       )?.amount;
       // no balance
-      if (!amount) return;
+      if (!amount) throw new Error("No balance for asset: " + denom);
 
       return new CoinPretty(asset, amount);
     })
   );
-
-  // something is wrong with the token asset balances
-  if (listedBalances.some((balance) => !balance)) return [];
 
   return listedBalances as CoinPretty[];
 }

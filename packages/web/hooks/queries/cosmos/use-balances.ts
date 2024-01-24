@@ -15,10 +15,14 @@ export const useBalances = ({
   address: string;
   queryOptions?: UseQueryOptions<ResponseData, unknown, ResponseData, string[]>;
 }) => {
-  return useQuery(getQueryKey(address), () => queryBalances(address), {
-    enabled: Boolean(address) && typeof address === "string",
-    ...queryOptions,
-  });
+  return useQuery(
+    getQueryKey(address),
+    () => queryBalances({ bech32Address: address }),
+    {
+      enabled: Boolean(address) && typeof address === "string",
+      ...queryOptions,
+    }
+  );
 };
 
 useBalances.invalidateQuery = ({

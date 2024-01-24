@@ -22,7 +22,7 @@ export function createSortSchema<
 >(keyPaths: TKeyPaths) {
   return z.object({
     keyPath: z.enum(keyPaths),
-    direction: z.enum(["asc", "desc"]).default("desc").optional(),
+    direction: z.enum(["asc", "desc"]).default("desc"),
   });
 }
 

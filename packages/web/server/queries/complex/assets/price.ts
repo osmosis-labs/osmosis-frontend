@@ -5,7 +5,7 @@ import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
@@ -24,19 +24,19 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   return cachified({
     cache: pricesCache,
     key: `coingecko-coin-${denom}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const { coins } = await queryCoingeckoSearch(denom);
       return coins?.find(
         ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
       );
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 
@@ -50,12 +50,12 @@ async function getCoingeckoPrice({
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
+    ttl: 60 * 1000, // 1 minute
     getFreshValue: async () => {
       const prices = await querySimplePrice([coingeckoId], [currency]);
       const price = prices[coingeckoId]?.[currency];
       return price ? new Dec(price) : undefined;
     },
-    ttl: 60 * 1000, // 1 minute
   });
 }
 
@@ -191,59 +191,66 @@ export async function getAssetPrice({
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
-  const assetListAsset = getAssetFromAssetList({
-    sourceDenom: asset.sourceDenom,
-    coinMinimalDenom: asset.coinMinimalDenom,
-    assetLists: AssetLists,
+  return cachified({
+    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    cache: pricesCache,
+    ttl: 3_000, // 3 seconds
+    getFreshValue: async () => {
+      const assetListAsset = getAssetFromAssetList({
+        sourceDenom: asset.sourceDenom,
+        coinMinimalDenom: asset.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      if (!assetListAsset) {
+        throw new Error(
+          `Asset ${asset.sourceDenom} not found on asset list registry.`
+        );
+      }
+
+      let coingeckoAsset:
+        | NonNullable<
+            Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
+          >[number]
+        | undefined;
+
+      const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
+
+      /**
+       * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
+       */
+      try {
+        if (
+          (!assetListAsset || !assetListAsset.coinGeckoId) &&
+          !shouldCalculateUsingPools &&
+          asset.coinDenom
+        ) {
+          coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
+        }
+      } catch (e) {
+        console.error("Failed to fetch asset from coingecko registry", e);
+      }
+
+      const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
+
+      if (shouldCalculateUsingPools && assetListAsset) {
+        return await calculatePriceFromPriceId({
+          asset: assetListAsset.rawAsset,
+          currency,
+        });
+      }
+
+      if (!id) {
+        throw new Error(
+          `Asset ${
+            asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
+          } has no identifier for pricing.`
+        );
+      }
+
+      return await getCoingeckoPrice({ coingeckoId: id, currency });
+    },
   });
-
-  if (!assetListAsset) {
-    throw new Error(
-      `Asset ${asset.sourceDenom} not found on asset list registry.`
-    );
-  }
-
-  let coingeckoAsset:
-    | NonNullable<
-        Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
-      >[number]
-    | undefined;
-
-  const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
-
-  /**
-   * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
-   */
-  try {
-    if (
-      (!assetListAsset || !assetListAsset.coinGeckoId) &&
-      !shouldCalculateUsingPools &&
-      asset.coinDenom
-    ) {
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
-    }
-  } catch (e) {
-    console.error("Failed to fetch asset from coingecko registry", e);
-  }
-
-  const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
-
-  if (shouldCalculateUsingPools && assetListAsset) {
-    return await calculatePriceFromPriceId({
-      asset: assetListAsset.rawAsset,
-      currency,
-    });
-  }
-
-  if (!id) {
-    throw new Error(
-      `Asset ${
-        asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
-      } has no identifier for pricing.`
-    );
-  }
-
-  return await getCoingeckoPrice({ coingeckoId: id, currency });
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.
@@ -254,7 +261,7 @@ export async function calcAssetValue({
   currency = "usd",
 }: {
   anyDenom: string;
-  amount: Int | string;
+  amount: Int | Dec | string;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
   const asset = await getAsset({ anyDenom });
@@ -270,7 +277,9 @@ export async function calcAssetValue({
 
   if (typeof amount === "string") amount = new Int(amount);
 
-  return amount.toDec().quo(tokenDivision).mul(price);
+  return (amount instanceof Dec ? amount : amount.toDec())
+    .quo(tokenDivision)
+    .mul(price);
 }
 
 /** Calculate and sum the value of multiple assets. */

@@ -1,3 +1,4 @@
+import { concentratedLiquidityRouter } from "~/server/api/edge-routers/concentrated-liquidity-router";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { assetsRouter } from "./assets-router";
@@ -11,4 +12,5 @@ export const edgeRouter = createTRPCRouter({
   pools: poolsRouter,
   staking: stakingRouter,
   quoteRouter: swapRouter,
+  concentratedLiquidity: concentratedLiquidityRouter,
 });

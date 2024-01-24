@@ -30,14 +30,14 @@ export type MarketIncentivePoolSortKey =
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) => getPool(poolId)),
+    .query(({ input: { poolId } }) => getPool({ poolId })),
   getMarketIncentivePools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(
         z.object({
-          sort: createSortSchema(marketIncentivePoolsSortKeys)
-            .optional()
-            .default({ keyPath: "totalFiatValueLocked" }),
+          sort: createSortSchema(marketIncentivePoolsSortKeys).default({
+            keyPath: "totalFiatValueLocked",
+          }),
         })
       )
     )

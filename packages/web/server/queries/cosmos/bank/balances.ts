@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 export type QueryBalancesResponse = {
   balances: {
@@ -9,11 +7,11 @@ export type QueryBalancesResponse = {
   }[];
 };
 
-export async function queryBalances(
-  bech32Address: string
-): Promise<QueryBalancesResponse> {
-  return apiClient<QueryBalancesResponse>(
-    ChainList[0].apis.rest[0].address +
-      `/cosmos/bank/v1beta1/balances/${bech32Address}`
-  );
-}
+export const queryBalances = createNodeQuery<
+  QueryBalancesResponse,
+  {
+    bech32Address: string;
+  }
+>({
+  path: ({ bech32Address }) => `/cosmos/bank/v1beta1/balances/${bech32Address}`,
+});
