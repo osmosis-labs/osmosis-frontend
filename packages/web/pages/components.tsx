@@ -38,6 +38,7 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
@@ -793,25 +794,99 @@ const Assets = () => (
   </Card>
 );
 
+const Inputs = () => {
+  const [searchBox, setSearchBox] = useState("");
+  const [inputBox, setInputBox] = useState("");
+  return (
+    <Card title="Inputs">
+      <Component title="Search Box">
+        <SearchBox
+          currentValue={searchBox}
+          onInput={(query: string) => {
+            setSearchBox(query);
+          }}
+          placeholder="search"
+        />
+      </Component>
+      <Component title="Search Box Right Icon">
+        <SearchBox
+          currentValue={searchBox}
+          onInput={(query: string) => {
+            setSearchBox(query);
+          }}
+          placeholder="search"
+          rightIcon={() => <Icon id="tune" className="" />}
+        />
+      </Component>
+      <Component title="Search Box Disabled">
+        <SearchBox
+          disabled
+          currentValue={searchBox}
+          onInput={(query: string) => {
+            setSearchBox(query);
+          }}
+          placeholder="search"
+        />
+      </Component>
+
+      <Component title="Input Box">
+        <InputBox currentValue={inputBox} onInput={setInputBox} rightEntry />
+      </Component>
+
+      <Component title="Input Box No Border">
+        <InputBox
+          style="no-border"
+          currentValue={inputBox}
+          onInput={setInputBox}
+        />
+      </Component>
+
+      <Component title="Input Box Active">
+        <InputBox
+          style="active"
+          currentValue={inputBox}
+          onInput={setInputBox}
+        />
+      </Component>
+
+      <Component title="Input Box Error">
+        <InputBox style="error" currentValue={inputBox} onInput={setInputBox} />
+      </Component>
+      <Component title="Input Box Trailing Symbol">
+        <InputBox
+          currentValue={inputBox}
+          onInput={setInputBox}
+          trailingSymbol="%"
+        />
+      </Component>
+      <Component title="Input Box Right Entry">
+        <InputBox currentValue={inputBox} onInput={setInputBox} rightEntry />
+      </Component>
+    </Card>
+  );
+};
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
+
       <FontSize />
       <Color />
       <Icons />
       <Assets />
+      <Inputs />
+      <Buttons />
+      <CustomButtons />
       <Tooltips />
       <Loaders />
       <Checkboxes />
       <Radios />
       <Switches />
       <Sliders />
+      <MenuDropdowns />
       <CheckboxSelects />
       <StakeTabs />
-      <MenuDropdowns />
-      <Buttons />
-      <CustomButtons />
     </div>
   );
 };
