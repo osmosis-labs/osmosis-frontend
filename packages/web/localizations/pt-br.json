@@ -116,7 +116,9 @@
       "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
-      "goToSite": "Ir para o site"
+      "goToSite": "Ir para o site",
+      "doNotShowAgain": "Não mostre isso novamente",
+      "chainHalted": "A cadeia de osmose é interrompida, as transações são temporariamente desativadas."
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "Histórico de Transferências"
     },
     "ibcTransfer": {
+      "buttonAdd": "Adicionar",
       "buttonEdit": "Editar",
       "buttonEnter": "Entrar",
       "channelCongestedDeposit": "Depositar (Canal congestionada)",
@@ -221,7 +224,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos os ativos",
-      "withdrawButton": "Sacar"
+      "withdrawButton": "Sacar",
+      "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
     "transfer": {
@@ -229,6 +233,7 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "givePermission": "Dê permissões para usar tokens",
+      "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",
@@ -237,7 +242,9 @@
         "seeRequest": "Ver solicitação em {walletName}",
         "noQuotesAvailable": "Nenhuma cotação disponível",
         "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente."
+        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
+        "invalidAddress": "Endereço inválido",
+        "missingAddress": "Endereço ausente"
       },
       "from": "De",
       "loading": "Carregando",
@@ -285,6 +292,11 @@
       "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
       "warning": "AVISO:",
       "loading": "Carregando..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Ativar ativos não verificados",
+      "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
+      "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     }
   },
   "buyTokens": "Comprar tokens",
@@ -292,7 +304,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
       "kadoSubtitle": "Suporta OSMO, USDC",
-      "transakSubtitle": "Suporta OSMO"
+      "transakSubtitle": "Suporta OSMO",
+      "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incentivo",
@@ -449,7 +462,6 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -476,7 +488,6 @@
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",
-    "numDaysRemaining": "{numDays} dias restantes",
     "putAssetsToWork": "Coloque seus ativos para trabalhar",
     "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
     "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
@@ -545,7 +556,20 @@
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em"
+    "rewardDistribution": "Distribuição de Recompensa em",
+    "aprBreakdown": {
+      "swapFees": "Taxas de troca",
+      "boost": "Impulsionar",
+      "superfluid": "Superfluido",
+      "externalBoost": "Impulso externo",
+      "total": "TAEG total",
+      "explainer": {
+        "title": "Como as TAEG são calculadas?",
+        "p1": "Todas as APRs são estimativas. Eles são calculados tomando a TAEG média de liquidez no pool.",
+        "p2": "Em pools superalimentados, a maioria dos usuários receberá recompensas mais baixas. Isso se deve a posições mais concentradas, que captam mais incentivos.",
+        "p3": "Para manter as estimativas conservadoras, todas as APRs são divididas pelo fator 3."
+      }
+    }
   },
   "profile": {
     "balance": "Saldo",
@@ -572,6 +596,7 @@
   },
   "stake": {
     "available": "Disponível",
+    "staked": "Apostado",
     "MAX": "MAX",
     "validatorHeader": "Esquadrão validador",
     "stake": "Estaca OSMO",
@@ -581,6 +606,7 @@
     "amount": "Quantia",
     "availableIn": "Disponível em",
     "day": "dia",
+    "days": "dias",
     "month": "mês",
     "dashboard": "Painel",
     "dashboardStakedOsmo": "OSMO apostado",
@@ -599,9 +625,7 @@
     "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
-    "collectRewardsTooltip": "Colete todas as suas recompensas não reclamadas. Esses tokens estarão imediatamente disponíveis para você no Osmosis.",
     "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Colete e reaposte automaticamente seus ganhos não reclamados com um clique. A composição é uma ótima maneira de ganhar mais com seus ativos.",
     "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
     "learnMore": {
@@ -653,6 +677,20 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
+    },
+    "introModal": {
+      "callout": "Novo recurso",
+      "title": "Apostando na Osmose",
+      "description": {
+        "1": "O staking é uma das maneiras mais fáceis de ganhar com seus ativos. Agora você pode apostar seu OSMO diretamente no Osmosis.",
+        "2": "ganhe até",
+        "3": "anualmente em apostas de recompensas!",
+        "4": "e colocá-lo para funcionar",
+        "5": "Coloque seu {displayBalance} para funcionar e",
+        "button": "Compre um pouco de OSMO"
+      },
+      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG.",
+      "button": "Comece a apostar"
     }
   },
   "superfluidValidator": {
@@ -797,11 +835,9 @@
     "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
-    "pastDaysReturns": "Retornos do dia anterior",
-    "allTimeReturns": "Todo o tempo retorna",
-    "averagePrice": "Preço médio",
     "aboutDenom": "Sobre {name}",
     "ariaView": "Visualizar {name}",
     "ariaViewOn": "Visualizar em {name}",
@@ -818,9 +854,10 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "televisão",
-    "backButton": "Todos os tokens",
-    "ariaBackButton": "Botão Voltar de todos os tokens",
-    "noData": "DE"
+    "noData": "DE",
+    "buyToken": "Compre {coinDenom}",
+    "staking": "Estacamento",
+    "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Atualizações de osmose!",
@@ -829,5 +866,49 @@
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
   "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "earnPage": {
+    "title": "Ganhar",
+    "position": "Posição",
+    "positions": "Posições",
+    "allocation": "Alocação",
+    "tokensCount": "{number} tokens",
+    "strategiesCount": "{number} estratégias",
+    "value": "Valor",
+    "method": "Método",
+    "platform": "Plataforma",
+    "scrollToSeeMore": "role para ver mais",
+    "discoverStrategies": "Descubra estratégias",
+    "myStrategies": "Minhas estratégias",
+    "strategyPlatform": "Estratégia/Plataforma",
+    "apy": "APY",
+    "daily": "Diário",
+    "reward": "Recompensa",
+    "lock": "Trancar",
+    "days": "dias",
+    "risk": "Risco",
+    "strategyMethod": "Método de Estratégia",
+    "allMethods": "Todos os métodos",
+    "platforms": "Plataformas",
+    "allPlatforms": "Todas as plataformas",
+    "lockingDuration": "Duração do bloqueio",
+    "specialTokens": "Tokens Especiais",
+    "filters": "Filtros",
+    "resetFilters": "Redefinir filtros",
+    "saveFilters": "Salvar filtros",
+    "rewards": "Recompensas",
+    "estimatedInYearlyRewards": "Estimado em recompensas anuais",
+    "availableToClaim": "disponível para reivindicar",
+    "claimAllRewards": "Reivindique todas as recompensas",
+    "join": "Juntar",
+    "tokenFilterOptions": {
+      "my": "Meus tokens",
+      "all": "Todos os tokens"
+    },
+    "rewardTypes": {
+      "all": "Todos",
+      "single": "Solteiro",
+      "multi": "Múltiplo"
+    }
+  },
   "disclaimer": "Isenção de responsabilidade"
 }

@@ -1,11 +1,27 @@
 import React, { FunctionComponent, useState } from "react";
 
 import { RootStore } from "~/stores/root";
+import { api } from "~/utils/trpc";
 
 const storeContext = React.createContext<RootStore | null>(null);
 
 export const StoreProvider: FunctionComponent = ({ children }) => {
-  const [rootStore] = useState(() => new RootStore());
+  const apiUtils = api.useUtils();
+  const [rootStore] = useState(
+    () =>
+      new RootStore({
+        txEvents: {
+          onBroadcastFailed: () => {
+            apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
+          },
+          onFulfill: () => {
+            apiUtils.edge.assets.getAsset.invalidate(); // Invalidate user balance
+            apiUtils.edge.assets.getAssetInfo.invalidate(); // Invalidate user balance and info
+          },
+        },
+      })
+  );
 
   return (
     <storeContext.Provider value={rootStore}>{children}</storeContext.Provider>

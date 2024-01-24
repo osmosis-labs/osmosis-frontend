@@ -51,7 +51,7 @@ import {
   TokenCMSData,
   Twitter,
 } from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
+import { ImperatorToken, queryAllTokens } from "~/server/queries/imperator";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
@@ -97,7 +97,13 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets, tokenDetailsByLanguage, imperatorDenom, coingeckoCoin }) => {
+  ({
+    tokenDenom,
+    tweets,
+    tokenDetailsByLanguage,
+    imperatorDenom,
+    coingeckoCoin,
+  }) => {
     const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
@@ -130,8 +136,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={t("tokenInfos.backButton")}
-          ariaLabel={t("tokenInfos.ariaBackButton")}
+          label={t("menu.assets")}
+          ariaLabel={t("menu.assets")}
           href="/assets"
         />
       ),
@@ -155,12 +161,27 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const memoedPools = routablePools ?? [];
 
     const denom = useMemo(() => {
-      return router.query.denom as string;
-    }, [router.query.denom]);
+      return tokenDenom as string;
+    }, [tokenDenom]);
 
     return (
       <AssetInfoViewProvider value={contextValue}>
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
+          <LinkButton
+            className="mr-auto hidden md:flex"
+            icon={
+              <Image
+                alt="left"
+                src="/icons/arrow-left.svg"
+                width={24}
+                height={24}
+                className="text-osmoverse-200"
+              />
+            }
+            label={t("menu.assets")}
+            ariaLabel={t("menu.assets")}
+            href="/assets"
+          />
           <Navigation
             denom={denom}
             tokenDetailsByLanguage={tokenDetailsByLanguage}
@@ -170,7 +191,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
 
-              <YourBalance denom={denom} />
+              <YourBalance
+                denom={denom}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
 
               <TokenDetails
                 denom={denom}
@@ -309,7 +333,7 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom?.toUpperCase()}</h1>
+        <h1 className="text-h4 font-h4">{denom}</h1>
         {title ? (
           <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
         ) : (
@@ -641,7 +665,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom,
+      tokenDenom: token?.coinDenom ?? tokenDenom,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,

@@ -6,7 +6,7 @@ GREEN='\033[0;32m' # Green color
 NC='\033[0m' # No Color
 
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="6506d0dafde9a15b96b480433d58024db35eb953"
+OSMOSIS_COMMIT_HASH="c6d8ea8b1216803d5fa40aa2e8d288d470170100"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
@@ -49,13 +49,14 @@ git -C .repos/ibc-go sparse-checkout set proto
 git fetch --all --tags
 git -C .repos/ibc-go checkout $IBC_GO_VERSION
 
-
 # WASMD PROTOS
 
 # Extract the Wasmd version from the go.mod file
 WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
+echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
 
-
+# TROUBLESHOOTING
+# if this fails, reach out to chain team to tag the replaced commits instead of using the commit directly - 
 
 # Split the version string by '-'
 IFS='-' read -ra ADDR <<< "$WASMD_VERSION"

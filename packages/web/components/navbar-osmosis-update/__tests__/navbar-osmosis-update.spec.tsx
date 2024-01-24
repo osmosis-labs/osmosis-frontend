@@ -7,7 +7,7 @@ import { rest } from "msw";
 
 import NavbarOsmosisUpdate from "~/components/navbar-osmosis-update";
 import { server } from "~/tests/msw";
-import { mockFeatureFlags, renderWithProviders } from "~/utils/test-utils";
+import { mockFeatureFlags, renderWithProviders } from "~/tests/test-utils";
 
 beforeEach(() => {
   resetLDMocks();

@@ -15,8 +15,6 @@ import {
 } from "react";
 import { useMeasure } from "react-use";
 
-import { AdBanner } from "~/components/ad-banner";
-import { Ad } from "~/components/ad-banner/ad-banner-types";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
@@ -32,7 +30,6 @@ import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
-  useFeatureFlags,
   useSlippageConfig,
   useWalletSelect,
   useWindowSize,
@@ -48,10 +45,10 @@ export interface SwapToolProps {
   isInModal?: boolean;
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
-  ads?: Ad[];
   sendTokenDenom?: string;
   outTokenDenom?: string;
   page?: SwapPage;
+  forceSwapInPoolId?: string;
 }
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
@@ -59,10 +56,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     isInModal,
     onRequestModalClose,
     swapButton,
-    ads,
     sendTokenDenom,
     outTokenDenom,
     page = "Swap Page",
+    forceSwapInPoolId,
   }) => {
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
@@ -71,7 +68,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
-    const featureFlags = useFeatureFlags();
 
     const account = accountStore.getWallet(chainId);
 
@@ -80,6 +76,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
+      forceSwapInPoolId,
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -211,7 +208,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     return (
       <>
-        {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
           <Popover>
             {({ open, close }) => (
@@ -824,11 +820,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                   </SkeletonLoader>
                 </div>
-                <SplitRoute
-                  {...routesVisDisclosure}
-                  split={swapState.quote?.split ?? []}
-                  isLoading={isSwapToolLoading}
-                />
+                {!forceSwapInPoolId && (
+                  <SplitRoute
+                    {...routesVisDisclosure}
+                    split={swapState.quote?.split ?? []}
+                    isLoading={isSwapToolLoading}
+                  />
+                )}
               </div>
             </SkeletonLoader>
           </div>
@@ -841,7 +839,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   : "primary"
               }
               disabled={
-                isSwapToolLoading ||
+                isWalletLoading ||
+                swapState.isQuoteLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||

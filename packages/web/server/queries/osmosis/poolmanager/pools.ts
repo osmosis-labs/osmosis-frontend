@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "~/server/queries/base-utils";
 
 export type WeightedPoolRawResponse = {
   "@type": "/osmosis.gamm.v1beta1.Pool";
@@ -99,7 +97,7 @@ export type CosmwasmPoolRawResponse = {
   instantiate_msg: string;
 };
 
-type PoolRawResponse =
+export type PoolRawResponse =
   | WeightedPoolRawResponse
   | StablePoolRawResponse
   | ConcentratedPoolRawResponse
@@ -109,10 +107,6 @@ export type PoolsResponse = {
   pools: PoolRawResponse[];
 };
 
-export async function queryPools(): Promise<PoolsResponse> {
-  const url = new URL(
-    "/osmosis/poolmanager/v1beta1/all-pools",
-    ChainList[0].apis.rest[0].address
-  );
-  return await apiClient<PoolsResponse>(url.toString());
-}
+export const queryPools = createNodeQuery<PoolsResponse>({
+  path: "/osmosis/poolmanager/v1beta1/all-pools",
+});

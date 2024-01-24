@@ -116,7 +116,9 @@
       "externalLink": "You are now leaving the Osmosis app to go to",
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
-      "goToSite": "Go to Site"
+      "goToSite": "Continue to Site",
+      "doNotShowAgain": "Do not show this again",
+      "chainHalted": "Osmosis chain is halted, transactions are temporarily disabled."
     }
   },
   "store": {
@@ -171,6 +173,7 @@
       "title": "Transfer History"
     },
     "ibcTransfer": {
+      "buttonAdd": "Add",
       "buttonEdit": "Edit",
       "buttonEnter": "Enter",
       "channelCongestedDeposit": "Deposit (Channel congested)",
@@ -221,7 +224,8 @@
         "symbol": "Symbol"
       },
       "title": "All Assets",
-      "withdrawButton": "Withdraw"
+      "withdrawButton": "Withdraw",
+      "activate": "Activate"
     },
     "totalAssets": "Total assets",
     "transfer": {
@@ -229,6 +233,7 @@
       "availableOn": "Available on {network}",
       "approving": "Approving...",
       "givePermission": "Give permissions to use tokens",
+      "enterAddress": "{network} address",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
@@ -237,7 +242,9 @@
         "seeRequest": "See request in {walletName}",
         "noQuotesAvailable": "No Quotes Available",
         "unexpectedError": "Unexpected Error. Please try again.",
-        "transactionError": "Error getting transaction. Please try again."
+        "transactionError": "Error getting transaction. Please try again.",
+        "invalidAddress": "Invalid Address",
+        "missingAddress": "Missing Address"
       },
       "from": "From",
       "loading": "Loading",
@@ -285,6 +292,11 @@
       "undergoAudit": "while undergoing auditing (est. completion January 2024).",
       "warning": "WARNING:",
       "loading": "Loading..."
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Activate unverified assets",
+      "description": "is an unverified token. Do you wish to activate it? Be sure to research thoroughly before trading.",
+      "reminder": "You can always deactivate this setting in the settings modal."
     }
   },
   "buyTokens": "Buy tokens",
@@ -292,7 +304,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Choose Fiat Onramp",
       "kadoSubtitle": "Supports OSMO, USDC",
-      "transakSubtitle": "Supports OSMO"
+      "transakSubtitle": "Supports OSMO",
+      "onrampMoneySubtitle": "Supports OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Incentive",
@@ -449,7 +462,6 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
-    "7davg": "(7d avg)",
     "amountDaysUnbonding": "{numDays} day unbonding",
     "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "APR": "APR",
@@ -476,7 +488,6 @@
     "learnMore": "Learn more",
     "level": "Level {level}",
     "liquidity": "Pool liquidity",
-    "numDaysRemaining": "{numDays} days remaining",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make.",
     "rewardDistribution": "Rewards distributed to all liquidity providers",
@@ -545,7 +556,20 @@
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in"
+    "rewardDistribution": "Reward distribution in",
+    "aprBreakdown": {
+      "swapFees": "Swap fees",
+      "boost": "Boost",
+      "superfluid": "Superfluid",
+      "externalBoost": "External Boost",
+      "total": "Total APR",
+      "explainer": {
+        "title": "How are APRs calculated?",
+        "p1": "All APRs are estimates. They are calculated by taking the average APR for liquidity in the pool.",
+        "p2": "In supercharged pools, most users will receive lower rewards. This is due to positions that are more concentrated, which capture more of the incentives.",
+        "p3": "In order to keep estimates conservative, all APRs are divided by factor of 3."
+      }
+    }
   },
   "profile": {
     "balance": "Balance",
@@ -572,6 +596,7 @@
   },
   "stake": {
     "available": "Available",
+    "staked": "Staked",
     "MAX": "MAX",
     "validatorHeader": "Stake squad",
     "stake": "Stake OSMO",
@@ -581,6 +606,7 @@
     "amount": "Amount",
     "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "dashboardStakedOsmo": "staked OSMO",
@@ -588,7 +614,7 @@
     "stakeBalanceTitle": "Total staked balance",
     "viewOrEdit": "View or edit",
     "collectRewards": "Collect rewards",
-    "investRewards": "Collect and re-invest",
+    "investRewards": "Collect and reinvest",
     "learn": "Learn more",
     "alertTitleBeginning": "Earn",
     "alertTitleEnd": "APR",
@@ -599,9 +625,7 @@
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
-    "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
@@ -653,6 +677,20 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
+    },
+    "introModal": {
+      "callout": "New feature",
+      "title": "Staking on Osmosis",
+      "description": {
+        "1": "Staking is one of the easiest ways to earn with your assets. Now you can stake your OSMO right on Osmosis.",
+        "2": "earn up to",
+        "3": "yearly in staking rewards!",
+        "4": "and put it to work",
+        "5": "Put your available {displayBalance} to work and",
+        "button": "Buy some OSMO"
+      },
+      "asterisk": "* Staking reward value subject to price and APR volatility.",
+      "button": "Start staking"
     }
   },
   "superfluidValidator": {
@@ -797,11 +835,9 @@
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
     "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
     "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
@@ -818,9 +854,10 @@
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
-    "backButton": "All tokens",
-    "ariaBackButton": "All tokens back button",
-    "noData": "N.D."
+    "noData": "N.D.",
+    "buyToken": "Buy {coinDenom}",
+    "staking": "Staking",
+    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmosis updates!",
@@ -829,5 +866,49 @@
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
+  "earnPage": {
+    "title": "Earn",
+    "position": "Position",
+    "positions": "Positions",
+    "allocation": "Allocation",
+    "tokensCount": "{number} tokens",
+    "strategiesCount": "{number} strategies",
+    "value": "Value",
+    "method": "Method",
+    "platform": "Platform",
+    "scrollToSeeMore": "scroll to see more",
+    "discoverStrategies": "Discover Strategies",
+    "myStrategies": "My Strategies",
+    "strategyPlatform": "Strategy / Platform",
+    "apy": "APY",
+    "daily": "Daily",
+    "reward": "Reward",
+    "lock": "Lock",
+    "days": "days",
+    "risk": "Risk",
+    "strategyMethod": "Strategy Method",
+    "allMethods": "All Method",
+    "platforms": "Platforms",
+    "allPlatforms": "All Platforms",
+    "lockingDuration": "Locking Duration",
+    "specialTokens": "Special Tokens",
+    "filters": "Filters",
+    "resetFilters": "Reset Filters",
+    "saveFilters": "Save Filters",
+    "rewards": "Rewards",
+    "estimatedInYearlyRewards": "Estimated in yearly rewards",
+    "availableToClaim": "available to claim",
+    "claimAllRewards": "Claim all rewards",
+    "join": "Join",
+    "tokenFilterOptions": {
+      "my": "My Tokens",
+      "all": "All Tokens"
+    },
+    "rewardTypes": {
+      "all": "All",
+      "single": "Single",
+      "multi": "Multi"
+    }
+  },
   "disclaimer": "Disclaimer"
 }

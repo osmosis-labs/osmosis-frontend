@@ -51,7 +51,12 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  getSourceDenomFromAssetList,
+  isNil,
+} from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -78,6 +83,7 @@ import {
   OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
+  TxEvents,
 } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
@@ -91,6 +97,8 @@ import {
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
+
+export const GasMultiplier = 1.5;
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -140,6 +148,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
+  /**
+   * We make sure that the 'base' field always has as its value the native chain parameter
+   * and not values derived from the IBC connection with Osmosis
+   */
+  private get walletManagerAssets() {
+    return this.assets.map((assetList) => ({
+      ...assetList,
+      assets: assetList.assets.map((asset) => ({
+        ...asset,
+        base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
+      })),
+    })) as CosmologyAssetList[];
+  }
+
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
     readonly osmosisChainId: string,
@@ -151,11 +173,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     protected readonly chainGetter: ChainGetter,
     protected readonly options: {
       walletConnectOptions?: WalletConnectOptions;
-      preTxEvents?: {
-        onBroadcastFailed?: (string: string, e?: Error) => void;
-        onBroadcasted?: (string: string, txHash: Uint8Array) => void;
-        onFulfill?: (string: string, tx: any) => void;
-      };
+      preTxEvents?: TxEvents;
       broadcastUrl?: string;
       simulateUrl?: string;
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
@@ -185,7 +203,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets as CosmologyAssetList[],
+      this.walletManagerAssets,
       wallets,
       logger,
       true,
@@ -1048,12 +1066,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * 1. Encodes the messages using the available registry.
    * 2. Constructs an unsigned transaction object, including specific signing modes, and possibly ignores the public key in simulation.
    * 3. Sends a POST request to simulate the transaction.
-   * 4. Calculates the estimated gas used, multiplying by a fixed factor (1.5) to provide a buffer.
+   * 4. Calculates the estimated gas used, multiplying by a fixed factor (2) to provide a buffer.
    * 5. Includes specific error handling for errors returned from the axios request.
    * 6. Utilizes a placeholder signature since the transaction signature is not actually verified.
    *
    * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
-   * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
+   * This is offset by multiplying the estimated gas by a fixed factor (2) to provide a buffer.
    *
    * If the chain does not support transaction simulation, the function may
    * fall back to using the provided fee parameter.
@@ -1120,12 +1138,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error(`Invalid integer gas: ${result.gas_info.gas_used}`);
       }
 
-      const multiplier = 1.5;
       /**
        * The gas amount is multiplied by a specific factor to provide additional
        * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
        *  */
-      const gas = String(Math.round(gasUsed * multiplier));
+      const gas = String(Math.round(gasUsed * GasMultiplier));
 
       if (
         signOptions.preferNoSetFee ||
@@ -1183,12 +1200,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (chainId === this.osmosisChainId) {
       try {
         const result = await this.queryOsmosisGasPrice();
-        const multiplier = 1.5;
+
         /**
          * The gas amount is multiplied by a specific factor to provide additional
          * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
          *  */
-        gasPrice = result.baseFee * multiplier;
+        gasPrice = result.baseFee * GasMultiplier;
       } catch (e) {
         console.warn(
           "Failed to fetch Osmosis gas price. Using default gas price. Error stack: ",

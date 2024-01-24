@@ -6,17 +6,19 @@ import { EthWallet } from "~/integrations/ethereum/types";
 
 /** Use balance of arbitrary ERC20 EVM contract. */
 export function useErc20Balance(
-  ethWallet: EthWallet,
+  ethWallet: EthWallet | undefined,
   erc20ContractAddress?: string
 ) {
   const [erc20Balance, setErc20Balance] = useState<Awaited<
     ReturnType<typeof queryErc20Balance>
   > | null>(null);
 
-  const address = ethWallet.accountAddress;
-  const sendFn = ethWallet.send;
+  const address = ethWallet?.accountAddress;
+  const sendFn = ethWallet?.send;
 
   useEffect(() => {
+    if (!ethWallet || !sendFn) return;
+
     if (address && erc20ContractAddress) {
       queryErc20Balance(sendFn, erc20ContractAddress, address).then(
         (balance) => {
@@ -24,7 +26,7 @@ export function useErc20Balance(
         }
       );
     }
-  }, [ethWallet.chainId, address, erc20ContractAddress, sendFn]);
+  }, [ethWallet?.chainId, address, erc20ContractAddress, sendFn, ethWallet]);
 
   if (!erc20Balance) return;
   return new CoinPretty(

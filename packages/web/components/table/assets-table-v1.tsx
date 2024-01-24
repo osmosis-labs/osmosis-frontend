@@ -677,12 +677,14 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                           <Button
                             mode="text"
                             className="whitespace-nowrap !p-0"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
                               if (!cell.coinDenom) return;
                               setConfirmUnverifiedTokenDenom(cell.coinDenom);
                             }}
                           >
-                            Activate
+                            {t("assets.table.activate")}
                           </Button>
                         ) : (
                           <TransferButtonCell type="deposit" {...cell} />

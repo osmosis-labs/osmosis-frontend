@@ -127,7 +127,6 @@ export const InputBox: FunctionComponent<Props> = ({
               onFocus && onFocus(e);
             }}
             onInput={(e: any) => onInput(e.target.value)}
-            onClick={(e: any) => e.target.select()}
             disabled={disabled}
             autoFocus={autoFocus}
           />

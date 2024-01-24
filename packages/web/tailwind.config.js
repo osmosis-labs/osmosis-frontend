@@ -50,12 +50,15 @@ module.exports = {
         600: "#565081",
         700: "#3C356D",
         800: "#282750",
+        810: "#241E4B",
         825: "#232047",
         850: "#201B43",
+        860: "#19183A",
         900: "#140F34",
         1000: "#090524",
       },
       ammelia: {
+        400: "#D779CF",
         600: "#CA2EBD",
       },
       rust: {
@@ -164,6 +167,10 @@ module.exports = {
         "linear-gradient(0deg, #282750 0%, rgba(40, 39, 80, 0.00) 100%)",
       "gradient-token-details-shadow":
         "linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);",
+      "gradient-scrollable-allocation-list":
+        "linear-gradient(0deg, #201B43 20%, rgba(20, 15, 52, 0) 100%);",
+      "gradient-scrollable-allocation-list-reverse":
+        "linear-gradient(180deg, #201B43 10%, rgba(20, 15, 52, 0) 30%);",
     },
     screens: {
       "3xl": { max: "1792px" },
@@ -211,8 +218,11 @@ module.exports = {
       gridTemplateColumns: {
         tokenpage: "minmax(0, 1fr), minmax(0, 430px)",
         tokenStats: "repeat(auto-fill, minmax(150px, 1fr))",
+        earnpage: "minmax(0, 1fr), minmax(0, 332px)",
+        earnpositions: "minmax(0, 1fr), 1px, minmax(0, 284px)",
       },
       width: {
+        25: "6.25rem",
         loader: {
           1: "3.75rem",
           2: "4rem",
@@ -225,6 +235,7 @@ module.exports = {
       spacing: {
         sidebar: "14.58rem",
         "mobile-header": "6rem",
+        "rewards-w": "108px",
         0.25: "1px",
         4.5: "18px",
         10.5: "2.625rem",
@@ -238,6 +249,13 @@ module.exports = {
       },
       maxHeight: {
         terms: "28rem",
+      },
+      minWidth: {
+        10: "2.5rem",
+        "rewards-container": "332px",
+        "multi-radio": "290px",
+        "dropdown-with-label": "200px",
+        "strategy-buttons": "186px",
       },
       keyframes: {
         loading: {
@@ -265,6 +283,7 @@ module.exports = {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
+        "3x4pxlinset": "1.25rem", // 4px smaller than rounded-3xl
         "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
         "4xl": "1.75rem",
         "5xl": "2rem",

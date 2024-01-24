@@ -3,6 +3,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
 /** Params defines the parameters for the module. */
 export interface Params {
   maximumUnauthenticatedGas: bigint;
+  cosignerContract: string;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/osmosis.authenticator.Params";
@@ -11,6 +12,7 @@ export interface ParamsProtoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
   maximum_unauthenticated_gas: string;
+  cosigner_contract: string;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/authenticator/params";
@@ -19,10 +21,12 @@ export interface ParamsAminoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsSDKType {
   maximum_unauthenticated_gas: bigint;
+  cosigner_contract: string;
 }
 function createBaseParams(): Params {
   return {
     maximumUnauthenticatedGas: BigInt(0),
+    cosignerContract: "",
   };
 }
 export const Params = {
@@ -33,6 +37,9 @@ export const Params = {
   ): BinaryWriter {
     if (message.maximumUnauthenticatedGas !== BigInt(0)) {
       writer.uint32(8).uint64(message.maximumUnauthenticatedGas);
+    }
+    if (message.cosignerContract !== "") {
+      writer.uint32(18).string(message.cosignerContract);
     }
     return writer;
   },
@@ -46,6 +53,9 @@ export const Params = {
       switch (tag >>> 3) {
         case 1:
           message.maximumUnauthenticatedGas = reader.uint64();
+          break;
+        case 2:
+          message.cosignerContract = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -61,11 +71,13 @@ export const Params = {
       object.maximumUnauthenticatedGas !== null
         ? BigInt(object.maximumUnauthenticatedGas.toString())
         : BigInt(0);
+    message.cosignerContract = object.cosignerContract ?? "";
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
     return {
       maximumUnauthenticatedGas: BigInt(object.maximum_unauthenticated_gas),
+      cosignerContract: object.cosigner_contract,
     };
   },
   toAmino(message: Params): ParamsAmino {
@@ -73,6 +85,7 @@ export const Params = {
     obj.maximum_unauthenticated_gas = message.maximumUnauthenticatedGas
       ? message.maximumUnauthenticatedGas.toString()
       : undefined;
+    obj.cosigner_contract = message.cosignerContract;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

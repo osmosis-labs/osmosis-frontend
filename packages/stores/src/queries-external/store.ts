@@ -9,6 +9,7 @@ import {
   COINGECKO_API_DEFAULT_BASEURL,
   IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
   IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
+  NUMIA_INDEXER_BASEURL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
@@ -22,13 +23,13 @@ import { ObservableQueryPriceRangeAprs } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryMarketCaps } from "./mcap";
+import { ObservableQueryPoolAprs } from "./numia";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryMarketCap } from "./token-market-cap";
-import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
@@ -37,7 +38,6 @@ export class QueriesExternalStore {
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
-  public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -49,6 +49,7 @@ export class QueriesExternalStore {
   public readonly queryCoinGeckoCoinsInfos: DeepReadonly<ObservableQueryCoingeckoCoinsInfos>;
   public readonly queryCoinGeckoMarketChartCoins: DeepReadonly<ObservableQueryCoingeckoMarketChartCoins>;
   public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
+  public readonly queryPoolAprs: DeepReadonly<ObservableQueryPoolAprs>;
 
   constructor(
     kvStore: KVStore,
@@ -87,12 +88,6 @@ export class QueriesExternalStore {
       priceStore,
       timeseriesDataBaseUrl
     );
-    this.queryTokenPairHistoricalChart =
-      new ObservableQueryTokensPairHistoricalChart(
-        kvStore,
-        priceStore,
-        timeseriesDataBaseUrl
-      );
     this.queryPriceRangeAprs = new ObservableQueryPriceRangeAprs(
       kvStore,
       indexerDataBaseUrl
@@ -143,6 +138,11 @@ export class QueriesExternalStore {
       kvStore,
       timeseriesDataBaseUrl,
       priceStore
+    );
+
+    this.queryPoolAprs = new ObservableQueryPoolAprs(
+      kvStore,
+      NUMIA_INDEXER_BASEURL
     );
   }
 }

@@ -16,8 +16,8 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools";
-import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
+import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 const osmosisChainId = ChainList[0].chain_id;
 
@@ -40,7 +40,9 @@ const routers: {
     name: "tfm",
     router: new TfmRemoteRouter(
       osmosisChainId,
-      tfmBaseUrl ?? "https://api.tfm.com"
+      tfmBaseUrl ?? "https://api.tfm.com",
+      (coinMinimalDenom, amount) =>
+        calcAssetValue({ anyDenom: coinMinimalDenom, amount })
     ),
   },
   {
@@ -52,8 +54,14 @@ const routers: {
   {
     name: "legacy",
     router: {
-      routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-        (await routeTokenOutGivenIn({ token: tokenIn, tokenOutDenom })).quote,
+      routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
+        (
+          await routeTokenOutGivenIn({
+            token: tokenIn,
+            tokenOutDenom,
+            forcePoolId,
+          })
+        ).quote,
     } as TokenOutGivenInRouter,
   },
 ];
@@ -65,12 +73,19 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
-        preferredRouter: zodAvailableRouterKey.optional().default("legacy"),
+        preferredRouter: zodAvailableRouterKey,
+        forcePoolId: z.string().optional(),
       })
     )
     .query(
       async ({
-        input: { tokenInDenom, tokenInAmount, tokenOutDenom, preferredRouter },
+        input: {
+          tokenInDenom,
+          tokenInAmount,
+          tokenOutDenom,
+          preferredRouter,
+          forcePoolId,
+        },
       }) => {
         const { name, router } = routers.find(
           ({ name }) => name === preferredRouter
@@ -83,21 +98,12 @@ export const swapRouter = createTRPCRouter({
             denom: tokenInDenom,
             amount: new Int(tokenInAmount),
           },
-          tokenOutDenom
+          tokenOutDenom,
+          forcePoolId
         );
         const timeMs = Date.now() - startTime;
 
-        // validate assets
-        if (!(await getAsset({ anyDenom: tokenInDenom }))) {
-          throw new Error(
-            `Token in denom is not configured in asset list: ${tokenInDenom}`
-          );
-        }
         const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
-        if (!tokenOutAsset)
-          throw new Error(
-            `Token out denom is not configured in asset list: ${tokenOutDenom}`
-          );
 
         // calculate fiat value of amounts
         // get fiat value
@@ -164,6 +170,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
+            swapFee: staticPool?.swapFee,
             type: staticPool?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,

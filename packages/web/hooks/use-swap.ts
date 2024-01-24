@@ -11,17 +11,18 @@ import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
-import { useEffect } from "react";
 import { useCallback } from "react";
+import { useEffect } from "react";
 
-import type { MaybeUserAsset } from "~/server/api/edge-routers/assets";
+import { useShowUnlistedAssets } from "~/hooks/use-show-unlisted-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
+import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useBalances } from "./queries/cosmos/balances";
+import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
@@ -29,6 +30,20 @@ import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+
+type SwapOptions = {
+  /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
+  initialFromDenom?: string;
+  /** Initial to denom if `useQueryParams` is not `true` and there's no query param. */
+  initialToDenom?: string;
+  /** Set to true to use query params instead as to from token denom state. */
+  useQueryParams?: boolean;
+  /** Set to true if users should be able to select other currencies to swap. */
+  useOtherCurrencies?: boolean;
+  /** Set to the pool ID that the user must swap in. `initialFromDenom` and `initialToDenom`
+   *  must be set to the pool's tokens or the quote queries will fail. */
+  forceSwapInPoolId?: string;
+};
 
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
  *
@@ -43,7 +58,8 @@ export function useSwap({
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,
-} = {}) {
+  forceSwapInPoolId,
+}: SwapOptions = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
@@ -73,6 +89,7 @@ export function useSwap({
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      forcePoolId: forceSwapInPoolId,
     },
     canLoadQuote
   );
@@ -93,6 +110,7 @@ export function useSwap({
         .truncate()
         .toString(),
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      forcePoolId: forceSwapInPoolId,
     },
     isToFromAssets
   );
@@ -103,11 +121,12 @@ export function useSwap({
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
-    const error = quoteError ?? spotPriceQuoteError;
+    let error = quoteError;
 
-    // Various router clients on server should reconcile their error messages
-    // into the following error messages or instances on the server.
-    // Then we can show the user a useful translated error message vs just "Error".
+    // only show spot price error if there's no quote
+    if (quote && !quote.amount.toDec().isPositive() && !error)
+      error = spotPriceQuoteError;
+
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
@@ -116,6 +135,7 @@ export function useSwap({
       return inAmountInput.error;
   }, [
     quoteError,
+    quote,
     spotPriceQuoteError,
     inAmountInput.error,
     inAmountInput.isEmpty,
@@ -246,7 +266,10 @@ export function useSwap({
 
   const positivePrevQuote = usePreviousWhen(
     quote,
-    useCallback(() => Boolean(quote?.amount.toDec().isPositive()), [quote])
+    useCallback(
+      () => Boolean(quote?.amount.toDec().isPositive()) && !quoteError,
+      [quote, quoteError]
+    )
   );
 
   return {
@@ -299,20 +322,20 @@ export function useSwapAssets({
     switchAssets,
   } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
-  // get selectable currencies for trading, including user balances if wallect connected
-  const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
-
   // generate debounced search from user inputs
+  const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
   const [debouncedSearchInput, setDebouncedSearchInput] =
     useDebouncedState<string>("", 500);
   useEffect(() => {
     setDebouncedSearchInput(assetsQueryInput);
   }, [setDebouncedSearchInput, assetsQueryInput]);
 
-  const inputSearch = useMemo(
+  const queryInput = useMemo(
     () => (debouncedSearchInput ? { query: debouncedSearchInput } : undefined),
     [debouncedSearchInput]
   );
+
+  const { showUnlistedAssets } = useShowUnlistedAssets();
 
   const canLoadAssets =
     !isLoadingWallet &&
@@ -320,25 +343,17 @@ export function useSwapAssets({
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
   // use a separate query for search to maintain pagination in other infinite query
-  const { data: searchAssets, isLoading: isLoadingSearchAssets } =
-    api.edge.assets.getAssets.useQuery(
-      {
-        search: inputSearch,
-        userOsmoAddress: account?.address,
-      },
-      {
-        enabled: canLoadAssets && Boolean(inputSearch),
-      }
-    );
   const {
     data: selectableAssetPages,
-    isLoading: isLoadingInfiniteAssets,
+    isLoading: isLoadingSelectAssets,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = api.edge.assets.getAssets.useInfiniteQuery(
     {
+      search: queryInput,
       userOsmoAddress: account?.address,
+      includeUnlisted: showUnlistedAssets,
       limit: 50, // items per page
     },
     {
@@ -347,16 +362,10 @@ export function useSwapAssets({
       initialCursor: 0,
     }
   );
-  const isLoadingSelectAssets = Boolean(inputSearch)
-    ? isLoadingSearchAssets
-    : isLoadingInfiniteAssets;
 
   const allSelectableAssets = useMemo(
-    () =>
-      inputSearch
-        ? searchAssets?.items
-        : selectableAssetPages?.pages.flatMap(({ items }) => items),
-    [selectableAssetPages?.pages, inputSearch, searchAssets]
+    () => selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [],
+    [selectableAssetPages?.pages]
   );
 
   const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
@@ -383,7 +392,7 @@ export function useSwapAssets({
   /** Remove to and from assets from assets that can be selected. */
   const filteredSelectableAssets = useMemo(
     () =>
-      allSelectableAssets?.filter(
+      allSelectableAssets.filter(
         (asset) =>
           asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
           asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
@@ -483,9 +492,9 @@ function useToFromDenoms(
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset(
+function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
-  existingAssets: MaybeUserAsset[] = []
+  existingAssets: TAsset[] = []
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -500,17 +509,20 @@ function useSwapAsset(
       asset.coinMinimalDenom === minDenomOrSymbol
   );
   const queryEnabled =
-    Boolean(minDenomOrSymbol) && !isLoadingWallet && !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getAssets.useQuery(
+    !isNil(minDenomOrSymbol) &&
+    typeof minDenomOrSymbol === "string" &&
+    !isLoadingWallet &&
+    !existingAsset;
+  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
-      findMinDenomOrSymbol: minDenomOrSymbol,
+      findMinDenomOrSymbol: minDenomOrSymbol ?? "",
       userOsmoAddress: account?.address,
     },
     { enabled: queryEnabled }
   );
 
   return {
-    asset: existingAsset ?? asset?.items[0],
+    asset: existingAsset ?? asset,
     isLoading: isLoading && !existingAsset,
   };
 }
@@ -519,7 +531,10 @@ function useSwapAsset(
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
-  input: RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+  input: Omit<
+    RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+    "preferredRouter"
+  >,
   enabled: boolean,
   routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
 ) {
@@ -531,7 +546,9 @@ function useQueryRouterBestQuote(
         : routerKeys.filter((key) => {
             if (!featureFlags.sidecarRouter && key === "sidecar") return false;
             if (!featureFlags.legacyRouter && key === "legacy") return false;
-            if (!featureFlags.tfmRouter && key === "tfm") return false;
+            // TFM doesn't support force swap through pool
+            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
+              return false;
             return true;
           }),
     [
@@ -540,6 +557,7 @@ function useQueryRouterBestQuote(
       featureFlags.legacyRouter,
       featureFlags.tfmRouter,
       routerKeys,
+      input.forcePoolId,
     ]
   );
 
@@ -622,6 +640,9 @@ function useQueryRouterBestQuote(
   };
 }
 
+/** Various router clients on server should reconcile their error messages
+ *  into the following error messages or instances on the server.
+ *  Then we can show the user a useful translated error message vs just "Error". */
 function makeRouterErrorFromTrpcError(
   error:
     | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>

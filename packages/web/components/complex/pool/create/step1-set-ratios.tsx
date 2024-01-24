@@ -111,6 +111,43 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             </span>
           </button>
         </div>
+        <div className="flex flex-col gap-4 p-3.5 md:p-2.5">
+          <div className="flex place-content-between items-center rounded-2xl">
+            <span className="md:subtitle2">
+              {t("pools.createPool.swapFee")}
+            </span>
+            <div className="flex items-center gap-4 md:gap-1">
+              <InputBox
+                className="w-44 md:w-20"
+                type="number"
+                inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                currentValue={config.swapFee}
+                onInput={(value) => config.setSwapFee(value)}
+                placeholder=""
+                trailingSymbol="%"
+              />
+            </div>
+          </div>
+          {config.poolType === "stable" && (
+            <div className="flex place-content-between items-center rounded-2xl">
+              <span className="md:subtitle2">
+                {t("pools.createPool.scalingFactorController")}
+              </span>
+              <div className="flex items-center gap-4 md:gap-1">
+                <InputBox
+                  className="w-44 md:w-20"
+                  type="text"
+                  inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                  currentValue={config.scalingFactorControllerAddress}
+                  onInput={(value) =>
+                    config.setScalingFactorControllerAddress(value)
+                  }
+                  placeholder="osmo..."
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </StepBase>
     );
   }
