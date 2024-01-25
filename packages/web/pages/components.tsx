@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
@@ -44,6 +44,7 @@ import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
+import NavbarOsmoPrice from "~/components/navbar-osmo-price";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
@@ -770,7 +771,7 @@ const Tooltips = () => (
     <Component title="Tooltip Text">
       <Tooltip
         content="tooltip content"
-        className="h-8 w-32 border-2 border-osmoverse-500"
+        className="h-8 w-32 rounded-xl border-2 border-osmoverse-500"
       >
         <span className="m-auto">Hover Me</span>
       </Tooltip>
@@ -778,7 +779,7 @@ const Tooltips = () => (
     <Component title="Tooltip Icon">
       <Tooltip
         content="tooltip content"
-        className="h-8 w-32 border-2 border-osmoverse-500"
+        className="h-8 w-32 rounded-xl border-2 border-osmoverse-500"
       >
         <Icon
           id={"alert-circle" as SpriteIconId}
@@ -963,7 +964,16 @@ const Inputs = () => {
   );
 };
 
+import { AssetCard, AssetSourceCard, HeroCard } from "~/components/cards";
+import { AppCard } from "~/components/cards/app-card";
+import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
+import { GenericMainCard } from "~/components/cards/generic-main-card";
+import { IconLink } from "~/components/cards/icon-link";
+import OsmoverseCard from "~/components/cards/osmoverse-card";
+import { UnbondingCard } from "~/components/cards/unbonding-card";
+import { Pill } from "~/components/indicators/pill";
 import QRCode from "~/components/qrcode";
+import { useStore } from "~/stores";
 
 const QRCodes = () => (
   <Card title="QR Codes">
@@ -1016,6 +1026,128 @@ const Steppers = () => {
   );
 };
 
+const Indicators = () => (
+  <Card title="Indicators">
+    <Component title="Pill">
+      <Pill>text</Pill>
+    </Component>
+    <Component title="Pill Animated">
+      <Pill animate>text</Pill>
+    </Component>
+  </Card>
+);
+
+const NavbarOsmoPrices = () => (
+  <Card title="Navbar Osmo Price">
+    <Component title="Osmo Price">
+      <NavbarOsmoPrice />
+    </Component>
+  </Card>
+);
+
+const Cards = () => {
+  return (
+    <Card title="Cards">
+      <Component title="App Card">
+        <AppCard
+          title="title"
+          subtitle="subtitle"
+          imageUrl="/tokens/osmo.svg"
+          twitterUrl="https://app.osmosis.zone/"
+          githubUrl="https://app.osmosis.zone/"
+          externalUrl="https://app.osmosis.zone/"
+          mediumUrl="https://app.osmosis.zone/"
+          index={0}
+        />
+      </Component>
+      <Component title="Asset Card">
+        <AssetCard
+          coinDenom="Osmo/Atom"
+          coinImageUrl="/tokens/osmo.svg"
+          coinDenomCaption="Coin Denom Caption"
+          isSuperfluid={true}
+          onClick={() => console.log("clicked")}
+          showArrow={true}
+          metrics={[{ label: "Label", value: "Value" }]}
+        />
+      </Component>
+      <Component title="Asset Source Card">
+        <AssetSourceCard
+          id="osmo"
+          iconUrl="/tokens/osmo.svg"
+          displayName="Display Name"
+          isConnected={false}
+          isSelected={false}
+        />
+      </Component>
+      <Component title="Asset Source Card Connected">
+        <AssetSourceCard
+          id="osmo"
+          iconUrl="/tokens/osmo.svg"
+          displayName="Display Name"
+          isConnected={true}
+          isSelected={false}
+        />
+      </Component>
+      <Component title="Asset Source Card Selected">
+        <AssetSourceCard
+          id="osmo"
+          iconUrl="/tokens/osmo.svg"
+          displayName="Display Name"
+          isConnected={false}
+          isSelected={true}
+        />
+      </Component>
+      <Component title="Estimated Earnings">
+        <EstimatedEarningCard
+          stakeAmount={
+            new CoinPretty(useStore().chainStore.osmosis.stakeCurrency, 10000)
+          }
+          stakingAPR={new Dec(0.1)}
+        />
+      </Component>
+      <Component title="Generic Main Card">
+        <div className="rounded-[32px] bg-osmoverse-900 p-2">
+          <GenericMainCard title="Title">Content</GenericMainCard>
+        </div>
+      </Component>
+      <Component title="Hero Card">
+        <HeroCard
+          title="Title"
+          subtitle="Subtitle"
+          imageUrl="/tokens/osmo.svg"
+          fallbackImageUrl="/tokens/osmo.svg"
+          twitterUrl="https://app.osmosis.zone/"
+          githubUrl="https://app.osmosis.zone/"
+          externalUrl="https://app.osmosis.zone/"
+          mediumUrl="https://app.osmosis.zone/"
+        >
+          Content
+        </HeroCard>
+      </Component>
+      <Component title="Icon Link">
+        <IconLink url="https://app.osmosis.zone" ariaLabel="Twitter">
+          <Icon
+            id="twitter"
+            height="14px"
+            width="14px"
+            className="fill-osmoverse-400"
+          />
+        </IconLink>
+      </Component>
+      <Component title="Unbonding Card">
+        <UnbondingCard />
+      </Component>
+      <Component title="Osmoverse Card">
+        <OsmoverseCard>Content </OsmoverseCard>
+      </Component>
+      {/* <Component title="Bond Card">
+        <BondCard>Content </BondCard>
+      </Component> */}
+    </Card>
+  );
+};
+
 const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -1040,6 +1172,9 @@ const Components: NextPage = () => {
       <StakeTabs />
       <QRCodes />
       <Steppers />
+      <Indicators />
+      <NavbarOsmoPrices />
+      <Cards />
     </div>
   );
 };
