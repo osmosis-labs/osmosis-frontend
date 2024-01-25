@@ -114,7 +114,7 @@ const NavbarOsmoPrice = observer(() => {
 
 const OsmoPriceAndChart: FunctionComponent = () => {
   const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
-    api.edge.assets.getAssetInfo.useQuery({
+    api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: "OSMO",
     });
 

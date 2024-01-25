@@ -47,8 +47,9 @@ export function compareDec(a: Dec, b: Dec): CompareResult {
   return 0;
 }
 
-/** Prefers an object that has a given member defined and non-null. */
-export function compareDefinedMember<T extends object>(
+/** Prefers an object that has a given member defined and non-null.
+ *  **DOES NOT** compare the value. */
+export function compareMemberDefinition<T extends object>(
   a: Partial<T>,
   b: Partial<T>,
   member: keyof T

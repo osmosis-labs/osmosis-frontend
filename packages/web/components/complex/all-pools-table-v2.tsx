@@ -107,6 +107,8 @@ export const AllPoolsTable: FunctionComponent<{
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       enabled: isQueryParamsReady,
+
+      // expensive query
       trpc: {
         context: {
           skipBatch: true,
