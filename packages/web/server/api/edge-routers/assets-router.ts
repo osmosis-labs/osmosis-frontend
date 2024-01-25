@@ -8,13 +8,13 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
-  getAssetMarketInfo,
   getAssetPrice,
+  getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetInfo,
+  getUserAssetCoin,
   getUserAssetsBreakdown,
-  mapGetAssetMarketInfos,
-  mapGetUserAssetInfos,
+  mapGetMarketAssets,
+  mapGetUserAssetCoins,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
@@ -46,7 +46,7 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-      return await getUserAssetInfo({
+      return await getUserAssetCoin({
         asset,
         userOsmoAddress,
       });
@@ -66,7 +66,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
-            mapGetUserAssetInfos({
+            mapGetUserAssetCoins({
               search,
               userOsmoAddress,
               onlyVerified,
@@ -113,14 +113,14 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-      const userAsset = await getUserAssetInfo({ asset, userOsmoAddress });
-      const userMarketInfoAsset = await getAssetMarketInfo({
+      const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
+      const userMarketAsset = await getMarketAsset({
         asset: userAsset,
       });
 
       return {
         ...userAsset,
-        ...userMarketInfoAsset,
+        ...userMarketAsset,
       };
     }),
   getMarketAssets: publicProcedure
@@ -159,13 +159,13 @@ export const assetsRouter = createTRPCRouter({
             const isDefaultSort = !sortInput && !search;
 
             let assets;
-            assets = await mapGetAssetMarketInfos({
+            assets = await mapGetMarketAssets({
               search,
               onlyVerified,
               includeUnlisted,
             });
 
-            assets = await mapGetUserAssetInfos({
+            assets = await mapGetUserAssetCoins({
               assets,
               userOsmoAddress,
               includeUnlisted,

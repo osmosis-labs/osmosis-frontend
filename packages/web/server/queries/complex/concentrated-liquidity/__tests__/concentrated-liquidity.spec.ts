@@ -2,10 +2,7 @@ import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import cases from "jest-in-case";
 
-import {
-  getAsset,
-  mapRawAssetsToCoinPretty,
-} from "~/server/queries/complex/assets";
+import { getAsset, mapAssetsToCoins } from "~/server/queries/complex/assets";
 
 import {
   getClTickPrice,
@@ -14,7 +11,7 @@ import {
   getPriceFromSqrtPrice,
   getTotalClaimableRewards,
   getTotalEarned,
-} from "../concentrated-liquidity";
+} from "..";
 
 jest.mock("~/server/queries/complex/assets");
 
@@ -162,25 +159,24 @@ cases(
         "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
     };
 
-    (mapRawAssetsToCoinPretty as jest.Mock).mockImplementation(
-      ({ rawAssets }) =>
-        rawAssets.map((asset: { denom: string; amount: string }) => {
-          if (
-            asset.denom ===
-            "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7"
-          ) {
-            return new CoinPretty(dai, asset.amount);
-          }
+    (mapAssetsToCoins as jest.Mock).mockImplementation(({ rawAssets }) =>
+      rawAssets.map((asset: { denom: string; amount: string }) => {
+        if (
+          asset.denom ===
+          "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7"
+        ) {
+          return new CoinPretty(dai, asset.amount);
+        }
 
-          if (
-            asset.denom ===
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-          ) {
-            return new CoinPretty(atom, asset.amount);
-          }
+        if (
+          asset.denom ===
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+        ) {
+          return new CoinPretty(atom, asset.amount);
+        }
 
-          return new CoinPretty(osmo, asset.amount);
-        })
+        return new CoinPretty(osmo, asset.amount);
+      })
     );
 
     const result = await getTotalClaimableRewards({
@@ -328,19 +324,18 @@ const atom: Currency = {
 cases(
   "getTotalClaimableRewards",
   async ({ claimedIncentives, claimableSpreadRewards, expected }) => {
-    (mapRawAssetsToCoinPretty as jest.Mock).mockImplementation(
-      ({ rawAssets }) =>
-        rawAssets.map((asset: { denom: string; amount: string }) => {
-          if (asset.denom === dai.coinMinimalDenom) {
-            return new CoinPretty(dai, asset.amount);
-          }
+    (mapAssetsToCoins as jest.Mock).mockImplementation(({ rawAssets }) =>
+      rawAssets.map((asset: { denom: string; amount: string }) => {
+        if (asset.denom === dai.coinMinimalDenom) {
+          return new CoinPretty(dai, asset.amount);
+        }
 
-          if (asset.denom === atom.coinMinimalDenom) {
-            return new CoinPretty(atom, asset.amount);
-          }
+        if (asset.denom === atom.coinMinimalDenom) {
+          return new CoinPretty(atom, asset.amount);
+        }
 
-          return new CoinPretty(osmo, asset.amount);
-        })
+        return new CoinPretty(osmo, asset.amount);
+      })
     );
 
     const result = await getTotalClaimableRewards({
@@ -424,19 +419,18 @@ cases(
 cases(
   "getTotalEarned",
   async ({ totalIncentivesRewards, totalSpreadRewards, expected }) => {
-    (mapRawAssetsToCoinPretty as jest.Mock).mockImplementation(
-      ({ rawAssets }) =>
-        rawAssets.map((asset: { denom: string; amount: string }) => {
-          if (asset.denom === dai.coinMinimalDenom) {
-            return new CoinPretty(dai, asset.amount);
-          }
+    (mapAssetsToCoins as jest.Mock).mockImplementation(({ rawAssets }) =>
+      rawAssets.map((asset: { denom: string; amount: string }) => {
+        if (asset.denom === dai.coinMinimalDenom) {
+          return new CoinPretty(dai, asset.amount);
+        }
 
-          if (asset.denom === atom.coinMinimalDenom) {
-            return new CoinPretty(atom, asset.amount);
-          }
+        if (asset.denom === atom.coinMinimalDenom) {
+          return new CoinPretty(atom, asset.amount);
+        }
 
-          return new CoinPretty(osmo, asset.amount);
-        })
+        return new CoinPretty(osmo, asset.amount);
+      })
     );
 
     const result = await getTotalEarned({

@@ -5,10 +5,7 @@ import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
-import {
-  getAsset,
-  mapRawAssetsToCoinPretty,
-} from "~/server/queries/complex/assets";
+import { getAsset, mapAssetsToCoins } from "~/server/queries/complex/assets";
 import { getPools } from "~/server/queries/complex/pools";
 import {
   getConcentratedRangePoolApr,
@@ -196,11 +193,11 @@ export async function getTotalClaimableRewards({
 }) {
   const [claimableIncentiveRewards, claimableSpreadRewards] = await Promise.all(
     [
-      mapRawAssetsToCoinPretty({
+      mapAssetsToCoins({
         rawAssets: rawClaimableIncentiveRewards,
         calculatePrice,
       }),
-      mapRawAssetsToCoinPretty({
+      mapAssetsToCoins({
         rawAssets: rawClaimableSpreadRewards,
         calculatePrice,
       }),
@@ -209,7 +206,7 @@ export async function getTotalClaimableRewards({
 
   type AssetMap = Map<
     string,
-    Awaited<ReturnType<typeof mapRawAssetsToCoinPretty>>[number]
+    Awaited<ReturnType<typeof mapAssetsToCoins>>[number]
   >;
 
   return Array.from(
@@ -236,11 +233,11 @@ export async function getTotalEarned({
   calculatePrice?: boolean;
 }) {
   const [spreadRewards, incentivesRewards] = await Promise.all([
-    mapRawAssetsToCoinPretty({
+    mapAssetsToCoins({
       rawAssets: totalSpreadRewards,
       calculatePrice,
     }),
-    mapRawAssetsToCoinPretty({
+    mapAssetsToCoins({
       rawAssets: totalIncentivesRewards,
       calculatePrice,
     }),
@@ -248,7 +245,7 @@ export async function getTotalEarned({
 
   const earnedCoinDenomMap = new Map<
     string,
-    Awaited<ReturnType<typeof mapRawAssetsToCoinPretty>>[number]
+    Awaited<ReturnType<typeof mapAssetsToCoins>>[number]
   >();
   [...spreadRewards, ...incentivesRewards].forEach((coin) => {
     const existingCoin = earnedCoinDenomMap.get(coin.currency.coinMinimalDenom);

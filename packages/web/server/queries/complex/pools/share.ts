@@ -4,8 +4,8 @@ import { estimateExitSwap } from "@osmosis-labs/math";
 import { StablePoolRawResponse, WeightedPoolRawResponse } from "../../osmosis";
 import { getPool } from ".";
 
-/** Calculates underlying pool assets from given GAMM shares (without decimals). */
-export async function getGammShareUnderlyingAssets({
+/** Calculates underlying coins from given GAMM shares (without decimals). */
+export async function getGammShareUnderlyingCoins({
   denom,
   amount,
 }: {

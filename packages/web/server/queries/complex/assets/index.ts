@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -85,6 +85,56 @@ export async function getAssets({
   return simplifyAssetListForDisplay(assetList, params);
 }
 
+/**
+ * This function maps raw assets to a CoinPretty. This is useful for
+ * converting raw assets returned from chain into coins listed in asset list.
+ * It also optionally calculates the fiat value of the asset if the 'calculatePrice'
+ * parameter is true.
+ *
+ * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
+ * @param calculatePrice A boolean indicating whether to calculate the price of the asset.
+ *
+ * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
+ */
+export async function mapAssetsToCoins({
+  rawAssets,
+  calculatePrice,
+}: {
+  rawAssets?: {
+    amount: string | number | Int | Dec | { toDec(): Dec };
+    denom: string;
+  }[];
+  calculatePrice?: boolean;
+}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
+  if (!rawAssets) return [];
+  const result = await Promise.all(
+    rawAssets.map(async ({ amount, denom }) => {
+      const asset = await getAsset({
+        anyDenom: denom,
+      });
+
+      if (!asset) return undefined;
+
+      const coin = new CoinPretty(asset, amount);
+      if (calculatePrice) {
+        const fiatValue = await calcAssetValue({
+          amount: coin.toDec(),
+          anyDenom: denom,
+        });
+
+        if (!fiatValue)
+          throw new Error(`Could not calculate price for ${denom}`);
+
+        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
+          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
+      }
+
+      return coin;
+    })
+  );
+  return result.filter((p): p is NonNullable<typeof p> => !!p);
+}
+
 /** Transform given asset list into an array of minimal asset types for user in frontend. */
 function simplifyAssetListForDisplay(
   assetList: AssetList[],
@@ -142,57 +192,6 @@ function simplifyAssetListForDisplay(
   return assetListAssets.map(makeMinimalAsset);
 }
 
-/**
- * This function maps raw assets to a CoinPretty. This is useful for
- * converting raw assets returned from chain. It also optionally
- * calculates the fiat value of the asset if the 'calculatePrice'
- * parameter is true.
- *
- * @param {Array} rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
- * @param {boolean} calculatePrice A boolean indicating whether to calculate the price of the asset.
- *
- * @returns {Promise<Array>} A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
- */
-export async function mapRawAssetsToCoinPretty({
-  rawAssets,
-  calculatePrice,
-}: {
-  rawAssets?: {
-    amount: string | number;
-    denom: string;
-  }[];
-  calculatePrice?: boolean;
-}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
-  if (!rawAssets) return [];
-  const result = await Promise.all(
-    rawAssets.map(async ({ amount, denom }) => {
-      const asset = await getAsset({
-        anyDenom: denom,
-      });
-
-      if (!asset) return undefined;
-
-      const coin = new CoinPretty(asset, amount);
-      if (calculatePrice) {
-        const fiatValue = await calcAssetValue({
-          amount: coin.toDec(),
-          anyDenom: denom,
-        });
-
-        if (!fiatValue)
-          throw new Error(`Could not calculate price for ${denom}`);
-
-        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
-          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
-      }
-
-      return coin;
-    })
-  );
-  return result.filter((p): p is NonNullable<typeof p> => !!p);
-}
-
-export * from "./info";
 export * from "./market";
 export * from "./price";
 export * from "./user";
