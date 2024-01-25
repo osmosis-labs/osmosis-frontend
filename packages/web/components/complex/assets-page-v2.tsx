@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { useWalletSelect } from "~/hooks";
+import { useDimension, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -27,22 +27,26 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       },
     }
   );
+  const [valuesRef, { height: valuesHeight }] = useDimension<HTMLDivElement>();
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <h2>Total Value {value?.aggregatedValue.toString()}</h2>
-      <span>{value?.aggregated.map((c) => c.toString()).join("______")}</span>
+      <div ref={valuesRef}>
+        <h2>Total Value {value?.aggregatedValue.toString()}</h2>
+        <span>{value?.aggregated.map((c) => c.toString()).join("______")}</span>
 
-      <h2>Pooled Value {value?.pooledValue.toString()}</h2>
-      <span>{value?.pooled.map((c) => c.toString()).join("______")}</span>
+        <h2>Pooled Value {value?.pooledValue.toString()}</h2>
+        <span>{value?.pooled.map((c) => c.toString()).join("______")}</span>
 
-      <h2>Available Value {value?.availableValue.toString()}</h2>
-      <span>{value?.available.map((c) => c.toString()).join("______")}</span>
+        <h2>Available Value {value?.availableValue.toString()}</h2>
+        <span>{value?.available.map((c) => c.toString()).join("______")}</span>
 
-      <h2>Delegated Value {value?.delegatedValue.toString()}</h2>
-      <span>{value?.delegated.toString()}</span>
+        <h2>Delegated Value {value?.delegatedValue.toString()}</h2>
+        <span>{value?.delegated.toString()}</span>
+      </div>
 
       <AssetsInfoTable
+        tableTopPadding={valuesHeight}
         onDeposit={(coinDenom) => {
           console.log("deposit", coinDenom);
         }}
