@@ -473,7 +473,7 @@ const WalletInfo: FunctionComponent<
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
   const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
-    api.edge.assets.getUserAsset.useQuery(
+    api.edge.assets.getAsset.useQuery(
       {
         findMinDenomOrSymbol: "OSMO",
         userOsmoAddress: wallet?.address as string,

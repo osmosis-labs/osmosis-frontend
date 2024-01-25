@@ -24,7 +24,7 @@ import {
   TimeFrame,
 } from "~/server/queries/imperator";
 import { TimeDuration } from "~/server/queries/imperator";
-import { compareDec, compareDefinedMember } from "~/utils/compare";
+import { compareDec, compareMemberDefinition } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -35,7 +35,7 @@ const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
 ).merge(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
-  getUserAsset: publicProcedure
+  getAsset: publicProcedure
     .input(
       z
         .object({
@@ -51,7 +51,7 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress,
       });
     }),
-  getUserAssets: publicProcedure
+  getAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(
       async ({
@@ -102,7 +102,7 @@ export const assetsRouter = createTRPCRouter({
 
     return assets.filter((a): a is Asset => !!a);
   }),
-  getUserMarketAsset: publicProcedure
+  getMarketAsset: publicProcedure
     .input(
       z
         .object({
@@ -123,7 +123,7 @@ export const assetsRouter = createTRPCRouter({
         ...userMarketInfoAsset,
       };
     }),
-  getUserMarketAssets: publicProcedure
+  getMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
@@ -203,7 +203,7 @@ export const assetsRouter = createTRPCRouter({
                 // Sort by market cap as long as there's no user fiat balance
                 // Assets with fiat balances will remain sorted as they are
                 if (!assetA.usdValue && !assetB.usdValue) {
-                  const marketCapDefinedCompare = compareDefinedMember(
+                  const marketCapDefinedCompare = compareMemberDefinition(
                     assetA,
                     assetB,
                     "marketCap"
@@ -244,7 +244,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssetsBreakdown: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(async ({ input: userOsmoAddress }) =>
+    .query(({ input: userOsmoAddress }) =>
       getUserAssetsBreakdown(userOsmoAddress)
     ),
 

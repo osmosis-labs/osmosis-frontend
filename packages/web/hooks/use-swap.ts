@@ -257,8 +257,6 @@ export function useSwap({
         if (!account?.address) return;
         useBalances.invalidateQuery({ address: account.address, queryClient });
 
-        swapAssets.invalidateQueries();
-
         inAmountInput.reset();
       }),
     [quote, inAmountInput, account, swapAssets, queryClient]
@@ -349,7 +347,7 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getUserAssets.useInfiniteQuery(
+  } = api.edge.assets.getAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,
@@ -400,11 +398,6 @@ export function useSwapAssets({
     [allSelectableAssets, fromAsset, toAsset]
   );
 
-  const trpcUtils = api.useUtils();
-  const invalidateQueries = useCallback(() => {
-    trpcUtils.edge.assets.getUserAssets.invalidate();
-  }, [trpcUtils]);
-
   return {
     fromAsset,
     toAsset,
@@ -423,7 +416,6 @@ export function useSwapAssets({
     setToAssetDenom,
     switchAssets,
     fetchNextPageAssets: fetchNextPage,
-    invalidateQueries,
   };
 }
 
@@ -513,7 +505,7 @@ function useSwapAsset<TAsset extends Asset>(
     typeof minDenomOrSymbol === "string" &&
     !isLoadingWallet &&
     !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getUserAsset.useQuery(
+  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
       findMinDenomOrSymbol: minDenomOrSymbol ?? "",
       userOsmoAddress: account?.address,

@@ -4,7 +4,7 @@ import cases from "jest-in-case";
 import {
   compareCommon,
   compareDec,
-  compareDefinedMember,
+  compareMemberDefinition,
   CompareResult,
 } from "../compare";
 
@@ -59,12 +59,12 @@ cases(
 );
 
 cases(
-  "compareDefinedMember",
+  "compareMemberDefinition",
   ({ a, b, member, expected }) => {
     type TestType = { member?: string | null | undefined };
-    expect(compareDefinedMember<TestType>(a, b, member as keyof TestType)).toBe(
-      expected
-    );
+    expect(
+      compareMemberDefinition<TestType>(a, b, member as keyof TestType)
+    ).toBe(expected);
   },
   {
     "should return -1 if member is in a but not in b": {
