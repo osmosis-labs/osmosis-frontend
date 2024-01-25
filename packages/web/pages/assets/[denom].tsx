@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import { FunctionComponent, useCallback } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -105,6 +106,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     coingeckoCoin,
   }) => {
     const { t } = useTranslation();
+    const language = useCurrentLanguage();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
 
@@ -164,8 +166,68 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       return tokenDenom as string;
     }, [tokenDenom]);
 
+    const details = useMemo(() => {
+      return tokenDetailsByLanguage
+        ? tokenDetailsByLanguage[language]
+        : undefined;
+    }, [language, tokenDetailsByLanguage]);
+
+    const title = useMemo(() => {
+      if (details) {
+        return details.name;
+      }
+
+      const currencies = ChainList.map(
+        (info) => info.keplrChain.currencies
+      ).reduce((a, b) => [...a, ...b]);
+
+      const currency = currencies.find(
+        (el) => el.coinDenom === denom.toUpperCase()
+      );
+
+      if (!currency) {
+        return undefined;
+      }
+
+      const asset = getAssetFromAssetList({
+        coinMinimalDenom: currency?.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      return asset?.rawAsset.name;
+    }, [denom, details]);
+
+    const description = useMemo(() => {
+      if (details) {
+        return details.description;
+      }
+
+      const currencies = ChainList.map(
+        (info) => info.keplrChain.currencies
+      ).reduce((a, b) => [...a, ...b]);
+
+      const currency = currencies.find(
+        (el) => el.coinDenom === denom.toUpperCase()
+      );
+
+      if (!currency) {
+        return undefined;
+      }
+
+      const asset = getAssetFromAssetList({
+        coinMinimalDenom: currency?.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      return asset?.rawAsset.description;
+    }, [denom, details]);
+
     return (
       <AssetInfoViewProvider value={contextValue}>
+        <NextSeo
+          title={`${title ? `${title} (${denom})` : denom} | Osmosis`}
+          description={description}
+        />
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
           <LinkButton
             className="mr-auto hidden md:flex"

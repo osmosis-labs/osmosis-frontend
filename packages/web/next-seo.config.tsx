@@ -5,7 +5,8 @@ import { useTranslation } from "~/hooks";
 import spriteSVGURL from "~/public/icons/sprite.svg";
 
 const SEO_VALUES = {
-  SITE_URL: "https://osmosis.zone/",
+  SITE_URL: "https://osmosis.zone",
+  APP_URL: "https://app.osmosis.zone",
   TWITTER_HANDLE: "@osmosiszone",
   IMAGE_PREVIEW: "/images/preview.jpg",
   FAVICON: "/favicon.ico",
@@ -52,7 +53,7 @@ const SEO: React.FC = () => {
       description: t("seo.default.description"),
       images: [
         {
-          url: SEO_VALUES.IMAGE_PREVIEW,
+          url: `${SEO_VALUES.APP_URL}${SEO_VALUES.IMAGE_PREVIEW}`,
           width: 1920,
           height: 1080,
           alt: "Osmosis",
