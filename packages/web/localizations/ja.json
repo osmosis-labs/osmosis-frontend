@@ -818,9 +818,6 @@
       "title": "浸透アセット",
       "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
     },
-    "asset": {
-      "title": "浸透アセット - {name}"
-    },
     "disclaimer": {
       "title": "浸透に関する免責事項",
       "description": "主要な分散型コスモス取引所である Osmosis の免責事項とプライバシー ポリシーをお読みください。"

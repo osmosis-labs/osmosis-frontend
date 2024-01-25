@@ -818,9 +818,6 @@
       "title": "Osmose-Vermögenswerte",
       "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
     },
-    "asset": {
-      "title": "Osmose-Assets – {name}"
-    },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",
       "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"

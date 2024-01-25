@@ -818,9 +818,6 @@
       "title": "Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
-    "asset": {
-      "title": "Osmosis Assets - {name}"
-    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
