@@ -154,15 +154,11 @@ export async function getUserAssetsBreakdown(address: {
   const lockedCoins = coins[2];
   const delegatedCoin = coins[3];
 
-  const pooledAssets = [
-    ...underlyingGammShareCoins,
-    ...clCoins,
-    ...lockedCoins,
-  ];
+  const pooledCoins = [...underlyingGammShareCoins, ...clCoins, ...lockedCoins];
   const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
 
   const delegatedValue = await calcCoinValue(delegatedCoin);
-  const pooledValue = await calcSumCoinsValue(pooledAssets);
+  const pooledValue = await calcSumCoinsValue(pooledCoins);
   const availableValue = await calcSumCoinsValue(available);
   const aggregatedValue = await calcSumCoinsValue(allCoins);
 
@@ -170,7 +166,7 @@ export async function getUserAssetsBreakdown(address: {
     delegated: delegatedCoin, // Should be OSMO
     delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue ?? 0),
 
-    pooled: aggregateCoinsByDenom(pooledAssets),
+    pooled: aggregateCoinsByDenom(pooledCoins),
     pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue ?? 0),
 
     available: aggregateCoinsByDenom(available),
