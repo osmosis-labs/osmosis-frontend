@@ -460,6 +460,17 @@
     "discardButton": "Annuler les modifications",
     "clearAllHistory": "Tout effacer"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Nouvelle fonctionnalité",
+      "introducingTitle": "Présentation du trading en 1 clic",
+      "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
+      "learnMore": "Apprendre encore plus",
+      "startTradingButton": "Commencez le trading en 1 clic",
+      "activeHourLimit": "Le trading en 1 clic sera actif pendant 1 heure sur cet appareil avec une limite de dépenses de 5 000 USD.",
+      "changeButton": "Changement"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
     "amountDaysUnbonding": "Détachement de {numDays} jours",

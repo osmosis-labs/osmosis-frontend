@@ -460,6 +460,17 @@
     "discardButton": "Renunțați la modificări",
     "clearAllHistory": "Curata tot"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Optiune noua",
+      "introducingTitle": "Vă prezentăm tranzacționarea cu 1 clic",
+      "introducingSubtitle": "Efectuați tranzacții mai rapide și mai ușoare, fără bătaia de cap a aprobărilor multiple pentru portofel.",
+      "learnMore": "Află mai multe",
+      "startTradingButton": "Începeți tranzacționarea cu 1 clic",
+      "activeHourLimit": "Tranzacționarea cu 1 clic va fi activă timp de 1 oră pe acest dispozitiv, cu o limită de cheltuieli de 5000 USD",
+      "changeButton": "Schimbare"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
     "amountDaysUnbonding": "{numDays} zile de dezlegare",

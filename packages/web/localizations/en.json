@@ -460,6 +460,17 @@
     "discardButton": "Discard changes",
     "clearAllHistory": "Clear all"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "New Feature",
+      "introducingTitle": "Introducing 1-Click Trading",
+      "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
+      "learnMore": "Learn more",
+      "startTradingButton": "Start 1-Click Trading",
+      "activeHourLimit": "1-Click Trading will be active for 1 hour on this device with a $5000 USD spend limit",
+      "changeButton": "Change"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
     "amountDaysUnbonding": "{numDays} day unbonding",
