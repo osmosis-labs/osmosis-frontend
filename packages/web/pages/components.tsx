@@ -500,6 +500,15 @@ const CustomButtons = () => {
           onClick={() => console.log("clicked")}
         />
       </Component>
+      <Component title="Strategy Button">
+        <StrategyButton
+          icon={<Icon id={"arrow-right" as SpriteIconId} />}
+          label="Label"
+          resp="resp"
+          isOn={true}
+          onChange={() => console.log("clicked")}
+        />
+      </Component>
     </Card>
   );
 };
@@ -964,6 +973,7 @@ const Inputs = () => {
   );
 };
 
+import { StrategyButton } from "~/components/buttons/strategy-button";
 import { AssetCard, AssetSourceCard, HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
