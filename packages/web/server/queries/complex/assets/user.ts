@@ -7,9 +7,9 @@ import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
-import { getUserUnderlyingAssetsFromClPositions } from "../concentrated-liquidity";
+import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";
 import { getGammShareUnderlyingAssets } from "../pools/share";
-import { getUserTotalDelegatedAsset } from "../staking/user";
+import { getUserTotalDelegatedCoin } from "../staking/user";
 import {
   Asset,
   AssetFilter,
@@ -142,10 +142,10 @@ export async function getUserAssetsBreakdown(address: {
 }> {
   // Use Promise.all to send concurrent requests.
   const assets = await Promise.all([
-    getUserAssetsFromBank(address),
-    getUserUnderlyingAssetsFromClPositions(address),
-    getUserUnderlyingAssetsFromLocks(address),
-    getUserTotalDelegatedAsset(address),
+    getUserCoinsFromBank(address),
+    getUserUnderlyingCoinsFromClPositions(address),
+    getUserShareUnderlyingCoinsFromLocks(address),
+    getUserTotalDelegatedCoin(address),
   ]);
 
   const { underlyingGammShareAssets, available } = assets[0];
@@ -154,7 +154,11 @@ export async function getUserAssetsBreakdown(address: {
   const lockAssets = assets[2];
   const delegatedAsset = assets[3];
 
-  const pooledAssets = [...underlyingGammShareAssets, ...clAssets];
+  const pooledAssets = [
+    ...underlyingGammShareAssets,
+    ...clAssets,
+    ...lockAssets,
+  ];
   const allAssets = [...bankAssets, ...clAssets, ...lockAssets, delegatedAsset];
 
   const delegatedValue = await calcCoinValue(delegatedAsset);
@@ -180,7 +184,7 @@ export async function getUserAssetsBreakdown(address: {
 /** Lists all of a user's underlying assets in bank module.
  *  Only includes assets in asset list.
  *  Returns breakdown by underlying assets in GAMM pools as well as available assets. */
-export async function getUserAssetsFromBank({
+export async function getUserCoinsFromBank({
   userOsmoAddress,
 }: {
   userOsmoAddress: string;
@@ -227,7 +231,7 @@ export async function getUserAssetsFromBank({
 
 /** Lists all of a user's assets contained within locks.
  *  NOTE: only considers locked GAMM shares. */
-export async function getUserUnderlyingAssetsFromLocks({
+export async function getUserShareUnderlyingCoinsFromLocks({
   userOsmoAddress,
 }: {
   userOsmoAddress: string;

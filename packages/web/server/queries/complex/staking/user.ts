@@ -4,7 +4,7 @@ import { queryDelegations } from "../../cosmos/staking/delegations";
 import { getAsset } from "../assets";
 
 /** Gets total amount of stake token across all delegations.  */
-export async function getUserTotalDelegatedAsset({
+export async function getUserTotalDelegatedCoin({
   userOsmoAddress,
 }: {
   userOsmoAddress: string;

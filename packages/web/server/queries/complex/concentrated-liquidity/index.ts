@@ -28,7 +28,7 @@ import {
 } from "~/server/queries/osmosis/superfluid";
 
 /** Lists all of a user's coins within concentrated liquidity positions, not aggregated. */
-export async function getUserUnderlyingAssetsFromClPositions({
+export async function getUserUnderlyingCoinsFromClPositions({
   userOsmoAddress,
 }: {
   userOsmoAddress: string;
