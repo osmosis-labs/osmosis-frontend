@@ -1,6 +1,7 @@
+import Image from "next/image";
+
 import { Button, buttonCVA } from "~/components/buttons";
 import { Pill } from "~/components/indicators/pill";
-import { IntroSvg } from "~/components/one-click-trading/intro-one-click-svg";
 import { useTranslation } from "~/hooks";
 
 export const IntroducingOneClick = () => {
@@ -26,7 +27,7 @@ export const IntroducingOneClick = () => {
           {t("oneClickTrading.introduction.learnMore")} ↗️
         </a>
       </h2>
-      <IntroSvg />
+      <Image src="/images/1ct-intro-graphics.svg" alt="1ct intro" />
       <Button className="w-fit px-10">
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
