@@ -508,7 +508,8 @@
     "unbonding": "разъединение",
     "undelegating": "отказ от делегирования",
     "yourStats": "Ваш баланс в пуле",
-    "onlyInRangePositions": "Только для позиций в диапазоне"
+    "onlyInRangePositions": "Только для позиций в диапазоне",
+    "custom": "Обычай"
   },
   "pools": {
     "allPools": {

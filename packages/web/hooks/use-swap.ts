@@ -257,8 +257,6 @@ export function useSwap({
         if (!account?.address) return;
         useBalances.invalidateQuery({ address: account.address, queryClient });
 
-        swapAssets.invalidateQueries();
-
         inAmountInput.reset();
       }),
     [quote, inAmountInput, account, swapAssets, queryClient]
@@ -400,11 +398,6 @@ export function useSwapAssets({
     [allSelectableAssets, fromAsset, toAsset]
   );
 
-  const trpcUtils = api.useUtils();
-  const invalidateQueries = useCallback(() => {
-    trpcUtils.edge.assets.getAssets.invalidate();
-  }, [trpcUtils]);
-
   return {
     fromAsset,
     toAsset,
@@ -423,7 +416,6 @@ export function useSwapAssets({
     setToAssetDenom,
     switchAssets,
     fetchNextPageAssets: fetchNextPage,
-    invalidateQueries,
   };
 }
 
@@ -458,6 +450,11 @@ function useToFromDenoms(
   const [toAssetState, setToAssetState] = useState<string | undefined>(
     initialToDenom
   );
+
+  useEffect(() => {
+    setToAssetState(initialToDenom);
+    setFromAssetState(initialFromDenom);
+  }, [initialFromDenom, initialToDenom]);
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks

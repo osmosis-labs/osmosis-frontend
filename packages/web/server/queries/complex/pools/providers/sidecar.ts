@@ -7,7 +7,7 @@ import { queryPools } from "~/server/queries/sidecar";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
-import { TransmuterPoolCodeIds } from "../env";
+import { AstroportPclPoolCodeIds, TransmuterPoolCodeIds } from "../env";
 import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
@@ -76,6 +76,8 @@ export function getPoolTypeFromChainPool(
   if ("code_id" in chain_model) {
     if (TransmuterPoolCodeIds.includes(chain_model.code_id.toString()))
       return "cosmwasm-transmuter";
+    if (AstroportPclPoolCodeIds.includes(chain_model.code_id.toString()))
+      return "cosmwasm-astroport-pcl";
     else return "cosmwasm";
   }
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));

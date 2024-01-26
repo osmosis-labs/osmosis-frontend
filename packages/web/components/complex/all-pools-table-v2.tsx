@@ -26,7 +26,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
 import { CheckboxSelect } from "../control";
 import { SearchBox } from "../input";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 import { PoolQuickActionCell } from "../table/cells";
 import { SortHeader } from "../table/headers/sort";
 import { Tooltip } from "../tooltip";
@@ -107,6 +107,8 @@ export const AllPoolsTable: FunctionComponent<{
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       enabled: isQueryParamsReady,
+
+      // expensive query
       trpc: {
         context: {
           skipBatch: true,
