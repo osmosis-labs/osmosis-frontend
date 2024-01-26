@@ -1,5 +1,6 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
+import Image from "next/image";
 import { Fragment } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -7,7 +8,6 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
-import { IntroOneClickSvg } from "~/components/one-click-trading/intro-one-click-svg";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -56,12 +56,19 @@ const OneClickFloatingBannerContent = () => {
             "sm:py-4 sm:pl-3"
           )}
         >
-          <IntroOneClickSvg
+          <Image
+            src="/images/1ct-intro-graphics.svg"
+            alt="1ct intro"
             width={291.56}
             height={136}
             className={classNames("-ml-24", "sm:hidden")}
           />
-          <FloatingBannerMobileSvg
+
+          <Image
+            src="/images/1ct-mobile-icon.svg"
+            alt="1ct mobile icon"
+            width={40}
+            height={40}
             className={classNames("mr-3 hidden", "sm:block")}
           />
 
@@ -71,7 +78,12 @@ const OneClickFloatingBannerContent = () => {
               "sm:mr-0 sm:w-full sm:flex-row"
             )}
           >
-            <Pill className={classNames("!px-2", "sm:order-2 sm:self-center")}>
+            <Pill
+              className={classNames(
+                "!px-2",
+                "sm:order-2 sm:self-center sm:py-1 sm:text-caption"
+              )}
+            >
               {t("oneClickTrading.floatingBanner.newPill")}
             </Pill>
 
@@ -92,7 +104,7 @@ const OneClickFloatingBannerContent = () => {
               <ArrowButton
                 className={classNames(
                   "text-subtitle1 font-subtitle1",
-                  "sm:text-caption sm:font-caption"
+                  "sm:text-left sm:text-caption sm:font-caption"
                 )}
               >
                 {t("oneClickTrading.floatingBanner.tradeFasterButton")}
@@ -123,26 +135,5 @@ const OneClickFloatingBannerContent = () => {
         </div>
       </div>
     </Transition>
-  );
-};
-
-const FloatingBannerMobileSvg = (props: JSX.IntrinsicElements["svg"]) => {
-  return (
-    <svg
-      width="40"
-      height="40"
-      viewBox="0 0 40 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <rect width="40" height="40" rx="20" fill="#CA2EBD" />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M16.4333 27.1939L8.74854 8.74829L27.1941 16.433L20.3005 18.7745C20.3299 18.7983 20.3583 18.8239 20.3857 18.8512L26.9074 25.3729C27.3319 25.7974 27.3319 26.4856 26.9074 26.9101C26.4829 27.3346 25.7947 27.3346 25.3702 26.9101L18.8485 20.3884C18.8217 20.3616 18.7965 20.3337 18.7731 20.3049L16.4333 27.1939ZM21.7312 29.2295C22.1556 28.8051 22.8439 28.8051 23.2683 29.2295L25.7683 31.7295C26.1928 32.154 26.1928 32.8422 25.7683 33.2667C25.3438 33.6912 24.6556 33.6912 24.2311 33.2667L21.7312 30.7667C21.3067 30.3422 21.3067 29.654 21.7312 29.2295ZM30.7683 21.7296C30.3439 21.3051 29.6556 21.3051 29.2312 21.7296C28.8067 22.1541 28.8067 22.8423 29.2312 23.2668L31.7311 25.7668C32.1556 26.1913 32.8438 26.1913 33.2683 25.7668C33.6928 25.3423 33.6928 24.6541 33.2683 24.2296L30.7683 21.7296Z"
-        fill="#F8DEF3"
-      />
-    </svg>
   );
 };
