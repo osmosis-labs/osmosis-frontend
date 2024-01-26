@@ -156,7 +156,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
       const poolsWithInfos = await Promise.all(
         pools.map(async (pool, index) => {
           const { id } = pool;
-          const pool_ = await getPool(id).catch(() => null);
+          const pool_ = await getPool({ poolId: id }).catch(() => null);
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
