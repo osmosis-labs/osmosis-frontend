@@ -169,7 +169,7 @@ export interface PositionDataSDKType {
 export interface GenesisState {
   /** params are all the parameters of the module */
   params: Params;
-  /** pool data containining serialized pool struct and ticks. */
+  /** pool data containing serialized pool struct and ticks. */
   poolData: PoolData[];
   positionData: PositionData[];
   nextPositionId: bigint;
@@ -183,7 +183,7 @@ export interface GenesisStateProtoMsg {
 export interface GenesisStateAmino {
   /** params are all the parameters of the module */
   params?: ParamsAmino;
-  /** pool data containining serialized pool struct and ticks. */
+  /** pool data containing serialized pool struct and ticks. */
   pool_data: PoolDataAmino[];
   position_data: PositionDataAmino[];
   next_position_id: string;

@@ -52,6 +52,7 @@ import {
   getSourceDenomFromAssetList,
   isNil,
 } from "@osmosis-labs/utils";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -738,13 +739,36 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
+    const queries = this.queriesStore.get(chainId);
+    console.log("queries", queries);
+
+    const queryRPCStatus = queries.cosmos.queryRPCStatus;
+
+    console.log("queryRPCStatus", queryRPCStatus);
+
+    const result = await queryRPCStatus.waitFreshResponse();
+
+    console.log("result", result);
+
+    const latestBlockHeight = result
+      ? result.data.result.sync_info.latest_block_height
+      : "0";
+
+    console.log("latestBlockHeight", latestBlockHeight);
+
+    // Height way in the future for debugging
+    const timeout_height: bigint = BigInt(13567584);
+
+    console.log("timeout_height", timeout_height);
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
       chainId,
       memo,
       accountNumber,
-      sequence
+      sequence,
+      timeout_height
     );
 
     const { signature, signed } = await (wallet.client.signAmino
@@ -759,6 +783,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
+    console.log("signed", signed);
+    console.log("signature", signature);
+
     const signedTxBody = {
       messages: signed.msgs.map((msg) => {
         const res: any =
@@ -770,7 +797,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         return res;
       }),
       memo: signed.memo,
+
+      timeout_height: signed.timeout_height,
     };
+
+    console.log("signedTxBody", signedTxBody);
 
     const signedTxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
@@ -810,6 +841,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
+
+    console.log("SIGN DIRECT");
 
     if (
       !("signDirect" in wallet.client) &&
@@ -1116,3 +1149,80 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 }
+
+// /**
+//  * The document to be signed
+//  *
+//  * @see https://docs.cosmos.network/master/modules/auth/03_types.html#stdsigndoc
+//  */
+// export interface StdSignDoc {
+//   readonly chain_id: string;
+//   readonly account_number: string;
+//   readonly sequence: string;
+//   readonly fee: StdFee;
+//   readonly msgs: readonly AminoMsg[];
+//   readonly memo: string;
+//   readonly timeout_height?: string;
+// }
+
+// export function makeSignDocAmino(
+//   msgs: readonly AminoMsg[],
+//   fee: StdFee,
+//   chainId: string,
+//   memo: string | undefined,
+//   accountNumber: number | string,
+//   sequence: number | string,
+//   timeout_height?: bigint
+// ): StdSignDoc {
+//   return {
+//     chain_id: chainId,
+//     account_number: Uint53.fromString(accountNumber.toString()).toString(),
+//     sequence: Uint53.fromString(sequence.toString()).toString(),
+//     fee: fee,
+//     msgs: msgs,
+//     memo: memo || "",
+//     ...(timeout_height && { timeout_height: timeout_height.toString() }),
+//   };
+// }
+
+// export function makeSignDoc(
+//   bodyBytes: Uint8Array,
+//   authInfoBytes: Uint8Array,
+//   chainId: string,
+//   accountNumber: number
+// ): SignDoc {
+//   return {
+//     bodyBytes: bodyBytes,
+//     authInfoBytes: authInfoBytes,
+//     chainId: chainId,
+//     accountNumber: new Long(accountNumber),
+//   };
+// }
+
+/**
+ * Takes an integer value from the Tendermint RPC API and
+ * returns it as BigInt.
+ *
+ * This supports the full uint64 and int64 ranges.
+ */
+// export function apiToBigInt(input: string): bigint {
+//   if (!input.match(/^-?[0-9]+$/)) {
+//     throw new Error("Invalid string format");
+//   }
+//   return BigInt(input);
+// }
+
+// export function makeSignBytes({
+//   accountNumber,
+//   authInfoBytes,
+//   bodyBytes,
+//   chainId,
+// }: SignDoc): Uint8Array {
+//   const signDoc = SignDoc.fromPartial({
+//     accountNumber: accountNumber,
+//     authInfoBytes: authInfoBytes,
+//     bodyBytes: bodyBytes,
+//     chainId: chainId,
+//   });
+//   return SignDoc.encode(signDoc).finish();
+// }

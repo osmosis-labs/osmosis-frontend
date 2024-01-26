@@ -34,7 +34,7 @@ export function prettifyTxError(
       if (matchLegacySignatureVerificationFailed.length >= 2) {
         const sequence = matchLegacySignatureVerificationFailed[1];
         if (!Number.isNaN(parseInt(sequence))) {
-          return ["errors.sequenceNumber", { sequence }];
+          return message;
         }
       }
     }
