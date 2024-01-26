@@ -469,6 +469,11 @@
       "startTradingButton": "Commencez le trading en 1 clic",
       "activeHourLimit": "Le trading en 1 clic sera actif pendant 1 heure sur cet appareil avec une limite de dépenses de 5 000 USD.",
       "changeButton": "Changement"
+    },
+    "floatingBanner": {
+      "newPill": "Nouveau",
+      "title": "Trading en 1 clic",
+      "tradeFasterButton": "Tradez plus rapidement"
     }
   },
   "pool": {

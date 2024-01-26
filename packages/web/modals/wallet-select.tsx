@@ -23,12 +23,14 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
+import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import SkeletonLoader from "~/components/skeleton-loader";
 import {
   Step,
@@ -124,7 +126,6 @@ export const WalletSelectModal: FunctionComponent<
   const featureFlags = useFeatureFlags();
   const hasInstalledWallets = useHasWalletsInstalled();
 
-  // const { t } = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
@@ -477,9 +478,24 @@ const RightModalContent: FunctionComponent<
     const { accountStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasWalletsInstalled();
+    const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
+      OneClickFloatingBannerDoNotShowKey
+    );
+    const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
+
+    useEffect(() => {
+      /**
+       * If the user has already viewed the 1CT introduction during
+       * the wallet selection process, then don't display the 1CT
+       * banner when they connect to their wallet.
+       */
+      if (show1CT && modalView === "list") {
+        setDoNotShow1CTFloatingBanner(true);
+      }
+    }, [modalView, setDoNotShow1CTFloatingBanner, show1CT]);
 
     if (modalView === "connected") {
       onRequestClose();
@@ -641,7 +657,7 @@ const RightModalContent: FunctionComponent<
 
     return (
       <>
-        {hasInstalledWallets && featureFlags.oneClickTrading ? (
+        {show1CT ? (
           <div className="flex flex-col px-8">
             {" "}
             <IntroducingOneClick />

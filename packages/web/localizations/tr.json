@@ -469,6 +469,11 @@
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
       "activeHourLimit": "Tek Tıklamayla Ticaret bu cihazda 1 saat boyunca 5000 ABD Doları harcama limitiyle etkin olacak",
       "changeButton": "Değiştirmek"
+    },
+    "floatingBanner": {
+      "newPill": "Yeni",
+      "title": "Tek Tıklamayla Ticaret",
+      "tradeFasterButton": "Daha Hızlı Ticaret Yapın"
     }
   },
   "pool": {

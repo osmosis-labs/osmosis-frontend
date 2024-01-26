@@ -469,6 +469,11 @@
       "startTradingButton": "Начать торговлю в 1 клик",
       "activeHourLimit": "1-Click Trading будет активна на этом устройстве в течение 1 часа с лимитом расходов в 5000 долларов США.",
       "changeButton": "Изменять"
+    },
+    "floatingBanner": {
+      "newPill": "Новый",
+      "title": "Торговля в 1 клик",
+      "tradeFasterButton": "Торгуйте быстрее"
     }
   },
   "pool": {

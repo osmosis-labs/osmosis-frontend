@@ -469,6 +469,11 @@
       "startTradingButton": "Start 1-Click Trading",
       "activeHourLimit": "1-Click Trading will be active for 1 hour on this device with a $5000 USD spend limit",
       "changeButton": "Change"
+    },
+    "floatingBanner": {
+      "newPill": "New",
+      "title": "1-Click Trading",
+      "tradeFasterButton": "Trade Faster"
     }
   },
   "pool": {

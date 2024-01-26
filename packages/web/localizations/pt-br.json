@@ -469,6 +469,11 @@
       "startTradingButton": "Comece a negociação com 1 clique",
       "activeHourLimit": "A negociação com 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
       "changeButton": "Mudar"
+    },
+    "floatingBanner": {
+      "newPill": "Novo",
+      "title": "Negociação em 1 clique",
+      "tradeFasterButton": "Negocie mais rápido"
     }
   },
   "pool": {

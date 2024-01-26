@@ -469,6 +469,11 @@
       "startTradingButton": "1-Click取引を開始する",
       "activeHourLimit": "1-Click 取引はこのデバイスで 1 時間有効になり、使用制限は 5000 米ドルになります",
       "changeButton": "変化"
+    },
+    "floatingBanner": {
+      "newPill": "新しい",
+      "title": "1クリック取引",
+      "tradeFasterButton": "より迅速な取引"
     }
   },
   "pool": {

@@ -469,6 +469,11 @@
       "startTradingButton": "開始一鍵交易",
       "activeHourLimit": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5000 美元",
       "changeButton": "改變"
+    },
+    "floatingBanner": {
+      "newPill": "新的",
+      "title": "一鍵交易",
+      "tradeFasterButton": "交易更快"
     }
   },
   "pool": {

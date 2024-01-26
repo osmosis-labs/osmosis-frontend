@@ -469,6 +469,11 @@
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "activeHourLimit": "Tranzacționarea cu 1 clic va fi activă timp de 1 oră pe acest dispozitiv, cu o limită de cheltuieli de 5000 USD",
       "changeButton": "Schimbare"
+    },
+    "floatingBanner": {
+      "newPill": "Nou",
+      "title": "1-Click Trading",
+      "tradeFasterButton": "Comerț mai rapid"
     }
   },
   "pool": {
