@@ -508,7 +508,8 @@
     "unbonding": "बंधन मुक्त करना",
     "undelegating": "प्रत्यायोजित न करना",
     "yourStats": "आपका पूल संतुलन",
-    "onlyInRangePositions": "केवल रेंज में पदों के लिए"
+    "onlyInRangePositions": "केवल रेंज में पदों के लिए",
+    "custom": "रिवाज़"
   },
   "pools": {
     "allPools": {

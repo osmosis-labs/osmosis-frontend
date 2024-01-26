@@ -11,6 +11,7 @@ const allPooltypes = [
   "weighted",
   "stable",
   "cosmwasm-transmuter",
+  "cosmwasm-astroport-pcl",
   "cosmwasm",
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
