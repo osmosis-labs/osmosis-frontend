@@ -460,6 +460,17 @@
     "discardButton": "لغو تغییرات",
     "clearAllHistory": "همه را پاک کن"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "خصوصیت جدید",
+      "introducingTitle": "معرفی تجارت 1 کلیک",
+      "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
+      "learnMore": "بیشتر بدانید",
+      "startTradingButton": "شروع تجارت با 1 کلیک",
+      "activeHourLimit": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
+      "changeButton": "تغییر دادن"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
     "amountDaysUnbonding": "{numDays} روز تا باز شدن",

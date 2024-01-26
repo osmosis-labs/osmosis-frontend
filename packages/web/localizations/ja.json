@@ -460,6 +460,17 @@
     "discardButton": "変更を破棄",
     "clearAllHistory": "すべてクリア"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "新機能",
+      "introducingTitle": "1-Click取引の導入",
+      "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
+      "learnMore": "もっと詳しく知る",
+      "startTradingButton": "1-Click取引を開始する",
+      "activeHourLimit": "1-Click 取引はこのデバイスで 1 時間有効になり、使用制限は 5000 米ドルになります",
+      "changeButton": "変化"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24時間取引高",
     "amountDaysUnbonding": "{numDays}日の結合解除",

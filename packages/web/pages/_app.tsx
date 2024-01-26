@@ -257,6 +257,8 @@ const MainLayoutWrapper: FunctionComponent<{
     flags.earnPage,
     flags.staking,
     osmosisWallet?.walletInfo?.stakeUrl,
+    onOpenLeavingOsmosisToMars,
+    onOpenLeavingOsmosisToLevana,
   ]);
 
   const secondaryMenuItems: MainLayoutMenu[] = [

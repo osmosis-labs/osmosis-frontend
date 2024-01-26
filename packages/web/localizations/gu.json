@@ -460,6 +460,17 @@
     "discardButton": "ફેરફારોને અવગણો",
     "clearAllHistory": "બધું સાફ કરો"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "નવી સુવિધા",
+      "introducingTitle": "1-ક્લિક ટ્રેડિંગનો પરિચય",
+      "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
+      "learnMore": "વધુ શીખો",
+      "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
+      "activeHourLimit": "1-ક્લિક ટ્રેડિંગ $5000 USD ખર્ચ મર્યાદા સાથે આ ઉપકરણ પર 1 કલાક માટે સક્રિય રહેશે",
+      "changeButton": "બદલો"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24h ટ્રેડિંગ વોલ્યુમ",
     "amountDaysUnbonding": "{numDays} દિવસ અનબોન્ડિંગ",

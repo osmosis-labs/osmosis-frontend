@@ -460,6 +460,17 @@
     "discardButton": "Odrzucać zmiany",
     "clearAllHistory": "Wyczyść wszystko"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Nowa cecha",
+      "introducingTitle": "Przedstawiamy handel jednym kliknięciem",
+      "introducingSubtitle": "Dokonuj szybszych i łatwiejszych transakcji bez konieczności zatwierdzania wielu portfeli.",
+      "learnMore": "Ucz się więcej",
+      "startTradingButton": "Rozpocznij handel jednym kliknięciem",
+      "activeHourLimit": "Handel jednym kliknięciem będzie aktywny przez 1 godzinę na tym urządzeniu z limitem wydatków wynoszącym 5000 USD",
+      "changeButton": "Zmiana"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
     "amountDaysUnbonding": "{numDays} dzień rozłączenia",

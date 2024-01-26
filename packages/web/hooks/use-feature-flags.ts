@@ -24,7 +24,8 @@ export type AvailableFlags =
   | "aprBreakdown"
   | "newPoolsTable"
   | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton";
+  | "tfmProTradingNavbarButton"
+  | "oneClickTrading";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

@@ -460,6 +460,17 @@
     "discardButton": "변경 사항 취소",
     "clearAllHistory": "모두 지우기"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "새로운 기능",
+      "introducingTitle": "1-클릭 거래 소개",
+      "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
+      "learnMore": "더 알아보기",
+      "startTradingButton": "1-클릭 거래 시작",
+      "activeHourLimit": "1-클릭 거래는 $5000 USD 지출 한도로 이 기기에서 1시간 동안 활성화됩니다.",
+      "changeButton": "변화"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
     "amountDaysUnbonding": "{numDays}일 연결 해제",

@@ -460,6 +460,17 @@
     "discardButton": "Descartar los cambios",
     "clearAllHistory": "Limpiar todo"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Nueva caracteristica",
+      "introducingTitle": "Presentamos el comercio con 1 clic",
+      "introducingSubtitle": "Realice transacciones más rápidas y sencillas sin la molestia de múltiples aprobaciones de billetera.",
+      "learnMore": "Aprende más",
+      "startTradingButton": "Comience a operar con 1 clic",
+      "activeHourLimit": "El comercio con 1 clic estará activo durante 1 hora en este dispositivo con un límite de gasto de $5000 USD",
+      "changeButton": "Cambiar"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
     "amountDaysUnbonding": "{numDays} día para desabonar",

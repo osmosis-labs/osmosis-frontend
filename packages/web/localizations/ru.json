@@ -460,6 +460,17 @@
     "discardButton": "Отменить изменения",
     "clearAllHistory": "Очистить все"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Новая особенность",
+      "introducingTitle": "Представляем торговлю в 1 клик",
+      "introducingSubtitle": "Совершайте сделки быстрее и проще без хлопот, требующих одобрения нескольких кошельков.",
+      "learnMore": "Узнать больше",
+      "startTradingButton": "Начать торговлю в 1 клик",
+      "activeHourLimit": "1-Click Trading будет активна на этом устройстве в течение 1 часа с лимитом расходов в 5000 долларов США.",
+      "changeButton": "Изменять"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Объем торгов за 24 часа",
     "amountDaysUnbonding": "{numDays} день отсоединения",

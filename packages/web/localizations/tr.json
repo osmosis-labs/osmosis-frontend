@@ -460,6 +460,17 @@
     "discardButton": "Değişiklikleri gözardı et",
     "clearAllHistory": "Hepsini temizle"
   },
+  "oneClickTrading": {
+    "introduction": {
+      "newFeature": "Yeni özellik",
+      "introducingTitle": "Tek Tıklamayla Ticarete Giriş",
+      "introducingSubtitle": "Birden fazla cüzdan onayıyla uğraşmadan daha hızlı ve daha kolay işlemler yapın.",
+      "learnMore": "Daha fazla bilgi edin",
+      "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
+      "activeHourLimit": "Tek Tıklamayla Ticaret bu cihazda 1 saat boyunca 5000 ABD Doları harcama limitiyle etkin olacak",
+      "changeButton": "Değiştirmek"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
     "amountDaysUnbonding": "{numDays} gün ayrılma",

@@ -28,6 +28,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
+import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
 import SkeletonLoader from "~/components/skeleton-loader";
 import {
   Step,
@@ -37,7 +38,7 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
-import { MultiLanguageT, useTranslation } from "~/hooks";
+import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -98,6 +99,17 @@ const OnboardingSteps = (t: MultiLanguageT) => [
   },
 ];
 
+const useHasWalletsInstalled = () => {
+  return useMemo(() => {
+    const wallets = WalletRegistry.filter(
+      (wallet) =>
+        wallet.windowPropertyName && wallet.windowPropertyName in window
+    );
+
+    return wallets.length > 0;
+  }, []);
+};
+
 export const WalletSelectModal: FunctionComponent<
   ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
 > = observer((props) => {
@@ -109,6 +121,8 @@ export const WalletSelectModal: FunctionComponent<
   } = props;
   const { isMobile } = useWindowSize();
   const { accountStore, chainStore } = useStore();
+  const featureFlags = useFeatureFlags();
+  const hasInstalledWallets = useHasWalletsInstalled();
 
   // const { t } = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
@@ -248,8 +262,11 @@ export const WalletSelectModal: FunctionComponent<
     >
       <div
         className={classNames(
-          "flex min-h-[50vh] overflow-auto sm:max-h-full sm:flex-col",
-          modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]"
+          "flex overflow-auto sm:max-h-full sm:flex-col",
+          modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]",
+          hasInstalledWallets && featureFlags.oneClickTrading
+            ? "min-h-[73vh]"
+            : "min-h-[50vh]"
         )}
       >
         <ClientOnly
@@ -458,6 +475,8 @@ const RightModalContent: FunctionComponent<
   ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
+    const featureFlags = useFeatureFlags();
+    const hasInstalledWallets = useHasWalletsInstalled();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -621,39 +640,47 @@ const RightModalContent: FunctionComponent<
     }
 
     return (
-      <div className="flex flex-col px-8">
-        <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
-          {t("Getting Started")}
-        </h1>
+      <>
+        {hasInstalledWallets && featureFlags.oneClickTrading ? (
+          <div className="flex flex-col px-8">
+            {" "}
+            <IntroducingOneClick />
+          </div>
+        ) : (
+          <div className="flex flex-col px-8 pt-1.5">
+            <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
+              {t("Getting Started")}
+            </h1>
+            <Stepper
+              className="relative flex flex-col gap-2"
+              autoplay={{ stopOnHover: true, delayInMs: 4000 }}
+            >
+              <StepsIndicator className="order-1 mt-16" />
+              <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
+              {OnboardingSteps(t).map(({ title, content }) => (
+                <Step key={title}>
+                  <div className="flex flex-col items-center justify-center gap-10 text-center">
+                    <div className="h-[186px] w-[186px]">
+                      <Image
+                        src="/images/wallet-showcase.svg"
+                        alt="Wallet showcase"
+                        width={186}
+                        height={186}
+                      />
+                    </div>
 
-        <Stepper
-          className="relative flex flex-col gap-2"
-          autoplay={{ stopOnHover: true, delayInMs: 4000 }}
-        >
-          <StepsIndicator className="order-1 mt-16" />
-          <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
-          {OnboardingSteps(t).map(({ title, content }) => (
-            <Step key={title}>
-              <div className="flex flex-col items-center justify-center gap-10 text-center">
-                <div className="h-[186px] w-[186px]">
-                  <Image
-                    src="/images/wallet-showcase.svg"
-                    alt="Wallet showcase"
-                    width={186}
-                    height={186}
-                  />
-                </div>
-
-                <div className="flex max-w-sm flex-col gap-3">
-                  <h1 className="subtitle1">{title}</h1>
-                  <p className="body2 text-osmoverse-200">{content}</p>
-                </div>
-              </div>
-            </Step>
-          ))}
-          <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
-        </Stepper>
-      </div>
+                    <div className="flex max-w-sm flex-col gap-3">
+                      <h1 className="subtitle1">{title}</h1>
+                      <p className="body2 text-osmoverse-200">{content}</p>
+                    </div>
+                  </div>
+                </Step>
+              ))}
+              <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
+            </Stepper>
+          </div>
+        )}
+      </>
     );
   }
 );
