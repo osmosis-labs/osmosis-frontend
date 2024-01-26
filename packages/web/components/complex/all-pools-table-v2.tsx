@@ -49,12 +49,10 @@ export const AllPoolsTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [sortKey_, setSortKey] = useQueryParamState<SortKey>(
+  const [sortKey, setSortKey] = useQueryParamState<SortKey>(
     "allPoolsSort",
     "volume24hUsd"
   );
-  /** Won't sort when searching is happening. */
-  const sortKey: SortKey = Boolean(searchQuery) ? undefined : sortKey_;
 
   const [sortDirection = "desc", setSortDirection, isQueryParamsReady] =
     useQueryParamState<SortDirection>("allPoolsSortDir", "desc");
