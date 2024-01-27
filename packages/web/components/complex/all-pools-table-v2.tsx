@@ -522,7 +522,10 @@ const PoolCompositionCell: PoolCellComponent = ({
               height={24}
             />
           )}
-          {spreadFactor}
+
+          <span className={classNames("text-sm font-caption opacity-60")}>
+            {spreadFactor ? spreadFactor.toString() : ""}
+          </span>
         </div>
       </div>
     </div>
