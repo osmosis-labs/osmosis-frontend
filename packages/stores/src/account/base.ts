@@ -2,11 +2,11 @@ import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
-  makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
+  StdFee,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
-import { Int53 } from "@cosmjs/math";
+import { Int53, Uint53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
@@ -52,6 +52,7 @@ import {
   getSourceDenomFromAssetList,
   isNil,
 } from "@osmosis-labs/utils";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -63,6 +64,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import Long from "long";
 import { LRUCache } from "lru-cache";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
@@ -90,6 +92,14 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
+
+// The number of heights from current before transaction times out.
+// 10 heights * 5 second block time = 50 seconds before transaction
+// timeout and mempool eviction.
+const timeoutHeightOffset: bigint = BigInt(10);
+
+// The value of zero represent that there is not timeout height set.
+const timeoutHeightDisabledStr = "0";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -738,13 +748,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
+    const timeout_height = await this.getTimeoutHeight(chainId);
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
       chainId,
       memo,
       accountNumber,
-      sequence
+      sequence,
+      timeout_height
     );
 
     const { signature, signed } = await (wallet.client.signAmino
@@ -759,27 +772,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBody = {
-      messages: signed.msgs.map((msg) => {
-        const res: any =
-          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
-      memo: signed.memo,
-    };
-
-    const signedTxBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: signedTxBody,
-    };
-
-    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      signedTxBodyEncodeObject
-    );
+    const signedTxBodyBytes =
+      wallet?.signingStargateOptions?.registry?.encodeTxBody({
+        messages: signed.msgs.map((msg) => {
+          const res: any =
+            wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+          // Include the 'memo' field again because the 'registry' omits it
+          if (msg.value.memo) {
+            res.value.memo = msg.value.memo;
+          }
+          return res;
+        }),
+        memo: signed.memo,
+        timeoutHeight: Long.fromString(
+          signDoc.timeout_height ?? timeoutHeightDisabledStr
+        ),
+      });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
     const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
@@ -797,6 +805,30 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       authInfoBytes: signedAuthInfoBytes,
       signatures: [fromBase64(signature.signature)],
     });
+  }
+
+  // Gets the timeout height as the sum of the latest block height and an offset.
+  // If for any reason we fail to get the latest block height, we disable the timeout height by returning
+  // a string value of 0.
+  private async getTimeoutHeight(chainId: string): Promise<bigint> {
+    // Get status query.
+    const queryRPCStatus = this.queriesStore.get(chainId).cosmos.queryRPCStatus;
+
+    // Wait for the response.
+    const result = await queryRPCStatus.waitFreshResponse();
+
+    // Retrieve the latest block height. If not present, set it to 0.
+    const latestBlockHeight = result
+      ? result.data.result.sync_info.latest_block_height
+      : timeoutHeightDisabledStr;
+
+    // If for any reason we fail to get the latest block height, we disable the timeout height.
+    if (latestBlockHeight == timeoutHeightDisabledStr) {
+      return BigInt(timeoutHeightDisabledStr);
+    }
+
+    // Otherwise we compute the timeout height as given by latest block height + offset.
+    return BigInt(latestBlockHeight) + timeoutHeightOffset;
   }
 
   private async signDirect(
@@ -891,6 +923,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         address,
         true
       );
+
+      console.log("account", account.getSequence());
 
       return {
         accountNumber: account.getAccountNumber(),
@@ -1115,4 +1149,42 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     });
   }
+}
+
+/**
+ * The document to be signed
+ * Referenced from CosmjsL
+ * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
+ *
+ * We copied it over to work around dependency updates.
+ */
+export interface StdSignDoc {
+  readonly chain_id: string;
+  readonly account_number: string;
+  readonly sequence: string;
+  readonly fee: StdFee;
+  readonly msgs: readonly AminoMsg[];
+  readonly memo: string;
+  readonly timeout_height?: string;
+}
+
+// Creates the document to be signed from given parameters.
+export function makeSignDocAmino(
+  msgs: readonly AminoMsg[],
+  fee: StdFee,
+  chainId: string,
+  memo: string | undefined,
+  accountNumber: number | string,
+  sequence: number | string,
+  timeout_height?: bigint
+): StdSignDoc {
+  return {
+    chain_id: chainId,
+    account_number: Uint53.fromString(accountNumber.toString()).toString(),
+    sequence: Uint53.fromString(sequence.toString()).toString(),
+    fee: fee,
+    msgs: msgs,
+    memo: memo || "",
+    ...(timeout_height && { timeout_height: timeout_height.toString() }),
+  };
 }
