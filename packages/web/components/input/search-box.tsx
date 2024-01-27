@@ -1,6 +1,14 @@
 import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
-import { DOMAttributes, forwardRef, useState } from "react";
+import { debounce } from "debounce";
+import {
+  type ChangeEvent,
+  type DOMAttributes,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
@@ -40,6 +48,11 @@ type SearchBoxProps = Omit<InputProps<string>, "currentValue"> &
   VariantProps<typeof searchBoxClasses> & {
     type?: string;
     currentValue?: string;
+    /**
+     * adds the ability to output the searchbox event using a debounce effect,
+     * which is useful to avoid making too many requests.
+     */
+    debounce?: number;
     onKeyDown?: DOMAttributes<HTMLInputElement>["onKeyDown"];
     onFocusChange?: (isFocused: boolean) => void;
     rightIcon?: () => React.ReactNode;
@@ -60,10 +73,24 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       onFocusChange,
       size,
       rightIcon,
+      debounce: _debounce,
     },
     ref
   ) {
     const [isFocused, setIsFocused] = useState(false);
+
+    const _onInput = useCallback(
+      (e: ChangeEvent<HTMLInputElement>) => {
+        console.log(e);
+        onInput(e.target.value);
+      },
+      [onInput]
+    );
+
+    const _debouncedOnInput = useMemo(
+      () => (!_debounce ? _onInput : debounce(_onInput, _debounce)),
+      [_debounce, _onInput]
+    );
 
     return (
       <div
@@ -83,7 +110,8 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           <input
             ref={ref}
             className="h-full w-full appearance-none bg-transparent tracking-wider transition-colors"
-            value={currentValue}
+            defaultValue={_debounce ? currentValue : undefined}
+            value={_debounce ? undefined : currentValue}
             type={type}
             autoFocus={autoFocus}
             placeholder={placeholder}
@@ -97,7 +125,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
               setIsFocused(false);
               onFocusChange?.(false);
             }}
-            onInput={(e: any) => onInput(e.target.value)}
+            onInput={_debouncedOnInput}
             disabled={disabled}
             onKeyDown={onKeyDown}
           />
