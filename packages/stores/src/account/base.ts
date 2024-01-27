@@ -28,6 +28,7 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { AminoTypes as CosmosKitAminoTypes } from "@cosmos-kit/core/node_modules/@cosmjs/stargate";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
@@ -188,7 +189,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.options.walletConnectOptions,
       {
         signingStargate: () => ({
-          aminoTypes: this.aminoTypes,
+          aminoTypes: this.aminoTypes as unknown as CosmosKitAminoTypes,
           registry: this.registry,
         }),
       },
@@ -514,6 +515,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      console.log("txRaw", Buffer.from(txRaw.bodyBytes).toString("base64"));
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -771,6 +773,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       timeout_height
     );
 
+    const isTrue = wallet.client.signAmino ? "true" : "false";
+    console.log("isTrue", isTrue);
+
     const { signature, signed } = await (wallet.client.signAmino
       ? wallet.client.signAmino(
           wallet.chainId,
@@ -808,6 +813,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       value: signedTxBody,
     };
 
+    console.log("signedTxBodyEncodeObject", signedTxBodyEncodeObject);
+
     const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
       signedTxBodyEncodeObject
     );
@@ -821,6 +828,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       signed.fee.granter,
       signed.fee.payer,
       signMode
+    );
+
+    console.log(
+      "decode bytes",
+      wallet?.signingStargateOptions?.registry?.decodeTxBody(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        signedTxBodyBytes!
+      )
     );
 
     return TxRaw.fromPartial({
