@@ -425,7 +425,7 @@ const TableControls = () => {
       ...state,
       searchQuery: debouncedSearchInput,
     }));
-  }, [setFilters, debouncedSearchInput]);
+  }, [debouncedSearchInput]);
 
   return (
     <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
