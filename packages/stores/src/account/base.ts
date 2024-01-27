@@ -923,8 +923,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         true
       );
 
-      console.log("account", account.getSequence());
-
       return {
         accountNumber: account.getAccountNumber(),
         sequence: account.getSequence(),
