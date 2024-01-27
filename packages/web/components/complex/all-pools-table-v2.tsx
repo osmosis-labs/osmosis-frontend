@@ -60,14 +60,7 @@ const marketIncentivePoolsSortKeys = [
 
 const incentiveTypes = ["superfluid", "osmosis", "boost", "none"] as const;
 
-export const AllPoolsTable: FunctionComponent<{
-  topOffset: number;
-  quickAddLiquidity: (poolId: string) => void;
-}> = ({ topOffset, quickAddLiquidity }) => {
-  const { t } = useTranslation();
-  const router = useRouter();
-  const { width } = useWindowSize();
-
+const useAllPoolsTable = () => {
   const [sortParams, setSortParams] = useQueryStates(
     {
       allPoolsSort: parseAsStringLiteral(
@@ -83,9 +76,9 @@ export const AllPoolsTable: FunctionComponent<{
     }
   );
 
-  const [filters] = useQueryStates(
+  const [filters, setFilters] = useQueryStates(
     {
-      searchQuery: parseAsString.withDefault(""),
+      searchQuery: parseAsString,
       poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
         parseAsStringLiteral<PoolTypeFilter>(poolTypes)
       ).withDefault([...poolTypes]),
@@ -97,6 +90,24 @@ export const AllPoolsTable: FunctionComponent<{
       history: "push",
     }
   );
+
+  return {
+    filters,
+    setFilters,
+    sortParams,
+    setSortParams,
+  };
+};
+
+export const AllPoolsTable: FunctionComponent<{
+  topOffset: number;
+  quickAddLiquidity: (poolId: string) => void;
+}> = ({ topOffset, quickAddLiquidity }) => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { width } = useWindowSize();
+
+  const { filters, sortParams, setSortParams } = useAllPoolsTable();
 
   /** Won't sort when searching is happening. */
   const sortKey = useMemo(
@@ -126,8 +137,6 @@ export const AllPoolsTable: FunctionComponent<{
     [setSortParams]
   );
 
-  console.log(filters, sortParams, sortKey, router.isReady);
-
   const {
     data: poolsPagesData,
     isLoading,
@@ -137,9 +146,11 @@ export const AllPoolsTable: FunctionComponent<{
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
       limit: 100,
-      search: {
-        query: filters.searchQuery,
-      },
+      search: filters.searchQuery
+        ? {
+            query: filters.searchQuery,
+          }
+        : undefined,
       types: [...filters.poolTypesFilter, "cosmwasm"],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
@@ -401,20 +412,7 @@ export const AllPoolsTable: FunctionComponent<{
 const TableControls = () => {
   const { t } = useTranslation();
 
-  const [filters, setFilters] = useQueryStates(
-    {
-      searchQuery: parseAsString.withDefault(""),
-      poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
-        parseAsStringLiteral<PoolTypeFilter>(poolTypes)
-      ).withDefault([...poolTypes]),
-      poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
-        parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
-      ).withDefault([...incentiveTypes]),
-    },
-    {
-      history: "push",
-    }
-  );
+  const { filters, setFilters } = useAllPoolsTable();
 
   /*  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
 
@@ -504,7 +502,7 @@ const TableControls = () => {
         <SearchBox
           size="small"
           placeholder={t("assets.table.search")}
-          currentValue={filters.searchQuery}
+          currentValue={filters.searchQuery ?? undefined}
           onInput={(searchQuery: string) => {
             setFilters((state) => ({
               ...state,
