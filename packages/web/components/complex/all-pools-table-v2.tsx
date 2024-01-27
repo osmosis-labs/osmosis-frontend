@@ -165,7 +165,6 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      enabled: router.isReady,
 
       // expensive query
       trpc: {
