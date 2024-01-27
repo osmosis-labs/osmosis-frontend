@@ -52,7 +52,6 @@ import {
   getSourceDenomFromAssetList,
   isNil,
 } from "@osmosis-labs/utils";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
