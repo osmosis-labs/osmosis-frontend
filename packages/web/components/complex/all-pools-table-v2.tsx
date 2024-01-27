@@ -22,6 +22,7 @@ import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { theme } from "~/tailwind.config";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -414,11 +415,17 @@ const TableControls = () => {
 
   const { filters, setFilters } = useAllPoolsTable();
 
-  /*  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
+  const { searchInput, setSearchInput, debouncedSearchInput } =
+    useSearchQueryInput();
 
   // Pass search query in an effect to prevent rendering the entire table on every input change
   // Only on debounced search query input
-  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]); */
+  useEffect(() => {
+    setFilters((state) => ({
+      ...state,
+      searchQuery: debouncedSearchInput,
+    }));
+  }, [setFilters, debouncedSearchInput]);
 
   return (
     <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
@@ -502,13 +509,8 @@ const TableControls = () => {
         <SearchBox
           size="small"
           placeholder={t("assets.table.search")}
-          currentValue={filters.searchQuery ?? undefined}
-          onInput={(searchQuery: string) => {
-            setFilters((state) => ({
-              ...state,
-              searchQuery,
-            }));
-          }}
+          currentValue={searchInput}
+          onInput={setSearchInput}
         />
       </div>
     </div>
