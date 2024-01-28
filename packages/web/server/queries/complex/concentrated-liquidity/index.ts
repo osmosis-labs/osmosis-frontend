@@ -36,7 +36,7 @@ import { aggregateCoinsByDenom } from "~/utils/coin";
 
 import { queryPositionPerformance } from "../../imperator";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
-import { isPoolSuperfluid } from "../pools/superfluid";
+import { getSuperfluidPoolIds } from "../pools/superfluid";
 
 /** Lists all of a user's coins within all concentrated liquidity positions, aggregated by denom. */
 export async function getUserUnderlyingCoinsFromClPositions({
@@ -192,21 +192,23 @@ export async function mapGetUserPositionDetails({
   const undelegatingPositionsPromise = queryUndelegatingClPositions({
     bech32Address: userOsmoAddress,
   });
-
   const stakeCurrencyPromise = getAsset({
     anyDenom: ChainList[0].staking.staking_tokens[0].denom,
   });
+  const superfluidPoolIdsPromise = getSuperfluidPoolIds();
 
   const [
     userUnbondingPositions,
     delegatedPositions,
     undelegatingPositions,
     stakeCurrency,
+    superfluidPoolIds,
   ] = await Promise.all([
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
     undelegatingPositionsPromise,
     stakeCurrencyPromise,
+    superfluidPoolIdsPromise,
   ]);
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
@@ -216,7 +218,6 @@ export async function mapGetUserPositionDetails({
       const { asset0, asset1, position } = position_;
 
       const [baseAsset, quoteAsset] = await mapListedCoins([asset0, asset1]);
-
       if (!baseAsset || !quoteAsset) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
@@ -237,7 +238,6 @@ export async function mapGetUserPositionDetails({
           quoteAsset,
         }),
       ]);
-
       const rangeAprPromise = getConcentratedRangePoolApr({
         lowerTick: lowerTick.toString(),
         upperTick: upperTick.toString(),
@@ -250,7 +250,6 @@ export async function mapGetUserPositionDetails({
       ]);
 
       const pool = positionPools.find((pool) => pool.id === position.pool_id);
-
       if (!pool) {
         throw new Error(`Pool (${position.pool_id}) not found`);
       }
@@ -260,18 +259,11 @@ export async function mapGetUserPositionDetails({
         );
       }
 
-      const liquidity = new Dec(position.liquidity);
-
-      const isPoolSuperfluid_ = await isPoolSuperfluid({ poolId: pool.id });
-
       const periodLock = userUnbondingPositions.positions_with_period_lock.find(
         ({ position: unbondingPosition }) =>
           unbondingPosition.position_id === position.position_id
       );
       const isUnbonding = Boolean(periodLock);
-      const unbondEndTime = periodLock
-        ? new Date(periodLock.locks.end_time)
-        : undefined;
 
       const rawDelegatedSuperfluidPosition =
         delegatedPositions.cl_pool_user_position_records.find(
@@ -327,14 +319,13 @@ export async function mapGetUserPositionDetails({
 
       const status = calcPositionStatus({
         currentPrice,
+        lowerPrice: priceRange[0],
+        upperPrice: priceRange[1],
         isFullRange,
         isSuperfluidStaked,
         isSuperfluidUnstaking,
         isUnbonding,
-        lowerPrice: priceRange[0],
-        upperPrice: priceRange[1],
       });
-      const joinTime = new Date(position.join_time);
 
       const superfluidApr: RatePretty | undefined =
         isSuperfluidStaked || isSuperfluidUnstaking
@@ -399,11 +390,13 @@ export async function mapGetUserPositionDetails({
         isFullRange,
         status,
         priceRange,
-        liquidity,
-        joinTime,
+        liquidity: new Dec(position.liquidity),
+        joinTime: new Date(position.join_time),
         rangeApr: totalRangeApr,
-        unbondEndTime,
-        isPoolSuperfluid: isPoolSuperfluid_,
+        unbondEndTime: periodLock
+          ? new Date(periodLock.locks.end_time)
+          : undefined,
+        isPoolSuperfluid: superfluidPoolIds.includes(position.pool_id),
         superfluidApr,
         ...(superfluidData ? { superfluidData } : undefined),
         ...(await getPositionCoinsBreakdown({

@@ -27,6 +27,13 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
         },
         {
           enabled: Boolean(account?.address) && !isWalletLoading,
+
+          // expensive query
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
         }
       );
 
