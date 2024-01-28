@@ -1,8 +1,7 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, ReactNode, useMemo, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
@@ -10,97 +9,33 @@ import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { useStore } from "~/stores";
+import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { formatPretty } from "~/utils/formatter";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
-  position: ObservableQueryLiquidityPositionById;
+  position: UserPosition;
 }> = observer((props) => {
   const {
     showLinkToPool = false,
     position: {
-      id: positionId,
       poolId,
-      baseAsset,
-      quoteAsset,
-      lowerTick,
-      upperTick,
-      lowerPrices,
-      upperPrices,
+      spreadFactor,
+      status,
+      currentCoins,
+      currentValue,
+      priceRange: [lowerPrice, upperPrice],
       isFullRange,
-      totalClaimableRewards,
+      rangeApr,
+      roi,
+      isPoolSuperfluid,
     },
   } = props;
   const { t } = useTranslation();
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    priceStore,
-    accountStore,
-    queriesStore,
-    derivedDataStore,
-    queriesExternalStore,
-  } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
-  const account = accountStore.getWallet(chainId);
-  const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
-
-  const queryPool = poolId
-    ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
-    : undefined;
-  const queryPositionPerformanceMetrics =
-    queriesExternalStore.queryPositionsPerformaceMetrics.get(positionId);
-
-  const derivedPoolData = poolId
-    ? derivedDataStore.getForPool(poolId)
-    : undefined;
-
-  const config = poolId
-    ? useHistoricalAndLiquidityData(chainId, poolId)
-    : undefined;
-
-  const userPositionAssets = useMemo(
-    () =>
-      [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
-        Boolean(asset)
-      ),
-    [baseAsset, quoteAsset]
-  );
-  const roi = queryPositionPerformanceMetrics.calculateReturnOnInvestment(
-    userPositionAssets,
-    totalClaimableRewards
-  );
-
-  const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
-  const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
-  const liquidityValue =
-    baseAssetValue && quoteAssetValue && baseAssetValue.add(quoteAssetValue);
-
-  const superfluidDelegation =
-    derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(positionId);
-
-  const superfluidUndelegation =
-    derivedPoolData?.superfluidPoolDetail.getUndelegatingPositionInfo(
-      positionId
-    );
-
-  const rangeApr =
-    poolId && lowerTick && upperTick
-      ? queriesExternalStore.queryPriceRangeAprs
-          .get(poolId, lowerTick, upperTick)
-          ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
-      : undefined;
-
-  const isUnbonding =
-    osmosisQueries.queryAccountsUnbondingPositions
-      .get(account?.address ?? "")
-      .getPositionUnbondingInfo(positionId) !== undefined;
 
   return (
     <div
@@ -129,9 +64,9 @@ export const MyPositionCard: FunctionComponent<{
         <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
           <PoolAssetsIcon
             className="!w-[78px] sm:w-auto"
-            assets={queryPool?.poolAssets.map((poolAsset) => ({
-              coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-              coinDenom: poolAsset.amount.denom,
+            assets={currentCoins.map((poolAsset) => ({
+              coinImageUrl: poolAsset.currency.coinImageUrl,
+              coinDenom: poolAsset.denom,
             }))}
           />
 
@@ -139,69 +74,43 @@ export const MyPositionCard: FunctionComponent<{
             <div className="flex items-center gap-[6px] xs:flex-col xs:items-start">
               <PoolAssetsName
                 size="md"
-                assetDenoms={queryPool?.poolAssets.map(
-                  (asset) => asset.amount.denom
-                )}
+                assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
               <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
-                {queryPool?.swapFee.toString() ?? ""}{" "}
-                {t("clPositions.spreadFactor")}
+                {spreadFactor.toString() ?? ""} {t("clPositions.spreadFactor")}
               </span>
             </div>
-            {queryPool?.concentratedLiquidityPoolInfo &&
-              lowerPrices &&
-              upperPrices && (
-                <MyPositionStatus
-                  currentPrice={
-                    queryPool.concentratedLiquidityPoolInfo.currentPrice
-                  }
-                  lowerPrice={lowerPrices.price}
-                  upperPrice={upperPrices.price}
-                  fullRange={isFullRange}
-                  isSuperfluid={Boolean(superfluidDelegation)}
-                  isSuperfluidUnstaking={Boolean(superfluidUndelegation)}
-                  isUnbonding={isUnbonding}
-                />
-              )}
+            <MyPositionStatus status={status} />
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          {roi && (
-            <PositionDataGroup
-              label={t("clPositions.roi")}
-              value={roi.maxDecimals(0).toString()}
-            />
-          )}
-          {lowerPrices && upperPrices && (
-            <RangeDataGroup
-              lowerPrice={lowerPrices.price}
-              upperPrice={upperPrices.price}
-              isFullRange={isFullRange}
-            />
-          )}
-          {liquidityValue && (
-            <PositionDataGroup
-              label={t("clPositions.myLiquidity")}
-              value={formatPretty(liquidityValue)}
-            />
-          )}
+          <PositionDataGroup
+            label={t("clPositions.roi")}
+            value={roi.maxDecimals(0).toString()}
+          />
+          <RangeDataGroup
+            lowerPrice={lowerPrice}
+            upperPrice={upperPrice}
+            isFullRange={isFullRange}
+          />
+          <PositionDataGroup
+            label={t("clPositions.myLiquidity")}
+            value={formatPretty(currentValue)}
+          />
           {rangeApr && (
             <PositionDataGroup
               label={t("pool.APR")}
               value={formatPretty(rangeApr, {
                 maxDecimals: 1,
               })}
-              isSuperfluid={
-                Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
-              }
+              isSuperfluid={isPoolSuperfluid}
             />
           )}
         </div>
       </div>
-      {!collapsed && poolId && config && (
+      {!collapsed && (
         <MyPositionCardExpandedSection
           poolId={poolId}
-          chartConfig={config}
           position={props.position}
           showLinkToPool={showLinkToPool}
         />
