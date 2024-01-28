@@ -524,7 +524,7 @@ const SuperfluidPositionInfo: FunctionComponent<
   const { t } = useTranslation();
 
   /** is undelegation */
-  const endTime = "endTime" in props ? props.undelegationEndTime : undefined;
+  const endTime = props.undelegationEndTime;
 
   return (
     <div className="subtitle1 flex w-full flex-col gap-4 md:gap-1">

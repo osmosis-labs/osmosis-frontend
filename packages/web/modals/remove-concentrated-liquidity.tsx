@@ -26,11 +26,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     position: {
       id,
       status,
-      currentPrice,
-      priceRange: [lowerPrices, upperPrices],
       currentCoins: [positionBaseAsset, positionQuoteAsset],
       currentValue,
-      isFullRange,
       claimableRewardCoins,
     },
   } = props;
