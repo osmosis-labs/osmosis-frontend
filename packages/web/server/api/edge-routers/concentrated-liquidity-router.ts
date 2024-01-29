@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { mapGetUserPositionDetails } from "~/server/queries/complex/concentrated-liquidity";
+import {
+  getPositionHistoricalPerformance,
+  mapGetUserPositionDetails,
+} from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { sort } from "~/utils/sort";
 
@@ -18,5 +21,14 @@ export const concentratedLiquidityRouter = createTRPCRouter({
       mapGetUserPositionDetails({
         userOsmoAddress,
       }).then((positions) => sort(positions, "joinTime", sortDirection))
+    ),
+  getPositionHistoricalPerformance: publicProcedure
+    .input(
+      z.object({
+        positionId: z.string(),
+      })
+    )
+    .query(({ input: { positionId } }) =>
+      getPositionHistoricalPerformance({ positionId })
     ),
 });

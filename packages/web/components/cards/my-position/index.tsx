@@ -11,6 +11,7 @@ import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
@@ -20,6 +21,7 @@ export const MyPositionCard: FunctionComponent<{
   const {
     showLinkToPool = false,
     position: {
+      id,
       poolId,
       spreadFactor,
       status,
@@ -28,12 +30,16 @@ export const MyPositionCard: FunctionComponent<{
       priceRange: [lowerPrice, upperPrice],
       isFullRange,
       rangeApr,
-      roi,
       isPoolSuperfluid,
     },
   } = props;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
+
+  const { data: positionPerformance } =
+    api.edge.concentratedLiquidity.getPositionHistoricalPerformance.useQuery({
+      positionId: id,
+    });
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -84,10 +90,12 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          <PositionDataGroup
-            label={t("clPositions.roi")}
-            value={roi.maxDecimals(0).toString()}
-          />
+          {positionPerformance && (
+            <PositionDataGroup
+              label={t("clPositions.roi")}
+              value={positionPerformance.roi.maxDecimals(0).toString()}
+            />
+          )}
           <RangeDataGroup
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
@@ -108,10 +116,10 @@ export const MyPositionCard: FunctionComponent<{
           )}
         </div>
       </div>
-      {!collapsed && (
+      {!collapsed && positionPerformance && (
         <MyPositionCardExpandedSection
           poolId={poolId}
-          position={props.position}
+          position={{ ...props.position, ...positionPerformance }}
           showLinkToPool={showLinkToPool}
         />
       )}

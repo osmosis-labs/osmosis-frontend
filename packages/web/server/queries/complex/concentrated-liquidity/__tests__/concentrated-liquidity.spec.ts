@@ -8,7 +8,11 @@ jest.mock("~/server/queries/complex/assets");
 cases(
   "getClTickPrice",
   ({ tick, baseAsset, quoteAsset, expected }) => {
-    const result = getClTickPrice({ tick, baseAsset, quoteAsset });
+    const result = getClTickPrice({
+      tick,
+      baseCoin: baseAsset,
+      quoteCoin: quoteAsset,
+    });
     expect(result.toString()).toEqual(expected.toString());
   },
   [
@@ -54,7 +58,11 @@ cases(
 cases(
   "getPriceFromSqrtPrice",
   ({ sqrtPrice, baseAsset, quoteAsset, expected }) => {
-    const result = getPriceFromSqrtPrice({ sqrtPrice, baseAsset, quoteAsset });
+    const result = getPriceFromSqrtPrice({
+      sqrtPrice,
+      baseCoin: baseAsset,
+      quoteCoin: quoteAsset,
+    });
     expect(result.toString()).toEqual(expected);
   },
   [
