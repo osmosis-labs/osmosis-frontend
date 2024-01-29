@@ -11,14 +11,17 @@ import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type {
+  PositionHistoricalPerformance,
+  UserPosition,
+} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: UserPosition;
+    position: UserPosition & PositionHistoricalPerformance;
   } & ModalBaseProps
 > = observer((props) => {
   const {
