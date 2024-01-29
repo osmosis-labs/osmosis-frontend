@@ -169,19 +169,18 @@ export type UserPosition = Awaited<
 /** Appends user and position details to a given set of positions.
  *  If positions are not provided, they will be fetched with the given user address. */
 export async function mapGetUserPositionDetails({
-  positions,
+  positions: positions_,
   userOsmoAddress,
 }: {
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
 }) {
-  if (!positions)
-    positions = (await queryCLPositions({ bech32Address: userOsmoAddress }))
-      .positions;
-
-  const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
-  const positionPoolsPromise = getPools({ poolIds: poolIds });
-
+  const positionsPromise = positions_
+    ? Promise.resolve(positions_)
+    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+        ({ positions }) => positions
+      );
+  const poolsPromise = getPools();
   const lockableDurationsPromise = getLockableDurations();
   const userUnbondingPositionsPromise = queryCLUnbondingPositions({
     bech32Address: userOsmoAddress,
@@ -198,7 +197,8 @@ export async function mapGetUserPositionDetails({
   const superfluidPoolIdsPromise = getSuperfluidPoolIds();
 
   const [
-    positionPools,
+    positions,
+    pools,
     lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
@@ -206,7 +206,8 @@ export async function mapGetUserPositionDetails({
     stakeCurrency,
     superfluidPoolIds,
   ] = await Promise.all([
-    positionPoolsPromise,
+    positionsPromise,
+    poolsPromise,
     lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
@@ -257,7 +258,7 @@ export async function mapGetUserPositionDetails({
         rangeAprPromise,
       ]);
 
-      const pool = positionPools.find((pool) => pool.id === position.pool_id);
+      const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
         throw new Error(`Pool (${position.pool_id}) not found`);
       }
