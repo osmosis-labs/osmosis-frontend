@@ -534,7 +534,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      const txRaw = await this.sign(
+        wallet,
+        msgs,
+        usedFee,
+        memo || "",
+        timeoutHeight
+      );
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
