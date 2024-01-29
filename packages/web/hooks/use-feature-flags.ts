@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
+// NOTE: Please add a default value to any new flag you add to this list
 export type AvailableFlags =
   | "concentratedLiquidity"
   | "staking"
