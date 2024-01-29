@@ -27,10 +27,10 @@ export type AvailableFlags =
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton";
 
-type OptionalFlags = "_isInitialized" | "_isClientIDPresent";
-type RequiredFlags = Exclude<AvailableFlags, "mobileNotifications">;
-
-type ModifiedFlags = RequiredFlags & Partial<Record<OptionalFlags, boolean>>;
+type ModifiedFlags =
+  | Exclude<AvailableFlags, "mobileNotifications">
+  | "_isInitialized"
+  | "_isClientIDPresent";
 
 const defaultFlags: Record<ModifiedFlags, boolean> = {
   concentratedLiquidity: true,
@@ -53,6 +53,8 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newPoolsTable: true,
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
+  _isInitialized: false,
+  _isClientIDPresent: false,
 };
 
 export const useFeatureFlags = () => {
