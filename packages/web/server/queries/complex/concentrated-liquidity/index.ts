@@ -13,7 +13,7 @@ import {
   calcCoinValue,
   calcSumCoinsValue,
   getAsset,
-  mapListedCoins,
+  mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
 import { getPools } from "~/server/queries/complex/pools";
 import {
@@ -59,7 +59,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
     )
     .flat();
 
-  return await mapListedCoins(positionAssets).then(aggregateCoinsByDenom);
+  return await mapRawCoinToPretty(positionAssets).then(aggregateCoinsByDenom);
 }
 
 export type PositionStatus =
@@ -217,7 +217,10 @@ export async function mapGetUserPositionDetails({
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
-      const [baseAsset, quoteAsset] = await mapListedCoins([asset0, asset1]);
+      const [baseAsset, quoteAsset] = await mapRawCoinToPretty([
+        asset0,
+        asset1,
+      ]);
       if (!baseAsset || !quoteAsset) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
@@ -431,18 +434,22 @@ async function getPositionCoinsBreakdown({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapListedCoins(performance.principal.assets).then(aggregateCoinsByDenom),
-    mapListedCoins([position.asset0, position.asset1]),
+    mapRawCoinToPretty(performance.principal.assets).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty([position.asset0, position.asset1]),
 
-    mapListedCoins(position.claimable_incentives).then(aggregateCoinsByDenom),
-    mapListedCoins(position.claimable_spread_rewards).then(
+    mapRawCoinToPretty(position.claimable_incentives).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty(position.claimable_spread_rewards).then(
       aggregateCoinsByDenom
     ),
 
-    mapListedCoins(performance.total_incentives_rewards).then(
+    mapRawCoinToPretty(performance.total_incentives_rewards).then(
       aggregateCoinsByDenom
     ),
-    mapListedCoins(performance.total_spread_rewards).then(
+    mapRawCoinToPretty(performance.total_spread_rewards).then(
       aggregateCoinsByDenom
     ),
   ]);

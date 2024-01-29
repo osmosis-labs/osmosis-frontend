@@ -84,14 +84,14 @@ export async function getAssets({
 }
 
 /**
- * This function coins to a CoinPretty if listed in asset list. This is useful for
+ * This function converts coins to a CoinPretty if listed in asset list. This is useful for
  * converting raw assets returned from chain into coins listed in asset list.
  *
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
  */
-export async function mapListedCoins(
+export async function mapRawCoinToPretty(
   rawAssets: {
     amount: string | number | Int | Dec | { toDec(): Dec };
     denom: string;
