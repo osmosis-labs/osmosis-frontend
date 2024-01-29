@@ -26,10 +26,33 @@ export type AvailableFlags =
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton";
 
-type ModifiedFlags =
-  | Exclude<AvailableFlags, "mobileNotifications">
-  | "_isInitialized"
-  | "_isClientIDPresent";
+type OptionalFlags = "_isInitialized" | "_isClientIDPresent";
+type RequiredFlags = Exclude<AvailableFlags, "mobileNotifications">;
+
+type ModifiedFlags = RequiredFlags & Partial<Record<OptionalFlags, boolean>>;
+
+const defaultFlags: Record<ModifiedFlags, boolean> = {
+  concentratedLiquidity: true,
+  staking: true,
+  swapsAdBanner: true,
+  notifications: true,
+  convertToStake: true,
+  upgrades: true,
+  tokenInfo: true,
+  newAssetsTable: false,
+  sidebarOsmoChangeAndChart: true,
+  multiBridgeProviders: true,
+  unlistedAssets: false,
+  earnPage: false,
+  sidecarRouter: true,
+  legacyRouter: true,
+  tfmRouter: true,
+  osmosisUpdatesPopUp: false,
+  aprBreakdown: true,
+  newPoolsTable: true,
+  topAnnouncementBanner: true,
+  tfmProTradingNavbarButton: true,
+};
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
@@ -45,10 +68,18 @@ export const useFeatureFlags = () => {
 
   return {
     ...launchdarklyFlags,
+    ...(process.env.NODE_ENV === "development" &&
+    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
+      ? defaultFlags
+      : {}),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-    _isInitialized: isInitialized,
+    _isInitialized:
+      process.env.NODE_ENV === "development" &&
+      !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
+        ? true
+        : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;
 };
