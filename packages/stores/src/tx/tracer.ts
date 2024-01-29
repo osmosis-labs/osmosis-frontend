@@ -334,15 +334,19 @@ export class TxTracer {
           .toUpperCase()}'`,
       };
 
-      return new Promise<unknown>((resolve, reject) => {
-        this.txSubscribes.set(id, {
-          params,
-          resolver: resolve,
-          rejector: reject,
-        });
+      return new Promise<unknown>(async (resolve, reject) => {
+        try {
+          this.txSubscribes.set(id, {
+            params,
+            resolver: resolve,
+            rejector: reject,
+          });
 
-        this.sendSubscribeTxRpc(id, params);
-        resolve({ id });
+          this.sendSubscribeTxRpc(id, params);
+          resolve({ id });
+        } catch (e) {
+          reject(e);
+        }
       });
     } else {
       const id = this.createRandomId();
@@ -368,15 +372,19 @@ export class TxTracer {
         order_by: "desc",
       };
 
-      return new Promise<unknown>((resolve, reject) => {
-        this.txSubscribes.set(id, {
-          params,
-          resolver: resolve,
-          rejector: reject,
-        });
+      return new Promise<unknown>(async (resolve, reject) => {
+        try {
+          this.txSubscribes.set(id, {
+            params,
+            resolver: resolve,
+            rejector: reject,
+          });
 
-        this.sendSubscribeTxRpc(id, params);
-        resolve({ id });
+          this.sendSubscribeTxRpc(id, params);
+          resolve({ id });
+        } catch (e) {
+          reject(e);
+        }
       });
     }
   }

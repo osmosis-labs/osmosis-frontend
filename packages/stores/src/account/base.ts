@@ -99,7 +99,7 @@ export const GasMultiplier = 1.5;
 // The number of heights from current before transaction times out.
 // 10 heights * 5 second block time = 50 seconds before transaction
 // timeout and mempool eviction.
-const timeoutHeightOffset: bigint = BigInt(0);
+const timeoutHeightOffset: bigint = BigInt(10);
 
 // The value of zero represent that there is not timeout height set.
 const timeoutHeightDisabledStr = "0";
@@ -481,7 +481,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
     }
 
-    const chainID = wallet?.chainId;
+    const chainID = wallet.chainId;
     let timeoutHeight: bigint;
     try {
       timeoutHeight = await this.getTimeoutHeight(chainID);
