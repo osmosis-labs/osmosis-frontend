@@ -103,7 +103,7 @@ export const MyPositionCard: FunctionComponent<{
               value={formatPretty(rangeApr, {
                 maxDecimals: 1,
               })}
-              isSuperfluid={isPoolSuperfluid}
+              isSuperfluid={isPoolSuperfluid && status !== "outOfRange"}
             />
           )}
         </div>
