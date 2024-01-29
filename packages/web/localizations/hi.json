@@ -469,6 +469,11 @@
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "activeHourLimit": "1-क्लिक ट्रेडिंग इस डिवाइस पर $5000 USD की खर्च सीमा के साथ 1 घंटे के लिए सक्रिय रहेगी",
       "changeButton": "परिवर्तन"
+    },
+    "floatingBanner": {
+      "newPill": "नया",
+      "title": "1-ट्रेडिंग पर क्लिक करें",
+      "tradeFasterButton": "तेजी से व्यापार करें"
     }
   },
   "pool": {

@@ -469,6 +469,11 @@
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "activeHourLimit": "1-ક્લિક ટ્રેડિંગ $5000 USD ખર્ચ મર્યાદા સાથે આ ઉપકરણ પર 1 કલાક માટે સક્રિય રહેશે",
       "changeButton": "બદલો"
+    },
+    "floatingBanner": {
+      "newPill": "નવી",
+      "title": "1-ક્લિક કરો ટ્રેડિંગ",
+      "tradeFasterButton": "ઝડપી વેપાર"
     }
   },
   "pool": {

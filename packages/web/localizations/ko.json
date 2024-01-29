@@ -469,6 +469,11 @@
       "startTradingButton": "1-클릭 거래 시작",
       "activeHourLimit": "1-클릭 거래는 $5000 USD 지출 한도로 이 기기에서 1시간 동안 활성화됩니다.",
       "changeButton": "변화"
+    },
+    "floatingBanner": {
+      "newPill": "새로운",
+      "title": "1-클릭 거래",
+      "tradeFasterButton": "더 빠르게 거래하세요"
     }
   },
   "pool": {

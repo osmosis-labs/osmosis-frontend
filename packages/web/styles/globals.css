@@ -320,6 +320,15 @@
   }
 }
 
+@keyframes slideInRightExtreme {
+  from {
+    transform: translateX(120%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;
 }

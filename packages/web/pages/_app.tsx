@@ -30,6 +30,7 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
+import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
 import { StakeOnboarding } from "~/components/stake/stake-onboarding";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
@@ -320,6 +321,7 @@ const MainLayoutWrapper: FunctionComponent<{
           isWalletConnected={isWalletConnected}
         />
       )}
+      <OneClickFloatingBanner />
     </MainLayout>
   );
 });
