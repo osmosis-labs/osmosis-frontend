@@ -494,39 +494,36 @@ const PoolCompositionCell: PoolCellComponent = ({
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
             {t("components.table.poolId", { id })}
+            <div className="rounded-full bg-[#003F4780]">
+              <span className={classNames("text-sm font-caption opacity-60")}>
+                {type === "stable" && (
+                  <Image
+                    alt=""
+                    src="/icons/stableswap-pool.svg"
+                    width={24}
+                    height={24}
+                  />
+                )}
+                {type === "concentrated" && (
+                  <Icon
+                    color={theme.colors.white.mid}
+                    id="lightning-small"
+                    height={24}
+                    width={24}
+                  />
+                )}
+                {type === "cosmwasm-transmuter" && (
+                  <Image
+                    alt=""
+                    src="/icons/stableswap-pool.svg"
+                    width={24}
+                    height={24}
+                  />
+                )}
+                {spreadFactor ? spreadFactor.toString() : ""}
+              </span>
+            </div>
           </span>
-        </div>
-
-        <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
-          <div className="rounded-full bg-[#003F4780]">
-            <span className={classNames("text-sm font-caption opacity-60")}>
-              {type === "stable" && (
-                <Image
-                  alt=""
-                  src="/icons/stableswap-pool.svg"
-                  width={24}
-                  height={24}
-                />
-              )}
-              {type === "concentrated" && (
-                <Icon
-                  color={theme.colors.white.mid}
-                  id="lightning-small"
-                  height={24}
-                  width={24}
-                />
-              )}
-              {type === "cosmwasm-transmuter" && (
-                <Image
-                  alt=""
-                  src="/icons/stableswap-pool.svg"
-                  width={24}
-                  height={24}
-                />
-              )}
-              {spreadFactor ? spreadFactor.toString() : ""}
-            </span>
-          </div>
         </div>
       </div>
     </div>
