@@ -422,7 +422,7 @@ async function getPositionCoinsBreakdown({
 }) {
   const performance = await queryPositionPerformance({
     positionId: position.position.position_id,
-  });
+  }).catch(() => null);
 
   // get all user CL coins, including claimable rewards
 
@@ -434,9 +434,11 @@ async function getPositionCoinsBreakdown({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal.assets).then(
-      aggregateCoinsByDenom
-    ),
+    performance
+      ? mapRawCoinToPretty(performance.principal.assets).then(
+          aggregateCoinsByDenom
+        )
+      : Promise.resolve([]),
     mapRawCoinToPretty([position.asset0, position.asset1]),
 
     mapRawCoinToPretty(position.claimable_incentives).then(
@@ -446,12 +448,16 @@ async function getPositionCoinsBreakdown({
       aggregateCoinsByDenom
     ),
 
-    mapRawCoinToPretty(performance.total_incentives_rewards).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance.total_spread_rewards).then(
-      aggregateCoinsByDenom
-    ),
+    performance
+      ? mapRawCoinToPretty(performance.total_incentives_rewards).then(
+          aggregateCoinsByDenom
+        )
+      : Promise.resolve([]),
+    performance
+      ? mapRawCoinToPretty(performance.total_spread_rewards).then(
+          aggregateCoinsByDenom
+        )
+      : Promise.resolve([]),
   ]);
 
   if (currentCoins.length !== 2)
