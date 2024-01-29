@@ -70,7 +70,11 @@ import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
+import {
+  txTimedOutChainErrorMsg,
+  txTimedOutErrorPlaceholder,
+  TxTracer,
+} from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
@@ -95,7 +99,7 @@ export const GasMultiplier = 1.5;
 // The number of heights from current before transaction times out.
 // 10 heights * 5 second block time = 50 seconds before transaction
 // timeout and mempool eviction.
-const timeoutHeightOffset: bigint = BigInt(10);
+const timeoutHeightOffset: bigint = BigInt(0);
 
 // The value of zero represent that there is not timeout height set.
 const timeoutHeightDisabledStr = "0";
@@ -477,6 +481,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
     }
 
+    const chainID = wallet?.chainId;
+    let timeoutHeight: bigint;
+    try {
+      timeoutHeight = await this.getTimeoutHeight(chainID);
+    } catch (e) {
+      // Set to zero if fails to fetch timeout height
+      timeoutHeight = BigInt(0);
+    }
+
     try {
       if (wallet.walletStatus !== WalletStatus.Connected) {
         throw new Error(`Wallet for chain ${chainNameOrId} is not connected.`);
@@ -572,39 +585,45 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(txHashBuffer);
       }
 
-      const tx = await txTracer.traceTx(txHashBuffer).then(
-        (tx: {
-          data?: string;
-          events?: TxEvent;
-          gas_used?: string;
-          gas_wanted?: string;
-          log?: string;
-          code?: number;
-          height?: number;
-          tx_result?: {
-            data: string;
+      const tx = await txTracer
+        .traceTxWithTimeoutHeight(
+          txHashBuffer,
+          this.queriesStore.get(chainID).cosmos.queryRPCStatus,
+          timeoutHeight
+        )
+        .then(
+          (tx: {
+            data?: string;
+            events?: TxEvent;
+            gas_used?: string;
+            gas_wanted?: string;
+            log?: string;
             code?: number;
-            codespace: string;
-            events: TxEvent;
-            gas_used: string;
-            gas_wanted: string;
-            info: string;
-            log: string;
-          };
-        }) => {
-          txTracer.close();
+            height?: number;
+            tx_result?: {
+              data: string;
+              code?: number;
+              codespace: string;
+              events: TxEvent;
+              gas_used: string;
+              gas_wanted: string;
+              info: string;
+              log: string;
+            };
+          }) => {
+            txTracer.close();
 
-          return {
-            transactionHash: broadcasted.txhash.toLowerCase(),
-            code: tx?.code ?? tx?.tx_result?.code ?? 0,
-            height: tx?.height,
-            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
-            events: tx?.events ?? tx?.tx_result?.events,
-            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
-            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
-          };
-        }
-      );
+            return {
+              transactionHash: broadcasted.txhash.toLowerCase(),
+              code: tx?.code ?? tx?.tx_result?.code ?? 0,
+              height: tx?.height,
+              rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
+              events: tx?.events ?? tx?.tx_result?.events,
+              gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+              gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
+            };
+          }
+        );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -638,6 +657,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     } catch (e) {
       const error = e as Error;
+
+      // Update error message to be more user friendly and
+      // consistent across its sources.
+      if (error.message.includes(txTimedOutChainErrorMsg)) {
+        error.message = txTimedOutErrorPlaceholder;
+      }
+
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
@@ -662,7 +688,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: TxFee,
-    memo: string
+    memo: string,
+    timeoutHeight = BigInt(0)
   ): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
@@ -694,7 +721,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData
+          signerData,
+          timeoutHeight
         )
       : this.signDirect(
           wallet,
@@ -712,7 +740,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData
+    { accountNumber, sequence, chainId }: SignerData,
+    timeoutHeight: bigint
   ): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -747,8 +776,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
-    const timeout_height = await this.getTimeoutHeight(chainId);
-
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
@@ -756,7 +783,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo,
       accountNumber,
       sequence,
-      timeout_height
+      timeoutHeight
     );
 
     const { signature, signed } = await (wallet.client.signAmino

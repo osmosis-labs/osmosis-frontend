@@ -379,7 +379,8 @@
     "chartUnavailable": "Diagramm nicht verfügbar",
     "sequenceNumber": "Sie haben zu viele gleichzeitige Transaktionen! Versuchen Sie es erneut zu senden, nachdem Ihre vorherige Sendung in der Kette gelandet ist. (Sequenz: {sequence} )",
     "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
-    "invalidAmounts": "Ungültige(r) Betrag(e)"
+    "invalidAmounts": "Ungültige(r) Betrag(e)",
+    "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",

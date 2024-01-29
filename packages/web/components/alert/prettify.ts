@@ -1,5 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { txTimedOutErrorPlaceholder } from "@osmosis-labs/stores/build/tx/types";
 
 import { MultiLanguageT } from "~/hooks";
 
@@ -27,6 +28,10 @@ export function prettifyTxError(
   currencies: AppCurrency[]
 ): Parameters<MultiLanguageT> | string | undefined {
   try {
+    if (message.includes(txTimedOutErrorPlaceholder)) {
+      return ["errors.txTimedOutError"];
+    }
+
     const matchLegacySignatureVerificationFailed = message.match(
       regexLegacySignatureVerificationFailed
     );

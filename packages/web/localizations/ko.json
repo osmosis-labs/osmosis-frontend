@@ -379,7 +379,8 @@
     "chartUnavailable": "차트를 사용할 수 없음",
     "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
     "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
-    "invalidAmounts": "잘못된 금액"
+    "invalidAmounts": "잘못된 금액",
+    "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",

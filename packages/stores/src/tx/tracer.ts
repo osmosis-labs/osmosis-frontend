@@ -1,10 +1,23 @@
+import { Int } from "@keplr-wallet/unit";
+import { ObservableQueryRPCStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/status";
 import { Buffer } from "buffer";
+import { DeepReadonly } from "utility-types";
 
-import { TxEventMap, WsReadyState } from "./types";
+import {
+  TxEventMap,
+  txTimedOutChainErrorMsg,
+  txTimedOutErrorPlaceholder,
+  WsReadyState,
+} from "./types";
+import { delay } from "./utils";
 
 type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
 };
+
+// How many milliseconds to wait for requerying the status
+// when tracing transaction with timeout height.
+const requeryStatusDelayMs = 1000;
 
 /**
  * TxTracer is almost same with the `TendermintTxTracer` in the @keplr-wallet/cosmos library.
@@ -261,6 +274,54 @@ export class TxTracer {
     });
   }
 
+  // trace transaction with timeout height
+  // by querying for its hash until the timeout height is reached.
+  // If query succeeds before timeout hash, subscribe to the tx.
+  // If query fails before timeout height, throw an error.
+  // If timeout height is reached, throw an error.
+  async traceTxWithTimeoutHeight(
+    query: Uint8Array | Record<string, string | number | boolean>,
+    queryRPCStatus: DeepReadonly<ObservableQueryRPCStatus>,
+    timeoutHeight: bigint
+  ): Promise<any> {
+    // Query latest height
+    const timeoutHeightInt = new Int(timeoutHeight);
+
+    // Iterate until either the query succeeds or the timeout height is reached.
+    while (true) {
+      await queryRPCStatus.waitFreshResponse();
+      const latestHeight = queryRPCStatus.latestBlockHeight;
+
+      try {
+        // Exit loop if query succeeds.
+        await this.queryTx(query);
+        break;
+      } catch (e) {
+        // noop if error
+      }
+
+      // Exit loop if timeout height is reached.
+      if (latestHeight?.gt(timeoutHeightInt)) {
+        throw new Error(
+          `txTimedOutError: timeout height ${timeoutHeight} reached`
+        );
+      }
+
+      // Wait for 1 second before requerying.
+      await delay(requeryStatusDelayMs);
+    }
+
+    try {
+      // Subscribe to tx if query succeeds.
+      return await this.subscribeTx(query);
+    } catch (e: any) {
+      if (e.includes(txTimedOutChainErrorMsg)) {
+        throw new Error(txTimedOutErrorPlaceholder);
+      }
+      throw e;
+    }
+  }
+
   subscribeTx(
     query: Uint8Array | Record<string, string | number | boolean>
   ): Promise<any> {
@@ -281,6 +342,7 @@ export class TxTracer {
         });
 
         this.sendSubscribeTxRpc(id, params);
+        resolve({ id });
       });
     } else {
       const id = this.createRandomId();
@@ -314,6 +376,7 @@ export class TxTracer {
         });
 
         this.sendSubscribeTxRpc(id, params);
+        resolve({ id });
       });
     }
   }

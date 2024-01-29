@@ -379,7 +379,8 @@
     "chartUnavailable": "Chart unavailable",
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
-    "invalidAmounts": "Invalid amount(s)"
+    "invalidAmounts": "Invalid amount(s)",
+    "txTimedOutError": "Transaction timed out. Please retry."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",

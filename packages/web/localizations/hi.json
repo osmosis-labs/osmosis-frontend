@@ -379,7 +379,8 @@
     "chartUnavailable": "चार्ट अनुपलब्ध",
     "sequenceNumber": "आपके पास बहुत अधिक समवर्ती लेन-देन हैं! आपकी पिछली टीएक्स श्रृंखला पर आने के बाद पुनः भेजने का प्रयास करें। (अनुक्रम: {sequence} )",
     "swapSlippage": "फिसलन के कारण {coinDenom} के लिए स्वैप विफल रहा। फिसलन सहनशीलता बढ़ाने का प्रयास करें।",
-    "invalidAmounts": "अमान्य राशि"
+    "invalidAmounts": "अमान्य राशि",
+    "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",

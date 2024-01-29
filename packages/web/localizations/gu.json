@@ -379,7 +379,8 @@
     "chartUnavailable": "ચાર્ટ અનુપલબ્ધ",
     "sequenceNumber": "તમારી પાસે ઘણા બધા સહવર્તી વ્યવહારો છે! તમારા અગાઉના tx સાંકળ પર ઉતર્યા પછી ફરીથી મોકલવાનો પ્રયાસ કરો. (ક્રમ: {sequence} )",
     "swapSlippage": "સ્લિપેજને કારણે {coinDenom} માટે સ્વેપ નિષ્ફળ થયું. સ્લિપેજ સહિષ્ણુતા વધારવાનો પ્રયાસ કરો.",
-    "invalidAmounts": "અમાન્ય રકમ(ઓ)"
+    "invalidAmounts": "અમાન્ય રકમ(ઓ)",
+    "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
