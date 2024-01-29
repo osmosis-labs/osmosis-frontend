@@ -180,10 +180,9 @@ export async function mapGetUserPositionDetails({
       .positions;
 
   const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
-  const positionPools = await getPools({ poolIds: poolIds });
+  const positionPoolsPromise = getPools({ poolIds: poolIds });
 
-  const lockableDurations = await getLockableDurations();
-
+  const lockableDurationsPromise = getLockableDurations();
   const userUnbondingPositionsPromise = queryCLUnbondingPositions({
     bech32Address: userOsmoAddress,
   });
@@ -199,12 +198,16 @@ export async function mapGetUserPositionDetails({
   const superfluidPoolIdsPromise = getSuperfluidPoolIds();
 
   const [
+    positionPools,
+    lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
     undelegatingPositions,
     stakeCurrency,
     superfluidPoolIds,
   ] = await Promise.all([
+    positionPoolsPromise,
+    lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
     undelegatingPositionsPromise,
