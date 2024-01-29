@@ -524,7 +524,8 @@
     "unbonding": "解鎖中",
     "undelegating": "解除質押中",
     "yourStats": "您嘅資金池餘額",
-    "onlyInRangePositions": "僅適用於範圍內的位置"
+    "onlyInRangePositions": "僅適用於範圍內的位置",
+    "custom": "風俗"
   },
   "pools": {
     "allPools": {

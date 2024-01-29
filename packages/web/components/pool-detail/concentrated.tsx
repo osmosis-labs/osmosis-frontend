@@ -16,7 +16,7 @@ import {
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";

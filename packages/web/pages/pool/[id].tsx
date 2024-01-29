@@ -3,12 +3,12 @@ import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import {
   BasePoolDetails,
   ConcentratedLiquidityPool,
   SharePool,
 } from "~/components/pool-detail";
-import SkeletonLoader from "~/components/skeleton-loader";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";

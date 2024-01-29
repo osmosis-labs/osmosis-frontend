@@ -39,11 +39,11 @@ import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
+  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
 type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
@@ -86,7 +86,7 @@ export const AssetsInfoTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getAssetInfos.useInfiniteQuery(
+  } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
@@ -106,6 +106,13 @@ export const AssetsInfoTable: FunctionComponent<{
       enabled: !isLoadingWallet,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
   const assetsData = useMemo(

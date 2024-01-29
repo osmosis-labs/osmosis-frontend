@@ -524,7 +524,8 @@
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
     "yourStats": "Statisticile tale",
-    "onlyInRangePositions": "Doar pentru pozițiile din rază"
+    "onlyInRangePositions": "Doar pentru pozițiile din rază",
+    "custom": "Personalizat"
   },
   "pools": {
     "allPools": {

@@ -8,12 +8,13 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
-  getAssetMarketInfo,
   getAssetPrice,
+  getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetInfo,
-  mapGetAssetMarketInfos,
-  mapGetUserAssetInfos,
+  getUserAssetCoin,
+  getUserAssetsBreakdown,
+  mapGetMarketAssets,
+  mapGetUserAssetCoins,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
@@ -23,7 +24,7 @@ import {
   TimeFrame,
 } from "~/server/queries/imperator";
 import { TimeDuration } from "~/server/queries/imperator";
-import { compareDec, compareDefinedMember } from "~/utils/compare";
+import { compareDec, compareMemberDefinition } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -45,7 +46,7 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-      return await getUserAssetInfo({
+      return await getUserAssetCoin({
         asset,
         userOsmoAddress,
       });
@@ -65,7 +66,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
-            mapGetUserAssetInfos({
+            mapGetUserAssetCoins({
               search,
               userOsmoAddress,
               onlyVerified,
@@ -101,7 +102,7 @@ export const assetsRouter = createTRPCRouter({
 
     return assets.filter((a): a is Asset => !!a);
   }),
-  getAssetInfo: publicProcedure
+  getMarketAsset: publicProcedure
     .input(
       z
         .object({
@@ -112,17 +113,17 @@ export const assetsRouter = createTRPCRouter({
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
       const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-      const userAsset = await getUserAssetInfo({ asset, userOsmoAddress });
-      const userMarketInfoAsset = await getAssetMarketInfo({
+      const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
+      const userMarketAsset = await getMarketAsset({
         asset: userAsset,
       });
 
       return {
         ...userAsset,
-        ...userMarketInfoAsset,
+        ...userMarketAsset,
       };
     }),
-  getAssetInfos: publicProcedure
+  getMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
@@ -158,13 +159,13 @@ export const assetsRouter = createTRPCRouter({
             const isDefaultSort = !sortInput && !search;
 
             let assets;
-            assets = await mapGetAssetMarketInfos({
+            assets = await mapGetMarketAssets({
               search,
               onlyVerified,
               includeUnlisted,
             });
 
-            assets = await mapGetUserAssetInfos({
+            assets = await mapGetUserAssetCoins({
               assets,
               userOsmoAddress,
               includeUnlisted,
@@ -199,27 +200,23 @@ export const assetsRouter = createTRPCRouter({
                 if (isAPreferred && !isBPreferred) return -1;
                 if (!isAPreferred && isBPreferred) return 1;
 
-                // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
-                const usdValueDefinedCompare = compareDefinedMember(
-                  assetA,
-                  assetB,
-                  "usdValue"
-                );
-                if (usdValueDefinedCompare) return usdValueDefinedCompare;
-
-                // Sort by market cap
-                const marketCapDefinedCompare = compareDefinedMember(
-                  assetA,
-                  assetB,
-                  "marketCap"
-                );
-                if (marketCapDefinedCompare) return marketCapDefinedCompare;
-                if (assetA.marketCap && assetB.marketCap) {
-                  const marketCapCompare = compareDec(
-                    assetA.marketCap.toDec(),
-                    assetB.marketCap.toDec()
+                // Sort by market cap as long as there's no user fiat balance
+                // Assets with fiat balances will remain sorted as they are
+                if (!assetA.usdValue && !assetB.usdValue) {
+                  const marketCapDefinedCompare = compareMemberDefinition(
+                    assetA,
+                    assetB,
+                    "marketCap"
                   );
-                  if (marketCapCompare) return marketCapCompare;
+                  if (marketCapDefinedCompare) return marketCapDefinedCompare;
+
+                  if (assetA.marketCap && assetB.marketCap) {
+                    const marketCapCompare = compareDec(
+                      assetA.marketCap.toDec(),
+                      assetB.marketCap.toDec()
+                    );
+                    if (marketCapCompare) return marketCapCompare;
+                  }
                 }
                 return 0;
               });
@@ -245,6 +242,12 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
+  getUserAssetsBreakdown: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input: userOsmoAddress }) =>
+      getUserAssetsBreakdown(userOsmoAddress)
+    ),
+
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

@@ -29,9 +29,9 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import SkeletonLoader from "~/components/skeleton-loader";
 import {
   Step,
   Stepper,

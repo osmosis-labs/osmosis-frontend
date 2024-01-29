@@ -524,7 +524,8 @@
     "unbonding": "અનબોન્ડિંગ",
     "undelegating": "સોંપણી",
     "yourStats": "તમારું પૂલ બેલેન્સ",
-    "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે"
+    "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે",
+    "custom": "કસ્ટમ"
   },
   "pools": {
     "allPools": {

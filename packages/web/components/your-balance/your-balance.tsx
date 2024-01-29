@@ -15,7 +15,7 @@ import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Button } from "~/components/buttons";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
@@ -86,7 +86,7 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getAssetInfo.useQuery({
+    const { data } = api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
@@ -424,7 +424,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   const chainName = tokenChain?.chainName;
 
   const { data, isLoading: isCoinDataLoading } =
-    api.edge.assets.getAssetInfo.useQuery({
+    api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
