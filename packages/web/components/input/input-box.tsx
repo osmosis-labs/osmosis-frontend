@@ -62,8 +62,6 @@ export const InputBox: FunctionComponent<Props> = ({
     onChange: onInput,
   });
 
-  console.log("input style: ", style);
-
   return (
     <div
       className={classNames(
@@ -97,7 +95,6 @@ export const InputBox: FunctionComponent<Props> = ({
             onInput={(e: any) => setValue(e.target.value)}
             onBlur={onBlur}
             onFocus={(e: any) => {
-              console.log("onFocus: ", onFocus);
               setInputFocused(true);
               onFocus && onFocus(e);
             }}
