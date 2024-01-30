@@ -350,7 +350,7 @@ export const Staking: React.FC = observer(() => {
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
-          <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-3xl	">
+          <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-3xl">
             <AlertBanner
               className="!rounded-3xl"
               title={alertTitle}
