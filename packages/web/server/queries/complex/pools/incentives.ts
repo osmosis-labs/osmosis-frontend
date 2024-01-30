@@ -43,6 +43,11 @@ export const IncentivePoolFilterSchema = z.object({
 /** Params for filtering pools. */
 export type IncentivePoolFilter = z.infer<typeof IncentivePoolFilterSchema>;
 
+export async function getPoolIncentives(poolId: string) {
+  const map = await getCachedPoolIncentivesMap();
+  return map.get(poolId);
+}
+
 /** Checks a pool's incentive data againt a given filter to determine if it's filtered out. */
 export function isIncentivePoolFiltered(
   incentives: PoolIncentives,
