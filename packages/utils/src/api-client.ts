@@ -59,7 +59,7 @@ export async function apiClient<T>(
         data = await response.json();
       } catch (e) {
         throw new ApiClientError({
-          message: UNEXPECTED_ERROR_MESSAGE,
+          message: `JSON parse error: ${e}`,
           data: {
             url: endpoint,
           },

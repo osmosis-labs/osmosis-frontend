@@ -6,6 +6,7 @@ export type CommonCompareType =
   | string
   | Dec
   | Int
+  | Date
   | { toDec(): Dec }
   | null
   | undefined;
@@ -37,6 +38,10 @@ export function compareCommon(
     return compareDec(aValue, bValue);
   }
 
+  if (aValue instanceof Date && bValue instanceof Date) {
+    return compareDate(aValue, bValue);
+  }
+
   return 0;
 }
 
@@ -44,6 +49,12 @@ export function compareCommon(
 export function compareDec(a: Dec, b: Dec): CompareResult {
   if (a.lt(b)) return 1;
   if (a.gt(b)) return -1;
+  return 0;
+}
+
+export function compareDate(a: Date, b: Date): CompareResult {
+  if (a < b) return 1;
+  if (a > b) return -1;
   return 0;
 }
 
