@@ -95,7 +95,9 @@ export async function mapGetPoolIncentives<TPool extends Pool>({
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Get a cached Map with pool IDs mapped to incentives for that pool. */
-function getCachedPoolIncentivesMap(): Promise<Map<string, PoolIncentives>> {
+async function getCachedPoolIncentivesMap(): Promise<
+  Map<string, PoolIncentives>
+> {
   return cachified({
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
@@ -163,8 +165,8 @@ export function getConcentratedRangePoolApr({
         const apr = APR / 100;
         if (isNaN(apr)) return;
         return new RatePretty(apr);
-      } catch (e) {
-        console.error(e);
+      } catch {
+        return undefined;
       }
     },
   });
@@ -183,7 +185,7 @@ export function getLockableDurations() {
   return cachified({
     cache: incentivePoolsCache,
     key: "lockable-durations",
-    ttl: 1000 * 60 * 10, // 10 mins
+    ttl: 30 * 1000, // 30 seconds
     getFreshValue: async () => {
       const { lockable_durations } = await queryLockableDurations();
 

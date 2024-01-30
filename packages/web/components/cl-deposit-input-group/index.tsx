@@ -1,16 +1,22 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, useCallback, useMemo } from "react";
+import React, { FunctionComponent, useCallback } from "react";
 
 import { InputBox } from "~/components/input";
 import { useTranslation } from "~/hooks";
-import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
 
 export const DepositAmountGroup: FunctionComponent<{
+  getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   currency?: Currency;
   onUpdate: (amount: number) => void;
   onMax: () => void;
@@ -22,6 +28,7 @@ export const DepositAmountGroup: FunctionComponent<{
   outOfRangeClassName?: string;
 }> = observer(
   ({
+    getFiatValue,
     currency,
     percentage,
     onUpdate,
@@ -38,20 +45,17 @@ export const DepositAmountGroup: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";
 
-    const currentValuePrice = useCoinFiatValue(
-      useMemo(
-        () =>
-          currency
-            ? new CoinPretty(
-                currency,
-                new Dec(currentValue).mul(
-                  DecUtils.getTenExponentN(currency.coinDecimals)
-                )
+    const currentValuePrice =
+      currency && getFiatValue
+        ? getFiatValue(
+            new CoinPretty(
+              currency,
+              new Dec(currentValue).mul(
+                DecUtils.getTenExponentN(currency.coinDecimals)
               )
-            : undefined,
-        [currency, currentValue]
-      )
-    );
+            )
+          )
+        : 0;
 
     const walletBalance = currency
       ? queriesStore

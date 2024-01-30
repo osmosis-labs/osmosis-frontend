@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -7,6 +7,8 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { calcAssetValue } from "~/server/queries/complex/assets/price";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -84,19 +86,26 @@ export async function getAssets({
 }
 
 /**
- * This function converts coins to a CoinPretty if listed in asset list. This is useful for
+ * This function maps raw assets to a CoinPretty. This is useful for
  * converting raw assets returned from chain into coins listed in asset list.
+ * It also optionally calculates the fiat value of the asset if the 'calculatePrice'
+ * parameter is true.
  *
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
+ * @param calculatePrice A boolean indicating whether to calculate the price of the asset.
  *
- * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
+ * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
  */
-export async function mapRawCoinToPretty(
-  rawAssets: {
+export async function mapAssetsToCoins({
+  rawAssets,
+  calculatePrice,
+}: {
+  rawAssets?: {
     amount: string | number | Int | Dec | { toDec(): Dec };
     denom: string;
-  }[]
-): Promise<CoinPretty[]> {
+  }[];
+  calculatePrice?: boolean;
+}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
   if (!rawAssets) return [];
   const result = await Promise.all(
     rawAssets.map(async ({ amount, denom }) => {
@@ -106,7 +115,21 @@ export async function mapRawCoinToPretty(
 
       if (!asset) return undefined;
 
-      return new CoinPretty(asset, amount);
+      const coin = new CoinPretty(asset, amount);
+      if (calculatePrice) {
+        const fiatValue = await calcAssetValue({
+          amount: coin.toDec(),
+          anyDenom: denom,
+        });
+
+        if (!fiatValue)
+          throw new Error(`Could not calculate price for ${denom}`);
+
+        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
+          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
+      }
+
+      return coin;
     })
   );
   return result.filter((p): p is NonNullable<typeof p> => !!p);

@@ -1,34 +1,38 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryAllSuperfluidAssets } from "~/server/queries/osmosis/superfluid";
 
-const superfluidCache = new LRUCache<string, CacheEntry>({ max: 1 });
+const superfluidCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-export function getSuperfluidPoolIds() {
+export function isPoolSuperfluid({ poolId }: { poolId: string }) {
   return cachified({
     cache: superfluidCache,
-    key: "superfluid-pool-ids",
-    ttl: 1000 * 60 * 5, // 5 mins
+    key: `is-pool-superfluid-${poolId}`,
+    ttl: 30 * 1000, // 30 seconds
     getFreshValue: async () => {
       const { assets: superfluidAssets } = await queryAllSuperfluidAssets();
 
-      const superfluidPoolIds = new Set<string>();
       for (const asset of superfluidAssets) {
         // superfluid share pool
-        if (asset.asset_type === "SuperfluidAssetTypeLPShare") {
-          const poolId = asset.denom.split("/")[2];
-          superfluidPoolIds.add(poolId);
+        if (
+          asset.asset_type === "SuperfluidAssetTypeLPShare" &&
+          asset.denom === `gamm/pool/${poolId}`
+        ) {
+          return true;
         }
 
         // superfluid CL pool
-        if (asset.asset_type === "SuperfluidAssetTypeConcentratedShare") {
-          const poolId = asset.denom.split("/")[2];
-          superfluidPoolIds.add(poolId);
+        if (
+          asset.asset_type === "SuperfluidAssetTypeConcentratedShare" &&
+          asset.denom === `cl/pool/${poolId}`
+        ) {
+          return true;
         }
       }
 
-      return Array.from(superfluidPoolIds);
+      return false;
     },
   });
 }
