@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { StrategyButton } from "~/components/buttons/strategy-button";
 import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
@@ -17,7 +18,6 @@ import {
 } from "~/components/earn/table/types/filters";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
-import { StrategyButton } from "~/components/strategy-button";
 import { useTranslation } from "~/hooks";
 
 const strategiesFilters = [
