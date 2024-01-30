@@ -3,10 +3,9 @@ import {
   AminoMsg,
   encodeSecp256k1Pubkey,
   OfflineAminoSigner,
-  StdFee,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
-import { Int53, Uint53 } from "@cosmjs/math";
+import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
@@ -85,6 +84,7 @@ import {
   getEndpointString,
   getWalletEndpoints,
   logger,
+  makeSignDocAmino,
   removeLastSlash,
   TxFee,
 } from "./utils";
@@ -1146,42 +1146,4 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     });
   }
-}
-
-/**
- * The document to be signed
- * Referenced from CosmjsL
- * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
- *
- * We copied it over to work around dependency updates.
- */
-export interface StdSignDoc {
-  readonly chain_id: string;
-  readonly account_number: string;
-  readonly sequence: string;
-  readonly fee: StdFee;
-  readonly msgs: readonly AminoMsg[];
-  readonly memo: string;
-  readonly timeout_height?: string;
-}
-
-// Creates the document to be signed from given parameters.
-export function makeSignDocAmino(
-  msgs: readonly AminoMsg[],
-  fee: StdFee,
-  chainId: string,
-  memo: string | undefined,
-  accountNumber: number | string,
-  sequence: number | string,
-  timeout_height?: bigint
-): StdSignDoc {
-  return {
-    chain_id: chainId,
-    account_number: Uint53.fromString(accountNumber.toString()).toString(),
-    sequence: Uint53.fromString(sequence.toString()).toString(),
-    fee: fee,
-    msgs: msgs,
-    memo: memo || "",
-    ...(timeout_height && { timeout_height: timeout_height.toString() }),
-  };
 }
