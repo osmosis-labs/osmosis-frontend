@@ -1,5 +1,8 @@
+import classNames from "classnames";
 import { useCallback, useMemo } from "react";
 
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStack } from "~/hooks/use-stack";
 import { runIfFn } from "~/utils/function";
@@ -139,5 +142,28 @@ export const Screen = ({ children, screenName }: ScreenProps) => {
         ? runIfFn(children, screenManagerContext)
         : null}
     </>
+  );
+};
+
+interface ScreenGoBackButtonProps {
+  className?: string;
+}
+
+export const ScreenGoBackButton = ({ className }: ScreenGoBackButtonProps) => {
+  const { goBack, canGoBack } = useScreenManager();
+
+  if (!canGoBack) return null;
+
+  return (
+    <IconButton
+      onClick={goBack}
+      className={classNames(
+        "w-fit text-osmoverse-400 hover:text-osmoverse-100",
+        className
+      )}
+      icon={<Icon id="chevron-left" width={16} height={16} />}
+      aria-label="Go Back"
+      mode="unstyled"
+    />
   );
 };

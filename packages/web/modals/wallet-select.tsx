@@ -661,7 +661,11 @@ const RightModalContent: FunctionComponent<
         {show1CT ? (
           <>
             {true ? (
-              <OneClickTradingSettings />
+              <OneClickTradingSettings
+                classes={{
+                  root: "pt-1.5",
+                }}
+              />
             ) : (
               <div className="flex flex-col px-8">
                 <IntroducingOneClick />{" "}
