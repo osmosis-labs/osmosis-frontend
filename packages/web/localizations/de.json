@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "um den Pflock aufrechtzuerhalten. Der aktuelle Skalierungsfaktor ist",
     "scalingFactorInformation": "Dieser Faktor ermöglicht es der Kurve, sich an vorhersehbare Preisänderungen anzupassen, beispielsweise an den Wert, der einem liquiden Einsatztoken zukommt.",
     "singleAsset": "Einzelner Vermögenswert",
-    "stablecoinWarning": "Sie fügen Liquidität zu {denom} , einem {mechanism} unterstützten Stablecoin.",
     "title": "Liquidität hinzufügen",
     "titleInPool": "Liquidität zum Pool hinzufügen # {poolId}",
     "priceImpact": "Preisauswirkungen"
