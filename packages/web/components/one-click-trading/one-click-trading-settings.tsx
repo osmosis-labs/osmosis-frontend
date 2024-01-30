@@ -6,7 +6,7 @@ import React from "react";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { buttonCVA } from "~/components/buttons";
+import { Button, buttonCVA } from "~/components/buttons";
 import { Switch } from "~/components/control";
 import { useTranslation } from "~/hooks";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
@@ -26,8 +26,6 @@ const OneClickTradingSettings = ({
     networkFeeLimit: new Dec(0.000708),
     sessionPeriod: dayjs.duration(1, "hour"),
   });
-
-  //   const {} =
 
   const isDisabled = !parameters.isOneClickEnabled;
 
@@ -76,8 +74,11 @@ const OneClickTradingSettings = ({
         <SettingRow
           title="Spend Limit"
           content={
-            <div className="flex items-center gap-2">
-              <p className="text-wosmongton-200">
+            <Button
+              mode="text"
+              className="flex items-center gap-2 text-wosmongton-200"
+            >
+              <p>
                 {parameters.spendLimit.toString()}{" "}
                 {parameters.spendLimit.fiatCurrency.currency.toUpperCase()}
               </p>
@@ -87,41 +88,43 @@ const OneClickTradingSettings = ({
                 height={18}
                 className="text-osmoverse-500"
               />
-            </div>
+            </Button>
           }
           isDisabled={isDisabled}
         />
         <SettingRow
           title="Network fee limit"
           content={
-            <div className="flex items-center gap-2">
-              <p className="text-wosmongton-200">
-                {parameters.networkFeeLimit.toString()} OSMO
-              </p>
+            <Button
+              mode="text"
+              className="flex items-center gap-2 text-wosmongton-200"
+            >
+              <p>{parameters.networkFeeLimit.toString()} OSMO</p>
               <Icon
                 id="chevron-right"
                 width={18}
                 height={18}
                 className="text-osmoverse-500"
               />
-            </div>
+            </Button>
           }
           isDisabled={isDisabled}
         />
         <SettingRow
           title="Session period"
           content={
-            <div className="flex items-center gap-2">
-              <p className="text-wosmongton-200">
-                {parameters.sessionPeriod.asHours()} hours
-              </p>
+            <Button
+              mode="text"
+              className="flex items-center gap-2 text-wosmongton-200"
+            >
+              <p>{parameters.sessionPeriod.asHours()} hours</p>
               <Icon
                 id="chevron-right"
                 width={18}
                 height={18}
                 className="text-osmoverse-500"
               />
-            </div>
+            </Button>
           }
           isDisabled={isDisabled}
         />
