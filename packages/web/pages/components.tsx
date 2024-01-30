@@ -104,7 +104,6 @@ const Sliders = () => {
           className="my-8 w-full"
           currentValue={slider}
           onInput={(value) => {
-            console.log("value: ", value);
             setSlider(value);
           }}
           min={0}

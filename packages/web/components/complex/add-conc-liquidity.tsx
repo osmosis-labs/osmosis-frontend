@@ -1003,7 +1003,8 @@ const PriceInputBox: FunctionComponent<{
         </div>
       ) : (
         <InputBox
-          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          className="bg-transparent text-subtitle1 leading-tight"
+          style="no-border"
           type="number"
           rightEntry
           inputRef={inputRef}
