@@ -326,7 +326,11 @@ export async function calcSumAssetsValue({
     ).filter(Boolean) as NonNullable<
       Awaited<ReturnType<typeof calcAssetValue>>
     >[]
-  ).reduce((acc, price) => acc.add(price), new Dec(0));
+  ).reduce((acc, price) => {
+    if (!price) return acc;
+
+    return acc.add(price);
+  }, new Dec(0));
 }
 
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(

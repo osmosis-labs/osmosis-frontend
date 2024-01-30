@@ -13,6 +13,7 @@
     "scalingFactorControllerWarning_third": "Peg'i korumak için.Mevcut ölçeklendirme faktörü",
     "scalingFactorInformation": "Bu faktör, eğrinin, likit staking belirtecine tahakkuk eden değer gibi öngörülebilir fiyat değişikliklerine uyum sağlamasına olanak tanır.",
     "singleAsset": "Tek varlık",
+    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
     "titleInPool": "{poolId} havuzuna likidite ekle",
     "priceImpact": "Fiyat Etkisi"

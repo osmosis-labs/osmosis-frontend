@@ -1,4 +1,5 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -11,57 +12,77 @@ import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import type {
-  PositionHistoricalPerformance,
-  UserPosition,
-} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: UserPosition & PositionHistoricalPerformance;
+    position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
   const {
-    poolId,
-    position: {
-      id,
-      status,
-      currentCoins: [positionBaseAsset, positionQuoteAsset],
-      currentValue,
-      claimableRewardCoins,
-    },
-  } = props;
+    lowerPrices,
+    upperPrices,
+    baseAsset: positionBaseAsset,
+    quoteAsset: positionQuoteAsset,
+    isFullRange,
+    totalClaimableRewards,
+  } = props.position;
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
-    poolId,
-    id
+    props.poolId,
+    props.position.id
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () =>
-        removeLiquidity()
+      onClick: () => {
+        return removeLiquidity()
           .then(() => props.onRequestClose())
-          .catch(console.error),
+          .catch(console.error);
+      },
       children: config.error
         ? t(...tError(config.error))
         : t("clPositions.removeLiquidity"),
     },
     props.onRequestClose
   );
+
+  const baseAsset = config.effectiveLiquidityAmounts?.base;
+  const quoteAsset = config.effectiveLiquidityAmounts?.quote;
+
+  const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
+  const currentPrice =
+    queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+
+  const baseAssetValue = baseAsset
+    ? priceStore.calculatePrice(baseAsset)
+    : undefined;
+
+  const quoteAssetValue = quoteAsset
+    ? priceStore.calculatePrice(quoteAsset)
+    : undefined;
+
+  const fiatCurrency =
+    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+
+  const totalFiat =
+    baseAssetValue && quoteAssetValue
+      ? baseAssetValue.add(quoteAssetValue)
+      : undefined;
 
   return (
     <ModalBase
@@ -76,16 +97,28 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
               {t("clPositions.yourPosition")}
             </div>
-            <MyPositionStatus className="xs:px-0" status={status} negative />
+            {lowerPrices && upperPrices && (
+              <MyPositionStatus
+                currentPrice={currentPrice}
+                lowerPrice={lowerPrices.price}
+                upperPrice={upperPrices.price}
+                fullRange={isFullRange}
+                negative
+                className="xs:px-0"
+              />
+            )}
           </div>
           <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
-            <AssetAmount amount={positionBaseAsset} />
-            <AssetAmount amount={positionQuoteAsset} />
+            {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
+            {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
           </div>
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
-        <h2>{currentValue.toDec().toString(2)}</h2>
+        <h2>
+          {fiatCurrency?.symbol}
+          {totalFiat?.toDec().toString(2) ?? "0"}
+        </h2>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
             className="w-[360px] xs:!w-[280px]"
@@ -114,13 +147,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-        {claimableRewardCoins.length > 0 && (
+        {totalClaimableRewards.length > 0 && (
           <div className="mt-8 flex w-full flex-col gap-3 py-3">
             <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
               {t("clPositions.pendingRewards")}
             </div>
             <div className="flex flex-wrap justify-between gap-3 rounded-xl border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-              {claimableRewardCoins.map((coin) => (
+              {totalClaimableRewards.map((coin) => (
                 <AssetAmount
                   key={coin.currency.coinMinimalDenom}
                   className="!text-body2 !font-body2"

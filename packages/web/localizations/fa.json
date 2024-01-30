@@ -13,6 +13,7 @@
     "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
     "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
     "singleAsset": "یک توکن",
+    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
     "titleInPool": "افزودن نقدینگی به  #{poolId}",
     "priceImpact": "تاثیر قیمت"
