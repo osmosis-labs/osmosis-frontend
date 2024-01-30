@@ -4,7 +4,13 @@ import { Button, buttonCVA } from "~/components/buttons";
 import { Pill } from "~/components/indicators/pill";
 import { useTranslation } from "~/hooks";
 
-export const IntroducingOneClick = () => {
+interface IntroducingOneClickProps {
+  onClickEditParams?: () => void;
+}
+
+export const IntroducingOneClick = ({
+  onClickEditParams,
+}: IntroducingOneClickProps) => {
   const { t } = useTranslation();
 
   return (
@@ -38,7 +44,7 @@ export const IntroducingOneClick = () => {
       </Button>
       <p className="text-caption text-osmoverse-300">
         {t("oneClickTrading.introduction.activeHourLimit")} –{" "}
-        <Button mode="text" className="!inline">
+        <Button mode="text" className="!inline" onClick={onClickEditParams}>
           {t("oneClickTrading.introduction.changeButton")}
         </Button>
       </p>

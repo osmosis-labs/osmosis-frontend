@@ -483,6 +483,7 @@ const RightModalContent: FunctionComponent<
       OneClickFloatingBannerDoNotShowKey
     );
     const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
+    const [show1CTEditParams, setShow1CTEditParams] = useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -660,15 +661,22 @@ const RightModalContent: FunctionComponent<
       <>
         {show1CT ? (
           <>
-            {true ? (
+            {show1CTEditParams ? (
               <OneClickTradingSettings
                 classes={{
                   root: "pt-1.5",
                 }}
+                onClose={() => {
+                  setShow1CTEditParams(false);
+                }}
               />
             ) : (
               <div className="flex flex-col px-8">
-                <IntroducingOneClick />{" "}
+                <IntroducingOneClick
+                  onClickEditParams={() => {
+                    setShow1CTEditParams(true);
+                  }}
+                />{" "}
               </div>
             )}
           </>

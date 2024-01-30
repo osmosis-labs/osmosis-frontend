@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
 import { Switch } from "~/components/control";
 import {
   Screen,
@@ -27,9 +28,13 @@ enum SettingsScreens {
 
 interface OneClickTradingSettingsProps {
   classes?: Partial<Record<Classes, string>>;
+  onClose?: () => void;
 }
 
-const OneClickTradingSettings = ({ classes }: OneClickTradingSettingsProps) => {
+const OneClickTradingSettings = ({
+  classes,
+  onClose,
+}: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
 
   const [parameters, setParameters] = useState({
@@ -51,6 +56,14 @@ const OneClickTradingSettings = ({ classes }: OneClickTradingSettingsProps) => {
         <>
           <Screen screenName="main">
             <div className={classNames("flex flex-col gap-6", classes?.root)}>
+              <IconButton
+                onClick={onClose}
+                className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
+                icon={<Icon id="chevron-left" width={16} height={16} />}
+                aria-label="Go Back"
+                mode="unstyled"
+              />
+
               <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
                 1-Click Trading
               </h1>
