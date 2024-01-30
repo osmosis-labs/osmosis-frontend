@@ -27,7 +27,12 @@ export const IntroducingOneClick = () => {
           {t("oneClickTrading.introduction.learnMore")} ↗️
         </a>
       </h2>
-      <Image src="/images/1ct-intro-graphics.svg" alt="1ct intro" />
+      <Image
+        width={480}
+        height={224}
+        src="/images/1ct-intro-graphics.svg"
+        alt="1ct intro"
+      />
       <Button className="w-fit px-10">
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
