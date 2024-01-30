@@ -451,6 +451,11 @@ function useToFromDenoms(
     initialToDenom
   );
 
+  useEffect(() => {
+    setToAssetState(initialToDenom);
+    setFromAssetState(initialFromDenom);
+  }, [initialFromDenom, initialToDenom]);
+
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {

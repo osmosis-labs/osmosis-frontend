@@ -509,7 +509,8 @@
     "unbonding": "unbonding",
     "undelegating": "undelegating",
     "yourStats": "Your pool balance",
-    "onlyInRangePositions": "Only for positions in range"
+    "onlyInRangePositions": "Only for positions in range",
+    "custom": "Custom"
   },
   "pools": {
     "allPools": {

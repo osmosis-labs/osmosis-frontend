@@ -42,7 +42,7 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
               {t("assets.activateUnverifiedAssetsModal.description")}
             </p>
 
-            <p className="body2 border-gradient-neutral mt-5 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
+            <p className="body2 border-gradient-neutral mt-5 rounded-lg border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
               {t("assets.activateUnverifiedAssetsModal.reminder")}
             </p>
           </div>

@@ -97,9 +97,9 @@ import { WalletConnectionInProgressError } from "./wallet-errors";
 export const GasMultiplier = 1.5;
 
 // The number of heights from current before transaction times out.
-// 10 heights * 5 second block time = 50 seconds before transaction
+// 30 heights * 5 second block time = 150 seconds before transaction
 // timeout and mempool eviction.
-const timeoutHeightOffset: bigint = BigInt(10);
+const timeoutHeightOffset: bigint = BigInt(30);
 
 // The value of zero represent that there is not timeout height set.
 const timeoutHeightDisabledStr = "0";

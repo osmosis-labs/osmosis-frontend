@@ -509,7 +509,8 @@
     "unbonding": "結合を解く",
     "undelegating": "委任を解除する",
     "yourStats": "プール残高",
-    "onlyInRangePositions": "範囲内の位置のみ"
+    "onlyInRangePositions": "範囲内の位置のみ",
+    "custom": "カスタム"
   },
   "pools": {
     "allPools": {

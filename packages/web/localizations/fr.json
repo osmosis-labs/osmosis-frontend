@@ -509,7 +509,8 @@
     "unbonding": "Déblocage",
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
-    "onlyInRangePositions": "Uniquement pour les positions dans la plage"
+    "onlyInRangePositions": "Uniquement pour les positions dans la plage",
+    "custom": "Coutume"
   },
   "pools": {
     "allPools": {

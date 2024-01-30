@@ -509,7 +509,8 @@
     "unbonding": "باز شدن",
     "undelegating": "در حال خروج",
     "yourStats": "موجودی استخر شما",
-    "onlyInRangePositions": "فقط برای موقعیت های در محدوده"
+    "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
+    "custom": "سفارشی"
   },
   "pools": {
     "allPools": {

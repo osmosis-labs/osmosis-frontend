@@ -509,7 +509,8 @@
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
-    "onlyInRangePositions": "Tylko dla pozycji w zasięgu"
+    "onlyInRangePositions": "Tylko dla pozycji w zasięgu",
+    "custom": "Zwyczaj"
   },
   "pools": {
     "allPools": {

@@ -55,7 +55,7 @@ const Card: React.FC<{
   title: string;
   children: ReactNode;
 }> = ({ title, children }) => (
-  <div className="flex flex-col gap-4 rounded-[32px] bg-osmoverse-850 p-6">
+  <div className="flex flex-col gap-4 rounded-3xl bg-osmoverse-850 p-6">
     <h6 className="text-center">{title}</h6>
     <div className="flex w-full flex-wrap items-start justify-start gap-4">
       {children}
@@ -104,7 +104,6 @@ const Sliders = () => {
           className="my-8 w-full"
           currentValue={slider}
           onInput={(value) => {
-            console.log("value: ", value);
             setSlider(value);
           }}
           min={0}

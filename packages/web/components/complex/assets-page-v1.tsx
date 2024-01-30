@@ -335,7 +335,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   };
 
   return (
-    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-[32px] bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}

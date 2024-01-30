@@ -253,7 +253,7 @@ const NomicTransfer: FunctionComponent<
 
             <div className="mt-8 flex w-full flex-row justify-center">
               {reachedCapacityLimit === true ? (
-                <div className="body2 border-gradient-neutral w-full rounded-[10px] border border-wosmongton-400 px-3 py-4 text-center text-wosmongton-100">
+                <div className="body2 border-gradient-neutral w-full rounded-lg border border-wosmongton-400 px-3 py-4 text-center text-wosmongton-100">
                   {t("assets.nomic.bridgeAtCapacity")}
                 </div>
               ) : (

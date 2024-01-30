@@ -509,7 +509,8 @@
     "unbonding": "Desabonando",
     "undelegating": "desautorizando",
     "yourStats": "Su saldo de la piscina",
-    "onlyInRangePositions": "Solo para posiciones en rango"
+    "onlyInRangePositions": "Solo para posiciones en rango",
+    "custom": "Costumbre"
   },
   "pools": {
     "allPools": {

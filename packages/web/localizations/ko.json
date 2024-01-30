@@ -509,7 +509,8 @@
     "unbonding": "예치 해제중",
     "undelegating": "위임 해제중",
     "yourStats": "내 잔액",
-    "onlyInRangePositions": "범위 내 위치에만 해당"
+    "onlyInRangePositions": "범위 내 위치에만 해당",
+    "custom": "관습"
   },
   "pools": {
     "allPools": {

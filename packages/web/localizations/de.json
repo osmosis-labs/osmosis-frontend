@@ -509,7 +509,8 @@
     "unbonding": "sich lösen",
     "undelegating": "nichtdelegieren",
     "yourStats": "Ihr Pool-Guthaben",
-    "onlyInRangePositions": "Nur für Positionen in Reichweite"
+    "onlyInRangePositions": "Nur für Positionen in Reichweite",
+    "custom": "Brauch"
   },
   "pools": {
     "allPools": {

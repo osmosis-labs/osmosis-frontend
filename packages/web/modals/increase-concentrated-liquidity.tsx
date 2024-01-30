@@ -120,7 +120,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             />
           )}
         </div>
-        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+        <div className="mb-2 flex justify-between rounded-xl bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           {baseAsset && (
             <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
               {baseAsset.currency.coinImageUrl && (
