@@ -145,7 +145,7 @@ const PresetPercentageButton: FunctionComponent<{
     <button
       className={classNames(
         "flex flex-1 cursor-pointer items-center justify-center",
-        "rounded-lg	 bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
+        "rounded-lg bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": selected,
