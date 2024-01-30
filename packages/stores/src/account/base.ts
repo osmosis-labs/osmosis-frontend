@@ -861,7 +861,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     // If the memo is empty, set it to "FE" so we know it originated from the frontend for
     // QA purposes.
-    if (!memo) {
+    if (memo === "") {
       memo = "FE";
     }
 
