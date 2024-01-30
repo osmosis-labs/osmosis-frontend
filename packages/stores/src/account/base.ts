@@ -858,6 +858,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
+
+    // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+    // QA purposes.
+    if (!memo) {
+      memo = "FE";
+    }
+
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
