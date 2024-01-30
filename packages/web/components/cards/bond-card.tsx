@@ -133,7 +133,7 @@ export const BondCard: FunctionComponent<
             className="w-fit rounded-lg bg-superfluid p-[2px]"
             onClick={onGoSuperfluid}
           >
-            <div className="w-full rounded-md	 bg-osmoverse-800 p-3 md:p-2">
+            <div className="w-full rounded-md bg-osmoverse-800 p-3 md:p-2">
               <span className="text-superfluid-gradient">
                 {t("pool.superfluidEarnMore", {
                   rate: superfluid.apr.maxDecimals(0).toString(),

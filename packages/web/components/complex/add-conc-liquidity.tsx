@@ -276,7 +276,7 @@ const StrategySelector: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl	 bg-osmoverse-700/[.6] p-[2px]",
+        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
         {
           "bg-supercharged": selected,
           "cursor-pointer hover:bg-supercharged": onClick,
