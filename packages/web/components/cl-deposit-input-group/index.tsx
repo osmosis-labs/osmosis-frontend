@@ -133,7 +133,7 @@ export const DepositAmountGroup: FunctionComponent<{
             )}
             <div
               className={classNames(
-                "flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800",
+                "flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-xl bg-osmoverse-800",
                 priceInputClass
               )}
             >
