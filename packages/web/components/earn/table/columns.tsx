@@ -113,7 +113,7 @@ export const tableColumns = [
           .map((_, i) => (
             <div
               key={`${item.cell.id} ${i} risk indicator`}
-              className={classNames(`h-5 w-2 rounded-[10px] bg-osmoverse-700`, {
+              className={classNames(`h-5 w-2 rounded-lg bg-osmoverse-700`, {
                 "!bg-ion-400": i + 1 <= item.getValue(),
               })}
             />

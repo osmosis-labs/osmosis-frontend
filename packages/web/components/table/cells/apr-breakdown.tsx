@@ -15,7 +15,7 @@ export const AprBreakdownCell: FunctionComponent<{
 
   return (
     <Tooltip
-      rootClassNames="!rounded-[20px] drop-shadow-md"
+      rootClassNames="!rounded-2xl drop-shadow-md"
       content={<AprBreakdownLegacy poolId={poolId} />}
     >
       <div
