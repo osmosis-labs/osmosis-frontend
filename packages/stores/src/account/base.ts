@@ -733,6 +733,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Failed to retrieve account from signer");
     }
 
+    // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+    // QA purposes.
+    if (memo === "") {
+      memo = "FE";
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
