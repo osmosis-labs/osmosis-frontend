@@ -168,7 +168,7 @@ const Overview: FunctionComponent<
           />
         </div>
       </div>
-      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
+      <div className="flex rounded-2xl bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex flex-nowrap items-center gap-2">
             {pool && (
@@ -313,7 +313,7 @@ const StrategySelector: FunctionComponent<{
           src={imgSrc}
           width={354}
           height={180}
-          className="rounded-[1rem]"
+          className="!rounded-2xl"
         />
         <div className="body2 text-center text-osmoverse-200">
           {description}
@@ -663,7 +663,7 @@ const AddConcLiqManaged: FunctionComponent<
               target="_blank"
               rel="noreferrer"
             >
-              <div className="grid cursor-pointer grid-cols-4 items-center rounded-[1rem] border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
+              <div className="grid cursor-pointer grid-cols-4 items-center rounded-2xl border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
                 <div className="col-span-3 flex items-center gap-4">
                   <Image
                     alt="quasar-provider"

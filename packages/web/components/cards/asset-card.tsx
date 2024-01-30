@@ -40,7 +40,7 @@ export const AssetCard: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex w-full flex-col place-content-between gap-3 rounded-[0.875rem] bg-osmoverse-800 p-9",
+        "flex w-full flex-col place-content-between gap-3 rounded-xl bg-osmoverse-800 p-9",
         contentClassName
       )}
     >
