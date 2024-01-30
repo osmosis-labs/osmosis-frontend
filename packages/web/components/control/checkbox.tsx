@@ -36,7 +36,7 @@ export const CheckBox: FunctionComponent<
         onCheckedChange={onToggle}
         disabled={disabled}
         className={classNames(
-          "relative z-10 flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-[0.5rem] border-[0.15rem]",
+          "relative z-10 flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-lg border-[0.15rem]",
           isOn ? backgroundStyles : "bg-transparent",
           borderStyles,
           className

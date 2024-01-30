@@ -505,7 +505,7 @@ const WalletInfo: FunctionComponent<
             }}
             className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-md bg-osmoverse-700 group-hover:bg-gradient-positive">
               {profileStore.currentAvatar === "ammelia" ? (
                 <Image
                   alt="Wosmongton profile"

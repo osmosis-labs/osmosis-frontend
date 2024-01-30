@@ -42,7 +42,7 @@ const Palette = ({
       }}
     >
       <div
-        className="mx-auto w-full max-w-[424px] rounded-[16px] bg-osmoverse-700 p-[20px]"
+        className="mx-auto w-full max-w-[424px] rounded-2xl bg-osmoverse-700 p-[20px]"
         style={{
           pointerEvents: "all",
         }}
