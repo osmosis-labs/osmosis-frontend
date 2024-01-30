@@ -55,10 +55,17 @@ export const AddConcLiquidity: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
+    getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
     onRequestClose: () => void;
   } & CustomClasses
 > = observer(
-  ({ className, addLiquidityConfig, actionButton, onRequestClose }) => {
+  ({
+    className,
+    addLiquidityConfig,
+    actionButton,
+    getFiatValue,
+    onRequestClose,
+  }) => {
     const { poolId } = addLiquidityConfig;
     const {
       queriesStore,
@@ -96,6 +103,7 @@ export const AddConcLiquidity: FunctionComponent<
             case "add_manual":
               return (
                 <AddConcLiqView
+                  getFiatValue={getFiatValue}
                   pool={pool}
                   addLiquidityConfig={addLiquidityConfig}
                   actionButton={actionButton}
@@ -320,8 +328,9 @@ const AddConcLiqView: FunctionComponent<
     pool?: ObservableQueryPool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
+    getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool }) => {
+> = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -570,6 +579,7 @@ const AddConcLiqView: FunctionComponent<
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
+            getFiatValue={getFiatValue}
             currency={pool?.poolAssets[0]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
@@ -586,6 +596,7 @@ const AddConcLiqView: FunctionComponent<
             percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
+            getFiatValue={getFiatValue}
             currency={pool?.poolAssets[1]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"

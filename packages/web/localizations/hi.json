@@ -13,6 +13,7 @@
     "scalingFactorControllerWarning_third": "खूंटी को बनाए रखने के लिए. वर्तमान स्केलिंग कारक है",
     "scalingFactorInformation": "यह कारक वक्र को पूर्वानुमानित मूल्य परिवर्तनों को समायोजित करने की अनुमति देता है, जैसे कि तरल स्टेकिंग टोकन के लिए अर्जित मूल्य।",
     "singleAsset": "एकल संपत्ति",
+    "stablecoinWarning": "आप {denom} , एक {mechanism} समर्थित स्थिर मुद्रा में तरलता जोड़ रहे हैं।",
     "title": "तरलता जोड़ें",
     "titleInPool": "पूल में तरलता जोड़ें # {poolId}",
     "priceImpact": "मूल्य प्रभाव"

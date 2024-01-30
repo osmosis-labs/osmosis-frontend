@@ -13,6 +13,7 @@
     "scalingFactorControllerWarning_third": "Aby utrzymać kołek. Obecny współczynnik skalowania jest",
     "scalingFactorInformation": "Czynnik ten pozwala na dostosowanie krzywej do przewidywalnych zmian cen, takich jak wartość przypadająca na płynny token.",
     "singleAsset": "Jeden token",
+    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
     "title": "Dodaj Płynność",
     "titleInPool": "Dodaj płynność do puli {poolId}",
     "priceImpact": "Wpływ ceny"

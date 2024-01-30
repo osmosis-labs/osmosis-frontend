@@ -825,32 +825,40 @@ export class OsmosisAccountImpl {
    * Handles a superfluid staked position.
    *
    * @param positionId Position ID.
-   * @param coin0 Denom and amount of tokne 0 to add to the position.
-   * @param coin1 Denom and amount of token1 to add to the position.
+   * @param amount0 Integer amount of token0 to add to the position.
+   * @param amount1 Integer amount of token1 to add to the position.
    * @param maxSlippage Max token amounts slippage as whole %. Default `2.5`, meaning 2.5%.
    * @param memo Optional memo to add to the transaction.
    * @param onFulfill Optional callback to be called when tx is fulfilled.
    */
   async sendAddToConcentratedLiquidityPositionMsg(
     positionId: string,
-    coin0: {
-      denom: string;
-      amount: string;
-    },
-    coin1: {
-      denom: string;
-      amount: string;
-    },
+    amount0: string,
+    amount1: string,
     maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    // refresh position
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+    if (!queryPosition.poolId) throw new Error("Position not found");
+
+    if (queryPosition.poolId === "1247" || queryPosition.poolId === "1248")
+      maxSlippage = "15";
+
+    // get CL pool
+    const queryClPool = this.queries.queryPools.getPool(queryPosition.poolId);
+    if (!queryClPool) throw new Error("Pool not found");
+    await queryClPool.waitResponse();
+
     // calculate desired amounts with slippage
-    const amount0WithSlippage = new Dec(coin0.amount)
+    const amount0WithSlippage = new Dec(amount0)
       .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
       .truncate()
       .toString();
-    const amount1WithSlippage = new Dec(coin1.amount)
+    const amount1WithSlippage = new Dec(amount1)
       .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
       .truncate()
       .toString();
@@ -866,17 +874,17 @@ export class OsmosisAccountImpl {
           positionId: BigInt(positionId),
           sender: this.address,
           tokenDesired0: {
-            denom: coin0.denom,
+            denom: queryClPool.poolAssetDenoms[0],
             amount: amount0WithSlippage,
           },
           tokenDesired1: {
-            denom: coin1.denom,
+            denom: queryClPool.poolAssetDenoms[1],
             amount: amount1WithSlippage,
           },
         })
       : this.msgOpts.clAddToConcentratedPosition.messageComposer({
-          amount0: coin0.amount,
-          amount1: coin1.amount,
+          amount0,
+          amount1,
           positionId: BigInt(positionId),
           sender: this.address,
           tokenMinAmount0: amount0WithSlippage,
@@ -897,7 +905,13 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
-              bal.waitFreshResponse();
+              if (
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.baseAsset?.currency.coinMinimalDenom ||
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.quoteAsset?.currency.coinMinimalDenom
+              )
+                bal.waitFreshResponse();
             });
           // refresh all user positions since IDs shift after adding to a position
           queries.osmosis?.queryAccountsPositions
