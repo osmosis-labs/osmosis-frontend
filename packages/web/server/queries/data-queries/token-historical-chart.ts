@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 /**
  * Time frame represents the amount of minutes per bar, basically price every
@@ -50,7 +50,7 @@ export async function queryTokenHistoricalChart({
   // collect params
   const url = new URL(
     `/tokens/v2/historical/${coinDenom}/chart?tf=${timeFrameMinutes}`,
-    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+    NUMIA_INDEXER_BASEURL
   );
   try {
     const response = await apiClient<

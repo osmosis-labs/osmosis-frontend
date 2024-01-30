@@ -19,7 +19,7 @@ export class ObservableQueryPoolAprs extends ObservableQueryExternalBase<
   PoolData[]
 > {
   constructor(kvStore: KVStore, baseURL: string) {
-    super(kvStore, baseURL, "/pools_apr");
+    super(kvStore, baseURL, "/pools_apr_v2");
 
     makeObservable(this);
   }

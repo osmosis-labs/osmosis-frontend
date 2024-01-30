@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 import { PoolToken } from "./filtered-pools";
 
 export interface ImperatorToken extends PoolToken {
@@ -12,7 +12,7 @@ export interface ImperatorToken extends PoolToken {
 
 export async function queryAllTokens(): Promise<ImperatorToken[]> {
   // collect params
-  const url = new URL("/tokens/v2/all", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  const url = new URL("/tokens/v2/all", NUMIA_INDEXER_BASEURL);
 
   return await apiClient<ImperatorToken[]>(url.toString());
 }

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 interface Asset {
   denom: string;
@@ -46,7 +46,7 @@ export async function queryPositionPerformance({
 }): Promise<PositionPerformance> {
   const url = new URL(
     `/cl/v1/position/last/id/${positionId}`,
-    IMPERATOR_INDEXER_DEFAULT_BASEURL
+    NUMIA_INDEXER_BASEURL
   );
 
   return await apiClient<PositionPerformance>(url.toString());
