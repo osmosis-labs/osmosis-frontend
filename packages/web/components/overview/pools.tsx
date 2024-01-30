@@ -63,7 +63,7 @@ export const PoolsOverview: FunctionComponent<
   return (
     <div
       className={classNames(
-        "relative flex flex-wrap items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 py-8 1.5lg:gap-6 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
+        "relative flex flex-wrap items-center gap-32 rounded-3xl bg-osmoverse-800 px-20 py-8 1.5lg:gap-6 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
         className
       )}
     >

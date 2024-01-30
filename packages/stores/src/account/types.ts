@@ -1,3 +1,4 @@
+import { AminoMsg, StdFee } from "@cosmjs/amino";
 import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
@@ -80,4 +81,21 @@ export interface TxEvents {
   onBroadcastFailed?: (string: string, e?: Error) => void;
   onBroadcasted?: (string: string, txHash: Uint8Array) => void;
   onFulfill?: (string: string, tx: any) => void;
+}
+
+/**
+ * The document to be signed
+ * Referenced from CosmjsL
+ * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
+ *
+ * We copied it over to work around dependency updates.
+ */
+export interface StdSignDoc {
+  readonly chain_id: string;
+  readonly account_number: string;
+  readonly sequence: string;
+  readonly fee: StdFee;
+  readonly msgs: readonly AminoMsg[];
+  readonly memo: string;
+  readonly timeout_height?: string;
 }

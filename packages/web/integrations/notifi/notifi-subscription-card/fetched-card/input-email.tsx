@@ -131,7 +131,7 @@ export const InputEmail: FunctionComponent<Props> = ({
             : "hidden"
         } h-7 ${
           isVerificationRequested ? "w-[5.5625rem]" : "w-[4.625rem]"
-        } rounded-[50rem] text-button`}
+        } rounded-full text-button`}
         size={"unstyled"}
         disabled={
           !emailRegex.test(inputProps.value?.toString() ?? "") ||
