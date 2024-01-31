@@ -81,6 +81,6 @@ const getErrorMessage = (tx: DeliverTxResponse, currencies: AppCurrency[]) => {
   }
 
   return isSlippageError(tx)
-    ? "swapFailed"
+    ? "errors.swapFailed"
     : prettifyTxError(tx.rawLog ?? "", currencies) ?? tx.rawLog;
 };
