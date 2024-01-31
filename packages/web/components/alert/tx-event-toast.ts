@@ -7,6 +7,7 @@ import { ToastType } from "~/components/alert/types";
 
 import { prettifyTxError } from "./prettify";
 
+// Error code for timeout height reached in Cosmos SDK.
 // https://github.com/cosmos/cosmos-sdk/blob/8f6a94cd1f9f1c6bf1ad83a751da86270db92e02/types/errors/errors.go#L129
 const txTimeoutHeightReachedErrorCode = 30;
 
