@@ -379,7 +379,8 @@
     "chartUnavailable": "Gráfico no disponible",
     "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
-    "invalidAmounts": "Montos no válidos"
+    "invalidAmounts": "Montos no válidos",
+    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",

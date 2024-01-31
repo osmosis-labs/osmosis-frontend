@@ -379,7 +379,8 @@
     "chartUnavailable": "Grafik mevcut değil",
     "sequenceNumber": "Çok fazla eş zamanlı işleminiz var! Önceki gönderiminiz zincire ulaştıktan sonra yeniden göndermeyi deneyin. (Sıra: {sequence} )",
     "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
-    "invalidAmounts": "Geçersiz tutarlar"
+    "invalidAmounts": "Geçersiz tutarlar",
+    "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
