@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
       "startButton": "Comience a operar con 1 clic"
+    },
+    "welcomeBack": {
+      "title": "Bienvenido de nuevo",
+      "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
+      "toggleLabel": "Comercio con 1 clic",
+      "editParamsAriaLabel": "Cambiar parámetros 1CT"
     }
   },
   "pool": {

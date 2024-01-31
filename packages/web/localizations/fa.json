@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "محدودیت هزینه شبکه",
       "sessionPeriodTitle": "دوره جلسه",
       "startButton": "شروع تجارت با 1 کلیک"
+    },
+    "welcomeBack": {
+      "title": "خوش برگشتی",
+      "description": "هنگامی که کیف پول خود را وصل کردید، از شما خواسته می شود تا یک تراکنش را تأیید کنید تا جلسه تجارت 1-Click خود را شروع کنید.",
+      "toggleLabel": "1- روی تجارت کلیک کنید",
+      "editParamsAriaLabel": "پارامترهای 1CT را تغییر دهید"
     }
   },
   "pool": {

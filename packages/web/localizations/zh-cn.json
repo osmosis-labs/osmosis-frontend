@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "网络费用限额",
       "sessionPeriodTitle": "会议期间",
       "startButton": "开始一键交易"
+    },
+    "welcomeBack": {
+      "title": "欢迎回来",
+      "description": "连接钱包后，系统将提示您批准交易以开始一键交易会话。",
+      "toggleLabel": "一键交易",
+      "editParamsAriaLabel": "更改1CT参数"
     }
   },
   "pool": {

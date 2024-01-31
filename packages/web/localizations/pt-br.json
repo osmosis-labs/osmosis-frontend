@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
       "startButton": "Comece a negociação com 1 clique"
+    },
+    "welcomeBack": {
+      "title": "bem vindo de volta",
+      "description": "Depois de conectar sua carteira, você será solicitado a aprovar uma transação para iniciar sua sessão de negociação com 1 clique.",
+      "toggleLabel": "Negociação em 1 clique",
+      "editParamsAriaLabel": "Alterar parâmetros 1CT"
     }
   },
   "pool": {

@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading"
+    },
+    "welcomeBack": {
+      "title": "Welcome back",
+      "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
+      "toggleLabel": "1-Click Trading",
+      "editParamsAriaLabel": "Change 1CT params"
     }
   },
   "pool": {

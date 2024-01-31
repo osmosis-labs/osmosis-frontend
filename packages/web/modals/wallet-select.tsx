@@ -677,7 +677,7 @@ const RightModalContent: FunctionComponent<
               />
             )}
             {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (
-              <div className="flex flex-col px-8 pt-16">
+              <div className="flex flex-col px-8 pt-14">
                 <OneClickTradingWelcomeBack
                   setTransaction1CTParams={setTransaction1CTParams}
                   transaction1CTParams={transaction1CTParams}

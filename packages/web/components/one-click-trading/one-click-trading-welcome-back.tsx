@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { Switch } from "~/components/control";
+import { useTranslation } from "~/hooks";
 import { noop } from "~/utils/function";
 
 interface OneClickTradingWelcomeBackProps {
@@ -16,11 +17,14 @@ const OneClickTradingWelcomeBack = ({
   setTransaction1CTParams,
   onClickEditParams,
 }: OneClickTradingWelcomeBackProps) => {
+  const { t } = useTranslation();
   const is1CTEnabled = Boolean(transaction1CTParams);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <h1 className="text-h5 font-h5">Welcome back</h1>
+    <div className="flex flex-col items-center gap-6">
+      <h1 className="text-h5 font-h5">
+        {t("oneClickTrading.welcomeBack.title")}
+      </h1>
 
       <Image
         alt="1CT welcome back screen"
@@ -48,7 +52,7 @@ const OneClickTradingWelcomeBack = ({
               className="self-start"
             />
             <span className="text-button font-button text-osmoverse-100">
-              1-Click Trading
+              {t("oneClickTrading.welcomeBack.toggleLabel")}
             </span>
           </div>
           <Switch
@@ -58,7 +62,7 @@ const OneClickTradingWelcomeBack = ({
           />
         </button>
         <IconButton
-          aria-label="Change 1CT params"
+          aria-label={t("oneClickTrading.welcomeBack.editParamsAriaLabel")}
           icon={<Icon id="setting" />}
           className="!h-auto w-auto rounded-l-none rounded-r-2xl px-4"
           onClick={onClickEditParams}
@@ -66,8 +70,7 @@ const OneClickTradingWelcomeBack = ({
       </div>
 
       <p className="text-center text-caption font-caption text-osmoverse-300">
-        Once you connect your wallet, you will be prompted to approve a
-        transaction to start your 1-Click Trading session.
+        {t("oneClickTrading.welcomeBack.description")}
       </p>
     </div>
   );

@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel"
+    },
+    "welcomeBack": {
+      "title": "Willkommen zurück",
+      "description": "Sobald Sie Ihr Wallet verbunden haben, werden Sie aufgefordert, eine Transaktion zu genehmigen, um Ihre 1-Click-Handelssitzung zu starten.",
+      "toggleLabel": "1-Klick-Handel",
+      "editParamsAriaLabel": "1CT-Parameter ändern"
     }
   },
   "pool": {

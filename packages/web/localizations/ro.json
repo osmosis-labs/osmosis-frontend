@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Limită taxă de rețea",
       "sessionPeriodTitle": "Perioada de sesiune",
       "startButton": "Începeți tranzacționarea cu 1 clic"
+    },
+    "welcomeBack": {
+      "title": "Bine ai revenit",
+      "description": "După ce vă conectați portofelul, vi se va solicita să aprobați o tranzacție pentru a începe sesiunea de tranzacționare cu 1 clic.",
+      "toggleLabel": "1-Click Trading",
+      "editParamsAriaLabel": "Modificați parametrii 1CT"
     }
   },
   "pool": {

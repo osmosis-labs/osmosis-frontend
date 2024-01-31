@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "網路費用限額",
       "sessionPeriodTitle": "會議期間",
       "startButton": "開始一鍵交易"
+    },
+    "welcomeBack": {
+      "title": "歡迎回來",
+      "description": "連接錢包後，系統將提示您批准交易以開始一鍵交易會話。",
+      "toggleLabel": "一鍵交易",
+      "editParamsAriaLabel": "更改1CT參數"
     }
   },
   "pool": {

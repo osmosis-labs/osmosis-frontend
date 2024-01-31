@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
       "startButton": "Rozpocznij handel jednym kliknięciem"
+    },
+    "welcomeBack": {
+      "title": "Witamy spowrotem",
+      "description": "Po podłączeniu portfela zostaniesz poproszony o zatwierdzenie transakcji w celu rozpoczęcia sesji handlu 1-Click.",
+      "toggleLabel": "Handel jednym kliknięciem",
+      "editParamsAriaLabel": "Zmień parametry 1CT"
     }
   },
   "pool": {
