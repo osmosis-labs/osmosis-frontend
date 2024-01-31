@@ -477,15 +477,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
     }
 
-    const chainID = wallet.chainId;
-    let timeoutHeight: bigint;
-    try {
-      timeoutHeight = await this.getTimeoutHeight(chainID);
-    } catch (e) {
-      // Set to zero if fails to fetch timeout height
-      timeoutHeight = BigInt(0);
-    }
-
     try {
       if (wallet.walletStatus !== WalletStatus.Connected) {
         throw new Error(`Wallet for chain ${chainNameOrId} is not connected.`);
@@ -530,13 +521,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(
-        wallet,
-        msgs,
-        usedFee,
-        memo || "",
-        timeoutHeight
-      );
+      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -678,8 +663,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: TxFee,
-    memo: string,
-    timeoutHeight = BigInt(0)
+    memo: string
   ): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
@@ -711,8 +695,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData,
-          timeoutHeight
+          signerData
         )
       : this.signDirect(
           wallet,
@@ -730,8 +713,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData,
-    timeoutHeight: bigint
+    { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -765,6 +747,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
       return res;
     }) as AminoMsg[];
+
+    const timeoutHeight = await this.getTimeoutHeight(chainId);
 
     const signDoc = makeSignDocAmino(
       msgs,
