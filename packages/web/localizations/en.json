@@ -474,6 +474,15 @@
       "newPill": "New",
       "title": "1-Click Trading",
       "tradeFasterButton": "Trade Faster"
+    },
+    "settings": {
+      "header": "1-Click Trading",
+      "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
+      "enableTitle": "Enable 1-Click Trading",
+      "spendLimitTitle": "Spend Limit",
+      "networkFeeLimitTitle": "Network fee limit",
+      "sessionPeriodTitle": "Session period",
+      "startButton": "Start 1-Click Trading"
     }
   },
   "pool": {

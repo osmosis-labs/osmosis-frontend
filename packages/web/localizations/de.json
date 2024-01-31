@@ -474,6 +474,15 @@
       "newPill": "Neu",
       "title": "1-Klick-Handel",
       "tradeFasterButton": "Handeln Sie schneller"
+    },
+    "settings": {
+      "header": "1-Klick-Handel",
+      "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
+      "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
+      "spendLimitTitle": "Ausgabenlimit",
+      "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
+      "sessionPeriodTitle": "Sitzungszeitraum",
+      "startButton": "Starten Sie den 1-Klick-Handel"
     }
   },
   "pool": {

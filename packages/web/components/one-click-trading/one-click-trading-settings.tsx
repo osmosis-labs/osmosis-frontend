@@ -65,7 +65,7 @@ const OneClickTradingSettings = ({
               />
 
               <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                1-Click Trading
+                {t("oneClickTrading.settings.header")}
               </h1>
 
               <div className="px-8">
@@ -78,9 +78,7 @@ const OneClickTradingSettings = ({
                     className="self-start"
                   />
                   <p className="text-body2 font-body2 text-osmoverse-300">
-                    1-Click Trading lets you securely trade on this device
-                    without the hassle of signing every transaction in your
-                    wallet.{" "}
+                    {t("oneClickTrading.settings.description")}{" "}
                     <a
                       className={buttonCVA({
                         mode: "text",
@@ -96,7 +94,7 @@ const OneClickTradingSettings = ({
 
               <div className="flex flex-col gap-0">
                 <SettingRow
-                  title="Enable 1-Click Trading"
+                  title={t("oneClickTrading.settings.enableTitle")}
                   content={
                     <Switch
                       isOn={parameters.isOneClickEnabled}
@@ -110,7 +108,7 @@ const OneClickTradingSettings = ({
                   }
                 />
                 <SettingRow
-                  title="Spend Limit"
+                  title={t("oneClickTrading.settings.spendLimitTitle")}
                   content={
                     <Button
                       mode="text"
@@ -135,7 +133,7 @@ const OneClickTradingSettings = ({
                   isDisabled={isDisabled}
                 />
                 <SettingRow
-                  title="Network fee limit"
+                  title={t("oneClickTrading.settings.networkFeeLimitTitle")}
                   content={
                     <Button
                       mode="text"
@@ -157,7 +155,7 @@ const OneClickTradingSettings = ({
                   isDisabled={isDisabled}
                 />
                 <SettingRow
-                  title="Session period"
+                  title={t("oneClickTrading.settings.sessionPeriodTitle")}
                   content={
                     <Button
                       mode="text"
@@ -185,7 +183,7 @@ const OneClickTradingSettings = ({
 
               {parameters.isOneClickEnabled && (
                 <div className="px-8">
-                  <Button>Start 1-Click Trading</Button>
+                  <Button>{t("oneClickTrading.settings.startButton")}</Button>
                 </div>
               )}
             </div>
@@ -195,7 +193,7 @@ const OneClickTradingSettings = ({
             <div className={classNames("flex flex-col gap-12", classes?.root)}>
               {screenGoBackButton}
               <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                Spend limit
+                {t("oneClickTrading.settings.spendLimitTitle")}
               </h1>
             </div>
           </Screen>
@@ -204,7 +202,7 @@ const OneClickTradingSettings = ({
             <div className={classNames("flex flex-col gap-12", classes?.root)}>
               {screenGoBackButton}
               <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                Network fee limit
+                {t("oneClickTrading.settings.networkFeeLimitTitle")}
               </h1>
             </div>
           </Screen>
@@ -213,7 +211,7 @@ const OneClickTradingSettings = ({
             <div className={classNames("flex flex-col gap-12", classes?.root)}>
               {screenGoBackButton}
               <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                Session period
+                {t("oneClickTrading.settings.sessionPeriodTitle")}
               </h1>
             </div>
           </Screen>

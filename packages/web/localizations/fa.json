@@ -474,6 +474,15 @@
       "newPill": "جدید",
       "title": "1- روی تجارت کلیک کنید",
       "tradeFasterButton": "تجارت سریعتر"
+    },
+    "settings": {
+      "header": "1- روی تجارت کلیک کنید",
+      "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
+      "enableTitle": "تجارت 1 کلیکی را فعال کنید",
+      "spendLimitTitle": "محدودیت هزینه",
+      "networkFeeLimitTitle": "محدودیت هزینه شبکه",
+      "sessionPeriodTitle": "دوره جلسه",
+      "startButton": "شروع تجارت با 1 کلیک"
     }
   },
   "pool": {

@@ -474,6 +474,15 @@
       "newPill": "新的",
       "title": "一鍵交易",
       "tradeFasterButton": "交易更快"
+    },
+    "settings": {
+      "header": "一鍵交易",
+      "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
+      "enableTitle": "啟用一鍵交易",
+      "spendLimitTitle": "消費限額",
+      "networkFeeLimitTitle": "網路費用限額",
+      "sessionPeriodTitle": "會議期間",
+      "startButton": "開始一鍵交易"
     }
   },
   "pool": {

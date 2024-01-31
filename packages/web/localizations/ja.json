@@ -474,6 +474,15 @@
       "newPill": "新しい",
       "title": "1クリック取引",
       "tradeFasterButton": "より迅速な取引"
+    },
+    "settings": {
+      "header": "1クリック取引",
+      "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
+      "enableTitle": "1-Click取引を有効にする",
+      "spendLimitTitle": "支出制限",
+      "networkFeeLimitTitle": "ネットワーク料金の制限",
+      "sessionPeriodTitle": "会期",
+      "startButton": "1-Click取引を開始する"
     }
   },
   "pool": {

@@ -474,6 +474,15 @@
       "newPill": "Nowy",
       "title": "Handel jednym kliknięciem",
       "tradeFasterButton": "Handluj szybciej"
+    },
+    "settings": {
+      "header": "Handel jednym kliknięciem",
+      "description": "Handel 1-Click pozwala bezpiecznie handlować na tym urządzeniu bez konieczności podpisywania każdej transakcji w portfelu.",
+      "enableTitle": "Włącz handel jednym kliknięciem",
+      "spendLimitTitle": "Limit wydatków",
+      "networkFeeLimitTitle": "Limit opłat sieciowych",
+      "sessionPeriodTitle": "Okres sesji",
+      "startButton": "Rozpocznij handel jednym kliknięciem"
     }
   },
   "pool": {

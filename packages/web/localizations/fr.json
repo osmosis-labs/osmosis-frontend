@@ -474,6 +474,15 @@
       "newPill": "Nouveau",
       "title": "Trading en 1 clic",
       "tradeFasterButton": "Tradez plus rapidement"
+    },
+    "settings": {
+      "header": "Trading en 1 clic",
+      "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
+      "enableTitle": "Activer le trading en 1 clic",
+      "spendLimitTitle": "Limite de dépenses",
+      "networkFeeLimitTitle": "Limite des frais de réseau",
+      "sessionPeriodTitle": "Période de séance",
+      "startButton": "Commencez le trading en 1 clic"
     }
   },
   "pool": {

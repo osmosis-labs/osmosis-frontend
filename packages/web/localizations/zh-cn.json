@@ -474,6 +474,15 @@
       "newPill": "新的",
       "title": "一键交易",
       "tradeFasterButton": "交易更快"
+    },
+    "settings": {
+      "header": "一键交易",
+      "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",
+      "enableTitle": "启用一键交易",
+      "spendLimitTitle": "消费限额",
+      "networkFeeLimitTitle": "网络费用限额",
+      "sessionPeriodTitle": "会议期间",
+      "startButton": "开始一键交易"
     }
   },
   "pool": {
