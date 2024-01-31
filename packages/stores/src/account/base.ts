@@ -753,7 +753,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
-    const timeout_height = await this.getTimeoutHeight(chainId);
+    const timeoutHeight = await this.getTimeoutHeight(chainId);
 
     const signDoc = makeSignDocAmino(
       msgs,
@@ -762,7 +762,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo,
       accountNumber,
       sequence,
-      timeout_height
+      timeoutHeight
     );
 
     const { signature, signed } = await (wallet.client.signAmino

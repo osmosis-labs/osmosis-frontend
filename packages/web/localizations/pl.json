@@ -379,7 +379,8 @@
     "chartUnavailable": "Wykres niedostępny",
     "sequenceNumber": "Masz zbyt wiele jednoczesnych transakcji! Spróbuj wysłać ponownie, gdy poprzednia wiadomość trafi do łańcucha. (Sekwencja: {sequence} )",
     "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
-    "invalidAmounts": "Nieprawidłowe kwoty"
+    "invalidAmounts": "Nieprawidłowe kwoty",
+    "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",

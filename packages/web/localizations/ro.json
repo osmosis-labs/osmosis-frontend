@@ -379,7 +379,8 @@
     "chartUnavailable": "Graficul indisponibil",
     "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
     "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
-    "invalidAmounts": "Sume nevalide"
+    "invalidAmounts": "Sume nevalide",
+    "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
