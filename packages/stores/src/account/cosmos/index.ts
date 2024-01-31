@@ -176,8 +176,12 @@ export class CosmosAccountImpl {
             });
 
           if (queryBalance) {
+            console.log("1");
             queryBalance.fetch();
+            console.log("2");
           }
+
+          console.log("3");
         }
       })
     );

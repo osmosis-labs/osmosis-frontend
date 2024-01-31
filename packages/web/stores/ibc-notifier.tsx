@@ -21,6 +21,8 @@ export const IbcNotifier: FunctionComponent = observer(() => {
     if (!historyHandlerAdded) {
       ibcTransferHistoryStore.addHistoryChangedHandler((history) => {
         if (chainStore.hasChain(history.destChainId)) {
+          console.log("history", history);
+
           const transferAmount = new CoinPretty(
             history.amount.currency,
             new Dec(history.amount.amount)
