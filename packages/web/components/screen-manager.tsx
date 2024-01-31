@@ -38,19 +38,34 @@ interface ScreenManagerProps {
  * - `currentScreen` (optional): Controls the current screen. When provided, this prop turns the component into a controlled component.
  * - `children`: Either the content to be rendered or a function that returns content, based on the `ScreenManagerState`.
  *
- * @example usage:
+ * @example
  *
  * ```jsx
  * const App = () => (
  *   <ScreenManager defaultScreen="home">
- *     <Screen screenName="home">Home Screen</Screen>
- *     <Screen screenName="about">About Screen</Screen>
+ *     <Screen screenName="home">
+ *       {({ setCurrentScreen }) => (
+ *         <>
+ *           Home Screen
+ *           <button onClick={() => setCurrentScreen("about")}>Go to About</button>
+ *         </>
+ *       )}
+ *     </Screen>
+ *     <Screen screenName="about">
+ *       {({ goBack }) => (
+ *         <>
+ *           About Screen
+ *           <button onClick={goBack}>Go Back</button>
+ *         </>
+ *       )}
+ *     </Screen>
  *   </ScreenManager>
  * );
  * ```
  *
  * In this example, `ScreenManager` is utilized to manage two screens, "home" and "about",
- * displaying only the content of the active screen.
+ * displaying only the content of the active screen and allowing the content to be rendered
+ * via a function that receives the `ScreenManagerState`.
  */
 export const ScreenManager = ({
   defaultScreen,
@@ -94,44 +109,14 @@ interface ScreenProps {
 }
 
 /**
- * `ScreenManager` provides a context for managing screens within a React application,
- * facilitating screen transitions, backward navigation, and the ability to check
- * if backward navigation is possible. It leverages a stack to maintain the history of screens,
- * making it particularly useful for workflows such as multi-step forms or navigation-based interfaces.
+ * `Screen` is a component that works in conjunction with `ScreenManager` to conditionally
+ * render its children based on the current active screen within a React application.
+ * It accepts a `screenName` prop, which it compares against the current screen managed by
+ * `ScreenManager`, and only renders its children if the names match.
  *
  * Props:
- * - `defaultScreen` (optional): Specifies the initial screen to be displayed.
- * - `currentScreen` (optional): Controls the current screen. When provided, this prop turns the component into a controlled component.
- * - `children`: Either the content to be rendered or a function that returns content, based on the `ScreenManagerState`.
- *
- * @example usage:
- *
- * ```jsx
- * const App = () => (
- *   <ScreenManager defaultScreen="home">
- *     <Screen screenName="home">
- *       {({ setCurrentScreen }) => (
- *         <>
- *           Home Screen
- *           <button onClick={() => setCurrentScreen("about")}>Go to About</button>
- *         </>
- *       )}
- *     </Screen>
- *     <Screen screenName="about">
- *       {({ goBack }) => (
- *         <>
- *           About Screen
- *           <button onClick={goBack}>Go Back</button>
- *         </>
- *       )}
- *     </Screen>
- *   </ScreenManager>
- * );
- * ```
- *
- * In this example, `ScreenManager` is utilized to manage two screens, "home" and "about",
- * displaying only the content of the active screen and allowing the content to be rendered
- * via a function that receives the `ScreenManagerState`.
+ * - `screenName`: A string that identifies the screen. This name is used to determine if the `Screen` should render its children.
+ * - `children`: The content to be rendered when this `Screen` is active, or a function that returns content and receives the `ScreenManagerState` as an argument.
  */
 export const Screen = ({ children, screenName }: ScreenProps) => {
   const screenManagerContext = useScreenManager();
