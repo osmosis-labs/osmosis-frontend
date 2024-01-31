@@ -73,7 +73,7 @@ import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
-import { makeLocalStorageKVStore } from "../kv-store";
+import { makeIndexedKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
@@ -90,11 +90,12 @@ import {
   DefaultGasPriceStep,
   getEndpointString,
   getWalletEndpoints,
+  HasUsedOneClickTradingIndexedDbKey,
   logger,
-  OneClickTradingLocalStorageKey,
+  OneClickTradingIndexedDbKey,
   removeLastSlash,
   TxFee,
-  UseOneClickTradingLocalStorageKey,
+  UseOneClickTradingIndexedDbKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
@@ -121,12 +122,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   oneClickTradingInfo: OneClickTradingInfo | null = null;
 
+  @observable
+  hasUsedOneClickTrading = false;
+
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
-  private _kvStore: KVStore = makeLocalStorageKVStore("account_store");
+  private _kvStore: KVStore = makeIndexedKVStore("account_store");
 
   /**
    * Keep track of the promise based observable for each wallet and chain id.
@@ -193,9 +197,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     autorun(async () => {
       const isOneClickTradingEnabled = await this.getUseOneClickTrading();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
         this.useOneClickTrading = isOneClickTradingEnabled;
         this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+        this.hasUsedOneClickTrading = hasUsedOneClickTrading;
       });
     });
   }
@@ -1252,15 +1258,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
-    return this._kvStore.get<OneClickTradingInfo>(
-      OneClickTradingLocalStorageKey
-    );
+    return this._kvStore.get<OneClickTradingInfo>(OneClickTradingIndexedDbKey);
   }
 
   @action
   async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    this.hasUsedOneClickTrading = true;
+    await this._kvStore.set<boolean>(HasUsedOneClickTradingIndexedDbKey, true);
+
     this.oneClickTradingInfo = data ?? null;
-    return this._kvStore.set(OneClickTradingLocalStorageKey, data);
+    return this._kvStore.set(OneClickTradingIndexedDbKey, data);
   }
 
   async isOneCLickTradingEnabled() {
@@ -1273,12 +1280,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @action
   async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
     this.useOneClickTrading = nextValue;
-    await this._kvStore.set(UseOneClickTradingLocalStorageKey, nextValue);
+    await this._kvStore.set<boolean>(UseOneClickTradingIndexedDbKey, nextValue);
   }
 
   async getUseOneClickTrading() {
     return Boolean(
-      await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
+      await this._kvStore.get<boolean>(UseOneClickTradingIndexedDbKey)
+    );
+  }
+
+  async getHasUsedOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(HasUsedOneClickTradingIndexedDbKey)
     );
   }
 }
