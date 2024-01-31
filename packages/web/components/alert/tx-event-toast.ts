@@ -7,6 +7,9 @@ import { ToastType } from "~/components/alert/types";
 
 import { prettifyTxError } from "./prettify";
 
+// https://github.com/cosmos/cosmos-sdk/blob/8f6a94cd1f9f1c6bf1ad83a751da86270db92e02/types/errors/errors.go#L129
+const txTimeoutHeightReachedErrorCode = 30;
+
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
 ) {
@@ -72,7 +75,7 @@ export function toastOnFulfill(
 
 // gets the error message depending on the transaction.
 const getErrorMessage = (tx: DeliverTxResponse, currencies: AppCurrency[]) => {
-  if (tx.code === 30) {
+  if (tx.code === txTimeoutHeightReachedErrorCode) {
     return "errors.txTimedOutError";
   }
 
