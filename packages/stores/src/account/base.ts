@@ -74,6 +74,7 @@ import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   RegistryWallet,
   TxEvent,
   TxEvents,
@@ -91,11 +92,6 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
-
-// The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
-// timeout and mempool eviction.
-const timeoutHeightOffset: bigint = BigInt(30);
 
 // The value of zero represent that there is not timeout height set.
 const timeoutHeightDisabledStr = "0";
@@ -827,7 +823,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     // Otherwise we compute the timeout height as given by latest block height + offset.
-    return BigInt(latestBlockHeight) + timeoutHeightOffset;
+    return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
   }
 
   private async signDirect(
