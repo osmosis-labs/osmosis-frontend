@@ -4,7 +4,7 @@ import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
+import { NUMIA_INDEXER_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 
 type Response = {
@@ -44,10 +44,7 @@ export class ObservableQueryPriceRangeApr extends ObservableQueryExternalBase<Re
 }
 
 export class ObservableQueryPriceRangeAprs extends HasMapStore<ObservableQueryPriceRangeApr> {
-  constructor(
-    kvStore: KVStore,
-    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
-  ) {
+  constructor(kvStore: KVStore, indexerBaseUrl = NUMIA_INDEXER_BASEURL) {
     super((key) => {
       const { poolId, lowerTickIndex, upperTickIndex } = this.parseKey(key);
       return new ObservableQueryPriceRangeApr(

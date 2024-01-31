@@ -5,7 +5,7 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
+import { NUMIA_INDEXER_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { PositionPerformance } from "./types";
 
@@ -161,7 +161,7 @@ export class ObservableQueryPositionsPerformanceMetrics extends HasMapStore<Obse
     chainGetter: ChainGetter,
     chainId: string,
     priceStore: IPriceStore,
-    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
+    indexerBaseUrl = NUMIA_INDEXER_BASEURL
   ) {
     super(
       (bech32Address) =>
