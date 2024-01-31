@@ -3,12 +3,7 @@ import { ObservableQueryRPCStatus } from "@osmosis-labs/keplr-stores/build/query
 import { Buffer } from "buffer";
 import { DeepReadonly } from "utility-types";
 
-import {
-  TxEventMap,
-  txTimedOutChainErrorMsg,
-  txTimedOutErrorPlaceholder,
-  WsReadyState,
-} from "./types";
+import { TxEventMap, WsReadyState } from "./types";
 import { delay } from "./utils";
 
 type Listeners = {
@@ -310,16 +305,7 @@ export class TxTracer {
       // Wait for 1 second before requerying.
       await delay(requeryStatusDelayMs);
     }
-
-    try {
-      // Subscribe to tx if query succeeds.
-      return await this.subscribeTx(query);
-    } catch (e: any) {
-      if (e.includes(txTimedOutChainErrorMsg)) {
-        throw new Error(txTimedOutErrorPlaceholder);
-      }
-      throw e;
-    }
+    return this.traceTx(query);
   }
 
   subscribeTx(
@@ -334,19 +320,14 @@ export class TxTracer {
           .toUpperCase()}'`,
       };
 
-      return new Promise<unknown>(async (resolve, reject) => {
-        try {
-          this.txSubscribes.set(id, {
-            params,
-            resolver: resolve,
-            rejector: reject,
-          });
+      return new Promise<unknown>((resolve, reject) => {
+        this.txSubscribes.set(id, {
+          params,
+          resolver: resolve,
+          rejector: reject,
+        });
 
-          this.sendSubscribeTxRpc(id, params);
-          resolve({ id });
-        } catch (e) {
-          reject(e);
-        }
+        this.sendSubscribeTxRpc(id, params);
       });
     } else {
       const id = this.createRandomId();
@@ -372,19 +353,14 @@ export class TxTracer {
         order_by: "desc",
       };
 
-      return new Promise<unknown>(async (resolve, reject) => {
-        try {
-          this.txSubscribes.set(id, {
-            params,
-            resolver: resolve,
-            rejector: reject,
-          });
+      return new Promise<unknown>((resolve, reject) => {
+        this.txSubscribes.set(id, {
+          params,
+          resolver: resolve,
+          rejector: reject,
+        });
 
-          this.sendSubscribeTxRpc(id, params);
-          resolve({ id });
-        } catch (e) {
-          reject(e);
-        }
+        this.sendSubscribeTxRpc(id, params);
       });
     }
   }
