@@ -46,7 +46,6 @@ export async function basicIbcTransfer(
         recipient,
       }),
     onFulfill: (tx: DeliverTxResponse) => {
-      console.log("IBC transfer tx onfulFill", tx);
       if (!tx.code) {
         const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
           | TxEvent[]

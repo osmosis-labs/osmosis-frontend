@@ -638,7 +638,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     } catch (e) {
       const error = e as Error;
-
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
