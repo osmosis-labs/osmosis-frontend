@@ -1,6 +1,6 @@
 import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse, isSlippageError } from "@osmosis-labs/stores";
-import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
+import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
@@ -50,10 +50,7 @@ export function toastOnFulfill(
       displayToast(
         {
           message: "transactionFailed",
-          caption: isSlippageError(tx)
-            ? "swapFailed"
-            : prettifyTxError(tx.rawLog ?? "", chainInfo.currencies) ??
-              tx.rawLog,
+          caption: getErrorMessage(tx, chainInfo.currencies),
         },
         ToastType.ERROR
       );
@@ -72,3 +69,14 @@ export function toastOnFulfill(
     }
   };
 }
+
+// gets the error message depending on the transaction.
+const getErrorMessage = (tx: DeliverTxResponse, currencies: AppCurrency[]) => {
+  if (tx.code === 30) {
+    return "errors.txTimedOutError";
+  }
+
+  return isSlippageError(tx)
+    ? "swapFailed"
+    : prettifyTxError(tx.rawLog ?? "", currencies) ?? tx.rawLog;
+};

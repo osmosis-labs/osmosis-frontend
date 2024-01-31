@@ -69,11 +69,7 @@ import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import {
-  txTimedOutChainErrorMsg,
-  txTimedOutErrorPlaceholder,
-  TxTracer,
-} from "../tx";
+import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
@@ -591,45 +587,39 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(txHashBuffer);
       }
 
-      const tx = await txTracer
-        .traceTxWithTimeoutHeight(
-          txHashBuffer,
-          this.queriesStore.get(chainID).cosmos.queryRPCStatus,
-          timeoutHeight
-        )
-        .then(
-          (tx: {
-            data?: string;
-            events?: TxEvent;
-            gas_used?: string;
-            gas_wanted?: string;
-            log?: string;
+      const tx = await txTracer.traceTx(txHashBuffer).then(
+        (tx: {
+          data?: string;
+          events?: TxEvent;
+          gas_used?: string;
+          gas_wanted?: string;
+          log?: string;
+          code?: number;
+          height?: number;
+          tx_result?: {
+            data: string;
             code?: number;
-            height?: number;
-            tx_result?: {
-              data: string;
-              code?: number;
-              codespace: string;
-              events: TxEvent;
-              gas_used: string;
-              gas_wanted: string;
-              info: string;
-              log: string;
-            };
-          }) => {
-            txTracer.close();
+            codespace: string;
+            events: TxEvent;
+            gas_used: string;
+            gas_wanted: string;
+            info: string;
+            log: string;
+          };
+        }) => {
+          txTracer.close();
 
-            return {
-              transactionHash: broadcasted.txhash.toLowerCase(),
-              code: tx?.code ?? tx?.tx_result?.code ?? 0,
-              height: tx?.height,
-              rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
-              events: tx?.events ?? tx?.tx_result?.events,
-              gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
-              gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
-            };
-          }
-        );
+          return {
+            transactionHash: broadcasted.txhash.toLowerCase(),
+            code: tx?.code ?? tx?.tx_result?.code ?? 0,
+            height: tx?.height,
+            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
+            events: tx?.events ?? tx?.tx_result?.events,
+            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
+          };
+        }
+      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -663,12 +653,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     } catch (e) {
       const error = e as Error;
-
-      // Update error message to be more user friendly and
-      // consistent across its sources.
-      if (error.message.includes(txTimedOutChainErrorMsg)) {
-        error.message = txTimedOutErrorPlaceholder;
-      }
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
