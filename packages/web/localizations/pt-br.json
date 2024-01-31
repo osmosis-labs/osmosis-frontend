@@ -474,6 +474,15 @@
       "newPill": "Novo",
       "title": "Negociação em 1 clique",
       "tradeFasterButton": "Negocie mais rápido"
+    },
+    "settings": {
+      "header": "Negociação em 1 clique",
+      "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
+      "enableTitle": "Habilite a negociação em 1 clique",
+      "spendLimitTitle": "Limite de gastos",
+      "networkFeeLimitTitle": "Limite de taxa de rede",
+      "sessionPeriodTitle": "Período da sessão",
+      "startButton": "Comece a negociação com 1 clique"
     }
   },
   "pool": {

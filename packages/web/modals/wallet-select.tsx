@@ -32,6 +32,7 @@ import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import {
   Step,
   Stepper,
@@ -482,6 +483,7 @@ const RightModalContent: FunctionComponent<
       OneClickFloatingBannerDoNotShowKey
     );
     const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
+    const [show1CTEditParams, setShow1CTEditParams] = useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -658,10 +660,26 @@ const RightModalContent: FunctionComponent<
     return (
       <>
         {show1CT ? (
-          <div className="flex flex-col px-8">
-            {" "}
-            <IntroducingOneClick />
-          </div>
+          <>
+            {show1CTEditParams ? (
+              <OneClickTradingSettings
+                classes={{
+                  root: "pt-1.5",
+                }}
+                onClose={() => {
+                  setShow1CTEditParams(false);
+                }}
+              />
+            ) : (
+              <div className="flex flex-col px-8">
+                <IntroducingOneClick
+                  onClickEditParams={() => {
+                    setShow1CTEditParams(true);
+                  }}
+                />{" "}
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col px-8 pt-1.5">
             <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">

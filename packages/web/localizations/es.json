@@ -474,6 +474,15 @@
       "newPill": "Nuevo",
       "title": "Comercio con 1 clic",
       "tradeFasterButton": "Opere más rápido"
+    },
+    "settings": {
+      "header": "Comercio con 1 clic",
+      "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
+      "enableTitle": "Habilite el comercio con 1 clic",
+      "spendLimitTitle": "Límite de gasto",
+      "networkFeeLimitTitle": "Límite de tarifa de red",
+      "sessionPeriodTitle": "Período de sesión",
+      "startButton": "Comience a operar con 1 clic"
     }
   },
   "pool": {

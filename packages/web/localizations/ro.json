@@ -474,6 +474,15 @@
       "newPill": "Nou",
       "title": "1-Click Trading",
       "tradeFasterButton": "Comerț mai rapid"
+    },
+    "settings": {
+      "header": "1-Click Trading",
+      "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
+      "enableTitle": "Activați tranzacționarea cu 1 clic",
+      "spendLimitTitle": "Limita de cheltuieli",
+      "networkFeeLimitTitle": "Limită taxă de rețea",
+      "sessionPeriodTitle": "Perioada de sesiune",
+      "startButton": "Începeți tranzacționarea cu 1 clic"
     }
   },
   "pool": {

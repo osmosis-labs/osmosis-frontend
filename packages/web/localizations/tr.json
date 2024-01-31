@@ -474,6 +474,15 @@
       "newPill": "Yeni",
       "title": "Tek Tıklamayla Ticaret",
       "tradeFasterButton": "Daha Hızlı Ticaret Yapın"
+    },
+    "settings": {
+      "header": "Tek Tıklamayla Ticaret",
+      "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
+      "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
+      "spendLimitTitle": "Harcama Limiti",
+      "networkFeeLimitTitle": "Ağ ücreti limiti",
+      "sessionPeriodTitle": "Oturum dönemi",
+      "startButton": "Tek Tıklamayla Ticareti Başlatın"
     }
   },
   "pool": {

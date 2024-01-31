@@ -8,7 +8,7 @@ import { FunctionComponent } from "react";
 import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { CheckBox } from "~/components/control";
-import Spinner from "~/components/spinner";
+import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useAddAuthenticator } from "~/hooks/mutations/osmosis/add-authenticator";
