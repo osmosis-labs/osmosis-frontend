@@ -19,7 +19,8 @@
     "noUnusedParameters": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["*"]
+      "~/*": ["*"],
+      "@/*": ["./*"]
     },
     "plugins": [{ "name": "next" }]
   },

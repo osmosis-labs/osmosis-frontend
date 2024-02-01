@@ -38,6 +38,7 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
+import { Checkbox as CheckboxShadcn } from "~/components/control/checkbox-shadcn";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
@@ -132,6 +133,43 @@ const Sliders = () => {
           step={1}
           useSuperchargedGradient
         />
+      </Component>
+    </Card>
+  );
+};
+
+const CheckboxesShadcn = () => {
+  const [checked, setChecked] = useState(false);
+  const handleCheckboxToggle = () => setChecked(!checked);
+
+  return (
+    <Card title="Checkbox">
+      <Component title="Regular (Shadcn)">
+        <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
+      </Component>
+
+      <Component title="Disabled (Shadcn)">
+        <CheckboxShadcn
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          disabled
+        />
+      </Component>
+
+      <Component title="With Children (Shadcn)">
+        <div className="flex items-center space-x-2">
+          <CheckboxShadcn
+            checked={checked}
+            onClick={handleCheckboxToggle}
+            id="terms"
+          />
+          <label
+            htmlFor="terms"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Child
+          </label>
+        </div>
       </Component>
     </Card>
   );
@@ -1029,6 +1067,7 @@ const Components: NextPage = () => {
       <CustomButtons />
       <Tooltips />
       <Loaders />
+      <CheckboxesShadcn />
       <Checkboxes />
       <Radios />
       <RadiosWithOptions />
