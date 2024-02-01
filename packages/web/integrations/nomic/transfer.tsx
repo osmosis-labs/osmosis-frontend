@@ -16,7 +16,7 @@ import { GradientView } from "~/components/assets/gradient-view";
 import { Button } from "~/components/buttons";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
@@ -253,7 +253,7 @@ const NomicTransfer: FunctionComponent<
 
             <div className="mt-8 flex w-full flex-row justify-center">
               {reachedCapacityLimit === true ? (
-                <div className="body2 border-gradient-neutral w-full rounded-[10px] border border-wosmongton-400 px-3 py-4 text-center text-wosmongton-100">
+                <div className="body2 border-gradient-neutral w-full rounded-lg border border-wosmongton-400 px-3 py-4 text-center text-wosmongton-100">
                   {t("assets.nomic.bridgeAtCapacity")}
                 </div>
               ) : (

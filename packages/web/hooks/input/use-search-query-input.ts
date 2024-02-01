@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { useState } from "react";
 
 import type { Search } from "~/utils/search";
 
@@ -13,6 +14,7 @@ export function useSearchQueryInput(debounceMs = 500) {
   // generate debounced search from user inputs
   const [debouncedSearchInput, setDebouncedSearchInput] =
     useDebouncedState<string>("", debounceMs);
+
   const setSearchInput = useCallback(
     (input: string) => {
       const sanitizedSearchInput = input.replace(/#/g, "").trim();

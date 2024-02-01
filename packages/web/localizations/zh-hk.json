@@ -379,7 +379,8 @@
     "chartUnavailable": "圖表不可用",
     "sequenceNumber": "您的並發事務太多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
-    "invalidAmounts": "金額無效"
+    "invalidAmounts": "金額無效",
+    "txTimedOutError": "交易超時。請重試。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -508,7 +509,8 @@
     "unbonding": "解鎖中",
     "undelegating": "解除質押中",
     "yourStats": "您嘅資金池餘額",
-    "onlyInRangePositions": "僅適用於範圍內的位置"
+    "onlyInRangePositions": "僅適用於範圍內的位置",
+    "custom": "風俗"
   },
   "pools": {
     "allPools": {

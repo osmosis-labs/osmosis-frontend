@@ -26,7 +26,7 @@ import {
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
 import {
@@ -168,7 +168,7 @@ const Overview: FunctionComponent<
           />
         </div>
       </div>
-      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
+      <div className="flex rounded-2xl bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex flex-nowrap items-center gap-2">
             {pool && (
@@ -284,7 +284,7 @@ const StrategySelector: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px]",
+        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
         {
           "bg-supercharged": selected,
           "cursor-pointer hover:bg-supercharged": onClick,
@@ -294,7 +294,7 @@ const StrategySelector: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
+          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl py-8 px-4",
           {
             "bg-osmoverse-700": Boolean(onClick),
           }
@@ -313,7 +313,7 @@ const StrategySelector: FunctionComponent<{
           src={imgSrc}
           width={354}
           height={180}
-          className="rounded-[1rem]"
+          className="!rounded-2xl"
         />
         <div className="body2 text-center text-osmoverse-200">
           {description}
@@ -663,7 +663,7 @@ const AddConcLiqManaged: FunctionComponent<
               target="_blank"
               rel="noreferrer"
             >
-              <div className="grid cursor-pointer grid-cols-4 items-center rounded-[1rem] border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
+              <div className="grid cursor-pointer grid-cols-4 items-center rounded-2xl border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
                 <div className="col-span-3 flex items-center gap-4">
                   <Image
                     alt="quasar-provider"
@@ -1003,7 +1003,8 @@ const PriceInputBox: FunctionComponent<{
         </div>
       ) : (
         <InputBox
-          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          className="bg-transparent text-subtitle1 leading-tight"
+          style="no-border"
           type="number"
           rightEntry
           inputRef={inputRef}

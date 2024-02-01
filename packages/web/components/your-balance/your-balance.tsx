@@ -15,7 +15,7 @@ import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Button } from "~/components/buttons";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
@@ -86,7 +86,7 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getAssetInfo.useQuery({
+    const { data } = api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
@@ -360,9 +360,7 @@ const ActionButton = ({
   shrinkTitle,
 }: ActionButtonProps) => {
   return (
-    <div
-      className={`relative flex flex-1 flex-row justify-between overflow-hidden rounded-[20px] bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6`}
-    >
+    <div className="relative flex flex-1 flex-row justify-between overflow-hidden rounded-2xl bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6">
       <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         {largeTitle && <p className="font-subtitle1">{title}</p>}
         {largeTitle ? (
@@ -424,7 +422,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   const chainName = tokenChain?.chainName;
 
   const { data, isLoading: isCoinDataLoading } =
-    api.edge.assets.getAssetInfo.useQuery({
+    api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });

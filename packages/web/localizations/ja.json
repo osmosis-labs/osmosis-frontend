@@ -379,7 +379,8 @@
     "chartUnavailable": "チャートは使用できません",
     "sequenceNumber": "同時トランザクションが多すぎます。前の tx がチェーンに到達した後に再送信してみてください。 (シーケンス: {sequence}",
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
-    "invalidAmounts": "無効な金額です"
+    "invalidAmounts": "無効な金額です",
+    "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -508,7 +509,8 @@
     "unbonding": "結合を解く",
     "undelegating": "委任を解除する",
     "yourStats": "プール残高",
-    "onlyInRangePositions": "範囲内の位置のみ"
+    "onlyInRangePositions": "範囲内の位置のみ",
+    "custom": "カスタム"
   },
   "pools": {
     "allPools": {

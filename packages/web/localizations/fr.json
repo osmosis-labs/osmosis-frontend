@@ -379,7 +379,8 @@
     "chartUnavailable": "Graphique indisponible",
     "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
     "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
-    "invalidAmounts": "Montant(s) invalide(s)"
+    "invalidAmounts": "Montant(s) invalide(s)",
+    "txTimedOutError": "La transaction a expiré. Veuillez réessayer."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -508,7 +509,8 @@
     "unbonding": "Déblocage",
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
-    "onlyInRangePositions": "Uniquement pour les positions dans la plage"
+    "onlyInRangePositions": "Uniquement pour les positions dans la plage",
+    "custom": "Coutume"
   },
   "pools": {
     "allPools": {

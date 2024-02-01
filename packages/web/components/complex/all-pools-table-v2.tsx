@@ -11,14 +11,18 @@ import { EventEmitter } from "eventemitter3";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringEnum,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
+import { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
-import { useQueryParamState } from "~/hooks/window/use-query-param-state";
-import type { MarketIncentivePoolSortKey } from "~/server/api/edge-routers/pools-router";
 import { theme } from "~/tailwind.config";
-import type { Search } from "~/utils/search";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -26,7 +30,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AprBreakdown } from "../cards/apr-breakdown";
 import { CheckboxSelect } from "../control";
 import { SearchBox } from "../input";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 import { PoolQuickActionCell } from "../table/cells";
 import { SortHeader } from "../table/headers/sort";
 import { Tooltip } from "../tooltip";
@@ -34,10 +38,66 @@ import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
 type Pool =
   RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
-type SortKey = MarketIncentivePoolSortKey | undefined;
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 type PoolIncentiveFilter = NonNullable<Pool["incentiveTypes"]>[number];
+
+const poolTypes = [
+  "weighted",
+  "stable",
+  "concentrated",
+  "cosmwasm-transmuter",
+] as const;
+
+const marketIncentivePoolsSortKeys = [
+  "totalFiatValueLocked",
+  "feesSpent7dUsd",
+  "feesSpent24hUsd",
+  "volume7dUsd",
+  "volume24hUsd",
+  "aprBreakdown.total",
+] as const;
+
+const incentiveTypes = ["superfluid", "osmosis", "boost", "none"] as const;
+
+const useAllPoolsTable = () => {
+  const [sortParams, setSortParams] = useQueryStates(
+    {
+      allPoolsSort: parseAsStringLiteral(
+        marketIncentivePoolsSortKeys
+      ).withDefault("volume24hUsd"),
+      allPoolsSortDir: parseAsStringEnum<SortDirection>([
+        "asc",
+        "desc",
+      ]).withDefault("desc"),
+    },
+    {
+      history: "push",
+    }
+  );
+
+  const [filters, setFilters] = useQueryStates(
+    {
+      searchQuery: parseAsString,
+      poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
+        parseAsStringLiteral<PoolTypeFilter>(poolTypes)
+      ).withDefault([...poolTypes]),
+      poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
+        parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
+      ).withDefault([...incentiveTypes]),
+    },
+    {
+      history: "push",
+    }
+  );
+
+  return {
+    filters,
+    setFilters,
+    sortParams,
+    setSortParams,
+  };
+};
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -47,38 +107,34 @@ export const AllPoolsTable: FunctionComponent<{
   const router = useRouter();
   const { width } = useWindowSize();
 
-  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+  const { filters, sortParams, setSortParams } = useAllPoolsTable();
 
-  const [sortKey_, setSortKey] = useQueryParamState<SortKey>(
-    "allPoolsSort",
-    "volume24hUsd"
-  );
   /** Won't sort when searching is happening. */
-  const sortKey: SortKey = Boolean(searchQuery) ? undefined : sortKey_;
+  const sortKey = useMemo(
+    () => (Boolean(filters.searchQuery) ? undefined : sortParams.allPoolsSort),
+    [filters.searchQuery, sortParams.allPoolsSort]
+  );
 
-  const [sortDirection = "desc", setSortDirection, isQueryParamsReady] =
-    useQueryParamState<SortDirection>("allPoolsSortDir", "desc");
+  const setSortDirection = useCallback(
+    (dir: SortDirection) => {
+      setSortParams((state) => ({
+        ...state,
+        allPoolsSortDir: dir,
+      }));
+    },
+    [setSortParams]
+  );
 
-  const [poolTypesFilter, setPoolTypesFilter] = useQueryParamState<
-    PoolTypeFilter[]
-  >("allPoolsType", [
-    "weighted",
-    "stable",
-    "concentrated",
-    "cosmwasm-transmuter",
-  ]);
-  const [poolIncentivesFilter_, setPoolIncentivesFilter] = useQueryParamState<
-    PoolIncentiveFilter[] | string | undefined
-  >("allPoolsIncentive", ["superfluid", "osmosis", "boost", "none"]);
-  // useQueryParamState will return a string if there's a single filter selected
-  const poolIncentivesFilter = useMemo(
-    () =>
-      (!poolIncentivesFilter_
-        ? []
-        : typeof poolIncentivesFilter_ === "string"
-        ? [poolIncentivesFilter_]
-        : poolIncentivesFilter_) as PoolIncentiveFilter[],
-    [poolIncentivesFilter_]
+  const setSortKey = useCallback(
+    (key: (typeof sortParams)["allPoolsSort"] | undefined) => {
+      if (key) {
+        setSortParams((state) => ({
+          ...state,
+          allPoolsSort: key,
+        }));
+      }
+    },
+    [setSortParams]
   );
 
   const {
@@ -90,15 +146,17 @@ export const AllPoolsTable: FunctionComponent<{
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
       limit: 100,
-      search: searchQuery,
-      types: poolTypesFilter
-        ? poolTypesFilter.concat("cosmwasm" as PoolTypeFilter)
+      search: filters.searchQuery
+        ? {
+            query: filters.searchQuery,
+          }
         : undefined,
-      incentiveTypes: poolIncentivesFilter,
+      types: [...filters.poolTypesFilter, "cosmwasm"],
+      incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
         ? {
             keyPath: sortKey,
-            direction: sortDirection,
+            direction: sortParams.allPoolsSortDir,
           }
         : undefined,
       minLiquidityUsd: 1_000,
@@ -106,7 +164,8 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      enabled: isQueryParamsReady,
+
+      // expensive query
       trpc: {
         context: {
           skipBatch: true,
@@ -114,6 +173,7 @@ export const AllPoolsTable: FunctionComponent<{
       },
     }
   );
+
   const poolsData = useMemo(
     () => poolsPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [poolsPagesData]
@@ -122,6 +182,7 @@ export const AllPoolsTable: FunctionComponent<{
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
+
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row, {
@@ -137,11 +198,9 @@ export const AllPoolsTable: FunctionComponent<{
             sortKey="volume24hUsd"
             disabled={isLoading}
             currentSortKey={sortKey}
-            currentDirection={sortDirection}
+            currentDirection={sortParams.allPoolsSortDir}
             setSortDirection={setSortDirection}
-            setSortKey={(key) => {
-              if (key) setSortKey(key);
-            }}
+            setSortKey={setSortKey}
           />
         ),
       }),
@@ -155,11 +214,9 @@ export const AllPoolsTable: FunctionComponent<{
               sortKey="totalFiatValueLocked"
               disabled={isLoading}
               currentSortKey={sortKey}
-              currentDirection={sortDirection}
+              currentDirection={sortParams.allPoolsSortDir}
               setSortDirection={setSortDirection}
-              setSortKey={(key) => {
-                if (key) setSortKey(key);
-              }}
+              setSortKey={setSortKey}
             />
           ),
         }
@@ -172,11 +229,9 @@ export const AllPoolsTable: FunctionComponent<{
             sortKey="feesSpent7dUsd"
             disabled={isLoading}
             currentSortKey={sortKey}
-            currentDirection={sortDirection}
+            currentDirection={sortParams.allPoolsSortDir}
             setSortDirection={setSortDirection}
-            setSortKey={(key) => {
-              if (key) setSortKey(key);
-            }}
+            setSortKey={setSortKey}
           />
         ),
       }),
@@ -188,11 +243,9 @@ export const AllPoolsTable: FunctionComponent<{
             sortKey="aprBreakdown.total"
             disabled={isLoading}
             currentSortKey={sortKey}
-            currentDirection={sortDirection}
+            currentDirection={sortParams.allPoolsSortDir}
             setSortDirection={setSortDirection}
-            setSortKey={(key) => {
-              if (key) setSortKey(key);
-            }}
+            setSortKey={setSortKey}
           >
             <AprDisclaimerTooltip />
           </SortHeader>
@@ -213,13 +266,13 @@ export const AllPoolsTable: FunctionComponent<{
     ],
     [
       columnHelper,
-      sortKey,
-      sortDirection,
-      cellGroupEventEmitter,
-      isLoading,
-      setSortKey,
-      setSortDirection,
       t,
+      isLoading,
+      sortKey,
+      sortParams.allPoolsSortDir,
+      setSortDirection,
+      setSortKey,
+      cellGroupEventEmitter,
       quickAddLiquidity,
     ]
   );
@@ -274,13 +327,7 @@ export const AllPoolsTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <TableControls
-        poolTypesFilter={poolTypesFilter ?? []}
-        setPoolTypesFilter={setPoolTypesFilter}
-        poolIncentivesFilter={poolIncentivesFilter ?? []}
-        setPoolIncentivesFilter={setPoolIncentivesFilter}
-        setSearchQuery={setSearchQuery}
-      />
+      <TableControls />
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -361,26 +408,20 @@ export const AllPoolsTable: FunctionComponent<{
   );
 };
 
-const TableControls: FunctionComponent<{
-  poolTypesFilter: PoolTypeFilter[];
-  setPoolTypesFilter: (poolType: PoolTypeFilter[]) => void;
-  poolIncentivesFilter: PoolIncentiveFilter[];
-  setPoolIncentivesFilter: (poolIncentive: PoolIncentiveFilter[]) => void;
-  setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({
-  poolTypesFilter,
-  setPoolTypesFilter,
-  poolIncentivesFilter,
-  setPoolIncentivesFilter,
-  setSearchQuery,
-}) => {
+const TableControls = () => {
   const { t } = useTranslation();
 
-  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
+  const { filters, setFilters } = useAllPoolsTable();
 
-  // Pass search query in an effect to prevent rendering the entire table on every input change
-  // Only on debounced search query input
-  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
+  const onSearchInput = useCallback(
+    (data: string) => {
+      setFilters((state) => ({
+        ...state,
+        searchQuery: data.length === 0 ? null : data,
+      }));
+    },
+    [setFilters]
+  );
 
   return (
     <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
@@ -389,7 +430,7 @@ const TableControls: FunctionComponent<{
       <div className="flex h-12 flex-wrap gap-3 xl:h-fit">
         <CheckboxSelect
           label={t("components.pool.title")}
-          selectedOptionIds={poolTypesFilter as string[]}
+          selectedOptionIds={filters.poolTypesFilter}
           atLeastOneSelected
           options={[
             { id: "weighted", display: t("components.table.weighted") },
@@ -404,23 +445,27 @@ const TableControls: FunctionComponent<{
             },
           ]}
           onSelect={(poolType) => {
-            if (poolTypesFilter.includes(poolType as PoolTypeFilter)) {
-              setPoolTypesFilter(
-                poolTypesFilter.filter(
-                  (type) => type !== (poolType as PoolTypeFilter)
-                )
-              );
-            } else if (!poolTypesFilter.includes(poolType as PoolTypeFilter)) {
-              setPoolTypesFilter([
-                ...poolTypesFilter,
-                poolType as PoolTypeFilter,
-              ]);
+            if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
+              setFilters((state) => ({
+                ...state,
+                poolTypesFilter: state.poolTypesFilter.filter(
+                  (type) => type !== poolType
+                ),
+              }));
+            } else {
+              setFilters((state) => ({
+                ...state,
+                poolTypesFilter: [
+                  ...state.poolTypesFilter,
+                  poolType as PoolTypeFilter,
+                ],
+              }));
             }
           }}
         />
         <CheckboxSelect
           label={t("components.incentive.title")}
-          selectedOptionIds={poolIncentivesFilter as string[]}
+          selectedOptionIds={filters.poolIncentivesFilter}
           atLeastOneSelected
           options={[
             { id: "superfluid", display: t("pools.aprBreakdown.superfluid") },
@@ -436,32 +481,33 @@ const TableControls: FunctionComponent<{
           ]}
           onSelect={(incentiveType) => {
             if (
-              poolIncentivesFilter.includes(
+              filters.poolIncentivesFilter.includes(
                 incentiveType as PoolIncentiveFilter
               )
             ) {
-              setPoolIncentivesFilter(
-                poolIncentivesFilter.filter(
+              setFilters((state) => ({
+                ...state,
+                poolIncentivesFilter: filters.poolIncentivesFilter.filter(
                   (type) => type !== (incentiveType as PoolIncentiveFilter)
-                )
-              );
-            } else if (
-              !poolIncentivesFilter.includes(
-                incentiveType as PoolIncentiveFilter
-              )
-            ) {
-              setPoolIncentivesFilter([
-                ...poolIncentivesFilter,
-                incentiveType as PoolIncentiveFilter,
-              ]);
+                ),
+              }));
+            } else {
+              setFilters((state) => ({
+                ...state,
+                poolIncentivesFilter: [
+                  ...state.poolIncentivesFilter,
+                  incentiveType as PoolIncentiveFilter,
+                ],
+              }));
             }
           }}
         />
         <SearchBox
           size="small"
           placeholder={t("assets.table.search")}
-          currentValue={searchInput}
-          onInput={setSearchInput}
+          debounce={500}
+          currentValue={filters.searchQuery ?? undefined}
+          onInput={onSearchInput}
         />
       </div>
     </div>
@@ -530,7 +576,7 @@ const AprBreakdownCell: PoolCellComponent = ({
 }) =>
   (aprBreakdown && (
     <Tooltip
-      rootClassNames="!rounded-[20px] drop-shadow-md"
+      rootClassNames="!rounded-2xl drop-shadow-md"
       content={<AprBreakdown {...aprBreakdown} />}
     >
       <p

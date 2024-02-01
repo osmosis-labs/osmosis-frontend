@@ -2,19 +2,16 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { mapRawAssetsToCoinPretty } from "~/server/queries/complex/assets";
+import { mapAssetsToCoins } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   getTotalClaimableRewards,
   getTotalEarned,
-  mapGetPositionDetails,
+  mapGetUserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { queryPositionPerformance } from "~/server/queries/imperator";
-import {
-  queryCLPosition,
-  queryCLPositions,
-} from "~/server/queries/osmosis/concentratedliquidity";
+import { queryCLPosition } from "~/server/queries/osmosis/concentratedliquidity";
 import { sum } from "~/utils/math";
 import { sort } from "~/utils/sort";
 
@@ -28,12 +25,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema.required())
     )
     .query(async ({ input: { userOsmoAddress, sortDirection } }) => {
-      const { positions: rawPositions } = await queryCLPositions({
-        bech32Address: userOsmoAddress,
-      });
-
-      const result = await mapGetPositionDetails({
-        positions: rawPositions,
+      const result = await mapGetUserPositionDetails({
         userOsmoAddress,
       });
       return sort(result, "joinTime", sortDirection);
@@ -57,11 +49,11 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         unclaimedRewards,
         totalEarned,
       ] = await Promise.all([
-        mapRawAssetsToCoinPretty({
+        mapAssetsToCoins({
           rawAssets: performance.principal.assets,
           calculatePrice: true,
         }),
-        mapRawAssetsToCoinPretty({
+        mapAssetsToCoins({
           rawAssets: [position.position.asset0, position.position.asset1],
           calculatePrice: true,
         }),

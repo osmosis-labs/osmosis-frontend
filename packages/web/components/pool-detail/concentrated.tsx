@@ -16,7 +16,7 @@ import {
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -179,7 +179,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           />
         )}
         <section className="flex flex-col gap-8">
-          <div className="flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
+          <div className="flex flex-col rounded-3xl bg-osmoverse-1000 p-8">
             <div className="flex flex-row lg:flex-col lg:gap-3">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -472,7 +472,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
 
     return (
       <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-1000 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
               {t("clPositions.totalBalance")}
@@ -512,14 +512,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
         </div>
         {featureFlags.aprBreakdown && (
           <AprBreakdownLegacy
-            className="shrink-0 rounded-[28px] bg-osmoverse-1000"
+            className="shrink-0 rounded-3xl bg-osmoverse-1000"
             poolId={poolId}
             showDisclaimerTooltip
           />
         )}
 
         {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-1000 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">
               {t("pool.incentives")}
             </span>
