@@ -71,7 +71,7 @@ const OneClickTradingSettings = ({
               <div className="px-8">
                 <div className="flex gap-4 rounded-xl bg-osmoverse-825 px-4 py-3">
                   <Image
-                    src="/images/1ct-mobile-icon.svg"
+                    src="/images/1ct-small-icon.svg"
                     alt="1ct icon"
                     width={32}
                     height={32}

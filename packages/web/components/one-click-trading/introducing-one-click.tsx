@@ -5,11 +5,13 @@ import { Pill } from "~/components/indicators/pill";
 import { useTranslation } from "~/hooks";
 
 interface IntroducingOneClickProps {
+  onStartTrading: () => void;
   onClickEditParams?: () => void;
 }
 
 export const IntroducingOneClick = ({
   onClickEditParams,
+  onStartTrading,
 }: IntroducingOneClickProps) => {
   const { t } = useTranslation();
 
@@ -39,7 +41,7 @@ export const IntroducingOneClick = ({
         src="/images/1ct-intro-graphics.svg"
         alt="1ct intro"
       />
-      <Button className="w-fit px-10">
+      <Button className="w-fit px-10" onClick={onStartTrading}>
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
       <p className="text-caption text-osmoverse-300">

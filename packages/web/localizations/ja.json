@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する"
+    },
+    "welcomeBack": {
+      "title": "おかえり",
+      "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
+      "toggleLabel": "1クリック取引",
+      "editParamsAriaLabel": "1CTパラメータの変更"
     }
   },
   "pool": {

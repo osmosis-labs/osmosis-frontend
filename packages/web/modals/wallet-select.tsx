@@ -33,6 +33,7 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
+import OneClickTradingWelcomeBack from "~/components/one-click-trading/one-click-trading-welcome-back";
 import {
   Step,
   Stepper,
@@ -484,6 +485,10 @@ const RightModalContent: FunctionComponent<
     );
     const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
     const [show1CTEditParams, setShow1CTEditParams] = useState(false);
+    const [transaction1CTParams, setTransaction1CTParams] = useState<Record<
+      string,
+      any
+    > | null>(null);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -661,7 +666,7 @@ const RightModalContent: FunctionComponent<
       <>
         {show1CT ? (
           <>
-            {show1CTEditParams ? (
+            {show1CTEditParams && (
               <OneClickTradingSettings
                 classes={{
                   root: "pt-1.5",
@@ -670,13 +675,33 @@ const RightModalContent: FunctionComponent<
                   setShow1CTEditParams(false);
                 }}
               />
-            ) : (
-              <div className="flex flex-col px-8">
-                <IntroducingOneClick
+            )}
+            {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (
+              <div className="flex flex-col px-8 pt-14">
+                <OneClickTradingWelcomeBack
+                  setTransaction1CTParams={setTransaction1CTParams}
+                  transaction1CTParams={transaction1CTParams}
                   onClickEditParams={() => {
                     setShow1CTEditParams(true);
                   }}
-                />{" "}
+                />
+              </div>
+            )}
+            {!show1CTEditParams && !accountStore.hasUsedOneClickTrading && (
+              <div className="flex flex-col px-8">
+                <IntroducingOneClick
+                  onStartTrading={() => {
+                    accountStore.setOneClickTradingInfo({
+                      allowed: "",
+                      allowedMessages: [],
+                      period: "90",
+                      privateKey: "",
+                    });
+                  }}
+                  onClickEditParams={() => {
+                    setShow1CTEditParams(true);
+                  }}
+                />
               </div>
             )}
           </>

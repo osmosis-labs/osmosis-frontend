@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic"
+    },
+    "welcomeBack": {
+      "title": "Content de te revoir",
+      "description": "Une fois que vous aurez connecté votre portefeuille, vous serez invité à approuver une transaction pour démarrer votre session de trading en 1 clic.",
+      "toggleLabel": "Trading en 1 clic",
+      "editParamsAriaLabel": "Modifier les paramètres 1CT"
     }
   },
   "pool": {

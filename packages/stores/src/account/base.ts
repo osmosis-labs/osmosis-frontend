@@ -90,6 +90,7 @@ import {
   DefaultGasPriceStep,
   getEndpointString,
   getWalletEndpoints,
+  HasUsedOneClickTradingLocalStorageKey,
   logger,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
@@ -120,6 +121,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @observable
   oneClickTradingInfo: OneClickTradingInfo | null = null;
+
+  @observable
+  hasUsedOneClickTrading = false;
 
   txTypeInProgressByChain = observable.map<string, string>();
 
@@ -193,9 +197,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     autorun(async () => {
       const isOneClickTradingEnabled = await this.getUseOneClickTrading();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
         this.useOneClickTrading = isOneClickTradingEnabled;
         this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+        this.hasUsedOneClickTrading = hasUsedOneClickTrading;
       });
     });
   }
@@ -1259,6 +1265,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @action
   async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    this.hasUsedOneClickTrading = true;
+    await this._kvStore.set<boolean>(
+      HasUsedOneClickTradingLocalStorageKey,
+      true
+    );
+
     this.oneClickTradingInfo = data ?? null;
     return this._kvStore.set(OneClickTradingLocalStorageKey, data);
   }
@@ -1273,12 +1285,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @action
   async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
     this.useOneClickTrading = nextValue;
-    await this._kvStore.set(UseOneClickTradingLocalStorageKey, nextValue);
+    await this._kvStore.set<boolean>(
+      UseOneClickTradingLocalStorageKey,
+      nextValue
+    );
   }
 
   async getUseOneClickTrading() {
     return Boolean(
       await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
+    );
+  }
+
+  async getHasUsedOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(HasUsedOneClickTradingLocalStorageKey)
     );
   }
 }

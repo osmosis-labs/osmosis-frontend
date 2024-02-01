@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
       "startButton": "1-클릭 거래 시작"
+    },
+    "welcomeBack": {
+      "title": "돌아온 것을 환영합니다",
+      "description": "지갑을 연결하면 1-클릭 거래 세션을 시작하기 위해 거래를 승인하라는 메시지가 표시됩니다.",
+      "toggleLabel": "1-클릭 거래",
+      "editParamsAriaLabel": "1CT 매개변수 변경"
     }
   },
   "pool": {

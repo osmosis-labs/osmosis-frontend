@@ -65,7 +65,7 @@ const OneClickFloatingBannerContent = () => {
           />
 
           <Image
-            src="/images/1ct-mobile-icon.svg"
+            src="/images/1ct-small-icon.svg"
             alt="1ct mobile icon"
             width={40}
             height={40}

@@ -483,6 +483,12 @@
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın"
+    },
+    "welcomeBack": {
+      "title": "tekrar hoşgeldiniz",
+      "description": "Cüzdanınızı bağladığınızda, Tek Tıkla Ticaret oturumunuzu başlatmak için bir işlemi onaylamanız istenecektir.",
+      "toggleLabel": "Tek Tıklamayla Ticaret",
+      "editParamsAriaLabel": "1CT parametrelerini değiştirin"
     }
   },
   "pool": {
