@@ -39,7 +39,7 @@ export const RecommendedSwapDenoms = [
  * Pools that are excluded from showing external boost incentives APRs.
  */
 export const ExcludedExternalBoostPools =
-  EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? [];
+  EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? ([] as string[]);
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   // #560 (UST/OSMO)
