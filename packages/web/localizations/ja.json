@@ -489,6 +489,11 @@
       "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
       "toggleLabel": "1クリック取引",
       "editParamsAriaLabel": "1CTパラメータの変更"
+    },
+    "connectToContinue": {
+      "altText": "ワンクリック取引グラフィック",
+      "header": "続行するにはウォレットに接続してください",
+      "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     }
   },
   "pool": {

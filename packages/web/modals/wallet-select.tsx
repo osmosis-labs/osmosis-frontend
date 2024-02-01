@@ -32,6 +32,7 @@ import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import OneClickTradingWelcomeBack from "~/components/one-click-trading/one-click-trading-welcome-back";
 import {
@@ -489,6 +490,8 @@ const RightModalContent: FunctionComponent<
       string,
       any
     > | null>(null);
+    const [showConnectAWalletToContinue, setShowConnectAWalletToContinue] =
+      useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -688,21 +691,23 @@ const RightModalContent: FunctionComponent<
               </div>
             )}
             {!show1CTEditParams && !accountStore.hasUsedOneClickTrading && (
-              <div className="flex flex-col px-8">
-                <IntroducingOneClick
-                  onStartTrading={() => {
-                    accountStore.setOneClickTradingInfo({
-                      allowed: "",
-                      allowedMessages: [],
-                      period: "90",
-                      privateKey: "",
-                    });
-                  }}
-                  onClickEditParams={() => {
-                    setShow1CTEditParams(true);
-                  }}
-                />
-              </div>
+              <>
+                {showConnectAWalletToContinue ? (
+                  <OneClickTradingConnectToContinue />
+                ) : (
+                  <div className="flex flex-col px-8">
+                    <IntroducingOneClick
+                      onStartTrading={() => {
+                        // setTransaction1CTParams({});
+                        setShowConnectAWalletToContinue(true);
+                      }}
+                      onClickEditParams={() => {
+                        setShow1CTEditParams(true);
+                      }}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (

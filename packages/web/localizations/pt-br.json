@@ -489,6 +489,11 @@
       "description": "Depois de conectar sua carteira, você será solicitado a aprovar uma transação para iniciar sua sessão de negociação com 1 clique.",
       "toggleLabel": "Negociação em 1 clique",
       "editParamsAriaLabel": "Alterar parâmetros 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Gráfico de negociação com um clique",
+      "header": "Conecte uma carteira para continuar",
+      "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
     }
   },
   "pool": {

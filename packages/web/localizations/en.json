@@ -489,6 +489,11 @@
       "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Change 1CT params"
+    },
+    "connectToContinue": {
+      "altText": "One Click Trading Graphic",
+      "header": "Connect a wallet to continue",
+      "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     }
   },
   "pool": {

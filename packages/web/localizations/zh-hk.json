@@ -489,6 +489,11 @@
       "description": "連接錢包後，系統將提示您批准交易以開始一鍵交易會話。",
       "toggleLabel": "一鍵交易",
       "editParamsAriaLabel": "更改1CT參數"
+    },
+    "connectToContinue": {
+      "altText": "一鍵交易圖形",
+      "header": "連接錢包以繼續",
+      "description": "當您在所選錢包中批准交易時，您的一鍵交易會話將開始。"
     }
   },
   "pool": {

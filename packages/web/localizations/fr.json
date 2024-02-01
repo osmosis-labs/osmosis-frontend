@@ -489,6 +489,11 @@
       "description": "Une fois que vous aurez connecté votre portefeuille, vous serez invité à approuver une transaction pour démarrer votre session de trading en 1 clic.",
       "toggleLabel": "Trading en 1 clic",
       "editParamsAriaLabel": "Modifier les paramètres 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Graphique de trading en un clic",
+      "header": "Connectez un portefeuille pour continuer",
+      "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
     }
   },
   "pool": {
