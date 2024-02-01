@@ -11,6 +11,7 @@ const buttonVariants = cva(
       variant: {
         default:
           "border-2 border-wosmongton-700 bg-wosmongton-700 hover:border-wosmongton-400 hover:bg-wosmongton-400 rounded-xl disabled:border-2 disabled:border-osmoverse-500 disabled:bg-osmoverse-500 disabled:text-osmoverse-100",
+        // TODO add styles
         // destructive:
         //   "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         // outline:
