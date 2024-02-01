@@ -5,6 +5,9 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
+import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PoolAssetsIcon } from "~/components/assets";
 import {
   CopyIcon,
@@ -39,7 +42,6 @@ import {
   StakeTab,
   Switch,
 } from "~/components/control";
-import { Checkbox as CheckboxShadcn } from "~/components/control/checkbox-shadcn";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
@@ -238,6 +240,61 @@ const Checkboxes = () => {
           isOn={checked}
           onToggle={handleCheckboxToggle}
         />
+      </Component>
+    </Card>
+  );
+};
+
+const RadiosShadcn = () => {
+  const [radio, setRadio] = useState("option-one");
+
+  return (
+    <Card title="Radio (Shadcn)" alt>
+      <Component title="Regular (Shadcn)">
+        <RadioGroup defaultValue="option-one">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="option-one"
+              id="option-one"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-one"}
+            />
+            <Label htmlFor="option-one">Option One</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="option-two"
+              id="option-two"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-two"}
+            />
+            <Label htmlFor="option-two">Option Two</Label>
+          </div>
+        </RadioGroup>
+      </Component>
+      <Component title="Regular (Shadcn)">
+        <RadioGroup defaultValue="option-one">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              disabled
+              value="option-one"
+              id="option-one"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-one"}
+            />
+            <Label htmlFor="option-one">Option One</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              disabled
+              value="option-two"
+              id="option-two"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-two"}
+            />
+            <Label htmlFor="option-two">Option Two</Label>
+          </div>
+        </RadioGroup>
       </Component>
     </Card>
   );
@@ -1077,6 +1134,7 @@ const Components: NextPage = () => {
       <CheckboxesShadcn />
       <Checkboxes />
       <Radios />
+      <RadiosShadcn />
       <RadiosWithOptions />
       <Switches />
       <Sliders />
