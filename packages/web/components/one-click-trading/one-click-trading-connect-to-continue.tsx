@@ -3,9 +3,7 @@ import React from "react";
 
 import { useTranslation } from "~/hooks";
 
-type Props = {};
-
-const OneClickTradingConnectToContinue = (props: Props) => {
+const OneClickTradingConnectToContinue = () => {
   const { t } = useTranslation();
   return (
     <div className="flex h-full flex-col items-center justify-center px-8">
