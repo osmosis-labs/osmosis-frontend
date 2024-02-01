@@ -7,7 +7,6 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
-import { ExcludedExternalBoostPools } from "~/config/feature-flag";
 import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { queryLockableDurations } from "~/server/queries/osmosis";
 
@@ -107,21 +106,11 @@ async function getCachedPoolIncentivesMap(): Promise<
       const aprs = await queryPoolAprs();
 
       return aprs.reduce((map, apr) => {
-        let total = maybeMakeRatePretty(apr.total_apr);
+        const total = maybeMakeRatePretty(apr.total_apr);
         const swapFee = maybeMakeRatePretty(apr.swap_fees);
         const superfluid = maybeMakeRatePretty(apr.superfluid);
         const osmosis = maybeMakeRatePretty(apr.osmosis);
-        let boost = maybeMakeRatePretty(apr.boost);
-
-        // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
-        if (
-          ExcludedExternalBoostPools.includes(apr.pool_id) &&
-          total &&
-          boost
-        ) {
-          total = new RatePretty(total.toDec().sub(boost.toDec()));
-          boost = undefined;
-        }
+        const boost = maybeMakeRatePretty(apr.boost);
 
         // add list of incentives that are defined
         const incentiveTypes: PoolIncentiveType[] = [];
