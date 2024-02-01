@@ -631,15 +631,15 @@ const SwitchesShadcn = () => {
     <Card title="Switch (Shadcn)" alt>
       <Component title="Regular (Shadcn)">
         <SwitchShadcn
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+          checked={isSwitchOn}
+          onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
       <Component title="Disabled (Shadcn)">
         <SwitchShadcn
           disabled
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+          checked={isSwitchOn}
+          onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
     </Card>
