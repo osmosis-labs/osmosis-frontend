@@ -517,13 +517,13 @@ const Buttons = () => {
 
 const ButtonsShadcn = () => {
   return (
-    <Card title="Buttons (Shadcn)">
+    <Card title="Buttons (Shadcn)" alt>
       <Component title="Regular">
         <ButtonShadcn onClick={() => console.log("clicked")}>
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Regular (Disabled)">
+      <Component title="Disabled">
         <ButtonShadcn disabled onClick={() => console.log("clicked")}>
           Click
         </ButtonShadcn>
