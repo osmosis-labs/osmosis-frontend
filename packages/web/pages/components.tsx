@@ -5,6 +5,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
+import { Button as ButtonShadcn } from "@/components/ui/button";
 import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -509,6 +510,23 @@ const Buttons = () => {
         <Button mode="unstyled" onClick={() => console.log("clicked")}>
           Click
         </Button>
+      </Component>
+    </Card>
+  );
+};
+
+const ButtonsShadcn = () => {
+  return (
+    <Card title="Buttons (Shadcn)">
+      <Component title="Regular">
+        <ButtonShadcn onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Regular (Disabled)">
+        <ButtonShadcn disabled onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
       </Component>
     </Card>
   );
@@ -1128,6 +1146,7 @@ const Components: NextPage = () => {
       <Assets />
       <Inputs />
       <Buttons />
+      <ButtonsShadcn />
       <CustomButtons />
       <Tooltips />
       <Loaders />
