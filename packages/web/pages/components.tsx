@@ -9,6 +9,7 @@ import { Button as ButtonShadcn } from "@/components/ui/button";
 import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch as SwitchShadcn } from "@/components/ui/switch";
 import { PoolAssetsIcon } from "~/components/assets";
 import {
   CopyIcon,
@@ -64,7 +65,7 @@ const Card: React.FC<{
   <div
     className={classNames(
       "flex flex-col gap-4 rounded-3xl p-6",
-      alt ? "bg-ion-700" : "bg-osmoverse-850"
+      alt ? "bg-rust-800" : "bg-osmoverse-800"
     )}
   >
     <h6 className="text-center">{title}</h6>
@@ -622,6 +623,28 @@ const CustomButtons = () => {
   );
 };
 
+const SwitchesShadcn = () => {
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+
+  return (
+    <Card title="Switch (Shadcn)" alt>
+      <Component title="Regular (Shadcn)">
+        <SwitchShadcn
+          isOn={isSwitchOn}
+          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+        />
+      </Component>
+      <Component title="Disabled (Shadcn)">
+        <SwitchShadcn
+          disabled
+          isOn={isSwitchOn}
+          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+        />
+      </Component>
+    </Card>
+  );
+};
+
 const Switches = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
@@ -1145,16 +1168,17 @@ const Components: NextPage = () => {
       <Icons />
       <Assets />
       <Inputs />
-      <Buttons />
       <ButtonsShadcn />
+      <Buttons />
       <CustomButtons />
       <Tooltips />
       <Loaders />
       <CheckboxesShadcn />
       <Checkboxes />
-      <Radios />
       <RadiosShadcn />
+      <Radios />
       <RadiosWithOptions />
+      <SwitchesShadcn />
       <Switches />
       <Sliders />
       <MenuDropdowns />
