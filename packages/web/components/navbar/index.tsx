@@ -587,9 +587,13 @@ const AnnouncementBanner: FunctionComponent<{
       : bannerResponse?.banner;
 
   if (!banner) return null;
-
   // If the banner has a pageRoute, only show it on that page
-  if (banner.pageRoute && router.pathname !== banner.pageRoute) return null;
+  if (
+    banner.pageRoute &&
+    router.pathname !== banner.pageRoute &&
+    router.asPath !== banner.pageRoute
+  )
+    return null;
 
   const { isWarning, bg, link, persistent } = banner;
 
