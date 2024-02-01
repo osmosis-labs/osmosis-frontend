@@ -1,4 +1,5 @@
 import { RatePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
@@ -55,8 +56,14 @@ import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets"
 const Card: React.FC<{
   title: string;
   children: ReactNode;
-}> = ({ title, children }) => (
-  <div className="flex flex-col gap-4 rounded-3xl bg-osmoverse-850 p-6">
+  alt?: boolean;
+}> = ({ title, children, alt }) => (
+  <div
+    className={classNames(
+      "flex flex-col gap-4 rounded-3xl p-6",
+      alt ? "bg-ion-700" : "bg-osmoverse-850"
+    )}
+  >
     <h6 className="text-center">{title}</h6>
     <div className="flex w-full flex-wrap items-start justify-start gap-4">
       {children}
@@ -143,7 +150,7 @@ const CheckboxesShadcn = () => {
   const handleCheckboxToggle = () => setChecked(!checked);
 
   return (
-    <Card title="Checkbox">
+    <Card title="Checkbox (Shadcn)" alt>
       <Component title="Regular (Shadcn)">
         <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
       </Component>
