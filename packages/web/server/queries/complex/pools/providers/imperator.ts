@@ -419,7 +419,11 @@ export async function makePoolFromImperatorPool(
     spreadFactor: RatePretty;
     totalFiatValueLocked: PricePretty;
   } = {
-    spreadFactor: new RatePretty(filteredPool.swap_fees),
+    spreadFactor: new RatePretty(
+      new Dec(filteredPool.swap_fees.toString()).mul(
+        DecUtils.getTenExponentN(-2)
+      )
+    ),
     totalFiatValueLocked: new PricePretty(
       DEFAULT_VS_CURRENCY,
       filteredPool.liquidity
