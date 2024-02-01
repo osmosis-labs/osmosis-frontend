@@ -67,10 +67,6 @@ export async function mapGetPoolIncentives<TPool extends Pool>({
     .map((pool) => {
       const poolIncentive = incentives.get(pool.id);
 
-      if (pool.id === "1423") {
-        console.log(poolIncentive, params);
-      }
-
       // Filter pools if incentive types are specified.
       // Any type in the given list of types has to be included at least once in the pool types.
       if (params.incentiveTypes && poolIncentive) {
