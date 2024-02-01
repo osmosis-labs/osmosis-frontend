@@ -35,6 +35,13 @@ export const RecommendedSwapDenoms = [
   "ETH",
 ];
 
+/**
+ * Pools that are excluded from showing external boost incentives APRs.
+ */
+export const ExcludedExternalBoostPools = [
+  "1423", // stDYDX/DYDX
+];
+
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   // #560 (UST/OSMO)
   // #562 (UST/LUNA)
