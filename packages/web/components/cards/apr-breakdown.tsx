@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
+import { ExcludedExternalBoostPools } from "~/config";
 import { useTranslation } from "~/hooks";
 import type { PoolIncentives } from "~/server/queries/complex/pools/incentives";
 import { useStore } from "~/stores";
@@ -19,13 +20,26 @@ export const AprBreakdownLegacy: FunctionComponent<
   const { queriesExternalStore } = useStore();
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
 
+  let totalApr = poolAprs?.totalApr;
+  let boostApr = poolAprs?.boost;
+
+  if (
+    poolAprs?.poolId &&
+    ExcludedExternalBoostPools.includes(poolAprs.poolId) &&
+    totalApr &&
+    boostApr
+  ) {
+    totalApr = new RatePretty(totalApr.toDec().sub(boostApr.toDec()));
+    boostApr = undefined;
+  }
+
   return (
     <AprBreakdown
-      total={poolAprs?.totalApr}
+      total={totalApr}
       swapFee={poolAprs?.swapFees}
       superfluid={poolAprs?.superfluid}
       osmosis={poolAprs?.osmosis}
-      boost={poolAprs?.boost}
+      boost={boostApr}
       className={className}
       showDisclaimerTooltip={showDisclaimerTooltip}
     />
