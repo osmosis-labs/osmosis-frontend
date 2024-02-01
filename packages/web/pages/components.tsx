@@ -7,6 +7,7 @@ import { ReactNode, useCallback, useContext, useState } from "react";
 
 import { Button as ButtonShadcn } from "@/components/ui/button";
 import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
+import { Input as InputShadcn } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch as SwitchShadcn } from "@/components/ui/switch";
@@ -1105,6 +1106,29 @@ const Inputs = () => {
   );
 };
 
+const InputsShadcn = () => {
+  const [searchBox, setSearchBox] = useState("");
+  return (
+    <Card title="Inputs (Shadcn)" alt>
+      <Component title="Regular">
+        <InputShadcn
+          value={searchBox}
+          onChange={(e) => setSearchBox(e.currentTarget.value)}
+          placeholder="search"
+        />
+      </Component>
+      <Component title="Disabled">
+        <InputShadcn
+          disabled
+          value={searchBox}
+          onChange={(e) => setSearchBox(e.currentTarget.value)}
+          placeholder="search"
+        />
+      </Component>
+    </Card>
+  );
+};
+
 import QRCode from "~/components/qrcode";
 
 const QRCodes = () => (
@@ -1167,6 +1191,7 @@ const Components: NextPage = () => {
       <Color />
       <Icons />
       <Assets />
+      <InputsShadcn />
       <Inputs />
       <ButtonsShadcn />
       <Buttons />
