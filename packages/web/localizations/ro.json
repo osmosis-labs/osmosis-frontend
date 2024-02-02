@@ -489,6 +489,11 @@
       "description": "După ce vă conectați portofelul, vi se va solicita să aprobați o tranzacție pentru a începe sesiunea de tranzacționare cu 1 clic.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Modificați parametrii 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Grafică de tranzacționare cu un clic",
+      "header": "Conectați un portofel pentru a continua",
+      "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     }
   },
   "pool": {

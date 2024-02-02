@@ -489,6 +489,11 @@
       "description": "Cüzdanınızı bağladığınızda, Tek Tıkla Ticaret oturumunuzu başlatmak için bir işlemi onaylamanız istenecektir.",
       "toggleLabel": "Tek Tıklamayla Ticaret",
       "editParamsAriaLabel": "1CT parametrelerini değiştirin"
+    },
+    "connectToContinue": {
+      "altText": "Tek Tıklamayla Ticaret Grafiği",
+      "header": "Devam etmek için bir cüzdan bağlayın",
+      "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     }
   },
   "pool": {

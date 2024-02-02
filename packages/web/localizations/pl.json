@@ -489,6 +489,11 @@
       "description": "Po podłączeniu portfela zostaniesz poproszony o zatwierdzenie transakcji w celu rozpoczęcia sesji handlu 1-Click.",
       "toggleLabel": "Handel jednym kliknięciem",
       "editParamsAriaLabel": "Zmień parametry 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Grafika handlowa jednym kliknięciem",
+      "header": "Podłącz portfel, aby kontynuować",
+      "description": "Twoja sesja handlu 1-Click rozpocznie się w momencie zatwierdzenia transakcji w wybranym portfelu."
     }
   },
   "pool": {

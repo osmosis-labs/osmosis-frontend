@@ -489,6 +489,11 @@
       "description": "지갑을 연결하면 1-클릭 거래 세션을 시작하기 위해 거래를 승인하라는 메시지가 표시됩니다.",
       "toggleLabel": "1-클릭 거래",
       "editParamsAriaLabel": "1CT 매개변수 변경"
+    },
+    "connectToContinue": {
+      "altText": "원클릭 거래 그래픽",
+      "header": "계속하려면 지갑을 연결하세요",
+      "description": "선택한 지갑에서 거래를 승인하면 1-클릭 거래 세션이 시작됩니다."
     }
   },
   "pool": {

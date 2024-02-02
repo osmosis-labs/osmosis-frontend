@@ -489,6 +489,11 @@
       "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
       "toggleLabel": "Comercio con 1 clic",
       "editParamsAriaLabel": "Cambiar parámetros 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Gráfico de operaciones con un clic",
+      "header": "Conecte una billetera para continuar",
+      "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
     }
   },
   "pool": {
