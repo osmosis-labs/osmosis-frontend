@@ -31,7 +31,7 @@ describe("makePoolFromImperatorPool", () => {
     expect(result.id).toBe(weightedPool.pool_id.toString());
     expect(result.type).toBe("weighted");
     expect((result.raw as any).pool_assets).toBeDefined();
-    expect(result.spreadFactor.toDec().toString()).toBe("0.200000000000000000");
+    expect(result.spreadFactor.toDec().toString()).toBe("0.002000000000000000");
   });
 
   it("should return a valid pool object for a stable pool", async () => {
@@ -43,7 +43,7 @@ describe("makePoolFromImperatorPool", () => {
     expect(result.type).toBe("stable");
     expect((result.raw as any).pool_liquidity).toBeDefined();
     expect(result.reserveCoins.length).toBe(2);
-    expect(result.spreadFactor.toDec().toString()).toBe("0.300000000000000000");
+    expect(result.spreadFactor.toDec().toString()).toBe("0.003000000000000000");
   });
 
   it("should return a valid pool object for a concentrated liquidity pool", async () => {
