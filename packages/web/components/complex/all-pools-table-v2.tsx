@@ -538,28 +538,16 @@ const PoolCompositionCell: PoolCellComponent = ({
           <span className={classNames("text-sm font-caption opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>
               {t("components.table.poolId", { id })}
-              <div
-                className={classNames("rounded-full", {
-                  "bg-[#64C5EE20]": Boolean(type === "concentrated"),
-                  "bg-[#FA825D20]": Boolean(type === "weighted"),
-                  "bg-[#C7F8EF20]": Boolean(type === "stable"),
-                  "bg-[#FAE1D920]": Boolean(
-                    type === "cosmwasm-transmuter" || type === "cosmwasm"
-                  ),
-                })}
-              >
+              <div>
                 <p
-                  className={classNames(
-                    "ml-auto flex items-center gap-1.5 px-1",
-                    {
-                      "text-ion-400": Boolean(type === "concentrated"),
-                      "text-rust-500": Boolean(type === "weighted"),
-                      "text-bullish-300": Boolean(type === "stable"),
-                      "text-rust-300": Boolean(
-                        type === "cosmwasm-transmuter" || type === "cosmwasm"
-                      ),
-                    }
-                  )}
+                  className={classNames("ml-auto flex items-center gap-1.5", {
+                    "text-ion-400": Boolean(type === "concentrated"),
+                    "text-rust-500": Boolean(type === "weighted"),
+                    "text-bullish-300": Boolean(type === "stable"),
+                    "text-rust-300": Boolean(
+                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                    ),
+                  })}
                 >
                   {type === "weighted" && (
                     <Image
