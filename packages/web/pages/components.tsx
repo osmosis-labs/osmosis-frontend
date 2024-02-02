@@ -520,14 +520,29 @@ const Buttons = () => {
 const ButtonsShadcn = () => {
   return (
     <Card title="Buttons (Shadcn)" alt>
-      <Component title="Regular">
-        <ButtonShadcn onClick={() => console.log("clicked")}>
+      <Component title="Regular - default">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="default">
           Click
         </ButtonShadcn>
       </Component>
       <Component title="Disabled">
         <ButtonShadcn disabled onClick={() => console.log("clicked")}>
           Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Small">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="sm">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Large">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="lg">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Icon">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="icon">
+          <Icon id="close" />
         </ButtonShadcn>
       </Component>
     </Card>
