@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Switch } from "~/components/control";
+import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import {
   Screen,
   ScreenGoBackButton,
@@ -29,11 +30,15 @@ enum SettingsScreens {
 interface OneClickTradingSettingsProps {
   classes?: Partial<Record<Classes, string>>;
   onClose?: () => void;
+  transaction1CTParams: any; // TODO: Define type for 1CT
+  setTransaction1CTParams: (params: any) => void; // TODO: Define type for 1CT
 }
 
 const OneClickTradingSettings = ({
   classes,
   onClose,
+  transaction1CTParams,
+  setTransaction1CTParams,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
 
@@ -190,11 +195,17 @@ const OneClickTradingSettings = ({
           </Screen>
 
           <Screen screenName={SettingsScreens.SpendLimit}>
-            <div className={classNames("flex flex-col gap-12", classes?.root)}>
-              {screenGoBackButton}
-              <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                {t("oneClickTrading.settings.spendLimitTitle")}
-              </h1>
+            <div
+              className={classNames(
+                "flex h-full flex-col gap-12",
+                classes?.root
+              )}
+            >
+              <SpendLimitScreen
+                goBackButton={screenGoBackButton}
+                transaction1CTParams={transaction1CTParams}
+                setTransaction1CTParams={setTransaction1CTParams}
+              />
             </div>
           </Screen>
 
