@@ -11,10 +11,14 @@ module.exports = {
   ],
   theme: {
     colors: {
+      // shadcn theme colors
       primary: {
         DEFAULT: "#462ADF",
         foreground: "#FFFFFF",
       },
+      background: "#FFFFFF",
+      input: "#565081",
+      // our custom colors
       white: {
         full: "#FFFFFF",
         high: "rgba(255, 255, 255, 0.95)",
