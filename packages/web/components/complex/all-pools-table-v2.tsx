@@ -22,7 +22,6 @@ import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { theme } from "~/tailwind.config";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -537,36 +536,67 @@ const PoolCompositionCell: PoolCellComponent = ({
             assetDenoms={reserveCoins.map((coin) => coin.denom)}
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
-            {t("components.table.poolId", { id })}
-            <div className="rounded-full bg-[#003F4780]">
-              <span className={classNames("text-sm font-caption opacity-60")}>
-                {type === "stable" && (
-                  <Image
-                    alt=""
-                    src="/icons/stableswap-pool.svg"
-                    width={24}
-                    height={24}
-                  />
-                )}
-                {type === "concentrated" && (
-                  <Icon
-                    color={theme.colors.white.mid}
-                    id="lightning-small"
-                    height={24}
-                    width={24}
-                  />
-                )}
-                {type === "cosmwasm-transmuter" && (
-                  <Image
-                    alt=""
-                    src="/icons/stableswap-pool.svg"
-                    width={24}
-                    height={24}
-                  />
-                )}
-                {spreadFactor ? spreadFactor.toString() : ""}
-              </span>
-            </div>
+            <p className={classNames("ml-auto flex items-center gap-1.5")}>
+              {t("components.table.poolId", { id })}
+              <div
+                className={classNames("rounded-full", {
+                  "bg-[#64C5EE20]": Boolean(type === "concentrated"),
+                  "bg-[#FA825D20]": Boolean(type === "weighted"),
+                  "bg-[#C7F8EF20]": Boolean(type === "stable"),
+                  "bg-[#FAE1D920]": Boolean(
+                    type === "cosmwasm-transmuter" || type === "cosmwasm"
+                  ),
+                })}
+              >
+                <p
+                  className={classNames(
+                    "ml-auto flex items-center gap-1.5 px-1",
+                    {
+                      "text-ion-400": Boolean(type === "concentrated"),
+                      "text-rust-500": Boolean(type === "weighted"),
+                      "text-bullish-300": Boolean(type === "stable"),
+                      "text-rust-300": Boolean(
+                        type === "cosmwasm-transmuter" || type === "cosmwasm"
+                      ),
+                    }
+                  )}
+                >
+                  {type === "weighted" && (
+                    <Image
+                      alt=""
+                      src="/icons/classic-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "stable" && (
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool-new.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "concentrated" && (
+                    <Image
+                      alt=""
+                      src="/icons/supercharged-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "cosmwasm-transmuter" && (
+                    <Image
+                      alt=""
+                      src="/icons/custom-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {spreadFactor ? spreadFactor.toString() : ""}
+                </p>
+              </div>
+            </p>
           </span>
         </div>
       </div>
