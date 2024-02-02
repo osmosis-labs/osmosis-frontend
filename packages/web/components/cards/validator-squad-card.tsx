@@ -137,7 +137,7 @@ export const ValidatorSquadCard: React.FC<{
             {t("stake.validatorHeader")}
           </span>
         </div>
-        <OsmoverseCard containerClasses="!rounded-[28px]">
+        <OsmoverseCard containerClasses="!rounded-3xl">
           <div className="flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
@@ -145,7 +145,7 @@ export const ValidatorSquadCard: React.FC<{
                 disabled={hasInsufficientBalance}
                 mode="bullish-special"
                 size="normal"
-                className="rounded-[19px]"
+                className="rounded-2xl"
                 onClick={() => {
                   setShowValidatorModal(true);
                 }}

@@ -379,7 +379,8 @@
     "chartUnavailable": "نمودار در دسترس نیست",
     "sequenceNumber": "شما تراکنش های همزمان زیادی دارید! پس از اینکه tx قبلی روی زنجیره قرار گرفت، دوباره ارسال کنید. (توالی: {sequence} )",
     "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
-    "invalidAmounts": "مقدار(های) نامعتبر"
+    "invalidAmounts": "مقدار(های) نامعتبر",
+    "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",

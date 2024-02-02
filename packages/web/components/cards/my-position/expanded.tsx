@@ -376,13 +376,13 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             !isUnbonding && (
               <>
                 <button
-                  className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px] md:ml-auto"
+                  className="w-fit rounded-lg bg-superfluid py-[2px] px-[2px] md:ml-auto"
                   disabled={!Boolean(account)}
                   onClick={() => {
                     setSelectSfValidatorAddress(true);
                   }}
                 >
-                  <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
+                  <div className="w-full rounded-lg bg-osmoverse-800 px-3 py-[6px] md:px-2">
                     <span className="text-superfluid-gradient">
                       {t("pool.superfluidEarnMore", {
                         rate: superfluidPoolDetail.superfluidApr
@@ -467,7 +467,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
     <Button
       mode="unstyled"
       size="sm"
-      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400 md:ml-auto"
+      className="text-white w-fit whitespace-nowrap rounded-lg border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400 md:ml-auto"
       onClick={props.onClick}
       {...props}
     >

@@ -114,7 +114,7 @@ export const InputSms: FunctionComponent<Props> = ({
           selected && !targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
         } h-7 ${
           isVerificationRequested ? "w-[5.5625rem]" : "w-[4.625rem]"
-        } rounded-[50rem] text-button`}
+        } rounded-full text-button`}
         size={"unstyled"}
         disabled={
           !smsRegex.test(inputProps.value?.toString() ?? "") ||
