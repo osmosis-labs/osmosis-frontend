@@ -11,6 +11,10 @@ module.exports = {
   ],
   theme: {
     colors: {
+      primary: {
+        DEFAULT: "#462ADF",
+        foreground: "#FFFFFF",
+      },
       white: {
         full: "#FFFFFF",
         high: "rgba(255, 255, 255, 0.95)",
