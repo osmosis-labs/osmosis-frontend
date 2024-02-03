@@ -9,6 +9,33 @@ import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const WalletRegistry: RegistryWallet[] = [
   {
+    ...CosmosKitWalletList["trust-extension"],
+    logo: "/wallets/trust.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust").then((m) => m.default.wallets),
+    windowPropertyName: "trustwallet",
+    async supportsChain(chainId) {
+      const trustAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "stride-1",
+        "neutron-1",
+        "agoric-3",
+        "axelar-dojo-1",
+        "evmos_9001-2",
+        "injective-1",
+        "stargaze-1",
+        "columbus-5",
+        "laozi-mainnet",
+        "crypto-org-chain-mainnet-1",
+        "kava_2222-10",
+      ];
+
+      return trustAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    features: [],
+  },
+  {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
     logo: "/wallets/keplr.svg",
@@ -24,7 +51,7 @@ export const WalletRegistry: RegistryWallet[] = [
     logo: "/wallets/keplr.svg",
     lazyInstall: () =>
       import("~/integrations/keplr-walletconnect").then(
-        (m) => m.KeplrMobileWallet
+        (m) => m.KeplrMobileWallet,
       ),
     supportsChain: async (chainId) => {
       const keplrMobileAvailableChains: MainnetChainIds[] = [
@@ -159,7 +186,7 @@ export const WalletRegistry: RegistryWallet[] = [
     logo: "/wallets/cosmostation.png",
     lazyInstall: () =>
       import("@cosmos-kit/cosmostation-extension").then(
-        (m) => m.CosmostationExtensionWallet
+        (m) => m.CosmostationExtensionWallet,
       ),
     windowPropertyName: "cosmostation",
     stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
@@ -194,7 +221,7 @@ export const WalletRegistry: RegistryWallet[] = [
     logo: "/wallets/station.svg",
     lazyInstall: () =>
       import("@cosmos-kit/station-extension").then(
-        (m) => m.StationExtensionWallet
+        (m) => m.StationExtensionWallet,
       ),
     windowPropertyName: "station",
     supportsChain: async (chainId) => {
@@ -219,7 +246,7 @@ export const WalletRegistry: RegistryWallet[] = [
     logo: "/wallets/okx.png",
     lazyInstall: () =>
       import("@cosmos-kit/okxwallet-extension").then(
-        (m) => m.OkxwalletExtensionWallet
+        (m) => m.OkxwalletExtensionWallet,
       ),
     windowPropertyName: "okxwallet",
     async supportsChain(chainId, retryCount = 0) {
@@ -258,7 +285,7 @@ export const WalletRegistry: RegistryWallet[] = [
            * the second for 400 ms, and so on.
            */
           await new Promise((resolve) =>
-            setTimeout(resolve, Math.pow(2, retryCount) * 100)
+            setTimeout(resolve, Math.pow(2, retryCount) * 100),
           );
           // @ts-ignore
           return this.supportsChain(chainId, retryCount + 1);
@@ -272,7 +299,7 @@ export const WalletRegistry: RegistryWallet[] = [
 
       if (
         error.includes(
-          "Already processing wallet_requestIdentities. Please wait."
+          "Already processing wallet_requestIdentities. Please wait.",
         )
       ) {
         return new WalletConnectionInProgressError();

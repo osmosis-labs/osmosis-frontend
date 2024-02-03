@@ -7,6 +7,7 @@ import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
+import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import * as fs from "fs";
 import path from "path";
@@ -21,6 +22,7 @@ const CosmosKitWalletList = [
   leapMobileInfo,
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
+  trustExtensionInfo,
   xdefiExtensionInfo,
   stationExtensionInfo,
 ];
@@ -84,10 +86,11 @@ async function generateCosmosKitWalletList() {
   const content = `
       import {Wallet} from "@cosmos-kit/core"
       export enum AvailableWallets {${CosmosKitWalletList.map(
-        (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
+        (wallet) =>
+          `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`,
       ).join(",")}}
       export const CosmosKitWalletList: Record<AvailableWallets, Wallet> = ${getStringifiedWallet(
-        registryObject
+        registryObject,
       )}     
     `;
 
