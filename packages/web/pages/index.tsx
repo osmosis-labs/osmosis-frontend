@@ -2,11 +2,41 @@ import { useQuery } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
 import { AdBanner } from "~/components/ad-banner";
+import { Icon } from "~/components/assets";
+import { Data, DoubleTokenChart } from "~/components/chart/double-token-chart";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
+
+const data1: Data[] = [
+  { time: 1700855000000, close: 0.67321876, denom: "OSMO" },
+  { time: 1700855300000, close: 0.61487231, denom: "OSMO" },
+  { time: 1700855600000, close: 0.64198742, denom: "OSMO" },
+  { time: 1700855900000, close: 0.65654321, denom: "OSMO" },
+  { time: 1700856200000, close: 0.65541234, denom: "OSMO" },
+  { time: 1700856500000, close: 0.65412345, denom: "OSMO" },
+  { time: 1700856800000, close: 0.65234567, denom: "OSMO" },
+  { time: 1700857100000, close: 0.69765432, denom: "OSMO" },
+  { time: 1700857400000, close: 0.65498765, denom: "OSMO" },
+  { time: 1700857700000, close: 0.65587654, denom: "OSMO" },
+  { time: 1700858000000, close: 0.65654321, denom: "OSMO" },
+];
+
+const data2: Data[] = [
+  { time: 1700855000000, close: 0.65321876, denom: "OSMO" },
+  { time: 1700855300000, close: 0.65487231, denom: "OSMO" },
+  { time: 1700855600000, close: 0.65198742, denom: "OSMO" },
+  { time: 1700855900000, close: 0.65654321, denom: "OSMO" },
+  { time: 1700856200000, close: 0.65541234, denom: "OSMO" },
+  { time: 1700856500000, close: 0.65412345, denom: "OSMO" },
+  { time: 1700856800000, close: 0.65234567, denom: "OSMO" },
+  { time: 1700857100000, close: 0.65765432, denom: "OSMO" },
+  { time: 1700857400000, close: 0.65498765, denom: "OSMO" },
+  { time: 1700857700000, close: 0.65587654, denom: "OSMO" },
+  { time: 1700858000000, close: 0.65654321, denom: "OSMO" },
+];
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
@@ -34,7 +64,7 @@ const Home = () => {
               </span>
             </span>
           </div>
-          <div className="flex items-center rounded-5xl bg-osmoverse-900 p-8">
+          <div className="flex flex-col items-center rounded-5xl bg-osmoverse-900 p-8">
             <div className="flex w-full justify-between">
               <div className="flex items-center gap-16">
                 <div className="flex flex-col gap-1">
@@ -74,6 +104,7 @@ const Home = () => {
                 <button className="text-caption text-osmoverse-400">1Y</button>
               </div>
             </div>
+            <DoubleTokenChart height={336} data1={data1} data2={data2} />
           </div>
         </div>
       </div>
