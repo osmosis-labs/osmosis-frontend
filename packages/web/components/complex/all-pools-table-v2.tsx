@@ -22,7 +22,6 @@ import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { theme } from "~/tailwind.config";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -520,7 +519,7 @@ type PoolCellComponent<TProps = {}> = FunctionComponent<
 
 const PoolCompositionCell: PoolCellComponent = ({
   row: {
-    original: { id, type, reserveCoins },
+    original: { id, type, spreadFactor, reserveCoins },
   },
 }) => {
   const { t } = useTranslation();
@@ -537,33 +536,57 @@ const PoolCompositionCell: PoolCellComponent = ({
             assetDenoms={reserveCoins.map((coin) => coin.denom)}
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
-            {t("components.table.poolId", { id })}
+            <p className={classNames("ml-auto flex items-center gap-1.5")}>
+              {t("components.table.poolId", { id })}
+              <div>
+                <p
+                  className={classNames("ml-auto flex items-center gap-1.5", {
+                    "text-ion-400": Boolean(type === "concentrated"),
+                    "text-rust-500": Boolean(type === "weighted"),
+                    "text-bullish-300": Boolean(type === "stable"),
+                    "text-rust-300": Boolean(
+                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                    ),
+                  })}
+                >
+                  {type === "weighted" && (
+                    <Image
+                      alt=""
+                      src="/icons/classic-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "stable" && (
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool-new.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "concentrated" && (
+                    <Image
+                      alt=""
+                      src="/icons/supercharged-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {type === "cosmwasm-transmuter" && (
+                    <Image
+                      alt=""
+                      src="/icons/custom-pool.svg"
+                      width={12}
+                      height={12}
+                    />
+                  )}
+                  {spreadFactor ? spreadFactor.toString() : ""}
+                </p>
+              </div>
+            </p>
           </span>
         </div>
-        {type === "stable" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
-        {type === "concentrated" && (
-          <Icon
-            color={theme.colors.white.mid}
-            id="lightning-small"
-            height={24}
-            width={24}
-          />
-        )}
-        {type === "cosmwasm-transmuter" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
       </div>
     </div>
   );

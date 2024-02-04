@@ -43,7 +43,8 @@ import { HideBalancesState } from "~/stores/user-settings";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface Props {
-  nativeBalances: CoinBalance[];
+  nativeBalances: (CoinBalance & { isVerified: boolean })[];
+  unverifiedNativeBalances: (CoinBalance & { isVerified: boolean })[];
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
@@ -82,16 +83,16 @@ function mapCommonFields(
 }
 
 function nativeBalancesToTableCell(
-  balances: CoinBalance[],
+  balances: (CoinBalance & { isVerified: boolean })[],
   osmosisChainId: string
 ): SortableTableCell[] {
-  return balances.map(({ balance, fiatValue }) => {
+  return balances.map(({ balance, fiatValue, isVerified }) => {
     const commonFields = mapCommonFields(balance, fiatValue);
     return {
       ...commonFields,
       chainId: osmosisChainId,
       chainName: "",
-      isVerified: true,
+      isVerified,
     };
   });
 }
@@ -99,6 +100,7 @@ function nativeBalancesToTableCell(
 export const AssetsTableV1: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
+    unverifiedNativeBalances,
     ibcBalances,
     unverifiedIbcBalances,
     onDeposit: _onDeposit,
@@ -213,7 +215,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             )
           ),
           ...nativeBalancesToTableCell(
-            nativeBalances.filter(
+            (isSearching ? unverifiedNativeBalances : nativeBalances).filter(
               ({ balance, fiatValue }) =>
                 !(
                   balance.denom === "OSMO" ||
@@ -243,10 +245,11 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         }),
       [
         nativeBalances,
+        chainStore.osmosis.chainId,
         isSearching,
         unverifiedIbcBalances,
         ibcBalances,
-        chainStore.osmosis.chainId,
+        unverifiedNativeBalances,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
