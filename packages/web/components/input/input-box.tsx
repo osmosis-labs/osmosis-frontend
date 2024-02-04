@@ -29,7 +29,7 @@ interface Props
   /** Show a clear button when `currentValue !== ""`. */
   clearButton?: boolean;
   /** Display a symbol after the input box, ex: '%'. */
-  trailingSymbol?: string;
+  trailingSymbol?: React.ReactNode;
   inputClassName?: string;
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;

@@ -53,6 +53,7 @@ import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
   ApiClientError,
+  DefaultGasPriceStep,
   getSourceDenomFromAssetList,
   isNil,
 } from "@osmosis-labs/utils";
@@ -88,7 +89,6 @@ import {
 } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
-  DefaultGasPriceStep,
   getEndpointString,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
