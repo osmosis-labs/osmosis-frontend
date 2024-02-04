@@ -1327,14 +1327,24 @@
     bfs-path "^1.0.2"
     cross-fetch "^3.1.5"
 
-"@chain-registry/cosmostation@1.23.0", "@chain-registry/cosmostation@^1.23.0":
-  version "1.23.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/cosmostation/-/cosmostation-1.23.0.tgz#591ac567bb554cdbf8f335ee54abc14416fe5668"
-  integrity sha512-WpA8/i5rqsAwhDrKbz7TaIfSJJkA2NSQlc6Lh2ThT8H8SigiPtBGiEqBy1OFkSF+vBsG64NPCu7XUxLP/e+/oA==
+"@chain-registry/cosmostation@1.26.0":
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/cosmostation/-/cosmostation-1.26.0.tgz#0d3967b8d320168a5c9c7b56b3352dcf3f2945b0"
+  integrity sha512-MmjThpQ0U0EJF66UJzPy67iKC9hY7ljrpGtQOPfeYGB/lUlKZTsE/mgF2XkKGUf7wJK8LugOqU5Zul7C1/ZA4Q==
   dependencies:
     "@babel/runtime" "^7.21.0"
     "@chain-registry/types" "^0.17.0"
-    "@chain-registry/utils" "^1.14.0"
+    "@chain-registry/utils" "^1.15.0"
+    "@cosmostation/extension-client" "0.1.15"
+
+"@chain-registry/cosmostation@^1.26.0":
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/cosmostation/-/cosmostation-1.31.0.tgz#0dfa92c2a726857f9e2b1d1d583c20ec636a57d4"
+  integrity sha512-oAN8QhPkWOc+i9zIGFR+z1WKIqOKEDGbjVP3X2lub3fei/rgmUvRI0Bi3zUjlehVxP4jloIhkZD594+LvHpJaw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+    "@chain-registry/types" "^0.18.0"
+    "@chain-registry/utils" "^1.18.0"
     "@cosmostation/extension-client" "0.1.15"
 
 "@chain-registry/keplr@1.25.0":
@@ -1369,17 +1379,7 @@
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-"@chain-registry/utils@^1.14.0":
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/utils/-/utils-1.14.0.tgz#e6043009d80bfb702067c3a92970fae9350f8689"
-  integrity sha512-Xn55RSG76UrE0EAuZMgAiH/zC0xHc+904ydcdMr4Ix+ZsK6nxjwX4mRl9MOx83I1H+Om9GTMtDuXAjy0zxBmqg==
-  dependencies:
-    "@babel/runtime" "^7.21.0"
-    "@chain-registry/types" "^0.17.0"
-    bignumber.js "9.1.1"
-    sha.js "^2.4.11"
-
-"@chain-registry/utils@^1.18.0":
+"@chain-registry/utils@^1.15.0", "@chain-registry/utils@^1.18.0":
   version "1.18.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/utils/-/utils-1.18.0.tgz#d711efc2660b3b65077a5bee90b45ddc6af2194f"
   integrity sha512-FAPyP1FN1jr88GfiBWnppe5S1ddgbK9TfwkyKuNSKHlk9Q+fhdC4nPM552bEz76AuFyfv7SFHg3kDuQSgYYZBw==
@@ -2229,30 +2229,31 @@
     events "3.3.0"
     uuid "^9.0.1"
 
-"@cosmos-kit/cosmostation-extension@^2.5.4":
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-extension/-/cosmostation-extension-2.5.4.tgz#99d3be5a1612824a5612d2eccc5552257eff51fd"
-  integrity sha512-oLODBAUis1PbdpEUS+Kdko9VRdkLrlbBIOKvbEaJhMLDpqtnKEWXfwuBBxOm10zPs8snlwcbpMIbAwtpDwTi9Q==
+"@cosmos-kit/cosmostation-extension@^2.7.10":
+  version "2.7.10"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-extension/-/cosmostation-extension-2.7.10.tgz#2120fa826c692732e7c539a35141df0f8e832876"
+  integrity sha512-x0rBk4Ht6uicfZxIXRbwUi5WHrvKsI11oXbf9bYL9nRBfRTgpbO6zIW9791oTVjiJLzHbKaBQoqh1R233YcHbg==
   dependencies:
-    "@chain-registry/cosmostation" "^1.23.0"
-    "@cosmos-kit/core" "^2.7.2"
+    "@chain-registry/cosmostation" "^1.26.0"
+    "@cosmos-kit/core" "^2.8.9"
+    cosmjs-types "^0.9.0"
 
-"@cosmos-kit/cosmostation-mobile@^2.4.3":
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-mobile/-/cosmostation-mobile-2.4.3.tgz#7f4b8cdac326901d3f5c483260d4d6b04ffd9051"
-  integrity sha512-sHZ/ntkBpnOpaTKN0w8C2cwXIyuue1zPo39mELZ9I4iESnAVOZdKa4W9XOR/422SUqmDK2RR/F2XgemoPz/ipA==
+"@cosmos-kit/cosmostation-mobile@^2.6.9":
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-mobile/-/cosmostation-mobile-2.6.9.tgz#1c304ac12cccc05de93c9ed927243d51087426f6"
+  integrity sha512-GjZetNMFrz2oLisdp14ahxftkwPz5v1OYRGvD4MLTdMSA71JUTzX8A4At4uo4M7nwG09H1yQ2/CLQy9XGVRinA==
   dependencies:
-    "@chain-registry/cosmostation" "1.23.0"
-    "@cosmos-kit/core" "^2.7.2"
-    "@cosmos-kit/walletconnect" "^2.4.3"
+    "@chain-registry/cosmostation" "1.26.0"
+    "@cosmos-kit/core" "^2.8.9"
+    "@cosmos-kit/walletconnect" "^2.5.9"
 
-"@cosmos-kit/cosmostation@^2.4.4":
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation/-/cosmostation-2.4.4.tgz#6fdef907adf7070f0751fb40048ff059f85e638a"
-  integrity sha512-HT5/438pEfsvL5vI3a3p0Z7/aEc/uVRt8WdQHvZW1ZMGB1yrZcrkOXG/8KEafgIAnWqJh8aRqDoGfFzuOF+lug==
+"@cosmos-kit/cosmostation@^2.4.10":
+  version "2.6.10"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation/-/cosmostation-2.6.10.tgz#406d93a29c154e988f4d60425d8edbba4f0cd455"
+  integrity sha512-DWR28fnkv04yr5Eyo/CS7yOiYr3cwld9lE/F2qGIYGb2Tw/eUWhKSl05+2ly8S15xoKOXT7wxXOsFIXYYUQ8/g==
   dependencies:
-    "@cosmos-kit/cosmostation-extension" "^2.5.4"
-    "@cosmos-kit/cosmostation-mobile" "^2.4.3"
+    "@cosmos-kit/cosmostation-extension" "^2.7.10"
+    "@cosmos-kit/cosmostation-mobile" "^2.6.9"
 
 "@cosmos-kit/keplr-extension@^2.5.4":
   version "2.5.4"
