@@ -238,8 +238,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
-          console.log(balance);
-
           return {
             ...balance,
             assetName: asset?.rawAsset.name,
