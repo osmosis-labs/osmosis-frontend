@@ -12,7 +12,7 @@ export const WalletRegistry: RegistryWallet[] = [
     ...CosmosKitWalletList["trust-extension"],
     logo: "/wallets/trust.png",
     lazyInstall: () =>
-      import("@cosmos-kit/trust").then((m) => m.default.wallets),
+      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
     windowPropertyName: "trustwallet",
     async supportsChain(chainId) {
       const trustAvailableChains: MainnetChainIds[] = [
@@ -33,6 +33,8 @@ export const WalletRegistry: RegistryWallet[] = [
 
       return trustAvailableChains.includes(chainId as MainnetChainIds);
     },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
     features: [],
   },
   {
