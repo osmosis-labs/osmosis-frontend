@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "para manter a paridade. O fator de escalonamento atual é",
     "scalingFactorInformation": "Esse fator permite à curva se ajustar à uma mudança de preço previsível, como o valor acumulado para staking líquido do token.",
     "singleAsset": "Um único ativo",
-    "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
     "title": "Adicionar Liquidez",
     "titleInPool": "Adicionar liquidez para a piscina #{poolId}",
     "priceImpact": "Impacto do preço"

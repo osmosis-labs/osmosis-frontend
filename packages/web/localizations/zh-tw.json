@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
     "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
     "singleAsset": "單一資產",
-    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
     "title": "加入流動性",
     "titleInPool": "加入流動性到流動性池 #{poolId}",
     "priceImpact": "價格影響"

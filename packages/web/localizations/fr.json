@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
     "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
     "singleAsset": "Actif unique",
-    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
     "title": "Ajouter de la liquidité",
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "priceImpact": "Incidence sur les prix"
