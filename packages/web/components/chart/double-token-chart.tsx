@@ -131,14 +131,15 @@ export const DoubleTokenChart = ({
 
               if (time && close) {
                 const maxDecimals = Math.max(getDecimalCount(close), 2);
+                const datumByKey = tooltipData.datumByKey;
                 return (
                   <div className="flex gap-6 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
-                    {Object.keys(tooltipData.datumByKey).map((key) => (
+                    {Object.keys(datumByKey).map((key) => (
                       <div key={key} className="flex flex-col">
                         <p className="text-body2">{key}</p>
                         <h6 className="text-h6 font-semibold text-white-full">
                           $
-                          {formatPretty(new Dec(close), {
+                          {formatPretty(new Dec(datumByKey[key].datum.close), {
                             maxDecimals,
                             notation: "compact",
                           }) || ""}
