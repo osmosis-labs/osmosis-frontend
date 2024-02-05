@@ -1,74 +1,79 @@
-import Link from "next/link";
+import classNames from "classnames";
+import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import React from "react";
 
-import { Icon } from "~/components/assets";
-import { Data, DoubleTokenChart } from "~/components/chart/double-token-chart";
+import { DoubleTokenChart } from "~/components/chart/double-token-chart";
+import { AssetInfo } from "~/components/home/asset-info";
+import { useGetHistoricalPriceWithNormalization } from "~/components/home/hooks";
+import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
+import * as trpc from "~/utils/trpc";
 
-const data1: Data[] = [
-  { time: 1700855000000, close: 0.67321876, denom: "OSMO" },
-  { time: 1700855300000, close: 0.61487231, denom: "OSMO" },
-  { time: 1700855600000, close: 0.64198742, denom: "OSMO" },
-  { time: 1700855900000, close: 0.65654321, denom: "OSMO" },
-  { time: 1700856200000, close: 0.65541234, denom: "OSMO" },
-  { time: 1700856500000, close: 0.65412345, denom: "OSMO" },
-  { time: 1700856800000, close: 0.65234567, denom: "OSMO" },
-  { time: 1700857100000, close: 0.69765432, denom: "OSMO" },
-  { time: 1700857400000, close: 0.65498765, denom: "OSMO" },
-  { time: 1700857700000, close: 0.65587654, denom: "OSMO" },
-  { time: 1700858000000, close: 0.65654321, denom: "OSMO" },
-];
-
-const data2: Data[] = [
-  { time: 1700855000000, close: 0.65321876, denom: "OSMO" },
-  { time: 1700855300000, close: 0.65487231, denom: "OSMO" },
-  { time: 1700855600000, close: 0.65198742, denom: "OSMO" },
-  { time: 1700855900000, close: 0.65654321, denom: "OSMO" },
-  { time: 1700856200000, close: 0.65541234, denom: "OSMO" },
-  { time: 1700856500000, close: 0.65412345, denom: "OSMO" },
-  { time: 1700856800000, close: 0.65234567, denom: "OSMO" },
-  { time: 1700857100000, close: 0.65765432, denom: "OSMO" },
-  { time: 1700857400000, close: 0.65498765, denom: "OSMO" },
-  { time: 1700857700000, close: 0.65587654, denom: "OSMO" },
-  { time: 1700858000000, close: 0.65654321, denom: "OSMO" },
+const availableTimeFrames: CommonPriceChartTimeFrame[] = [
+  "1H",
+  "1D",
+  "1W",
+  "1M",
 ];
 
 export const ChartSection = () => {
+  const [{ from, to, timeFrame: urlTimeFrame }, setQueryState] = useQueryStates(
+    {
+      from: parseAsString.withDefault("OSMO"),
+      to: parseAsString.withDefault("ATOM"),
+      timeFrame:
+        parseAsStringEnum<CommonPriceChartTimeFrame>(
+          availableTimeFrames
+        ).withDefault("1M"),
+    }
+  );
+
+  const { data: fromAssetMarketData } =
+    trpc.api.edge.assets.getMarketAsset.useQuery({
+      findMinDenomOrSymbol: from,
+    });
+  const { data: toAssetMarketData } =
+    trpc.api.edge.assets.getMarketAsset.useQuery({
+      findMinDenomOrSymbol: to,
+    });
+
+  const { data: fromAssetChartData } = useGetHistoricalPriceWithNormalization(
+    from,
+    urlTimeFrame
+  );
+  const { data: toAssetChartData } = useGetHistoricalPriceWithNormalization(
+    to,
+    urlTimeFrame
+  );
+
   return (
     <section className="w-full overflow-hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
-          <div className="flex flex-col gap-1">
-            <Link
-              href={`/assets/${"OSMO"}`}
-              className="inline-flex items-center gap-1"
-            >
-              <h6 className="text-wosmongton-200">OSMO</h6>
-              <Icon id="chevron-right" color="#B3B1FD" className="h-4 w-4" />
-            </Link>
-            <h4>$1.51</h4>
-            <span className="text-subititle1 text-bullish-500">↗️ 10.28%</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Link
-              href={`/assets/${"ATOM"}`}
-              className="inline-flex items-center gap-1"
-            >
-              <h6 className="text-wosmongton-200">ATOM</h6>
-              <Icon id="chevron-right" color="#B3B1FD" className="h-4 w-4" />
-            </Link>
-            <h4>$10.12</h4>
-            <span className="text-subititle1 text-bullish-500">↗️ 7.71%</span>
-          </div>
+          <AssetInfo assetPrice={fromAssetMarketData} denom={from} />
+          <AssetInfo assetPrice={toAssetMarketData} denom={to} />
         </div>
         <div className="flex items-center gap-1">
-          <button className="text-caption text-osmoverse-400">1H</button>
-          <button className="text-caption text-osmoverse-400">1D</button>
-          <button className="text-caption text-osmoverse-400">7D</button>
-          <button className="text-caption text-osmoverse-400">30D</button>
-          <button className="text-caption text-osmoverse-400">1Y</button>
+          {availableTimeFrames.map((timeFrame) => (
+            <button
+              key={timeFrame}
+              onClick={() => setQueryState({ timeFrame })}
+              className={classNames(
+                "px-2 py-[5px] text-caption text-osmoverse-400",
+                {
+                  "!text-wosmongton-300": timeFrame === urlTimeFrame,
+                }
+              )}
+            >
+              {timeFrame}
+            </button>
+          ))}
         </div>
       </header>
-      <DoubleTokenChart height={336} data1={data1} data2={data2} />
+      <DoubleTokenChart
+        height={336}
+        data1={fromAssetChartData ?? []}
+        data2={toAssetChartData ?? []}
+      />
     </section>
   );
 };
