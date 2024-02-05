@@ -17,7 +17,10 @@ interface AdBannerProps {
 export const AdBanner: React.FC<AdBannerProps> = memo(
   ({ ads, localization }) => {
     return (
-      <Stepper autoplay={{ delayInMs: 12000, stopOnHover: true }}>
+      <Stepper
+        className="w-full"
+        autoplay={{ delayInMs: 12000, stopOnHover: true }}
+      >
         {ads.map((ad: Ad) => (
           <Step
             key={`${ad.name} ${ad.headerOrTranslationKey} ${ad.subheaderOrTranslationKey}`}
