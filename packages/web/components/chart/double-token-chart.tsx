@@ -125,7 +125,7 @@ export const DoubleTokenChart = ({
               strokeWidth: 0,
               fill: theme.colors.wosmongton["200"],
             }}
-            renderTooltip={({ tooltipData }) => {
+            renderTooltip={({ tooltipData, colorScale }) => {
               const close = tooltipData?.nearestDatum?.datum?.close;
               const time = tooltipData?.nearestDatum?.datum?.time;
 
@@ -136,7 +136,12 @@ export const DoubleTokenChart = ({
                   <div className="flex gap-6 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     {Object.keys(datumByKey).map((key) => (
                       <div key={key} className="flex flex-col">
-                        <p className="text-body2">{key}</p>
+                        <p
+                          className="text-body2 font-medium"
+                          style={{ color: colorScale?.(key) }}
+                        >
+                          {key}
+                        </p>
                         <h6 className="text-h6 font-semibold text-white-full">
                           $
                           {formatPretty(new Dec(datumByKey[key].datum.close), {
