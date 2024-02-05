@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 import { Icon } from "~/components/assets";
@@ -37,18 +38,24 @@ export const ChartSection = () => {
       <div className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           <div className="flex flex-col gap-1">
-            <span className="inline-flex items-center gap-1">
+            <Link
+              href={`/assets/${"OSMO"}`}
+              className="inline-flex items-center gap-1"
+            >
               <h6 className="text-wosmongton-200">OSMO</h6>
               <Icon id="chevron-right" color="#B3B1FD" className="h-4 w-4" />
-            </span>
+            </Link>
             <h4>$1.51</h4>
             <span className="text-subititle1 text-bullish-500">↗️ 10.28%</span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="inline-flex items-center gap-1">
+            <Link
+              href={`/assets/${"ATOM"}`}
+              className="inline-flex items-center gap-1"
+            >
               <h6 className="text-wosmongton-200">ATOM</h6>
               <Icon id="chevron-right" color="#B3B1FD" className="h-4 w-4" />
-            </span>
+            </Link>
             <h4>$10.12</h4>
             <span className="text-subititle1 text-bullish-500">↗️ 7.71%</span>
           </div>
