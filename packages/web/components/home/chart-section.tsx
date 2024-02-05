@@ -34,8 +34,8 @@ const data2: Data[] = [
 
 export const ChartSection = () => {
   return (
-    <div className="flex flex-1 flex-col items-center rounded-tl-5xl rounded-bl-5xl bg-osmoverse-900">
-      <div className="flex w-full justify-between p-8">
+    <section className="w-full overflow-hidden">
+      <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           <div className="flex flex-col gap-1">
             <Link
@@ -67,8 +67,8 @@ export const ChartSection = () => {
           <button className="text-caption text-osmoverse-400">30D</button>
           <button className="text-caption text-osmoverse-400">1Y</button>
         </div>
-      </div>
+      </header>
       <DoubleTokenChart height={336} data1={data1} data2={data2} />
-    </div>
+    </section>
   );
 };

@@ -19,15 +19,15 @@ const Home = () => {
 
   return (
     <main className="flex h-full flex-col items-center justify-center gap-4 overflow-auto bg-osmoverse-1000 px-8 py-2">
-      <div className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header">
+      <header className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header">
         <YourTotalBalance />
         <div className="flex w-[27rem] items-stretch">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
         </div>
-      </div>
-      <div className="flex w-full">
+      </header>
+      <div className="flex w-full rounded-5xl bg-osmoverse-900">
         <ChartSection />
-        <div className="-ml-4 flex w-[27rem]">
+        <div className="min-w-[27rem]">
           <SwapTool />
         </div>
       </div>
