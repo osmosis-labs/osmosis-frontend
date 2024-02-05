@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 import { Icon } from "~/components/assets";
@@ -13,10 +14,13 @@ export const YourTotalBalance = () => {
         <span className="text-subititle1 text-bullish-500">
           ↗️ $1,863.96 &#40;5.6%&#41;
         </span>
-        <span className="text-subititle1 inline-flex items-center gap-1 text-wosmongton-200">
+        <Link
+          href={"/assets"}
+          className="text-subititle1 inline-flex items-center gap-1 text-wosmongton-200"
+        >
           View assets
           <Icon id="arrow-right" color="#B3B1FD" className="h-4 w-4" />
-        </span>
+        </Link>
       </span>
     </div>
   );
