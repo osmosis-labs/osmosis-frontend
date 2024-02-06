@@ -708,36 +708,11 @@ export const TransferContent: FunctionComponent<
   );
 
   // reduce the results' data to that with the highest out amount
-  const bestQuote = useMemo(() => {
-    return (
-      [...quoteResults]
-        // only those that have fetched
-        .filter((quoteResult) => Boolean(quoteResult.isFetched))
-        // Sort by response time. The fastest and highest quality quote will be first.
-        .sort((a, b) => {
-          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
-            return 1;
-          }
-          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
-            return -1;
-          }
-          return 0;
-        })
-        // only those that have returned a result without error
-        .map(({ data }) => data)
-        // only the best quote data
-        .reduce((bestAcc, cur) => {
-          if (!bestAcc) return cur;
-          if (
-            !!cur &&
-            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
-          ) {
-            return cur;
-          }
-          return bestAcc;
-        }, undefined)
-    );
-  }, [quoteResults]);
+  const selectedQuote = useMemo(() => {
+    return quoteResults?.find(
+      ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
+    )?.data;
+  }, [quoteResults, selectedBridgeProvider]);
 
   const numSucceeded = quoteResults.filter(({ isSuccess }) => isSuccess).length;
   const isOneSuccessful = Boolean(numSucceeded);
@@ -756,26 +731,44 @@ export const TransferContent: FunctionComponent<
   );
 
   useEffect(() => {
-    // Make sure that the selected bridge provider is set to the best quote provider.
-    const selectedQuote = quoteResults.find(
-      (quoteResult) => quoteResult.data?.provider?.id === selectedBridgeProvider
-    );
+    const bestQuote = [...quoteResults]
+      // only those that have fetched
+      .filter((quoteResult) => Boolean(quoteResult.isFetched))
+      // Sort by response time. The fastest and highest quality quote will be first.
+      .sort((a, b) => {
+        if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+          return 1;
+        }
+        if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+          return -1;
+        }
+        return 0;
+      })
+      // only those that have returned a result without error
+      .map(({ data }) => data)
+      // only the best quote data
+      .reduce((bestAcc, cur) => {
+        if (!bestAcc) return cur;
+        if (
+          !!cur &&
+          bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+        ) {
+          return cur;
+        }
+        return bestAcc;
+      }, undefined);
 
-    if (
-      !!bestQuote &&
-      (!selectedBridgeProvider ||
-        selectedQuote?.data?.provider?.id !== bestQuote?.provider.id)
-    ) {
+    if (!!bestQuote && (!selectedBridgeProvider || !selectedQuote)) {
       setSelectedBridgeProvider(bestQuote.provider.id);
     }
-  }, [bestQuote, quoteResults, selectedBridgeProvider]);
+  }, [selectedQuote, quoteResults, selectedBridgeProvider]);
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
-    bestQuote?.transferFee !== undefined &&
+    selectedQuote?.transferFee !== undefined &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
-      .lt(bestQuote?.transferFee.toDec());
+      .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -796,9 +789,9 @@ export const TransferContent: FunctionComponent<
          * If there is no transaction request data, fetch it.
          */
         enabled:
-          Boolean(bestQuote) &&
+          Boolean(selectedQuote) &&
           Boolean(selectedBridgeProvider) &&
-          !bestQuote?.transactionRequest &&
+          !selectedQuote?.transactionRequest &&
           inputAmount.gt(new Dec(0)) &&
           !isInsufficientBal &&
           !isInsufficientFee,
@@ -850,7 +843,9 @@ export const TransferContent: FunctionComponent<
     onRequestClose,
   ]);
 
-  const handleEvmTx = async (quote: NonNullable<typeof bestQuote>["quote"]) => {
+  const handleEvmTx = async (
+    quote: NonNullable<typeof selectedQuote>["quote"]
+  ) => {
     if (!ethWalletClient) throw new Error("No ETH wallet client found");
 
     const transactionRequest =
@@ -982,7 +977,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<typeof bestQuote>["quote"]
+    quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -1055,11 +1050,11 @@ export const TransferContent: FunctionComponent<
 
   const onTransfer = async () => {
     const transactionRequest =
-      bestQuote?.transactionRequest ??
+      selectedQuote?.transactionRequest ??
       bridgeTransaction.data?.transactionRequest;
-    const selectedQuote = bestQuote?.quote;
+    const quote = selectedQuote?.quote;
 
-    if (!transactionRequest || !selectedQuote) return;
+    if (!transactionRequest || !quote) return;
 
     logEvent([
       isWithdraw
@@ -1074,10 +1069,10 @@ export const TransferContent: FunctionComponent<
 
     try {
       if (transactionRequest.type === "evm") {
-        await handleEvmTx({ ...selectedQuote, transactionRequest });
+        await handleEvmTx({ ...quote, transactionRequest });
       } else if (transactionRequest.type === "cosmos") {
         await handleCosmosTx({
-          ...selectedQuote,
+          ...quote,
           transactionRequest,
         });
       }
@@ -1106,8 +1101,8 @@ export const TransferContent: FunctionComponent<
 
   const errors = someError?.data?.errors ?? [];
   const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
-  const warnUserOfSlippage = bestQuote?.isSlippageTooHigh;
-  const warnUserOfPriceImpact = bestQuote?.isPriceImpactTooHigh;
+  const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
+  const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
   if (!counterpartyAddress) {
@@ -1162,8 +1157,8 @@ export const TransferContent: FunctionComponent<
   } else if (isSendTxPending) {
     buttonText = t("assets.transfer.sending");
   } else if (
-    bestQuote?.quote?.transactionRequest?.type === "evm" &&
-    bestQuote?.quote?.transactionRequest.approvalTransactionRequest &&
+    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
+    selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
@@ -1184,7 +1179,7 @@ export const TransferContent: FunctionComponent<
     });
   }
 
-  if (bestQuote && !bestQuote.expectedOutput) {
+  if (selectedQuote && !selectedQuote.expectedOutput) {
     throw new Error("Expected output is not defined.");
   }
 
@@ -1256,44 +1251,48 @@ export const TransferContent: FunctionComponent<
               }
             : undefined
         }
-        transferFee={!someError ? bestQuote?.transferFee ?? "-" : "-"}
-        transferFeeFiat={!someError ? bestQuote?.transferFeeFiat : undefined}
-        gasCost={!someError && bestQuote ? bestQuote.gasCost : undefined}
-        gasCostFiat={!someError ? bestQuote?.gasCostFiat : undefined}
+        transferFee={!someError ? selectedQuote?.transferFee ?? "-" : "-"}
+        transferFeeFiat={
+          !someError ? selectedQuote?.transferFeeFiat : undefined
+        }
+        gasCost={
+          !someError && selectedQuote ? selectedQuote.gasCost : undefined
+        }
+        gasCostFiat={!someError ? selectedQuote?.gasCostFiat : undefined}
         classes={{
           expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
           priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
         }}
         expectedOutput={
-          !someError ? bestQuote?.expectedOutput ?? "-" : undefined
+          !someError ? selectedQuote?.expectedOutput ?? "-" : undefined
         }
         expectedOutputFiat={
-          !someError ? bestQuote?.expectedOutputFiat : undefined
+          !someError ? selectedQuote?.expectedOutputFiat : undefined
         }
         priceImpact={
           !someError &&
           inputAmountRaw !== "" &&
-          bestQuote?.priceImpact.toDec().gt(new Dec(0))
-            ? bestQuote?.priceImpact
+          selectedQuote?.priceImpact.toDec().gt(new Dec(0))
+            ? selectedQuote?.priceImpact
             : undefined
         }
         waitTime={
-          !someError ? bestQuote?.estimatedTime?.humanize() ?? "-" : "-"
+          !someError ? selectedQuote?.estimatedTime?.humanize() ?? "-" : "-"
         }
         bridgeProviders={quoteResults
           .map(({ data }) => data?.provider)
-          ?.filter(
-            (provider): provider is NonNullable<typeof provider> =>
-              !!provider && provider.id === selectedBridgeProvider
-          ) // Only show the selected bridge provider
+          ?.filter((r): r is NonNullable<typeof r> => !!r)
           .map(({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
             name: id,
           }))}
         selectedBridgeProvidersId={
-          !someError ? bestQuote?.provider.id : undefined
+          !someError ? selectedQuote?.provider.id : undefined
         }
+        onSelectBridgeProvider={({ id }) => {
+          setSelectedBridgeProvider(id);
+        }}
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         isLoadingDetails={isLoadingBridgeQuote}
         addWithdrawAddrConfig={addWithdrawAddrConfig}
@@ -1319,7 +1318,7 @@ export const TransferContent: FunctionComponent<
               isApprovingToken ||
               Boolean(someError) ||
               Boolean(bridgeTransaction.error) ||
-              !bestQuote?.quote ||
+              !selectedQuote?.quote ||
               isDisabledProp ||
               !counterpartyAddress
             }
