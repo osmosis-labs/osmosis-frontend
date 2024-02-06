@@ -42,7 +42,7 @@ export const ChartSection = () => {
   } = useGetHistoricalPriceWithNormalization(to, urlTimeFrame);
 
   return (
-    <section className="w-full overflow-hidden">
+    <section className="w-full overflow-hidden 1.5lg:hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (

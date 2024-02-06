@@ -28,7 +28,7 @@ export const YourTotalBalance = () => {
   );
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 1.5lg:hidden">
       <span className="text-subtitle1 text-osmoverse-300">
         Your total balance
       </span>
