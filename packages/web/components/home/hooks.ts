@@ -4,7 +4,7 @@ import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import * as trpc from "~/utils/trpc";
 
-export const useGetHistoricalPriceWithNormalization = (
+export const useSwapHistoricalPrice = (
   coinDenom: string,
   timeFrame: CommonPriceChartTimeFrame
 ) => {

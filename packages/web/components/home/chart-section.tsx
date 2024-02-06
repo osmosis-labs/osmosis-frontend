@@ -4,7 +4,7 @@ import React from "react";
 import { DoubleTokenChart } from "~/components/chart/double-token-chart";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
-  useGetHistoricalPriceWithNormalization,
+  useSwapHistoricalPrice,
   useSwapPageQuery,
 } from "~/components/home/hooks";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -35,11 +35,11 @@ export const ChartSection = () => {
 
   const {
     result: { data: fromAssetChartData },
-  } = useGetHistoricalPriceWithNormalization(from, urlTimeFrame);
+  } = useSwapHistoricalPrice(from, urlTimeFrame);
 
   const {
     result: { data: toAssetChartData },
-  } = useGetHistoricalPriceWithNormalization(to, urlTimeFrame);
+  } = useSwapHistoricalPrice(to, urlTimeFrame);
 
   return (
     <section className="w-full overflow-hidden 1.5lg:hidden">

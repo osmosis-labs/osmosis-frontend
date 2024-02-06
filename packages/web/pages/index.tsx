@@ -18,7 +18,7 @@ const Home = () => {
   });
 
   return (
-    <main className="flex h-full flex-col items-center justify-center gap-4 overflow-auto bg-osmoverse-1000 px-8 py-2">
+    <main className="flex h-full flex-col gap-4 overflow-auto bg-osmoverse-1000 px-8 py-2">
       <header className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header 1.5lg:justify-center">
         <YourTotalBalance />
         <div className="flex w-[27rem] items-stretch">
