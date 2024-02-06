@@ -184,8 +184,7 @@
       "titleDeposit": "जमा करें {coinDenom}",
       "titleWithdraw": "{coinDenom} वापस लें",
       "waitTime": "20 सेकंड",
-      "warningLossFunds": "चेतावनी: केंद्रीय विनिमय पते पर निकासी करने से धन की हानि होगी।",
-      "provider": "प्रदाता"
+      "warningLossFunds": "चेतावनी: केंद्रीय विनिमय पते पर निकासी करने से धन की हानि होगी।"
     },
     "myPools": "आपके तालाब",
     "poolCards": {
@@ -258,7 +257,8 @@
       "expectedOutputInfo": "उपयोग किए गए प्रदाता के आधार पर, शुल्क, फिसलन और कीमत प्रभाव के अनुसार कम आउटपुट हो सकता है।",
       "priceImpact": "मूल्य प्रभाव",
       "sending": "भेजना...",
-      "transferAnyway": "फिर भी स्थानांतरण"
+      "transferAnyway": "फिर भी स्थानांतरण",
+      "provider": "प्रदाता"
     },
     "transferAssetSelect": {
       "buttonNext": "अगला",

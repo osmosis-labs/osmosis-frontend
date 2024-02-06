@@ -184,8 +184,7 @@
       "titleDeposit": "{coinDenom} Yatır",
       "titleWithdraw": "{coinDenom} Çek",
       "waitTime": "20 saniye",
-      "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur.",
-      "provider": "Sağlayıcı"
+      "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur."
     },
     "myPools": "Havuzlarım",
     "poolCards": {
@@ -258,7 +257,8 @@
       "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
       "priceImpact": "Fiyat Etkisi",
       "sending": "Gönderiliyor...",
-      "transferAnyway": "Yine de Aktar"
+      "transferAnyway": "Yine de Aktar",
+      "provider": "Sağlayıcı"
     },
     "transferAssetSelect": {
       "buttonNext": "Sonraki",
