@@ -324,7 +324,7 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
-const availableBridgeKeys: AvailableBridges[] = ["Squid", "Skip", "Axelar"];
+const availableBridgeKeys: AvailableBridges[] = ["Skip", "Squid", "Axelar"];
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -683,7 +683,7 @@ export const TransferContent: FunctionComponent<
                 seconds: estimatedTime,
               }),
 
-              // allBridgeProviders: quotes.map((quote) => quote.provider),
+              responseTime: dayjs(),
               quote,
               transactionRequest,
               priceImpact,
@@ -710,9 +710,19 @@ export const TransferContent: FunctionComponent<
   // reduce the results' data to that with the highest out amount
   const bestQuote = useMemo(() => {
     return (
-      quoteResults
+      [...quoteResults]
         // only those that have fetched
         .filter((quoteResult) => Boolean(quoteResult.isFetched))
+        // Sort by response time. The fastest and highest quality quote will be first.
+        .sort((a, b) => {
+          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+            return 1;
+          }
+          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+            return -1;
+          }
+          return 0;
+        })
         // only those that have returned a result without error
         .map(({ data }) => data)
         // only the best quote data
