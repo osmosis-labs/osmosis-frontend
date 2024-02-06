@@ -258,8 +258,7 @@
       "expectedOutputInfo": "使用するプロバイダーによっては、料金、スリッページ、価格への影響に応じて出力が低下する場合があります。",
       "priceImpact": "価格への影響",
       "sending": "送信...",
-      "transferAnyway": "とにかく転送",
-      "provider": "プロバイダー"
+      "transferAnyway": "とにかく転送"
     },
     "transferAssetSelect": {
       "buttonNext": "次",

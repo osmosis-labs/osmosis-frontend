@@ -258,8 +258,7 @@
       "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
       "priceImpact": "价格影响",
       "sending": "正在发送...",
-      "transferAnyway": "无论如何转移",
-      "provider": "提供者"
+      "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",

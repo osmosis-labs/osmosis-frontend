@@ -258,8 +258,7 @@
       "expectedOutputInfo": "ઉપયોગમાં લેવાતા પ્રદાતાના આધારે, ફી, સ્લિપેજ અને કિંમતની અસર અનુસાર ઓછું આઉટપુટ હોઈ શકે છે.",
       "priceImpact": "ભાવની અસર",
       "sending": "મોકલી રહ્યું છે...",
-      "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો",
-      "provider": "પ્રદાતા"
+      "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો"
     },
     "transferAssetSelect": {
       "buttonNext": "આગળ",

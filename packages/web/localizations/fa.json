@@ -258,8 +258,7 @@
       "expectedOutputInfo": "بسته به ارائه دهنده مورد استفاده، ممکن است با توجه به هزینه ها، لغزش و تاثیر قیمت، خروجی کمتری وجود داشته باشد.",
       "priceImpact": "تاثیر قیمت",
       "sending": "در حال ارسال...",
-      "transferAnyway": "انتقال به هر حال",
-      "provider": "ارائه دهنده"
+      "transferAnyway": "انتقال به هر حال"
     },
     "transferAssetSelect": {
       "buttonNext": "بعدی",

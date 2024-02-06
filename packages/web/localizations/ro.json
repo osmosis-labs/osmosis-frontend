@@ -258,8 +258,7 @@
       "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
-      "transferAnyway": "Transfer oricum",
-      "provider": "Furnizor"
+      "transferAnyway": "Transfer oricum"
     },
     "transferAssetSelect": {
       "buttonNext": "Urmatorul",

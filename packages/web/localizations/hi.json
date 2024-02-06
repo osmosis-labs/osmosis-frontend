@@ -258,8 +258,7 @@
       "expectedOutputInfo": "उपयोग किए गए प्रदाता के आधार पर, शुल्क, फिसलन और कीमत प्रभाव के अनुसार कम आउटपुट हो सकता है।",
       "priceImpact": "मूल्य प्रभाव",
       "sending": "भेजना...",
-      "transferAnyway": "फिर भी स्थानांतरण",
-      "provider": "प्रदाता"
+      "transferAnyway": "फिर भी स्थानांतरण"
     },
     "transferAssetSelect": {
       "buttonNext": "अगला",

@@ -258,8 +258,7 @@
       "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
       "priceImpact": "Fiyat Etkisi",
       "sending": "Gönderiliyor...",
-      "transferAnyway": "Yine de Aktar",
-      "provider": "Sağlayıcı"
+      "transferAnyway": "Yine de Aktar"
     },
     "transferAssetSelect": {
       "buttonNext": "Sonraki",
