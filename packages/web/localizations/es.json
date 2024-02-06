@@ -184,7 +184,8 @@
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Retirar {coinDenom}",
       "waitTime": "20 segundos",
-      "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos."
+      "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos.",
+      "provider": "Proveedor"
     },
     "myPools": "Mis piscinas",
     "poolCards": {

@@ -184,7 +184,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "轉出 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
+      "provider": "提供者"
     },
     "myPools": "我嘅流動性池",
     "poolCards": {

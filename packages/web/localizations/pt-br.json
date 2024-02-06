@@ -184,7 +184,8 @@
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Sacar {coinDenom}",
       "waitTime": "20 segundos",
-      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos."
+      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
+      "provider": "Fornecedor"
     },
     "myPools": "Minhas Piscinas",
     "poolCards": {

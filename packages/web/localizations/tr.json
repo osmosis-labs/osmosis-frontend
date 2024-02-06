@@ -184,7 +184,8 @@
       "titleDeposit": "{coinDenom} Yatır",
       "titleWithdraw": "{coinDenom} Çek",
       "waitTime": "20 saniye",
-      "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur."
+      "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur.",
+      "provider": "Sağlayıcı"
     },
     "myPools": "Havuzlarım",
     "poolCards": {
