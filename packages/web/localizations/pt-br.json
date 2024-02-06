@@ -184,7 +184,8 @@
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Sacar {coinDenom}",
       "waitTime": "20 segundos",
-      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos."
+      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
+      "provider": "Fornecedor"
     },
     "myPools": "Minhas Piscinas",
     "poolCards": {
@@ -257,8 +258,7 @@
       "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
       "priceImpact": "Impacto no preço",
       "sending": "Enviando...",
-      "transferAnyway": "Transferir de qualquer maneira",
-      "provider": "Fornecedor"
+      "transferAnyway": "Transferir de qualquer maneira"
     },
     "transferAssetSelect": {
       "buttonNext": "Próximo",

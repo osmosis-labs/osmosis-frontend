@@ -184,7 +184,8 @@
       "titleDeposit": "{coinDenom} 입금",
       "titleWithdraw": "{coinDenom} 출금",
       "waitTime": "20초",
-      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
+      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다.",
+      "provider": "공급자"
     },
     "myPools": "내 풀",
     "poolCards": {
@@ -257,8 +258,7 @@
       "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
       "sending": "전송중...",
-      "transferAnyway": "무시하고 전송",
-      "provider": "공급자"
+      "transferAnyway": "무시하고 전송"
     },
     "transferAssetSelect": {
       "buttonNext": "다음",

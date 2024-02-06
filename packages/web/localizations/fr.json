@@ -184,7 +184,8 @@
       "titleDeposit": "Déposer {coinDenom}",
       "titleWithdraw": "Retirer {coinDenom}",
       "waitTime": "20 secondes",
-      "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds"
+      "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds",
+      "provider": "Fournisseur"
     },
     "myPools": "Mes Bassins",
     "poolCards": {
@@ -257,8 +258,7 @@
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
       "sending": "Envoi en cours...",
-      "transferAnyway": "Transférer quand même",
-      "provider": "Fournisseur"
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
