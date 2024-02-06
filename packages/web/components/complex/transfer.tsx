@@ -90,7 +90,6 @@ export type TransferProps<
   priceImpact?: RatePretty | string;
   bridgeProviders?: BridgeProviderOption[];
   selectedBridgeProvidersId?: string;
-  onSelectBridgeProvider?: (id: BridgeProviderOption) => void;
   isLoadingDetails?: boolean;
 } & InputProps<string> &
   Disableable;
@@ -118,7 +117,6 @@ export const Transfer = observer(
     disabled = false,
     bridgeProviders,
     selectedBridgeProvidersId,
-    onSelectBridgeProvider,
     isLoadingDetails,
     expectedOutput,
     expectedOutputFiat,
