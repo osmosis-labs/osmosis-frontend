@@ -107,7 +107,7 @@
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
-    "goToPool": "رفتن به استخر #"
+    "goToPool": "رفتن به استخر #{poolid}"
   },
   "app": {
     "banner": {

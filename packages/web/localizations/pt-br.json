@@ -107,7 +107,7 @@
     "totalBalance": "Balanço total",
     "numPositions": "indefinido",
     "onePosition": "1 posição",
-    "goToPool": "Vá para a piscina #"
+    "goToPool": "Vá para a piscina #{poolId}"
   },
   "app": {
     "banner": {

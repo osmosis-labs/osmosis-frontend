@@ -107,7 +107,7 @@
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
-    "goToPool": "પૂલ # {poolId} પર જાઓ"
+    "goToPool": "પૂલ #{poolId} પર જાઓ"
   },
   "app": {
     "banner": {

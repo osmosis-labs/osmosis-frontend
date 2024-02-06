@@ -13,7 +13,7 @@ import {
   calcCoinValue,
   calcSumCoinsValue,
   getAsset,
-  mapListedCoins,
+  mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
 import { getPools } from "~/server/queries/complex/pools";
 import {
@@ -25,6 +25,7 @@ import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   LiquidityPosition,
+  queryCLPosition,
   queryCLPositions,
   queryCLUnbondingPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
@@ -59,7 +60,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
     )
     .flat();
 
-  return await mapListedCoins(positionAssets).then(aggregateCoinsByDenom);
+  return await mapRawCoinToPretty(positionAssets).then(aggregateCoinsByDenom);
 }
 
 export type PositionStatus =
@@ -130,15 +131,15 @@ export function calcPositionStatus({
 
 export function getPriceFromSqrtPrice({
   sqrtPrice,
-  baseAsset,
-  quoteAsset,
+  baseCoin,
+  quoteCoin,
 }: {
-  baseAsset: CoinPretty;
-  quoteAsset: CoinPretty;
+  baseCoin: CoinPretty;
+  quoteCoin: CoinPretty;
   sqrtPrice: Dec;
 }) {
   const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-    baseAsset.currency.coinDecimals - quoteAsset.currency.coinDecimals
+    baseCoin.currency.coinDecimals - quoteCoin.currency.coinDecimals
   );
   const price = sqrtPrice.mul(sqrtPrice).mul(multiplicationQuoteOverBase);
   return price;
@@ -146,43 +147,41 @@ export function getPriceFromSqrtPrice({
 
 export function getClTickPrice({
   tick,
-  baseAsset,
-  quoteAsset,
+  baseCoin,
+  quoteCoin,
 }: {
   tick: Int;
-  baseAsset: CoinPretty;
-  quoteAsset: CoinPretty;
+  baseCoin: CoinPretty;
+  quoteCoin: CoinPretty;
 }) {
   const sqrtPrice = tickToSqrtPrice(tick);
   return getPriceFromSqrtPrice({
-    baseAsset,
-    quoteAsset,
+    baseCoin,
+    quoteCoin,
     sqrtPrice,
   });
 }
 
 export type UserPosition = Awaited<
-  ReturnType<typeof mapGetUserPositionDetails>
+  ReturnType<typeof mapGetTrimmedUserPositionDetails>
 >[number];
 
 /** Appends user and position details to a given set of positions.
  *  If positions are not provided, they will be fetched with the given user address. */
 export async function mapGetUserPositionDetails({
-  positions,
+  positions: positions_,
   userOsmoAddress,
 }: {
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
 }) {
-  if (!positions)
-    positions = (await queryCLPositions({ bech32Address: userOsmoAddress }))
-      .positions;
-
-  const poolIds = positions.map(({ position: { pool_id } }) => pool_id);
-  const positionPools = await getPools({ poolIds: poolIds });
-
-  const lockableDurations = await getLockableDurations();
-
+  const positionsPromise = positions_
+    ? Promise.resolve(positions_)
+    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+        ({ positions }) => positions
+      );
+  const poolsPromise = getPools();
+  const lockableDurationsPromise = getLockableDurations();
   const userUnbondingPositionsPromise = queryCLUnbondingPositions({
     bech32Address: userOsmoAddress,
   });
@@ -198,12 +197,18 @@ export async function mapGetUserPositionDetails({
   const superfluidPoolIdsPromise = getSuperfluidPoolIds();
 
   const [
+    positions,
+    pools,
+    lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
     undelegatingPositions,
     stakeCurrency,
     superfluidPoolIds,
   ] = await Promise.all([
+    positionsPromise,
+    poolsPromise,
+    lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
     undelegatingPositionsPromise,
@@ -217,25 +222,29 @@ export async function mapGetUserPositionDetails({
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
-      const [baseAsset, quoteAsset] = await mapListedCoins([asset0, asset1]);
-      if (!baseAsset || !quoteAsset) {
+      const [baseCoin, quoteCoin] = await mapRawCoinToPretty([asset0, asset1]);
+      if (!baseCoin || !quoteCoin) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
         );
       }
+      const currentValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
+      );
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
       const priceRangePromise = Promise.all([
         getClTickPrice({
           tick: lowerTick,
-          baseAsset,
-          quoteAsset,
+          baseCoin,
+          quoteCoin,
         }),
         getClTickPrice({
           tick: upperTick,
-          baseAsset,
-          quoteAsset,
+          baseCoin,
+          quoteCoin,
         }),
       ]);
       const rangeAprPromise = getConcentratedRangePoolApr({
@@ -249,7 +258,7 @@ export async function mapGetUserPositionDetails({
         rangeAprPromise,
       ]);
 
-      const pool = positionPools.find((pool) => pool.id === position.pool_id);
+      const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
         throw new Error(`Pool (${position.pool_id}) not found`);
       }
@@ -310,8 +319,8 @@ export async function mapGetUserPositionDetails({
         sqrtPrice: new Dec(
           (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
         ),
-        baseAsset,
-        quoteAsset,
+        baseCoin,
+        quoteCoin,
       });
 
       const isFullRange =
@@ -387,6 +396,8 @@ export async function mapGetUserPositionDetails({
         poolId: position.pool_id,
         spreadFactor: pool.spreadFactor,
         currentPrice,
+        currentCoins: [baseCoin, quoteCoin],
+        currentValue,
         isFullRange,
         status,
         priceRange,
@@ -399,9 +410,6 @@ export async function mapGetUserPositionDetails({
         isPoolSuperfluid: superfluidPoolIds.includes(position.pool_id),
         superfluidApr,
         ...(superfluidData ? { superfluidData } : undefined),
-        ...(await getPositionCoinsBreakdown({
-          position: position_,
-        })),
       };
     })
   );
@@ -411,15 +419,98 @@ export async function mapGetUserPositionDetails({
   );
 }
 
-/** Gets a breakdown of current and reward coins, with fiat values, for a single CL position. */
-async function getPositionCoinsBreakdown({
-  position,
+// TODO: Rename this
+export async function mapGetTrimmedUserPositionDetails({
+  positions: initialPositions,
+  userOsmoAddress,
 }: {
-  position: LiquidityPosition;
+  positions?: LiquidityPosition[];
+  userOsmoAddress: string;
 }) {
-  const performance = await queryPositionPerformance({
-    positionId: position.position.position_id,
+  const positionsPromise = initialPositions
+    ? Promise.resolve(initialPositions)
+    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+        ({ positions }) => positions
+      );
+
+  const stakeCurrencyPromise = getAsset({
+    anyDenom: ChainList[0].staking.staking_tokens[0].denom,
   });
+
+  const [positions, stakeCurrency] = await Promise.all([
+    positionsPromise,
+    stakeCurrencyPromise,
+  ]);
+
+  if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
+
+  const eventualPositionsDetails = await Promise.all(
+    positions.map(async (position_) => {
+      const { asset0, asset1, position } = position_;
+
+      const [baseCoin, quoteCoin] = await mapRawCoinToPretty([asset0, asset1]);
+      if (!baseCoin || !quoteCoin) {
+        throw new Error(
+          `Error finding assets for position ${position.position_id}`
+        );
+      }
+      const currentValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
+      );
+
+      const lowerTick = new Int(position.lower_tick);
+      const upperTick = new Int(position.upper_tick);
+      const priceRange = await Promise.all([
+        getClTickPrice({
+          tick: lowerTick,
+          baseCoin,
+          quoteCoin,
+        }),
+        getClTickPrice({
+          tick: upperTick,
+          baseCoin,
+          quoteCoin,
+        }),
+      ]);
+
+      const isFullRange =
+        lowerTick.equals(minTick) && upperTick.equals(maxTick);
+
+      return {
+        id: position.position_id,
+        poolId: position.pool_id,
+        currentCoins: [baseCoin, quoteCoin],
+        currentValue,
+        isFullRange,
+        priceRange,
+        liquidity: new Dec(position.liquidity),
+        joinTime: new Date(position.join_time),
+      };
+    })
+  );
+
+  return eventualPositionsDetails.filter(
+    (p): p is NonNullable<typeof p> => !!p
+  );
+}
+
+export type PositionHistoricalPerformance = Awaited<
+  ReturnType<typeof getPositionHistoricalPerformance>
+>;
+
+/** Gets a breakdown of current and reward coins, with fiat values, for a single CL position. */
+export async function getPositionHistoricalPerformance({
+  positionId,
+}: {
+  positionId: string;
+}) {
+  const [{ position }, performance] = await Promise.all([
+    queryCLPosition({ id: positionId }),
+    queryPositionPerformance({
+      positionId,
+    }),
+  ]);
 
   // get all user CL coins, including claimable rewards
 
@@ -431,18 +522,22 @@ async function getPositionCoinsBreakdown({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapListedCoins(performance.principal.assets).then(aggregateCoinsByDenom),
-    mapListedCoins([position.asset0, position.asset1]),
+    mapRawCoinToPretty(performance.principal.assets).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty([position.asset0, position.asset1]),
 
-    mapListedCoins(position.claimable_incentives).then(aggregateCoinsByDenom),
-    mapListedCoins(position.claimable_spread_rewards).then(
+    mapRawCoinToPretty(position.claimable_incentives).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty(position.claimable_spread_rewards).then(
       aggregateCoinsByDenom
     ),
 
-    mapListedCoins(performance.total_incentives_rewards).then(
+    mapRawCoinToPretty(performance.total_incentives_rewards).then(
       aggregateCoinsByDenom
     ),
-    mapListedCoins(performance.total_spread_rewards).then(
+    mapRawCoinToPretty(performance.total_spread_rewards).then(
       aggregateCoinsByDenom
     ),
   ]);

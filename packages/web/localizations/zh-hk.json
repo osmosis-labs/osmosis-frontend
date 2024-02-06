@@ -107,7 +107,7 @@
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
-    "goToPool": "前往泳池 #"
+    "goToPool": "前往泳池 #{poolId}"
   },
   "app": {
     "banner": {

@@ -107,7 +107,7 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール # {poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します"
   },
   "app": {
     "banner": {

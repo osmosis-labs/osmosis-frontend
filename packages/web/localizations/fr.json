@@ -107,7 +107,7 @@
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #"
+    "goToPool": "Aller à la piscine #{poolId}"
   },
   "app": {
     "banner": {

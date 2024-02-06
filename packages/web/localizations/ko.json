@@ -107,7 +107,7 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동"
+    "goToPool": "풀 번호로 이동 #{poolId}"
   },
   "app": {
     "banner": {

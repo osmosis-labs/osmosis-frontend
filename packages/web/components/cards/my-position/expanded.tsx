@@ -27,7 +27,10 @@ import { useConst } from "~/hooks/use-const";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type {
+  PositionHistoricalPerformance,
+  UserPosition,
+} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
@@ -44,7 +47,7 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  position: UserPosition;
+  position: UserPosition & Partial<PositionHistoricalPerformance>;
   showLinkToPool?: boolean;
 }> = observer(({ poolId, position, showLinkToPool = false }) => {
   const {
@@ -316,7 +319,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           )}
         <PositionButton
           disabled={
-            claimableRewardCoins.length === 0 ||
+            claimableRewardCoins?.length === 0 ||
             Boolean(account?.txTypeInProgress) ||
             !Boolean(account)
           }

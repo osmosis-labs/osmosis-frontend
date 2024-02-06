@@ -107,7 +107,7 @@
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja",
-    "goToPool": "Idź do basenu #"
+    "goToPool": "Idź do basenu #{poolId}"
   },
   "app": {
     "banner": {

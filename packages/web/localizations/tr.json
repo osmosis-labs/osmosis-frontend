@@ -107,7 +107,7 @@
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
-    "goToPool": "havuza git #"
+    "goToPool": "havuza git #{poolId}"
   },
   "app": {
     "banner": {

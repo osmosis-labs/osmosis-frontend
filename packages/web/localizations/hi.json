@@ -107,7 +107,7 @@
     "totalBalance": "कुल शेष",
     "numPositions": "{numPositions} पद",
     "onePosition": "1 पद",
-    "goToPool": "पूल # पर जाएँ {poolId}"
+    "goToPool": "पूल # पर जाएँ #{poolId}"
   },
   "app": {
     "banner": {

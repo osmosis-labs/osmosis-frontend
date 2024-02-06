@@ -107,7 +107,7 @@
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
-    "goToPool": "Mergi la piscina #"
+    "goToPool": "Mergi la piscina #{poolId}"
   },
   "app": {
     "banner": {

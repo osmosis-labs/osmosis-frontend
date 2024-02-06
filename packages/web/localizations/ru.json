@@ -107,7 +107,7 @@
     "totalBalance": "Итоговый баланс",
     "numPositions": "{numPositions} позиции",
     "onePosition": "1 позиция",
-    "goToPool": "Перейти к пулу № {poolId}"
+    "goToPool": "Перейти к пулу № #{poolId}"
   },
   "app": {
     "banner": {

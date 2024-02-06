@@ -5,12 +5,12 @@ import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
-import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
@@ -20,27 +20,41 @@ export const MyPositionCard: FunctionComponent<{
   const {
     showLinkToPool = false,
     position: {
+      id,
       poolId,
-      spreadFactor,
-      status,
+      // spreadFactor,
+      // status,
       currentCoins,
       currentValue,
       priceRange: [lowerPrice, upperPrice],
       isFullRange,
-      rangeApr,
-      roi,
-      isPoolSuperfluid,
+      // rangeApr,
+      // isPoolSuperfluid,
     },
   } = props;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
+
+  const { data: positionPerformance } =
+    api.edge.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
+      {
+        positionId: id,
+      },
+      {
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
     <div
       className={classNames(
-        "flex flex-col gap-8 overflow-hidden rounded-2xl bg-osmoverse-800 px-8 py-5 transition-colors sm:p-4",
+        "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 px-8 py-5 transition-colors sm:p-4",
         {
           "cursor-pointer hover:bg-osmoverse-700": collapsed,
         }
@@ -76,18 +90,20 @@ export const MyPositionCard: FunctionComponent<{
                 size="md"
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
-              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+              {/* <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
                 {spreadFactor.toString() ?? ""} {t("clPositions.spreadFactor")}
-              </span>
+              </span> */}
             </div>
-            <MyPositionStatus status={status} />
+            {/* <MyPositionStatus status={status} /> */}
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          <PositionDataGroup
-            label={t("clPositions.roi")}
-            value={roi.maxDecimals(0).toString()}
-          />
+          {positionPerformance && (
+            <PositionDataGroup
+              label={t("clPositions.roi")}
+              value={positionPerformance.roi.maxDecimals(0).toString()}
+            />
+          )}
           <RangeDataGroup
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
@@ -97,21 +113,21 @@ export const MyPositionCard: FunctionComponent<{
             label={t("clPositions.myLiquidity")}
             value={formatPretty(currentValue)}
           />
-          {rangeApr && (
+          {/* {rangeApr && (
             <PositionDataGroup
               label={t("pool.APR")}
               value={formatPretty(rangeApr, {
                 maxDecimals: 1,
               })}
-              isSuperfluid={isPoolSuperfluid}
+              isSuperfluid={isPoolSuperfluid && status !== "outOfRange"}
             />
-          )}
+          )} */}
         </div>
       </div>
       {!collapsed && (
         <MyPositionCardExpandedSection
           poolId={poolId}
-          position={props.position}
+          position={{ ...props.position, ...positionPerformance }}
           showLinkToPool={showLinkToPool}
         />
       )}

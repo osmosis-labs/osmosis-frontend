@@ -91,7 +91,7 @@ export async function getAssets({
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
  */
-export async function mapListedCoins(
+export async function mapRawCoinToPretty(
   rawAssets: {
     amount: string | number | Int | Dec | { toDec(): Dec };
     denom: string;

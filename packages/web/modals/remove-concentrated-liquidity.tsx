@@ -11,14 +11,17 @@ import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type {
+  PositionHistoricalPerformance,
+  UserPosition,
+} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: UserPosition;
+    position: UserPosition & Partial<PositionHistoricalPerformance>;
   } & ModalBaseProps
 > = observer((props) => {
   const {
@@ -111,13 +114,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-        {claimableRewardCoins.length > 0 && (
+        {(claimableRewardCoins?.length ?? 0) > 0 && (
           <div className="mt-8 flex w-full flex-col gap-3 py-3">
             <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
               {t("clPositions.pendingRewards")}
             </div>
             <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-              {claimableRewardCoins.map((coin) => (
+              {claimableRewardCoins?.map((coin) => (
                 <AssetAmount
                   key={coin.currency.coinMinimalDenom}
                   className="!text-body2 !font-body2"
