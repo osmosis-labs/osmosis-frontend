@@ -184,8 +184,7 @@
       "titleDeposit": "واریز {coinDenom}",
       "titleWithdraw": "برداشت {coinDenom}",
       "waitTime": "20 ثانیه",
-      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود.",
-      "provider": "ارائه دهنده"
+      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود."
     },
     "myPools": "استخرهای من",
     "poolCards": {

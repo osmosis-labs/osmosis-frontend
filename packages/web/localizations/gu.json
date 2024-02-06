@@ -184,8 +184,7 @@
       "titleDeposit": "જમા {coinDenom}",
       "titleWithdraw": "પાછી ખેંચો {coinDenom}",
       "waitTime": "20 સેકન્ડ",
-      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે.",
-      "provider": "પ્રદાતા"
+      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે."
     },
     "myPools": "તમારા પૂલ",
     "poolCards": {

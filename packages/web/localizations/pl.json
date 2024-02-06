@@ -184,8 +184,7 @@
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
       "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
-      "provider": "Dostawca"
+      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
     },
     "myPools": "Moje Pule",
     "poolCards": {

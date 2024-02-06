@@ -184,8 +184,7 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
-      "provider": "Provider"
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
     },
     "myPools": "Your Pools",
     "poolCards": {
