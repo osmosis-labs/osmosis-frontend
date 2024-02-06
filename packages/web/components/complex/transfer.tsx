@@ -263,10 +263,7 @@ export const Transfer = observer(
         )}
 
         <div className="body1 relative flex w-full flex-col gap-12 text-osmoverse-400 transition-opacity duration-300">
-          <BridgeFromToNetwork
-            transferPath={[from, to]}
-            bridgeProviders={bridgeProviders}
-          />
+          <BridgeFromToNetwork transferPath={[from, to]} />
 
           <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
             {/* From Address */}
