@@ -183,8 +183,7 @@
       "titleDeposit": "Einzahlung {coinDenom}",
       "titleWithdraw": "Abheben {coinDenom}",
       "waitTime": "20 Sekunden",
-      "warningLossFunds": "Warnung: Eine Auszahlung an die zentrale Börsenadresse führt zum Verlust von Geldern.",
-      "provider": "Anbieter"
+      "warningLossFunds": "Warnung: Eine Auszahlung an die zentrale Börsenadresse führt zum Verlust von Geldern."
     },
     "myPools": "Ihre Pools",
     "poolCards": {
@@ -257,7 +256,8 @@
       "expectedOutputInfo": "Abhängig vom genutzten Anbieter kann es aufgrund von Gebühren, Slippage und Preisauswirkungen zu einem geringeren Output kommen.",
       "priceImpact": "Preisauswirkungen",
       "sending": "Senden...",
-      "transferAnyway": "Übertragen Sie trotzdem"
+      "transferAnyway": "Übertragen Sie trotzdem",
+      "provider": "Anbieter"
     },
     "transferAssetSelect": {
       "buttonNext": "Nächste",
