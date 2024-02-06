@@ -121,8 +121,7 @@ export const DoubleTokenChart = ({ data, height }: DoubleTokenChartProps) => {
             },
           })}
         >
-          <AnimatedAxis orientation="bottom" numTicks={4} hideTicks hideZero />
-          <AnimatedAxis orientation="bottom" numTicks={4} hideTicks hideZero />
+          <AnimatedAxis orientation="bottom" numTicks={2} hideTicks hideZero />
           {convertedPrimaryData.length > 0 ? (
             <>
               <AnimatedAreaSeries
