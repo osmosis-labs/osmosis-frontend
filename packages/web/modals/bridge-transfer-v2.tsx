@@ -1267,20 +1267,6 @@ export const TransferContent: FunctionComponent<
           !someError ? bestQuote?.estimatedTime?.humanize() ?? "-" : "-"
         }
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={quoteResults
-          .map(({ data }) => data?.provider)
-          ?.filter(
-            (provider): provider is NonNullable<typeof provider> =>
-              !!provider && provider.id === selectedBridgeProvider
-          ) // Only show the selected bridge provider
-          .map(({ id, logoUrl }) => ({
-            id: id,
-            logo: logoUrl,
-            name: id,
-          }))}
-        selectedBridgeProvidersId={
-          !someError ? bestQuote?.provider.id : undefined
-        }
         isLoadingDetails={isLoadingBridgeQuote}
         addWithdrawAddrConfig={addWithdrawAddrConfig}
       />
