@@ -9,23 +9,72 @@ import {
   Tooltip,
   XYChart,
 } from "@visx/xychart";
-import React from "react";
+import { useMemo } from "react";
 
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
-export type Data = { time: number; close: number; denom: string };
+export type Data = {
+  time: number;
+  close: number;
+  denom: string;
+  originalClose?: number;
+};
 
-export const DoubleTokenChart = ({
-  data1,
-  data2,
-  height,
-}: {
-  data1: Data[];
-  data2: Data[];
+export interface DoubleTokenChartProps {
+  data: Data[][];
   height: number;
-}) => {
+}
+
+// TODO: support multiple token using array, for future support and simple logic
+export const DoubleTokenChart = ({ data, height }: DoubleTokenChartProps) => {
+  const [primaryData, secondaryData] = data;
+
+  const [primaryMin, primaryMax] = useMemo(() => {
+    const max = Math.max(...primaryData.map((d) => d.close));
+    const min = Math.min(...primaryData.map((d) => d.close));
+
+    return [min, max];
+  }, [primaryData]);
+
+  const [secondaryMin, secondaryMax] = useMemo(() => {
+    const max = Math.max(...secondaryData.map((d) => d.close));
+    const min = Math.min(...secondaryData.map((d) => d.close));
+
+    return [min, max];
+  }, [secondaryData]);
+
+  /**
+   * Here we normalize data in a range between zero and one.
+   */
+  const convertedPrimaryData = useMemo(
+    () =>
+      primaryData.map((data) => {
+        return {
+          ...data,
+          close: (data.close - primaryMin) / (primaryMax - primaryMin),
+          originalClose: data.close,
+        };
+      }),
+    [primaryData, primaryMin, primaryMax]
+  );
+
+  /**
+   * Here we normalize data in a range between zero and one.
+   */
+  const convertedSecondaryData = useMemo(
+    () =>
+      secondaryData.map((data) => {
+        return {
+          ...data,
+          close: (data.close - secondaryMin) / (secondaryMax - secondaryMin),
+          originalClose: data.close,
+        };
+      }),
+    [secondaryData, secondaryMax, secondaryMin]
+  );
+
   return (
     <ParentSize className="flex-shrink-1 flex-1 [&>svg]:overflow-visible">
       {({ width }) => (
@@ -74,46 +123,55 @@ export const DoubleTokenChart = ({
         >
           <AnimatedAxis orientation="bottom" numTicks={4} hideTicks hideZero />
           <AnimatedAxis orientation="bottom" numTicks={4} hideTicks hideZero />
-          <>
-            <AnimatedAreaSeries
-              dataKey="OSMO"
-              data={data1}
-              xAccessor={(d: Data) => d?.time}
-              yAccessor={(d: Data) => d?.close}
-              fillOpacity={0.4}
-              curve={curveNatural}
-              fill="url(#gradient)"
-            />
-            <LinearGradient
-              id="gradient"
-              from={"#D779CF"}
-              rotate={-8}
-              fromOffset="13.08%"
-              fromOpacity={1}
-              toOpacity={0}
-              toOffset="85.36%"
-            />
-          </>
-          <>
-            <AnimatedAreaSeries
-              dataKey="ATOM"
-              data={data2}
-              xAccessor={(d: Data) => d?.time}
-              yAccessor={(d: Data) => d?.close}
-              fillOpacity={0.4}
-              curve={curveNatural}
-              fill="url(#gradient)"
-            />
-            <LinearGradient
-              id="gradient"
-              from={"#8C8AF9"}
-              rotate={-8}
-              fromOffset="13.08%"
-              fromOpacity={1}
-              toOpacity={0}
-              toOffset="85.36%"
-            />
-          </>
+          {convertedPrimaryData.length > 0 ? (
+            <>
+              <AnimatedAreaSeries
+                dataKey={convertedPrimaryData[0].denom}
+                data={convertedPrimaryData}
+                xAccessor={(d: Data) => d?.time}
+                yAccessor={(d: Data) => d?.close}
+                fillOpacity={0.4}
+                curve={curveNatural}
+                fill="url(#gradient)"
+              />
+              <LinearGradient
+                id="gradient"
+                from={"#D779CF"}
+                rotate={-8}
+                fromOffset="13.08%"
+                fromOpacity={1}
+                toOpacity={0}
+                toOffset="85.36%"
+              />
+            </>
+          ) : (
+            false
+          )}
+          {convertedSecondaryData.length > 0 ? (
+            <>
+              <AnimatedAreaSeries
+                dataKey={convertedSecondaryData[0].denom}
+                data={convertedSecondaryData}
+                xAccessor={(d: Data) => d?.time}
+                yAccessor={(d: Data) => d?.close}
+                fillOpacity={0.4}
+                curve={curveNatural}
+                fill="url(#secondaryGradient)"
+              />
+              <LinearGradient
+                id="secondaryGradient"
+                from={"#D779CF"}
+                rotate={-8}
+                fromOffset="13.08%"
+                fromOpacity={1}
+                toOpacity={0}
+                toOffset="85.36%"
+              />
+            </>
+          ) : (
+            false
+          )}
+
           <Tooltip<Data>
             snapTooltipToDatumX
             snapTooltipToDatumY
@@ -126,12 +184,15 @@ export const DoubleTokenChart = ({
               fill: theme.colors.wosmongton["200"],
             }}
             renderTooltip={({ tooltipData, colorScale }) => {
-              const close = tooltipData?.nearestDatum?.datum?.close;
+              const close =
+                tooltipData?.nearestDatum?.datum?.originalClose ??
+                tooltipData?.nearestDatum?.datum?.close;
               const time = tooltipData?.nearestDatum?.datum?.time;
 
               if (time && close) {
                 const maxDecimals = Math.max(getDecimalCount(close), 2);
                 const datumByKey = tooltipData.datumByKey;
+
                 return (
                   <div className="flex gap-6 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     {Object.keys(datumByKey).map((key) => (
@@ -144,10 +205,16 @@ export const DoubleTokenChart = ({
                         </p>
                         <h6 className="text-h6 font-semibold text-white-full">
                           $
-                          {formatPretty(new Dec(datumByKey[key].datum.close), {
-                            maxDecimals,
-                            notation: "compact",
-                          }) || ""}
+                          {formatPretty(
+                            new Dec(
+                              datumByKey[key].datum.originalClose ??
+                                datumByKey[key].datum.close
+                            ),
+                            {
+                              maxDecimals,
+                              notation: "compact",
+                            }
+                          ) || ""}
                         </h6>
                       </div>
                     ))}
