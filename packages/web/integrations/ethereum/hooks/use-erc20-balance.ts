@@ -1,5 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { queryErc20Balance } from "~/integrations/ethereum/queries";
 import { EthWallet } from "~/integrations/ethereum/types";
@@ -9,24 +9,19 @@ export function useErc20Balance(
   ethWallet: EthWallet | undefined,
   erc20ContractAddress?: string
 ) {
-  const [erc20Balance, setErc20Balance] = useState<Awaited<
-    ReturnType<typeof queryErc20Balance>
-  > | null>(null);
+  const { data: erc20Balance } = useQuery({
+    queryKey: ["erc20-balance", ethWallet?.chainId, erc20ContractAddress],
+    queryFn: () => {
+      if (!ethWallet || !ethWallet.send) return;
+      if (!ethWallet.accountAddress || !erc20ContractAddress) return;
 
-  const address = ethWallet?.accountAddress;
-  const sendFn = ethWallet?.send;
-
-  useEffect(() => {
-    if (!ethWallet || !sendFn) return;
-
-    if (address && erc20ContractAddress) {
-      queryErc20Balance(sendFn, erc20ContractAddress, address).then(
-        (balance) => {
-          setErc20Balance(balance);
-        }
+      return queryErc20Balance(
+        ethWallet.send,
+        erc20ContractAddress,
+        ethWallet.accountAddress
       );
-    }
-  }, [ethWallet?.chainId, address, erc20ContractAddress, sendFn, ethWallet]);
+    },
+  });
 
   if (!erc20Balance) return;
   return new CoinPretty(

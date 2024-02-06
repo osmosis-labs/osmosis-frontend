@@ -324,7 +324,7 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
-const availableBridgeKeys: AvailableBridges[] = ["Skip", "Axelar", "Squid"];
+const availableBridgeKeys: AvailableBridges[] = ["Squid", "Skip", "Axelar"];
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -636,7 +636,7 @@ export const TransferContent: FunctionComponent<
                   coinMinimalDenom: expectedOutput.sourceDenom,
                 },
                 new Dec(expectedOutput.amount)
-              ).maxDecimals(8),
+              ),
 
               get expectedOutputFiat() {
                 if (!expectedOutput.fiatValue) return undefined;
@@ -716,11 +716,15 @@ export const TransferContent: FunctionComponent<
         // only those that have returned a result without error
         .map(({ data }) => data)
         // only the best quote data
-        .reduce((best, cur) => {
-          if (!best) return cur;
-          if (cur && best.expectedOutput.toDec().lt(cur.expectedOutput.toDec()))
+        .reduce((bestAcc, cur) => {
+          if (!bestAcc) return cur;
+          if (
+            !!cur &&
+            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+          ) {
             return cur;
-          return best;
+          }
+          return bestAcc;
         }, undefined)
     );
   }, [quoteResults]);
@@ -885,9 +889,9 @@ export const TransferContent: FunctionComponent<
           ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
         });
 
-        quoteResults.forEach((quoteResult) => {
-          quoteResult.refetch();
-        });
+        for (const quoteResult of quoteResults) {
+          await quoteResult.refetch();
+        }
 
         return;
       }
@@ -1265,6 +1269,20 @@ export const TransferContent: FunctionComponent<
         }
         waitTime={
           !someError ? bestQuote?.estimatedTime?.humanize() ?? "-" : "-"
+        }
+        bridgeProviders={quoteResults
+          .map(({ data }) => data?.provider)
+          ?.filter(
+            (provider): provider is NonNullable<typeof provider> =>
+              !!provider && provider.id === selectedBridgeProvider
+          ) // Only show the selected bridge provider
+          .map(({ id, logoUrl }) => ({
+            id: id,
+            logo: logoUrl,
+            name: id,
+          }))}
+        selectedBridgeProvidersId={
+          !someError ? bestQuote?.provider.id : undefined
         }
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         isLoadingDetails={isLoadingBridgeQuote}

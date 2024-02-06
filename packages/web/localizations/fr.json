@@ -258,7 +258,8 @@
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
       "sending": "Envoi en cours...",
-      "transferAnyway": "Transférer quand même"
+      "transferAnyway": "Transférer quand même",
+      "provider": "Fournisseur"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",

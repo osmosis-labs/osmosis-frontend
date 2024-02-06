@@ -258,7 +258,8 @@
       "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
       "sending": "Wysyłanie...",
-      "transferAnyway": "Transfer mimo wszystko"
+      "transferAnyway": "Transfer mimo wszystko",
+      "provider": "Dostawca"
     },
     "transferAssetSelect": {
       "buttonNext": "Dalej",

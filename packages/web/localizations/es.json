@@ -258,7 +258,8 @@
       "expectedOutputInfo": "Dependiendo del proveedor utilizado, puede haber una producción menor según las tarifas, el deslizamiento y el impacto en el precio.",
       "priceImpact": "Impacto en el precio",
       "sending": "Enviando...",
-      "transferAnyway": "Transferir de todos modos"
+      "transferAnyway": "Transferir de todos modos",
+      "provider": "Proveedor"
     },
     "transferAssetSelect": {
       "buttonNext": "Siguiente",

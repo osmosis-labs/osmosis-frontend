@@ -258,7 +258,8 @@
       "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact",
       "sending": "Sending...",
-      "transferAnyway": "Transfer Anyway"
+      "transferAnyway": "Transfer Anyway",
+      "provider": "Provider"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",

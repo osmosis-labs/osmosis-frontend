@@ -225,6 +225,10 @@ export const Transfer = observer(
       }
     }
 
+    const selectedProvider = bridgeProviders?.find(
+      (provider) => provider.id === selectedBridgeProvidersId
+    );
+
     return (
       <div
         className={classNames("flex flex-col gap-11 overflow-x-auto md:gap-4", {
@@ -264,8 +268,6 @@ export const Transfer = observer(
           <BridgeFromToNetwork
             transferPath={[from, to]}
             bridgeProviders={bridgeProviders}
-            onSelectBridgeProvider={onSelectBridgeProvider}
-            selectedBridgeProvidersId={selectedBridgeProvidersId}
           />
 
           <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
@@ -566,6 +568,26 @@ export const Transfer = observer(
                 </SkeletonLoader>
               </div>
             )}
+
+            <div className="flex place-content-between items-center">
+              <span>{t("assets.transfer.provider")}</span>
+              <SkeletonLoader
+                className="flex min-w-[5rem] justify-end"
+                isLoaded={!isLoadingDetails}
+              >
+                <div className="flex min-h-[16px] items-center gap-2 self-end">
+                  {!!selectedProvider && (
+                    <Image
+                      src={selectedProvider.logo}
+                      alt={`${selectedProvider.name} logo`}
+                      width={16}
+                      height={16}
+                    />
+                  )}
+                  <p>{selectedProvider?.name ?? "-"}</p>
+                </div>
+              </SkeletonLoader>
+            </div>
 
             {priceImpact && (
               <div className="flex place-content-between items-center">
