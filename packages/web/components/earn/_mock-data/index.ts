@@ -20,7 +20,7 @@ export const MOCK_tableData: Strategy[] = [
     daily: 0.0008,
     reward: ["OSMO", "MARS"],
     lock: 21,
-    risk: 2,
+    risk: 4,
     actions: {
       externalURL: "#",
     },
@@ -112,7 +112,7 @@ export const MOCK_tableData: Strategy[] = [
     daily: 0.0012,
     reward: ["BTC", "ETH"],
     lock: 25,
-    risk: 2,
+    risk: 5,
     actions: {
       externalURL: "#",
     },

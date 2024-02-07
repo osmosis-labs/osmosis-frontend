@@ -108,16 +108,21 @@ export const tableColumns = [
     header: () => <ColumnCellHeader tKey={"earnPage.risk"} />,
     cell: (item) => (
       <div className="flex items-center justify-end gap-1">
-        {Array(3)
-          .fill(null)
-          .map((_, i) => (
-            <div
-              key={`${item.cell.id} ${i} risk indicator`}
-              className={classNames(`h-5 w-2 rounded-lg bg-osmoverse-700`, {
-                "!bg-ion-400": i + 1 <= item.getValue(),
-              })}
-            />
-          ))}
+        {[
+          "bg-wosmongton-900",
+          "bg-wosmongton-800",
+          "bg-wosmongton-700",
+          "bg-wosmongton-500",
+          "bg-wosmongton-300",
+        ].map((bgColor, i) => (
+          <div
+            key={`${item.cell.id} ${i} risk indicator`}
+            className={classNames(`h-5 w-2 rounded-lg`, {
+              [bgColor]: i + 1 <= item.getValue(),
+              "bg-osmoverse-700": i + 1 > item.getValue(),
+            })}
+          />
+        ))}
       </div>
     ),
   }),
