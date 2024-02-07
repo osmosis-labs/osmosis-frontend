@@ -1291,6 +1291,9 @@ const Components: NextPage = () => {
       <CheckboxesShadcn />
       <Checkboxes />
 
+      <RadiosShadcn />
+      <Radios />
+
       <FontSize />
       <Color />
       <Icons />
@@ -1302,8 +1305,6 @@ const Components: NextPage = () => {
       <Tooltips />
       <Loaders />
 
-      <RadiosShadcn />
-      <Radios />
       <RadiosWithOptions />
 
       <Sliders />
