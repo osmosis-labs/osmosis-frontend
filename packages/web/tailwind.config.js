@@ -27,7 +27,7 @@ module.exports = {
         500: "#5B57FA",
         700: "#462ADF",
         800: "#361FB2",
-        900: "#2D1B8F"
+        900: "#2D1B8F",
       },
       ion: {
         100: "#DCF9FF",
@@ -175,6 +175,8 @@ module.exports = {
         "linear-gradient(180deg, #201B43 10%, rgba(20, 15, 52, 0) 30%);",
       "gradient-earnpage-position-bg":
         "linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), #462ADF 100%)",
+      "gradient-earnpage-tvl-depositcap":
+        "linear-gradient(to right, #462ADF, #8A86FF)",
     },
     screens: {
       "3xl": { max: "1792px" },
