@@ -78,7 +78,9 @@ export function isIncentivePoolFiltered(
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Get a cached Map with pool IDs mapped to incentives for that pool. */
-function getCachedPoolIncentivesMap(): Promise<Map<string, PoolIncentives>> {
+export function getCachedPoolIncentivesMap(): Promise<
+  Map<string, PoolIncentives>
+> {
   return cachified({
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
