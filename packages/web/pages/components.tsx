@@ -157,11 +157,19 @@ const CheckboxesShadcn = () => {
 
   return (
     <Card title="Checkbox (Shadcn)" alt>
-      <Component title="Regular (Shadcn)">
+      <Component title="Regular">
         <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
       </Component>
 
-      <Component title="Disabled (Shadcn)">
+      <Component title="Indeterminate">
+        <CheckboxShadcn
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          isIndeterminate
+        />
+      </Component>
+
+      <Component title="Disabled">
         <CheckboxShadcn
           checked={checked}
           onClick={handleCheckboxToggle}
@@ -169,7 +177,7 @@ const CheckboxesShadcn = () => {
         />
       </Component>
 
-      <Component title="With Children (Shadcn)">
+      <Component title="With Children">
         <div className="flex items-center space-x-2">
           <CheckboxShadcn
             checked={checked}
@@ -1305,6 +1313,9 @@ const Components: NextPage = () => {
       <ButtonsShadcn />
       <Buttons />
 
+      <CheckboxesShadcn />
+      <Checkboxes />
+
       <FontSize />
       <Color />
       <Icons />
@@ -1315,8 +1326,7 @@ const Components: NextPage = () => {
       <CustomButtons />
       <Tooltips />
       <Loaders />
-      <CheckboxesShadcn />
-      <Checkboxes />
+
       <RadiosShadcn />
       <Radios />
       <RadiosWithOptions />
