@@ -2,7 +2,6 @@ import { flexRender, useReactTable } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 
-import { useWindowSize } from "~/hooks";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 
 interface StrategiesTableProps {
@@ -12,7 +11,6 @@ interface StrategiesTableProps {
 const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
   const { tableConfig } = useStrategyTableConfig(showBalance);
   const table = useReactTable(tableConfig);
-  const { width } = useWindowSize();
 
   return (
     <div className="xl:no-scrollbar w-full xl:overflow-scroll">
@@ -23,8 +21,8 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-20 bg-osmoverse-850 !text-left":
-                      header.index === 1 && width > 768,
+                    "sticky left-20 bg-osmoverse-850 !text-left md:static md:left-0":
+                      header.index === 1,
                     "sticky left-0 z-30 bg-osmoverse-850 !pl-4":
                       header.index === 0,
                   })}
@@ -54,9 +52,8 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
                   className={classNames(
                     "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
                     {
-                      "md:sticky md:-left-1 md:z-30": rowIndex === 0,
-                      "sticky -left-1 z-30": rowIndex === 0 && width > 768,
-                      "sticky left-20 z-30": rowIndex === 1 && width > 768,
+                      "sticky -left-1 z-30": rowIndex === 0,
+                      "sticky left-20 z-30 md:static md:left-0": rowIndex === 1,
                     }
                   )}
                   key={cell.id}
