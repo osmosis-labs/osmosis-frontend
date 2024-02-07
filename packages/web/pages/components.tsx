@@ -676,6 +676,25 @@ const Switches = () => {
           onToggle={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
+      <Component title="Children - Left">
+        <Switch
+          disabled
+          isOn={isSwitchOn}
+          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+        >
+          <span>Child</span>
+        </Switch>
+      </Component>
+      <Component title="Children - Right">
+        <Switch
+          disabled
+          isOn={isSwitchOn}
+          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+          labelPosition="right"
+        >
+          <span>Child</span>
+        </Switch>
+      </Component>
     </Card>
   );
 };
@@ -1201,6 +1220,8 @@ const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
+      <SwitchesShadcn />
+      <Switches />
 
       <FontSize />
       <Color />
@@ -1218,8 +1239,7 @@ const Components: NextPage = () => {
       <RadiosShadcn />
       <Radios />
       <RadiosWithOptions />
-      <SwitchesShadcn />
-      <Switches />
+
       <Sliders />
       <MenuDropdowns />
       <CheckboxSelects />
