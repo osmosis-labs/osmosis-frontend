@@ -1,5 +1,4 @@
 import { RatePretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
@@ -63,15 +62,8 @@ import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets"
 const Card: React.FC<{
   title: string;
   children: ReactNode;
-  alt?: boolean;
-}> = ({ title, children, alt }) => (
-  <div
-    className={classNames(
-      "flex flex-col gap-4 rounded-3xl p-6",
-      // alt ? "bg-rust-800" : "bg-osmoverse-800"
-      "bg-osmoverse-800"
-    )}
-  >
+}> = ({ title, children }) => (
+  <div className="bg-osmoverse-800 bg-osmoverse-800">
     <h6 className="text-center">{title}</h6>
     <div className="flex w-full flex-wrap items-start justify-start gap-4">
       {children}
@@ -179,7 +171,7 @@ const CheckboxesShadcn = () => {
   const handleCheckboxToggle = () => setChecked(!checked);
 
   return (
-    <Card title="Checkbox (Shadcn)" alt>
+    <Card title="Checkbox (Shadcn)">
       <Component title="Regular">
         <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
       </Component>
@@ -286,7 +278,7 @@ const RadiosShadcn = () => {
   const [radio, setRadio] = useState("option-one");
 
   return (
-    <Card title="Radio (Shadcn)" alt>
+    <Card title="Radio (Shadcn)">
       <Component title="Regular (Shadcn)">
         <RadioGroup defaultValue="option-one">
           <div className="flex items-center space-x-2">
@@ -548,7 +540,7 @@ const Buttons = () => {
 
 const ButtonsShadcn = () => {
   return (
-    <Card title="Buttons (Shadcn)" alt>
+    <Card title="Buttons (Shadcn)">
       <Component title="Primary">
         <ButtonShadcn onClick={() => console.log("clicked")} size="default">
           Click
@@ -707,7 +699,7 @@ const SwitchesShadcn = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   return (
-    <Card title="Switch (Shadcn)" alt>
+    <Card title="Switch (Shadcn)">
       <Component title="Regular">
         <SwitchShadcn
           checked={isSwitchOn}
@@ -1228,7 +1220,7 @@ const Inputs = () => {
 const InputsShadcn = () => {
   const [searchBox, setSearchBox] = useState("");
   return (
-    <Card title="Inputs (Shadcn)" alt>
+    <Card title="Inputs (Shadcn)">
       <Component title="Regular">
         <InputShadcn
           value={searchBox}
