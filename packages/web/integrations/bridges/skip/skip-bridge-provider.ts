@@ -1,10 +1,12 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts, TxStatus } from "@osmosis-labs/stores";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
 
+import { AssetLists } from "~/config/generated/asset-lists";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import SkipApiClient from "~/integrations/bridges/skip/queries";
@@ -245,15 +247,32 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const gasCost = await this.estimateGasCost(params, transactionRequest);
 
-        const gasAssetPriceUSD = gasCost
-          ? await getAssetPrice({
-              asset: {
-                coinDenom: gasCost?.denom ?? "",
-                sourceDenom: gasCost?.sourceDenom ?? "",
-              },
-              currency: "usd",
-            })
-          : undefined;
+        let gasAssetPriceUSD: Dec | undefined;
+        if (gasCost) {
+          const fromChainAssets = await this.getSkipAssets(
+            fromChain.chainId.toString()
+          );
+
+          const nativeAsset = fromChainAssets[
+            fromChain.chainId.toString()
+          ].assets.find((asset) => !asset.token_contract);
+
+          const gasAsset = getAssetFromAssetList({
+            coinGeckoId: nativeAsset?.coingecko_id ?? "",
+            assetLists: AssetLists,
+          });
+
+          gasAssetPriceUSD = gasAsset
+            ? await getAssetPrice({
+                asset: {
+                  sourceDenom: gasAsset.sourceDenom,
+                  coinDenom: gasAsset.sourceDenom,
+                  coinMinimalDenom: gasAsset.coinMinimalDenom,
+                },
+                currency: "usd",
+              })
+            : undefined;
+        }
 
         return {
           input: {

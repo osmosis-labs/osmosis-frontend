@@ -15,6 +15,7 @@ export type SkipAsset = {
   description?: string;
   coingecko_id?: string;
   recommended_symbol?: string;
+  is_evm_native?: boolean;
 };
 
 export type SkipChain = {
