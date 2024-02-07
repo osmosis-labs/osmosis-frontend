@@ -519,8 +519,12 @@ export async function getPositionHistoricalPerformance({
     }),
   ]);
 
-  // get all user CL coins, including claimable rewards
+  // There is no performance data for this position
+  if (performance.message) {
+    console.error(`No performance data for position ${positionId}`);
+  }
 
+  // get all user CL coins, including claimable rewards
   const [
     principalCoins,
     currentCoins,
@@ -529,22 +533,20 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal.assets).then(
+    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
       aggregateCoinsByDenom
     ),
     mapRawCoinToPretty([position.asset0, position.asset1]),
-
     mapRawCoinToPretty(position.claimable_incentives).then(
       aggregateCoinsByDenom
     ),
     mapRawCoinToPretty(position.claimable_spread_rewards).then(
       aggregateCoinsByDenom
     ),
-
-    mapRawCoinToPretty(performance.total_incentives_rewards).then(
+    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
       aggregateCoinsByDenom
     ),
-    mapRawCoinToPretty(performance.total_spread_rewards).then(
+    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
       aggregateCoinsByDenom
     ),
   ]);
@@ -585,13 +587,18 @@ export async function getPositionHistoricalPerformance({
     (await calcSumCoinsValue(totalRewardCoins)) ?? 0
   );
 
+  const principalValueDec = principalValue.toDec();
+
   const roi = new RatePretty(
     currentValue
       .toDec()
       .add(claimableRewardsValue.toDec())
       .add(totalEarnedValue.toDec())
-      .sub(principalValue.toDec())
-      .quo(principalValue.toDec())
+      .sub(principalValueDec)
+      .quo(
+        // Principal can be 0 if the position is not found
+        principalValueDec.equals(new Dec(0)) ? new Dec(1) : principalValueDec
+      )
   );
 
   return {

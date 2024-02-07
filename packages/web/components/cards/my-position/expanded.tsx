@@ -244,12 +244,15 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
           </div>
           <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
-            <AssetsInfo
-              className="flex-1 sm:w-full"
-              title={t("clPositions.principalAssets")}
-              assets={principalCoins}
-              totalValue={principalValue}
-            />
+            {(principalCoins?.length ?? 0) < 1 &&
+            positionPerformance ? undefined : (
+              <AssetsInfo
+                className="flex-1 sm:w-full"
+                title={t("clPositions.principalAssets")}
+                assets={principalCoins}
+                totalValue={principalValue}
+              />
+            )}
             <AssetsInfo
               className="flex-1 sm:w-full"
               title={t("clPositions.unclaimedRewards")}
