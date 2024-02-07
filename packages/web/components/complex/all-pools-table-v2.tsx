@@ -8,7 +8,6 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -542,7 +541,6 @@ const PoolCompositionCell: PoolCellComponent = ({
                 <p
                   className={classNames("ml-auto flex items-center gap-1.5", {
                     "text-ion-400": Boolean(type === "concentrated"),
-                    "text-rust-500": Boolean(type === "weighted"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
                       type === "cosmwasm-transmuter" || type === "cosmwasm"
@@ -550,36 +548,16 @@ const PoolCompositionCell: PoolCellComponent = ({
                   })}
                 >
                   {type === "weighted" && (
-                    <Image
-                      alt=""
-                      src="/icons/classic-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="weighted-pool" width={16} height={16} />
                   )}
                   {type === "stable" && (
-                    <Image
-                      alt=""
-                      src="/icons/stableswap-pool-new.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="stable-pool" width={16} height={16} />
                   )}
                   {type === "concentrated" && (
-                    <Image
-                      alt=""
-                      src="/icons/supercharged-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="concentrated-pool" width={16} height={16} />
                   )}
                   {type === "cosmwasm-transmuter" && (
-                    <Image
-                      alt=""
-                      src="/icons/custom-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="custom-pool" width={16} height={16} />
                   )}
                   {spreadFactor ? spreadFactor.toString() : ""}
                 </p>
