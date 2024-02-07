@@ -55,6 +55,7 @@ import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Slider as SliderShadcn } from "~/components/ui/slider";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -107,6 +108,24 @@ const Loaders = () => {
       </Component>
       <Component title="Skeleton (Shadcn)">
         <Skeleton className="h-4 w-full rounded-full" />
+      </Component>
+    </Card>
+  );
+};
+
+const SlidersShadcn = () => {
+  const [slider, setSlider] = useState([50]);
+
+  return (
+    <Card title="Slider (Shadcn)">
+      <Component title="Slider">
+        <SliderShadcn
+          min={0}
+          max={100}
+          step={1}
+          value={slider}
+          onValueChange={(value) => setSlider(value)}
+        />
       </Component>
     </Card>
   );
@@ -1302,6 +1321,9 @@ const Components: NextPage = () => {
       <InputsShadcn />
       <Inputs />
 
+      <SlidersShadcn />
+      <Sliders />
+
       <FontSize />
       <Color />
       <Icons />
@@ -1313,7 +1335,6 @@ const Components: NextPage = () => {
 
       <RadiosWithOptions />
 
-      <Sliders />
       <MenuDropdowns />
       <CheckboxSelects />
       <StakeTabs />
