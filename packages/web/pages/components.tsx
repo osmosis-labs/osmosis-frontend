@@ -644,18 +644,44 @@ const SwitchesShadcn = () => {
 
   return (
     <Card title="Switch (Shadcn)" alt>
-      <Component title="Regular (Shadcn)">
+      <Component title="Regular">
         <SwitchShadcn
           checked={isSwitchOn}
           onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
-      <Component title="Disabled (Shadcn)">
+      <Component title="Disabled">
         <SwitchShadcn
           disabled
           checked={isSwitchOn}
           onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
+      </Component>
+      <Component title="Children - Right">
+        <div className="flex items-center">
+          <label className="text-white pr-[15px] text-[15px] leading-none">
+            Child
+          </label>
+          <SwitchShadcn
+            checked={isSwitchOn}
+            onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
+          >
+            Child
+          </SwitchShadcn>
+        </div>
+      </Component>
+      <Component title="Children - Left">
+        <div className="flex items-center">
+          <SwitchShadcn
+            checked={isSwitchOn}
+            onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
+          >
+            Child
+          </SwitchShadcn>
+          <label className="text-white pl-[15px] text-[15px] leading-none">
+            Child
+          </label>
+        </div>
       </Component>
     </Card>
   );
@@ -677,17 +703,12 @@ const Switches = () => {
         />
       </Component>
       <Component title="Children - Left">
-        <Switch
-          disabled
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
-        >
+        <Switch isOn={isSwitchOn} onToggle={() => setIsSwitchOn(!isSwitchOn)}>
           <span>Child</span>
         </Switch>
       </Component>
       <Component title="Children - Right">
         <Switch
-          disabled
           isOn={isSwitchOn}
           onToggle={() => setIsSwitchOn(!isSwitchOn)}
           labelPosition="right"
