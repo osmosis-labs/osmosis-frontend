@@ -54,6 +54,7 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { Skeleton } from "~/components/ui/skeleton";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -103,6 +104,9 @@ const Loaders = () => {
       </Component>
       <Component title="Spinner">
         <Spinner />
+      </Component>
+      <Component title="Skeleton (Shadcn)">
+        <Skeleton className="h-4 w-full rounded-full" />
       </Component>
     </Card>
   );
@@ -1282,6 +1286,7 @@ const Components: NextPage = () => {
   return (
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
+
       <SwitchesShadcn />
       <Switches />
 
@@ -1294,12 +1299,13 @@ const Components: NextPage = () => {
       <RadiosShadcn />
       <Radios />
 
+      <InputsShadcn />
+      <Inputs />
+
       <FontSize />
       <Color />
       <Icons />
       <Assets />
-      <InputsShadcn />
-      <Inputs />
 
       <CustomButtons />
       <Tooltips />
