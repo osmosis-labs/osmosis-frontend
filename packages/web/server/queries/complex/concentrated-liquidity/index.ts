@@ -162,25 +162,24 @@ export function getClTickPrice({
   });
 }
 
-export type UserPosition = Awaited<
-  ReturnType<typeof mapGetTrimmedUserPositionDetails>
+export type UserPositionDetails = Awaited<
+  ReturnType<typeof mapGetPositionDetails>
 >[number];
 
 /** Appends user and position details to a given set of positions.
  *  If positions are not provided, they will be fetched with the given user address. */
-export async function mapGetUserPositionDetails({
-  positions: positions_,
+export async function mapGetPositionDetails({
+  positions: initialPositions,
   userOsmoAddress,
 }: {
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
 }) {
-  const positionsPromise = positions_
-    ? Promise.resolve(positions_)
+  const positionsPromise = initialPositions
+    ? Promise.resolve(initialPositions)
     : queryCLPositions({ bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
-  const poolsPromise = getPools();
   const lockableDurationsPromise = getLockableDurations();
   const userUnbondingPositionsPromise = queryCLUnbondingPositions({
     bech32Address: userOsmoAddress,
@@ -198,7 +197,6 @@ export async function mapGetUserPositionDetails({
 
   const [
     positions,
-    pools,
     lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
@@ -207,7 +205,6 @@ export async function mapGetUserPositionDetails({
     superfluidPoolIds,
   ] = await Promise.all([
     positionsPromise,
-    poolsPromise,
     lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
@@ -215,6 +212,10 @@ export async function mapGetUserPositionDetails({
     stakeCurrencyPromise,
     superfluidPoolIdsPromise,
   ]);
+
+  const pools = await getPools({
+    poolIds: positions.map(({ position }) => position.pool_id),
+  });
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
 
@@ -396,13 +397,8 @@ export async function mapGetUserPositionDetails({
         poolId: position.pool_id,
         spreadFactor: pool.spreadFactor,
         currentPrice,
-        currentCoins: [baseCoin, quoteCoin],
         currentValue,
-        isFullRange,
         status,
-        priceRange,
-        liquidity: new Dec(position.liquidity),
-        joinTime: new Date(position.join_time),
         rangeApr: totalRangeApr,
         unbondEndTime: periodLock
           ? new Date(periodLock.locks.end_time)
@@ -419,8 +415,9 @@ export async function mapGetUserPositionDetails({
   );
 }
 
-// TODO: Rename this
-export async function mapGetTrimmedUserPositionDetails({
+export type UserPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
+
+export async function mapGetPositions({
   positions: initialPositions,
   userOsmoAddress,
 }: {
@@ -444,7 +441,7 @@ export async function mapGetTrimmedUserPositionDetails({
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
 
-  const eventualPositionsDetails = await Promise.all(
+  const eventualPositions = await Promise.all(
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
@@ -490,9 +487,7 @@ export async function mapGetTrimmedUserPositionDetails({
     })
   );
 
-  return eventualPositionsDetails.filter(
-    (p): p is NonNullable<typeof p> => !!p
-  );
+  return eventualPositions.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 export type PositionHistoricalPerformance = Awaited<

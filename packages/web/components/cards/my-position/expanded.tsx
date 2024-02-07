@@ -30,6 +30,7 @@ import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-l
 import type {
   PositionHistoricalPerformance,
   UserPosition,
+  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
@@ -47,7 +48,9 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  position: UserPosition & Partial<PositionHistoricalPerformance>;
+  position: UserPosition &
+    Partial<UserPositionDetails> &
+    Partial<PositionHistoricalPerformance>;
   showLinkToPool?: boolean;
 }> = observer(({ poolId, position, showLinkToPool = false }) => {
   const {
@@ -70,7 +73,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     isPoolSuperfluid,
     superfluidApr,
     superfluidData,
-
     currentCoins,
     currentValue,
     claimableRewardCoins,
@@ -155,7 +157,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               data={depthChartData}
               annotationDatum={useMemo(
                 () => ({
-                  price: Number(currentPrice.toString()),
+                  price: Number(currentPrice?.toString()),
                   depth: xRange[1],
                 }),
                 [currentPrice, xRange]
@@ -514,7 +516,7 @@ const Chart: FunctionComponent<{
 });
 
 const SuperfluidPositionInfo: FunctionComponent<
-  RouterOutputs["edge"]["concentratedLiquidity"]["getUserPositions"][number]["superfluidData"]
+  RouterOutputs["edge"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
 > = (props) => {
   const {
     validatorName,

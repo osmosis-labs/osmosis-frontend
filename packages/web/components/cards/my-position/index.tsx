@@ -5,10 +5,13 @@ import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
+import { MyPositionStatus } from "~/components/cards/my-position/status";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -17,19 +20,18 @@ export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
   position: UserPosition;
 }> = observer((props) => {
+  const { accountStore, chainStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
   const {
     showLinkToPool = false,
     position: {
       id,
       poolId,
-      // spreadFactor,
-      // status,
       currentCoins,
       currentValue,
       priceRange: [lowerPrice, upperPrice],
       isFullRange,
-      // rangeApr,
-      // isPoolSuperfluid,
     },
   } = props;
   const { t } = useTranslation();
@@ -46,6 +48,17 @@ export const MyPositionCard: FunctionComponent<{
             skipBatch: true,
           },
         },
+      }
+    );
+
+  const { data: positionDetails, isLoading: isLoadingPositionDetails } =
+    api.edge.concentratedLiquidity.getPositionDetails.useQuery(
+      {
+        positionId: id,
+        userOsmoAddress: account?.address ?? "",
+      },
+      {
+        enabled: Boolean(account?.address),
       }
     );
 
@@ -90,11 +103,23 @@ export const MyPositionCard: FunctionComponent<{
                 size="md"
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
-              {/* <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
-                {spreadFactor.toString() ?? ""} {t("clPositions.spreadFactor")}
-              </span> */}
+              <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
+                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+                  {positionDetails?.spreadFactor.toString() ?? ""}{" "}
+                  {t("clPositions.spreadFactor")}
+                </span>
+              </SkeletonLoader>
             </div>
-            {/* <MyPositionStatus status={status} /> */}
+            <SkeletonLoader
+              isLoaded={!isLoadingPositionDetails}
+              className={classNames(
+                isLoadingPositionDetails && "min-h-[2rem] max-w-[7rem]"
+              )}
+            >
+              {positionDetails?.status && (
+                <MyPositionStatus status={positionDetails.status} />
+              )}
+            </SkeletonLoader>
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
@@ -113,21 +138,28 @@ export const MyPositionCard: FunctionComponent<{
             label={t("clPositions.myLiquidity")}
             value={formatPretty(currentValue)}
           />
-          {/* {rangeApr && (
+          <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
             <PositionDataGroup
               label={t("pool.APR")}
-              value={formatPretty(rangeApr, {
+              value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
                 maxDecimals: 1,
               })}
-              isSuperfluid={isPoolSuperfluid && status !== "outOfRange"}
+              isSuperfluid={
+                positionDetails?.isPoolSuperfluid &&
+                positionDetails?.status !== "outOfRange"
+              }
             />
-          )} */}
+          </SkeletonLoader>
         </div>
       </div>
       {!collapsed && (
         <MyPositionCardExpandedSection
           poolId={poolId}
-          position={{ ...props.position, ...positionPerformance }}
+          position={{
+            ...props.position,
+            ...positionDetails,
+            ...positionPerformance,
+          }}
           showLinkToPool={showLinkToPool}
         />
       )}
