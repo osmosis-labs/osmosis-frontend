@@ -542,7 +542,7 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Disabled">
+      {/* <Component title="Disabled">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
           variant="secondary"
@@ -550,7 +550,7 @@ const ButtonsShadcn = () => {
         >
           Click
         </ButtonShadcn>
-      </Component>
+      </Component> */}
       <Component title="Destructive">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
@@ -559,7 +559,7 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Disabled">
+      {/* <Component title="Disabled">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
           variant="destructive"
@@ -567,27 +567,27 @@ const ButtonsShadcn = () => {
         >
           Click
         </ButtonShadcn>
-      </Component>
+      </Component> */}
       <Component title="Ghost">
         <ButtonShadcn onClick={() => console.log("clicked")} variant="ghost">
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Disabled">
+      {/* <Component title="Disabled">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
           variant="ghost"
           disabled
         >
           Click
-        </ButtonShadcn>
-      </Component>
+        </ButtonShadcn> 
+      </Component> */}
       <Component title="Outline">
         <ButtonShadcn variant="outline" onClick={() => console.log("clicked")}>
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Disabled">
+      {/* <Component title="Disabled">
         <ButtonShadcn
           variant="outline"
           onClick={() => console.log("clicked")}
@@ -595,9 +595,18 @@ const ButtonsShadcn = () => {
         >
           Click
         </ButtonShadcn>
-      </Component>
+      </Component> */}
       <Component title="Small">
         <ButtonShadcn onClick={() => console.log("clicked")} size="sm">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Small Outline">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          size="sm"
+          variant="outline"
+        >
           Click
         </ButtonShadcn>
       </Component>
