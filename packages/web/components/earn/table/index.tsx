@@ -13,7 +13,7 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
   const table = useReactTable(tableConfig);
 
   return (
-    <div className="xl:no-scrollbar w-full xl:overflow-scroll">
+    <div className="no-scrollbar w-full overflow-scroll">
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
