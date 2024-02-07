@@ -138,6 +138,8 @@ export const AllPoolsTable: FunctionComponent<{
   const {
     data: poolsPagesData,
     isLoading,
+    isFetching,
+    isPreviousData,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -162,6 +164,8 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      keepPreviousData: true,
 
       // expensive query
       trpc: {
@@ -326,7 +330,14 @@ export const AllPoolsTable: FunctionComponent<{
   return (
     <div className="w-full">
       <TableControls />
-      <table className="w-full">
+      <table
+        className={classNames(
+          "w-full",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -367,7 +378,10 @@ export const AllPoolsTable: FunctionComponent<{
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="transition-colors duration-200 ease-in-out"
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      isPreviousData && isFetching && "cursor-progress"
+                    )}
                     key={cell.id}
                   >
                     <Link
@@ -377,6 +391,9 @@ export const AllPoolsTable: FunctionComponent<{
                       onClick={(e) => e.stopPropagation()}
                       passHref
                       prefetch={false}
+                      className={classNames(
+                        isPreviousData && isFetching && "cursor-progress"
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
