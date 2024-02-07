@@ -420,9 +420,11 @@ export type ClPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
 export async function mapGetPositions({
   positions: initialPositions,
   userOsmoAddress,
+  forPoolId,
 }: {
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
+  forPoolId?: string;
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
@@ -442,49 +444,59 @@ export async function mapGetPositions({
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
 
   const eventualPositions = await Promise.all(
-    positions.map(async (position_) => {
-      const { asset0, asset1, position } = position_;
+    positions
+      .filter((position) => {
+        if (Boolean(forPoolId) && position.position.pool_id !== forPoolId) {
+          return false;
+        }
+        return true;
+      })
+      .map(async (position_) => {
+        const { asset0, asset1, position } = position_;
 
-      const [baseCoin, quoteCoin] = await mapRawCoinToPretty([asset0, asset1]);
-      if (!baseCoin || !quoteCoin) {
-        throw new Error(
-          `Error finding assets for position ${position.position_id}`
+        const [baseCoin, quoteCoin] = await mapRawCoinToPretty([
+          asset0,
+          asset1,
+        ]);
+        if (!baseCoin || !quoteCoin) {
+          throw new Error(
+            `Error finding assets for position ${position.position_id}`
+          );
+        }
+        const currentValue = new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
         );
-      }
-      const currentValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
-      );
 
-      const lowerTick = new Int(position.lower_tick);
-      const upperTick = new Int(position.upper_tick);
-      const priceRange = await Promise.all([
-        getClTickPrice({
-          tick: lowerTick,
-          baseCoin,
-          quoteCoin,
-        }),
-        getClTickPrice({
-          tick: upperTick,
-          baseCoin,
-          quoteCoin,
-        }),
-      ]);
+        const lowerTick = new Int(position.lower_tick);
+        const upperTick = new Int(position.upper_tick);
+        const priceRange = await Promise.all([
+          getClTickPrice({
+            tick: lowerTick,
+            baseCoin,
+            quoteCoin,
+          }),
+          getClTickPrice({
+            tick: upperTick,
+            baseCoin,
+            quoteCoin,
+          }),
+        ]);
 
-      const isFullRange =
-        lowerTick.equals(minTick) && upperTick.equals(maxTick);
+        const isFullRange =
+          lowerTick.equals(minTick) && upperTick.equals(maxTick);
 
-      return {
-        id: position.position_id,
-        poolId: position.pool_id,
-        currentCoins: [baseCoin, quoteCoin],
-        currentValue,
-        isFullRange,
-        priceRange,
-        liquidity: new Dec(position.liquidity),
-        joinTime: new Date(position.join_time),
-      };
-    })
+        return {
+          id: position.position_id,
+          poolId: position.pool_id,
+          currentCoins: [baseCoin, quoteCoin],
+          currentValue,
+          isFullRange,
+          priceRange,
+          liquidity: new Dec(position.liquidity),
+          joinTime: new Date(position.join_time),
+        };
+      })
   );
 
   return eventualPositions.filter((p): p is NonNullable<typeof p> => !!p);

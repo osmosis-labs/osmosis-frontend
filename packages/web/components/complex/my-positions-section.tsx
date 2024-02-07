@@ -24,6 +24,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
       api.edge.concentratedLiquidity.getUserPositions.useQuery(
         {
           userOsmoAddress: account?.address ?? "",
+          forPoolId,
         },
         {
           enabled: Boolean(account?.address) && !isWalletLoading,

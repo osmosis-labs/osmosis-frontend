@@ -16,12 +16,14 @@ export const concentratedLiquidityRouter = createTRPCRouter({
       z
         .object({
           sortDirection: z.enum(["asc", "desc"]).default("desc"),
+          forPoolId: z.string().optional(),
         })
         .merge(UserOsmoAddressSchema.required())
     )
-    .query(({ input: { userOsmoAddress, sortDirection } }) =>
+    .query(({ input: { userOsmoAddress, sortDirection, forPoolId } }) =>
       mapGetPositions({
         userOsmoAddress,
+        forPoolId,
       }).then((positions) => sort(positions, "joinTime", sortDirection))
     ),
   getPositionDetails: publicProcedure
