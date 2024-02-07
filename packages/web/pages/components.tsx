@@ -160,7 +160,6 @@ const CheckboxesShadcn = () => {
       <Component title="Regular">
         <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
       </Component>
-
       <Component title="Indeterminate">
         <CheckboxShadcn
           checked={checked}
@@ -168,7 +167,6 @@ const CheckboxesShadcn = () => {
           isIndeterminate
         />
       </Component>
-
       <Component title="Disabled">
         <CheckboxShadcn
           checked={checked}
@@ -176,7 +174,6 @@ const CheckboxesShadcn = () => {
           disabled
         />
       </Component>
-
       <Component title="With Children">
         <div className="flex items-center space-x-2">
           <CheckboxShadcn
@@ -192,20 +189,18 @@ const CheckboxesShadcn = () => {
           </label>
         </div>
       </Component>
-
-      <Component title="Destructive">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          variant="destructive"
-        />
-      </Component>
-
       <Component title="Secondary">
         <CheckboxShadcn
           checked={checked}
           onClick={handleCheckboxToggle}
           variant="secondary"
+        />
+      </Component>
+      <Component title="Destructive">
+        <CheckboxShadcn
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          variant="destructive"
         />
       </Component>
     </Card>
@@ -256,15 +251,6 @@ const Checkboxes = () => {
         <CheckBox
           borderStyles="border-rust-700"
           backgroundStyles="bg-gradient-negative"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-        />
-      </Component>
-
-      <Component title="Wosmongton-200">
-        <CheckBox
-          backgroundStyles="bg-wosmongton-200"
-          borderStyles="border-wosmongton-200"
           isOn={checked}
           onToggle={handleCheckboxToggle}
         />
@@ -558,15 +544,6 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      {/* <Component title="Disabled">
-        <ButtonShadcn
-          onClick={() => console.log("clicked")}
-          variant="secondary"
-          disabled
-        >
-          Click
-        </ButtonShadcn>
-      </Component> */}
       <Component title="Destructive">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
@@ -575,43 +552,16 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      {/* <Component title="Disabled">
-        <ButtonShadcn
-          onClick={() => console.log("clicked")}
-          variant="destructive"
-          disabled
-        >
-          Click
-        </ButtonShadcn>
-      </Component> */}
       <Component title="Ghost">
         <ButtonShadcn onClick={() => console.log("clicked")} variant="ghost">
           Click
         </ButtonShadcn>
       </Component>
-      {/* <Component title="Disabled">
-        <ButtonShadcn
-          onClick={() => console.log("clicked")}
-          variant="ghost"
-          disabled
-        >
-          Click
-        </ButtonShadcn> 
-      </Component> */}
       <Component title="Outline">
         <ButtonShadcn variant="outline" onClick={() => console.log("clicked")}>
           Click
         </ButtonShadcn>
       </Component>
-      {/* <Component title="Disabled">
-        <ButtonShadcn
-          variant="outline"
-          onClick={() => console.log("clicked")}
-          disabled
-        >
-          Click
-        </ButtonShadcn>
-      </Component> */}
       <Component title="Small">
         <ButtonShadcn onClick={() => console.log("clicked")} size="sm">
           Click

@@ -8,7 +8,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const checkboxVariants = cva(
-  "focus-visible:ring-ring peer h-6 w-6 shrink-0 rounded-lg border border-osmoverse-300 shadow focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-300 data-[state=checked]:text-primary-foreground",
+  "focus-visible:ring-ring peer h-6 w-6 shrink-0 rounded-lg border-2 border-osmoverse-300 shadow focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-300 data-[state=checked]:text-primary-foreground",
   {
     variants: {
       variant: {
@@ -42,9 +42,9 @@ const Checkbox = React.forwardRef<
       className={cn("text-current flex items-center justify-center")}
     >
       {isIndeterminate ? (
-        <MinusIcon className="h-6 w-6 text-osmoverse-800" />
+        <MinusIcon className="h-5 w-5 text-osmoverse-800" />
       ) : (
-        <CheckIcon className="h-6 w-6 text-osmoverse-800" />
+        <CheckIcon className="h-5 w-5 text-osmoverse-800" />
       )}
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
