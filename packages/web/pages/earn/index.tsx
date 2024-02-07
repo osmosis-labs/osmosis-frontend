@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useEffect } from "react";
 
-import { EarnAllocation } from "~/components/earn/allocation";
 import {
   FilterProvider,
   Filters,
@@ -49,12 +48,12 @@ export default function Earn() {
   return (
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
       <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
-        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:hidden">
+        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3">
           <EarnPosition />
-          <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
-          <EarnAllocation />
+          {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
+          <EarnAllocation /> */}
         </div>
-        <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
+        {/* <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
           <Tabs>
             <TabButtons>
               <TabButton withTextOpacity textClassName="!text-lg !leading-8">
@@ -77,7 +76,7 @@ export default function Earn() {
               </TabPanel>
             </TabPanels>
           </Tabs>
-        </div>
+        </div> */}
         <EarnRewards />
       </div>
       <FilterProvider defaultFilters={defaultFilters}>
