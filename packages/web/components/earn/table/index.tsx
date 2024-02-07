@@ -23,9 +23,9 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-rewards-w bg-osmoverse-850 !text-left":
-                      header.index === 1,
-                    "sticky left-0 z-30 w-rewards-w bg-osmoverse-850":
+                    "sticky left-20 bg-osmoverse-850 !text-left":
+                      header.index === 1 && width > 768,
+                    "sticky left-0 z-30 bg-osmoverse-850 !pl-4":
                       header.index === 0,
                   })}
                   key={header.id}
@@ -54,10 +54,9 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
                   className={classNames(
                     "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
                     {
-                      "md:sticky md:left-0 md:z-30": rowIndex === 0,
-                      "sticky left-0 z-30": rowIndex === 0 && width > 768,
-                      "sticky left-rewards-w z-30":
-                        rowIndex === 1 && width > 768,
+                      "md:sticky md:-left-1 md:z-30": rowIndex === 0,
+                      "sticky -left-1 z-30": rowIndex === 0 && width > 768,
+                      "sticky left-20 z-30": rowIndex === 1 && width > 768,
                     }
                   )}
                   key={cell.id}
