@@ -108,7 +108,7 @@ export const EarnPosition = () => {
       </div>
       <div className="flex flex-col gap-2">
         <span className="inline-flex items-center gap-4">
-          <p className="text-subtitle-1">Total Value Invested</p>
+          <p className="text-subtitle-1">{t("earnPage.totalValueInvested")}</p>
           <Tooltip content="lorem ipsum">
             <Icon id="info" width={16} height={16} />
           </Tooltip>

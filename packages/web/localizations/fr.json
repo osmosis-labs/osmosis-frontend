@@ -910,7 +910,9 @@
       "all": "Tous",
       "single": "Célibataire",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valeur totale investie",
+    "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
   "disclaimer": "Clause de non-responsabilité"
 }

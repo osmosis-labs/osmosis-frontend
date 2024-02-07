@@ -54,7 +54,7 @@ export default function Earn() {
           {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation /> */}
           <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">
-            Look below and find best strategies for you
+            {t("earnPage.lookBelow")}
           </p>
           <Image
             src={"/images/staking-apr-full.svg"}

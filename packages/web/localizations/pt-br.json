@@ -910,7 +910,9 @@
       "all": "Todos",
       "single": "Solteiro",
       "multi": "Múltiplo"
-    }
+    },
+    "totalValueInvested": "Valor total investido",
+    "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
   "disclaimer": "Isenção de responsabilidade"
 }

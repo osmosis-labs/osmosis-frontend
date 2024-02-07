@@ -910,7 +910,9 @@
       "all": "All",
       "single": "Single",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Total Value Invested",
+    "lookBelow": "Look below and find best strategies for you"
   },
   "disclaimer": "Disclaimer"
 }
