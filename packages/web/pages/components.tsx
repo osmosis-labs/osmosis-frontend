@@ -66,7 +66,8 @@ const Card: React.FC<{
   <div
     className={classNames(
       "flex flex-col gap-4 rounded-3xl p-6",
-      alt ? "bg-rust-800" : "bg-osmoverse-800"
+      // alt ? "bg-rust-800" : "bg-osmoverse-800"
+      "bg-osmoverse-800"
     )}
   >
     <h6 className="text-center">{title}</h6>
@@ -415,16 +416,11 @@ const Radios = () => {
 const Buttons = () => {
   return (
     <Card title="Buttons">
-      <Component title="Regular">
+      <Component title="Primary">
         <Button onClick={() => console.log("clicked")}>Click</Button>
       </Component>
       <Component title="Disabled">
         <Button disabled onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Primary">
-        <Button mode="primary" onClick={() => console.log("clicked")}>
           Click
         </Button>
       </Component>
@@ -520,13 +516,61 @@ const Buttons = () => {
 const ButtonsShadcn = () => {
   return (
     <Card title="Buttons (Shadcn)" alt>
-      <Component title="Regular - default">
+      <Component title="Primary">
         <ButtonShadcn onClick={() => console.log("clicked")} size="default">
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Disabled">
+      <Component title="Primary - Disabled">
         <ButtonShadcn disabled onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Secondary">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="secondary"
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Secondary - Disabled">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="secondary"
+          disabled
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Destructive">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="destructive"
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Destructive - Disabled">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="destructive"
+          disabled
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Outline">
+        <ButtonShadcn variant="outline" onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Outline - Disabled">
+        <ButtonShadcn
+          variant="outline"
+          onClick={() => console.log("clicked")}
+          disabled
+        >
           Click
         </ButtonShadcn>
       </Component>
@@ -535,14 +579,14 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Large">
-        <ButtonShadcn onClick={() => console.log("clicked")} size="lg">
-          Click
-        </ButtonShadcn>
-      </Component>
       <Component title="Icon">
         <ButtonShadcn onClick={() => console.log("clicked")} size="icon">
           <Icon id="close" />
+        </ButtonShadcn>
+      </Component>
+      <Component title="Link">
+        <ButtonShadcn onClick={() => console.log("clicked")} variant="link">
+          Click
         </ButtonShadcn>
       </Component>
     </Card>
@@ -657,7 +701,7 @@ const SwitchesShadcn = () => {
           onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
-      <Component title="Children - Right">
+      <Component title="Children - Left">
         <div className="flex items-center">
           <label className="text-white pr-[15px] text-[15px] leading-none">
             Child
@@ -670,7 +714,7 @@ const SwitchesShadcn = () => {
           </SwitchShadcn>
         </div>
       </Component>
-      <Component title="Children - Left">
+      <Component title="Children - Right">
         <div className="flex items-center">
           <SwitchShadcn
             checked={isSwitchOn}
@@ -1244,14 +1288,16 @@ const Components: NextPage = () => {
       <SwitchesShadcn />
       <Switches />
 
+      <ButtonsShadcn />
+      <Buttons />
+
       <FontSize />
       <Color />
       <Icons />
       <Assets />
       <InputsShadcn />
       <Inputs />
-      <ButtonsShadcn />
-      <Buttons />
+
       <CustomButtons />
       <Tooltips />
       <Loaders />
