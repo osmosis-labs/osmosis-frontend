@@ -28,6 +28,7 @@ import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
 import Spinner from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import {
   ObservableAddConcentratedLiquidityConfig,
@@ -39,7 +40,6 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import { CheckBox } from "../control";
 import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -544,11 +544,10 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
-            <CheckBox
-              borderStyles="border-superfluid"
-              backgroundStyles="bg-superfluid"
-              isOn={shouldBeSuperfluidStaked}
-              onToggle={() => {
+            <Checkbox
+              variant="secondary"
+              checked={shouldBeSuperfluidStaked}
+              onClick={() => {
                 setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
               }}
               disabled={sfStakingDisabled}
@@ -574,7 +573,7 @@ const AddConcLiqView: FunctionComponent<
                   })}
                 </span>
               </div>
-            </CheckBox>
+            </Checkbox>
           )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">

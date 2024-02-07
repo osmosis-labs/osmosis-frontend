@@ -1,4 +1,3 @@
-export * from "./checkbox";
 export * from "./checkbox-select";
 export * from "./language-select";
 export * from "./menu-dropdown";

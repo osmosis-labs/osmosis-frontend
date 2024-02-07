@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
 import { Button as ButtonShadcn } from "@/components/ui/button";
-import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input as InputShadcn } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -37,7 +37,6 @@ import LinkIconButton from "~/components/buttons/link-icon-button";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
-  CheckBox,
   CheckboxSelect,
   MenuDropdown,
   Radio,
@@ -174,32 +173,28 @@ const Sliders = () => {
   );
 };
 
-const CheckboxesShadcn = () => {
+const Checkboxes = () => {
   const [checked, setChecked] = useState(false);
   const handleCheckboxToggle = () => setChecked(!checked);
 
   return (
     <Card title="Checkbox (Shadcn)" alt>
       <Component title="Regular">
-        <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
+        <Checkbox checked={checked} onClick={handleCheckboxToggle} />
       </Component>
       <Component title="Indeterminate">
-        <CheckboxShadcn
+        <Checkbox
           checked={checked}
           onClick={handleCheckboxToggle}
           isIndeterminate
         />
       </Component>
       <Component title="Disabled">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          disabled
-        />
+        <Checkbox checked={checked} onClick={handleCheckboxToggle} disabled />
       </Component>
       <Component title="With Children">
         <div className="flex items-center space-x-2">
-          <CheckboxShadcn
+          <Checkbox
             checked={checked}
             onClick={handleCheckboxToggle}
             id="terms"
@@ -213,69 +208,17 @@ const CheckboxesShadcn = () => {
         </div>
       </Component>
       <Component title="Secondary">
-        <CheckboxShadcn
+        <Checkbox
           checked={checked}
           onClick={handleCheckboxToggle}
           variant="secondary"
         />
       </Component>
       <Component title="Destructive">
-        <CheckboxShadcn
+        <Checkbox
           checked={checked}
           onClick={handleCheckboxToggle}
           variant="destructive"
-        />
-      </Component>
-    </Card>
-  );
-};
-
-const Checkboxes = () => {
-  const [checked, setChecked] = useState(false);
-  const handleCheckboxToggle = () => setChecked(!checked);
-  return (
-    <Card title="Checkbox">
-      <Component title="Regular">
-        <CheckBox isOn={checked} onToggle={handleCheckboxToggle} />
-      </Component>
-
-      <Component title="Indeterminate">
-        <CheckBox
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-          isIndeterminate={true}
-        />
-      </Component>
-
-      <Component title="Disabled">
-        <CheckBox
-          disabled={true}
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-        />
-      </Component>
-
-      <Component title="With Children">
-        <CheckBox isOn={checked} onToggle={handleCheckboxToggle}>
-          <span className="rounded-lg bg-osmoverse-700 p-2">child</span>
-        </CheckBox>
-      </Component>
-
-      <Component title="Superfluid">
-        <CheckBox
-          borderStyles="border-superfluid"
-          backgroundStyles="bg-superfluid"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-        />
-      </Component>
-
-      <Component title="Rust-700">
-        <CheckBox
-          borderStyles="border-rust-700"
-          backgroundStyles="bg-gradient-negative"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
         />
       </Component>
     </Card>
@@ -1312,7 +1255,6 @@ const Components: NextPage = () => {
       <ButtonsShadcn />
       <Buttons />
 
-      <CheckboxesShadcn />
       <Checkboxes />
 
       <RadiosShadcn />

@@ -31,10 +31,10 @@ import {
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { StakeOrEdit } from "~/components/types";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -268,10 +268,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 (
                   props: CellContext<FormattedValidator, FormattedValidator>
                 ) => (
-                  <CheckBox
-                    isOn={props.row.getIsSelected()}
-                    onToggle={props.row.getToggleSelectedHandler()}
-                    containerProps={{ style: {} }}
+                  <Checkbox
+                    checked={props.row.getIsSelected()}
+                    onClick={props.row.getToggleSelectedHandler()}
                   />
                 )
               ),

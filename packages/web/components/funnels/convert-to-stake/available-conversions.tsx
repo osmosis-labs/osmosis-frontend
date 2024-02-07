@@ -5,11 +5,11 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, MouseEventHandler } from "react";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { CheckBox } from "~/components/control";
 import { Disableable } from "~/components/types";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 
 /** List of options a user has for converting GAMM shares to staked OSMO. */
@@ -110,7 +110,7 @@ export const BalancerShareConversionRow: FunctionComponent<
   SuggestedConvertToStakeAssets &
     Disableable & {
       isSelected: boolean;
-      onToggle: (isOn: boolean) => void;
+      onToggle: MouseEventHandler<HTMLButtonElement> | undefined;
     }
 > = ({
   poolId,
@@ -131,16 +131,19 @@ export const BalancerShareConversionRow: FunctionComponent<
         }
       )}
       onClick={() => {
-        onToggle(!isSelected);
+        // TODO fix this
+        console.log("clicked");
+        // onToggle(!isSelected);
       }}
     >
       <div className="flex items-center gap-5">
-        <CheckBox
-          backgroundStyles="bg-wosmongton-200"
-          borderStyles="border-wosmongton-200"
-          isOn={isSelected}
+        <Checkbox
+          // TODO - fix this
+          // backgroundStyles="bg-wosmongton-200"
+          // borderStyles="border-wosmongton-200"
+          checked={isSelected}
           disabled={disabled}
-          onToggle={onToggle}
+          onClick={onToggle}
         />
         <div className="flex items-center gap-14">
           <div className="flex items-center gap-3">
@@ -178,7 +181,7 @@ export const ClPositionConversionRow: FunctionComponent<
   Required<SuggestedConvertToStakeAssets> &
     Disableable & {
       isSelected: boolean;
-      onToggle: (isOn: boolean) => void;
+      onToggle: MouseEventHandler<HTMLButtonElement> | undefined;
     }
 > = observer(
   ({
@@ -201,16 +204,18 @@ export const ClPositionConversionRow: FunctionComponent<
           }
         )}
         onClick={() => {
-          onToggle(!isSelected);
+          // TODO fix this
+          // onToggle(!isSelected);
         }}
       >
         <div className="flex items-center gap-5">
-          <CheckBox
-            borderStyles="border-wosmongton-200"
-            backgroundStyles="bg-wosmongton-200"
-            isOn={isSelected}
+          <Checkbox
+            // TODO fix this
+            // borderStyles="border-wosmongton-200"
+            // backgroundStyles="bg-wosmongton-200"
+            checked={isSelected}
             disabled={disabled}
-            onToggle={onToggle}
+            onClick={onToggle}
           />
           <div className="flex items-center gap-14">
             <div className="flex items-center gap-3">

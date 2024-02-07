@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { useState } from "react";
 
-import { CheckBox } from "~/components/control";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -86,7 +86,7 @@ export const ExternalLinkModal: FunctionComponent<
         </div>
 
         <label className="mb-6 flex items-center space-x-2">
-          <CheckBox isOn={doNotShowAgain} onToggle={onToggleDoNotShowAgain} />
+          <Checkbox checked={doNotShowAgain} onClick={onToggleDoNotShowAgain} />
           <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
         </label>
 
