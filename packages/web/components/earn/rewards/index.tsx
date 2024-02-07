@@ -21,13 +21,13 @@ export const EarnRewards = () => {
           </Tooltip>
         </div>
       </div> */}
-      <div className="mt-6 flex justify-between">
+      <div className="mt-3.5 flex justify-between">
         <h4 className="text-osmoverse-200">$24.55</h4>
         <small className="max-w-[54px] text-right text-xs font-subtitle2 font-medium text-osmoverse-300">
           {t("earnPage.availableToClaim")}
         </small>
       </div>
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="mt-4.5 flex flex-col gap-3">
         <Button mode={"primary"} className="max-h-11">
           {t("earnPage.claimAllRewards")}
         </Button>
