@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -48,10 +49,20 @@ export default function Earn() {
   return (
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
       <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
-        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3">
+        <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
           <EarnPosition />
           {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation /> */}
+          <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">
+            Look below and find best strategies for you
+          </p>
+          <Image
+            src={"/images/staking-apr-full.svg"}
+            alt="Staking image"
+            width={298}
+            height={212}
+            className="translate-x-8 translate-y-10 -rotate-[75deg] overflow-visible object-cover 2xl:object-contain 1.5md:hidden"
+          />
         </div>
         {/* <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
           <Tabs>
