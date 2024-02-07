@@ -10,7 +10,7 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type { ClPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -18,7 +18,7 @@ import { api } from "~/utils/trpc";
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
-  position: UserPosition;
+  position: ClPosition;
 }> = observer((props) => {
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -155,11 +155,9 @@ export const MyPositionCard: FunctionComponent<{
       {!collapsed && (
         <MyPositionCardExpandedSection
           poolId={poolId}
-          position={{
-            ...props.position,
-            ...positionDetails,
-            ...positionPerformance,
-          }}
+          position={props.position}
+          positionDetails={positionDetails}
+          positionPerformance={positionPerformance}
           showLinkToPool={showLinkToPool}
         />
       )}

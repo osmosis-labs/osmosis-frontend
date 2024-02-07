@@ -12,8 +12,9 @@ import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import type {
+  ClPosition,
+  ClPositionDetails,
   PositionHistoricalPerformance,
-  UserPosition,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -21,17 +22,19 @@ import { formatPretty } from "~/utils/formatter";
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: UserPosition & Partial<PositionHistoricalPerformance>;
+    position: ClPosition;
+    status: ClPositionDetails["status"];
+    claimableRewardCoins: PositionHistoricalPerformance["claimableRewardCoins"];
   } & ModalBaseProps
 > = observer((props) => {
   const {
     poolId,
+    status,
+    claimableRewardCoins,
     position: {
       id,
-      status,
       currentCoins: [positionBaseAsset, positionQuoteAsset],
       currentValue,
-      claimableRewardCoins,
     },
   } = props;
 

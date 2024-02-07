@@ -28,9 +28,9 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import type {
+  ClPosition,
+  ClPositionDetails,
   PositionHistoricalPerformance,
-  UserPosition,
-  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
@@ -48,325 +48,349 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  position: UserPosition &
-    Partial<UserPositionDetails> &
-    Partial<PositionHistoricalPerformance>;
+  position: ClPosition;
+  positionDetails: ClPositionDetails | undefined;
+  positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
-}> = observer(({ poolId, position, showLinkToPool = false }) => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-  } = useStore();
+}> = observer(
+  ({
+    poolId,
+    position,
+    showLinkToPool = false,
+    positionDetails,
+    positionPerformance,
+  }) => {
+    const {
+      chainStore: {
+        osmosis: { chainId },
+      },
+      accountStore,
+    } = useStore();
 
-  const { logEvent } = useAmplitudeAnalytics();
+    const { logEvent } = useAmplitudeAnalytics();
 
-  const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(chainId);
 
-  const {
-    currentPrice,
-    status,
-    priceRange: [lowerPrice, upperPrice],
-    isFullRange,
-    unbondEndTime,
-    isPoolSuperfluid,
-    superfluidApr,
-    superfluidData,
-    currentCoins,
-    currentValue,
-    claimableRewardCoins,
-    claimableRewardsValue,
-    principalCoins,
-    principalValue,
-    totalRewardCoins,
-    totalEarnedValue,
-  } = position;
+    const {
+      priceRange: [lowerPrice, upperPrice],
+      isFullRange,
+      currentCoins,
+      currentValue,
+    } = position;
 
-  const { t } = useTranslation();
-  const router = useRouter();
+    const {
+      currentPrice,
+      status,
+      unbondEndTime,
+      isPoolSuperfluid,
+      superfluidApr,
+      superfluidData,
+    } = positionDetails ?? {};
 
-  const [activeModal, setActiveModal] = useState<"increase" | "remove" | null>(
-    null
-  );
+    const {
+      claimableRewardCoins,
+      claimableRewardsValue,
+      principalCoins,
+      principalValue,
+      totalRewardCoins,
+      totalEarnedValue,
+    } = positionPerformance ?? {};
 
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
-  const {
-    xRange,
-    yRange,
-    depthChartData,
-    resetZoom,
-    zoomIn,
-    zoomOut,
-    setPriceRange,
-  } = chartConfig;
+    const { t } = useTranslation();
+    const router = useRouter();
 
-  const [selectSfValidatorAddress, setSelectSfValidatorAddress] =
-    useState<boolean>(false);
+    const [activeModal, setActiveModal] = useState<
+      "increase" | "remove" | null
+    >(null);
 
-  useEffect(() => {
-    if (lowerPrice && upperPrice) {
-      setPriceRange([lowerPrice, upperPrice]);
-    }
-  }, [lowerPrice, upperPrice, setPriceRange]);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+    const {
+      xRange,
+      yRange,
+      depthChartData,
+      resetZoom,
+      zoomIn,
+      zoomOut,
+      setPriceRange,
+    } = chartConfig;
 
-  const sendCollectAllRewardsMsg = useCallback(() => {
-    logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
-    account!.osmosis
-      .sendCollectAllPositionsRewardsMsgs(
-        [position.id],
-        undefined,
-        undefined,
-        (tx) => {
-          if (!tx.code) {
-            logEvent([EventName.ConcentratedLiquidity.collectRewardsCompleted]);
+    const [selectSfValidatorAddress, setSelectSfValidatorAddress] =
+      useState<boolean>(false);
+
+    useEffect(() => {
+      if (lowerPrice && upperPrice) {
+        setPriceRange([lowerPrice, upperPrice]);
+      }
+    }, [lowerPrice, upperPrice, setPriceRange]);
+
+    const sendCollectAllRewardsMsg = useCallback(() => {
+      logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
+      account!.osmosis
+        .sendCollectAllPositionsRewardsMsgs(
+          [position.id],
+          undefined,
+          undefined,
+          (tx) => {
+            if (!tx.code) {
+              logEvent([
+                EventName.ConcentratedLiquidity.collectRewardsCompleted,
+              ]);
+            }
           }
-        }
-      )
-      .catch(console.error);
-  }, [account, logEvent, position.id]);
+        )
+        .catch(console.error);
+    }, [account, logEvent, position.id]);
 
-  return (
-    <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-      {activeModal === "increase" && (
-        <IncreaseConcentratedLiquidityModal
-          isOpen={true}
-          poolId={poolId}
-          position={position}
-          onRequestClose={() => setActiveModal(null)}
-        />
-      )}
-      {activeModal === "remove" && (
-        <RemoveConcentratedLiquidityModal
-          isOpen={true}
-          poolId={poolId}
-          position={position}
-          onRequestClose={() => setActiveModal(null)}
-        />
-      )}
-      <div className="flex w-full gap-1 xl:hidden">
-        <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-          <ChartHeader config={chartConfig} />
-          <Chart config={chartConfig} position={position} />
+    return (
+      <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex w-full gap-1 xl:hidden">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+            <ChartHeader config={chartConfig} />
+            <Chart config={chartConfig} position={position} />
+          </div>
+          <div className="flex h-[20.1875rem] w-80 rounded-r-2xl bg-osmoverse-700">
+            <div className="mt-[84px] flex flex-1 flex-col">
+              <ConcentratedLiquidityDepthChart
+                yRange={yRange}
+                xRange={xRange}
+                data={depthChartData}
+                annotationDatum={useMemo(
+                  () => ({
+                    price: Number(currentPrice?.toString()),
+                    depth: xRange[1],
+                  }),
+                  [currentPrice, xRange]
+                )}
+                rangeAnnotation={useMemo(
+                  () => [
+                    {
+                      price: Number(lowerPrice.toString()),
+                      depth: xRange[1],
+                    },
+                    {
+                      price: Number(upperPrice.toString()),
+                      depth: xRange[1],
+                    },
+                  ],
+                  [lowerPrice, upperPrice, xRange]
+                )}
+                offset={useConst({
+                  top: 0,
+                  right: 36,
+                  bottom: 24 + 28,
+                  left: 0,
+                })}
+                horizontal
+                fullRange={isFullRange}
+              />
+            </div>
+            <div className="mb-8 flex flex-col pr-2">
+              <div className="mt-7 mr-6 flex h-6 gap-1">
+                <ChartButton
+                  alt="refresh"
+                  icon="refresh-ccw"
+                  selected={false}
+                  onClick={() => resetZoom()}
+                />
+                <ChartButton
+                  alt="zoom out"
+                  icon="zoom-out"
+                  selected={false}
+                  onClick={zoomOut}
+                />
+                <ChartButton
+                  alt="zoom in"
+                  icon="zoom-in"
+                  selected={false}
+                  onClick={zoomIn}
+                />
+              </div>
+              <div className="flex h-full flex-col justify-between py-4">
+                <PriceBox
+                  currentValue={formatPretty(upperPrice, {
+                    scientificMagnitudeThreshold: 4,
+                  })}
+                  label={t("clPositions.maxPrice")}
+                  infinity={isFullRange}
+                />
+                <PriceBox
+                  currentValue={
+                    isFullRange
+                      ? "0"
+                      : formatPretty(lowerPrice, {
+                          scientificMagnitudeThreshold: 4,
+                        })
+                  }
+                  label={t("clPositions.minPrice")}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex h-[20.1875rem] w-80 rounded-r-2xl bg-osmoverse-700">
-          <div className="mt-[84px] flex flex-1 flex-col">
-            <ConcentratedLiquidityDepthChart
-              yRange={yRange}
-              xRange={xRange}
-              data={depthChartData}
-              annotationDatum={useMemo(
-                () => ({
-                  price: Number(currentPrice?.toString()),
-                  depth: xRange[1],
-                }),
-                [currentPrice, xRange]
-              )}
-              rangeAnnotation={useMemo(
-                () => [
-                  {
-                    price: Number(lowerPrice.toString()),
-                    depth: xRange[1],
-                  },
-                  {
-                    price: Number(upperPrice.toString()),
-                    depth: xRange[1],
-                  },
-                ],
-                [lowerPrice, upperPrice, xRange]
-              )}
-              offset={useConst({
-                top: 0,
-                right: 36,
-                bottom: 24 + 28,
-                left: 0,
-              })}
-              horizontal
-              fullRange={isFullRange}
+        <div className="flex w-full flex-col gap-4 sm:flex-col">
+          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            <AssetsInfo
+              className="flex-1 sm:w-full"
+              title={t("clPositions.currentAssets")}
+              assets={currentCoins}
+              totalValue={currentValue}
+            />
+            <AssetsInfo
+              className="flex-1 sm:w-full"
+              title={t("clPositions.totalRewardsEarned")}
+              assets={totalRewardCoins}
+              totalValue={totalEarnedValue}
+              emptyText={t("clPositions.noRewards")}
             />
           </div>
-          <div className="mb-8 flex flex-col pr-2">
-            <div className="mt-7 mr-6 flex h-6 gap-1">
-              <ChartButton
-                alt="refresh"
-                icon="refresh-ccw"
-                selected={false}
-                onClick={() => resetZoom()}
-              />
-              <ChartButton
-                alt="zoom out"
-                icon="zoom-out"
-                selected={false}
-                onClick={zoomOut}
-              />
-              <ChartButton
-                alt="zoom in"
-                icon="zoom-in"
-                selected={false}
-                onClick={zoomIn}
-              />
-            </div>
-            <div className="flex h-full flex-col justify-between py-4">
-              <PriceBox
-                currentValue={formatPretty(upperPrice, {
-                  scientificMagnitudeThreshold: 4,
-                })}
-                label={t("clPositions.maxPrice")}
-                infinity={isFullRange}
-              />
-              <PriceBox
-                currentValue={
-                  isFullRange
-                    ? "0"
-                    : formatPretty(lowerPrice, {
-                        scientificMagnitudeThreshold: 4,
-                      })
-                }
-                label={t("clPositions.minPrice")}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex w-full flex-col gap-4 sm:flex-col">
-        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
-          <AssetsInfo
-            className="flex-1 sm:w-full"
-            title={t("clPositions.currentAssets")}
-            assets={currentCoins}
-            totalValue={currentValue}
-          />
-          <AssetsInfo
-            className="flex-1 sm:w-full"
-            title={t("clPositions.totalRewardsEarned")}
-            assets={totalRewardCoins}
-            totalValue={totalEarnedValue}
-            emptyText={t("clPositions.noRewards")}
-          />
-        </div>
-        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
-          <AssetsInfo
-            className="flex-1 sm:w-full"
-            title={t("clPositions.principalAssets")}
-            assets={principalCoins}
-            totalValue={principalValue}
-          />
-          <AssetsInfo
-            className="flex-1 sm:w-full"
-            title={t("clPositions.unclaimedRewards")}
-            assets={claimableRewardCoins}
-            totalValue={claimableRewardsValue}
-            emptyText={t("clPositions.noRewards")}
-          />
-        </div>
-        {unbondEndTime && !superfluidData && (
           <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
-            <div className="flex flex-col text-right md:pl-4">
-              <span>
-                {t("clPositions.unbondingFromNow", {
-                  fromNow: moment(unbondEndTime).fromNow(true),
-                })}
-              </span>
-            </div>
+            <AssetsInfo
+              className="flex-1 sm:w-full"
+              title={t("clPositions.principalAssets")}
+              assets={principalCoins}
+              totalValue={principalValue}
+            />
+            <AssetsInfo
+              className="flex-1 sm:w-full"
+              title={t("clPositions.unclaimedRewards")}
+              assets={claimableRewardCoins}
+              totalValue={claimableRewardsValue}
+              emptyText={t("clPositions.noRewards")}
+            />
           </div>
-        )}
-      </div>
-      {superfluidData && <SuperfluidPositionInfo {...superfluidData} />}
-      <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
-        {showLinkToPool && (
-          <ArrowButton
-            className="md:ml-auto"
-            onClick={() => router.push(`/pool/${poolId}`)}
-          >
-            {t("clPositions.goToPool", { poolId })}
-          </ArrowButton>
-        )}
-        {isFullRange &&
-          isPoolSuperfluid &&
-          !superfluidData &&
-          superfluidApr &&
-          account &&
-          status !== "unbonding" && (
-            <>
-              <button
-                className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px] md:ml-auto"
-                onClick={() => {
-                  setSelectSfValidatorAddress(true);
-                }}
-              >
-                <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
-                  <span className="text-superfluid-gradient">
-                    {t("pool.superfluidEarnMore", {
-                      rate: superfluidApr.maxDecimals(1).toString(),
-                    })}
-                  </span>
-                </div>
-              </button>
-              {selectSfValidatorAddress && (
-                <SuperfluidValidatorModal
-                  isOpen={selectSfValidatorAddress}
-                  onRequestClose={() => setSelectSfValidatorAddress(false)}
-                  onSelectValidator={(validatorAddress) => {
-                    account.osmosis
-                      .sendStakeExistingPositionMsg(
-                        position.id,
-                        validatorAddress
-                      )
-                      .catch(console.error);
-                    setSelectSfValidatorAddress(false);
-                  }}
-                />
-              )}
-            </>
+          {unbondEndTime && !superfluidData && (
+            <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+              <div className="flex flex-col text-right md:pl-4">
+                <span>
+                  {t("clPositions.unbondingFromNow", {
+                    fromNow: moment(unbondEndTime).fromNow(true),
+                  })}
+                </span>
+              </div>
+            </div>
           )}
-        <PositionButton
-          disabled={
-            claimableRewardCoins?.length === 0 ||
-            Boolean(account?.txTypeInProgress) ||
-            !Boolean(account)
-          }
-          onClick={sendCollectAllRewardsMsg}
-        >
-          {t("clPositions.collectRewards")}
-        </PositionButton>
-        <PositionButton
-          disabled={
-            Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidData?.undelegationEndTime) ||
-            status === "unbonding" ||
-            !Boolean(account)
-          }
-          onClick={useCallback(() => {
-            if (superfluidData?.delegationLockId) {
-              account!.osmosis
-                .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock([
-                  {
-                    lockId: superfluidData.delegationLockId,
-                    isSyntheticLock: true,
-                  },
-                ])
-                .catch(console.error);
-            } else setActiveModal("remove");
-          }, [account, superfluidData])}
-        >
-          {Boolean(superfluidData?.delegationLockId)
-            ? t("clPositions.unstake")
-            : t("clPositions.removeLiquidity")}
-        </PositionButton>
-        <PositionButton
-          disabled={
-            Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidData?.undelegationEndTime) ||
-            status === "unbonding"
-          }
-          onClick={useCallback(() => setActiveModal("increase"), [])}
-        >
-          {t("clPositions.increaseLiquidity")}
-        </PositionButton>
+        </div>
+        {superfluidData && <SuperfluidPositionInfo {...superfluidData} />}
+        <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
+          {showLinkToPool && (
+            <ArrowButton
+              className="md:ml-auto"
+              onClick={() => router.push(`/pool/${poolId}`)}
+            >
+              {t("clPositions.goToPool", { poolId })}
+            </ArrowButton>
+          )}
+          {isFullRange &&
+            isPoolSuperfluid &&
+            !superfluidData &&
+            superfluidApr &&
+            account &&
+            status !== "unbonding" && (
+              <>
+                <button
+                  className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px] md:ml-auto"
+                  onClick={() => {
+                    setSelectSfValidatorAddress(true);
+                  }}
+                >
+                  <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
+                    <span className="text-superfluid-gradient">
+                      {t("pool.superfluidEarnMore", {
+                        rate: superfluidApr.maxDecimals(1).toString(),
+                      })}
+                    </span>
+                  </div>
+                </button>
+                {selectSfValidatorAddress && (
+                  <SuperfluidValidatorModal
+                    isOpen={selectSfValidatorAddress}
+                    onRequestClose={() => setSelectSfValidatorAddress(false)}
+                    onSelectValidator={(validatorAddress) => {
+                      account.osmosis
+                        .sendStakeExistingPositionMsg(
+                          position.id,
+                          validatorAddress
+                        )
+                        .catch(console.error);
+                      setSelectSfValidatorAddress(false);
+                    }}
+                  />
+                )}
+              </>
+            )}
+          <PositionButton
+            disabled={
+              claimableRewardCoins?.length === 0 ||
+              Boolean(account?.txTypeInProgress) ||
+              !Boolean(account)
+            }
+            onClick={sendCollectAllRewardsMsg}
+          >
+            {t("clPositions.collectRewards")}
+          </PositionButton>
+          <PositionButton
+            disabled={
+              !status ||
+              Boolean(account?.txTypeInProgress) ||
+              Boolean(superfluidData?.undelegationEndTime) ||
+              status === "unbonding" ||
+              !Boolean(account)
+            }
+            onClick={useCallback(() => {
+              if (superfluidData?.delegationLockId) {
+                account!.osmosis
+                  .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                    [
+                      {
+                        lockId: superfluidData.delegationLockId,
+                        isSyntheticLock: true,
+                      },
+                    ]
+                  )
+                  .catch(console.error);
+              } else setActiveModal("remove");
+            }, [account, superfluidData])}
+          >
+            {Boolean(superfluidData?.delegationLockId)
+              ? t("clPositions.unstake")
+              : t("clPositions.removeLiquidity")}
+          </PositionButton>
+          <PositionButton
+            disabled={
+              !status ||
+              Boolean(account?.txTypeInProgress) ||
+              Boolean(superfluidData?.undelegationEndTime) ||
+              status === "unbonding"
+            }
+            onClick={useCallback(() => setActiveModal("increase"), [])}
+          >
+            {t("clPositions.increaseLiquidity")}
+          </PositionButton>
+
+          {activeModal === "increase" && !!status && (
+            <IncreaseConcentratedLiquidityModal
+              isOpen={true}
+              poolId={poolId}
+              position={position}
+              status={status}
+              onRequestClose={() => setActiveModal(null)}
+            />
+          )}
+          {activeModal === "remove" && !!status && claimableRewardCoins && (
+            <RemoveConcentratedLiquidityModal
+              isOpen={true}
+              poolId={poolId}
+              position={position}
+              onRequestClose={() => setActiveModal(null)}
+              claimableRewardCoins={claimableRewardCoins}
+              status={status}
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
   props
@@ -493,7 +517,7 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-  position: UserPosition;
+  position: ClPosition;
 }> = observer(({ config, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;

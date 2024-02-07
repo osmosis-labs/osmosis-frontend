@@ -162,7 +162,7 @@ export function getClTickPrice({
   });
 }
 
-export type UserPositionDetails = Awaited<
+export type ClPositionDetails = Awaited<
   ReturnType<typeof mapGetPositionDetails>
 >[number];
 
@@ -415,7 +415,7 @@ export async function mapGetPositionDetails({
   );
 }
 
-export type UserPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
+export type ClPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
 
 export async function mapGetPositions({
   positions: initialPositions,
