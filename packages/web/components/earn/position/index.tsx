@@ -97,10 +97,10 @@ export const EarnPosition = () => {
   return (
     <div className="flex flex-col justify-between gap-6">
       <div className="flex items-center gap-3.5">
-        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
+        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
           {t("earnPage.positions")}
         </h5>
-        <p className="text-sm font-semibold text-wosmongton-300">
+        <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
           {t("earnPage.strategiesCount", { number: "7" })}
         </p>
       </div>
