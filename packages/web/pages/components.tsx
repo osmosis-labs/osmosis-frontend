@@ -521,7 +521,7 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Primary - Disabled">
+      <Component title="Disabled">
         <ButtonShadcn disabled onClick={() => console.log("clicked")}>
           Click
         </ButtonShadcn>
@@ -534,7 +534,7 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Secondary - Disabled">
+      <Component title="Disabled">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
           variant="secondary"
@@ -551,10 +551,24 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Destructive - Disabled">
+      <Component title="Disabled">
         <ButtonShadcn
           onClick={() => console.log("clicked")}
           variant="destructive"
+          disabled
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Ghost">
+        <ButtonShadcn onClick={() => console.log("clicked")} variant="ghost">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Disabled">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="ghost"
           disabled
         >
           Click
@@ -565,7 +579,7 @@ const ButtonsShadcn = () => {
           Click
         </ButtonShadcn>
       </Component>
-      <Component title="Outline - Disabled">
+      <Component title="Disabled">
         <ButtonShadcn
           variant="outline"
           onClick={() => console.log("clicked")}
