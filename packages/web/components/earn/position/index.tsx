@@ -1,3 +1,5 @@
+import { Icon } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 
 // const mockData = [
@@ -95,7 +97,7 @@ export const EarnPosition = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col justify-between gap-6">
+    <div className="flex flex-col gap-7">
       <div className="flex items-center gap-3.5">
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
           {t("earnPage.positions")}
@@ -103,6 +105,15 @@ export const EarnPosition = () => {
         <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
           {t("earnPage.strategiesCount", { number: "7" })}
         </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="inline-flex items-center gap-4">
+          <p className="text-subtitle-1">Total Value Invested</p>
+          <Tooltip content="lorem ipsum">
+            <Icon id="info" width={16} height={16} />
+          </Tooltip>
+        </span>
+        <h3 className="text-osmoverse-100">$23,347.23</h3>
       </div>
       {/* <div className="flex flex-col justify-between">
         <div className="flex justify-between xs:flex-wrap">
