@@ -192,6 +192,22 @@ const CheckboxesShadcn = () => {
           </label>
         </div>
       </Component>
+
+      <Component title="Destructive">
+        <CheckboxShadcn
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          variant="destructive"
+        />
+      </Component>
+
+      <Component title="Secondary">
+        <CheckboxShadcn
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          variant="secondary"
+        />
+      </Component>
     </Card>
   );
 };
