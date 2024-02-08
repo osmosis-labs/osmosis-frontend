@@ -83,7 +83,10 @@ export const ChartSection = () => {
       </header>
       <DoubleTokenChart
         height={336}
-        data={[fromAssetChartData ?? [], toAssetChartData ?? []]}
+        data={[
+          fromAssetChartData ?? [],
+          !showPairRatio ? toAssetChartData ?? [] : [],
+        ]}
         showPairRatio={showPairRatio}
       />
       <button
