@@ -151,7 +151,7 @@ export const MyPositionCard: FunctionComponent<{
                 maxDecimals: 1,
               })}
               isSuperfluid={
-                positionDetails?.isPoolSuperfluid &&
+                Boolean(positionDetails?.superfluidData) &&
                 positionDetails?.status !== "outOfRange"
               }
             />
