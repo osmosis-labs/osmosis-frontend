@@ -59,6 +59,12 @@ export const MyPositionCard: FunctionComponent<{
       },
       {
         enabled: Boolean(account?.address),
+
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
       }
     );
 

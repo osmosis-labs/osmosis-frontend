@@ -7,7 +7,10 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   calcCoinValue,
@@ -162,6 +165,41 @@ export function getClTickPrice({
   });
 }
 
+const concentratedLiquidityCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+function getUnbondingClPositions({ bech32Address }: { bech32Address: string }) {
+  return cachified({
+    cache: concentratedLiquidityCache,
+    key: `unbonding-cl-positions-${bech32Address}`,
+    ttl: 5 * 1000, // 5 seconds
+    getFreshValue: () => queryCLUnbondingPositions({ bech32Address }),
+  });
+}
+
+function getDelegatedClPositions({ bech32Address }: { bech32Address: string }) {
+  return cachified({
+    cache: concentratedLiquidityCache,
+    key: `delegated-cl-positions-${bech32Address}`,
+    ttl: 5 * 1000, // 5 seconds
+    getFreshValue: () => queryDelegatedClPositions({ bech32Address }),
+  });
+}
+
+function getUndelegatingClPositions({
+  bech32Address,
+}: {
+  bech32Address: string;
+}) {
+  return cachified({
+    cache: concentratedLiquidityCache,
+    key: `undelegating-cl-positions-${bech32Address}`,
+    ttl: 5 * 1000, // 5 seconds
+    getFreshValue: () => queryUndelegatingClPositions({ bech32Address }),
+  });
+}
+
 export type ClPositionDetails = Awaited<
   ReturnType<typeof mapGetPositionDetails>
 >[number];
@@ -181,13 +219,13 @@ export async function mapGetPositionDetails({
         ({ positions }) => positions
       );
   const lockableDurationsPromise = getLockableDurations();
-  const userUnbondingPositionsPromise = queryCLUnbondingPositions({
+  const userUnbondingPositionsPromise = getUnbondingClPositions({
     bech32Address: userOsmoAddress,
   });
-  const delegatedPositionsPromise = queryDelegatedClPositions({
+  const delegatedPositionsPromise = getDelegatedClPositions({
     bech32Address: userOsmoAddress,
   });
-  const undelegatingPositionsPromise = queryUndelegatingClPositions({
+  const undelegatingPositionsPromise = getUndelegatingClPositions({
     bech32Address: userOsmoAddress,
   });
   const stakeCurrencyPromise = getAsset({

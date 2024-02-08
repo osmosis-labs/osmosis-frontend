@@ -3,11 +3,10 @@ import React, { FunctionComponent, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MyPositionCard } from "~/components/cards";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-import { Spinner } from "../loaders";
 
 const INITIAL_POSITION_CNT = 3;
 
@@ -47,23 +46,33 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
 
     return (
       <div className="flex flex-col gap-3">
-        {isLoading && <Spinner className="mx-auto my-3" />}
-        {visiblePositions.map((position) => (
-          <MyPositionCard
-            key={position.id}
-            position={position}
-            showLinkToPool={!Boolean(forPoolId)}
-          />
-        ))}
-        {positions &&
-          visiblePositions.length > 0 &&
-          positions.length > INITIAL_POSITION_CNT && (
-            <ShowMoreButton
-              className="mx-auto"
-              isOn={viewMore}
-              onToggle={() => setViewMore((v) => !v)}
-            />
-          )}
+        {/* {isLoading && <Spinner className="mx-auto my-3" />} */}
+        {isLoading ? (
+          <>
+            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+          </>
+        ) : (
+          <>
+            {visiblePositions.map((position) => (
+              <MyPositionCard
+                key={position.id}
+                position={position}
+                showLinkToPool={!Boolean(forPoolId)}
+              />
+            ))}
+            {positions &&
+              visiblePositions.length > 0 &&
+              positions.length > INITIAL_POSITION_CNT && (
+                <ShowMoreButton
+                  className="mx-auto"
+                  isOn={viewMore}
+                  onToggle={() => setViewMore((v) => !v)}
+                />
+              )}
+          </>
+        )}
       </div>
     );
   });

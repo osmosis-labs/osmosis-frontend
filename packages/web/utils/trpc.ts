@@ -67,6 +67,9 @@ export const api = createTRPCNext<AppRouter>({
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
             edge: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc`)(runtime),
+            poolsEdge: makeSkipBatchLink(`${getBaseUrl()}/api/pools-edge-trpc`)(
+              runtime
+            ),
           };
 
           return (ctx) => {
@@ -85,7 +88,16 @@ export const api = createTRPCNext<AppRouter>({
              * If the base path is not `edge`, we can just call the node server directly.
              */
             const isEdge = basePath === "edge";
-            const link = isEdge ? servers["edge"] : servers["node"];
+            const isPoolsEdge = isEdge && possibleEdgePath.startsWith("pools");
+
+            let link: (typeof servers)["node"];
+            if (isEdge && !isPoolsEdge) {
+              link = servers["edge"];
+            } else if (isPoolsEdge && possibleEdgePath.startsWith("pools")) {
+              link = servers["poolsEdge"];
+            } else {
+              link = servers["node"];
+            }
 
             return isEdge
               ? link({
