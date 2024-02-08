@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 import { Icon } from "~/components/assets";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -13,21 +14,22 @@ export const YourTotalBalance = observer(() => {
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isWalletLoading, onOpenWalletSelect } = useWalletSelect();
 
-  const { data: value } = api.edge.assets.getUserAssetsBreakdown.useQuery(
-    {
-      userOsmoAddress: account?.address ?? "",
-    },
-    {
-      enabled: !!account && !isWalletLoading,
-
-      // expensive query
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
+  const { data: value, isLoading } =
+    api.edge.assets.getUserAssetsBreakdown.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
       },
-    }
-  );
+      {
+        enabled: !!account && !isWalletLoading,
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const isZero = value?.aggregatedValue.toDec().isZero();
   const isWalletConnected = account?.isWalletConnected;
@@ -39,13 +41,15 @@ export const YourTotalBalance = observer(() => {
           <span className="text-subtitle1 text-osmoverse-300">
             Your total balance
           </span>
-          <h3
-            className={classNames({
-              "text-osmoverse-600": isZero,
-            })}
-          >
-            {value?.aggregatedValue.toString() ?? "N.D."}
-          </h3>
+          <SkeletonLoader isLoaded={!isLoading}>
+            <h3
+              className={classNames({
+                "text-osmoverse-600": isZero,
+              })}
+            >
+              {value?.aggregatedValue.toString() ?? "N.D."}
+            </h3>
+          </SkeletonLoader>
           {isZero ? (
             <button className="text-subtitle1 text-wosmongton-200">
               Add funds to get started
