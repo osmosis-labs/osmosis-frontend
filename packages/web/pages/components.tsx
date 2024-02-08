@@ -4,12 +4,6 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
-import { Button as ButtonShadcn } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input as InputShadcn } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch as SwitchShadcn } from "@/components/ui/switch";
 import { PoolAssetsIcon } from "~/components/assets";
 import {
   CopyIcon,
@@ -53,13 +47,11 @@ import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
 import { Button as ButtonShadcn } from "~/components/ui/button";
-import { Checkbox as CheckboxShadcn } from "~/components/ui/checkbox";
+import { Checkbox } from "~/components/ui/checkbox";
 import { Input as InputShadcn } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Skeleton } from "~/components/ui/skeleton";
-import { Skeleton } from "~/components/ui/skeleton";
-import { Slider as SliderShadcn } from "~/components/ui/slider";
 import { Slider as SliderShadcn } from "~/components/ui/slider";
 import { Switch as SwitchShadcn } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
@@ -167,62 +159,6 @@ const Sliders = () => {
           max={100}
           step={1}
           useSuperchargedGradient
-        />
-      </Component>
-    </Card>
-  );
-};
-
-const CheckboxesShadcn = () => {
-  const [checked, setChecked] = useState(false);
-  const handleCheckboxToggle = () => setChecked(!checked);
-
-  return (
-    <Card title="Checkbox (Shadcn)">
-      <Component title="Regular">
-        <CheckboxShadcn checked={checked} onClick={handleCheckboxToggle} />
-      </Component>
-      <Component title="Indeterminate">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          isIndeterminate
-        />
-      </Component>
-      <Component title="Disabled">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          disabled
-        />
-      </Component>
-      <Component title="With Children">
-        <div className="flex items-center space-x-2">
-          <CheckboxShadcn
-            checked={checked}
-            onClick={handleCheckboxToggle}
-            id="terms"
-          />
-          <label
-            htmlFor="terms"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Child
-          </label>
-        </div>
-      </Component>
-      <Component title="Secondary">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          variant="secondary"
-        />
-      </Component>
-      <Component title="Destructive">
-        <CheckboxShadcn
-          checked={checked}
-          onClick={handleCheckboxToggle}
-          variant="destructive"
         />
       </Component>
     </Card>
