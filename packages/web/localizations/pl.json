@@ -99,7 +99,7 @@
     "pendingRewards": "Oczekujące nagrody",
     "superfluidValidator": "Walidator",
     "superfluidUnstake": "Po zdjęciu kołka, dostępne później",
-    "superfluidUnstaking": "Rozpinany, dostępny w",
+    "superfluidUnstaking": "Odblokowanie, dostępne za {fromNow}",
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
     "unbondingFromNow": "Niewiążący, dostępny w",

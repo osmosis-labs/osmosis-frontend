@@ -99,7 +99,7 @@
     "pendingRewards": "Ожидаемые награды",
     "superfluidValidator": "Валидатор",
     "superfluidUnstake": "После отмены ставки становится доступным через {duration}",
-    "superfluidUnstaking": "Отмена ставки доступна в {fromNow}",
+    "superfluidUnstaking": "Разблокировка, доступно через {fromNow}",
     "superfluidCommission": "комиссия",
     "unstake": "Снять ликвидность",
     "unbondingFromNow": "Отмена связи доступна в {fromNow}",

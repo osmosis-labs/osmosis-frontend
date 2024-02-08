@@ -67,6 +67,11 @@ export const api = createTRPCNext<AppRouter>({
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
             edge: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc`)(runtime),
+
+            /**
+             * Create a separate link for the pools edge server since its query is too expensive
+             * and it's slowing the other queries down because of JS single threaded nature.
+             */
             poolsEdge: makeSkipBatchLink(`${getBaseUrl()}/api/pools-edge-trpc`)(
               runtime
             ),

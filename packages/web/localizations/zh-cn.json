@@ -99,7 +99,7 @@
     "pendingRewards": "待奖励",
     "superfluidValidator": "验证器",
     "superfluidUnstake": "一旦解除质押，可用后",
-    "superfluidUnstaking": "取消质押，可用于",
+    "superfluidUnstaking": "解锁，{fromNow}后可用",
     "superfluidCommission": "委员会",
     "unstake": "解除流动性质押",
     "unbondingFromNow": "脱粘，可用于",

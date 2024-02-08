@@ -9,6 +9,10 @@ export const config = {
   runtime: "edge",
 };
 
+/**
+ * Create a separate link for the pools edge server since its query is too expensive
+ * and it's slowing the other queries down because of JS single threaded nature.
+ */
 export default async function handler(req: NextRequest) {
   return fetchRequestHandler({
     endpoint: "/api/pools-edge-trpc",

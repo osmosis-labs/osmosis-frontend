@@ -99,7 +99,7 @@
     "pendingRewards": "Recompensas pendientes",
     "superfluidValidator": "Validador",
     "superfluidUnstake": "Una vez no apostado, disponible después",
-    "superfluidUnstaking": "Unstake, disponible en",
+    "superfluidUnstaking": "Unstake, disponible en {fromNow}",
     "superfluidCommission": "comisión",
     "unstake": "Quitar liquidez",
     "unbondingFromNow": "Desvinculación, disponible en",

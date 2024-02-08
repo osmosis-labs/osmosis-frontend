@@ -99,7 +99,7 @@
     "pendingRewards": "Bekleyen ödüller",
     "superfluidValidator": "Doğrulayıcı",
     "superfluidUnstake": "Stake kaldırıldıktan sonra kullanılabilir",
-    "superfluidUnstaking": "Geri alma, mevcut",
+    "superfluidUnstaking": "Kilidini Açma, {fromNow} içinde kullanılabilir",
     "superfluidCommission": "komisyon",
     "unstake": "Likiditeyi serbest bırakın",
     "unbondingFromNow": "Bağsız, mevcut",

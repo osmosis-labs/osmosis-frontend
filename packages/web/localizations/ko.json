@@ -99,7 +99,7 @@
     "pendingRewards": "보류 중인 보상",
     "superfluidValidator": "유효성 검사기",
     "superfluidUnstake": "스테이킹 해제 후 사용 가능",
-    "superfluidUnstaking": "언스테이킹, 사용 가능",
+    "superfluidUnstaking": "언스테이크, {fromNow}에 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "유동성 언스테이킹",
     "unbondingFromNow": "언본딩, 사용 가능",

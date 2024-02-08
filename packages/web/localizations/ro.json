@@ -99,7 +99,7 @@
     "pendingRewards": "Recompense în așteptare",
     "superfluidValidator": "Validator",
     "superfluidUnstake": "Odată dezamăgit, disponibil după",
-    "superfluidUnstaking": "Unstaking, disponibil în",
+    "superfluidUnstaking": "Deblocare, disponibil în {fromNow}",
     "superfluidCommission": "comision",
     "unstake": "Anulați lichiditatea",
     "unbondingFromNow": "Dezlipire, disponibil în",
