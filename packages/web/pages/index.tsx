@@ -18,9 +18,9 @@ const Home = () => {
   });
 
   return (
-    <main className="flex h-full w-full flex-col overflow-auto px-8 py-2 lg:px-12 1.5xs:px-4">
+    <main className="flex h-full w-full flex-col px-8 py-2 lg:px-12 1.5xs:px-4">
       <div className="mx-auto w-full max-w-[1700px]">
-        <header className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header lg:flex-col lg:items-start">
+        <header className="mt-0 flex w-full items-end justify-between 1.5xl:mt-mobile-header lg:flex-col lg:items-start">
           <YourTotalBalance />
           <div className="mt-6 flex w-[27rem] items-stretch lg:w-full">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
