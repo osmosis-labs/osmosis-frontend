@@ -60,9 +60,9 @@
     "adSubtitle": "आपके कुछ पद {apr} % APR के लिए OSMO को दांव पर लगाकर अर्जित की जाने वाली कमाई से कम कमा रहे हैं। अपग्रेड करने के लिए पद देखें और चुनें।",
     "title": "स्टेक्ड OSMO में कनवर्ट करें",
     "description": "चयनित पदों को पूरी तरह से OSMO में परिवर्तित कर दिया जाएगा। फिर सभी OSMO स्वचालित रूप से आपके मौजूदा सत्यापनकर्ता सेट से जुड़ जाएंगे।",
-    "stakedOsmo": "स्टेक्ड ओएसएमओ",
-    "APR": "अप्रैल",
-    "currentApr": "वर्तमान अप्रैल",
+    "stakedOsmo": "स्टेक्ड OSMO",
+    "APR": "एपीआर",
+    "currentApr": "वर्तमान एपीआर",
     "pool": "पूल # {poolId}",
     "position": "स्थिति # {positionId}",
     "convertAndStake": "कन्वर्ट और हिस्सेदारी"
@@ -189,7 +189,7 @@
     },
     "myPools": "आपके तालाब",
     "poolCards": {
-      "APR": "अप्रैल",
+      "APR": "एपीआर",
       "bonded": "बंधुआ",
       "FeeAPY": "शुल्क एपीवाई",
       "liquidity": "मेरी तरलता"
@@ -200,7 +200,7 @@
       "titleDeposit": "से जमा करें",
       "titleWithdraw": "को वापस ले लें"
     },
-    "stakedAssets": "स्टेक्ड ओएसएमओ",
+    "stakedAssets": "स्टेक्ड OSMO",
     "table": {
       "columns": {
         "assetChain": "संपत्ति/श्रृंखला",
@@ -303,15 +303,15 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "फिएट ऑनरैंप चुनें",
-      "kadoSubtitle": "ओएसएमओ, यूएसडीसी का समर्थन करता है",
-      "transakSubtitle": "ओएसएमओ का समर्थन करता है",
-      "onrampMoneySubtitle": "ओएसएमओ, यूएसडीसी का समर्थन करता है"
+      "kadoSubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
+      "transakSubtitle": "OSMO का समर्थन करता है",
+      "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है"
     },
     "incentive": {
       "mobileTitle": "प्रोत्साहन",
       "title": "प्रोत्साहन प्रकार"
     },
-    "MAX": "मैक्स",
+    "MAX": "अधिकतम",
     "pool": {
       "mobileTitle": "पूल",
       "title": "पूल के प्रकार"
@@ -465,7 +465,7 @@
     "24hrTradingVolume": "24 घंटे ट्रेडिंग वॉल्यूम",
     "amountDaysUnbonding": "{numDays} दिन अनबॉन्डिंग",
     "amountDaysUnbonding_plural": "{numDays} दिन अनबॉन्डिंग",
-    "APR": "अप्रैल",
+    "APR": "एपीआर",
     "available": "उपलब्ध",
     "bonded": "बंधुआ",
     "bondLiquidity": "बांड तरलता",
@@ -516,7 +516,7 @@
     "allPools": {
       "search": "पूल खोजें",
       "sort": {
-        "APRIncentivized": "अप्रैल",
+        "APRIncentivized": "एपीआर",
         "fees": "फीस (7डी)",
         "liquidity": "लिक्विडिटी",
         "poolName": "पूल का नाम/संख्या",
@@ -524,7 +524,7 @@
       },
       "title": "पूल खोजें"
     },
-    "APR": "अप्रैल",
+    "APR": "एपीआर",
     "bonded": "बंधुआ",
     "createPool": {
       "amount": "मात्रा",
@@ -564,7 +564,7 @@
       "boost": "बढ़ाना",
       "superfluid": "अतितरल",
       "externalBoost": "बाहरी बूस्ट",
-      "total": "कुल अप्रैल",
+      "total": "कुल एपीआर",
       "explainer": {
         "title": "एपीआर की गणना कैसे की जाती है?",
         "p1": "सभी एपीआर अनुमान हैं। उनकी गणना पूल में तरलता के लिए औसत एपीआर लेकर की जाती है।",
@@ -599,10 +599,10 @@
   "stake": {
     "available": "उपलब्ध",
     "staked": "दांव पर लगा दिया",
-    "MAX": "मैक्स",
+    "MAX": "अधिकतम",
     "validatorHeader": "हिस्सेदारी दस्ता",
-    "stake": "स्टेक ओएसएमओ",
-    "unstake": "ओएसएमओ को अनस्टेक करें",
+    "stake": "स्टेक OSMO",
+    "unstake": "OSMO को अनस्टेक करें",
     "estimatedEarnings": "अनुमानित आय",
     "unbondingInProgress": "अनस्टेकिंग प्रगति पर है",
     "amount": "मात्रा",
@@ -619,7 +619,7 @@
     "investRewards": "एकत्र करें और पुनः निवेश करें",
     "learn": "और अधिक जानें",
     "alertTitleBeginning": "कमाना",
-    "alertTitleEnd": "अप्रैल",
+    "alertTitleEnd": "एपीआर",
     "alertSubtitle": "अपने OSMO को दांव पर लगाकर",
     "mainCardButtonText": "दांव",
     "mainCardButtonUnstakeText": "दाँव से उतारना",
@@ -722,7 +722,7 @@
     "expectedOutput": "अपेक्षित उत्पादन",
     "fee": "स्वैप शुल्क ( {fee} )",
     "HALF": "आधा",
-    "MAX": "मैक्स",
+    "MAX": "अधिकतम",
     "minimumSlippage": "स्लिपेज के बाद प्राप्त न्यूनतम राशि ( {slippage} )",
     "pool": "पूल # {id}",
     "priceImpact": "मूल्य प्रभाव",
