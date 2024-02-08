@@ -112,7 +112,7 @@ export const ChartSection = () => {
                     alt={`${marketData?.coinDenom} image`}
                     width={32}
                     height={32}
-                    className="h-8 w-8 rounded-full"
+                    className="rounded-full"
                   />
                 ) : (
                   <div className="h-8 w-8 rounded-full bg-osmoverse-600">
