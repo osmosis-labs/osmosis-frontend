@@ -2,7 +2,9 @@ import classNames from "classnames";
 import Image from "next/image";
 import React, { useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { DoubleTokenChart } from "~/components/chart/double-token-chart";
+import { MenuDropdown } from "~/components/control";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
   useSwapHistoricalPrice,
@@ -44,9 +46,10 @@ export const ChartSection = () => {
   } = useSwapHistoricalPrice(to, urlTimeFrame);
 
   const [showPairRatio, setShowPairRatio] = useState(false);
+  const [isTimeFrameSelectorOpen, setIsTimeFrameSelectorOpen] = useState(false);
 
   return (
-    <section className="relative w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 lg:hidden">
+    <section className="relative max-h-[520px] w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 lg:hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (
@@ -64,7 +67,24 @@ export const ChartSection = () => {
             />
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="relative hidden xl:block">
+          <button
+            onClick={() => setIsTimeFrameSelectorOpen((p) => !p)}
+            className="inline-flex items-center gap-1 self-start px-2 py-[5px] text-caption text-wosmongton-300"
+          >
+            {urlTimeFrame}
+            <Icon id="chevron-down" className="h-4 w-4" />
+          </button>
+          <MenuDropdown
+            isOpen={isTimeFrameSelectorOpen}
+            onSelect={(s) =>
+              setQueryState({ timeFrame: s as CommonPriceChartTimeFrame })
+            }
+            options={availableTimeFrames.map((tf) => ({ display: tf, id: tf }))}
+            isFloating
+          />
+        </div>
+        <div className="flex items-center gap-1 xl:hidden">
           {availableTimeFrames.map((timeFrame) => (
             <button
               key={timeFrame}
