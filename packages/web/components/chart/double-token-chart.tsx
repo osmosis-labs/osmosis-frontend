@@ -76,7 +76,10 @@ export const DoubleTokenChart = ({ data, height }: DoubleTokenChartProps) => {
   );
 
   return (
-    <ParentSize className="flex-shrink-1 flex-1 [&>svg]:overflow-visible">
+    <ParentSize
+      className="flex-shrink-1 flex-1 [&>svg]:overflow-visible"
+      style={{ maxHeight: height }}
+    >
       {({ width }) => (
         <XYChart
           key="line-chart"
