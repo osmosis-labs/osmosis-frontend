@@ -46,10 +46,18 @@ export const ChartSection = () => {
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (
-            <AssetInfo assetPrice={fromAssetMarketData} denom={from} />
+            <AssetInfo
+              assetPrice={fromAssetMarketData}
+              denom={from}
+              colorHex="#D779CF"
+            />
           )}
           {!isLoadingToMarketData && (
-            <AssetInfo assetPrice={toAssetMarketData} denom={to} />
+            <AssetInfo
+              assetPrice={toAssetMarketData}
+              denom={to}
+              colorHex="#8C8AF9"
+            />
           )}
         </div>
         <div className="flex items-center gap-1">
