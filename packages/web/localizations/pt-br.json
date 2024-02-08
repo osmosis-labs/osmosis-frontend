@@ -553,7 +553,7 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
-    "TVL": "televisão",
+    "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
@@ -855,7 +855,7 @@
     "marketCapRank": "Classificação de capitalização de mercado",
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
-    "tvl": "televisão",
+    "tvl": "TVL",
     "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
