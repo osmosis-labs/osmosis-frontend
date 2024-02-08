@@ -124,7 +124,8 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               variant="destructive"
               checked={config.acknowledgeFee}
               onClick={() => (config.acknowledgeFee = !config.acknowledgeFee)}
-            >
+            />
+            <label className="cursor-pointer pl-3 md:pl-1">
               {isMobile ? (
                 <div className="mx-auto w-2/3">
                   {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
@@ -132,7 +133,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               ) : (
                 t("pools.createPool.undersandCost", { POOL_CREATION_FEE })
               )}
-            </Checkbox>
+            </label>
           </div>
         </div>
       </div>
