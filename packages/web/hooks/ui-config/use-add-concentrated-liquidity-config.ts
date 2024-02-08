@@ -566,21 +566,13 @@ export class ObservableAddConcentratedLiquidityConfig {
       this.pool.currentSqrtPrice
     );
 
-    const amount0Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      ) ?? new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
-    const amount1Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
-    const totalValue = amount0Value.toDec().add(amount1Value.toDec());
+    const totalValue = amount0.toDec().add(amount1.toDec());
 
     if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
 
     return [
-      new RatePretty(amount0Value.toDec().quo(totalValue)),
-      new RatePretty(amount1Value.toDec().quo(totalValue)),
+      new RatePretty(amount0.toDec().quo(totalValue)),
+      new RatePretty(amount1.toDec().quo(totalValue)),
     ];
   }
 
