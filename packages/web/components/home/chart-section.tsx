@@ -46,7 +46,7 @@ export const ChartSection = () => {
   const [showPairRatio, setShowPairRatio] = useState(false);
 
   return (
-    <section className="relative w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 1.5lg:hidden">
+    <section className="relative w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 lg:hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (

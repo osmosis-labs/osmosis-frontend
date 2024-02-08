@@ -18,17 +18,20 @@ const Home = () => {
   });
 
   return (
-    <main className="flex h-full w-full flex-col overflow-auto px-8 py-2">
+    <main className="flex h-full w-full flex-col overflow-auto px-8 py-2 lg:px-12 1.5xs:px-4">
       <div className="mx-auto w-full max-w-[1700px]">
-        <header className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header 1.5lg:justify-center">
+        <header className="mt-0 flex w-full items-end justify-between 2xl:mt-mobile-header lg:flex-col lg:items-start">
           <YourTotalBalance />
-          <div className="flex w-[27rem] items-stretch">
+          <div className="mt-6 flex w-[27rem] items-stretch lg:w-full">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          </div>
+          <div className="mt-4 hidden w-full lg:block">
+            <SwapTool />
           </div>
         </header>
         <div className="mt-4 flex w-full 1.5lg:justify-center 1.5lg:bg-transparent">
           <ChartSection />
-          <div className="min-w-[27rem] rounded-tr-3xl rounded-br-3xl border-l border-l-osmoverse-900 bg-osmoverse-850 1.5lg:w-[27rem] 1.5lg:min-w-[auto]">
+          <div className="min-w-[27rem] rounded-tr-3xl rounded-br-3xl border-l border-l-osmoverse-900 bg-osmoverse-850 1.5lg:w-[27rem] 1.5lg:min-w-[auto] lg:hidden">
             <SwapTool />
           </div>
         </div>
