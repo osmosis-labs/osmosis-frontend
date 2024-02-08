@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import React from "react";
+import Image from "next/image";
+import React, { useState } from "react";
 
 import { DoubleTokenChart } from "~/components/chart/double-token-chart";
 import { AssetInfo } from "~/components/home/asset-info";
@@ -42,8 +43,10 @@ export const ChartSection = () => {
     result: { data: toAssetChartData },
   } = useSwapHistoricalPrice(to, urlTimeFrame);
 
+  const [showPairRatio, setShowPairRatio] = useState(false);
+
   return (
-    <section className="w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 1.5lg:hidden">
+    <section className="relative w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 1.5lg:hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (
@@ -82,6 +85,43 @@ export const ChartSection = () => {
         height={336}
         data={[fromAssetChartData ?? [], toAssetChartData ?? []]}
       />
+      <button
+        onClick={() => setShowPairRatio((p) => !p)}
+        className={classNames(
+          "absolute bottom-6 left-6 h-11 rounded-full bg-osmoverse-700 text-xl text-wosmongton-200",
+          { "w-11": !showPairRatio, "py-1.5 px-3": showPairRatio }
+        )}
+      >
+        {showPairRatio ? (
+          <div className="inline-flex">
+            {[fromAssetMarketData, toAssetMarketData].map((marketData, idx) => (
+              <div
+                className={classNames("relative", {
+                  "z-[2]": idx === 0,
+                  "z-[1] -ml-3": idx === 1,
+                })}
+                key={marketData?.coinDenom}
+              >
+                {marketData?.coinImageUrl ? (
+                  <Image
+                    src={marketData?.coinImageUrl}
+                    alt={`${marketData?.coinDenom} image`}
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-osmoverse-600">
+                    {marketData?.coinDenom.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          "$"
+        )}
+      </button>
     </section>
   );
 };
