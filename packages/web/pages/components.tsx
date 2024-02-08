@@ -4,12 +4,6 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
-import { Button as ButtonShadcn } from "@/components/ui/button";
-import { Checkbox as CheckboxShadcn } from "@/components/ui/checkbox";
-import { Input as InputShadcn } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch as SwitchShadcn } from "@/components/ui/switch";
 import { PoolAssetsIcon } from "~/components/assets";
 import {
   CopyIcon,
@@ -53,8 +47,14 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { Button as ButtonShadcn } from "~/components/ui/button";
+import { Checkbox as CheckboxShadcn } from "~/components/ui/checkbox";
+import { Input as InputShadcn } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Slider as SliderShadcn } from "~/components/ui/slider";
+import { Switch as SwitchShadcn } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
