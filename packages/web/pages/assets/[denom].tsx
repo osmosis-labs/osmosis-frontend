@@ -60,7 +60,7 @@ import { createContext } from "~/utils/react-context";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
-  tokenDenom?: string;
+  tokenDenom: string | null;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
@@ -75,12 +75,13 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
 
     useEffect(() => {
       if (
-        typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
+        (typeof featureFlags.tokenInfo !== "undefined" &&
+          !featureFlags.tokenInfo) ||
+        !tokenDenom
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router]);
+    }, [featureFlags.tokenInfo, router, tokenDenom]);
 
     if (!tokenDenom) {
       return null; // TODO: Add skeleton loader
@@ -727,7 +728,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom: token?.coinDenom ?? tokenDenom,
+      tokenDenom: token?.coinDenom ?? null,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,

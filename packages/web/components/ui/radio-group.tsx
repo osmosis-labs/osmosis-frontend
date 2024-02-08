@@ -1,9 +1,8 @@
 "use client";
 
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import classNames from "classnames";
 import * as React from "react";
-
-import { cn } from "@/lib/utils";
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -11,7 +10,7 @@ const RadioGroup = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Root
-      className={cn("grid gap-2", className)}
+      className={classNames("grid gap-2", className)}
       {...props}
       ref={ref}
     />
@@ -26,7 +25,7 @@ const RadioGroupItem = React.forwardRef<
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
-      className={cn(
+      className={classNames(
         "focus-visible:ring-ring aspect-square h-5 w-5 rounded-full border-2 text-osmoverse-200 shadow focus:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-wosmongton-200",
         className
       )}

@@ -910,7 +910,9 @@
       "all": "Tüm",
       "single": "Bekar",
       "multi": "Çok"
-    }
+    },
+    "totalValueInvested": "Yatırılan Toplam Değer",
+    "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
   "disclaimer": "Sorumluluk reddi beyanı"
 }

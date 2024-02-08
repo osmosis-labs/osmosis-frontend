@@ -910,7 +910,9 @@
       "all": "모두",
       "single": "하나의",
       "multi": "다중"
-    }
+    },
+    "totalValueInvested": "총 투자 가치",
+    "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
   "disclaimer": "부인 성명"
 }
