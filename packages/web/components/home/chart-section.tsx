@@ -21,7 +21,11 @@ const availableTimeFrames: CommonPriceChartTimeFrame[] = [
   "1M",
 ];
 
-export const ChartSection = () => {
+export const ChartSection = ({
+  isChartVisible,
+}: {
+  isChartVisible: boolean;
+}) => {
   const {
     queryState: { from, to, timeFrame: urlTimeFrame },
     setQueryState,
@@ -49,7 +53,15 @@ export const ChartSection = () => {
   const [isTimeFrameSelectorOpen, setIsTimeFrameSelectorOpen] = useState(false);
 
   return (
-    <section className="relative max-h-[520px] w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 lg:hidden">
+    <section
+      className={classNames(
+        "relative max-h-[520px] w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 transition-all duration-300 ease-in-out lg:hidden",
+        {
+          "translate-x-full opacity-0": !isChartVisible,
+          "translate-x-0 opacity-100": isChartVisible,
+        }
+      )}
+    >
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (
