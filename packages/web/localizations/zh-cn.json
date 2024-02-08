@@ -910,7 +910,9 @@
       "all": "全部",
       "single": "单身的",
       "multi": "多"
-    }
+    },
+    "totalValueInvested": "投资总额",
+    "lookBelow": "请参阅下文并找到最适合您的策略"
   },
   "disclaimer": "免责声明"
 }

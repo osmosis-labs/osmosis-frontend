@@ -910,7 +910,9 @@
       "all": "Toate",
       "single": "Singur",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valoarea totală investită",
+    "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
   "disclaimer": "Disclaimer"
 }

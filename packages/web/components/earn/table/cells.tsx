@@ -1,12 +1,13 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
-import { useMemo } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
+import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -16,6 +17,19 @@ interface StrategyNameCellProps {
   strategyMethod: string;
   platformName: string;
 }
+
+export const StrategyTooltip = ({
+  header,
+  body,
+}: {
+  header: string;
+  body: ReactNode;
+}) => (
+  <div className="flex flex-col gap-1">
+    <p className="text-caption">{header}</p>
+    {body}
+  </div>
+);
 
 export const StrategyNameCell = ({
   name,
@@ -45,23 +59,64 @@ export const StrategyNameCell = ({
 
 export const TVLCell = (item: CellContext<Strategy, number>) => {
   const fluctuation = item.row.original.tvl.fluctuation;
+  const depositCap = item.row.original.tvl.depositCap;
+  const depositCapOccupied = depositCap
+    ? Math.round((depositCap.actual / depositCap.total) * 100)
+    : 0;
   const { priceStore } = useStore();
-  const isFluctuationPositive = useMemo(() => fluctuation > 0, [fluctuation]);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
   return (
     <div className="flex flex-col">
       <ColumnCellCell>
         {fiat && formatPretty(new PricePretty(fiat, new Dec(item.getValue())))}
       </ColumnCellCell>
-      <small
-        className={classNames("text-xs font-subtitle2 font-medium", {
-          "text-bullish-400": isFluctuationPositive,
-          "text-osmoverse-500": !isFluctuationPositive,
-        })}
-      >
-        {fluctuation}%
-      </small>
+      {fluctuation && (
+        <small
+          className={classNames("text-xs font-subtitle2 font-medium", {
+            "text-bullish-400": fluctuation > 0,
+            "text-osmoverse-500": fluctuation < 0,
+          })}
+        >
+          {fluctuation}%
+        </small>
+      )}
+      {depositCap && (
+        <Tooltip
+          content={
+            <StrategyTooltip
+              header="Deposit Cap"
+              body={
+                <p className="text-caption text-osmoverse-300">
+                  {formatPretty(new Dec(depositCap.actual), {
+                    unitDisplay: "narrow",
+                  })}
+                  /
+                  {formatPretty(new Dec(depositCap.total), {
+                    unitDisplay: "narrow",
+                  })}
+                </p>
+              }
+            />
+          }
+          className="justify-end"
+        >
+          <span className="inline-flex items-center justify-end gap-2">
+            <div className="relative h-1.5 w-[70px] rounded-full bg-osmoverse-900">
+              <div
+                className={classNames(
+                  "absolute h-1.5 rounded-full bg-gradient-earnpage-tvl-depositcap"
+                )}
+                style={{
+                  width: `${depositCapOccupied * 0.7}px`,
+                }}
+              />
+            </div>
+            <p className="text-caption text-osmoverse-200">
+              {depositCapOccupied}%
+            </p>
+          </span>
+        </Tooltip>
+      )}
     </div>
   );
 };

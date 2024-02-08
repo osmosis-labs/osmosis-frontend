@@ -14,13 +14,16 @@ export const MOCK_tableData: Strategy[] = [
     strategyName: "ATOM Pro M+ Vault",
     tvl: {
       value: 10290316,
-      fluctuation: 4.5,
+      depositCap: {
+        actual: 12100290,
+        total: 14000000,
+      },
     },
     apy: 10.94,
     daily: 0.0008,
     reward: ["OSMO", "MARS"],
     lock: 21,
-    risk: 2,
+    risk: 4,
     actions: {
       externalURL: "#",
     },
@@ -112,7 +115,7 @@ export const MOCK_tableData: Strategy[] = [
     daily: 0.0012,
     reward: ["BTC", "ETH"],
     lock: 25,
-    risk: 2,
+    risk: 5,
     actions: {
       externalURL: "#",
     },
