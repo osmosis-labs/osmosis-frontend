@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useLocalStorage } from "react-use";
 
 import { AdBanner } from "~/components/ad-banner";
 import { Icon } from "~/components/assets";
@@ -10,7 +9,11 @@ import { ChartSection } from "~/components/home/chart-section";
 import { YourTotalBalance } from "~/components/home/your-total-balance";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useLocalStorageState,
+} from "~/hooks";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const Home = () => {
@@ -20,7 +23,7 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
-  const [isChartVisible, setIsChartVisible] = useLocalStorage(
+  const [isChartVisible, setIsChartVisible] = useLocalStorageState(
     "isChartVisible",
     false
   );
