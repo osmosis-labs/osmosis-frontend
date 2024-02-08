@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ExcludedExternalBoostPools } from "~/config/feature-flag";
-import { queryPriceRangeApr } from "~/server/queries/imperator";
+import { queryPriceRangeApr } from "~/server/queries/numia";
 import { queryLockableDurations } from "~/server/queries/osmosis";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
