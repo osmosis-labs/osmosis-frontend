@@ -910,7 +910,9 @@
       "all": "Alle",
       "single": "Einzel",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Gesamtinvestitionswert",
+    "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
   "disclaimer": "Haftungsausschluss"
 }

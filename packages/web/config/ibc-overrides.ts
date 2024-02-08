@@ -544,6 +544,12 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://tfm.com/bridge?chainFrom=dymension_1100-1&chainTo=osmosis-1&token0=adym&token1=ibc%2F9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
   },
+  "injective.GLTO": {
+    depositUrlOverride:
+      "https://tfm.com/bridge?chainFrom=injective-1&chainTo=osmosis-1&token0=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2&token1=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7",
+    withdrawUrlOverride:
+      "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7&token1=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
