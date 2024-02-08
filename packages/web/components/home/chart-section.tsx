@@ -42,7 +42,7 @@ export const ChartSection = () => {
   } = useSwapHistoricalPrice(to, urlTimeFrame);
 
   return (
-    <section className="w-full overflow-hidden 1.5lg:hidden">
+    <section className="w-full overflow-hidden rounded-tl-3xl rounded-bl-3xl bg-osmoverse-850 1.5lg:hidden">
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           {!isLoadingFromMarketData && (
