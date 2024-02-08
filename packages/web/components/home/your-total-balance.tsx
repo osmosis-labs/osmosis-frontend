@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React from "react";
 
@@ -7,7 +8,7 @@ import { useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export const YourTotalBalance = () => {
+export const YourTotalBalance = observer(() => {
   const { accountStore, chainStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isWalletLoading, onOpenWalletSelect } = useWalletSelect();
@@ -83,4 +84,4 @@ export const YourTotalBalance = () => {
       )}
     </>
   );
-};
+});
