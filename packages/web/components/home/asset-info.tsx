@@ -4,15 +4,16 @@ import Link from "next/link";
 import React from "react";
 
 import { Icon } from "~/components/assets";
+import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
 interface AssetInfoProps {
   assetPrice: any;
   denom: string;
-  colorHex?: string;
+  color?: string;
 }
 
-export const AssetInfo = ({ assetPrice, denom, colorHex }: AssetInfoProps) => {
+export const AssetInfo = ({ assetPrice, denom, color }: AssetInfoProps) => {
   const isNumberPositive = assetPrice?.priceChange24h?.toDec().isPositive();
   return (
     <div className="flex flex-col gap-1">
@@ -21,14 +22,14 @@ export const AssetInfo = ({ assetPrice, denom, colorHex }: AssetInfoProps) => {
         className="inline-flex items-center gap-1"
       >
         <h6
-          className={classNames({ "text-wosmongton-200": !colorHex })}
-          style={{ color: colorHex }}
+          className={classNames({ "text-wosmongton-200": !color })}
+          style={{ color }}
         >
           {denom}
         </h6>
         <Icon
           id="chevron-right"
-          color={colorHex ?? "#B3B1FD"}
+          color={color ?? theme.colors.wosmongton[200]}
           className="h-4 w-4"
         />
       </Link>

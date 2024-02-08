@@ -8,6 +8,7 @@ import {
   useSwapPageQuery,
 } from "~/components/home/hooks";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
+import { theme } from "~/tailwind.config";
 import * as trpc from "~/utils/trpc";
 
 const availableTimeFrames: CommonPriceChartTimeFrame[] = [
@@ -49,14 +50,14 @@ export const ChartSection = () => {
             <AssetInfo
               assetPrice={fromAssetMarketData}
               denom={from}
-              colorHex="#D779CF"
+              color={theme.colors.ammelia["400"]}
             />
           )}
           {!isLoadingToMarketData && (
             <AssetInfo
               assetPrice={toAssetMarketData}
               denom={to}
-              colorHex="#8C8AF9"
+              color={theme.colors.wosmongton["300"]}
             />
           )}
         </div>
