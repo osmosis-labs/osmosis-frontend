@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useLocalStorage } from "react-use";
 
 import { AdBanner } from "~/components/ad-banner";
+import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ChartSection } from "~/components/home/chart-section";
 import { YourTotalBalance } from "~/components/home/your-total-balance";
@@ -17,6 +20,11 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
+  const [isChartVisible, setIsChartVisible] = useLocalStorage(
+    "isChartVisible",
+    false
+  );
+
   return (
     <main className="flex h-full w-full px-8 py-2 lg:px-12 1.5xs:px-4">
       <div className="mx-auto w-full max-w-[1700px]">
@@ -29,9 +37,26 @@ const Home = () => {
             <SwapTool />
           </div>
         </header>
-        <div className="mt-4 flex w-full 1.5lg:justify-center 1.5lg:bg-transparent">
-          <ChartSection />
-          <div className="min-w-[27rem] rounded-tr-3xl rounded-br-3xl border-l border-l-osmoverse-900 bg-osmoverse-850 1.5lg:w-[27rem] 1.5lg:min-w-[auto] lg:hidden">
+        <div className="mt-4 flex w-full overflow-x-hidden 1.5lg:justify-center 1.5lg:bg-transparent">
+          <ChartSection isChartVisible={isChartVisible ?? false} />
+          <div
+            className={classNames(
+              "relative min-w-[27rem] border-l border-l-osmoverse-900 bg-osmoverse-850 1.5lg:w-[27rem] 1.5lg:min-w-[auto] lg:hidden",
+              {
+                "rounded-tr-3xl rounded-br-3xl": isChartVisible,
+                "rounded-3xl": !isChartVisible,
+              }
+            )}
+          >
+            <button
+              onClick={() => setIsChartVisible(!isChartVisible)}
+              className="absolute top-9 left-8 z-10"
+            >
+              <Icon
+                id={isChartVisible ? "collapse-right" : "graph"}
+                className="h-6 w-6"
+              />
+            </button>
             <SwapTool />
           </div>
         </div>
