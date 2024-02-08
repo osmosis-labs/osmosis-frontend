@@ -9,6 +9,7 @@ import {
   Tooltip,
   XYChart,
 } from "@visx/xychart";
+import classNames from "classnames";
 import { useMemo } from "react";
 
 import { theme } from "~/tailwind.config";
@@ -25,10 +26,15 @@ export type Data = {
 export interface DoubleTokenChartProps {
   data: Data[][];
   height: number;
+  showPairRatio?: boolean;
 }
 
 // TODO: support multiple token using array, for future support and simple logic
-export const DoubleTokenChart = ({ data, height }: DoubleTokenChartProps) => {
+export const DoubleTokenChart = ({
+  data,
+  height,
+  showPairRatio,
+}: DoubleTokenChartProps) => {
   const [primaryData, secondaryData] = data;
 
   const [primaryMin, primaryMax] = useMemo(() => {
@@ -198,7 +204,13 @@ export const DoubleTokenChart = ({ data, height }: DoubleTokenChartProps) => {
                 return (
                   <div className="flex gap-6 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     {Object.keys(datumByKey).map((key) => (
-                      <div key={key} className="flex flex-col">
+                      <div
+                        key={key}
+                        className={classNames("flex", {
+                          "flex-col-reverse": showPairRatio,
+                          "flex-col": !showPairRatio,
+                        })}
+                      >
                         <p
                           className="text-body2 font-medium"
                           style={{ color: colorScale?.(key) }}
