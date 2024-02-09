@@ -1,5 +1,11 @@
 import { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
-import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
+import { useRouter } from "next/router";
+import {
+  parseAsString,
+  parseAsStringEnum,
+  useQueryState,
+  useQueryStates,
+} from "nuqs";
 import { useMemo } from "react";
 
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -7,7 +13,7 @@ import * as trpc from "~/utils/trpc";
 
 export const useSwapHistoricalPrice = (
   coinDenom: string,
-  timeFrame: CommonPriceChartTimeFrame
+  timeFrame?: CommonPriceChartTimeFrame
 ) => {
   /**
    * Need to have a custom graph so you have more points to plot
@@ -75,17 +81,24 @@ export const availableTimeFrames: CommonPriceChartTimeFrame[] = [
 ];
 
 export const useSwapPageQuery = () => {
-  const [queryState, setQueryState] = useQueryStates({
-    from: parseAsString.withDefault("OSMO"),
-    to: parseAsString.withDefault("ATOM"),
-    timeFrame:
-      parseAsStringEnum<CommonPriceChartTimeFrame>(
-        availableTimeFrames
-      ).withDefault("1M"),
+  const router = useRouter();
+
+  const [swapState, setSwapState] = useQueryStates({
+    from: parseAsString.withDefault("ATOM"),
+    to: parseAsString.withDefault("OSMO"),
   });
 
+  const [timeFrame, setTimeFrame] = useQueryState(
+    "timeFrame",
+    parseAsStringEnum<CommonPriceChartTimeFrame>(
+      availableTimeFrames
+    ).withDefault("1M")
+  );
+
   return {
-    queryState,
-    setQueryState,
+    swapState,
+    setSwapState,
+    timeFrame: router.isReady ? timeFrame : undefined,
+    setTimeFrame,
   };
 };

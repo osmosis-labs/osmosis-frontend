@@ -22,8 +22,9 @@ export const ChartSection = ({
   isChartVisible: boolean;
 }) => {
   const {
-    queryState: { from, to, timeFrame: urlTimeFrame },
-    setQueryState,
+    swapState: { from, to },
+    timeFrame: urlTimeFrame,
+    setTimeFrame,
   } = useSwapPageQuery();
 
   const { data: fromAssetMarketData, isLoading: isLoadingFromMarketData } =
@@ -97,9 +98,7 @@ export const ChartSection = ({
           </button>
           <MenuDropdown
             isOpen={isTimeFrameSelectorOpen}
-            onSelect={(s) =>
-              setQueryState({ timeFrame: s as CommonPriceChartTimeFrame })
-            }
+            onSelect={(s) => setTimeFrame(s as CommonPriceChartTimeFrame)}
             options={availableTimeFrames.map((tf) => ({ display: tf, id: tf }))}
             isFloating
           />
@@ -108,7 +107,7 @@ export const ChartSection = ({
           {availableTimeFrames.map((timeFrame) => (
             <button
               key={timeFrame}
-              onClick={() => setQueryState({ timeFrame })}
+              onClick={() => setTimeFrame(timeFrame)}
               className={classNames(
                 "px-2 py-[5px] text-caption text-osmoverse-400",
                 {
