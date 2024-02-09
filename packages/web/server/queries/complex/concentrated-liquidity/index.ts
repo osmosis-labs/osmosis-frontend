@@ -375,10 +375,9 @@ export async function mapGetPositionDetails({
         isUnbonding,
       });
 
-      const superfluidApr: RatePretty | undefined =
-        isSuperfluidStaked || isSuperfluidUnstaking
-          ? (await getPoolIncentives(pool.id))?.aprBreakdown?.superfluid
-          : undefined;
+      const superfluidApr: RatePretty | undefined = (
+        await getPoolIncentives(pool.id)
+      )?.aprBreakdown?.superfluid;
 
       /** User's current superfluid delegation or undelegation */
       let superfluidData:
@@ -428,7 +427,10 @@ export async function mapGetPositionDetails({
         };
       }
 
-      const totalRangeApr = rangeApr?.add(superfluidApr ?? new Dec(0));
+      const totalRangeApr =
+        isSuperfluidStaked || isSuperfluidUnstaking
+          ? rangeApr?.add(superfluidApr ?? new Dec(0))
+          : rangeApr;
 
       return {
         id: position.position_id,

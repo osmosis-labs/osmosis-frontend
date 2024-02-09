@@ -474,6 +474,8 @@ export const TransferContent: FunctionComponent<
   useDebounce(
     () => {
       setDebouncedInputValue(inputAmountRaw);
+      // Every time the input amount changes, revert the controlled mode (always select the best quote automatically)
+      setBridgeProviderControlledMode(false);
     },
     300,
     [inputAmountRaw]
@@ -549,6 +551,9 @@ export const TransferContent: FunctionComponent<
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
     useState<AvailableBridges | null>(null);
+  const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
+    useState(false);
+
   const quoteResults = api.useQueries((t) =>
     availableBridgeKeys.map((bridge) =>
       t.bridgeTransfer.getQuoteByBridge(
@@ -731,7 +736,9 @@ export const TransferContent: FunctionComponent<
   );
 
   useEffect(() => {
-    const bestQuote = [...quoteResults]
+    const quoteResults_ = [...quoteResults];
+
+    const bestQuote = quoteResults_
       // only those that have fetched
       .filter((quoteResult) => Boolean(quoteResult.isFetched))
       // Sort by response time. The fastest and highest quality quote will be first.
@@ -758,10 +765,25 @@ export const TransferContent: FunctionComponent<
         return bestAcc;
       }, undefined);
 
-    if (!!bestQuote && (!selectedBridgeProvider || !selectedQuote)) {
+    // If the selected bridge provider is not found in the results, select the best quote provider
+    const isBridgeProviderNotFound = !quoteResults_.some(
+      ({ data }) => data?.provider.id === selectedBridgeProvider
+    );
+
+    if (
+      !!bestQuote &&
+      ((bestQuote?.provider.id !== selectedBridgeProvider &&
+        !isBridgeProviderControlledMode) ||
+        isBridgeProviderNotFound)
+    ) {
       setSelectedBridgeProvider(bestQuote.provider.id);
     }
-  }, [selectedQuote, quoteResults, selectedBridgeProvider]);
+  }, [
+    selectedQuote,
+    quoteResults,
+    selectedBridgeProvider,
+    isBridgeProviderControlledMode,
+  ]);
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
@@ -801,6 +823,7 @@ export const TransferContent: FunctionComponent<
 
   useUnmount(() => {
     setSelectedBridgeProvider(null);
+    setBridgeProviderControlledMode(false);
   });
 
   const [transferInitiated, setTransferInitiated] = useState(false);
@@ -1291,6 +1314,7 @@ export const TransferContent: FunctionComponent<
           !someError ? selectedQuote?.provider.id : undefined
         }
         onSelectBridgeProvider={({ id }) => {
+          setBridgeProviderControlledMode(true);
           setSelectedBridgeProvider(id);
         }}
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
