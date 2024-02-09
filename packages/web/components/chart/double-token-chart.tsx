@@ -218,7 +218,7 @@ export const DoubleTokenChart = ({
                           {key}
                         </p>
                         <h6 className="text-h6 font-semibold text-white-full">
-                          $
+                          {!showPairRatio && "$"}
                           {formatPretty(
                             new Dec(
                               datumByKey[key].datum.originalClose ??
