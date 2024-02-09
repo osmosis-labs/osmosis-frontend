@@ -129,7 +129,7 @@ export const InputTelegram: FunctionComponent<Props> = ({
         }
         checked={selected}
         onCheckedChange={(toggled) => setSelected(toggled)}
-      ></Switch>
+      />
 
       <Button
         className={`${

@@ -69,9 +69,9 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
 
         {isExpended
           ? sortedRows.map((alert, key) => (
-              <div key={key}>
+              <div key={key} className="flex gap-2">
                 <Switch
-                  // labelPosition="right"
+                  id="alert-name"
                   disabled={disabled}
                   checked={toggleStates[alert.name] === true}
                   onCheckedChange={(value) => {
@@ -91,9 +91,8 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
                       [alert.name]: value,
                     }));
                   }}
-                >
-                  {alert.name}
-                </Switch>
+                />
+                <label htmlFor="alert-name">{alert.name}</label>
               </div>
             ))
           : null}
