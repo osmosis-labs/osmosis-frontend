@@ -23,25 +23,16 @@ const availableTimeFrames: CommonPriceChartTimeFrame[] = [
   "1M",
 ];
 
-const calculatePairRatios = (
-  from:
-    | (TokenHistoricalPrice & {
-        denom: string;
-      })[]
-    | undefined,
-  to:
-    | (TokenHistoricalPrice & {
-        denom: string;
-      })[]
-    | undefined
-):
+type AssetChartData =
   | (TokenHistoricalPrice & {
       denom: string;
-    })[] => {
-  const ratios:
-    | (TokenHistoricalPrice & {
-        denom: string;
-      })[] = [];
+    })[];
+
+const calculatePairRatios = (
+  from?: AssetChartData,
+  to?: AssetChartData
+): AssetChartData => {
+  const ratios: AssetChartData = [];
 
   if (from && to && from.length === to.length) {
     from.forEach((from, i) => {
