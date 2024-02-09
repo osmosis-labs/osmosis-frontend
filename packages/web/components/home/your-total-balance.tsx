@@ -21,7 +21,7 @@ export const YourTotalBalance = observer(() => {
         userOsmoAddress: account?.address ?? "",
       },
       {
-        enabled: !!account && !isWalletLoading,
+        enabled: account?.address !== undefined && !isWalletLoading,
 
         // expensive query
         trpc: {
