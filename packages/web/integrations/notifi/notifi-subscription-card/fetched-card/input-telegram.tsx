@@ -122,12 +122,11 @@ export const InputTelegram: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        // containerClassName={`${
-        //   !selected || targetGroup?.telegramTargets?.[0]?.isConfirmed
-        //     ? ""
-        //     : "hidden"
-        // }`}
-        // labelPosition="left"
+        className={
+          !selected || targetGroup?.telegramTargets?.[0]?.isConfirmed
+            ? ""
+            : "hidden"
+        }
         checked={selected}
         onCheckedChange={(toggled) => setSelected(toggled)}
       ></Switch>

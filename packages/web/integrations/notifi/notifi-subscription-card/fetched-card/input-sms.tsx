@@ -100,15 +100,12 @@ export const InputSms: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        // labelClassName=""
-        // containerClassName={`${
-        //   !selected || targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
-        // }`}
-        // labelPosition="left"
+        className={
+          !selected || targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
+        }
         checked={selected}
         onCheckedChange={(toggled) => setSelected(toggled)}
-      ></Switch>
-
+      />
       <Button
         className={`${
           selected && !targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
