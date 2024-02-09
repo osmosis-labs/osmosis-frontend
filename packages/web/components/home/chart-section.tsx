@@ -102,7 +102,7 @@ export const ChartSection = ({
             isFloating
           />
         </div>
-        <div className="flex items-center gap-1 xl:hidden">
+        <div className="flex items-center gap-1 self-start xl:hidden">
           {availableTimeFrames.map((timeFrame) => (
             <button
               key={timeFrame}
