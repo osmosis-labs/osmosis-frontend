@@ -585,10 +585,14 @@ export class ObservableAddConcentratedLiquidityConfig {
     );
 
     const amount0Value = this._baseDepositPrice
-      ? this._baseDepositPrice.mul(amount0)
+      ? this._baseDepositPrice.mul(
+          new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+        )
       : new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
     const amount1Value = this._quoteDepositPrice
-      ? this._quoteDepositPrice.mul(amount1)
+      ? this._quoteDepositPrice.mul(
+          new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+        )
       : new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
 
     const totalValue = amount0Value.toDec().add(amount1Value.toDec());
