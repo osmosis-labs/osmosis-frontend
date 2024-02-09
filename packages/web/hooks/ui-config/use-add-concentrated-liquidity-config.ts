@@ -30,6 +30,7 @@ import {
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
+import type { AppCurrency } from "@osmosis-labs/types";
 import {
   action,
   autorun,
@@ -566,14 +567,28 @@ export class ObservableAddConcentratedLiquidityConfig {
       this.pool.currentSqrtPrice
     );
 
+    const amount0Currency = new CoinPretty(
+      this._baseDepositAmountIn.sendCurrency,
+      amount0
+    );
+
+    (amount0Currency.currency as AppCurrency).base =
+      this._baseDepositAmountIn.sendCurrency.coinGeckoId;
+
+    const amount1Currency = new CoinPretty(
+      this._quoteDepositAmountIn.sendCurrency,
+      amount1
+    );
+
+    (amount1Currency.currency as AppCurrency).base =
+      this._quoteDepositAmountIn.sendCurrency.coinGeckoId;
+
     const amount0Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      ) ?? new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
+      this.priceStore.calculatePrice(amount0Currency) ??
+      new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
     const amount1Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+      this.priceStore.calculatePrice(amount1Currency) ??
+      new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
     const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
     if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
