@@ -10,7 +10,7 @@ export const config = {
 };
 
 /**
- * Create a separate link for the pools edge server since its query is too expensive
+ * Create a separate api edge route for the pools edge server since its query is too expensive
  * and it's slowing the other queries down because of JS single threaded nature.
  */
 export default async function handler(req: NextRequest) {

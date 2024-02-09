@@ -110,7 +110,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </div>
             <MyPositionStatus className="xs:px-0" status={status} negative />
           </div>
-          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+          <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
             <AssetAmount amount={positionBaseAsset} />
             <AssetAmount amount={positionQuoteAsset} />
           </div>
@@ -158,7 +158,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
               {t("clPositions.pendingRewards")}
             </div>
-            <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            <div className="flex flex-wrap justify-between gap-3 rounded-xl border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
               {claimableRewardCoins?.map((coin) => (
                 <AssetAmount
                   key={coin.currency.coinMinimalDenom}
