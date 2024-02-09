@@ -183,7 +183,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "提币 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
+      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
+      "provider": "提供者"
     },
     "myPools": "我的资金池",
     "poolCards": {
@@ -256,8 +257,7 @@
       "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
       "priceImpact": "价格影响",
       "sending": "正在发送...",
-      "transferAnyway": "无论如何转移",
-      "provider": "提供者"
+      "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",
@@ -909,7 +909,9 @@
       "all": "全部",
       "single": "单身的",
       "multi": "多"
-    }
+    },
+    "totalValueInvested": "投资总额",
+    "lookBelow": "请参阅下文并找到最适合您的策略"
   },
   "disclaimer": "免责声明"
 }

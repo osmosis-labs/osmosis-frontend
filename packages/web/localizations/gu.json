@@ -183,7 +183,8 @@
       "titleDeposit": "જમા {coinDenom}",
       "titleWithdraw": "પાછી ખેંચો {coinDenom}",
       "waitTime": "20 સેકન્ડ",
-      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે."
+      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે.",
+      "provider": "પ્રદાતા"
     },
     "myPools": "તમારા પૂલ",
     "poolCards": {
@@ -256,8 +257,7 @@
       "expectedOutputInfo": "ઉપયોગમાં લેવાતા પ્રદાતાના આધારે, ફી, સ્લિપેજ અને કિંમતની અસર અનુસાર ઓછું આઉટપુટ હોઈ શકે છે.",
       "priceImpact": "ભાવની અસર",
       "sending": "મોકલી રહ્યું છે...",
-      "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો",
-      "provider": "પ્રદાતા"
+      "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો"
     },
     "transferAssetSelect": {
       "buttonNext": "આગળ",
@@ -909,7 +909,9 @@
       "all": "બધા",
       "single": "એકલુ",
       "multi": "મલ્ટી"
-    }
+    },
+    "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
+    "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો"
   },
   "disclaimer": "અસ્વીકરણ"
 }

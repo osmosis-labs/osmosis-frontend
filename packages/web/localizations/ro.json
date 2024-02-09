@@ -183,7 +183,8 @@
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
       "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
+      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
+      "provider": "Furnizor"
     },
     "myPools": "Pool-urile Mele",
     "poolCards": {
@@ -256,8 +257,7 @@
       "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
-      "transferAnyway": "Transfer oricum",
-      "provider": "Furnizor"
+      "transferAnyway": "Transfer oricum"
     },
     "transferAssetSelect": {
       "buttonNext": "Urmatorul",
@@ -909,7 +909,9 @@
       "all": "Toate",
       "single": "Singur",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valoarea totală investită",
+    "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
   "disclaimer": "Disclaimer"
 }

@@ -184,6 +184,7 @@ export class ObservableHistoricalAndLiquidityData {
     if (this.lastChartData.close <= 0.001) return 5;
     if (this.lastChartData.close <= 0.01) return 4;
     if (this.lastChartData.close <= 0.1) return 3;
+    if (this.lastChartData.close < 1) return 3;
     return 2;
   }
 

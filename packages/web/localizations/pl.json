@@ -183,7 +183,8 @@
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
       "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
+      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
+      "provider": "Dostawca"
     },
     "myPools": "Moje Pule",
     "poolCards": {
@@ -256,8 +257,7 @@
       "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
       "sending": "Wysyłanie...",
-      "transferAnyway": "Transfer mimo wszystko",
-      "provider": "Dostawca"
+      "transferAnyway": "Transfer mimo wszystko"
     },
     "transferAssetSelect": {
       "buttonNext": "Dalej",
@@ -909,7 +909,9 @@
       "all": "Wszystko",
       "single": "Pojedynczy",
       "multi": "Wielo"
-    }
+    },
+    "totalValueInvested": "Całkowita zainwestowana wartość",
+    "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
   "disclaimer": "Zastrzeżenie"
 }

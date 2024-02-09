@@ -183,7 +183,8 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "provider": "Provider"
     },
     "myPools": "Your Pools",
     "poolCards": {
@@ -256,8 +257,7 @@
       "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact",
       "sending": "Sending...",
-      "transferAnyway": "Transfer Anyway",
-      "provider": "Provider"
+      "transferAnyway": "Transfer Anyway"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",
@@ -909,7 +909,9 @@
       "all": "All",
       "single": "Single",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Total Value Invested",
+    "lookBelow": "Look below and find best strategies for you"
   },
   "disclaimer": "Disclaimer"
 }
