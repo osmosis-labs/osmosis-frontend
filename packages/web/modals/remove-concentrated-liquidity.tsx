@@ -6,6 +6,7 @@ import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
@@ -55,8 +56,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const baseAsset = config.effectiveLiquidityAmounts?.base;
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
-  const { price: baseAssetPrice } = useCoinPrice(baseAsset);
-  const { price: quoteAssetPrice } = useCoinPrice(quoteAsset);
+  const { price: baseAssetPrice, isLoading: isLoadingBaseAssetPrice } =
+    useCoinPrice(baseAsset);
+  const { price: quoteAssetPrice, isLoading: isLoadingQuoteAssetPrice } =
+    useCoinPrice(quoteAsset);
 
   const baseAssetValue =
     baseAssetPrice && baseAsset
@@ -114,10 +117,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
-        <h2>
-          {DEFAULT_VS_CURRENCY.symbol}
-          {totalFiat?.toDec().toString(2) ?? "0"}
-        </h2>
+        <SkeletonLoader
+          isLoaded={!isLoadingBaseAssetPrice || !isLoadingQuoteAssetPrice}
+        >
+          <h2>
+            {DEFAULT_VS_CURRENCY.symbol}
+            {totalFiat?.toDec().toString(2) ?? "0"}
+          </h2>
+        </SkeletonLoader>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
             className="w-[360px] xs:!w-[280px]"
@@ -172,7 +179,8 @@ const PresetPercentageButton: FunctionComponent<{
   children: ReactNode;
   selected?: boolean;
   onClick: () => void;
-}> = ({ selected, children, onClick }) => {
+  disabled?: boolean;
+}> = ({ selected, children, onClick, disabled }) => {
   return (
     <button
       className={classNames(
@@ -184,6 +192,7 @@ const PresetPercentageButton: FunctionComponent<{
         }
       )}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
