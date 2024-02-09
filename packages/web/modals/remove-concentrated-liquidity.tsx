@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,8 +9,10 @@ import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import type {
   ClPosition,
   ClPositionDetails,
@@ -32,9 +34,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     status,
     claimableRewardCoins,
     position: {
-      id,
       currentCoins: [positionBaseAsset, positionQuoteAsset],
-      currentValue,
     },
   } = props;
 
@@ -49,8 +49,29 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     chainStore,
     chainId,
     poolId,
-    id
+    props.position
   );
+
+  const baseAsset = config.effectiveLiquidityAmounts?.base;
+  const quoteAsset = config.effectiveLiquidityAmounts?.quote;
+
+  const { price: baseAssetPrice } = useCoinPrice(baseAsset);
+  const { price: quoteAssetPrice } = useCoinPrice(quoteAsset);
+
+  const baseAssetValue =
+    baseAssetPrice && baseAsset
+      ? new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          baseAsset.toDec().mul(baseAssetPrice.toDec())
+        )
+      : undefined;
+  const quoteAssetValue =
+    quoteAssetPrice && quoteAsset
+      ? new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          quoteAsset.toDec().mul(quoteAssetPrice.toDec())
+        )
+      : undefined;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -65,6 +86,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  const totalFiat =
+    baseAssetValue && quoteAssetValue
+      ? baseAssetValue.add(quoteAssetValue)
+      : undefined;
 
   return (
     <ModalBase
@@ -88,7 +114,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
-        <h2>{currentValue.toDec().toString(2)}</h2>
+        <h2>
+          {DEFAULT_VS_CURRENCY.symbol}
+          {totalFiat?.toDec().toString(2) ?? "0"}
+        </h2>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
             className="w-[360px] xs:!w-[280px]"
