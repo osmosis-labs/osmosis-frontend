@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 
 import { AdBanner } from "~/components/ad-banner";
+import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
-import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
+import { ChartSection } from "~/components/home/chart-section";
+import { YourTotalBalance } from "~/components/home/your-total-balance";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useLocalStorageState,
+} from "~/hooks";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const Home = () => {
@@ -16,40 +23,45 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
+  const [isChartVisible, setIsChartVisible] = useLocalStorageState(
+    "isChartVisible",
+    false
+  );
+
   return (
-    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
-      <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
-        <svg
-          className="absolute h-full w-full lg:hidden"
-          pointerEvents="none"
-          viewBox="0 0 1300 900"
-          height="900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g>
-            <ProgressiveSvgImage
-              lowResXlinkHref="/images/osmosis-home-bg-low.png"
-              xlinkHref="/images/osmosis-home-bg.png"
-              x="56"
-              y="220"
-              width="578.7462"
-              height="725.6817"
-            />
-            <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
-              x={"61"}
-              y={"682"}
-              width={"448.8865"}
-              height={"285.1699"}
-            />
-          </g>
-        </svg>
-      </div>
-      <div className="my-auto flex h-auto w-full items-center">
-        <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-          <SwapTool />
+    <main className="flex h-full w-full px-8 py-2 lg:px-12 1.5xs:px-4">
+      <div className="mx-auto w-full max-w-[1700px]">
+        <header className="mt-0 flex w-full items-end justify-between 1.5xl:mt-mobile-header lg:flex-col lg:items-start">
+          <YourTotalBalance />
+          <div className="mt-6 flex w-[27rem] items-stretch lg:w-full">
+            {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          </div>
+          <div className="mt-4 hidden w-full lg:block">
+            <SwapTool />
+          </div>
+        </header>
+        <div className="mt-4 flex w-full overflow-x-hidden 1.5lg:justify-center 1.5lg:bg-transparent">
+          <ChartSection isChartVisible={isChartVisible ?? false} />
+          <div
+            className={classNames(
+              "relative min-w-[27rem] border-l border-l-osmoverse-900 bg-osmoverse-850 1.5lg:w-[27rem] 1.5lg:min-w-[auto] lg:hidden",
+              {
+                "rounded-tr-3xl rounded-br-3xl": isChartVisible,
+                "rounded-3xl": !isChartVisible,
+              }
+            )}
+          >
+            <button
+              onClick={() => setIsChartVisible(!isChartVisible)}
+              className="absolute top-9 left-8 z-10"
+            >
+              <Icon
+                id={isChartVisible ? "collapse-right" : "graph"}
+                className="h-6 w-6"
+              />
+            </button>
+            <SwapTool />
+          </div>
         </div>
       </div>
     </main>
