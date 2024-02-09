@@ -544,16 +544,19 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
-            <Checkbox
-              variant="secondary"
-              checked={shouldBeSuperfluidStaked}
-              onClick={() => {
-                setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
-              }}
-              disabled={sfStakingDisabled}
-            >
-              <div
-                className={classNames("flex flex-col gap-1", {
+            <div className="flex">
+              <Checkbox
+                id="superfluid-stake"
+                variant="secondary"
+                checked={shouldBeSuperfluidStaked}
+                onClick={() => {
+                  setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
+                }}
+                disabled={sfStakingDisabled}
+              />
+              <label
+                htmlFor="superfluid-stake"
+                className={classNames("ml-3 flex flex-col gap-1", {
                   "opacity-30": sfStakingDisabled,
                 })}
               >
@@ -572,8 +575,8 @@ const AddConcLiqView: FunctionComponent<
                       .toString(),
                   })}
                 </span>
-              </div>
-            </Checkbox>
+              </label>
+            </div>
           )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
