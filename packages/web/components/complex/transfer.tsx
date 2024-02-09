@@ -617,7 +617,7 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
   return (
     <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
       <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
-      <div className="mx-auto">
+      <div className="mx-auto flex">
         <Checkbox
           checked={addressConfig.didAckWithdrawRisk}
           variant="secondary"
@@ -626,11 +626,10 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
               !addressConfig.didAckWithdrawRisk
             )
           }
-          // TODO update this
-          // labelClassName="items-center"
-        >
+        />
+        <label className="ml-2 items-center">
           {t("assets.ibcTransfer.checkboxVerify")}
-        </Checkbox>
+        </label>
       </div>
     </GradientView>
   );
