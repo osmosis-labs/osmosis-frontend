@@ -68,14 +68,22 @@ export const ChartSection = ({
             <AssetInfo
               assetPrice={fromAssetMarketData}
               denom={from}
-              color={theme.colors.ammelia["400"]}
+              color={
+                showPairRatio
+                  ? theme.colors.wosmongton["200"]
+                  : theme.colors.ammelia["400"]
+              }
             />
           )}
           {!isLoadingToMarketData && (
             <AssetInfo
               assetPrice={toAssetMarketData}
               denom={to}
-              color={theme.colors.wosmongton["300"]}
+              color={
+                showPairRatio
+                  ? theme.colors.wosmongton["200"]
+                  : theme.colors.wosmongton["300"]
+              }
             />
           )}
         </div>

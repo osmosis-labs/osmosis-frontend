@@ -102,10 +102,9 @@ export const DoubleTokenChart = ({
           }}
           theme={buildChartTheme({
             backgroundColor: "transparent",
-            colors: [
-              theme.colors.ammelia["400"],
-              theme.colors.wosmongton["300"],
-            ],
+            colors: showPairRatio
+              ? [theme.colors.wosmongton["200"]]
+              : [theme.colors.ammelia["400"], theme.colors.wosmongton["300"]],
             gridColor: theme.colors.osmoverse["600"],
             gridColorDark: theme.colors.osmoverse["300"],
             svgLabelSmall: {
@@ -213,7 +212,9 @@ export const DoubleTokenChart = ({
                       >
                         <p
                           className="text-body2 font-medium"
-                          style={{ color: colorScale?.(key) }}
+                          style={{
+                            color: colorScale?.(key),
+                          }}
                         >
                           {key}
                         </p>
