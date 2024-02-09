@@ -32,6 +32,13 @@ const marketIncentivePoolsSortKeys = [
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
 
+/**
+ * This router is run on another edge api route since these queries are too expensive
+ * and are slowing the other queries down because of JS single threaded nature. Client calls are still
+ * the same. The separation is strictly on the server and automatically handled on trpc link.
+ *
+ * @see /web/utils/trpc.ts
+ */
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))

@@ -8,7 +8,6 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -139,6 +138,8 @@ export const AllPoolsTable: FunctionComponent<{
   const {
     data: poolsPagesData,
     isLoading,
+    isFetching,
+    isPreviousData,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -163,6 +164,8 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      keepPreviousData: true,
 
       // expensive query
       trpc: {
@@ -327,7 +330,14 @@ export const AllPoolsTable: FunctionComponent<{
   return (
     <div className="w-full">
       <TableControls />
-      <table className="w-full">
+      <table
+        className={classNames(
+          "w-full",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -368,7 +378,10 @@ export const AllPoolsTable: FunctionComponent<{
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="transition-colors duration-200 ease-in-out"
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      isPreviousData && isFetching && "cursor-progress"
+                    )}
                     key={cell.id}
                   >
                     <Link
@@ -378,6 +391,9 @@ export const AllPoolsTable: FunctionComponent<{
                       onClick={(e) => e.stopPropagation()}
                       passHref
                       prefetch={false}
+                      className={classNames(
+                        isPreviousData && isFetching && "cursor-progress"
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -542,7 +558,6 @@ const PoolCompositionCell: PoolCellComponent = ({
                 <p
                   className={classNames("ml-auto flex items-center gap-1.5", {
                     "text-ion-400": Boolean(type === "concentrated"),
-                    "text-rust-500": Boolean(type === "weighted"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
                       type === "cosmwasm-transmuter" || type === "cosmwasm"
@@ -550,36 +565,16 @@ const PoolCompositionCell: PoolCellComponent = ({
                   })}
                 >
                   {type === "weighted" && (
-                    <Image
-                      alt=""
-                      src="/icons/classic-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="weighted-pool" width={16} height={16} />
                   )}
                   {type === "stable" && (
-                    <Image
-                      alt=""
-                      src="/icons/stableswap-pool-new.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="stable-pool" width={16} height={16} />
                   )}
                   {type === "concentrated" && (
-                    <Image
-                      alt=""
-                      src="/icons/supercharged-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="concentrated-pool" width={16} height={16} />
                   )}
                   {type === "cosmwasm-transmuter" && (
-                    <Image
-                      alt=""
-                      src="/icons/custom-pool.svg"
-                      width={12}
-                      height={12}
-                    />
+                    <Icon id="custom-pool" width={16} height={16} />
                   )}
                   {spreadFactor ? spreadFactor.toString() : ""}
                 </p>

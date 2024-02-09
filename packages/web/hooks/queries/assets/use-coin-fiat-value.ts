@@ -1,21 +1,14 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { api } from "~/utils/trpc";
 
 export function useCoinFiatValue(
   coin?: CoinPretty,
   vsCurrency = DEFAULT_VS_CURRENCY
 ): PricePretty | undefined {
-  const { data: price } = api.edge.assets.getAssetPrice.useQuery(
-    {
-      coinMinimalDenom: coin?.currency?.coinMinimalDenom ?? "",
-    },
-    {
-      enabled: Boolean(coin?.currency),
-    }
-  );
+  const { price } = useCoinPrice(coin);
 
   return useMemo(() => {
     if (!coin || !price) {

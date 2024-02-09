@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
     "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
     "singleAsset": "Un activo",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
     "title": "Agregar liquidez",
     "titleInPool": "Agregue liquidez a la piscina {poolId}",
     "priceImpact": "Impacto en el precio"
@@ -100,7 +99,7 @@
     "pendingRewards": "Recompensas pendientes",
     "superfluidValidator": "Validador",
     "superfluidUnstake": "Una vez no apostado, disponible después",
-    "superfluidUnstaking": "Unstake, disponible en",
+    "superfluidUnstaking": "Unstake, disponible en {fromNow}",
     "superfluidCommission": "comisión",
     "unstake": "Quitar liquidez",
     "unbondingFromNow": "Desvinculación, disponible en",
@@ -108,7 +107,7 @@
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
     "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #"
+    "goToPool": "Ir a la piscina #{poolId}"
   },
   "app": {
     "banner": {

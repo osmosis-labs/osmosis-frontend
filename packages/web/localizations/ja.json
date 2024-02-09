@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "ペグのメンテナンスに。現在のスケーリング係数は次のとおりです。",
     "scalingFactorInformation": "この要素により、リキッドステーキングトークンに発生する価値など、予測可能な価格の変化に合わせて曲線を調整することができます。",
     "singleAsset": "単一の資産",
-    "stablecoinWarning": "{denom}に裏付けられたステーブルコインである{mechanism}に流動性を追加しています。",
     "title": "流動性の追加",
     "titleInPool": "プールに流動性を追加 # {poolId}",
     "priceImpact": "価格への影響"
@@ -108,7 +107,7 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール # {poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します"
   },
   "app": {
     "banner": {

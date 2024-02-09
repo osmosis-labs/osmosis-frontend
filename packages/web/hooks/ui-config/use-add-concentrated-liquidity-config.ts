@@ -30,14 +30,7 @@ import {
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  when,
-} from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
@@ -237,42 +230,26 @@ export function useAddConcentratedLiquidityConfig(
   const increaseLiquidity = useCallback(
     (positionId: string) =>
       new Promise<void>(async (resolve, reject) => {
-        const amount0 = config.quoteDepositOnly
-          ? "0"
-          : config.baseDepositAmountIn.getAmountPrimitive().amount;
-        const amount1 = config.baseDepositOnly
-          ? "0"
-          : config.quoteDepositAmountIn.getAmountPrimitive().amount;
+        const coin0 = config.quoteDepositOnly
+          ? {
+              denom: config.baseDepositAmountIn.sendCurrency.coinMinimalDenom,
+              amount: "0",
+            }
+          : config.baseDepositAmountIn.getAmountPrimitive();
+        const coin1 = config.baseDepositOnly
+          ? {
+              denom: config.quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
+              amount: "0",
+            }
+          : config.quoteDepositAmountIn.getAmountPrimitive();
 
-        await when(() => Boolean(priceStore.response));
-        const value0 = priceStore.calculatePrice(
-          new CoinPretty(config.baseDepositAmountIn.sendCurrency, amount0)
-        );
-        const value1 = priceStore.calculatePrice(
-          new CoinPretty(config.quoteDepositAmountIn.sendCurrency, amount1)
-        );
-        const totalValue = Number(
-          value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
-        );
-        const baseEvent = {
-          isSingleAsset: amount0 === "0" || amount1 === "0",
-          liquidityUSD: totalValue,
-          positionId: positionId,
-          volatilityType: config.currentStrategy ?? "",
-          poolId,
-          rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
-          rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
-        };
-        logEvent([
-          EventName.ConcentratedLiquidity.addMoreLiquidityStarted,
-          baseEvent,
-        ]);
+        logEvent([EventName.ConcentratedLiquidity.addMoreLiquidityStarted]);
 
         try {
-          await account?.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
             positionId,
-            amount0,
-            amount1,
+            coin0,
+            coin1,
             undefined,
             undefined,
             (tx) => {
@@ -284,7 +261,6 @@ export function useAddConcentratedLiquidityConfig(
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
-                  baseEvent,
                 ]);
 
                 resolve();
@@ -303,10 +279,7 @@ export function useAddConcentratedLiquidityConfig(
       config.quoteDepositAmountIn,
       config.baseDepositOnly,
       config.quoteDepositOnly,
-      config.currentStrategy,
-      config.rangeWithCurrencyDecimals,
-      account?.osmosis,
-      priceStore,
+      account,
       logEvent,
     ]
   );
