@@ -1,6 +1,8 @@
+import { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
 import classNames from "classnames";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { DoubleTokenChart } from "~/components/chart/double-token-chart";
@@ -20,6 +22,50 @@ const availableTimeFrames: CommonPriceChartTimeFrame[] = [
   "1W",
   "1M",
 ];
+
+const calculatePairRatios = (
+  from:
+    | (TokenHistoricalPrice & {
+        denom: string;
+      })[]
+    | undefined,
+  to:
+    | (TokenHistoricalPrice & {
+        denom: string;
+      })[]
+    | undefined
+):
+  | (TokenHistoricalPrice & {
+      denom: string;
+    })[] => {
+  const ratios:
+    | (TokenHistoricalPrice & {
+        denom: string;
+      })[] = [];
+
+  if (from && to && from.length === to.length) {
+    from.forEach((from, i) => {
+      // Calculate ratio for each property
+      const closeRatio = from.close / to[i].close;
+      const highRatio = from.high / to[i].high;
+      const lowRatio = from.low / to[i].low;
+      const openRatio = from.open / to[i].open;
+      const volumeRatio = from.volume / to[i].volume;
+
+      // Push ratios to the array
+      ratios.push({
+        denom: `${from.denom}/${to[i].denom}`,
+        close: closeRatio,
+        high: highRatio,
+        low: lowRatio,
+        open: openRatio,
+        volume: volumeRatio,
+        time: (from.time + to[i].time) / 2,
+      });
+    });
+  }
+  return ratios;
+};
 
 export const ChartSection = ({
   isChartVisible,
@@ -51,6 +97,11 @@ export const ChartSection = ({
 
   const [showPairRatio, setShowPairRatio] = useState(false);
   const [isTimeFrameSelectorOpen, setIsTimeFrameSelectorOpen] = useState(false);
+
+  const pairRatios = useMemo(
+    () => calculatePairRatios(fromAssetChartData, toAssetChartData),
+    [fromAssetChartData, toAssetChartData]
+  );
 
   return (
     <section
@@ -115,10 +166,11 @@ export const ChartSection = ({
       </header>
       <DoubleTokenChart
         height={336}
-        data={[
-          fromAssetChartData ?? [],
-          !showPairRatio ? toAssetChartData ?? [] : [],
-        ]}
+        data={
+          showPairRatio
+            ? [pairRatios, []]
+            : [fromAssetChartData ?? [], toAssetChartData ?? []]
+        }
         showPairRatio={showPairRatio}
       />
       <button
