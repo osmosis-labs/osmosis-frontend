@@ -62,10 +62,6 @@ async function makePoolFromSidecarPool({
   reserveCoins: CoinPretty[] | null;
   totalFiatValueLocked: PricePretty | null;
 }): Promise<Pool | undefined> {
-  // const reserveCoins = await getListedReservesFromSidecarPool(
-  //   sidecarPool
-  // ).catch(() => null);
-
   // contains unlisted or invalid assets
   if (!reserveCoins || !totalFiatValueLocked) return;
 
@@ -75,9 +71,6 @@ async function makePoolFromSidecarPool({
     raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
     spreadFactor: new RatePretty(sidecarPool.spread_factor),
     reserveCoins,
-    // totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
-    //   reserveCoins
-    // ),
     totalFiatValueLocked,
   };
 }
