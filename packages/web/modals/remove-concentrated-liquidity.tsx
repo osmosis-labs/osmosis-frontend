@@ -122,7 +122,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         >
           <h2>
             {DEFAULT_VS_CURRENCY.symbol}
-            {totalFiat?.toDec().toString(2) ?? "0"}
+            {totalFiat?.toDec().toString(2) ?? "0.00"}
           </h2>
         </SkeletonLoader>
         <div className="flex w-full flex-col items-center gap-6">
