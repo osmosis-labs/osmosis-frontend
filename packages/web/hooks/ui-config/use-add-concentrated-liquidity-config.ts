@@ -436,7 +436,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
@@ -513,7 +517,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
