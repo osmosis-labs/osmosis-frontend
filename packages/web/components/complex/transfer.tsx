@@ -619,6 +619,7 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
       <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
       <div className="mx-auto flex">
         <Checkbox
+          id="verify"
           checked={addressConfig.didAckWithdrawRisk}
           variant="secondary"
           onClick={() =>
@@ -627,7 +628,7 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
             )
           }
         />
-        <label className="ml-2 items-center">
+        <label className="ml-2 items-center" htmlFor="verify">
           {t("assets.ibcTransfer.checkboxVerify")}
         </label>
       </div>
