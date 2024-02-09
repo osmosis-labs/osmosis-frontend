@@ -7,6 +7,7 @@ import { DoubleTokenChart } from "~/components/chart/double-token-chart";
 import { MenuDropdown } from "~/components/control";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
+  availableTimeFrames,
   useSwapHistoricalPrice,
   useSwapPageQuery,
 } from "~/components/home/hooks";
@@ -14,13 +15,6 @@ import { useCalculatePairRatios } from "~/hooks/use-calculate-pair-ratios";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { theme } from "~/tailwind.config";
 import * as trpc from "~/utils/trpc";
-
-const availableTimeFrames: CommonPriceChartTimeFrame[] = [
-  "1H",
-  "1D",
-  "1W",
-  "1M",
-];
 
 export const ChartSection = ({
   isChartVisible,
