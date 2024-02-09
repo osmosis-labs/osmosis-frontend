@@ -5,7 +5,7 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, MouseEventHandler } from "react";
+import { FunctionComponent } from "react";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Disableable } from "~/components/types";
@@ -110,7 +110,7 @@ export const BalancerShareConversionRow: FunctionComponent<
   SuggestedConvertToStakeAssets &
     Disableable & {
       isSelected: boolean;
-      onToggle: MouseEventHandler<HTMLButtonElement> | undefined;
+      onToggle: (checked: boolean) => void;
     }
 > = ({
   poolId,
@@ -130,20 +130,13 @@ export const BalancerShareConversionRow: FunctionComponent<
           "cursor-not-allowed": disabled,
         }
       )}
-      onClick={() => {
-        // TODO fix this
-        console.log("clicked");
-        // onToggle(!isSelected);
-      }}
+      onClick={() => onToggle(!isSelected)}
     >
       <div className="flex items-center gap-5">
         <Checkbox
-          // TODO - fix this
-          // backgroundStyles="bg-wosmongton-200"
-          // borderStyles="border-wosmongton-200"
           checked={isSelected}
           disabled={disabled}
-          onClick={onToggle}
+          onClick={() => onToggle(!isSelected)}
         />
         <div className="flex items-center gap-14">
           <div className="flex items-center gap-3">
@@ -181,7 +174,7 @@ export const ClPositionConversionRow: FunctionComponent<
   Required<SuggestedConvertToStakeAssets> &
     Disableable & {
       isSelected: boolean;
-      onToggle: MouseEventHandler<HTMLButtonElement> | undefined;
+      onToggle: (checked: boolean) => void;
     }
 > = observer(
   ({
@@ -203,19 +196,13 @@ export const ClPositionConversionRow: FunctionComponent<
             "cursor-not-allowed": disabled,
           }
         )}
-        onClick={() => {
-          // TODO fix this
-          // onToggle(!isSelected);
-        }}
+        onClick={() => onToggle(!isSelected)}
       >
         <div className="flex items-center gap-5">
           <Checkbox
-            // TODO fix this
-            // borderStyles="border-wosmongton-200"
-            // backgroundStyles="bg-wosmongton-200"
             checked={isSelected}
             disabled={disabled}
-            onClick={onToggle}
+            onClick={() => onToggle(!isSelected)}
           />
           <div className="flex items-center gap-14">
             <div className="flex items-center gap-3">
