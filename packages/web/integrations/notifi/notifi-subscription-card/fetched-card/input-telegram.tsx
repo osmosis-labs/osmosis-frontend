@@ -11,7 +11,7 @@ import {
 } from "react";
 
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { TargetGroupFragment } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
@@ -122,15 +122,14 @@ export const InputTelegram: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        labelClassName=""
-        containerClassName={`${
-          !selected || targetGroup?.telegramTargets?.[0]?.isConfirmed
-            ? ""
-            : "hidden"
-        }`}
-        labelPosition="left"
-        isOn={selected}
-        onToggle={(toggled) => setSelected(toggled)}
+        // containerClassName={`${
+        //   !selected || targetGroup?.telegramTargets?.[0]?.isConfirmed
+        //     ? ""
+        //     : "hidden"
+        // }`}
+        // labelPosition="left"
+        checked={selected}
+        onCheckedChange={(toggled) => setSelected(toggled)}
       ></Switch>
 
       <Button

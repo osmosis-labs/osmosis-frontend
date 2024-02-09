@@ -2,7 +2,7 @@ import { resolveStringRef } from "@notifi-network/notifi-react-card";
 import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { EVENT_TYPE_ID } from "~/integrations/notifi/hooks/use-history-detail-contents";
@@ -71,10 +71,10 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
           ? sortedRows.map((alert, key) => (
               <div key={key}>
                 <Switch
-                  labelPosition="right"
+                  // labelPosition="right"
                   disabled={disabled}
-                  isOn={toggleStates[alert.name] === true}
-                  onToggle={(value) => {
+                  checked={toggleStates[alert.name] === true}
+                  onCheckedChange={(value) => {
                     if (value) {
                       logEvent([
                         EventName.Notifications.enableAlertClicked,

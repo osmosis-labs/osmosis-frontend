@@ -8,7 +8,7 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
-import { SortMenu, Switch } from "~/components/control";
+import { SortMenu } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import {
@@ -21,6 +21,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -449,9 +450,9 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <Switch
-                isOn={hideZeroBalances}
+                checked={hideZeroBalances}
                 disabled={!canHideZeroBalances}
-                onToggle={() => {
+                onCheckedChange={() => {
                   logEvent([
                     EventName.Assets.assetsListFiltered,
                     {
@@ -495,8 +496,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
                 <Switch
-                  isOn={hideBalancesSetting?.state.hideBalances ?? false}
-                  onToggle={() => {
+                  checked={hideBalancesSetting?.state.hideBalances ?? false}
+                  onCheckedChange={() => {
                     setHideBalancesPrivacy(
                       !hideBalancesSetting!.state.hideBalances
                     );
@@ -505,9 +506,9 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   {t("assets.table.hideBalances")}
                 </Switch>
                 <Switch
-                  isOn={hideZeroBalances}
+                  checked={hideZeroBalances}
                   disabled={!canHideZeroBalances}
-                  onToggle={() => {
+                  onCheckedChange={() => {
                     setHideZeroBalances(!hideZeroBalances);
                   }}
                 >

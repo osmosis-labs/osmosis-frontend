@@ -1,6 +1,6 @@
 import { FunctionComponent, InputHTMLAttributes } from "react";
 
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
 
@@ -19,11 +19,11 @@ export const InputWithSwitch: FunctionComponent<Props> = ({
   return (
     <div className="flex flex-row justify-center">
       <Switch
-        labelClassName="flex-grow"
-        containerClassName="flex-grow px-10 md:px-4"
-        labelPosition="left"
-        isOn={selected}
-        onToggle={(toggled) => setSelected(toggled)}
+        // labelClassName="flex-grow"
+        // containerClassName="flex-grow px-10 md:px-4"
+        // labelPosition="left"
+        checked={selected}
+        onCheckedChange={(toggled) => setSelected(toggled)}
       >
         <InputWithIcon iconId={iconId} {...inputProps} />
       </Switch>
