@@ -46,7 +46,6 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
 
     return (
       <div className="flex flex-col gap-3">
-        {/* {isLoading && <Spinner className="mx-auto my-3" />} */}
         {isLoading ? (
           <>
             <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
