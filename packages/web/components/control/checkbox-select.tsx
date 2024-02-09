@@ -77,7 +77,6 @@ export const CheckboxSelect: FunctionComponent<
                       }}
                     >
                       <Checkbox
-                        // className="w-fit"
                         checked={Boolean(selectedOptionIds?.includes(id))}
                         onClick={noop}
                         disabled={

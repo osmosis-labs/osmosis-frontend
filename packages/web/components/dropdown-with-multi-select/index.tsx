@@ -92,10 +92,6 @@ export const DropdownWithMultiSelect = <T,>({
                       </small>
                     </div>
                     <Checkbox
-                      // TODO - fix this
-                      // checkClassName="hidden"
-                      // backgroundStyles="bg-wosmongton-700"
-                      // borderStyles="border-osmoverse-300 border-opacity-50"
                       checked={
                         stateValues.filter((f) => f.value === value).length !==
                         0
