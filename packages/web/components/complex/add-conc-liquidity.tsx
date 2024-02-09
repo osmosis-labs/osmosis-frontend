@@ -544,7 +544,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
-            <div className="flex">
+            <div className="flex gap-3">
               <Checkbox
                 id="superfluid-stake"
                 variant="secondary"
@@ -556,7 +556,7 @@ const AddConcLiqView: FunctionComponent<
               />
               <label
                 htmlFor="superfluid-stake"
-                className={classNames("ml-3 flex flex-col gap-1", {
+                className={classNames("flex flex-col gap-1", {
                   "opacity-30": sfStakingDisabled,
                 })}
               >
