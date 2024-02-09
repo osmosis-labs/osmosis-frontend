@@ -66,7 +66,7 @@ export const YourTotalBalance = observer(() => {
               >
                 {isZero
                   ? t("homePage.addFundsToGetStarted")
-                  : t("profile.viewAllAssets")}
+                  : t("homePage.viewAssets")}
                 <Icon id="arrow-right" color="#B3B1FD" className="h-4 w-4" />
               </Link>
             </span>
