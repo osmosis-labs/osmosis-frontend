@@ -474,7 +474,8 @@ export const TransferContent: FunctionComponent<
   useDebounce(
     () => {
       setDebouncedInputValue(inputAmountRaw);
-      // Every time the input amount changes, revert the controlled mode (always select the best quote automatically)
+      // Every time the input amount changes, deactivate the controlled mode.
+      // Best quotes will be selected automatically.
       setBridgeProviderControlledMode(false);
     },
     300,
