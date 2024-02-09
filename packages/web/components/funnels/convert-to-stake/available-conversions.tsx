@@ -8,8 +8,8 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { CheckBox } from "~/components/control";
 import { Disableable } from "~/components/types";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 
 /** List of options a user has for converting GAMM shares to staked OSMO. */
@@ -110,7 +110,7 @@ export const BalancerShareConversionRow: FunctionComponent<
   SuggestedConvertToStakeAssets &
     Disableable & {
       isSelected: boolean;
-      onToggle: (isOn: boolean) => void;
+      onToggle: (checked: boolean) => void;
     }
 > = ({
   poolId,
@@ -130,17 +130,13 @@ export const BalancerShareConversionRow: FunctionComponent<
           "cursor-not-allowed": disabled,
         }
       )}
-      onClick={() => {
-        onToggle(!isSelected);
-      }}
+      onClick={() => onToggle(!isSelected)}
     >
       <div className="flex items-center gap-5">
-        <CheckBox
-          backgroundStyles="bg-wosmongton-200"
-          borderStyles="border-wosmongton-200"
-          isOn={isSelected}
+        <Checkbox
+          checked={isSelected}
           disabled={disabled}
-          onToggle={onToggle}
+          onClick={() => onToggle(!isSelected)}
         />
         <div className="flex items-center gap-14">
           <div className="flex items-center gap-3">
@@ -178,7 +174,7 @@ export const ClPositionConversionRow: FunctionComponent<
   Required<SuggestedConvertToStakeAssets> &
     Disableable & {
       isSelected: boolean;
-      onToggle: (isOn: boolean) => void;
+      onToggle: (checked: boolean) => void;
     }
 > = observer(
   ({
@@ -200,17 +196,13 @@ export const ClPositionConversionRow: FunctionComponent<
             "cursor-not-allowed": disabled,
           }
         )}
-        onClick={() => {
-          onToggle(!isSelected);
-        }}
+        onClick={() => onToggle(!isSelected)}
       >
         <div className="flex items-center gap-5">
-          <CheckBox
-            borderStyles="border-wosmongton-200"
-            backgroundStyles="bg-wosmongton-200"
-            isOn={isSelected}
+          <Checkbox
+            checked={isSelected}
             disabled={disabled}
-            onToggle={onToggle}
+            onClick={() => onToggle(!isSelected)}
           />
           <div className="flex items-center gap-14">
             <div className="flex items-center gap-3">

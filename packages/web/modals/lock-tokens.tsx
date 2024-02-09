@@ -4,9 +4,9 @@ import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
-import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -163,11 +163,10 @@ export const LockTokensModal: FunctionComponent<
           ))}
         </div>
         {superfluidPoolDetail?.isSuperfluid && (
-          <CheckBox
-            backgroundStyles="bg-superfluid"
-            borderStyles="border-superfluid"
-            isOn={superfluidDurationSelected && electSuperfluid}
-            onToggle={() => setElectSuperfluid(!electSuperfluid)}
+          <Checkbox
+            variant="secondary"
+            checked={superfluidDurationSelected && electSuperfluid}
+            onClick={() => setElectSuperfluid(!electSuperfluid)}
             disabled={!superfluidDurationSelected || hasSuperfluidValidator}
           >
             <div
@@ -190,7 +189,7 @@ export const LockTokensModal: FunctionComponent<
                 </span>
               )}
             </div>
-          </CheckBox>
+          </Checkbox>
         )}
         <div className="flex flex-col gap-2">
           <div className="flex place-content-between items-center">

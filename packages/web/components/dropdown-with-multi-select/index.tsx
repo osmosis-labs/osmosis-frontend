@@ -4,8 +4,8 @@ import { ReactNode } from "react";
 import { Fragment } from "react";
 
 import { Icon } from "~/components/assets";
-import { CheckBox } from "~/components/control";
 import { ListOption } from "~/components/earn/table/types/filters";
+import { Checkbox } from "~/components/ui/checkbox";
 
 interface DropdownWithMultiSelectProps<T> {
   options: (ListOption<T> & { icon: ReactNode })[];
@@ -91,15 +91,12 @@ export const DropdownWithMultiSelect = <T,>({
                         {label}
                       </small>
                     </div>
-                    <CheckBox
-                      checkClassName="hidden"
-                      backgroundStyles="bg-wosmongton-700"
-                      borderStyles="border-osmoverse-300 border-opacity-50"
-                      isOn={
+                    <Checkbox
+                      checked={
                         stateValues.filter((f) => f.value === value).length !==
                         0
                       }
-                      onToggle={() => toggleFn({ label, value })}
+                      onClick={() => toggleFn({ label, value })}
                     />
                   </div>
                 </Listbox.Option>
