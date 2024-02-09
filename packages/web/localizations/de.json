@@ -912,5 +912,13 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Haftungsausschluss"
+  "disclaimer": "Haftungsausschluss",
+  "homePage": {
+    "yourTotalBalance": "Ihr Gesamtsaldo",
+    "addFundsToGetStarted": "Fügen Sie Geld hinzu, um loszulegen",
+    "viewAssets": "Assets anzeigen",
+    "welcomeToOsmosis": "Willkommen bei Osmosis",
+    "connectAndFund": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
+    "getStarted": "Loslegen"
+  }
 }

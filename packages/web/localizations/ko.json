@@ -912,5 +912,13 @@
       "multi": "다중"
     }
   },
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "homePage": {
+    "yourTotalBalance": "총 잔액",
+    "addFundsToGetStarted": "시작하려면 자금을 추가하세요.",
+    "viewAssets": "자산 보기",
+    "welcomeToOsmosis": "삼투에 오신 것을 환영합니다",
+    "connectAndFund": "몇 단계만 거치면 지갑을 연결하고 자금을 조달하여 거래를 시작할 수 있습니다.",
+    "getStarted": "시작하다"
+  }
 }

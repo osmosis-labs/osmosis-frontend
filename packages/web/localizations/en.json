@@ -912,5 +912,13 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "homePage": {
+    "yourTotalBalance": "Your total balance",
+    "addFundsToGetStarted": "Add funds to get started",
+    "viewAssets": "View Assets",
+    "welcomeToOsmosis": "Welcome to Osmosis",
+    "connectAndFund": "Connect and fund your wallet to start trading in just a few steps.",
+    "getStarted": "Get Started"
+  }
 }

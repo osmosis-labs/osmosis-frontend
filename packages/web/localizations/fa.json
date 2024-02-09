@@ -912,5 +912,13 @@
       "multi": "چند"
     }
   },
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "homePage": {
+    "yourTotalBalance": "کل موجودی شما",
+    "addFundsToGetStarted": "برای شروع پول اضافه کنید",
+    "viewAssets": "مشاهده دارایی ها",
+    "welcomeToOsmosis": "به اسموز خوش آمدید",
+    "connectAndFund": "برای شروع تجارت فقط در چند مرحله، کیف پول خود را وصل کنید و سرمایه گذاری کنید.",
+    "getStarted": "شروع کنید"
+  }
 }

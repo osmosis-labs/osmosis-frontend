@@ -912,5 +912,13 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Clause de non-responsabilité"
+  "disclaimer": "Clause de non-responsabilité",
+  "homePage": {
+    "yourTotalBalance": "Votre solde total",
+    "addFundsToGetStarted": "Ajoutez des fonds pour commencer",
+    "viewAssets": "Afficher les actifs",
+    "welcomeToOsmosis": "Bienvenue chez Osmose",
+    "connectAndFund": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
+    "getStarted": "Commencer"
+  }
 }

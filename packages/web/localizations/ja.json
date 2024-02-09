@@ -912,5 +912,13 @@
       "multi": "マルチ"
     }
   },
-  "disclaimer": "免責事項"
+  "disclaimer": "免責事項",
+  "homePage": {
+    "yourTotalBalance": "合計残高",
+    "addFundsToGetStarted": "開始するには資金を追加してください",
+    "viewAssets": "アセットを表示する",
+    "welcomeToOsmosis": "オズモシスへようこそ",
+    "connectAndFund": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
+    "getStarted": "始めましょう"
+  }
 }

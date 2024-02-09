@@ -912,5 +912,13 @@
       "multi": "Wielo"
     }
   },
-  "disclaimer": "Zastrzeżenie"
+  "disclaimer": "Zastrzeżenie",
+  "homePage": {
+    "yourTotalBalance": "Twoje całkowite saldo",
+    "addFundsToGetStarted": "Dodaj środki, aby rozpocząć",
+    "viewAssets": "Zobacz zasoby",
+    "welcomeToOsmosis": "Witamy w Osmozie",
+    "connectAndFund": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
+    "getStarted": "Zaczynaj"
+  }
 }

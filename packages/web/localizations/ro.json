@@ -912,5 +912,13 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "homePage": {
+    "yourTotalBalance": "Soldul dvs. total",
+    "addFundsToGetStarted": "Adăugați fonduri pentru a începe",
+    "viewAssets": "Vedeți activele",
+    "welcomeToOsmosis": "Bun venit la Osmoza",
+    "connectAndFund": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
+    "getStarted": "Incepe"
+  }
 }

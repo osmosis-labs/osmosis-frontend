@@ -912,5 +912,13 @@
       "multi": "Multi"
     }
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "homePage": {
+    "yourTotalBalance": "Tu saldo total",
+    "addFundsToGetStarted": "Agregue fondos para comenzar",
+    "viewAssets": "Ver activos",
+    "welcomeToOsmosis": "Bienvenidos a Ósmosis",
+    "connectAndFund": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
+    "getStarted": "Empezar"
+  }
 }

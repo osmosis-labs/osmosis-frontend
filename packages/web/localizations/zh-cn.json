@@ -912,5 +912,13 @@
       "multi": "多"
     }
   },
-  "disclaimer": "免责声明"
+  "disclaimer": "免责声明",
+  "homePage": {
+    "yourTotalBalance": "您的总余额",
+    "addFundsToGetStarted": "添加资金即可开始",
+    "viewAssets": "查看资产",
+    "welcomeToOsmosis": "欢迎来到渗透",
+    "connectAndFund": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
+    "getStarted": "开始使用"
+  }
 }

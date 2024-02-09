@@ -912,5 +912,13 @@
       "multi": "Çok"
     }
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "homePage": {
+    "yourTotalBalance": "Toplam bakiyeniz",
+    "addFundsToGetStarted": "Başlamak için para ekleyin",
+    "viewAssets": "Varlıkları Görüntüle",
+    "welcomeToOsmosis": "Osmosis'e hoş geldiniz",
+    "connectAndFund": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
+    "getStarted": "Başlamak"
+  }
 }
