@@ -95,6 +95,18 @@ export function useAddConcentratedLiquidityConfig(
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
 
+  const { data: baseDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+    coinMinimalDenom: pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
+  });
+
+  const { data: quoteDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+    coinMinimalDenom: pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
+  });
+
+  if (baseDepositPrice && quoteDepositPrice) {
+    config.setPrices(baseDepositPrice, quoteDepositPrice);
+  }
+
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
       {
@@ -339,6 +351,12 @@ export class ObservableAddConcentratedLiquidityConfig {
   protected _quoteDepositAmountIn: AmountConfig;
 
   @observable
+  protected _baseDepositPrice: PricePretty | null = null;
+
+  @observable
+  protected _quoteDepositPrice: PricePretty | null = null;
+
+  @observable
   protected _anchorAsset: "base" | "quote" = "base";
 
   @observable
@@ -418,7 +436,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
@@ -495,7 +517,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
@@ -566,14 +592,17 @@ export class ObservableAddConcentratedLiquidityConfig {
       this.pool.currentSqrtPrice
     );
 
-    const amount0Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      ) ?? new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
-    const amount1Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+    const amount0Value = this._baseDepositPrice
+      ? this._baseDepositPrice.mul(
+          new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+        )
+      : new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
+    const amount1Value = this._quoteDepositPrice
+      ? this._quoteDepositPrice.mul(
+          new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+        )
+      : new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+
     const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
     if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
@@ -1030,6 +1059,15 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
     this._minHistoricalPrice = min;
     this._maxHistoricalPrice = max;
+  };
+
+  @action
+  readonly setPrices = (
+    baseDepositPrice: PricePretty,
+    quoteDepositPrice: PricePretty
+  ) => {
+    this._baseDepositPrice = baseDepositPrice;
+    this._quoteDepositPrice = quoteDepositPrice;
   };
 
   @action
