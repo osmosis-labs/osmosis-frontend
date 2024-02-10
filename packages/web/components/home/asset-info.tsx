@@ -40,12 +40,13 @@ export const AssetInfo = ({
         />
       </Link>
       <h4>{formatPretty(assetPrice ?? new Dec(0))}</h4>
-      <span
-        className={isNumberPositive ? "text-bullish-400" : "text-osmoverse-500"}
-      >
+      <span className={isNumberPositive ? "text-bullish-400" : "text-rust-500"}>
         {isNumberPositive ? "↗️ " : "↘ "}
-        {priceChange24h?.maxDecimals(2).inequalitySymbol(false).toString() ??
-          ""}
+        {priceChange24h
+          ?.maxDecimals(2)
+          .inequalitySymbol(false)
+          .mul(isNumberPositive ? new Dec(1) : new Dec(-1))
+          .toString() ?? ""}
       </span>
     </div>
   );
