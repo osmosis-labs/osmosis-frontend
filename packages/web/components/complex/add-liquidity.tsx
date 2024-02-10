@@ -134,7 +134,7 @@ const AmountInput: FunctionComponent<{
   currency: Currency;
   weightFraction: RatePretty;
   index: number;
-}> = ({ addLiquidityConfig, weightFraction, currency, index }) => {
+}> = observer(({ addLiquidityConfig, weightFraction, currency, index }) => {
   const { chainStore } = useStore();
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
@@ -143,6 +143,7 @@ const AmountInput: FunctionComponent<{
   const inputAmount = addLiquidityConfig.isSingleAmountIn
     ? addLiquidityConfig.singleAmountInConfig?.amount ?? "0"
     : addLiquidityConfig.getAmountAt(index);
+
   const onInputAmount = (value: string) => {
     if (addLiquidityConfig.isSingleAmountIn) {
       addLiquidityConfig.singleAmountInConfig?.setAmount(value);
@@ -154,12 +155,14 @@ const AmountInput: FunctionComponent<{
   const inputAmountValue = useCoinFiatValue(
     useMemo(
       () =>
-        new CoinPretty(currency, inputAmount).moveDecimalPointRight(
-          currency.coinDecimals
-        ),
+        new CoinPretty(
+          currency,
+          inputAmount.length === 0 ? "0" : inputAmount
+        ).moveDecimalPointRight(currency.coinDecimals),
       [currency, inputAmount]
     )
   );
+
   const assetBalance = addLiquidityConfig.isSingleAmountIn
     ? addLiquidityConfig.singleAmountInBalance
     : addLiquidityConfig.getSenderBalanceAt(index);
@@ -249,4 +252,4 @@ const AmountInput: FunctionComponent<{
       </div>
     </div>
   );
-};
+});
