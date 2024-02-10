@@ -163,14 +163,17 @@ export const LockTokensModal: FunctionComponent<
           ))}
         </div>
         {superfluidPoolDetail?.isSuperfluid && (
-          <Checkbox
-            variant="secondary"
-            checked={superfluidDurationSelected && electSuperfluid}
-            onClick={() => setElectSuperfluid(!electSuperfluid)}
-            disabled={!superfluidDurationSelected || hasSuperfluidValidator}
-          >
-            <div
-              className={classNames("flex flex-col gap-1", {
+          <div className="flex gap-3">
+            <Checkbox
+              id="superfluid-checkbox"
+              variant="secondary"
+              checked={superfluidDurationSelected && electSuperfluid}
+              onClick={() => setElectSuperfluid(!electSuperfluid)}
+              disabled={!superfluidDurationSelected || hasSuperfluidValidator}
+            />
+            <label
+              htmlFor="superfluid-checkbox"
+              className={classNames("flex cursor-pointer flex-col gap-1", {
                 "opacity-30":
                   !superfluidDurationSelected || hasSuperfluidValidator,
               })}
@@ -188,8 +191,8 @@ export const LockTokensModal: FunctionComponent<
                   })}
                 </span>
               )}
-            </div>
-          </Checkbox>
+            </label>
+          </div>
         )}
         <div className="flex flex-col gap-2">
           <div className="flex place-content-between items-center">
