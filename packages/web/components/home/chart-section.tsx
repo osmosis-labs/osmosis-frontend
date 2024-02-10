@@ -11,6 +11,7 @@ import {
   useSwapHistoricalPrice,
   useSwapPageQuery,
 } from "~/components/home/hooks";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useCalculatePairRatios } from "~/hooks/use-calculate-pair-ratios";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { theme } from "~/tailwind.config";
@@ -65,7 +66,7 @@ export const ChartSection = ({
     >
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
-          {!isLoadingFromMarketData && (
+          <SkeletonLoader isLoaded={!isLoadingFromMarketData}>
             <AssetInfo
               assetPrice={fromAssetMarketData}
               denom={from}
@@ -75,8 +76,8 @@ export const ChartSection = ({
                   : theme.colors.ammelia["400"]
               }
             />
-          )}
-          {!isLoadingToMarketData && (
+          </SkeletonLoader>
+          <SkeletonLoader isLoaded={!isLoadingToMarketData}>
             <AssetInfo
               assetPrice={toAssetMarketData}
               denom={to}
@@ -86,7 +87,7 @@ export const ChartSection = ({
                   : theme.colors.wosmongton["300"]
               }
             />
-          )}
+          </SkeletonLoader>
         </div>
         <div className="relative hidden xl:block">
           <button
