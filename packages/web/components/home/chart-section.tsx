@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { DoubleTokenChart } from "~/components/chart/double-token-chart";
+import { TestChart } from "~/components/chart/lw-chart";
 import { MenuDropdown } from "~/components/control";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
@@ -11,6 +11,7 @@ import {
   useSwapHistoricalPrice,
   useSwapPageQuery,
 } from "~/components/home/hooks";
+import { Spinner } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useCalculatePairRatios } from "~/hooks/use-calculate-pair-ratios";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -39,11 +40,11 @@ export const ChartSection = ({
     });
 
   const {
-    result: { data: fromAssetChartData },
+    result: { data: fromAssetChartData, isLoading: isFromChartDataLoading },
   } = useSwapHistoricalPrice(from, urlTimeFrame);
 
   const {
-    result: { data: toAssetChartData },
+    result: { data: toAssetChartData, isLoading: isToChartDataLoading },
   } = useSwapHistoricalPrice(to, urlTimeFrame);
 
   const [showPairRatio, setShowPairRatio] = useState(false);
@@ -123,7 +124,7 @@ export const ChartSection = ({
           ))}
         </div>
       </header>
-      <DoubleTokenChart
+      {/* <DoubleTokenChart
         height={336}
         data={
           showPairRatio
@@ -131,11 +132,24 @@ export const ChartSection = ({
             : [fromAssetChartData ?? [], toAssetChartData ?? []]
         }
         showPairRatio={showPairRatio}
-      />
+      /> */}
+      {!isFromChartDataLoading && !isToChartDataLoading ? (
+        <TestChart
+          data={
+            showPairRatio
+              ? [pairRatios, []]
+              : [fromAssetChartData!, toAssetChartData!]
+          }
+        />
+      ) : (
+        <div className="flex h-1/2 flex-col items-center justify-center">
+          <Spinner />
+        </div>
+      )}
       <button
         onClick={() => setShowPairRatio((p) => !p)}
         className={classNames(
-          "absolute bottom-6 left-6 h-11 rounded-full bg-osmoverse-700 text-xl text-wosmongton-200",
+          "absolute bottom-6 left-6 z-10 h-11 rounded-full bg-osmoverse-700 text-xl text-wosmongton-200",
           { "w-11": !showPairRatio, "py-1.5 px-3": showPairRatio }
         )}
       >
