@@ -68,8 +68,9 @@ export const ChartSection = ({
         <div className="flex items-center gap-16">
           <SkeletonLoader isLoaded={!isLoadingFromMarketData}>
             <AssetInfo
-              assetPrice={fromAssetMarketData}
-              denom={from}
+              assetPrice={fromAssetMarketData?.currentPrice}
+              priceChange24h={fromAssetMarketData?.priceChange24h}
+              denom={fromAssetMarketData?.coinDenom}
               color={
                 showPairRatio
                   ? theme.colors.wosmongton["200"]
@@ -79,8 +80,9 @@ export const ChartSection = ({
           </SkeletonLoader>
           <SkeletonLoader isLoaded={!isLoadingToMarketData}>
             <AssetInfo
-              assetPrice={toAssetMarketData}
-              denom={to}
+              assetPrice={toAssetMarketData?.currentPrice}
+              priceChange24h={toAssetMarketData?.priceChange24h}
+              denom={toAssetMarketData?.coinDenom}
               color={
                 showPairRatio
                   ? theme.colors.wosmongton["200"]
