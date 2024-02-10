@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { TestChart } from "~/components/chart/home-chart";
+import { HomeChart } from "~/components/chart/home-chart";
 import { MenuDropdown } from "~/components/control";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
@@ -125,7 +125,7 @@ export const ChartSection = ({
         </div>
       </header>
       {!isFromChartDataLoading && !isToChartDataLoading ? (
-        <TestChart
+        <HomeChart
           data={
             showPairRatio
               ? [pairRatios, []]

@@ -18,7 +18,7 @@ const _getTransformedData = (data?: Data[]) =>
       }))
     : [];
 
-export const TestChart = ({ data }: { data: Data[][] }) => {
+export const HomeChart = ({ data }: { data: Data[][] }) => {
   const [data1, data2] = data;
   const firstSeriesData = _getTransformedData(data1);
   const secondSeriesData = _getTransformedData(data2);
