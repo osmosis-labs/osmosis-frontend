@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { TestChart } from "~/components/chart/lw-chart";
+import { TestChart } from "~/components/chart/home-chart";
 import { MenuDropdown } from "~/components/control";
 import { AssetInfo } from "~/components/home/asset-info";
 import {
@@ -124,15 +124,6 @@ export const ChartSection = ({
           ))}
         </div>
       </header>
-      {/* <DoubleTokenChart
-        height={336}
-        data={
-          showPairRatio
-            ? [pairRatios, []]
-            : [fromAssetChartData ?? [], toAssetChartData ?? []]
-        }
-        showPairRatio={showPairRatio}
-      /> */}
       {!isFromChartDataLoading && !isToChartDataLoading ? (
         <TestChart
           data={
