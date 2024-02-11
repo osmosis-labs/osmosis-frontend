@@ -38,7 +38,7 @@ function fetchPoolsFromSidecar() {
   return cachified({
     cache: poolsCache,
     key: "sidecar-pools",
-    ttl: 2000, // 2 seconds
+    ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       return queryPools();
     },
@@ -49,19 +49,21 @@ function fetchPoolsFromSidecar() {
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<Pool | undefined> {
+  const poolId = getPoolIdFromChainPool(sidecarPool.chain_model);
   return cachified({
     cache: poolsCache,
-    key: "pool-" + getPoolIdFromChainPool(sidecarPool.chain_model),
-    ttl: 5000, // 5 seconds
-    getFreshValue: async (context) => {
+    key: "pool-" + poolId,
+    ttl: 5_000, // 5 seconds
+    getFreshValue: async () => {
       const reserveCoins = await getListedReservesFromSidecarPool(
         sidecarPool
       ).catch(() => null);
 
       // contains unlisted or invalid assets
       if (!reserveCoins) {
-        // if the pool is not valid, we don't want to cache it
-        context.metadata.ttl = -1;
+        console.info(
+          `Skipping pool id ${poolId} with unlisted or invalid assets`
+        );
         return;
       }
 
