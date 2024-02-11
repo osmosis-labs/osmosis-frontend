@@ -1,6 +1,13 @@
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  calcSumCoinsValue,
+  mapRawCoinToPretty,
+} from "~/server/queries/complex/assets";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import {
   getPool,
   getPools,
@@ -12,6 +19,12 @@ import {
   isIncentivePoolFiltered,
 } from "~/server/queries/complex/pools/incentives";
 import { getCachedPoolMarketMetricsMap } from "~/server/queries/complex/pools/market";
+import { getGammShareUnderlyingCoins } from "~/server/queries/complex/pools/share";
+import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid";
+import { queryBalances } from "~/server/queries/cosmos";
+import { queryCLPositions } from "~/server/queries/osmosis/concentratedliquidity";
+import { queryAccountLockedCoins } from "~/server/queries/osmosis/lockup/account-locked-coins";
+import { aggregateRawCoinsByDenom } from "~/utils/coin";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -43,6 +56,101 @@ export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) => getPool({ poolId })),
+  getUserPools: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input: { userOsmoAddress } }) => {
+      const [userBalances, lockedCoins, accountPositions] = await Promise.all([
+        queryBalances({ bech32Address: userOsmoAddress }),
+        queryAccountLockedCoins({
+          bech32Address: userOsmoAddress,
+        }),
+        queryCLPositions({ bech32Address: userOsmoAddress }),
+      ]);
+
+      const gammAssets = [
+        ...userBalances.balances,
+        ...lockedCoins.coins,
+      ].filter(({ denom }) => denom && denom.startsWith("gamm/pool/"));
+
+      const userPoolIdsSet: Set<string> = new Set(
+        accountPositions.positions
+          .map(({ position: { pool_id } }) => pool_id)
+          .filter((poolId): poolId is string => Boolean(poolId))
+      );
+
+      for (const bal of gammAssets) {
+        // The pool share token is in the form of 'gamm/pool/${poolId}'.
+        if (bal.denom.startsWith("gamm/pool/")) {
+          const poolId = bal.denom.replace("gamm/pool/", "");
+          userPoolIdsSet.add(poolId);
+        }
+      }
+
+      const userPoolIds = Array.from(userPoolIdsSet);
+      const [eventualPools, poolIncentives, superfluidPools] =
+        await Promise.all([
+          getPools({
+            poolIds: userPoolIds,
+          }),
+          getCachedPoolIncentivesMap(),
+          getSuperfluidPoolIds(),
+        ]);
+
+      const pools = await Promise.all(
+        eventualPools.map(
+          async ({ id, reserveCoins, totalFiatValueLocked, type }) => {
+            let coinsToCalculateValue: CoinPretty[];
+
+            if (type === "concentrated") {
+              const positions = accountPositions.positions.filter(
+                ({ position: { pool_id } }) => pool_id === id
+              );
+
+              if (positions.length === 0) {
+                throw new Error(
+                  `Positions for pool id ${id} not found. It should exist if the pool id is available in the userPoolIds set.`
+                );
+              }
+
+              const aggregatedRawCoins = aggregateRawCoinsByDenom(
+                positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
+              );
+              coinsToCalculateValue = await mapRawCoinToPretty(
+                aggregatedRawCoins
+              );
+            } else {
+              const rawCoins = lockedCoins.coins.filter(
+                (coin) => coin.denom === `gamm/pool/${id}`
+              );
+              coinsToCalculateValue = (
+                await Promise.all(
+                  rawCoins.map(
+                    async (coin) => await getGammShareUnderlyingCoins(coin)
+                  )
+                )
+              ).flatMap((coins) => coins);
+            }
+
+            return {
+              id,
+              type,
+              reserveCoins,
+              apr: poolIncentives.get(id)?.aprBreakdown?.total,
+              poolLiquidity: totalFiatValueLocked,
+              isSuperfluid: superfluidPools.some(
+                (superfluidPoolId) => superfluidPoolId === id
+              ),
+              userValue: new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
+              ),
+            };
+          }
+        )
+      );
+
+      return sort(pools, "userValue");
+    }),
   getMarketIncentivePools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(

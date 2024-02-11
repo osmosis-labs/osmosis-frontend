@@ -2,7 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { LARGE_LRU_OPTIONS } from "~/config/cache";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 
@@ -13,66 +13,70 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const poolsCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
-/** Lightly cached pools from sidecar service. */
-export function getPoolsFromSidecar({
+export async function getPoolsFromSidecar({
   poolIds,
 }: {
   poolIds?: string[];
 } = {}): Promise<Pool[]> {
+  let eventualPools = await fetchPoolsFromSidecar();
+
+  if (poolIds) {
+    eventualPools = eventualPools.filter((pool) =>
+      poolIds.includes(getPoolIdFromChainPool(pool.chain_model))
+    );
+  }
+
+  const pools = await Promise.all(
+    eventualPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
+  );
+  return pools.filter(Boolean) as Pool[];
+}
+
+function fetchPoolsFromSidecar() {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
-    ttl: 1000, // 1 second
+    key: "sidecar-pools",
+    ttl: 2000, // 2 seconds
     getFreshValue: async () => {
-      const sidecarPools = await queryPools({ poolIds });
-      const reserveCoins = await Promise.all(
-        sidecarPools.map((sidecarPool) =>
-          getListedReservesFromSidecarPool(sidecarPool).catch(() => null)
-        )
-      );
-      const totalFiatLockedValues = await Promise.all(
-        reserveCoins.map((reserve) =>
-          reserve ? calcTotalFiatValueLockedFromReserve(reserve) : null
-        )
-      );
-
-      const pools = await Promise.all(
-        sidecarPools.map((sidecarPool, index) =>
-          makePoolFromSidecarPool({
-            sidecarPool,
-            totalFiatValueLocked: totalFiatLockedValues[index],
-            reserveCoins: reserveCoins[index],
-          })
-        )
-      );
-      return pools.filter(Boolean) as Pool[];
+      return queryPools();
     },
   });
 }
 
 /** Converts a single SQS pool model response to the standard and more useful Pool type. */
-async function makePoolFromSidecarPool({
-  sidecarPool,
-  reserveCoins,
-  totalFiatValueLocked,
-}: {
-  sidecarPool: SidecarPool;
-  reserveCoins: CoinPretty[] | null;
-  totalFiatValueLocked: PricePretty | null;
-}): Promise<Pool | undefined> {
-  // contains unlisted or invalid assets
-  if (!reserveCoins || !totalFiatValueLocked) return;
+async function makePoolFromSidecarPool(
+  sidecarPool: SidecarPool
+): Promise<Pool | undefined> {
+  return cachified({
+    cache: poolsCache,
+    key: "pool-" + getPoolIdFromChainPool(sidecarPool.chain_model),
+    ttl: 5000, // 5 seconds
+    getFreshValue: async (context) => {
+      const reserveCoins = await getListedReservesFromSidecarPool(
+        sidecarPool
+      ).catch(() => null);
 
-  return {
-    id: getPoolIdFromChainPool(sidecarPool.chain_model),
-    type: getPoolTypeFromChainPool(sidecarPool.chain_model),
-    raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
-    spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked,
-  };
+      // contains unlisted or invalid assets
+      if (!reserveCoins) {
+        // if the pool is not valid, we don't want to cache it
+        context.metadata.ttl = -1;
+        return;
+      }
+
+      return {
+        id: getPoolIdFromChainPool(sidecarPool.chain_model),
+        type: getPoolTypeFromChainPool(sidecarPool.chain_model),
+        raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
+        spreadFactor: new RatePretty(sidecarPool.spread_factor),
+        reserveCoins,
+        totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
+          reserveCoins
+        ),
+      };
+    },
+  });
 }
 
 function getPoolIdFromChainPool(

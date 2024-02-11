@@ -1,5 +1,4 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
@@ -10,9 +9,7 @@ import {
   useState,
 } from "react";
 
-import { ShowMoreButton } from "~/components/buttons/show-more";
-import { PoolCard } from "~/components/cards/";
-import { MetricLoader } from "~/components/loaders";
+import { MyPoolsSection } from "~/components/complex/pool";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import { Metric } from "~/components/types";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
@@ -20,7 +17,6 @@ import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
-  useHideDustUserSetting,
   useNavBar,
   useTransferConfig,
   useWindowSize,
@@ -260,7 +256,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
       />
-      {!isMobile && <PoolAssets />}
+      {!isMobile && <MyPoolsSection />}
     </main>
   );
 });
@@ -369,199 +365,4 @@ const Metric: FunctionComponent<Metric> = ({ label, value }) => (
       {value}
     </h2>
   </div>
-);
-
-const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { setUserProperty } = useAmplitudeAnalytics();
-  const { t } = useTranslation();
-
-  const { chainId } = chainStore.osmosis;
-  const address = accountStore.getWallet(chainId)?.address ?? "";
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
-
-  const ownedPoolIds = queriesStore
-    .get(chainId)
-    .osmosis!.queryGammPoolShare.getOwnPools(address);
-  const [showAllPools, setShowAllPools] = useState(false);
-
-  useEffect(() => {
-    setUserProperty("myPoolsCount", ownedPoolIds.length);
-  }, [ownedPoolIds.length, setUserProperty]);
-
-  const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
-    queryOsmosis.queryPools
-      .getPool(poolId)
-      ?.computeTotalValueLocked(priceStore)
-      .mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(address, poolId)
-      )
-  );
-
-  if (dustedPoolIds.length === 0) {
-    return null;
-  }
-
-  return (
-    <section>
-      <h5>{t("assets.myPools")}</h5>
-      <PoolCards
-        {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
-      />
-    </section>
-  );
-});
-
-const PoolCards: FunctionComponent<{
-  showAllPools: boolean;
-  ownedPoolIds: string[];
-  setShowAllPools: (show: boolean) => void;
-}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => {
-  const { logEvent } = useAmplitudeAnalytics();
-  return (
-    <>
-      <div className="grid-cards my-5 grid">
-        <PoolCardsDisplayer
-          poolIds={
-            showAllPools
-              ? ownedPoolIds
-              : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
-          }
-        />
-      </div>
-      {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
-        <ShowMoreButton
-          className="m-auto"
-          isOn={showAllPools}
-          onToggle={() => {
-            logEvent([
-              EventName.Assets.assetsListMoreClicked,
-              {
-                isOn: !showAllPools,
-              },
-            ]);
-            setShowAllPools(!showAllPools);
-          }}
-        />
-      )}
-    </>
-  );
-});
-
-const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
-  ({ poolIds }) => {
-    const { chainStore, queriesStore, derivedDataStore } = useStore();
-    const { t } = useTranslation();
-
-    const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
-
-    const flags = useFeatureFlags();
-
-    const pools = poolIds
-      .map((poolId) => {
-        const sharePoolDetail = derivedDataStore.sharePoolDetails.get(poolId);
-        const poolBonding = derivedDataStore.poolsBonding.get(poolId);
-        const pool = sharePoolDetail.querySharePool;
-
-        const apr =
-          poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
-
-        if (
-          !pool ||
-          (pool.type === "concentrated" && !flags.concentratedLiquidity)
-        ) {
-          return undefined;
-        }
-
-        return [
-          pool,
-          sharePoolDetail.userShareValue,
-          [
-            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
-              ? {
-                  label: t("assets.poolCards.APR"),
-                  value: (
-                    <MetricLoader
-                      isLoading={
-                        queryOsmosis.queryIncentivizedPools.isAprFetching
-                      }
-                    >
-                      <h6>{apr.maxDecimals(2).toString()}</h6>
-                    </MetricLoader>
-                  ),
-                }
-              : {
-                  label: t("assets.poolCards.FeeAPY"),
-                  value:
-                    poolBonding.highestBondDuration?.swapFeeApr
-                      .maxDecimals(0)
-                      .toString() ??
-                    sharePoolDetail.swapFeeApr.maxDecimals(0).toString(),
-                },
-            {
-              label: t("assets.poolCards.liquidity"),
-              value: (
-                <DesktopOnlyPrivateText
-                  text={sharePoolDetail.userAvailableValue
-                    .maxDecimals(2)
-                    .toString()}
-                />
-              ),
-            },
-            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
-              ? {
-                  label: t("assets.poolCards.bonded"),
-                  value: sharePoolDetail.userBondedValue.toString(),
-                }
-              : {
-                  label: t("pools.externalIncentivized.TVL"),
-                  value: formatPretty(sharePoolDetail.totalValueLocked),
-                },
-          ],
-        ] as [ObservableQueryPool, PricePretty, Metric[]];
-      })
-      .filter(
-        (p): p is [ObservableQueryPool, PricePretty, Metric[]] =>
-          p !== undefined
-      )
-      .sort(([, aFiatValue], [, bFiatValue]) => {
-        // desc by fiat value
-        if (aFiatValue.toDec().gt(bFiatValue.toDec())) return -1;
-        if (aFiatValue.toDec().lt(bFiatValue.toDec())) return 1;
-        return 0;
-      });
-    const { logEvent } = useAmplitudeAnalytics();
-
-    return (
-      <>
-        {pools.map(([pool, _, metrics]) => (
-          <PoolCard
-            key={pool.id}
-            poolId={pool.id}
-            poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
-            poolMetrics={metrics}
-            isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-              pool.id
-            )}
-            onClick={() =>
-              logEvent([
-                EventName.Assets.myPoolsCardClicked,
-                {
-                  poolId: pool.id,
-                  poolName: pool.poolAssets
-                    .map((poolAsset) => poolAsset.amount.denom)
-                    .join(" / "),
-                  poolWeight: pool.weightedPoolInfo?.assets
-                    .map((poolAsset) => poolAsset.weightFraction?.toString())
-                    .join(" / "),
-                  isSuperfluidPool:
-                    queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
-                },
-              ])
-            }
-          />
-        ))}
-      </>
-    );
-  }
 );
