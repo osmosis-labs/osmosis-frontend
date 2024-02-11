@@ -1,4 +1,9 @@
-import { ColorType, createChart, Time } from "lightweight-charts";
+import {
+  ColorType,
+  createChart,
+  CrosshairMode,
+  Time,
+} from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 import { theme } from "~/tailwind.config";
@@ -43,9 +48,12 @@ export const HomeChart = ({ data }: HomeChartProps) => {
       grid: { horzLines: { visible: false }, vertLines: { visible: false } },
       rightPriceScale: { visible: false },
       leftPriceScale: { visible: false },
-      crosshair: { horzLine: { visible: false } },
+      crosshair: { horzLine: { visible: false }, mode: CrosshairMode.Magnet },
       handleScroll: false,
       handleScale: false,
+      timeScale: {
+        timeVisible: true,
+      },
     });
 
     chart.timeScale().fitContent();
