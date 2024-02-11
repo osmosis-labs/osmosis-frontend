@@ -35,7 +35,6 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { removeQueryParam } from "~/utils/url";
 
-const INIT_POOL_CARD_COUNT = 6;
 const TransactionTypeQueryParamKey = "transaction_type";
 const DenomQueryParamKey = "denom";
 
