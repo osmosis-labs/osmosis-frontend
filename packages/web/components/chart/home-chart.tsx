@@ -10,6 +10,10 @@ type Data = {
   originalClose?: number;
 };
 
+interface HomeChartProps {
+  data: Data[][];
+}
+
 const _getTransformedData = (data?: Data[]) =>
   data
     ? data.map((originalData) => ({
@@ -18,17 +22,17 @@ const _getTransformedData = (data?: Data[]) =>
       }))
     : [];
 
-export const HomeChart = ({ data }: { data: Data[][] }) => {
+export const HomeChart = ({ data }: HomeChartProps) => {
   const [data1, data2] = data;
   const firstSeriesData = _getTransformedData(data1);
   const secondSeriesData = _getTransformedData(data2);
 
-  const chartContiner = useRef<HTMLDivElement>(null);
+  const chartContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const chart = createChart(chartContiner.current!, {
+    const chart = createChart(chartContainer.current!, {
       height: 336,
-      width: chartContiner.current?.clientWidth,
+      width: chartContainer.current?.clientWidth,
       layout: {
         background: {
           type: ColorType.Solid,
@@ -64,5 +68,6 @@ export const HomeChart = ({ data }: { data: Data[][] }) => {
 
     return () => chart.remove();
   }, [firstSeriesData, secondSeriesData]);
-  return <div className="z-0" ref={chartContiner}></div>;
+
+  return <div className="z-0" ref={chartContainer}></div>;
 };
