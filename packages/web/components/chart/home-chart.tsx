@@ -51,15 +51,15 @@ export const HomeChart = ({ data }: HomeChartProps) => {
     chart.timeScale().fitContent();
     const firstSeries = chart.addAreaSeries({
       lineColor: theme.colors.wosmongton["300"],
-      topColor: `rgba(60, 53, 109, 1)`,
+      topColor: "rgba(60, 53, 109, 1)",
       bottomColor: "rgba(32, 27, 67, 1)",
       priceLineVisible: false,
       priceScaleId: "left",
     });
     const secondSeries = chart.addAreaSeries({
       lineColor: theme.colors.ammelia["400"],
-      topColor: `rgba(60, 53, 109, 0.2)`,
-      bottomColor: "rgba(32, 27, 67, 0.2)",
+      topColor: "rgba(202, 46, 189, 0.2)",
+      bottomColor: "rgba(202, 46, 189, 0)",
       priceLineVisible: false,
       priceScaleId: "right",
     });
