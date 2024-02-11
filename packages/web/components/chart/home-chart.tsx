@@ -84,10 +84,6 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
     firstSeries.setData(firstSeriesData);
     secondSeries.setData(secondSeriesData);
 
-    const toolTipWidth = 80;
-    const toolTipHeight = 80;
-    const toolTipMargin = 15;
-
     const toolTip = document.createElement("div");
     toolTip.className =
       "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
@@ -111,6 +107,10 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
         toolTip.style.display = "block";
         const firstSeriesData = param.seriesData.get(firstSeries) as AreaData;
         const secondSeriesData = param.seriesData.get(secondSeries) as AreaData;
+
+        const toolTipWidth = secondSeriesData ? 180 : 90;
+        const toolTipHeight = 64;
+        const toolTipMargin = 15;
 
         toolTip.innerHTML = `
         <div class="flex flex-row gap-6">
@@ -169,7 +169,7 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
       chart.remove();
       toolTip.remove();
     };
-  }, [firstSeriesData, secondSeriesData]);
+  }, [firstSeriesData, priceStore, secondSeriesData]);
 
   return <div className="z-0" ref={chartContainer}></div>;
 });
