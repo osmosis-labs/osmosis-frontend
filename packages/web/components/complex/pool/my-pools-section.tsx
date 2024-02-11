@@ -45,7 +45,12 @@ export const MyPoolsSection = observer(() => {
     useCallback((myPool) => myPool.userValue, [])
   );
 
-  if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) return null;
+  if (
+    (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) ||
+    !account?.address
+  ) {
+    return null;
+  }
 
   return (
     <div className="pb-[3.75rem]">

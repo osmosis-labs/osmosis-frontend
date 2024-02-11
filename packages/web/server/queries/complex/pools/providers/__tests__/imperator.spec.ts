@@ -69,7 +69,7 @@ describe("makePoolFromImperatorPool", () => {
     expect((result.raw as any).code_id).toBe("148");
   });
 
-  it("should return a valid pool object for a cosmwasm transmuter pool", async () => {
+  it("should return a valid pool object for a cosmwasm pool", async () => {
     const result = await makePoolFromImperatorPool(cosmwasmPool as any);
 
     if (!result) throw new Error("result is undefined");
