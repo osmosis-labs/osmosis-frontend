@@ -59,12 +59,20 @@ export const poolsRouter = createTRPCRouter({
   getUserPools: publicProcedure
     .input(UserOsmoAddressSchema.required())
     .query(async ({ input: { userOsmoAddress } }) => {
-      const [userBalances, lockedCoins, accountPositions] = await Promise.all([
+      const [
+        userBalances,
+        lockedCoins,
+        accountPositions,
+        poolIncentives,
+        superfluidPools,
+      ] = await Promise.all([
         queryBalances({ bech32Address: userOsmoAddress }),
         queryAccountLockedCoins({
           bech32Address: userOsmoAddress,
         }),
         queryCLPositions({ bech32Address: userOsmoAddress }),
+        getCachedPoolIncentivesMap(),
+        getSuperfluidPoolIds(),
       ]);
 
       const gammAssets = [
@@ -87,14 +95,9 @@ export const poolsRouter = createTRPCRouter({
       }
 
       const userPoolIds = Array.from(userPoolIdsSet);
-      const [eventualPools, poolIncentives, superfluidPools] =
-        await Promise.all([
-          getPools({
-            poolIds: userPoolIds,
-          }),
-          getCachedPoolIncentivesMap(),
-          getSuperfluidPoolIds(),
-        ]);
+      const eventualPools = await getPools({
+        poolIds: userPoolIds,
+      });
 
       const pools = await Promise.all(
         eventualPools.map(
