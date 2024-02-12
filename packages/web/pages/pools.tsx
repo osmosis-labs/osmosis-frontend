@@ -1,19 +1,21 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
 
-import { MyPoolsSection } from "~/components/complex";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { PoolCard } from "~/components/cards";
 import { AllPoolsTable as AllPoolsTableV1 } from "~/components/complex/all-pools-table-v1";
 import { AllPoolsTable as AllPoolsTableV2 } from "~/components/complex/all-pools-table-v2";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useHideDustUserSetting, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -36,6 +38,8 @@ import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liqui
 import { ConvertToStakeModal } from "~/modals/convert-to-stake";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
@@ -376,6 +380,150 @@ const Pools: NextPage = observer(function () {
         ) : null}
       </section>
     </main>
+  );
+});
+
+export const MyPoolsSection = observer(() => {
+  const { accountStore, chainStore } = useStore();
+  const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  // Mobile only - pools (superfluid) pools sorting/filtering
+  const [showMoreMyPools, setShowMoreMyPools] = useState(false);
+
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
+
+  const poolCountShowMoreThreshold = isMobile ? 3 : 6;
+  const { data: myPoolDetails, isLoading: isLoadingMyPoolDetails } =
+    api.edge.pools.getUserPools.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
+      {
+        enabled: Boolean(account?.address),
+        select: (data) => data.slice(0, poolCountShowMoreThreshold),
+      }
+    );
+
+  const dustFilteredPools = useHideDustUserSetting(
+    myPoolDetails ?? [],
+    useCallback((myPool) => myPool.userValue, [])
+  );
+
+  if (
+    (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) ||
+    !account?.address
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="pb-[3.75rem]">
+      <h5 className="md:px-3">{t("pools.myPools")}</h5>
+      <div className="flex flex-col gap-4">
+        <div className="grid-cards mt-5 grid md:gap-3">
+          {isLoadingMyPoolDetails ? (
+            <>
+              {new Array(6).fill(undefined).map((_, i) => (
+                <SkeletonLoader
+                  key={i}
+                  className="h-[226px] w-[341px] rounded-4xl"
+                />
+              ))}
+            </>
+          ) : (
+            <>
+              {dustFilteredPools.map(
+                ({
+                  id,
+                  type,
+                  apr = new RatePretty(new Dec(0)),
+                  poolLiquidity,
+                  userValue,
+                  reserveCoins,
+                  isSuperfluid,
+                }) => {
+                  const poolLiqudity_ = formatPretty(poolLiquidity);
+
+                  let myPoolMetrics = [
+                    {
+                      label: t("pools.APR"),
+                      value: isMobile ? (
+                        apr.maxDecimals(0).toString()
+                      ) : (
+                        <h6>{apr.maxDecimals(2).toString()}</h6>
+                      ),
+                    },
+                    {
+                      label: t("pools.TVL"),
+                      value: isMobile ? (
+                        poolLiqudity_
+                      ) : (
+                        <h6>{poolLiqudity_}</h6>
+                      ),
+                    },
+                    {
+                      label:
+                        type === "concentrated"
+                          ? t("pools.myLiquidity")
+                          : t("pools.bonded"),
+                      value: isMobile ? (
+                        userValue.toString()
+                      ) : (
+                        <h6>{formatPretty(userValue)}</h6>
+                      ),
+                    },
+                  ];
+
+                  return (
+                    <PoolCard
+                      key={id}
+                      poolId={id}
+                      poolAssets={reserveCoins.map((coin) => ({
+                        coinImageUrl: coin.currency.coinImageUrl,
+                        coinDenom: coin.currency.coinDenom,
+                      }))}
+                      poolMetrics={myPoolMetrics}
+                      isSuperfluid={isSuperfluid}
+                      isSupercharged={type === "concentrated"}
+                      mobileShowFirstLabel
+                      onClick={() =>
+                        logEvent([
+                          EventName.Pools.myPoolsCardClicked,
+                          {
+                            poolId: id,
+                            poolName: reserveCoins
+                              .map((coin) => coin.currency.coinDenom)
+                              .join(" / "),
+                            // poolWeight: queryPool.weightedPoolInfo?.assets
+                            //   .map((poolAsset) =>
+                            //     poolAsset.weightFraction?.toString()
+                            //   )
+                            //   .join(" / "),
+                            isSuperfluidPool: isSuperfluid,
+                          },
+                        ])
+                      }
+                    />
+                  );
+                }
+              )}
+            </>
+          )}
+        </div>
+        {isMobile &&
+          (myPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
+            <div className="mx-auto">
+              <ShowMoreButton
+                isOn={showMoreMyPools}
+                onToggle={() => setShowMoreMyPools(!showMoreMyPools)}
+              />
+            </div>
+          )}
+      </div>
+    </div>
   );
 });
 
