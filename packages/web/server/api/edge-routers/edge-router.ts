@@ -2,6 +2,7 @@ import { concentratedLiquidityRouter } from "~/server/api/edge-routers/concentra
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { assetsRouter } from "./assets-router";
+import { earnRouter } from "./earn-router";
 import { poolsRouter } from "./pools-router";
 import { stakingRouter } from "./staking-router";
 import { swapRouter } from "./swap-router";
@@ -13,4 +14,5 @@ export const edgeRouter = createTRPCRouter({
   staking: stakingRouter,
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
+  earn: earnRouter,
 });
