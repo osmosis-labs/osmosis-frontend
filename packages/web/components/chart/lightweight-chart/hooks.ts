@@ -149,8 +149,9 @@ export const useChart = (props: UseChartProps) => {
         horzLine: { visible: false },
         vertLine: {
           labelBackgroundColor: theme.colors.osmoverse[850],
-          style: LineStyle.SparseDotted,
-          color: "#38325D",
+          style: LineStyle.LargeDashed,
+          width: 2,
+          color: `${theme.colors.osmoverse[300]}33`,
         },
       },
       handleScroll: false,
