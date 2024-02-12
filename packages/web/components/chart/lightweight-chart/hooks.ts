@@ -6,6 +6,7 @@ import {
   createChart,
   DeepPartial,
   IChartApi,
+  LineStyle,
   MouseEventParams,
   SeriesOptionsCommon,
   Time,
@@ -148,6 +149,8 @@ export const useChart = (props: UseChartProps) => {
         horzLine: { visible: false },
         vertLine: {
           labelBackgroundColor: theme.colors.osmoverse[850],
+          style: LineStyle.SparseDotted,
+          color: "#38325D",
         },
       },
       handleScroll: false,
