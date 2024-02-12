@@ -341,7 +341,7 @@ const Pools: NextPage = observer(function () {
           </section>
         )}
 
-      {featureFlags.concentratedLiquidity && (
+      {featureFlags.concentratedLiquidity && account?.address && (
         <section ref={myPositionsRef}>
           <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
             <h5>{t("clPositions.yourPositions")}</h5>
