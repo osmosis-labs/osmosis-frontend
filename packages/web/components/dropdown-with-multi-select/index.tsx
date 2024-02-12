@@ -82,16 +82,15 @@ export const DropdownWithMultiSelect = <T,>({
                   key={value as unknown as string}
                   value={value}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
-                        {icon}
-                      </div>
-                      <small className="text-base text-osmoverse-200">
-                        {label}
-                      </small>
+                  <div className="flex w-full items-center justify-between gap-4">
+                    <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
+                      {icon}
                     </div>
+                    <small className="text-base text-osmoverse-200">
+                      {label}
+                    </small>
                     <Checkbox
+                      className="ml-auto"
                       checked={
                         stateValues.filter((f) => f.value === value).length !==
                         0

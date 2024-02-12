@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   FilterProvider,
@@ -108,9 +107,11 @@ export default function Earn() {
               {t("earnPage.myStrategies")}
             </TabButton>
           </TabButtons>
+          hi
           <TabHeader>
             <TopFilters />
           </TabHeader>
+          hi 2
           <TabPanels>
             <TabPanel
               showBottomBlock
