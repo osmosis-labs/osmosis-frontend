@@ -186,6 +186,7 @@
       "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur.",
       "provider": "Sağlayıcı"
     },
+    "myPools": "Havuzlarım",
     "poolCards": {
       "APR": "APR",
       "bonded": "Bağlı",

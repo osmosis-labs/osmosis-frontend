@@ -186,6 +186,7 @@
       "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
       "provider": "提供者"
     },
+    "myPools": "我的资金池",
     "poolCards": {
       "APR": "APR",
       "bonded": "已绑定",

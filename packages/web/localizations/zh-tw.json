@@ -186,6 +186,7 @@
       "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
       "provider": "提供者"
     },
+    "myPools": "我的流動性池",
     "poolCards": {
       "APR": "年利率(APR)",
       "bonded": "已鎖定",

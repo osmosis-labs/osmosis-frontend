@@ -186,6 +186,7 @@
       "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다.",
       "provider": "공급자"
     },
+    "myPools": "내 풀",
     "poolCards": {
       "APR": "APR",
       "bonded": "예치된 자산",
