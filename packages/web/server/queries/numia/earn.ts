@@ -1,4 +1,7 @@
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { apiClient } from "@osmosis-labs/utils";
+
+import { Asset } from "~/server/queries/complex/assets";
 
 import { NUMIA_BASE_URL } from ".";
 
@@ -27,7 +30,7 @@ export type EarnStrategyToken = {
   symbol: string;
 };
 
-export type EarnStrategy = {
+export type RawEarnStrategy = {
   /**
    * A unique identifier to the element, with some elements it has reference to the contract address but for example for a native pool it is the pool ID
    */
@@ -43,8 +46,21 @@ export type EarnStrategy = {
   rewardDenoms: EarnStrategyToken[];
 };
 
+export interface EarnStrategy {
+  id: string;
+  name: string;
+  category: EarnStrategyCategory;
+  provider: EarnStrategyProvider;
+  type: EarnStrategyType;
+  tokenDenoms: Asset[];
+  rewardDenoms: Asset[];
+  lockDuration: number;
+  tvl: PricePretty;
+  apy: RatePretty;
+}
+
 /** Queries numia for a earn strategies list. */
-export function queryEarnStrategies(): Promise<EarnStrategy[]> {
+export function queryEarnStrategies(): Promise<RawEarnStrategy[]> {
   const url = new URL("/earn/strategies", NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
