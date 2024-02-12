@@ -59,6 +59,8 @@ export async function getEarnStrategies() {
             lockDuration,
             tvl: processedTvl,
             apy: processedApy,
+            risk: 0,
+            balance: 0,
           });
         }
         return aggregatedStrategies;

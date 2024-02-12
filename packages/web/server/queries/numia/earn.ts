@@ -57,6 +57,8 @@ export interface EarnStrategy {
   lockDuration: number;
   tvl: PricePretty;
   apy: RatePretty;
+  risk: number;
+  balance: number;
 }
 
 /** Queries numia for a earn strategies list. */
