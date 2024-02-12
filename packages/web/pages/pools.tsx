@@ -399,7 +399,10 @@ export const MyPoolsSection = observer(() => {
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
     api.edge.pools.getUserPools.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress:
+          "osmo1qnqzdknfvr97uswyvr5qcehmlxhja92zq74dz5" ??
+          account?.address ??
+          "",
       },
       {
         enabled: Boolean(account?.address),
@@ -527,7 +530,9 @@ export const MyPoolsSection = observer(() => {
               isOn={showMoreMyPools}
               onToggle={() => {
                 setShowMoreMyPools(!showMoreMyPools);
-                titleRef.current?.scrollIntoView();
+                if (showMoreMyPools) {
+                  titleRef.current?.scrollIntoView();
+                }
               }}
             />
           </div>
