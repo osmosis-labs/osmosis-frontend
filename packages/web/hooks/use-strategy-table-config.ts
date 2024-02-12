@@ -29,13 +29,10 @@ export const useStrategyTableConfig = (
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility: {
-        balance_quantity: showBalance,
-        involvedTokens: !isMobile,
-        strategyMethod_id: false,
-        platform_id: false,
-        hasLockingDuration: false,
-        holdsTokens: false,
-        chainType: false,
+        balance: showBalance,
+        tokenDenoms: !isMobile,
+        tokenDenoms_coinDenom: false,
+        provider: false,
       },
       globalFilter: filters!.search,
       columnFilters,
