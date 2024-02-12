@@ -51,6 +51,8 @@ export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
       bottomColor: "rgba(32, 27, 67, 1)",
       priceLineVisible: false,
       priceScaleId: "left",
+      crosshairMarkerBorderWidth: 0,
+      crosshairMarkerRadius: 8,
     },
     data: firstSeriesData,
   });
@@ -63,6 +65,8 @@ export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
       bottomColor: "rgba(202, 46, 189, 0)",
       priceLineVisible: false,
       priceScaleId: "right",
+      crosshairMarkerBorderWidth: 0,
+      crosshairMarkerRadius: 8,
     },
     data: secondSeriesData,
   });
