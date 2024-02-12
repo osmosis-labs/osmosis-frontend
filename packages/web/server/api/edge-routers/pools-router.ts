@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -22,6 +22,7 @@ import { getCachedPoolMarketMetricsMap } from "~/server/queries/complex/pools/ma
 import { getGammShareUnderlyingCoins } from "~/server/queries/complex/pools/share";
 import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid";
 import { queryBalances } from "~/server/queries/cosmos";
+import { WeightedPoolRawResponse } from "~/server/queries/osmosis";
 import { queryCLPositions } from "~/server/queries/osmosis/concentratedliquidity";
 import { queryAccountLockedCoins } from "~/server/queries/osmosis/lockup/account-locked-coins";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
@@ -100,56 +101,74 @@ export const poolsRouter = createTRPCRouter({
       });
 
       const pools = await Promise.all(
-        eventualPools.map(
-          async ({ id, reserveCoins, totalFiatValueLocked, type }) => {
-            let coinsToCalculateValue: CoinPretty[];
+        eventualPools.map(async (pool) => {
+          const { id, reserveCoins, totalFiatValueLocked, type } = pool;
+          let coinsToCalculateValue: CoinPretty[];
 
-            if (type === "concentrated") {
-              const positions = accountPositions.positions.filter(
-                ({ position: { pool_id } }) => pool_id === id
-              );
+          if (type === "concentrated") {
+            const positions = accountPositions.positions.filter(
+              ({ position: { pool_id } }) => pool_id === id
+            );
 
-              if (positions.length === 0) {
-                throw new Error(
-                  `Positions for pool id ${id} not found. It should exist if the pool id is available in the userPoolIds set.`
-                );
-              }
-
-              const aggregatedRawCoins = aggregateRawCoinsByDenom(
-                positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
+            if (positions.length === 0) {
+              throw new Error(
+                `Positions for pool id ${id} not found. It should exist if the pool id is available in the userPoolIds set.`
               );
-              coinsToCalculateValue = await mapRawCoinToPretty(
-                aggregatedRawCoins
-              );
-            } else {
-              const rawCoins = lockedCoins.coins.filter(
-                (coin) => coin.denom === `gamm/pool/${id}`
-              );
-              coinsToCalculateValue = (
-                await Promise.all(
-                  rawCoins.map(
-                    async (coin) => await getGammShareUnderlyingCoins(coin)
-                  )
-                )
-              ).flatMap((coins) => coins);
             }
 
-            return {
-              id,
-              type,
-              reserveCoins,
-              apr: poolIncentives.get(id)?.aprBreakdown?.total,
-              poolLiquidity: totalFiatValueLocked,
-              isSuperfluid: superfluidPools.some(
-                (superfluidPoolId) => superfluidPoolId === id
-              ),
-              userValue: new PricePretty(
-                DEFAULT_VS_CURRENCY,
-                (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
-              ),
-            };
+            const aggregatedRawCoins = aggregateRawCoinsByDenom(
+              positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
+            );
+            coinsToCalculateValue = await mapRawCoinToPretty(
+              aggregatedRawCoins
+            );
+          } else {
+            const rawCoins = lockedCoins.coins.filter(
+              (coin) => coin.denom === `gamm/pool/${id}`
+            );
+            coinsToCalculateValue = (
+              await Promise.all(
+                rawCoins.map(
+                  async (coin) => await getGammShareUnderlyingCoins(coin)
+                )
+              )
+            ).flatMap((coins) => coins);
           }
-        )
+
+          return {
+            id,
+            type,
+            reserveCoins,
+            apr: poolIncentives.get(id)?.aprBreakdown?.total,
+            poolLiquidity: totalFiatValueLocked,
+            isSuperfluid: superfluidPools.some(
+              (superfluidPoolId) => superfluidPoolId === id
+            ),
+            userValue: new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
+            ),
+            weightedPoolInfo:
+              pool.type === "weighted"
+                ? {
+                    weights: (
+                      pool.raw as WeightedPoolRawResponse
+                    ).pool_assets.map(({ token: { denom }, weight }) => {
+                      const totalWeight = new Dec(
+                        (pool.raw as WeightedPoolRawResponse).total_weight
+                      );
+
+                      return {
+                        denom,
+                        weight: new RatePretty(
+                          new Dec(weight).quoTruncate(totalWeight)
+                        ),
+                      };
+                    }),
+                  }
+                : undefined,
+          };
+        })
       );
 
       return sort(pools, "userValue");

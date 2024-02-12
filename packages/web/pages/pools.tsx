@@ -340,16 +340,16 @@ const Pools: NextPage = observer(function () {
             />
           </section>
         )}
-      {featureFlags.concentratedLiquidity &&
-        queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
-          .positions.length > 0 && (
-          <section ref={myPositionsRef}>
-            <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
-              <h5>{t("clPositions.yourPositions")}</h5>
-              <MyPositionsSection />
-            </div>
-          </section>
-        )}
+
+      {featureFlags.concentratedLiquidity && (
+        <section ref={myPositionsRef}>
+          <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+            <h5>{t("clPositions.yourPositions")}</h5>
+            <MyPositionsSection />
+          </div>
+        </section>
+      )}
+
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
@@ -444,6 +444,7 @@ export const MyPoolsSection = observer(() => {
                   userValue,
                   reserveCoins,
                   isSuperfluid,
+                  weightedPoolInfo,
                 }) => {
                   const poolLiqudity_ = formatPretty(poolLiquidity);
 
@@ -497,11 +498,9 @@ export const MyPoolsSection = observer(() => {
                             poolName: reserveCoins
                               .map((coin) => coin.currency.coinDenom)
                               .join(" / "),
-                            // poolWeight: queryPool.weightedPoolInfo?.assets
-                            //   .map((poolAsset) =>
-                            //     poolAsset.weightFraction?.toString()
-                            //   )
-                            //   .join(" / "),
+                            poolWeight: weightedPoolInfo?.weights
+                              .map(({ weight }) => weight.toString())
+                              .join(" / "),
                             isSuperfluidPool: isSuperfluid,
                           },
                         ])
