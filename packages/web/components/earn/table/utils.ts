@@ -2,9 +2,9 @@ import { FilterFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
-import { Strategy } from "~/components/earn/table/types/strategy";
+import { EarnStrategy } from "~/server/queries/numia/earn";
 
-export const strictEqualFilter: FilterFn<Strategy> = (
+export const strictEqualFilter: FilterFn<EarnStrategy> = (
   row,
   colID,
   _filterValue
@@ -16,7 +16,7 @@ export const strictEqualFilter: FilterFn<Strategy> = (
   return row.getValue(colID) === filterValue;
 };
 
-export const arrLengthEquals: FilterFn<Strategy> = (
+export const arrLengthEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
@@ -33,7 +33,7 @@ export const arrLengthEquals: FilterFn<Strategy> = (
   }
 };
 
-export const listOptionValueEquals: FilterFn<Strategy> = (
+export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
@@ -52,7 +52,7 @@ export const listOptionValueEquals: FilterFn<Strategy> = (
   return filterResult.length > 0;
 };
 
-export const boolEqualsString: FilterFn<Strategy> = (
+export const boolEqualsString: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
@@ -70,7 +70,7 @@ export const boolEqualsString: FilterFn<Strategy> = (
   }
 };
 
-export const boolEquals: FilterFn<Strategy> = (row, colID, filterValue) => {
+export const boolEquals: FilterFn<EarnStrategy> = (row, colID, filterValue) => {
   const hasLockingDuration = row.getValue(colID) as boolean;
   const inputFilter = filterValue as boolean;
 

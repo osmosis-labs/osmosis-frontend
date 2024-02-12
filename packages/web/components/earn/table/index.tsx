@@ -3,13 +3,15 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
+import { api } from "~/utils/trpc";
 
 interface StrategiesTableProps {
   showBalance: boolean;
 }
 
 const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
-  const { tableConfig } = useStrategyTableConfig(showBalance);
+  const { data: strategies } = api.edge.earn.getEarnStrategies.useQuery();
+  const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
   const table = useReactTable(tableConfig);
 
   return (

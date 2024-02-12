@@ -1,5 +1,7 @@
+import { Dec } from "@keplr-wallet/unit";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { PropsWithChildren } from "react";
 
 import {
@@ -9,7 +11,6 @@ import {
   StrategyTooltip,
   TVLCell,
 } from "~/components/earn/table/cells";
-import { Strategy } from "~/components/earn/table/types/strategy";
 import {
   arrLengthEquals,
   boolEquals,
@@ -19,8 +20,10 @@ import {
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
+import { EarnStrategy } from "~/server/queries/numia/earn";
+import { formatPretty } from "~/utils/formatter";
 
-const columnHelper = createColumnHelper<Strategy>();
+const columnHelper = createColumnHelper<EarnStrategy>();
 
 export const ColumnCellHeader = ({
   className,
@@ -69,7 +72,7 @@ export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
 );
 
 export const tableColumns = [
-  columnHelper.accessor("involvedTokens", {
+  columnHelper.accessor("tokenDenoms", {
     header: () => {},
     cell: (item) => (
       <div className="relative flex items-center justify-end">
@@ -86,7 +89,7 @@ export const tableColumns = [
     ),
     enableHiding: true,
   }),
-  columnHelper.accessor("strategyName", {
+  columnHelper.accessor("name", {
     header: () => (
       <ColumnCellHeader
         tooltipClassname="!justify-start"
@@ -96,12 +99,12 @@ export const tableColumns = [
     cell: (item) => (
       <StrategyNameCell
         name={item.getValue()}
-        platformName={item.row.original.platform.displayName}
-        strategyMethod={item.row.original.strategyMethod.displayName}
+        platformName={item.row.original.provider}
+        strategyMethod={item.row.original.type}
       />
     ),
   }),
-  columnHelper.accessor("tvl.value", {
+  columnHelper.accessor("tvl", {
     header: () => (
       <ColumnCellHeader
         tooltipDescription="Description of TVL"
@@ -112,19 +115,33 @@ export const tableColumns = [
   }),
   columnHelper.accessor("apy", {
     header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
-    cell: (item) => <ColumnCellCell>{item.getValue()}%</ColumnCellCell>,
+    cell: (item) => (
+      <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
+    ),
   }),
-  columnHelper.accessor("daily", {
+  columnHelper.accessor("apy", {
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
-    cell: (item) => <ColumnCellCell>{item.getValue()}%</ColumnCellCell>,
+    cell: (item) => {
+      const currentYear = dayjs().year();
+      const januaryFirst = dayjs(`${currentYear}-01-01`);
+      const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);
+
+      const totalDaysOfTheYear = nextYearJanuaryFirst.diff(januaryFirst, "day");
+
+      return (
+        <ColumnCellCell>
+          {formatPretty(item.getValue().quo(new Dec(totalDaysOfTheYear)))}
+        </ColumnCellCell>
+      );
+    },
   }),
-  columnHelper.accessor("reward", {
+  columnHelper.accessor("rewardDenoms", {
     header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
     cell: (item) => (
       <div className="relative flex items-center justify-end">
-        {item.getValue().map((coin, i) => (
+        {item.getValue().map((token, i) => (
           <div
-            key={`${coin} ${i} ${item.cell.id}`}
+            key={`${token} ${i} ${item.cell.id}`}
             className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
@@ -135,7 +152,7 @@ export const tableColumns = [
     ),
     filterFn: arrLengthEquals,
   }),
-  columnHelper.accessor("lock", {
+  columnHelper.accessor("lockDuration", {
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
     cell: LockCell,
   }),
@@ -161,47 +178,42 @@ export const tableColumns = [
       </div>
     ),
   }),
-  columnHelper.accessor("balance.quantity", {
+  columnHelper.accessor("balance", {
     header: () => <ColumnCellHeader tKey={"assets.table.columns.balance"} />,
     cell: (item) => (
       <div className="flex flex-col">
         <ColumnCellCell>{item.getValue()}</ColumnCellCell>
-        <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
+        {/* <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
           {item.row.original.balance.converted}
-        </small>
+        </small> */}
       </div>
     ),
     enableHiding: true,
   }),
-  columnHelper.accessor("actions", {
+  columnHelper.accessor("type", {
     header: () => {},
     cell: ActionsCell,
   }),
-  columnHelper.accessor("strategyMethod.id", {
+  columnHelper.accessor("type", {
+    // here we need to take the type, strip and take the last word, which will correspond to valut | lp | perp lp ecc...
     header: () => {},
     cell: () => {},
     filterFn: strictEqualFilter,
     enableHiding: true,
   }),
-  columnHelper.accessor("platform.id", {
-    header: () => {},
-    cell: () => {},
-    filterFn: strictEqualFilter,
-    enableHiding: true,
-  }),
-  columnHelper.accessor("hasLockingDuration", {
+  columnHelper.accessor("lockDuration", {
     header: () => {},
     cell: () => {},
     filterFn: boolEquals,
     enableHiding: true,
   }),
-  columnHelper.accessor("holdsTokens", {
+  columnHelper.accessor("tokenDenoms.coinDenom", {
     header: () => {},
     cell: () => {},
     filterFn: boolEqualsString,
     enableHiding: true,
   }),
-  columnHelper.accessor("chainType", {
+  columnHelper.accessor("provider", {
     header: () => {},
     cell: () => {},
     filterFn: listOptionValueEquals,

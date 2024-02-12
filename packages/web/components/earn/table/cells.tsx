@@ -1,15 +1,12 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
-import classNames from "classnames";
 import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
-import { Strategy } from "~/components/earn/table/types/strategy";
-import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { EarnStrategy, EarnStrategyType } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
 interface StrategyNameCellProps {
@@ -57,20 +54,17 @@ export const StrategyNameCell = ({
   );
 };
 
-export const TVLCell = (item: CellContext<Strategy, number>) => {
-  const fluctuation = item.row.original.tvl.fluctuation;
-  const depositCap = item.row.original.tvl.depositCap;
-  const depositCapOccupied = depositCap
-    ? Math.round((depositCap.actual / depositCap.total) * 100)
-    : 0;
-  const { priceStore } = useStore();
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
+  // const fluctuation = item.row.original.tvl.fluctuation;
+  // const depositCap = item.row.original.tvl.depositCap;
+  // const depositCapOccupied = depositCap
+  //   ? Math.round((depositCap.actual / depositCap.total) * 100)
+  //   : 0;
+
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>
-        {fiat && formatPretty(new PricePretty(fiat, new Dec(item.getValue())))}
-      </ColumnCellCell>
-      {fluctuation && (
+      <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
+      {/* {fluctuation && (
         <small
           className={classNames("text-xs font-subtitle2 font-medium", {
             "text-bullish-400": fluctuation > 0,
@@ -116,14 +110,14 @@ export const TVLCell = (item: CellContext<Strategy, number>) => {
             </p>
           </span>
         </Tooltip>
-      )}
+      )} */}
     </div>
   );
 };
 
-export const LockCell = (item: CellContext<Strategy, number>) => {
+export const LockCell = (item: CellContext<EarnStrategy, number>) => {
   const { t } = useTranslation();
-  const hasLockingDuration = item.row.original.hasLockingDuration;
+  const hasLockingDuration = item.getValue() > 0;
 
   return (
     <div className="flex flex-col">
@@ -139,28 +133,20 @@ export const LockCell = (item: CellContext<Strategy, number>) => {
   );
 };
 
-export const ActionsCell = (
-  item: CellContext<
-    Strategy,
-    {
-      externalURL?: string | undefined;
-      onClick?: (() => void) | undefined;
-    }
-  >
-) => {
+export const ActionsCell = (_: CellContext<EarnStrategy, EarnStrategyType>) => {
   const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-center">
       <Button
-        onClick={item.getValue().onClick}
+        onClick={() => {}}
         mode={"quaternary"}
         className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
       >
         <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
           {t("earnPage.join")}
         </p>
-        {item.getValue().externalURL ? (
+        {true ? (
           <Icon
             id="arrow-up-right"
             className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
