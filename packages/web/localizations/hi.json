@@ -186,12 +186,6 @@
       "warningLossFunds": "चेतावनी: केंद्रीय विनिमय पते पर निकासी करने से धन की हानि होगी।",
       "provider": "प्रदाता"
     },
-    "poolCards": {
-      "APR": "एपीआर",
-      "bonded": "बंधुआ",
-      "FeeAPY": "शुल्क एपीवाई",
-      "liquidity": "मेरी तरलता"
-    },
     "selectAssetSource": {
       "installWallet": "{walletName} इंस्टॉल करें",
       "next": "अगला",

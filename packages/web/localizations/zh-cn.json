@@ -186,12 +186,6 @@
       "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
       "provider": "提供者"
     },
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "已绑定",
-      "FeeAPY": "费用 APY",
-      "liquidity": "我的流动性"
-    },
     "selectAssetSource": {
       "installWallet": "安装 {walletName}",
       "next": "下一步",

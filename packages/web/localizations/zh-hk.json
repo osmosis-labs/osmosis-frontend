@@ -186,12 +186,6 @@
       "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
       "provider": "提供者"
     },
-    "poolCards": {
-      "APR": "年利率(APR)",
-      "bonded": "已鎖定",
-      "FeeAPY": "交易費 APY",
-      "liquidity": "我嘅流動性"
-    },
     "selectAssetSource": {
       "installWallet": "安裝 {walletName}",
       "next": "下一步",

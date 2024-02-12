@@ -186,12 +186,6 @@
       "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos.",
       "provider": "Proveedor"
     },
-    "poolCards": {
-      "APR": "TPA",
-      "bonded": "Abonado",
-      "FeeAPY": "Tarifa TAI",
-      "liquidity": "Mi Liquidez"
-    },
     "selectAssetSource": {
       "installWallet": "Instalar {walletName}",
       "next": "Siguiente",

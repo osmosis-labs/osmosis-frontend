@@ -186,12 +186,6 @@
       "warningLossFunds": "Предупреждение: вывод средств на центральный адрес биржи приведет к потере средств.",
       "provider": "Поставщик"
     },
-    "poolCards": {
-      "APR": "АПРЕЛЬ",
-      "bonded": "Связанный",
-      "FeeAPY": "Комиссия APY",
-      "liquidity": "Моя ликвидность"
-    },
     "selectAssetSource": {
       "installWallet": "Установите {walletName}",
       "next": "Следующий",

@@ -186,12 +186,6 @@
       "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે.",
       "provider": "પ્રદાતા"
     },
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "બંધાયેલા",
-      "FeeAPY": "ફી APY",
-      "liquidity": "મારી લિક્વિડિટી"
-    },
     "selectAssetSource": {
       "installWallet": "ઇન્સ્ટોલ કરો {walletName}",
       "next": "આગળ",

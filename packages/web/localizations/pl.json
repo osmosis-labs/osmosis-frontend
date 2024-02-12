@@ -186,12 +186,6 @@
       "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
       "provider": "Dostawca"
     },
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Związane",
-      "FeeAPY": "APY z Prowizji",
-      "liquidity": "Moja płynność"
-    },
     "selectAssetSource": {
       "installWallet": "Zainstaluj {walletName}",
       "next": "Dalej",

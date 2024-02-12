@@ -186,12 +186,6 @@
       "warningLossFunds": "警告: 中央取引所アドレスに出金すると資金が失われます。",
       "provider": "プロバイダー"
     },
-    "poolCards": {
-      "APR": "4月",
-      "bonded": "保税済み",
-      "FeeAPY": "料金APY",
-      "liquidity": "私の流動性"
-    },
     "selectAssetSource": {
       "installWallet": "{walletName}をインストールします",
       "next": "次",
