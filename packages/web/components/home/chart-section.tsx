@@ -55,7 +55,7 @@ export const ChartSection = ({
     toAssetChartData
   );
 
-  const chardData = useMemo(() => {
+  const chartData = useMemo(() => {
     if (showPairRatio) {
       return [pairRatios, []];
     }
@@ -80,7 +80,7 @@ export const ChartSection = ({
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
           <SkeletonLoader
-            className=" min-w-[100px]"
+            className="min-w-[100px]"
             isLoaded={!isLoadingFromMarketData}
           >
             <AssetInfo
@@ -95,7 +95,7 @@ export const ChartSection = ({
             />
           </SkeletonLoader>
           <SkeletonLoader
-            className=" min-w-[100px]"
+            className="min-w-[100px]"
             isLoaded={!isLoadingToMarketData}
           >
             <AssetInfo
@@ -143,7 +143,7 @@ export const ChartSection = ({
         </div>
       </header>
       <HomeChart
-        data={chardData}
+        data={chartData}
         loading={isFromChartDataLoading || isToChartDataLoading}
       />
       <button
