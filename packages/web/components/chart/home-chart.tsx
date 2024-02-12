@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import {
   useChart,
   useChartAreaSeries,
-  useChartTooltip,
 } from "~/components/chart/lightweight-chart/hooks";
 import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
@@ -66,11 +65,6 @@ export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
       priceScaleId: "right",
     },
     data: secondSeriesData,
-  });
-
-  useChartTooltip({
-    chart,
-    container,
   });
 
   return (

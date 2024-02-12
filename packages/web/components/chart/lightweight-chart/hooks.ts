@@ -14,7 +14,6 @@ import {
 } from "lightweight-charts";
 import { useEffect, useMemo, useRef } from "react";
 
-import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -70,6 +69,8 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
       value,
     }));
 
+    const [_, secondSeriesData] = dataSeries;
+
     const content = dataSeries
       .map((series, index) => {
         const seriesData = series.value as AreaData;
@@ -82,7 +83,7 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
           seriesData.customValues?.denom
         }</div>
         <div class="text-white text-h6 font-h6 whitespace-nowrap">
-        $
+        ${secondSeriesData ? "$" : ""}
           ${formatPretty(new Dec(seriesData.value), {
             maxDecimals: 2,
             notation: "compact",
@@ -92,8 +93,6 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
     `;
       })
       .join("");
-
-    const [_, secondSeriesData] = dataSeries;
 
     const toolTipWidth = secondSeriesData ? 180 : 90;
     const toolTipHeight = 64;
@@ -215,25 +214,4 @@ export const useChartAreaSeries = (props: UseChartAreaSeriesProps) => {
 
     series?.setData(data);
   }, [chart, data, options]);
-};
-
-export interface UseChartTooltipProps {
-  chart: ReturnType<typeof useChart>["chart"];
-  container: ReturnType<typeof useChart>["container"];
-}
-
-export const useChartTooltip = (props: UseChartTooltipProps) => {
-  const { chart, container } = props;
-  const { priceStore } = useStore();
-
-  useEffect(() => {
-    const toolTip = document.createElement("div");
-    toolTip.className =
-      "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
-    container.current?.appendChild(toolTip);
-
-    return () => {
-      toolTip.remove();
-    };
-  }, [chart, container, priceStore]);
 };
