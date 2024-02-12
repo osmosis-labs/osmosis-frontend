@@ -146,7 +146,9 @@ export const useChart = (props: UseChartProps) => {
       leftPriceScale: { visible: false },
       crosshair: {
         horzLine: { visible: false },
-        vertLine: { labelBackgroundColor: theme.colors.osmoverse[850] },
+        vertLine: {
+          labelBackgroundColor: theme.colors.osmoverse[850],
+        },
       },
       handleScroll: false,
       handleScale: false,
@@ -154,6 +156,8 @@ export const useChart = (props: UseChartProps) => {
         timeVisible: true,
         secondsVisible: false,
         lockVisibleTimeRangeOnResize: true,
+        allowBoldLabels: false,
+        borderVisible: false,
       },
       ...options,
     }),
