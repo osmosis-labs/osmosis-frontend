@@ -2,6 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import dayjs from "dayjs";
+import Image from "next/image";
 import { PropsWithChildren } from "react";
 
 import {
@@ -76,13 +77,17 @@ export const tableColumns = [
     header: () => {},
     cell: (item) => (
       <div className="relative flex items-center justify-end">
-        {item.getValue().map((coin, i) => (
-          <div
-            key={`${coin} ${i} ${item.cell.id}`}
+        {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
+          <Image
+            src={coinImageUrl ?? ""}
+            alt={`${coinDenom} image`}
+            key={`${coinDenom} ${i} ${item.cell.id}`}
             className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
+            width={36}
+            height={36}
           />
         ))}
       </div>
@@ -140,13 +145,17 @@ export const tableColumns = [
     header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
     cell: (item) => (
       <div className="relative flex items-center justify-end">
-        {item.getValue().map((token, i) => (
-          <div
-            key={`${token} ${i} ${item.cell.id}`}
-            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
+        {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
+          <Image
+            src={coinImageUrl ?? ""}
+            alt={`${coinDenom} image`}
+            key={`${coinDenom} ${i} ${item.cell.id}`}
+            className={classNames("h-6 w-6 rounded-full bg-osmoverse-300", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
+            width={24}
+            height={24}
           />
         ))}
       </div>
