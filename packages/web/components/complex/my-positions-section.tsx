@@ -42,6 +42,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
       viewMore ? undefined : INITIAL_POSITION_CNT
     );
 
+    if (!account?.address) return null;
     if (!isLoading && positions && !positions.length) return null;
 
     return (
