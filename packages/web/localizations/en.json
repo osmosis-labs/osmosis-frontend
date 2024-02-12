@@ -186,6 +186,12 @@
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
       "provider": "Provider"
     },
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Bonded",
+      "FeeAPY": "Fee APY",
+      "liquidity": "My Liquidity"
+    },
     "selectAssetSource": {
       "installWallet": "Install {walletName}",
       "next": "Next",

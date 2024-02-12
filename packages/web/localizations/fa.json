@@ -186,6 +186,12 @@
       "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود.",
       "provider": "ارائه دهنده"
     },
+    "poolCards": {
+      "APR": "نرخ بازدهی",
+      "bonded": "قفل شده",
+      "FeeAPY": "کارمزذ سپرده گذاری",
+      "liquidity": "نقدینگی من"
+    },
     "selectAssetSource": {
       "installWallet": "نصب کیف پول {walletName}",
       "next": "بعدی",

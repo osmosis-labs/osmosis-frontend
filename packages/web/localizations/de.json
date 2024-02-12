@@ -186,6 +186,12 @@
       "warningLossFunds": "Warnung: Eine Auszahlung an die zentrale Börsenadresse führt zum Verlust von Geldern.",
       "provider": "Anbieter"
     },
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Gebunden",
+      "FeeAPY": "Gebühr APY",
+      "liquidity": "Meine Liquidität"
+    },
     "selectAssetSource": {
       "installWallet": "Installieren Sie {walletName}",
       "next": "Nächste",

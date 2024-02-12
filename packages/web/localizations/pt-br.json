@@ -186,6 +186,12 @@
       "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
       "provider": "Fornecedor"
     },
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Travado",
+      "FeeAPY": "Taxa de APY",
+      "liquidity": "Minha Liquidez"
+    },
     "selectAssetSource": {
       "installWallet": "Instalar {walletName}",
       "next": "Próximo",

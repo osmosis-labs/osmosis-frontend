@@ -186,6 +186,12 @@
       "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
       "provider": "Furnizor"
     },
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Blocate",
+      "FeeAPY": "APY din taxe",
+      "liquidity": "Lichiditate pool"
+    },
     "selectAssetSource": {
       "installWallet": "Instaleaza {walletName}",
       "next": "Urmatorul",
