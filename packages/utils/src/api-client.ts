@@ -35,7 +35,16 @@ interface ClientOptions extends RequestInit {
   data?: Record<string, any>;
 }
 
-const UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred.";
+function getErrorMessage({
+  url,
+  message = "An unexpected error occurred.",
+}: {
+  url: string;
+  message?: string;
+}) {
+  const timestamp = new Date().toISOString();
+  return `Fetch error at ${timestamp}. ${message}. URL: ${url}`;
+}
 
 export async function apiClient<T>(
   endpoint: string,
@@ -79,7 +88,7 @@ export async function apiClient<T>(
 
         if ("status_code" in data && data.status_code >= 400) {
           throw new ApiClientError({
-            message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+            message: getErrorMessage({ message: data?.message, url: endpoint }),
             data,
             response,
           });
@@ -88,7 +97,7 @@ export async function apiClient<T>(
         return data;
       } else {
         throw new ApiClientError({
-          message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+          message: getErrorMessage({ message: data?.message, url: endpoint }),
           data,
           response,
         });
@@ -103,8 +112,8 @@ export async function apiClient<T>(
       throw new ApiClientError({
         message:
           error.message === "Unexpected token < in JSON at position 0"
-            ? UNEXPECTED_ERROR_MESSAGE
-            : error.message,
+            ? getErrorMessage({ url: endpoint })
+            : getErrorMessage({ message: error.message, url: endpoint }),
         data: {},
         response,
       });

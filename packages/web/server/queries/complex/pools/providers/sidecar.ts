@@ -61,9 +61,6 @@ async function makePoolFromSidecarPool(
 
       // contains unlisted or invalid assets
       if (!reserveCoins) {
-        console.info(
-          `Skipping pool id ${poolId} with unlisted or invalid assets`
-        );
         return;
       }
 
