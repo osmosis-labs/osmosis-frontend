@@ -4,7 +4,6 @@ import {
   AreaStyleOptions,
   ColorType,
   createChart,
-  CrosshairMode,
   DeepPartial,
   IChartApi,
   MouseEventParams,
@@ -134,16 +133,21 @@ export const useChart = (props: UseChartProps) => {
   const internalOptions: DeepPartial<TimeChartOptions> = useMemo(
     () => ({
       layout: {
+        fontFamily: theme.fontFamily.subtitle1.join(","),
         background: {
           type: ColorType.Solid,
           color: theme.colors.osmoverse[850],
         },
-        textColor: theme.colors.osmoverse[200],
+        textColor: theme.colors.wosmongton[200],
+        fontSize: 14,
       },
       grid: { horzLines: { visible: false }, vertLines: { visible: false } },
       rightPriceScale: { visible: false },
       leftPriceScale: { visible: false },
-      crosshair: { horzLine: { visible: false }, mode: CrosshairMode.Magnet },
+      crosshair: {
+        horzLine: { visible: false },
+        vertLine: { labelBackgroundColor: theme.colors.osmoverse[850] },
+      },
       handleScroll: false,
       handleScale: false,
       timeScale: {
