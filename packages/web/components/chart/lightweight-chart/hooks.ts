@@ -232,14 +232,6 @@ export const useChartTooltip = (props: UseChartTooltipProps) => {
       "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
     container.current?.appendChild(toolTip);
 
-    // @ts-ignore
-    console.log(
-      "TEST: ",
-      // @ts-ignore
-      chart.current._private__crosshairMovedDelegate,
-      container.current
-    );
-
     return () => {
       toolTip.remove();
     };

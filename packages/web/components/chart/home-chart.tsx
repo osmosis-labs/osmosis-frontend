@@ -7,6 +7,7 @@ import {
   useChartAreaSeries,
   useChartTooltip,
 } from "~/components/chart/lightweight-chart/hooks";
+import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
 
 type Data = {
@@ -18,6 +19,7 @@ type Data = {
 
 interface HomeChartProps {
   data: Data[][];
+  loading?: boolean;
 }
 
 const _getTransformedData = (data?: Data[]): AreaData[] =>
@@ -31,7 +33,7 @@ const _getTransformedData = (data?: Data[]): AreaData[] =>
       }))
     : [];
 
-export const HomeChart = observer(({ data }: HomeChartProps) => {
+export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
   const [data1, data2] = data;
   const firstSeriesData = useMemo(() => _getTransformedData(data1), [data1]);
   const secondSeriesData = useMemo(() => _getTransformedData(data2), [data2]);
@@ -71,5 +73,13 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
     container,
   });
 
-  return <div className="z-0" ref={container}></div>;
+  return (
+    <div className="relative z-0" ref={container}>
+      {loading && (
+        <div className="absolute inset-0 z-50 flex h-full w-full flex-col items-center justify-center bg-osmoverse-850/50">
+          <Spinner />
+        </div>
+      )}
+    </div>
+  );
 });

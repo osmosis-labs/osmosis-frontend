@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { HomeChart } from "~/components/chart/home-chart";
@@ -11,7 +12,6 @@ import {
   useSwapHistoricalPrice,
   useSwapPageQuery,
 } from "~/components/home/hooks";
-import { Spinner } from "~/components/loaders";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useCalculatePairRatios } from "~/hooks/use-calculate-pair-ratios";
 import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -55,6 +55,18 @@ export const ChartSection = ({
     toAssetChartData
   );
 
+  const chardData = useMemo(() => {
+    if (showPairRatio) {
+      return [pairRatios, []];
+    }
+
+    if (fromAssetChartData && toAssetChartData) {
+      return [fromAssetChartData, toAssetChartData];
+    }
+
+    return [];
+  }, [fromAssetChartData, pairRatios, showPairRatio, toAssetChartData]);
+
   return (
     <section
       className={classNames(
@@ -67,7 +79,10 @@ export const ChartSection = ({
     >
       <header className="flex w-full justify-between p-8">
         <div className="flex items-center gap-16">
-          <SkeletonLoader isLoaded={!isLoadingFromMarketData}>
+          <SkeletonLoader
+            className=" min-w-[100px]"
+            isLoaded={!isLoadingFromMarketData}
+          >
             <AssetInfo
               assetPrice={fromAssetMarketData?.currentPrice}
               priceChange24h={fromAssetMarketData?.priceChange24h}
@@ -79,7 +94,10 @@ export const ChartSection = ({
               }
             />
           </SkeletonLoader>
-          <SkeletonLoader isLoaded={!isLoadingToMarketData}>
+          <SkeletonLoader
+            className=" min-w-[100px]"
+            isLoaded={!isLoadingToMarketData}
+          >
             <AssetInfo
               assetPrice={toAssetMarketData?.currentPrice}
               priceChange24h={toAssetMarketData?.priceChange24h}
@@ -124,19 +142,10 @@ export const ChartSection = ({
           ))}
         </div>
       </header>
-      {!isFromChartDataLoading && !isToChartDataLoading ? (
-        <HomeChart
-          data={
-            showPairRatio
-              ? [pairRatios, []]
-              : [fromAssetChartData!, toAssetChartData!]
-          }
-        />
-      ) : (
-        <div className="flex h-1/2 flex-col items-center justify-center">
-          <Spinner />
-        </div>
-      )}
+      <HomeChart
+        data={chardData}
+        loading={isFromChartDataLoading || isToChartDataLoading}
+      />
       <button
         onClick={() => setShowPairRatio((p) => !p)}
         className={classNames(
