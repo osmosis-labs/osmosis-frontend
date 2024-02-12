@@ -35,15 +35,14 @@ interface ClientOptions extends RequestInit {
   data?: Record<string, any>;
 }
 
+const UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred.";
+
 function getErrorMessage({
-  url,
-  message = "An unexpected error occurred.",
+  message = UNEXPECTED_ERROR_MESSAGE,
 }: {
-  url: string;
   message?: string;
-}) {
-  const timestamp = new Date().toISOString();
-  return `Fetch error at ${timestamp}. ${message}. URL: ${url}`;
+} = {}) {
+  return `Fetch error. ${message}.`;
 }
 
 export async function apiClient<T>(
@@ -88,7 +87,7 @@ export async function apiClient<T>(
 
         if ("status_code" in data && data.status_code >= 400) {
           throw new ApiClientError({
-            message: getErrorMessage({ message: data?.message, url: endpoint }),
+            message: getErrorMessage({ message: data?.message }),
             data,
             response,
           });
@@ -97,7 +96,7 @@ export async function apiClient<T>(
         return data;
       } else {
         throw new ApiClientError({
-          message: getErrorMessage({ message: data?.message, url: endpoint }),
+          message: getErrorMessage({ message: data?.message }),
           data,
           response,
         });
@@ -105,15 +104,25 @@ export async function apiClient<T>(
     } catch (e) {
       const error = e as Error | ApiClientError;
 
+      console.error("Fetch Error. Info:", {
+        error,
+        response,
+        endpoint,
+        config,
+        data,
+      });
+
       if (e instanceof ApiClientError) {
         throw e;
       }
 
       throw new ApiClientError({
-        message:
-          error.message === "Unexpected token < in JSON at position 0"
-            ? getErrorMessage({ url: endpoint })
-            : getErrorMessage({ message: error.message, url: endpoint }),
+        message: getErrorMessage({
+          message:
+            error.message === "Unexpected token < in JSON at position 0"
+              ? undefined
+              : error.message,
+        }),
         data: {},
         response,
       });
