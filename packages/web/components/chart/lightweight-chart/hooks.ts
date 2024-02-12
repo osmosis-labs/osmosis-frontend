@@ -36,7 +36,7 @@ export type UseChartReturn = ReturnType<typeof useChart>;
 const defaultTooltipInit: TooltipInitFn = (container) => {
   const toolTip = document.createElement("div");
   toolTip.className =
-    "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
+    "rounded-xl bg-osmoverse-1000 absolute hidden p-3 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
   container.current?.appendChild(toolTip);
 
   return toolTip;
