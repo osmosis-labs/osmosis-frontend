@@ -3,7 +3,7 @@ import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
-import { ComponentProps, useCallback, useState } from "react";
+import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
@@ -388,24 +388,31 @@ export const MyPoolsSection = observer(() => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
-  // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
 
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
-  const { data: myPoolDetails, isLoading: isLoadingMyPoolDetails } =
+  const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
     api.edge.pools.getUserPools.useQuery(
       {
         userOsmoAddress: account?.address ?? "",
       },
       {
         enabled: Boolean(account?.address),
-        select: (data) => data.slice(0, poolCountShowMoreThreshold),
       }
     );
+
+  const myPoolDetails = useMemo(
+    () =>
+      showMoreMyPools
+        ? allMyPoolDetails
+        : allMyPoolDetails?.slice(0, poolCountShowMoreThreshold),
+    [allMyPoolDetails, poolCountShowMoreThreshold, showMoreMyPools]
+  );
 
   const dustFilteredPools = useHideDustUserSetting(
     myPoolDetails ?? [],
@@ -421,7 +428,9 @@ export const MyPoolsSection = observer(() => {
 
   return (
     <div className="pb-[3.75rem]">
-      <h5 className="md:px-3">{t("pools.myPools")}</h5>
+      <h5 ref={titleRef} className="md:px-3">
+        {t("pools.myPools")}
+      </h5>
       <div className="flex flex-col gap-4">
         <div className="grid-cards mt-5 grid md:gap-3">
           {isLoadingMyPoolDetails ? (
@@ -512,15 +521,17 @@ export const MyPoolsSection = observer(() => {
             </>
           )}
         </div>
-        {isMobile &&
-          (myPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
-            <div className="mx-auto">
-              <ShowMoreButton
-                isOn={showMoreMyPools}
-                onToggle={() => setShowMoreMyPools(!showMoreMyPools)}
-              />
-            </div>
-          )}
+        {(allMyPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
+          <div className="mx-auto">
+            <ShowMoreButton
+              isOn={showMoreMyPools}
+              onToggle={() => {
+                setShowMoreMyPools(!showMoreMyPools);
+                titleRef.current?.scrollIntoView();
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

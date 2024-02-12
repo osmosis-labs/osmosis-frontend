@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -19,7 +19,6 @@ import {
   isIncentivePoolFiltered,
 } from "~/server/queries/complex/pools/incentives";
 import { getCachedPoolMarketMetricsMap } from "~/server/queries/complex/pools/market";
-import { getGammShareUnderlyingCoins } from "~/server/queries/complex/pools/share";
 import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid";
 import { queryBalances } from "~/server/queries/cosmos";
 import { WeightedPoolRawResponse } from "~/server/queries/osmosis";
@@ -103,7 +102,10 @@ export const poolsRouter = createTRPCRouter({
       const pools = await Promise.all(
         eventualPools.map(async (pool) => {
           const { id, reserveCoins, totalFiatValueLocked, type } = pool;
-          let coinsToCalculateValue: CoinPretty[];
+          let userValue: PricePretty = new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            new Dec(0)
+          );
 
           if (type === "concentrated") {
             const positions = accountPositions.positions.filter(
@@ -119,20 +121,37 @@ export const poolsRouter = createTRPCRouter({
             const aggregatedRawCoins = aggregateRawCoinsByDenom(
               positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
             );
-            coinsToCalculateValue = await mapRawCoinToPretty(
+            const coinsToCalculateValue = await mapRawCoinToPretty(
               aggregatedRawCoins
             );
-          } else {
-            const rawCoins = lockedCoins.coins.filter(
-              (coin) => coin.denom === `gamm/pool/${id}`
+
+            userValue = new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
             );
-            coinsToCalculateValue = (
-              await Promise.all(
-                rawCoins.map(
-                  async (coin) => await getGammShareUnderlyingCoins(coin)
-                )
+          } else if (type === "weighted" || type === "stable") {
+            const totalShareAmount = new Dec(
+              (pool.raw as WeightedPoolRawResponse).total_shares.amount
+            );
+            const rawShare = aggregateRawCoinsByDenom(
+              lockedCoins.coins.filter(
+                (coin) => coin.denom === `gamm/pool/${id}`
               )
-            ).flatMap((coins) => coins);
+            )[0];
+
+            if (rawShare) {
+              const userValueAmount = totalShareAmount.isZero()
+                ? new Dec(0)
+                : totalFiatValueLocked
+                    .mul(
+                      new IntPretty(
+                        new Dec(rawShare.amount).quo(totalShareAmount)
+                      )
+                    )
+                    .trim(true);
+
+              userValue = new PricePretty(DEFAULT_VS_CURRENCY, userValueAmount);
+            }
           }
 
           return {
@@ -144,10 +163,7 @@ export const poolsRouter = createTRPCRouter({
             isSuperfluid: superfluidPools.some(
               (superfluidPoolId) => superfluidPoolId === id
             ),
-            userValue: new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
-            ),
+            userValue,
             weightedPoolInfo:
               pool.type === "weighted"
                 ? {

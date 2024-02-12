@@ -105,8 +105,6 @@ export async function apiClient<T>(
       const error = e as Error | ApiClientError;
 
       console.error("Fetch Error. Info:", {
-        error,
-        response,
         endpoint,
         config,
         data,
