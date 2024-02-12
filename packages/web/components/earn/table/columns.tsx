@@ -119,7 +119,8 @@ export const tableColumns = [
       <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
     ),
   }),
-  columnHelper.accessor("apy", {
+  columnHelper.display({
+    id: "daily",
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
     cell: (item) => {
       const currentYear = dayjs().year();
@@ -130,7 +131,7 @@ export const tableColumns = [
 
       return (
         <ColumnCellCell>
-          {formatPretty(item.getValue().quo(new Dec(totalDaysOfTheYear)))}
+          {formatPretty(item.row.original.apy.quo(new Dec(totalDaysOfTheYear)))}
         </ColumnCellCell>
       );
     },
