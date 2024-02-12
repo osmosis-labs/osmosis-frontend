@@ -156,6 +156,7 @@ export const tableColumns = [
   columnHelper.accessor("lockDuration", {
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
     cell: LockCell,
+    filterFn: boolEquals,
   }),
   columnHelper.accessor("risk", {
     header: () => <ColumnCellHeader tKey={"earnPage.risk"} />,
@@ -194,20 +195,15 @@ export const tableColumns = [
   columnHelper.accessor("type", {
     header: () => {},
     cell: ActionsCell,
-  }),
-  columnHelper.accessor("type", {
-    // here we need to take the type, strip and take the last word, which will correspond to valut | lp | perp lp ecc...
-    header: () => {},
-    cell: () => {},
     filterFn: strictEqualFilter,
-    enableHiding: true,
   }),
-  columnHelper.accessor("lockDuration", {
-    header: () => {},
-    cell: () => {},
-    filterFn: boolEquals,
-    enableHiding: true,
-  }),
+  // columnHelper.accessor("type", {
+  //   // here we need to take the type, strip and take the last word, which will correspond to valut | lp | perp lp ecc...
+  //   header: () => {},
+  //   cell: () => {},
+  //   filterFn: strictEqualFilter,
+  //   enableHiding: true,
+  // }),
   columnHelper.accessor("tokenDenoms.coinDenom", {
     header: () => {},
     cell: () => {},
