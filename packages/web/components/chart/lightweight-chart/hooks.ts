@@ -79,18 +79,16 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
 
         return `
       <div>
-        <div class="${
+        <p class="${
           index === 0 ? "text-wosmongton-300" : "text-ammelia-400"
-        } text-body2 font-body2 font-medium">${
-          seriesData.customValues?.denom
-        }</div>
-        <div class="text-white text-h6 font-h6 whitespace-nowrap">
-        ${secondSeriesData ? "$" : ""}
-          ${formatPretty(new Dec(seriesData.value), {
+        } font-medium">${seriesData.customValues?.denom}</p>
+        <h6 class="text-white inline-flex whitespace-nowrap">
+          <span>${secondSeriesData ? "$" : ""}</span>
+          <span>${formatPretty(new Dec(seriesData.value), {
             maxDecimals: 2,
             notation: "compact",
-          })}
-        </div>
+          })}</span>
+        </h6>
       </div>
     `;
       })
