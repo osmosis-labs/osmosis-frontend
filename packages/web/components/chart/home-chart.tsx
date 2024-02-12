@@ -1,17 +1,13 @@
-import { Dec } from "@keplr-wallet/unit";
-import {
-  AreaData,
-  ColorType,
-  createChart,
-  CrosshairMode,
-  Time,
-} from "lightweight-charts";
+import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef } from "react";
 
+import {
+  useChart,
+  useChartAreaSeries,
+  useChartTooltip,
+} from "~/components/chart/lightweight-chart/hooks";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
 
 type Data = {
   time: number;
@@ -41,49 +37,42 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
   const firstSeriesData = _getTransformedData(data1);
   const secondSeriesData = _getTransformedData(data2);
 
-  const chartContainer = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const chart = createChart(chartContainer.current!, {
+  const { container, chart } = useChart({
+    options: {
       height: 336,
-      width: chartContainer.current?.clientWidth,
-      layout: {
-        background: {
-          type: ColorType.Solid,
-          color: theme.colors.osmoverse[850],
-        },
-        textColor: theme.colors.osmoverse[200],
-      },
-      grid: { horzLines: { visible: false }, vertLines: { visible: false } },
-      rightPriceScale: { visible: false },
-      leftPriceScale: { visible: false },
-      crosshair: { horzLine: { visible: false }, mode: CrosshairMode.Magnet },
-      handleScroll: false,
-      handleScale: false,
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-      },
-    });
+    },
+  });
 
-    chart.timeScale().fitContent();
-    const firstSeries = chart.addAreaSeries({
+  useChartAreaSeries({
+    chart,
+    options: {
       lineColor: theme.colors.wosmongton["300"],
       topColor: "rgba(60, 53, 109, 1)",
       bottomColor: "rgba(32, 27, 67, 1)",
       priceLineVisible: false,
       priceScaleId: "left",
-    });
-    const secondSeries = chart.addAreaSeries({
+    },
+    data: firstSeriesData,
+  });
+
+  useChartAreaSeries({
+    chart,
+    options: {
       lineColor: theme.colors.ammelia["400"],
       topColor: "rgba(202, 46, 189, 0.2)",
       bottomColor: "rgba(202, 46, 189, 0)",
       priceLineVisible: false,
       priceScaleId: "right",
-    });
-    firstSeries.setData(firstSeriesData);
-    secondSeries.setData(secondSeriesData);
+    },
+    data: secondSeriesData,
+  });
 
+  useChartTooltip({
+    chart,
+    container,
+  });
+
+  /* useEffect(() => {
     const toolTip = document.createElement("div");
     toolTip.className =
       "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
@@ -169,7 +158,7 @@ export const HomeChart = observer(({ data }: HomeChartProps) => {
       chart.remove();
       toolTip.remove();
     };
-  }, [firstSeriesData, priceStore, secondSeriesData]);
+  }, [firstSeriesData, priceStore, secondSeriesData]); */
 
-  return <div className="z-0" ref={chartContainer}></div>;
+  return <div className="z-0" ref={container}></div>;
 });
