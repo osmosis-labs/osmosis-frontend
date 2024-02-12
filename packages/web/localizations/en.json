@@ -186,7 +186,6 @@
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
       "provider": "Provider"
     },
-    "myPools": "Your Pools",
     "poolCards": {
       "APR": "APR",
       "bonded": "Bonded",

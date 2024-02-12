@@ -186,7 +186,6 @@
       "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds",
       "provider": "Fournisseur"
     },
-    "myPools": "Mes Bassins",
     "poolCards": {
       "APR": "TAP",
       "bonded": "Liés",

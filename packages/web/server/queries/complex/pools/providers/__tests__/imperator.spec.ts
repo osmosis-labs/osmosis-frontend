@@ -281,7 +281,7 @@ const cosmwasmTransmuterPool = {
 };
 
 const cosmwasmPool = {
-  pool_id: 1211,
+  pool_id: 1212,
   type: "osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
   address: "osmo1gyg0pys40ex2f6a4dytd3ewpx2xfrsnt3rdc2t4j3s3jc9qx8kqsny066c",
   liquidity: 1994.2497781334503,
