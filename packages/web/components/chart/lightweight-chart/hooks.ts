@@ -70,49 +70,39 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
       value,
     }));
 
-    const [firstSeries, secondSeries] = dataSeries;
+    const content = dataSeries
+      .map((series, index) => {
+        const seriesData = series.value as AreaData;
 
-    const firstSeriesData = firstSeries.value as AreaData;
-    const secondSeriesData = secondSeries.value as AreaData;
+        return `
+      <div>
+        <div class="${
+          index === 0 ? "text-wosmongton-300" : "text-ammelia-400"
+        } text-body2 font-body2 font-medium">${
+          seriesData.customValues?.denom
+        }</div>
+        <div class="text-white text-h6 font-h6 whitespace-nowrap">
+        $
+          ${formatPretty(new Dec(seriesData.value), {
+            maxDecimals: 2,
+            notation: "compact",
+          })}
+        </div>
+      </div>
+    `;
+      })
+      .join("");
+
+    const [_, secondSeriesData] = dataSeries;
 
     const toolTipWidth = secondSeriesData ? 180 : 90;
     const toolTipHeight = 64;
     const toolTipMargin = 15;
 
-    toolTip.innerHTML = `
-            <div class="flex flex-row gap-6">
-              <div>
-                <div class="text-wosmongton-300 text-body2 font-body2 font-medium">${
-                  firstSeriesData.customValues?.denom
-                }</div>
-                <div class="text-white text-h6 font-h6 whitespace-nowrap">
-                $
-                  ${formatPretty(new Dec(firstSeriesData.value), {
-                    maxDecimals: 2,
-                    notation: "compact",
-                  })}
-                </div>
-              </div>
-              ${
-                secondSeriesData
-                  ? `
-                  <div>
-                    <div class="text-ammelia-400 text-body2 font-body2 font-medium">${
-                      secondSeriesData.customValues?.denom
-                    }</div>
-                    <div class="text-white text-h6 font-h6 whitespace-nowrap">
-                      $
-                      ${formatPretty(new Dec(secondSeriesData.value), {
-                        maxDecimals: 2,
-                        notation: "compact",
-                      })}
-                    </div>
-                  </div>
-                  `
-                  : ""
-              }
-            </div>
-            `;
+    toolTip.innerHTML = `<div class="flex flex-row gap-6">
+      ${content}
+    </div>
+    `;
 
     const y = param.point.y;
     let left = param.point.x + toolTipMargin;
