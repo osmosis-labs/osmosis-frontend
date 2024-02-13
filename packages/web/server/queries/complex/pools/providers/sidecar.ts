@@ -25,6 +25,7 @@ export function getPoolsFromSidecar({
     cache: poolsCache,
     key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
     ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const sidecarPools = await queryPools({ poolIds });
       const reserveCoins = await Promise.all(
