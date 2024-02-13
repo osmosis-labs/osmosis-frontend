@@ -1,7 +1,9 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { AreaData, MouseEventParams, Time } from "lightweight-charts";
 import Link from "next/link";
 import React from "react";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { theme } from "~/tailwind.config";
@@ -12,15 +14,45 @@ interface AssetInfoProps {
   priceChange24h?: RatePretty;
   denom?: string;
   color?: string;
+  crosshairParams?: MouseEventParams<Time>;
 }
 
 export const AssetInfo = ({
-  assetPrice,
+  assetPrice: initialAssetPrice,
   denom,
   color,
   priceChange24h,
+  crosshairParams,
 }: AssetInfoProps) => {
+  const series = useMemo(() => {
+    const dataSeries = Array.from(
+      crosshairParams?.seriesData ?? [],
+      ([key, value]) => ({
+        key,
+        value,
+      })
+    );
+
+    return dataSeries.find(
+      (series) => series.value.customValues?.denom === denom
+    );
+  }, [crosshairParams, denom]);
+
   const isNumberPositive = priceChange24h?.toDec().isPositive();
+
+  const assetPrice = useMemo(() => {
+    if (!series) {
+      return initialAssetPrice;
+    }
+
+    if (initialAssetPrice) {
+      return new PricePretty(
+        initialAssetPrice.fiatCurrency,
+        (series.value as AreaData).value
+      );
+    }
+  }, [series, initialAssetPrice]);
+
   return (
     <div className="flex flex-col gap-1">
       <Link

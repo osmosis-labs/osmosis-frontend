@@ -77,75 +77,83 @@ export const ChartSection = ({
         }
       )}
     >
-      <header className="flex w-full justify-between p-8">
-        <div className="flex items-center gap-16">
-          <SkeletonLoader
-            className="min-w-[100px]"
-            isLoaded={!isLoadingFromMarketData}
-          >
-            <AssetInfo
-              assetPrice={fromAssetMarketData?.currentPrice}
-              priceChange24h={fromAssetMarketData?.priceChange24h}
-              denom={fromAssetMarketData?.coinDenom}
-              color={
-                showPairRatio
-                  ? theme.colors.wosmongton["200"]
-                  : theme.colors.ammelia["400"]
-              }
-            />
-          </SkeletonLoader>
-          <SkeletonLoader
-            className="min-w-[100px]"
-            isLoaded={!isLoadingToMarketData}
-          >
-            <AssetInfo
-              assetPrice={toAssetMarketData?.currentPrice}
-              priceChange24h={toAssetMarketData?.priceChange24h}
-              denom={toAssetMarketData?.coinDenom}
-              color={
-                showPairRatio
-                  ? theme.colors.wosmongton["200"]
-                  : theme.colors.wosmongton["300"]
-              }
-            />
-          </SkeletonLoader>
-        </div>
-        <div className="relative hidden xl:block">
-          <button
-            onClick={() => setIsTimeFrameSelectorOpen((p) => !p)}
-            className="inline-flex items-center gap-1 self-start px-2 py-[5px] text-caption text-wosmongton-300"
-          >
-            {urlTimeFrame}
-            <Icon id="chevron-down" className="h-4 w-4" />
-          </button>
-          <MenuDropdown
-            isOpen={isTimeFrameSelectorOpen}
-            onSelect={(s) => setTimeFrame(s as CommonPriceChartTimeFrame)}
-            options={availableTimeFrames.map((tf) => ({ display: tf, id: tf }))}
-            isFloating
-          />
-        </div>
-        <div className="flex items-center gap-1 self-start xl:hidden">
-          {availableTimeFrames.map((timeFrame) => (
-            <button
-              key={timeFrame}
-              onClick={() => setTimeFrame(timeFrame)}
-              className={classNames(
-                "px-2 py-[5px] text-caption text-osmoverse-400",
-                {
-                  "!text-wosmongton-300": timeFrame === urlTimeFrame,
-                }
-              )}
-            >
-              {timeFrame}
-            </button>
-          ))}
-        </div>
-      </header>
       <HomeChart
         data={chartData}
         loading={isFromChartDataLoading || isToChartDataLoading}
-      />
+      >
+        {(params) => (
+          <header className="flex w-full justify-between p-8">
+            <div className="flex items-center gap-16">
+              <SkeletonLoader
+                className="min-w-[100px]"
+                isLoaded={!isLoadingFromMarketData}
+              >
+                <AssetInfo
+                  crosshairParams={params}
+                  assetPrice={fromAssetMarketData?.currentPrice}
+                  priceChange24h={fromAssetMarketData?.priceChange24h}
+                  denom={fromAssetMarketData?.coinDenom}
+                  color={
+                    showPairRatio
+                      ? theme.colors.wosmongton["200"]
+                      : theme.colors.ammelia["400"]
+                  }
+                />
+              </SkeletonLoader>
+              <SkeletonLoader
+                className="min-w-[100px]"
+                isLoaded={!isLoadingToMarketData}
+              >
+                <AssetInfo
+                  crosshairParams={params}
+                  assetPrice={toAssetMarketData?.currentPrice}
+                  priceChange24h={toAssetMarketData?.priceChange24h}
+                  denom={toAssetMarketData?.coinDenom}
+                  color={
+                    showPairRatio
+                      ? theme.colors.wosmongton["200"]
+                      : theme.colors.wosmongton["300"]
+                  }
+                />
+              </SkeletonLoader>
+            </div>
+            <div className="relative hidden xl:block">
+              <button
+                onClick={() => setIsTimeFrameSelectorOpen((p) => !p)}
+                className="inline-flex items-center gap-1 self-start px-2 py-[5px] text-caption text-wosmongton-300"
+              >
+                {urlTimeFrame}
+                <Icon id="chevron-down" className="h-4 w-4" />
+              </button>
+              <MenuDropdown
+                isOpen={isTimeFrameSelectorOpen}
+                onSelect={(s) => setTimeFrame(s as CommonPriceChartTimeFrame)}
+                options={availableTimeFrames.map((tf) => ({
+                  display: tf,
+                  id: tf,
+                }))}
+                isFloating
+              />
+            </div>
+            <div className="flex items-center gap-1 self-start xl:hidden">
+              {availableTimeFrames.map((timeFrame) => (
+                <button
+                  key={timeFrame}
+                  onClick={() => setTimeFrame(timeFrame)}
+                  className={classNames(
+                    "px-2 py-[5px] text-caption text-osmoverse-400",
+                    {
+                      "!text-wosmongton-300": timeFrame === urlTimeFrame,
+                    }
+                  )}
+                >
+                  {timeFrame}
+                </button>
+              ))}
+            </div>
+          </header>
+        )}
+      </HomeChart>
       <button
         onClick={() => setShowPairRatio((p) => !p)}
         className={classNames(

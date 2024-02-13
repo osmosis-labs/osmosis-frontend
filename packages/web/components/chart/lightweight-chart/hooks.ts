@@ -7,6 +7,7 @@ import {
   DeepPartial,
   IChartApi,
   isBusinessDay,
+  ISeriesApi,
   LineStyle,
   MouseEventParams,
   SeriesOptionsCommon,
@@ -14,6 +15,8 @@ import {
   Time,
   TimeChartOptions,
 } from "lightweight-charts";
+import { useState } from "react";
+import { useLayoutEffect } from "react";
 import { useEffect, useMemo, useRef } from "react";
 
 import { theme } from "~/tailwind.config";
@@ -130,6 +133,8 @@ export const useChart = (props: UseChartProps) => {
   } = props;
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<IChartApi>();
+  const [crosshairParams, setCrosshairParams] =
+    useState<MouseEventParams<Time>>();
 
   const internalOptions: DeepPartial<TimeChartOptions> = useMemo(
     () => ({
@@ -223,7 +228,7 @@ export const useChart = (props: UseChartProps) => {
     [options]
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     chart.current = createChart(container.current!, internalOptions);
 
     chart.current.timeScale().fitContent();
@@ -234,6 +239,7 @@ export const useChart = (props: UseChartProps) => {
       tooltipElement = tooltip.init(container);
 
       chart.current.subscribeCrosshairMove((param) => {
+        setCrosshairParams(param);
         tooltip.crosshairMove(param, container, tooltipElement);
       });
     }
@@ -259,11 +265,12 @@ export const useChart = (props: UseChartProps) => {
       chart.current?.remove();
       chart.current = undefined;
     };
-  }, [internalOptions, tooltip]);
+  }, []);
 
   return {
     container,
     chart,
+    crosshairParams,
   };
 };
 
@@ -275,10 +282,18 @@ export interface UseChartAreaSeriesProps {
 
 export const useChartAreaSeries = (props: UseChartAreaSeriesProps) => {
   const { chart, data, options } = props;
+  const series = useRef<ISeriesApi<"Area">>();
 
   useEffect(() => {
-    const series = chart.current?.addAreaSeries(options);
+    if (series.current) {
+      try {
+        chart.current?.removeSeries(series.current);
+        series.current = undefined;
+      } catch {}
+    }
 
-    series?.setData(data);
+    series.current = chart.current?.addAreaSeries(options);
+
+    series.current?.setData(data);
   }, [chart, data, options]);
 };

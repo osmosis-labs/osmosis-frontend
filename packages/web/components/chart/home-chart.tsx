@@ -1,5 +1,5 @@
-import { AreaData, Time } from "lightweight-charts";
-import { observer } from "mobx-react-lite";
+import { AreaData, MouseEventParams, Time } from "lightweight-charts";
+import { ReactNode } from "react";
 import { useMemo } from "react";
 
 import {
@@ -19,6 +19,7 @@ type Data = {
 interface HomeChartProps {
   data: Data[][];
   loading?: boolean;
+  children?: ReactNode | ((params?: MouseEventParams<Time>) => void);
 }
 
 const _getTransformedData = (data?: Data[]): AreaData[] =>
@@ -32,12 +33,13 @@ const _getTransformedData = (data?: Data[]): AreaData[] =>
       }))
     : [];
 
-export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
+export const HomeChart = (props: HomeChartProps) => {
+  const { data, loading, children } = props;
   const [data1, data2] = data;
   const firstSeriesData = useMemo(() => _getTransformedData(data1), [data1]);
   const secondSeriesData = useMemo(() => _getTransformedData(data2), [data2]);
 
-  const { container, chart } = useChart({
+  const { container, chart, crosshairParams } = useChart({
     options: {
       height: 336,
     },
@@ -73,6 +75,7 @@ export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
 
   return (
     <div className="relative z-0" ref={container}>
+      {typeof children === "function" ? children(crosshairParams) : children}
       {loading && (
         <div className="absolute inset-0 z-50 flex h-full w-full flex-col items-center justify-center bg-osmoverse-850/50">
           <Spinner />
@@ -80,4 +83,4 @@ export const HomeChart = observer(({ data, loading }: HomeChartProps) => {
       )}
     </div>
   );
-});
+};
