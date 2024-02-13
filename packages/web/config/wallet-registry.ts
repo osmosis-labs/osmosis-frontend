@@ -36,6 +36,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://trustwallet.com/staking",
     governanceUrl: "https://governance.trustwallet.com/",
     features: [],
+    mode: "extension", // Add mode property with correct value
   },
   {
     ...CosmosKitWalletList["keplr-extension"],
@@ -47,6 +48,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
@@ -90,6 +92,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -101,6 +104,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["leap-cosmos-mobile"],
@@ -182,6 +186,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
@@ -194,6 +199,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
     governanceUrl: "https://cosmos.leapwallet.io/gov",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["xdefi-extension"],
@@ -216,6 +222,7 @@ export const WalletRegistry: RegistryWallet[] = [
         .catch(() => false);
     },
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["station-extension"],
@@ -242,6 +249,7 @@ export const WalletRegistry: RegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["okxwallet-extension"],
@@ -313,5 +321,6 @@ export const WalletRegistry: RegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+    mode: "extension",
   },
 ];
