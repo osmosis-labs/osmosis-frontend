@@ -40,6 +40,7 @@ export const HomeChart = (props: HomeChartProps) => {
     options: {
       height: 336,
     },
+    enableCrosshairParams: true,
     areaSeriesOptions: [
       {
         options: {

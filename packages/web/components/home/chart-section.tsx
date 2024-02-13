@@ -157,8 +157,8 @@ export const ChartSection = ({
       <button
         onClick={() => setShowPairRatio((p) => !p)}
         className={classNames(
-          "absolute top-16 right-6 z-10 h-11 rounded-full bg-osmoverse-700 text-xl text-wosmongton-200",
-          { "w-11": !showPairRatio, "py-1.5 px-3": showPairRatio }
+          "absolute top-[72px] right-6 z-10 h-11 rounded-full bg-osmoverse-700 py-1.5 text-subtitle1 font-subtitle1 text-wosmongton-100",
+          { "px-4": !showPairRatio, "px-3": showPairRatio }
         )}
       >
         {showPairRatio ? (
@@ -188,7 +188,7 @@ export const ChartSection = ({
             ))}
           </div>
         ) : (
-          "$"
+          "USD"
         )}
       </button>
     </section>

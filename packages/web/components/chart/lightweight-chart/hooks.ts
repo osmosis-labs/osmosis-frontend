@@ -40,6 +40,7 @@ export interface UseChartProps {
     crosshairMove: TooltipCrosshairMoveFn;
   } | null;
   areaSeriesOptions?: ChartAreaSeriesOptions[];
+  enableCrosshairParams?: boolean;
 }
 
 export type UseChartReturn = ReturnType<typeof useChart>;
@@ -225,6 +226,7 @@ export const useChart = (props: UseChartProps) => {
       crosshairMove: defaultTooltipCrosshairMove,
     },
     areaSeriesOptions = [],
+    enableCrosshairParams = false,
   } = props;
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<IChartApi>();
@@ -241,12 +243,15 @@ export const useChart = (props: UseChartProps) => {
 
     if (tooltip) {
       tooltipElement = tooltip.init(container);
-
-      chart.current.subscribeCrosshairMove((param) => {
-        setCrosshairParams(param);
-        tooltip.crosshairMove(param, container, tooltipElement);
-      });
     }
+
+    chart.current.subscribeCrosshairMove((param) => {
+      if (enableCrosshairParams) {
+        setCrosshairParams(param);
+      }
+
+      tooltip?.crosshairMove(param, container, tooltipElement);
+    });
 
     chart.current.timeScale().fitContent();
 
