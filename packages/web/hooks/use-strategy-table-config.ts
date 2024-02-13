@@ -30,8 +30,8 @@ export const useStrategyTableConfig = (
     state: {
       columnVisibility: {
         balance: showBalance,
-        tokenDenoms: !isMobile,
-        tokenDenoms_coinDenom: false,
+        involvedTokens: !isMobile,
+        involvedTokens_coinDenom: false,
         provider: false,
         holdsTokens: false,
         hasLockingDuration: false,

@@ -54,8 +54,8 @@ export interface EarnStrategy {
   category: EarnStrategyCategory;
   provider: EarnStrategyProvider;
   type: EarnStrategyType;
-  tokenDenoms: Asset[];
-  rewardDenoms: Asset[];
+  involvedTokens: Asset[];
+  rewardTokens: Asset[];
   lockDuration: number;
   tvl: PricePretty;
   apy: RatePretty;

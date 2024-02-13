@@ -73,7 +73,7 @@ export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
 );
 
 export const tableColumns = [
-  columnHelper.accessor("tokenDenoms", {
+  columnHelper.accessor("involvedTokens", {
     header: () => {},
     cell: (item) => (
       <div className="relative flex items-center justify-end">
@@ -141,7 +141,7 @@ export const tableColumns = [
       );
     },
   }),
-  columnHelper.accessor("rewardDenoms", {
+  columnHelper.accessor("rewardTokens", {
     header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
     cell: (item) => (
       <div className="relative flex items-center justify-end">
@@ -209,7 +209,7 @@ export const tableColumns = [
     filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
-  columnHelper.accessor("tokenDenoms.coinDenom", {
+  columnHelper.accessor("involvedTokens.coinDenom", {
     header: () => {},
     cell: () => {},
     filterFn: boolEqualsString,
