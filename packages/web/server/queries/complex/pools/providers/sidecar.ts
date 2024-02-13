@@ -39,6 +39,7 @@ function fetchPoolsFromSidecar() {
     cache: poolsCache,
     key: "sidecar-pools",
     ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
     getFreshValue: async () => {
       return queryPools();
     },
@@ -54,6 +55,7 @@ async function makePoolFromSidecarPool(
     cache: poolsCache,
     key: "pool-" + poolId,
     ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
     getFreshValue: async () => {
       const reserveCoins = await getListedReservesFromSidecarPool(
         sidecarPool

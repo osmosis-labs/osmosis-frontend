@@ -59,6 +59,7 @@ function fetchPoolsFromImperator() {
     cache: poolsCache,
     key: "imperator-pools",
     ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
     getFreshValue: async () => {
       const numPools = await queryNumPools();
       let { pools } = await queryFilteredPools(
@@ -424,6 +425,7 @@ export async function makePoolFromImperatorPool(
     cache: poolsCache,
     key: "pools-" + filteredPool.pool_id.toString(),
     ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
     getFreshValue: async (): Promise<Pool | undefined> => {
       // deny pools containing tokens with gamm denoms
       if (
