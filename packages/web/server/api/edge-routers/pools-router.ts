@@ -24,6 +24,7 @@ import { queryBalances } from "~/server/queries/cosmos";
 import { WeightedPoolRawResponse } from "~/server/queries/osmosis";
 import { queryCLPositions } from "~/server/queries/osmosis/concentratedliquidity";
 import { queryAccountLockedCoins } from "~/server/queries/osmosis/lockup/account-locked-coins";
+import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
 import { createSortSchema, sort } from "~/utils/sort";
 
@@ -66,13 +67,34 @@ export const poolsRouter = createTRPCRouter({
         poolIncentives,
         superfluidPools,
       ] = await Promise.all([
-        queryBalances({ bech32Address: userOsmoAddress }),
-        queryAccountLockedCoins({
-          bech32Address: userOsmoAddress,
-        }),
-        queryCLPositions({ bech32Address: userOsmoAddress }),
-        getCachedPoolIncentivesMap(),
-        getSuperfluidPoolIds(),
+        timeout(
+          () => queryBalances({ bech32Address: userOsmoAddress }),
+          10_000, // 10 seconds
+          "queryBalances"
+        )(),
+        timeout(
+          () =>
+            queryAccountLockedCoins({
+              bech32Address: userOsmoAddress,
+            }),
+          10_000, // 10 seconds
+          "queryAccountLockedCoins"
+        )(),
+        timeout(
+          () => queryCLPositions({ bech32Address: userOsmoAddress }),
+          10_000, // 10 seconds
+          "queryCLPositions"
+        )(),
+        timeout(
+          () => getCachedPoolIncentivesMap(),
+          10_000, // 10 seconds
+          "getCachedPoolIncentivesMap"
+        )(),
+        timeout(
+          () => getSuperfluidPoolIds(),
+          10_000, // 10 seconds
+          "getSuperfluidPoolIds"
+        )(),
       ]);
 
       const gammAssets = [
@@ -94,10 +116,13 @@ export const poolsRouter = createTRPCRouter({
         }
       }
 
-      const userPoolIds = Array.from(userPoolIdsSet);
-      const eventualPools = await getPools({
-        poolIds: userPoolIds,
-      });
+      const eventualPools = (
+        await timeout(
+          () => getPools(),
+          10_000, // 10 seconds
+          "getPools"
+        )()
+      ).filter((pool) => userPoolIdsSet.has(pool.id));
 
       const pools = await Promise.all(
         eventualPools.map(async (pool) => {
