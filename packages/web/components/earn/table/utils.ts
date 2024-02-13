@@ -104,7 +104,7 @@ export const _getKey = (k: keyof Filters) => {
     case "platform":
       return "provider";
     case "rewardType":
-      return "rewards";
+      return "rewardTokens";
     case "search":
       return "name";
     case "noLockingDuration":
