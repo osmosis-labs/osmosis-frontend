@@ -1,3 +1,4 @@
+import { PricePretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -20,12 +21,53 @@ import {
   Tabs,
 } from "~/components/earn/tabs";
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 export default function Earn() {
   const { t } = useTranslation();
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
   useNavBar({ title: t("earnPage.title") });
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const userOsmoAddress = account?.address ?? "";
+
+  const { data: strategies } = api.edge.earn.getEarnStrategies.useQuery();
+  const queries = api.useQueries((q) =>
+    (strategies ?? []).map((strat) =>
+      q.edge.earn.getStrategyBalance(
+        {
+          strategyId: strat.id,
+          userOsmoAddress,
+        },
+        {
+          enabled: userOsmoAddress !== "",
+          staleTime: 1000 * 60 * 15,
+          cacheTime: 1000 * 60 * 30,
+        }
+      )
+    )
+  );
+
+  const areQueriesLoading = useMemo(
+    () => queries.some((q) => q.isLoading === true),
+    [queries]
+  );
+
+  const totalBalance = useMemo(() => {
+    let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+
+    queries.forEach((query) => {
+      if (query.data) {
+        accumulatedBalance = accumulatedBalance.add(query.data.balance.usd);
+      }
+    });
+
+    return accumulatedBalance;
+  }, [queries]);
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -50,7 +92,10 @@ export default function Earn() {
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
       <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
         <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
-          <EarnPosition />
+          <EarnPosition
+            totalBalance={formatPretty(totalBalance)}
+            isLoading={areQueriesLoading}
+          />
           {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation /> */}
           <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">

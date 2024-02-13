@@ -1,4 +1,7 @@
+import classNames from "classnames";
+
 import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 
@@ -93,7 +96,13 @@ import { useTranslation } from "~/hooks";
 //   },
 // ];
 
-export const EarnPosition = () => {
+export const EarnPosition = ({
+  totalBalance,
+  isLoading,
+}: {
+  totalBalance: string;
+  isLoading: boolean;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -112,8 +121,11 @@ export const EarnPosition = () => {
           <Tooltip content="lorem ipsum">
             <Icon id="info" width={16} height={16} />
           </Tooltip>
+          <Spinner
+            className={classNames({ hidden: !isLoading, block: isLoading })}
+          />
         </span>
-        <h3 className="text-osmoverse-100">$23,347.23</h3>
+        <h3 className="text-osmoverse-100">{totalBalance}</h3>
       </div>
       {/* <div className="flex flex-col justify-between">
         <div className="flex justify-between xs:flex-wrap">
