@@ -69,7 +69,7 @@ export const poolsRouter = createTRPCRouter({
       ] = await Promise.all([
         timeout(
           () => queryBalances({ bech32Address: userOsmoAddress }),
-          10000,
+          10_000, // 10 seconds
           "queryBalances"
         )(),
         timeout(
@@ -77,20 +77,24 @@ export const poolsRouter = createTRPCRouter({
             queryAccountLockedCoins({
               bech32Address: userOsmoAddress,
             }),
-          10000,
+          10_000, // 10 seconds
           "queryAccountLockedCoins"
         )(),
         timeout(
           () => queryCLPositions({ bech32Address: userOsmoAddress }),
-          10000,
+          10_000, // 10 seconds
           "queryCLPositions"
         )(),
         timeout(
           () => getCachedPoolIncentivesMap(),
-          10000,
+          10_000, // 10 seconds
           "getCachedPoolIncentivesMap"
         )(),
-        timeout(() => getSuperfluidPoolIds(), 10000, "getSuperfluidPoolIds")(),
+        timeout(
+          () => getSuperfluidPoolIds(),
+          10_000, // 10 seconds
+          "getSuperfluidPoolIds"
+        )(),
       ]);
 
       const gammAssets = [
@@ -113,7 +117,11 @@ export const poolsRouter = createTRPCRouter({
       }
 
       const eventualPools = (
-        await timeout(() => getPools(), 10000, "getPools")()
+        await timeout(
+          () => getPools(),
+          10_000, // 10 seconds
+          "getPools"
+        )()
       ).filter((pool) => userPoolIdsSet.has(pool.id));
 
       const pools = await Promise.all(

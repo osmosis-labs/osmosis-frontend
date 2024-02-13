@@ -31,14 +31,14 @@ export function getPoolsFromSidecar({
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () => queryPools({ poolIds }),
-        9000,
+        9_000, // 9 seconds
         "sidecarQueryPools"
       )();
       const reserveCoins = await Promise.all(
         sidecarPools.map((sidecarPool) =>
           timeout(
             () => getListedReservesFromSidecarPool(sidecarPool),
-            9000,
+            9_000, // 9 seconds
             "getListedReservesFromSidecarPool"
           )().catch((e) => {
             if (e instanceof AsyncTimeoutError) {
@@ -57,7 +57,7 @@ export function getPoolsFromSidecar({
           reserve
             ? timeout(
                 () => calcTotalFiatValueLockedFromReserve(reserve),
-                9000,
+                9_000, // 9 seconds
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
             : null
