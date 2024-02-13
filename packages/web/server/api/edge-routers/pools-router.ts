@@ -94,10 +94,9 @@ export const poolsRouter = createTRPCRouter({
         }
       }
 
-      const userPoolIds = Array.from(userPoolIdsSet);
-      const eventualPools = await getPools({
-        poolIds: userPoolIds,
-      });
+      const eventualPools = (await getPools()).filter((pool) =>
+        userPoolIdsSet.has(pool.id)
+      );
 
       const pools = await Promise.all(
         eventualPools.map(async (pool) => {
