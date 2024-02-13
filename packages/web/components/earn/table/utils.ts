@@ -133,14 +133,14 @@ export const getListOptions = <T>(
   });
 
   array = Array.from(possibleOptions).map((option) => ({
-    value: accessor === "type" ? (option as T) : (option as T),
+    value: option as any as T,
     label:
       accessor === "type"
         ? STRATEGY_METHODS[option as StrategyMethods]
         : STRATEGY_PROVIDERS[option as StrategyProviders],
   }));
 
-  array.unshift({ value: "" as T, label: allLabel });
+  array.unshift({ value: "" as any as T, label: allLabel });
 
   return array;
 };
