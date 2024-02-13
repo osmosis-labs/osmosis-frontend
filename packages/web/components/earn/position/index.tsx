@@ -99,9 +99,11 @@ import { useTranslation } from "~/hooks";
 export const EarnPosition = ({
   totalBalance,
   isLoading,
+  numberOfPositions,
 }: {
   totalBalance: string;
   isLoading: boolean;
+  numberOfPositions: number;
 }) => {
   const { t } = useTranslation();
 
@@ -112,7 +114,9 @@ export const EarnPosition = ({
           {t("earnPage.positions")}
         </h5>
         <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
-          {t("earnPage.strategiesCount", { number: "7" })}
+          {t("earnPage.strategiesCount", {
+            number: numberOfPositions.toString(),
+          })}
         </p>
       </div>
       <div className="flex flex-col gap-2">

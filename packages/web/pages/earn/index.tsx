@@ -57,16 +57,20 @@ export default function Earn() {
     [queries]
   );
 
-  const totalBalance = useMemo(() => {
+  const { totalBalance, joinedStrategiesIds } = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+    const joinedStrategiesIds: string[] = [];
 
     queries.forEach((query) => {
       if (query.data) {
+        if (!query.data.balance.usd.toDec().isZero()) {
+          joinedStrategiesIds.push(query.data.id);
+        }
         accumulatedBalance = accumulatedBalance.add(query.data.balance.usd);
       }
     });
 
-    return accumulatedBalance;
+    return { totalBalance: accumulatedBalance, joinedStrategiesIds };
   }, [queries]);
 
   const defaultFilters: Filters = useMemo(
@@ -94,6 +98,7 @@ export default function Earn() {
         <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
           <EarnPosition
             totalBalance={formatPretty(totalBalance)}
+            numberOfPositions={joinedStrategiesIds.length}
             isLoading={areQueriesLoading}
           />
           {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
