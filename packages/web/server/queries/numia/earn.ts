@@ -59,6 +59,7 @@ export interface EarnStrategy {
   apy: RatePretty;
   risk: number;
   balance: number;
+  holdsTokens: boolean;
 }
 
 /** Queries numia for a earn strategies list. */

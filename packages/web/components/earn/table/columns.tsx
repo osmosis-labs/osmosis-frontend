@@ -225,4 +225,8 @@ export const tableColumns = [
     filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
+  columnHelper.accessor("holdsTokens", {
+    filterFn: boolEqualsString,
+    enableHiding: true,
+  }),
 ];

@@ -86,19 +86,19 @@ export const boolEquals: FilterFn<EarnStrategy> = (row, colID, filterValue) => {
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
-      return "strategyMethod_id";
+      return "category";
     case "platform":
-      return "platform_id";
+      return "platform";
     case "rewardType":
-      return "reward";
+      return "rewards";
     case "search":
-      return "strategyName";
+      return "name";
     case "noLockingDuration":
       return "hasLockingDuration";
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "chainType";
+      return "platform";
     default:
       return k;
   }

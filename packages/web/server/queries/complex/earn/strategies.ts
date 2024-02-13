@@ -61,6 +61,7 @@ export async function getEarnStrategies() {
             apy: processedApy,
             risk: 0,
             balance: 0,
+            holdsTokens: false,
           });
         }
         return aggregatedStrategies;

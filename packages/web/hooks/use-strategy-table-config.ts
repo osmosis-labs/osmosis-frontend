@@ -33,6 +33,7 @@ export const useStrategyTableConfig = (
         tokenDenoms: !isMobile,
         tokenDenoms_coinDenom: false,
         provider: false,
+        holdsTokens: false,
       },
       globalFilter: filters!.search,
       columnFilters,
