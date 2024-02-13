@@ -108,7 +108,7 @@ export class ObservableAssets {
   }
 
   @computed
-  get nativeBalances(): CoinBalance[] {
+  get unverifiedNativeBalances(): (CoinBalance & { isVerified: boolean })[] {
     return this.chain.currencies
       .filter(
         (currency) =>
@@ -132,6 +132,9 @@ export class ObservableAssets {
         return !assetListAsset.keywords?.includes("osmosis-unlisted");
       }) // Remove unlisted assets if preview assets is disabled
       .map((currency) => {
+        const asset = this.assets.find(
+          (asset) => asset.symbol === currency.coinDenom
+        );
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.address ?? "")
           .getBalanceFromCurrency(currency);
@@ -141,6 +144,7 @@ export class ObservableAssets {
         return {
           balance: bal,
           fiatValue: this.priceStore.calculatePrice(bal),
+          isVerified: Boolean(asset?.keywords?.includes("osmosis-main")),
         };
       });
   }
@@ -277,6 +281,12 @@ export class ObservableAssets {
   })[] {
     return this.unverifiedIbcBalances.filter((ibcAsset) =>
       this.showUnverified ? true : ibcAsset.isVerified
+    );
+  }
+
+  get nativeBalances(): (CoinBalance & { isVerified: boolean })[] {
+    return this.unverifiedNativeBalances.filter((bal) =>
+      this.showUnverified ? true : bal.isVerified
     );
   }
 

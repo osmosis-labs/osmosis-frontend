@@ -19,23 +19,31 @@ export async function getGammShareUnderlyingCoins({
   }
   const poolRaw = pool.raw as StablePoolRawResponse | WeightedPoolRawResponse;
 
-  return estimateExitSwap(
-    {
-      totalShare: new Int(poolRaw.total_shares.amount),
-      poolAssets: pool.reserveCoins.map((coin) => ({
-        denom: coin.currency.coinMinimalDenom,
-        amount: new Int(coin.toCoin().amount),
-      })),
-      exitFee: new Dec(poolRaw.pool_params.exit_fee),
-    },
-    (coin) => {
-      const currency = pool.reserveCoins.find(
-        (c) => c.currency.coinMinimalDenom === coin.denom
-      );
-      if (!currency) throw new Error("Reserve coin not in pool assets");
-      return new CoinPretty(currency.currency, coin.amount);
-    },
-    amount,
-    0
-  ).tokenOuts;
+  try {
+    return estimateExitSwap(
+      {
+        totalShare: new Int(poolRaw.total_shares.amount),
+        poolAssets: pool.reserveCoins.map((coin) => ({
+          denom: coin.currency.coinMinimalDenom,
+          amount: new Int(coin.toCoin().amount),
+        })),
+        exitFee: new Dec(poolRaw.pool_params.exit_fee),
+      },
+      (coin) => {
+        const currency = pool.reserveCoins.find(
+          (c) => c.currency.coinMinimalDenom === coin.denom
+        );
+        if (!currency) throw new Error("Reserve coin not in pool assets");
+        return new CoinPretty(currency.currency, coin.amount);
+      },
+      amount,
+      0
+    ).tokenOuts;
+  } catch (e) {
+    console.error(`Error in getGammShareUnderlyingCoins.`, {
+      poolId,
+      coin: { denom, amount },
+    });
+    throw e;
+  }
 }

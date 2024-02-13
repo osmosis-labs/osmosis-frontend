@@ -8,7 +8,6 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -22,7 +21,6 @@ import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { theme } from "~/tailwind.config";
 import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -140,6 +138,8 @@ export const AllPoolsTable: FunctionComponent<{
   const {
     data: poolsPagesData,
     isLoading,
+    isFetching,
+    isPreviousData,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -164,6 +164,8 @@ export const AllPoolsTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      keepPreviousData: true,
 
       // expensive query
       trpc: {
@@ -328,7 +330,14 @@ export const AllPoolsTable: FunctionComponent<{
   return (
     <div className="w-full">
       <TableControls />
-      <table className="w-full">
+      <table
+        className={classNames(
+          "w-full",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -369,7 +378,10 @@ export const AllPoolsTable: FunctionComponent<{
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="transition-colors duration-200 ease-in-out"
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      isPreviousData && isFetching && "cursor-progress"
+                    )}
                     key={cell.id}
                   >
                     <Link
@@ -379,6 +391,9 @@ export const AllPoolsTable: FunctionComponent<{
                       onClick={(e) => e.stopPropagation()}
                       passHref
                       prefetch={false}
+                      className={classNames(
+                        isPreviousData && isFetching && "cursor-progress"
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -520,7 +535,7 @@ type PoolCellComponent<TProps = {}> = FunctionComponent<
 
 const PoolCompositionCell: PoolCellComponent = ({
   row: {
-    original: { id, type, reserveCoins },
+    original: { id, type, spreadFactor, reserveCoins },
   },
 }) => {
   const { t } = useTranslation();
@@ -537,33 +552,36 @@ const PoolCompositionCell: PoolCellComponent = ({
             assetDenoms={reserveCoins.map((coin) => coin.denom)}
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
-            {t("components.table.poolId", { id })}
+            <p className={classNames("ml-auto flex items-center gap-1.5")}>
+              {t("components.table.poolId", { id })}
+              <div>
+                <p
+                  className={classNames("ml-auto flex items-center gap-1.5", {
+                    "text-ion-400": Boolean(type === "concentrated"),
+                    "text-bullish-300": Boolean(type === "stable"),
+                    "text-rust-300": Boolean(
+                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                    ),
+                  })}
+                >
+                  {type === "weighted" && (
+                    <Icon id="weighted-pool" width={16} height={16} />
+                  )}
+                  {type === "stable" && (
+                    <Icon id="stable-pool" width={16} height={16} />
+                  )}
+                  {type === "concentrated" && (
+                    <Icon id="concentrated-pool" width={16} height={16} />
+                  )}
+                  {type === "cosmwasm-transmuter" && (
+                    <Icon id="custom-pool" width={16} height={16} />
+                  )}
+                  {spreadFactor ? spreadFactor.toString() : ""}
+                </p>
+              </div>
+            </p>
           </span>
         </div>
-        {type === "stable" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
-        {type === "concentrated" && (
-          <Icon
-            color={theme.colors.white.mid}
-            id="lightning-small"
-            height={24}
-            width={24}
-          />
-        )}
-        {type === "cosmwasm-transmuter" && (
-          <Image
-            alt=""
-            src="/icons/stableswap-pool.svg"
-            width={24}
-            height={24}
-          />
-        )}
       </div>
     </div>
   );
@@ -576,7 +594,7 @@ const AprBreakdownCell: PoolCellComponent = ({
 }) =>
   (aprBreakdown && (
     <Tooltip
-      rootClassNames="!rounded-[20px] drop-shadow-md"
+      rootClassNames="!rounded-2xl drop-shadow-md"
       content={<AprBreakdown {...aprBreakdown} />}
     >
       <p

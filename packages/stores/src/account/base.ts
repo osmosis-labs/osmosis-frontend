@@ -68,6 +68,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import Long from "long";
 import { LRUCache } from "lru-cache";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
@@ -80,6 +81,7 @@ import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
@@ -92,6 +94,7 @@ import {
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
+  makeSignDocAmino,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
@@ -100,6 +103,9 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
+
+// The value of zero represent that there is not timeout height set.
+const timeoutHeightDisabledStr = "0";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -878,13 +884,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
+    const timeoutHeight = await this.getTimeoutHeight(chainId);
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
       chainId,
       memo,
       accountNumber,
-      sequence
+      sequence,
+      timeoutHeight
     );
 
     const { signature, signed } = await (wallet.client.signAmino
@@ -899,27 +908,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBody = {
-      messages: signed.msgs.map((msg) => {
-        const res: any =
-          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
-      memo: signed.memo,
-    };
-
-    const signedTxBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: signedTxBody,
-    };
-
-    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      signedTxBodyEncodeObject
-    );
+    const signedTxBodyBytes =
+      wallet?.signingStargateOptions?.registry?.encodeTxBody({
+        messages: signed.msgs.map((msg) => {
+          const res: any =
+            wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+          // Include the 'memo' field again because the 'registry' omits it
+          if (msg.value.memo) {
+            res.value.memo = msg.value.memo;
+          }
+          return res;
+        }),
+        memo: signed.memo,
+        timeoutHeight: Long.fromString(
+          signDoc.timeout_height ?? timeoutHeightDisabledStr
+        ),
+      });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
     const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
@@ -937,6 +941,30 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       authInfoBytes: signedAuthInfoBytes,
       signatures: [fromBase64(signature.signature)],
     });
+  }
+
+  // Gets the timeout height as the sum of the latest block height and an offset.
+  // If for any reason we fail to get the latest block height, we disable the timeout height by returning
+  // a string value of 0.
+  private async getTimeoutHeight(chainId: string): Promise<bigint> {
+    // Get status query.
+    const queryRPCStatus = this.queriesStore.get(chainId).cosmos.queryRPCStatus;
+
+    // Wait for the response.
+    const result = await queryRPCStatus.waitFreshResponse();
+
+    // Retrieve the latest block height. If not present, set it to 0.
+    const latestBlockHeight = result
+      ? result.data.result.sync_info.latest_block_height
+      : timeoutHeightDisabledStr;
+
+    // If for any reason we fail to get the latest block height, we disable the timeout height.
+    if (latestBlockHeight == timeoutHeightDisabledStr) {
+      return BigInt(timeoutHeightDisabledStr);
+    }
+
+    // Otherwise we compute the timeout height as given by latest block height + offset.
+    return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
   }
 
   private async signDirect(

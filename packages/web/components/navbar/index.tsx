@@ -505,7 +505,7 @@ const WalletInfo: FunctionComponent<
             }}
             className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-md bg-osmoverse-700 group-hover:bg-gradient-positive">
               {profileStore.currentAvatar === "ammelia" ? (
                 <Image
                   alt="Wosmongton profile"
@@ -587,9 +587,13 @@ const AnnouncementBanner: FunctionComponent<{
       : bannerResponse?.banner;
 
   if (!banner) return null;
-
   // If the banner has a pageRoute, only show it on that page
-  if (banner.pageRoute && router.pathname !== banner.pageRoute) return null;
+  if (
+    banner.pageRoute &&
+    router.pathname !== banner.pageRoute &&
+    router.asPath !== banner.pageRoute
+  )
+    return null;
 
   const { isWarning, bg, link, persistent } = banner;
 

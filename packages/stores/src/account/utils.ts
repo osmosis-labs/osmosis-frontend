@@ -1,4 +1,6 @@
 import type { Chain } from "@chain-registry/types";
+import { AminoMsg } from "@cosmjs/amino/build/signdoc";
+import { Uint53 } from "@cosmjs/math";
 import { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,
@@ -6,6 +8,8 @@ import {
   ExtendedHttpEndpoint,
   Logger,
 } from "@cosmos-kit/core";
+
+import { StdSignDoc } from "./types";
 
 export interface TxFee extends StdFee {
   /**
@@ -70,6 +74,27 @@ export function changeDecStringToProtoBz(decStr: string): string {
   }
 
   return r;
+}
+
+// Creates the document to be signed from given parameters.
+export function makeSignDocAmino(
+  msgs: readonly AminoMsg[],
+  fee: StdFee,
+  chainId: string,
+  memo: string | undefined,
+  accountNumber: number | string,
+  sequence: number | string,
+  timeout_height?: bigint
+): StdSignDoc {
+  return {
+    chain_id: chainId,
+    account_number: Uint53.fromString(accountNumber.toString()).toString(),
+    sequence: Uint53.fromString(sequence.toString()).toString(),
+    fee: fee,
+    msgs: msgs,
+    memo: memo || "",
+    ...(timeout_height && { timeout_height: timeout_height.toString() }),
+  };
 }
 
 export const DefaultGasPriceStep: {

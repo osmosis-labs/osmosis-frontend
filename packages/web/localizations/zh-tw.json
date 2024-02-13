@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
     "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
     "singleAsset": "單一資產",
-    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
     "title": "加入流動性",
     "titleInPool": "加入流動性到流動性池 #{poolId}",
     "priceImpact": "價格影響"
@@ -100,7 +99,7 @@
     "pendingRewards": "待獎勵",
     "superfluidValidator": "驗證器",
     "superfluidUnstake": "一旦解除質押，可用後",
-    "superfluidUnstaking": "取消質押，可用於",
+    "superfluidUnstaking": "解鎖，{fromNow}後可用",
     "superfluidCommission": "委員會",
     "unstake": "解除流動性質押",
     "unbondingFromNow": "脫粘，可用於",
@@ -108,7 +107,7 @@
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
-    "goToPool": "前往泳池#"
+    "goToPool": "前往泳池#{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "圖表不可用",
     "sequenceNumber": "您的並發事務過多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
-    "invalidAmounts": "金額無效"
+    "invalidAmounts": "金額無效",
+    "txTimedOutError": "交易超時。請重試。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -945,7 +945,9 @@
       "all": "全部",
       "single": "單身的",
       "multi": "多"
-    }
+    },
+    "totalValueInvested": "投資總額",
+    "lookBelow": "請參閱下文並找到最適合您的策略"
   },
   "disclaimer": "免責聲明"
 }

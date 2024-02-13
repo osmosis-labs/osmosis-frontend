@@ -31,7 +31,7 @@ describe("makePoolFromImperatorPool", () => {
     expect(result.id).toBe(weightedPool.pool_id.toString());
     expect(result.type).toBe("weighted");
     expect((result.raw as any).pool_assets).toBeDefined();
-    expect(result.spreadFactor.toDec().toString()).toBe("0.200000000000000000");
+    expect(result.spreadFactor.toDec().toString()).toBe("0.002000000000000000");
   });
 
   it("should return a valid pool object for a stable pool", async () => {
@@ -43,7 +43,7 @@ describe("makePoolFromImperatorPool", () => {
     expect(result.type).toBe("stable");
     expect((result.raw as any).pool_liquidity).toBeDefined();
     expect(result.reserveCoins.length).toBe(2);
-    expect(result.spreadFactor.toDec().toString()).toBe("0.300000000000000000");
+    expect(result.spreadFactor.toDec().toString()).toBe("0.003000000000000000");
   });
 
   it("should return a valid pool object for a concentrated liquidity pool", async () => {
@@ -69,7 +69,7 @@ describe("makePoolFromImperatorPool", () => {
     expect((result.raw as any).code_id).toBe("148");
   });
 
-  it("should return a valid pool object for a cosmwasm transmuter pool", async () => {
+  it("should return a valid pool object for a cosmwasm pool", async () => {
     const result = await makePoolFromImperatorPool(cosmwasmPool as any);
 
     if (!result) throw new Error("result is undefined");
@@ -281,7 +281,7 @@ const cosmwasmTransmuterPool = {
 };
 
 const cosmwasmPool = {
-  pool_id: 1211,
+  pool_id: 1212,
   type: "osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
   address: "osmo1gyg0pys40ex2f6a4dytd3ewpx2xfrsnt3rdc2t4j3s3jc9qx8kqsny066c",
   liquidity: 1994.2497781334503,

@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
     "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
     "singleAsset": "Actif unique",
-    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
     "title": "Ajouter de la liquidité",
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "priceImpact": "Incidence sur les prix"
@@ -100,7 +99,7 @@
     "pendingRewards": "Récompenses en attente",
     "superfluidValidator": "Validateur",
     "superfluidUnstake": "Une fois désemballé, disponible après",
-    "superfluidUnstaking": "Dégagement, disponible en",
+    "superfluidUnstaking": "Dégagement, disponible en {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
     "unbondingFromNow": "Décollage, disponible en",
@@ -108,7 +107,7 @@
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #"
+    "goToPool": "Aller à la piscine #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Graphique indisponible",
     "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
     "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
-    "invalidAmounts": "Montant(s) invalide(s)"
+    "invalidAmounts": "Montant(s) invalide(s)",
+    "txTimedOutError": "La transaction a expiré. Veuillez réessayer."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -945,7 +945,9 @@
       "all": "Tous",
       "single": "Célibataire",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valeur totale investie",
+    "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
   "disclaimer": "Clause de non-responsabilité"
 }

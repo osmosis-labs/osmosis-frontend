@@ -3,7 +3,6 @@ import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control/switch";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -14,6 +13,7 @@ import {
   StrategyMethod,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -71,8 +71,8 @@ const FiltersModal = (
             {t("earnPage.lockingDuration")}
           </span>
           <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
+            checked={noLockingDuration}
+            onCheckedChange={(value) => setFilter("noLockingDuration", value)}
           />
         </div>
         <RadioWithOptions

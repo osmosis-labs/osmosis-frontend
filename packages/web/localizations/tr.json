@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "Peg'i korumak için.Mevcut ölçeklendirme faktörü",
     "scalingFactorInformation": "Bu faktör, eğrinin, likit staking belirtecine tahakkuk eden değer gibi öngörülebilir fiyat değişikliklerine uyum sağlamasına olanak tanır.",
     "singleAsset": "Tek varlık",
-    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
     "titleInPool": "{poolId} havuzuna likidite ekle",
     "priceImpact": "Fiyat Etkisi"
@@ -100,7 +99,7 @@
     "pendingRewards": "Bekleyen ödüller",
     "superfluidValidator": "Doğrulayıcı",
     "superfluidUnstake": "Stake kaldırıldıktan sonra kullanılabilir",
-    "superfluidUnstaking": "Geri alma, mevcut",
+    "superfluidUnstaking": "Kilidini Açma, {fromNow} içinde kullanılabilir",
     "superfluidCommission": "komisyon",
     "unstake": "Likiditeyi serbest bırakın",
     "unbondingFromNow": "Bağsız, mevcut",
@@ -108,7 +107,7 @@
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
-    "goToPool": "havuza git #"
+    "goToPool": "havuza git #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Grafik mevcut değil",
     "sequenceNumber": "Çok fazla eş zamanlı işleminiz var! Önceki gönderiminiz zincire ulaştıktan sonra yeniden göndermeyi deneyin. (Sıra: {sequence} )",
     "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
-    "invalidAmounts": "Geçersiz tutarlar"
+    "invalidAmounts": "Geçersiz tutarlar",
+    "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -945,7 +945,9 @@
       "all": "Tüm",
       "single": "Bekar",
       "multi": "Çok"
-    }
+    },
+    "totalValueInvested": "Yatırılan Toplam Değer",
+    "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
   "disclaimer": "Sorumluluk reddi beyanı"
 }

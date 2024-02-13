@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
     "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
     "singleAsset": "Un activo",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
     "title": "Agregar liquidez",
     "titleInPool": "Agregue liquidez a la piscina {poolId}",
     "priceImpact": "Impacto en el precio"
@@ -100,7 +99,7 @@
     "pendingRewards": "Recompensas pendientes",
     "superfluidValidator": "Validador",
     "superfluidUnstake": "Una vez no apostado, disponible después",
-    "superfluidUnstaking": "Unstake, disponible en",
+    "superfluidUnstaking": "Unstake, disponible en {fromNow}",
     "superfluidCommission": "comisión",
     "unstake": "Quitar liquidez",
     "unbondingFromNow": "Desvinculación, disponible en",
@@ -108,7 +107,7 @@
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
     "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #"
+    "goToPool": "Ir a la piscina #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Gráfico no disponible",
     "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
-    "invalidAmounts": "Montos no válidos"
+    "invalidAmounts": "Montos no válidos",
+    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -945,7 +945,9 @@
       "all": "Todo",
       "single": "Soltero",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valor total invertido",
+    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
   "disclaimer": "Descargo de responsabilidad"
 }

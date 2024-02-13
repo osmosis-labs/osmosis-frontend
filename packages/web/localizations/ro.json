@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "pentru a menține coaba. Factorul de scalare curent este",
     "scalingFactorInformation": "Acest factor permite curbei să se ajusteze la modificările predictibile ale prețului, cum ar fi valoarea acumulată pentru un jeton de miză lichid.",
     "singleAsset": "Un singur activ",
-    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
     "title": "Adauga Lichiditate",
     "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
     "priceImpact": "Impactul prețului"
@@ -100,7 +99,7 @@
     "pendingRewards": "Recompense în așteptare",
     "superfluidValidator": "Validator",
     "superfluidUnstake": "Odată dezamăgit, disponibil după",
-    "superfluidUnstaking": "Unstaking, disponibil în",
+    "superfluidUnstaking": "Deblocare, disponibil în {fromNow}",
     "superfluidCommission": "comision",
     "unstake": "Anulați lichiditatea",
     "unbondingFromNow": "Dezlipire, disponibil în",
@@ -108,7 +107,7 @@
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
-    "goToPool": "Mergi la piscina #"
+    "goToPool": "Mergi la piscina #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Graficul indisponibil",
     "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
     "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
-    "invalidAmounts": "Sume nevalide"
+    "invalidAmounts": "Sume nevalide",
+    "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -945,7 +945,9 @@
       "all": "Toate",
       "single": "Singur",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valoarea totală investită",
+    "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
   "disclaimer": "Disclaimer"
 }

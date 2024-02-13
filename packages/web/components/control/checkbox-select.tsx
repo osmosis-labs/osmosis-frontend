@@ -2,11 +2,11 @@ import { Menu } from "@headlessui/react";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
+import { Checkbox } from "~/components/ui/checkbox";
 import { useWindowSize } from "~/hooks";
 import { noop } from "~/utils/function";
 
 import { Icon } from "../assets";
-import { CheckBox } from "./checkbox";
 import { MenuSelectProps } from "./types";
 
 export const CheckboxSelect: FunctionComponent<
@@ -76,10 +76,9 @@ export const CheckboxSelect: FunctionComponent<
                         onSelect(id);
                       }}
                     >
-                      <CheckBox
-                        className="w-fit"
-                        isOn={Boolean(selectedOptionIds?.includes(id))}
-                        onToggle={noop}
+                      <Checkbox
+                        checked={Boolean(selectedOptionIds?.includes(id))}
+                        onClick={noop}
                         disabled={
                           atLeastOneSelected &&
                           selectedOptionIds?.length === 1 &&

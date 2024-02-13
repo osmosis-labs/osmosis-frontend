@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "ખીંટી જાળવવા માટે. વર્તમાન સ્કેલિંગ પરિબળ છે",
     "scalingFactorInformation": "આ પરિબળ વળાંકને અનુમાનિત કિંમતના ફેરફારોને સમાયોજિત કરવાની મંજૂરી આપે છે, જેમ કે લિક્વિડ સ્ટેકિંગ ટોકન પર ઉપાર્જિત મૂલ્ય.",
     "singleAsset": "સિંગલ એસેટ",
-    "stablecoinWarning": "તમે {denom} , a {mechanism} -બેક્ડ સ્ટેબલકોઇનમાં પ્રવાહિતા ઉમેરી રહ્યા છો.",
     "title": "લિક્વિડિટી ઉમેરો",
     "titleInPool": "પૂલ # {poolId} માં તરલતા ઉમેરો",
     "priceImpact": "ભાવની અસર"
@@ -108,7 +107,7 @@
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
-    "goToPool": "પૂલ # {poolId} પર જાઓ"
+    "goToPool": "પૂલ #{poolId} પર જાઓ"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "ચાર્ટ અનુપલબ્ધ",
     "sequenceNumber": "તમારી પાસે ઘણા બધા સહવર્તી વ્યવહારો છે! તમારા અગાઉના tx સાંકળ પર ઉતર્યા પછી ફરીથી મોકલવાનો પ્રયાસ કરો. (ક્રમ: {sequence} )",
     "swapSlippage": "સ્લિપેજને કારણે {coinDenom} માટે સ્વેપ નિષ્ફળ થયું. સ્લિપેજ સહિષ્ણુતા વધારવાનો પ્રયાસ કરો.",
-    "invalidAmounts": "અમાન્ય રકમ(ઓ)"
+    "invalidAmounts": "અમાન્ય રકમ(ઓ)",
+    "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
@@ -945,7 +945,9 @@
       "all": "બધા",
       "single": "એકલુ",
       "multi": "મલ્ટી"
-    }
+    },
+    "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
+    "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો"
   },
   "disclaimer": "અસ્વીકરણ"
 }

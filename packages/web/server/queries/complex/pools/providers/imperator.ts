@@ -16,6 +16,8 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+
 import { queryBalances } from "../../../cosmos";
 import {
   FilteredPoolsResponse,
@@ -33,19 +35,20 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
+const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Get pools from imperator that are listed in asset list. */
 export async function getPoolsFromImperator(): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: "imperator-pools",
-    ttl: 1000, // 1 second
+    ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const numPools = await queryNumPools();
       const { pools } = await queryFilteredPools(
         {
-          min_liquidity: 1_000,
+          min_liquidity: 0,
           order_by: "desc",
           order_key: "liquidity",
         },
@@ -419,7 +422,11 @@ export async function makePoolFromImperatorPool(
     spreadFactor: RatePretty;
     totalFiatValueLocked: PricePretty;
   } = {
-    spreadFactor: new RatePretty(filteredPool.swap_fees),
+    spreadFactor: new RatePretty(
+      new Dec(filteredPool.swap_fees.toString()).mul(
+        DecUtils.getTenExponentN(-2)
+      )
+    ),
     totalFiatValueLocked: new PricePretty(
       DEFAULT_VS_CURRENCY,
       filteredPool.liquidity

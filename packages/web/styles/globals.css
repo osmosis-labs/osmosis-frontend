@@ -320,6 +320,16 @@
   }
 }
 
+@keyframes deepPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
 @keyframes slideInRightExtreme {
   from {
     transform: translateX(120%);

@@ -31,12 +31,13 @@ interface CoinPrimitive {
   amount: string;
 }
 
-interface PositionPerformance {
-  total_spread_rewards: CoinPrimitive[];
-  total_incentives_rewards: CoinPrimitive[];
-  total_forfeit_rewards: CoinPrimitive[];
-  principal: PrincipalAction;
-}
+type PositionPerformance = {
+  total_spread_rewards?: CoinPrimitive[];
+  total_incentives_rewards?: CoinPrimitive[];
+  total_forfeit_rewards?: CoinPrimitive[];
+  principal?: PrincipalAction;
+  message?: string;
+};
 
 export async function queryPositionPerformance({
   positionId,

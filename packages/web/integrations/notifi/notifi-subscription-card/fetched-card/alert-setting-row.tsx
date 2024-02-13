@@ -2,7 +2,7 @@ import { resolveStringRef } from "@notifi-network/notifi-react-card";
 import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { EVENT_TYPE_ID } from "~/integrations/notifi/hooks/use-history-detail-contents";
@@ -69,12 +69,12 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
 
         {isExpended
           ? sortedRows.map((alert, key) => (
-              <div key={key}>
+              <div key={key} className="flex gap-2">
                 <Switch
-                  labelPosition="right"
+                  id="alert-name"
                   disabled={disabled}
-                  isOn={toggleStates[alert.name] === true}
-                  onToggle={(value) => {
+                  checked={toggleStates[alert.name] === true}
+                  onCheckedChange={(value) => {
                     if (value) {
                       logEvent([
                         EventName.Notifications.enableAlertClicked,
@@ -91,9 +91,8 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
                       [alert.name]: value,
                     }));
                   }}
-                >
-                  {alert.name}
-                </Switch>
+                />
+                <label htmlFor="alert-name">{alert.name}</label>
               </div>
             ))
           : null}

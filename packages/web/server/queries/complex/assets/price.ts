@@ -194,7 +194,7 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
     cache: pricesCache,
-    ttl: 3_000, // 3 seconds
+    ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const assetListAsset = getAssetFromAssetList({
         sourceDenom: asset.sourceDenom,
@@ -326,11 +326,7 @@ export async function calcSumAssetsValue({
     ).filter(Boolean) as NonNullable<
       Awaited<ReturnType<typeof calcAssetValue>>
     >[]
-  ).reduce((acc, price) => {
-    if (!price) return acc;
-
-    return acc.add(price);
-  }, new Dec(0));
+  ).reduce((acc, price) => acc.add(price), new Dec(0));
 }
 
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(

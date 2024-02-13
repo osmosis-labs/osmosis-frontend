@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "가 페그를 유지합니다. 현재 단위조정인수:",
     "scalingFactorInformation": "이 인수를 설정하면 유동성으로 공급한 스테이킹 토큰의 가치 변동과 같은 예측가능한 가격 변동에 대해 곡선을 조정할 수 있습니다.",
     "singleAsset": "단일 자산",
-    "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
     "title": "유동성 추가",
     "titleInPool": "#{poolId}풀에 유동성을 추가합니다.",
     "priceImpact": "가격 영향"
@@ -100,7 +99,7 @@
     "pendingRewards": "보류 중인 보상",
     "superfluidValidator": "유효성 검사기",
     "superfluidUnstake": "스테이킹 해제 후 사용 가능",
-    "superfluidUnstaking": "언스테이킹, 사용 가능",
+    "superfluidUnstaking": "언스테이크, {fromNow}에 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "유동성 언스테이킹",
     "unbondingFromNow": "언본딩, 사용 가능",
@@ -108,7 +107,7 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동"
+    "goToPool": "풀 번호로 이동 #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "차트를 사용할 수 없음",
     "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
     "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
-    "invalidAmounts": "잘못된 금액"
+    "invalidAmounts": "잘못된 금액",
+    "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -945,7 +945,9 @@
       "all": "모두",
       "single": "하나의",
       "multi": "다중"
-    }
+    },
+    "totalValueInvested": "총 투자 가치",
+    "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
   "disclaimer": "부인 성명"
 }

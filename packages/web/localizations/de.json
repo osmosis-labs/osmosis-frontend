@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "um den Pflock aufrechtzuerhalten. Der aktuelle Skalierungsfaktor ist",
     "scalingFactorInformation": "Dieser Faktor ermöglicht es der Kurve, sich an vorhersehbare Preisänderungen anzupassen, beispielsweise an den Wert, der einem liquiden Einsatztoken zukommt.",
     "singleAsset": "Einzelner Vermögenswert",
-    "stablecoinWarning": "Sie fügen Liquidität zu {denom} , einem {mechanism} unterstützten Stablecoin.",
     "title": "Liquidität hinzufügen",
     "titleInPool": "Liquidität zum Pool hinzufügen # {poolId}",
     "priceImpact": "Preisauswirkungen"
@@ -108,7 +107,7 @@
     "totalBalance": "Gesamtsaldo",
     "numPositions": "{numPositions} Positionen",
     "onePosition": "1 Position",
-    "goToPool": "Gehen Sie zu Pool # {poolId}"
+    "goToPool": "Gehen Sie zu Pool #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Diagramm nicht verfügbar",
     "sequenceNumber": "Sie haben zu viele gleichzeitige Transaktionen! Versuchen Sie es erneut zu senden, nachdem Ihre vorherige Sendung in der Kette gelandet ist. (Sequenz: {sequence} )",
     "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
-    "invalidAmounts": "Ungültige(r) Betrag(e)"
+    "invalidAmounts": "Ungültige(r) Betrag(e)",
+    "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -945,7 +945,9 @@
       "all": "Alle",
       "single": "Einzel",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Gesamtinvestitionswert",
+    "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
   "disclaimer": "Haftungsausschluss"
 }

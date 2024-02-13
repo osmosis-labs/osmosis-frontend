@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "para manter a paridade. O fator de escalonamento atual é",
     "scalingFactorInformation": "Esse fator permite à curva se ajustar à uma mudança de preço previsível, como o valor acumulado para staking líquido do token.",
     "singleAsset": "Um único ativo",
-    "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
     "title": "Adicionar Liquidez",
     "titleInPool": "Adicionar liquidez para a piscina #{poolId}",
     "priceImpact": "Impacto do preço"
@@ -100,7 +99,7 @@
     "pendingRewards": "Recompensas pendentes",
     "superfluidValidator": "Validador",
     "superfluidUnstake": "Uma vez desbloqueado, disponível após",
-    "superfluidUnstaking": "Inconstante, disponível em",
+    "superfluidUnstaking": "Desbloquear, disponível em {fromNow}",
     "superfluidCommission": "comissão",
     "unstake": "Liberar liquidez",
     "unbondingFromNow": "Unbonding, disponível em",
@@ -108,7 +107,7 @@
     "totalBalance": "Balanço total",
     "numPositions": "indefinido",
     "onePosition": "1 posição",
-    "goToPool": "Vá para a piscina #"
+    "goToPool": "Vá para a piscina #{poolId}"
   },
   "app": {
     "banner": {
@@ -379,7 +378,8 @@
     "chartUnavailable": "Gráfico indisponível",
     "sequenceNumber": "Você tem muitas transações simultâneas! Tente reenviar depois que seu tx anterior chegar à cadeia. (Sequência: {sequence} )",
     "swapSlippage": "A troca por {coinDenom} falhou devido a derrapagem. Tente aumentar a tolerância ao deslizamento.",
-    "invalidAmounts": "Quantidade(s) inválida(s)"
+    "invalidAmounts": "Quantidade(s) inválida(s)",
+    "txTimedOutError": "A transação expirou. Por favor tente novamente."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -588,7 +588,7 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
-    "TVL": "televisão",
+    "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
@@ -890,7 +890,7 @@
     "marketCapRank": "Classificação de capitalização de mercado",
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
-    "tvl": "televisão",
+    "tvl": "TVL",
     "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
@@ -945,7 +945,9 @@
       "all": "Todos",
       "single": "Solteiro",
       "multi": "Múltiplo"
-    }
+    },
+    "totalValueInvested": "Valor total investido",
+    "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
   "disclaimer": "Isenção de responsabilidade"
 }
