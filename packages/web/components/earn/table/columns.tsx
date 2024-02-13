@@ -201,6 +201,10 @@ export const tableColumns = [
     ),
     enableHiding: true,
   }),
+  columnHelper.display({
+    id: "strategyActions",
+    cell: ActionsCell,
+  }),
   columnHelper.accessor("type", {
     header: () => {},
     cell: ActionsCell,

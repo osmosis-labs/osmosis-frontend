@@ -6,7 +6,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
 import { useTranslation } from "~/hooks";
-import { EarnStrategy, EarnStrategyType } from "~/server/queries/numia/earn";
+import { EarnStrategy } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
 interface StrategyNameCellProps {
@@ -133,7 +133,7 @@ export const LockCell = (item: CellContext<EarnStrategy, number>) => {
   );
 };
 
-export const ActionsCell = (_: CellContext<EarnStrategy, EarnStrategyType>) => {
+export const ActionsCell = (_: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
 
   return (
