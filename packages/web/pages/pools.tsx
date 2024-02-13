@@ -399,10 +399,7 @@ export const MyPoolsSection = observer(() => {
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
     api.edge.pools.getUserPools.useQuery(
       {
-        userOsmoAddress:
-          "osmo1qnqzdknfvr97uswyvr5qcehmlxhja92zq74dz5" ??
-          account?.address ??
-          "",
+        userOsmoAddress: account?.address ?? "",
       },
       {
         enabled: Boolean(account?.address),
