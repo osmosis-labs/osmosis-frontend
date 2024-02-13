@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "ખીંટી જાળવવા માટે. વર્તમાન સ્કેલિંગ પરિબળ છે",
     "scalingFactorInformation": "આ પરિબળ વળાંકને અનુમાનિત કિંમતના ફેરફારોને સમાયોજિત કરવાની મંજૂરી આપે છે, જેમ કે લિક્વિડ સ્ટેકિંગ ટોકન પર ઉપાર્જિત મૂલ્ય.",
     "singleAsset": "સિંગલ એસેટ",
-    "stablecoinWarning": "તમે {denom} , a {mechanism} -બેક્ડ સ્ટેબલકોઇનમાં પ્રવાહિતા ઉમેરી રહ્યા છો.",
     "title": "લિક્વિડિટી ઉમેરો",
     "titleInPool": "પૂલ # {poolId} માં તરલતા ઉમેરો",
     "priceImpact": "ભાવની અસર"
@@ -108,7 +107,7 @@
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
-    "goToPool": "પૂલ # {poolId} પર જાઓ"
+    "goToPool": "પૂલ #{poolId} પર જાઓ"
   },
   "app": {
     "banner": {

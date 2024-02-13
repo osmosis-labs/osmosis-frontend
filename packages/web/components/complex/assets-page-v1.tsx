@@ -501,11 +501,13 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             {
               label: t("assets.poolCards.liquidity"),
               value: (
-                <DesktopOnlyPrivateText
-                  text={sharePoolDetail.userAvailableValue
-                    .maxDecimals(2)
-                    .toString()}
-                />
+                <h6>
+                  <DesktopOnlyPrivateText
+                    text={sharePoolDetail.userAvailableValue
+                      .maxDecimals(2)
+                      .toString()}
+                  />
+                </h6>
               ),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)

@@ -47,9 +47,11 @@ describe("apiClient", () => {
 
     await apiClient("http://example.com").catch((error) => {
       expect(error).toBeInstanceOf(ApiClientError);
-      expect(error.message).toEqual("Bad Request");
+      expect(error.message).toEqual("Fetch error. Bad Request.");
       expect(error.status).toEqual(400);
-      expect(error.data).toEqual({ message: "Bad Request" });
+      expect(error.data).toEqual({
+        message: "Bad Request",
+      });
     });
   });
 

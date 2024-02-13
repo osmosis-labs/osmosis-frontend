@@ -13,6 +13,7 @@ function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getMarketAsset.invalidate();
   apiUtils.edge.assets.getMarketAssets.invalidate();
   apiUtils.edge.assets.getUserAssetsBreakdown.invalidate();
+  apiUtils.edge.concentratedLiquidity.getUserPositions.invalidate();
 }
 
 export const StoreProvider: FunctionComponent = ({ children }) => {

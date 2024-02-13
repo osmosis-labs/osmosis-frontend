@@ -1,10 +1,10 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { getPoolsFromSidecar } from "~/server/queries/complex/pools/providers/sidecar";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromSidecar } from "./providers/sidecar";
 
 const allPooltypes = [
   "concentrated",

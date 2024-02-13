@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
     "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
     "singleAsset": "یک توکن",
-    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
     "titleInPool": "افزودن نقدینگی به  #{poolId}",
     "priceImpact": "تاثیر قیمت"
@@ -100,7 +99,7 @@
     "pendingRewards": "جوایز در انتظار",
     "superfluidValidator": "اعتبار سنجی",
     "superfluidUnstake": "یک بار بدون شرط، پس از آن در دسترس است",
-    "superfluidUnstaking": "بدون سهام، موجود در",
+    "superfluidUnstaking": "برداشت از سهام، در دسترس در {fromNow}",
     "superfluidCommission": "کمیسیون",
     "unstake": "نقدینگی بی خطر",
     "unbondingFromNow": "بدون پیوند، موجود در",
@@ -108,7 +107,7 @@
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
-    "goToPool": "رفتن به استخر #"
+    "goToPool": "رفتن به استخر #{poolId}"
   },
   "app": {
     "banner": {

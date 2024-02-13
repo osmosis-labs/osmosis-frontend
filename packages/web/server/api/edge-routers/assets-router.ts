@@ -247,7 +247,6 @@ export const assetsRouter = createTRPCRouter({
     .query(({ input: userOsmoAddress }) =>
       getUserAssetsBreakdown(userOsmoAddress)
     ),
-
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

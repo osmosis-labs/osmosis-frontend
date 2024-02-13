@@ -11,7 +11,7 @@ import {
 } from "react";
 
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { TargetGroupFragment } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
@@ -100,15 +100,12 @@ export const InputSms: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        labelClassName=""
-        containerClassName={`${
+        className={
           !selected || targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
-        }`}
-        labelPosition="left"
-        isOn={selected}
-        onToggle={(toggled) => setSelected(toggled)}
-      ></Switch>
-
+        }
+        checked={selected}
+        onCheckedChange={(toggled) => setSelected(toggled)}
+      />
       <Button
         className={`${
           selected && !targetGroup?.smsTargets?.[0]?.isConfirmed ? "" : "hidden"
