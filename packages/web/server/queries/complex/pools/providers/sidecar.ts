@@ -4,7 +4,7 @@ import { LRUCache } from "lru-cache";
 
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
-import timeout from "~/utils/async";
+import timeout, { AsyncTimeoutError } from "~/utils/async";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -31,16 +31,25 @@ export function getPoolsFromSidecar({
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () => queryPools({ poolIds }),
-        9999,
+        9000,
         "sidecarQueryPools"
       )();
       const reserveCoins = await Promise.all(
         sidecarPools.map((sidecarPool) =>
           timeout(
             () => getListedReservesFromSidecarPool(sidecarPool),
-            9999,
+            9000,
             "getListedReservesFromSidecarPool"
-          )().catch(() => null)
+          )().catch((e) => {
+            if (e instanceof AsyncTimeoutError) {
+              console.error(
+                `Timeout while fetching reserves for pool ${getPoolIdFromChainPool(
+                  sidecarPool.chain_model
+                )}`
+              );
+            }
+            return null;
+          })
         )
       );
       const totalFiatLockedValues = await Promise.all(
@@ -48,7 +57,7 @@ export function getPoolsFromSidecar({
           reserve
             ? timeout(
                 () => calcTotalFiatValueLockedFromReserve(reserve),
-                9999,
+                9000,
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
             : null
