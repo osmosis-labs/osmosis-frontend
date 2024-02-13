@@ -4,17 +4,6 @@ import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 
-export const strictEqualFilter: FilterFn<EarnStrategy> = (
-  row,
-  colID,
-  filterValue
-) => {
-  if (filterValue === "") {
-    return true;
-  }
-  return row.getValue(colID) === filterValue;
-};
-
 export const arrLengthEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
