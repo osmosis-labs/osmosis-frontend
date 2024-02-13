@@ -13,6 +13,12 @@ import {
   TVLCell,
 } from "~/components/earn/table/cells";
 import {
+  STRATEGY_METHODS,
+  STRATEGY_PROVIDERS,
+  StrategyMethods,
+  StrategyProviders,
+} from "~/components/earn/table/types/filters";
+import {
   arrLengthEquals,
   boolEquals,
   boolEqualsString,
@@ -104,8 +110,12 @@ export const tableColumns = [
     cell: (item) => (
       <StrategyNameCell
         name={item.getValue()}
-        platformName={item.row.original.provider}
-        strategyMethod={item.row.original.type}
+        platformName={
+          STRATEGY_PROVIDERS[item.row.original.provider as StrategyProviders]
+        }
+        strategyMethod={
+          STRATEGY_METHODS[item.row.original.type as StrategyMethods]
+        }
       />
     ),
   }),

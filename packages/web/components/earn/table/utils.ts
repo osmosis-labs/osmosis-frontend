@@ -5,6 +5,8 @@ import {
   ListOption,
   STRATEGY_METHODS,
   STRATEGY_PROVIDERS,
+  StrategyMethods,
+  StrategyProviders,
 } from "~/components/earn/table/types/filters";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 
@@ -117,13 +119,13 @@ export const getDefaultFiltersState = (filters: Filters) =>
     value,
   }));
 
-export const getListOptions = (
+export const getListOptions = <T>(
   strategies: EarnStrategy[],
   accessor: keyof Pick<EarnStrategy, "provider" | "type">,
   allLabel: string
 ) => {
   const possibleOptions = new Set<string>();
-  let array: ListOption<string>[];
+  let array: ListOption<T>[];
 
   strategies.forEach((strategy) => {
     const selection = strategy[accessor];
@@ -131,14 +133,14 @@ export const getListOptions = (
   });
 
   array = Array.from(possibleOptions).map((option) => ({
-    value: option,
+    value: accessor === "type" ? (option as T) : (option as T),
     label:
       accessor === "type"
-        ? STRATEGY_METHODS[option as keyof typeof STRATEGY_METHODS]
-        : STRATEGY_PROVIDERS[option as keyof typeof STRATEGY_PROVIDERS],
+        ? STRATEGY_METHODS[option as StrategyMethods]
+        : STRATEGY_PROVIDERS[option as StrategyProviders],
   }));
 
-  array.unshift({ value: "", label: allLabel });
+  array.unshift({ value: "" as T, label: allLabel });
 
   return array;
 };

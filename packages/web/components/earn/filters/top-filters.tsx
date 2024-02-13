@@ -12,6 +12,8 @@ import FiltersModal from "~/components/earn/filters/filters-modal";
 import {
   ListOption,
   StrategyButtonResponsibility,
+  StrategyMethods,
+  StrategyProviders,
 } from "~/components/earn/table/types/filters";
 import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
@@ -91,9 +93,9 @@ export const TopFilters = () => {
     [t]
   );
 
-  const strategies: ListOption<string>[] = useMemo(
+  const strategies: ListOption<StrategyMethods>[] = useMemo(
     () =>
-      getListOptions(
+      getListOptions<StrategyMethods>(
         earnStrategies ?? [],
         "type",
         t("earnPage.rewardTypes.all")
@@ -101,9 +103,9 @@ export const TopFilters = () => {
     [earnStrategies, t]
   );
 
-  const platforms: ListOption<string>[] = useMemo(
+  const platforms: ListOption<StrategyProviders>[] = useMemo(
     () =>
-      getListOptions(
+      getListOptions<StrategyProviders>(
         earnStrategies ?? [],
         "provider",
         t("earnPage.rewardTypes.all")
@@ -131,7 +133,7 @@ export const TopFilters = () => {
           onChange={(value) => setFilter("tokenHolder", value)}
           options={tokenFilterOptions}
         />
-        <DropdownWithLabel<string>
+        <DropdownWithLabel<StrategyMethods>
           label={t("earnPage.strategyMethod")}
           allLabel={t("earnPage.allMethods")}
           options={strategies}
@@ -140,7 +142,7 @@ export const TopFilters = () => {
             setFilter("strategyMethod", value as ListOption<string>)
           }
         />
-        <DropdownWithLabel<string>
+        <DropdownWithLabel<StrategyProviders>
           label={t("earnPage.platforms")}
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
@@ -223,14 +225,14 @@ export const TopFilters = () => {
         />
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
-        <DropdownWithLabel<string>
+        <DropdownWithLabel<StrategyMethods>
           label={t("earnPage.strategyMethod")}
           allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
           onChange={(value) => setFilter("strategyMethod", value)}
         />
-        <DropdownWithLabel<string>
+        <DropdownWithLabel<StrategyProviders>
           label={t("earnPage.platforms")}
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
