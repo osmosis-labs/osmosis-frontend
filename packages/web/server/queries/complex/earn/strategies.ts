@@ -16,7 +16,7 @@ const earnStrategiesCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-const earnStrategiesBalanceCache = new LRUCache<string, CacheEntry>(
+const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -88,18 +88,11 @@ export async function getStrategyBalance(
   userOsmoAddress: string
 ) {
   return await cachified({
-    cache: earnStrategiesBalanceCache,
-    ttl: 1000 * 60 * 60,
-    key: "earn-strategies-balance",
+    cache: earnStrategyBalanceCache,
+    ttl: 1000 * 60 * 5,
+    key: `earn-strategy-balance-${strategyId}-${userOsmoAddress}`,
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
-        const earnIds = (await getEarnStrategies()).map(
-          (strategies) => strategies.id
-        );
-        const queriedId = earnIds.find((id) => id === strategyId);
-
-        if (!queriedId) return undefined;
-
         const { balance, strategy } = await queryEarnUserBalance(
           strategyId,
           userOsmoAddress
