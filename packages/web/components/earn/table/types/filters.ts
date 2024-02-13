@@ -1,12 +1,4 @@
 export type TokenHolder = "my" | "all";
-export type StrategyMethod =
-  | ""
-  | "lp"
-  | "perp_lp"
-  | "vaults"
-  | "lending"
-  | "staking";
-
 export type RewardsTypes = "all" | "single" | "multi";
 export type StrategyButtonResponsibility =
   | "stablecoins"
