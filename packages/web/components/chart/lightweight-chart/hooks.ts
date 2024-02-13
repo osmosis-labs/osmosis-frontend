@@ -16,8 +16,7 @@ import {
   TimeChartOptions,
 } from "lightweight-charts";
 import { useState } from "react";
-import { useLayoutEffect } from "react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -29,12 +28,18 @@ type TooltipCrosshairMoveFn = (
   tooltip: HTMLDivElement
 ) => void;
 
+export interface ChartAreaSeriesOptions {
+  data: AreaData[];
+  options: DeepPartial<AreaStyleOptions & SeriesOptionsCommon>;
+}
+
 export interface UseChartProps {
   options: DeepPartial<TimeChartOptions>;
   tooltip?: {
     init: TooltipInitFn;
     crosshairMove: TooltipCrosshairMoveFn;
   } | null;
+  areaSeriesOptions?: ChartAreaSeriesOptions[];
 }
 
 export type UseChartReturn = ReturnType<typeof useChart>;
@@ -123,6 +128,95 @@ const defaultTooltipCrosshairMove: TooltipCrosshairMoveFn = (
   }
 };
 
+const defaultChartOptions: DeepPartial<TimeChartOptions> = {
+  layout: {
+    fontFamily: theme.fontFamily.subtitle1.join(","),
+    background: {
+      type: ColorType.Solid,
+      color: theme.colors.osmoverse[850],
+    },
+    textColor: theme.colors.wosmongton[200],
+    fontSize: 14,
+  },
+  grid: { horzLines: { visible: false }, vertLines: { visible: false } },
+  rightPriceScale: { visible: false },
+  leftPriceScale: { visible: false },
+  crosshair: {
+    horzLine: { visible: false },
+    vertLine: {
+      labelBackgroundColor: theme.colors.osmoverse[850],
+      style: LineStyle.LargeDashed,
+      width: 2,
+      color: `${theme.colors.osmoverse[300]}33`,
+    },
+  },
+  handleScroll: false,
+  handleScale: false,
+  timeScale: {
+    timeVisible: true,
+    secondsVisible: false,
+    lockVisibleTimeRangeOnResize: true,
+    allowBoldLabels: false,
+    borderVisible: false,
+    tickMarkFormatter: (
+      timePoint: Time,
+      tickMarkType: TickMarkType,
+      locale: string
+    ) => {
+      const formatOptions: Intl.DateTimeFormatOptions = {};
+
+      switch (tickMarkType) {
+        case TickMarkType.Year:
+          formatOptions.year = "numeric";
+          break;
+
+        case TickMarkType.Month:
+          formatOptions.month = "short";
+          break;
+
+        case TickMarkType.DayOfMonth:
+          formatOptions.day = "numeric";
+          formatOptions.month = "short";
+          break;
+
+        case TickMarkType.Time:
+          formatOptions.hour12 = false;
+          formatOptions.hour = "2-digit";
+          formatOptions.minute = "2-digit";
+          break;
+
+        case TickMarkType.TimeWithSeconds:
+          formatOptions.hour12 = false;
+          formatOptions.hour = "2-digit";
+          formatOptions.minute = "2-digit";
+          formatOptions.second = "2-digit";
+          break;
+      }
+
+      const date = !isBusinessDay(timePoint)
+        ? new Date((timePoint as number) * 1000)
+        : new Date(
+            Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
+          );
+
+      // from given date we should use only as UTC date or timestamp
+      // but to format as locale date we can convert UTC date to local date
+      const localDateFromUtc = new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds(),
+        date.getUTCMilliseconds()
+      );
+
+      return localDateFromUtc.toLocaleString(locale, formatOptions);
+    },
+  },
+  autoSize: true,
+};
+
 export const useChart = (props: UseChartProps) => {
   const {
     options,
@@ -130,108 +224,18 @@ export const useChart = (props: UseChartProps) => {
       init: defaultTooltipInit,
       crosshairMove: defaultTooltipCrosshairMove,
     },
+    areaSeriesOptions = [],
   } = props;
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<IChartApi>();
   const [crosshairParams, setCrosshairParams] =
     useState<MouseEventParams<Time>>();
 
-  const internalOptions: DeepPartial<TimeChartOptions> = useMemo(
-    () => ({
-      layout: {
-        fontFamily: theme.fontFamily.subtitle1.join(","),
-        background: {
-          type: ColorType.Solid,
-          color: theme.colors.osmoverse[850],
-        },
-        textColor: theme.colors.wosmongton[200],
-        fontSize: 14,
-      },
-      grid: { horzLines: { visible: false }, vertLines: { visible: false } },
-      rightPriceScale: { visible: false },
-      leftPriceScale: { visible: false },
-      crosshair: {
-        horzLine: { visible: false },
-        vertLine: {
-          labelBackgroundColor: theme.colors.osmoverse[850],
-          style: LineStyle.LargeDashed,
-          width: 2,
-          color: `${theme.colors.osmoverse[300]}33`,
-        },
-      },
-      handleScroll: false,
-      handleScale: false,
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-        lockVisibleTimeRangeOnResize: true,
-        allowBoldLabels: false,
-        borderVisible: false,
-        tickMarkFormatter: (
-          timePoint: Time,
-          tickMarkType: TickMarkType,
-          locale: string
-        ) => {
-          const formatOptions: Intl.DateTimeFormatOptions = {};
-
-          switch (tickMarkType) {
-            case TickMarkType.Year:
-              formatOptions.year = "numeric";
-              break;
-
-            case TickMarkType.Month:
-              formatOptions.month = "short";
-              break;
-
-            case TickMarkType.DayOfMonth:
-              formatOptions.day = "numeric";
-              formatOptions.month = "short";
-              break;
-
-            case TickMarkType.Time:
-              formatOptions.hour12 = false;
-              formatOptions.hour = "2-digit";
-              formatOptions.minute = "2-digit";
-              break;
-
-            case TickMarkType.TimeWithSeconds:
-              formatOptions.hour12 = false;
-              formatOptions.hour = "2-digit";
-              formatOptions.minute = "2-digit";
-              formatOptions.second = "2-digit";
-              break;
-          }
-
-          const date = !isBusinessDay(timePoint)
-            ? new Date((timePoint as number) * 1000)
-            : new Date(
-                Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
-              );
-
-          // from given date we should use only as UTC date or timestamp
-          // but to format as locale date we can convert UTC date to local date
-          const localDateFromUtc = new Date(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate(),
-            date.getUTCHours(),
-            date.getUTCMinutes(),
-            date.getUTCSeconds(),
-            date.getUTCMilliseconds()
-          );
-
-          return localDateFromUtc.toLocaleString(locale, formatOptions);
-        },
-      },
+  useEffect(() => {
+    chart.current = createChart(container.current!, {
+      ...defaultChartOptions,
       ...options,
-    }),
-    [options]
-  );
-
-  useLayoutEffect(() => {
-    chart.current = createChart(container.current!, internalOptions);
-
-    chart.current.timeScale().fitContent();
+    });
 
     let tooltipElement: HTMLDivElement;
 
@@ -244,28 +248,36 @@ export const useChart = (props: UseChartProps) => {
       });
     }
 
-    const handleResize = () => {
-      chart.current?.applyOptions({
-        width: container.current?.clientWidth,
-        timeScale: {
-          timeVisible: true,
-          secondsVisible: false,
-        },
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    chart.current.addAreaSeries();
+    chart.current.timeScale().fitContent();
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-
       tooltipElement?.remove();
       chart.current?.remove();
       chart.current = undefined;
     };
   }, []);
+
+  useEffect(() => {
+    const areaSeries: ISeriesApi<"Area">[] = [];
+
+    areaSeriesOptions.forEach((areaSeriesOpt) => {
+      const series = chart.current?.addAreaSeries(areaSeriesOpt.options);
+
+      series?.setData(areaSeriesOpt.data);
+
+      if (series) {
+        areaSeries.push(series);
+      }
+    });
+
+    chart.current?.timeScale().fitContent();
+
+    return () => {
+      areaSeries.forEach((series) => {
+        chart.current?.removeSeries(series);
+      });
+    };
+  }, [areaSeriesOptions]);
 
   return {
     container,
