@@ -46,6 +46,28 @@ export type RawEarnStrategy = {
   rewardDenoms: EarnStrategyToken[];
 };
 
+export interface RawEarnStrategyBalance {
+  strategy: string;
+  balance: {
+    amount: string;
+    usd: number;
+  };
+  token: {
+    name: string;
+    symbol: string;
+    decimals: string;
+    total_supply: string;
+  };
+}
+
+export interface EarnStrategyBalance {
+  balance: {
+    amount: string;
+    usd: PricePretty;
+  };
+  id: string;
+}
+
 export type tokensType = "stablecoins" | "correlated" | "bluechip";
 
 export interface EarnStrategy {
@@ -69,5 +91,16 @@ export interface EarnStrategy {
 /** Queries numia for a earn strategies list. */
 export function queryEarnStrategies(): Promise<RawEarnStrategy[]> {
   const url = new URL("/earn/strategies", NUMIA_BASE_URL);
+  return apiClient(url.toString());
+}
+
+export function queryEarnUserBalance(
+  strategyId: string,
+  userOsmoAddress: string
+): Promise<RawEarnStrategyBalance> {
+  const url = new URL(
+    `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
+    NUMIA_BASE_URL
+  );
   return apiClient(url.toString());
 }
