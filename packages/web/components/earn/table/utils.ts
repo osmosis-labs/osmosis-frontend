@@ -1,7 +1,11 @@
 import { FilterFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
-import { ListOption } from "~/components/earn/table/types/filters";
+import {
+  ListOption,
+  STRATEGY_METHODS,
+  STRATEGY_PROVIDERS,
+} from "~/components/earn/table/types/filters";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 
 export const arrLengthEquals: FilterFn<EarnStrategy> = (
@@ -112,3 +116,29 @@ export const getDefaultFiltersState = (filters: Filters) =>
     id: _getKey(key as keyof Filters),
     value,
   }));
+
+export const getListOptions = (
+  strategies: EarnStrategy[],
+  accessor: keyof Pick<EarnStrategy, "provider" | "type">,
+  allLabel: string
+) => {
+  const possibleOptions = new Set<string>();
+  let array: ListOption<string>[];
+
+  strategies.forEach((strategy) => {
+    const selection = strategy[accessor];
+    possibleOptions.add(selection);
+  });
+
+  array = Array.from(possibleOptions).map((option) => ({
+    value: option,
+    label:
+      accessor === "type"
+        ? STRATEGY_METHODS[option as keyof typeof STRATEGY_METHODS]
+        : STRATEGY_PROVIDERS[option as keyof typeof STRATEGY_PROVIDERS],
+  }));
+
+  array.unshift({ value: "", label: allLabel });
+
+  return array;
+};

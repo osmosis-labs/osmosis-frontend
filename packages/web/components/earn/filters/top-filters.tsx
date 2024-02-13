@@ -11,14 +11,14 @@ import { FilterContext } from "~/components/earn/filters/filter-context";
 import FiltersModal from "~/components/earn/filters/filters-modal";
 import {
   ListOption,
-  Platform,
   StrategyButtonResponsibility,
-  StrategyMethod,
 } from "~/components/earn/table/types/filters";
+import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
 import { useTranslation } from "~/hooks";
+import { api } from "~/utils/trpc";
 
 const strategiesFilters = [
   {
@@ -57,6 +57,8 @@ export const TopFilters = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
 
+  const { data: earnStrategies } = api.edge.earn.getEarnStrategies.useQuery();
+
   const rewardTypes = useMemo(
     () => [
       {
@@ -89,28 +91,24 @@ export const TopFilters = () => {
     [t]
   );
 
-  const strategies: ListOption<StrategyMethod>[] = useMemo(
-    () => [
-      { value: "", label: t("earnPage.rewardTypes.all") },
-      { value: "lp", label: "LP" },
-      { value: "perp_lp", label: "Perp LP" },
-      { value: "vaults", label: "Vaults" },
-      { value: "lending", label: "Lending" },
-      { value: "staking", label: "Staking" },
-    ],
-    [t]
+  const strategies: ListOption<string>[] = useMemo(
+    () =>
+      getListOptions(
+        earnStrategies ?? [],
+        "type",
+        t("earnPage.rewardTypes.all")
+      ),
+    [earnStrategies, t]
   );
 
-  const platforms: ListOption<Platform>[] = useMemo(
-    () => [
-      { value: "", label: t("earnPage.rewardTypes.all") },
-      { value: "quasar", label: "Quasar" },
-      { value: "osmosis_dex", label: "Osmosis DEX" },
-      { value: "levana", label: "Levana" },
-      { value: "mars", label: "Mars" },
-      { value: "osmosis", label: "Osmosis" },
-    ],
-    [t]
+  const platforms: ListOption<string>[] = useMemo(
+    () =>
+      getListOptions(
+        earnStrategies ?? [],
+        "provider",
+        t("earnPage.rewardTypes.all")
+      ),
+    [earnStrategies, t]
   );
 
   const {
@@ -133,14 +131,16 @@ export const TopFilters = () => {
           onChange={(value) => setFilter("tokenHolder", value)}
           options={tokenFilterOptions}
         />
-        <DropdownWithLabel<StrategyMethod>
+        <DropdownWithLabel<string>
           label={t("earnPage.strategyMethod")}
           allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
-          onChange={(value) => setFilter("strategyMethod", value)}
+          onChange={(value) =>
+            setFilter("strategyMethod", value as ListOption<string>)
+          }
         />
-        <DropdownWithLabel<Platform>
+        <DropdownWithLabel<string>
           label={t("earnPage.platforms")}
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
@@ -223,14 +223,14 @@ export const TopFilters = () => {
         />
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
-        <DropdownWithLabel<StrategyMethod>
+        <DropdownWithLabel<string>
           label={t("earnPage.strategyMethod")}
           allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
           onChange={(value) => setFilter("strategyMethod", value)}
         />
-        <DropdownWithLabel<Platform>
+        <DropdownWithLabel<string>
           label={t("earnPage.platforms")}
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
