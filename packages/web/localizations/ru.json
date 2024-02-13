@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "чтобы сохранить привязку. Текущий коэффициент масштабирования",
     "scalingFactorInformation": "Этот фактор позволяет кривой адаптироваться к предсказуемым изменениям цен, например, к стоимости ликвидного токена ставки.",
     "singleAsset": "Один актив",
-    "stablecoinWarning": "Вы добавляете ликвидность в {denom} , стейблкоин, поддерживаемый {mechanism} .",
     "title": "Добавить ликвидность",
     "titleInPool": "Добавьте ликвидность в пул # {poolId}",
     "priceImpact": "Влияние на цену"
@@ -100,7 +99,7 @@
     "pendingRewards": "Ожидаемые награды",
     "superfluidValidator": "Валидатор",
     "superfluidUnstake": "После отмены ставки становится доступным через {duration}",
-    "superfluidUnstaking": "Отмена ставки доступна в {fromNow}",
+    "superfluidUnstaking": "Разблокировка, доступно через {fromNow}",
     "superfluidCommission": "комиссия",
     "unstake": "Снять ликвидность",
     "unbondingFromNow": "Отмена связи доступна в {fromNow}",
@@ -108,7 +107,7 @@
     "totalBalance": "Итоговый баланс",
     "numPositions": "{numPositions} позиции",
     "onePosition": "1 позиция",
-    "goToPool": "Перейти к пулу № {poolId}"
+    "goToPool": "Перейти к пулу № #{poolId}"
   },
   "app": {
     "banner": {
@@ -910,7 +909,9 @@
       "all": "Все",
       "single": "Одинокий",
       "multi": "Мульти"
-    }
+    },
+    "totalValueInvested": "Общая вложенная стоимость",
+    "lookBelow": "Посмотрите ниже и найдите лучшие стратегии для вас"
   },
   "disclaimer": "Отказ от ответственности"
 }

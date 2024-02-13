@@ -1,11 +1,6 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import {
-  ObservableQueryLiquidityPositionById,
-  ObservableSuperfluidPoolDetail,
-} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import moment from "dayjs";
-import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -27,12 +22,20 @@ import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useConst } from "~/hooks/use-const";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
+import type {
+  ClPosition,
+  ClPositionDetails,
+  PositionHistoricalPerformance,
+} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
+import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -45,72 +48,53 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  chartConfig: ObservableHistoricalAndLiquidityData;
-  position: ObservableQueryLiquidityPositionById;
+  position: ClPosition;
+  positionDetails: ClPositionDetails | undefined;
+  positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
 }> = observer(
   ({
     poolId,
-    chartConfig,
-    position: positionConfig,
+    position,
     showLinkToPool = false,
+    positionDetails,
+    positionPerformance,
   }) => {
     const {
       chainStore: {
         osmosis: { chainId },
       },
       accountStore,
-      queriesStore,
-      derivedDataStore,
-      queriesExternalStore,
-      priceStore,
     } = useStore();
 
     const { logEvent } = useAmplitudeAnalytics();
 
     const account = accountStore.getWallet(chainId);
-    const osmosisQueries = queriesStore.get(chainId).osmosis!;
-    const queryPool = osmosisQueries.queryPools.getPool(poolId);
-    const derivedPoolData = derivedDataStore.getForPool(poolId);
-    const superfluidPoolDetail = derivedPoolData?.superfluidPoolDetail;
-
-    const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
-
-    const superfluidDelegation = superfluidPoolDetail.getDelegatedPositionInfo(
-      positionConfig.id
-    );
-
-    const superfluidUndelegation =
-      superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
-
-    const queryPositionMetrics =
-      queriesExternalStore.queryPositionsPerformaceMetrics.get(
-        positionConfig.id
-      );
-
-    const unbondInfo = osmosisQueries.queryAccountsUnbondingPositions
-      .get(account?.address ?? "")
-      .getPositionUnbondingInfo(positionConfig.id);
-    const isUnbonding = Boolean(unbondInfo);
 
     const {
-      xRange,
-      yRange,
-      lastChartData,
-      depthChartData,
-      resetZoom,
-      zoomIn,
-      zoomOut,
-      setPriceRange,
-    } = chartConfig;
-    const {
-      baseAsset,
-      quoteAsset,
-      lowerPrices,
-      upperPrices,
+      priceRange: [lowerPrice, upperPrice],
       isFullRange,
-      totalClaimableRewards,
-    } = positionConfig;
+      currentCoins,
+      currentValue,
+    } = position;
+
+    const {
+      currentPrice,
+      status,
+      unbondEndTime,
+      isPoolSuperfluid,
+      superfluidApr,
+      superfluidData,
+    } = positionDetails ?? {};
+
+    const {
+      claimableRewardCoins,
+      claimableRewardsValue,
+      principalCoins,
+      principalValue,
+      totalRewardCoins,
+      totalEarnedValue,
+    } = positionPerformance ?? {};
 
     const { t } = useTranslation();
     const router = useRouter();
@@ -119,109 +103,50 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       "increase" | "remove" | null
     >(null);
 
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+    const {
+      xRange,
+      yRange,
+      depthChartData,
+      resetZoom,
+      zoomIn,
+      zoomOut,
+      setPriceRange,
+    } = chartConfig;
+
     const [selectSfValidatorAddress, setSelectSfValidatorAddress] =
       useState<boolean>(false);
 
     useEffect(() => {
-      if (lowerPrices?.price && upperPrices?.price) {
-        setPriceRange([lowerPrices.price, upperPrices.price]);
+      if (lowerPrice && upperPrice) {
+        setPriceRange([lowerPrice, upperPrice]);
       }
-    }, [lowerPrices, upperPrices, setPriceRange]);
+    }, [lowerPrice, upperPrice, setPriceRange]);
 
     const sendCollectAllRewardsMsg = useCallback(() => {
-      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
-      const rewardAmountUSD =
-        positionConfig.totalClaimableRewards.length > 0 && fiat
-          ? Number(
-              positionConfig.totalClaimableRewards
-                .reduce(
-                  (sum, asset) =>
-                    sum.add(
-                      priceStore.calculatePrice(asset) ??
-                        new PricePretty(fiat, 0)
-                    ),
-                  new PricePretty(fiat, 0)
-                )
-                .toDec()
-                .toString()
-            )
-          : undefined;
-
-      const poolLiquidity = queryPool?.computeTotalValueLocked(priceStore);
-      const liquidityUSD = poolLiquidity
-        ? Number(poolLiquidity?.toDec().toString())
-        : undefined;
-
-      const poolName = queryPool?.poolAssets
-        ?.map((poolAsset) => poolAsset.amount.denom)
-        .join(" / ");
-      const positionId = positionConfig.id;
-
-      logEvent([
-        EventName.ConcentratedLiquidity.collectRewardsClicked,
-        {
-          liquidityUSD,
-          poolId,
-          poolName,
-          positionId,
-          rewardAmountUSD,
-        },
-      ]);
+      logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
       account!.osmosis
         .sendCollectAllPositionsRewardsMsgs(
-          [positionConfig.id],
+          [position.id],
           undefined,
           undefined,
           (tx) => {
             if (!tx.code) {
               logEvent([
                 EventName.ConcentratedLiquidity.collectRewardsCompleted,
-                {
-                  liquidityUSD,
-                  poolId,
-                  poolName,
-                  positionId,
-                  rewardAmountUSD,
-                },
               ]);
             }
           }
         )
-        .then(() => {})
         .catch(console.error);
-    }, [
-      account,
-      logEvent,
-      poolId,
-      positionConfig.id,
-      positionConfig.totalClaimableRewards,
-      priceStore,
-      queryPool,
-    ]);
+    }, [account, logEvent, position.id]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-        {activeModal === "increase" && (
-          <IncreaseConcentratedLiquidityModal
-            isOpen={true}
-            poolId={poolId}
-            position={positionConfig}
-            onRequestClose={() => setActiveModal(null)}
-          />
-        )}
-        {activeModal === "remove" && (
-          <RemoveConcentratedLiquidityModal
-            isOpen={true}
-            poolId={poolId}
-            position={positionConfig}
-            onRequestClose={() => setActiveModal(null)}
-          />
-        )}
         <div className="flex w-full gap-1 xl:hidden">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <ChartHeader config={chartConfig} />
-            <Chart config={chartConfig} positionConfig={positionConfig} />
+            <Chart config={chartConfig} position={position} />
           </div>
           <div className="flex h-[20.1875rem] w-80 rounded-r-2xl bg-osmoverse-700">
             <div className="mt-[84px] flex flex-1 flex-col">
@@ -231,30 +156,30 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: currentPrice
-                      ? Number(currentPrice.toString())
-                      : lastChartData?.close || 0,
+                    price: Number(currentPrice?.toString()),
                     depth: xRange[1],
                   }),
-                  [currentPrice, lastChartData, xRange]
+                  [currentPrice, xRange]
                 )}
                 rangeAnnotation={useMemo(
                   () => [
                     {
-                      price: Number(lowerPrices?.price.toString() ?? 0),
+                      price: Number(lowerPrice.toString()),
                       depth: xRange[1],
                     },
                     {
-                      price: Number(upperPrices?.price.toString() ?? 0),
+                      price: Number(upperPrice.toString()),
                       depth: xRange[1],
                     },
                   ],
-                  [lowerPrices, upperPrices, xRange]
+                  [lowerPrice, upperPrice, xRange]
                 )}
-                offset={useMemo(
-                  () => ({ top: 0, right: 36, bottom: 24 + 28, left: 0 }),
-                  []
-                )}
+                offset={useConst({
+                  top: 0,
+                  right: 36,
+                  bottom: 24 + 28,
+                  left: 0,
+                })}
                 horizontal
                 fullRange={isFullRange}
               />
@@ -282,13 +207,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               </div>
               <div className="flex h-full flex-col justify-between py-4">
                 <PriceBox
-                  currentValue={
-                    isFullRange
-                      ? "0"
-                      : formatPretty(upperPrices?.price ?? new Dec(0), {
-                          scientificMagnitudeThreshold: 4,
-                        })
-                  }
+                  currentValue={formatPretty(upperPrice, {
+                    scientificMagnitudeThreshold: 4,
+                  })}
                   label={t("clPositions.maxPrice")}
                   infinity={isFullRange}
                 />
@@ -296,7 +217,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   currentValue={
                     isFullRange
                       ? "0"
-                      : formatPretty(lowerPrices?.price ?? new Dec(0), {
+                      : formatPretty(lowerPrice, {
                           scientificMagnitudeThreshold: 4,
                         })
                   }
@@ -311,54 +232,48 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <AssetsInfo
               className="flex-1 sm:w-full"
               title={t("clPositions.currentAssets")}
-              assets={useMemo(
-                () =>
-                  [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
-                    Boolean(asset)
-                  ),
-                [baseAsset, quoteAsset]
-              )}
+              assets={currentCoins}
+              totalValue={currentValue}
             />
             <AssetsInfo
               className="flex-1 sm:w-full"
               title={t("clPositions.totalRewardsEarned")}
-              assets={queryPositionMetrics.totalEarned}
-              totalValue={queryPositionMetrics.totalEarnedValue}
-            />
-          </div>
-          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
-            <AssetsInfo
-              className="flex-1 sm:w-full"
-              title={t("clPositions.principalAssets")}
-              assets={queryPositionMetrics.principal.map(({ coin }) => coin)}
-              totalValue={queryPositionMetrics.totalPrincipalValue}
-            />
-            <AssetsInfo
-              className="flex-1 sm:w-full"
-              title={t("clPositions.unclaimedRewards")}
-              assets={totalClaimableRewards}
+              assets={totalRewardCoins}
+              totalValue={totalEarnedValue}
               emptyText={t("clPositions.noRewards")}
             />
           </div>
-          {unbondInfo && !superfluidDelegation && !superfluidUndelegation && (
+          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            {(principalCoins?.length ?? 0) < 1 &&
+            positionPerformance ? undefined : (
+              <AssetsInfo
+                className="flex-1 sm:w-full"
+                title={t("clPositions.principalAssets")}
+                assets={principalCoins}
+                totalValue={principalValue}
+              />
+            )}
+            <AssetsInfo
+              className="flex-1 sm:w-full"
+              title={t("clPositions.unclaimedRewards")}
+              assets={claimableRewardCoins}
+              totalValue={claimableRewardsValue}
+              emptyText={t("clPositions.noRewards")}
+            />
+          </div>
+          {unbondEndTime && !superfluidData && (
             <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
               <div className="flex flex-col text-right md:pl-4">
                 <span>
                   {t("clPositions.unbondingFromNow", {
-                    fromNow: moment(unbondInfo.endTime).fromNow(true),
+                    fromNow: moment(unbondEndTime).fromNow(true),
                   })}
                 </span>
               </div>
             </div>
           )}
         </div>
-        {(superfluidDelegation || superfluidUndelegation) &&
-          derivedPoolData.sharePoolDetail.longestDuration && (
-            <SuperfluidPositionInfo
-              {...(superfluidDelegation ?? superfluidUndelegation!)}
-              stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
-            />
-          )}
+        {superfluidData && <SuperfluidPositionInfo {...superfluidData} />}
         <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
           {showLinkToPool && (
             <ArrowButton
@@ -368,26 +283,23 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               {t("clPositions.goToPool", { poolId })}
             </ArrowButton>
           )}
-          {positionConfig.isFullRange &&
-            superfluidPoolDetail.isSuperfluid &&
-            !superfluidDelegation &&
-            !superfluidUndelegation &&
+          {isFullRange &&
+            isPoolSuperfluid &&
+            !superfluidData &&
+            superfluidApr &&
             account &&
-            !isUnbonding && (
+            status !== "unbonding" && (
               <>
                 <button
-                  className="w-fit rounded-lg bg-superfluid py-[2px] px-[2px] md:ml-auto"
-                  disabled={!Boolean(account)}
+                  className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px] md:ml-auto"
                   onClick={() => {
                     setSelectSfValidatorAddress(true);
                   }}
                 >
-                  <div className="w-full rounded-lg bg-osmoverse-800 px-3 py-[6px] md:px-2">
+                  <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
                     <span className="text-superfluid-gradient">
                       {t("pool.superfluidEarnMore", {
-                        rate: superfluidPoolDetail.superfluidApr
-                          .maxDecimals(1)
-                          .toString(),
+                        rate: superfluidApr.maxDecimals(1).toString(),
                       })}
                     </span>
                   </div>
@@ -399,7 +311,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     onSelectValidator={(validatorAddress) => {
                       account.osmosis
                         .sendStakeExistingPositionMsg(
-                          positionConfig.id,
+                          position.id,
                           validatorAddress
                         )
                         .catch(console.error);
@@ -411,7 +323,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             )}
           <PositionButton
             disabled={
-              !positionConfig.hasRewardsAvailable ||
+              claimableRewardCoins?.length === 0 ||
               Boolean(account?.txTypeInProgress) ||
               !Boolean(account)
             }
@@ -421,39 +333,62 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </PositionButton>
           <PositionButton
             disabled={
+              !status ||
               Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidUndelegation) ||
-              isUnbonding
+              Boolean(superfluidData?.undelegationEndTime) ||
+              status === "unbonding" ||
+              !Boolean(account)
             }
             onClick={useCallback(() => {
-              if (superfluidDelegation) {
-                account?.osmosis
+              if (superfluidData?.delegationLockId) {
+                account!.osmosis
                   .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                     [
                       {
-                        lockId: superfluidDelegation.lockId,
+                        lockId: superfluidData.delegationLockId,
                         isSyntheticLock: true,
                       },
                     ]
                   )
                   .catch(console.error);
               } else setActiveModal("remove");
-            }, [account, superfluidDelegation])}
+            }, [account, superfluidData])}
           >
-            {Boolean(superfluidDelegation)
+            {Boolean(superfluidData?.delegationLockId)
               ? t("clPositions.unstake")
               : t("clPositions.removeLiquidity")}
           </PositionButton>
           <PositionButton
             disabled={
+              !status ||
               Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidUndelegation) ||
-              isUnbonding
+              Boolean(superfluidData?.undelegationEndTime) ||
+              status === "unbonding"
             }
             onClick={useCallback(() => setActiveModal("increase"), [])}
           >
             {t("clPositions.increaseLiquidity")}
           </PositionButton>
+
+          {activeModal === "increase" && !!status && (
+            <IncreaseConcentratedLiquidityModal
+              isOpen={true}
+              poolId={poolId}
+              position={position}
+              status={status}
+              onRequestClose={() => setActiveModal(null)}
+            />
+          )}
+          {activeModal === "remove" && !!status && claimableRewardCoins && (
+            <RemoveConcentratedLiquidityModal
+              isOpen={true}
+              poolId={poolId}
+              position={position}
+              onRequestClose={() => setActiveModal(null)}
+              claimableRewardCoins={claimableRewardCoins}
+              status={status}
+            />
+          )}
         </div>
       </div>
     );
@@ -483,65 +418,52 @@ const AssetsInfo: FunctionComponent<
     totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(
-  ({
-    className,
-    title,
-    assets = [],
-    totalValue: totalValueProp,
-    emptyText,
-  }) => {
-    const { t } = useTranslation();
-    const { priceStore } = useStore();
+> = observer(({ className, title, assets = [], totalValue, emptyText }) => {
+  const { t } = useTranslation();
 
-    const totalValue = totalValueProp ?? priceStore.calculateTotalPrice(assets);
-
-    return (
-      <div
-        className={classNames(
-          "subtitle1 flex flex-col gap-2 text-osmoverse-400",
-          className
-        )}
-      >
-        <div>{title}</div>
-        {assets.length > 0 ? (
-          <div className="flex flex-wrap gap-3">
-            <div className="flex gap-2">
-              <div className="flex flex-wrap gap-x-5 gap-y-3">
-                {assets.map((asset) => (
-                  <div key={asset.denom} className="flex items-center gap-2">
-                    <div className="h-[24px] w-[24px] flex-shrink-0">
-                      {asset.currency.coinImageUrl && (
-                        <Image
-                          alt="base currency"
-                          src={asset.currency.coinImageUrl}
-                          height={24}
-                          width={24}
-                        />
-                      )}
-                    </div>
-                    <span className="whitespace-nowrap">
-                      {formatPretty(asset, { maxDecimals: 2 })}
-                    </span>
+  return (
+    <div
+      className={classNames(
+        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
+        className
+      )}
+    >
+      <div>{title}</div>
+      {assets.length > 0 ? (
+        <div className="flex flex-wrap gap-3">
+          <div className="flex gap-2">
+            <div className="flex flex-wrap gap-x-5 gap-y-3">
+              {assets.map((asset) => (
+                <div key={asset.denom} className="flex items-center gap-2">
+                  <div className="h-[24px] w-[24px] flex-shrink-0">
+                    {asset.currency.coinImageUrl && (
+                      <Image
+                        alt="base currency"
+                        src={asset.currency.coinImageUrl}
+                        height={24}
+                        width={24}
+                      />
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              {totalValue && (
-                <div className="text-white-full">({totalValue.toString()})</div>
-              )}
+                  <span className="whitespace-nowrap">
+                    {formatPretty(asset, { maxDecimals: 2 })}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-        ) : (
-          <span className="italic">
-            {emptyText ?? t("clPositions.checkBackForRewards")}
-          </span>
-        )}
-      </div>
-    );
-  }
-);
+          <div>
+            {totalValue && (
+              <div className="text-white-full">({totalValue.toString()})</div>
+            )}
+          </div>
+        </div>
+      ) : emptyText ? (
+        <span className="italic">{t("clPositions.checkBackForRewards")}</span>
+      ) : null}
+    </div>
+  );
+});
 
 const PriceBox: FunctionComponent<{
   label: string;
@@ -598,12 +520,10 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-  positionConfig: ObservableQueryLiquidityPositionById;
-}> = observer(({ config, positionConfig }) => {
+  position: ClPosition;
+}> = observer(({ config, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;
-
-  const { isFullRange } = positionConfig;
 
   return (
     <TokenPairHistoricalChart
@@ -622,20 +542,8 @@ const Chart: FunctionComponent<{
   );
 });
 
-type DelegationOrUndelegationInfo =
-  | NonNullable<
-      ReturnType<
-        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getDelegatedPositionInfo"]
-      >
-    >
-  | NonNullable<
-      ReturnType<
-        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getUndelegatingPositionInfo"]
-      >
-    >;
-
 const SuperfluidPositionInfo: FunctionComponent<
-  DelegationOrUndelegationInfo & { stakeDuration: Duration }
+  RouterOutputs["edge"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
 > = (props) => {
   const {
     validatorName,
@@ -643,12 +551,12 @@ const SuperfluidPositionInfo: FunctionComponent<
     equivalentStakedAmount,
     validatorCommission,
     superfluidApr,
-    stakeDuration,
+    humanizedStakeDuration,
   } = props;
   const { t } = useTranslation();
 
   /** is undelegation */
-  const endTime = "endTime" in props ? props.endTime : undefined;
+  const endTime = props.undelegationEndTime;
 
   return (
     <div className="subtitle1 flex w-full flex-col gap-4 md:gap-1">
@@ -688,7 +596,7 @@ const SuperfluidPositionInfo: FunctionComponent<
           ) : (
             <span>
               {t("clPositions.superfluidUnstake", {
-                duration: stakeDuration.humanize(),
+                duration: humanizedStakeDuration ?? "",
               })}
             </span>
           )}

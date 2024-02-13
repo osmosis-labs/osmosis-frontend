@@ -14,11 +14,12 @@ import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
-import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
+import { MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Disableable, InputProps } from "~/components/types";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
@@ -616,20 +617,20 @@ const AckWithdrawCustomAddressRisk: FunctionComponent<{
   return (
     <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
       <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
-      <div className="mx-auto">
-        <CheckBox
-          isOn={addressConfig.didAckWithdrawRisk}
-          borderStyles="border-superfluid"
-          backgroundStyles="bg-superfluid"
-          onToggle={() =>
+      <div className="mx-auto flex">
+        <Checkbox
+          id="verify"
+          checked={addressConfig.didAckWithdrawRisk}
+          variant="secondary"
+          onClick={() =>
             addressConfig.setDidAckWithdrawRisk(
               !addressConfig.didAckWithdrawRisk
             )
           }
-          labelClassName="items-center"
-        >
+        />
+        <label className="ml-2 items-center" htmlFor="verify">
           {t("assets.ibcTransfer.checkboxVerify")}
-        </CheckBox>
+        </label>
       </div>
     </GradientView>
   );

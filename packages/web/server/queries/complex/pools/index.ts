@@ -1,10 +1,10 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { getPoolsFromSidecar } from "~/server/queries/complex/pools/providers/sidecar";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromImperator } from "./providers/imperator";
 
 const allPooltypes = [
   "concentrated",
@@ -59,7 +59,7 @@ export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
   params?: PoolFilter,
-  poolProvider: PoolProvider = getPoolsFromImperator
+  poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
   let pools = await poolProvider({ poolIds: params?.poolIds });
 

@@ -11,7 +11,7 @@ import {
 import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
-import { CheckBox } from "~/components/control";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
@@ -120,12 +120,12 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         </div>
         <div className="md:caption rounded-xl bg-gradient-negative p-[2px]">
           <div className="flex items-center justify-center gap-2 rounded-xlinset bg-osmoverse-800 p-3.5 md:px-12">
-            <CheckBox
-              borderStyles="border-rust-700"
-              backgroundStyles="bg-gradient-negative"
-              isOn={config.acknowledgeFee}
-              onToggle={() => (config.acknowledgeFee = !config.acknowledgeFee)}
-            >
+            <Checkbox
+              variant="destructive"
+              checked={config.acknowledgeFee}
+              onClick={() => (config.acknowledgeFee = !config.acknowledgeFee)}
+            />
+            <label className="cursor-pointer pl-3 md:pl-1">
               {isMobile ? (
                 <div className="mx-auto w-2/3">
                   {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
@@ -133,7 +133,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               ) : (
                 t("pools.createPool.undersandCost", { POOL_CREATION_FEE })
               )}
-            </CheckBox>
+            </label>
           </div>
         </div>
       </div>

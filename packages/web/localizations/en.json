@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
     "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
     "singleAsset": "Single asset",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}",
     "priceImpact": "Price Impact"
@@ -910,7 +909,9 @@
       "all": "All",
       "single": "Single",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Total Value Invested",
+    "lookBelow": "Look below and find best strategies for you"
   },
   "disclaimer": "Disclaimer"
 }

@@ -245,13 +245,15 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const gasCost = await this.estimateGasCost(params, transactionRequest);
 
-        const gasAssetPriceUSD = await getAssetPrice({
-          asset: {
-            coinDenom: gasCost?.denom ?? "",
-            sourceDenom: gasCost?.sourceDenom ?? "",
-          },
-          currency: "usd",
-        });
+        const gasAssetPriceUSD = gasCost
+          ? await getAssetPrice({
+              asset: {
+                coinDenom: gasCost?.denom ?? "",
+                sourceDenom: gasCost?.sourceDenom ?? "",
+              },
+              currency: "usd",
+            })
+          : undefined;
 
         return {
           input: {

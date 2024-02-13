@@ -2,6 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { LARGE_LRU_OPTIONS } from "~/config/cache";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 
@@ -12,24 +13,35 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
+const poolsCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
-/** Lightly cached pools from sidecar service. */
-export function getPoolsFromSidecar({
+export async function getPoolsFromSidecar({
   poolIds,
 }: {
   poolIds?: string[];
 } = {}): Promise<Pool[]> {
+  let eventualPools = await fetchPoolsFromSidecar();
+
+  if (poolIds) {
+    eventualPools = eventualPools.filter((pool) =>
+      poolIds.includes(getPoolIdFromChainPool(pool.chain_model))
+    );
+  }
+
+  const pools = await Promise.all(
+    eventualPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
+  );
+  return pools.filter(Boolean) as Pool[];
+}
+
+function fetchPoolsFromSidecar() {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
-    ttl: 1000, // 1 second
+    key: "sidecar-pools",
+    ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
     getFreshValue: async () => {
-      const sidecarPools = await queryPools({ poolIds });
-      const pools = await Promise.all(
-        sidecarPools.map((sidecarPool) => makePoolFromSidecarPool(sidecarPool))
-      );
-      return pools.filter(Boolean) as Pool[];
+      return queryPools();
     },
   });
 }
@@ -38,23 +50,34 @@ export function getPoolsFromSidecar({
 async function makePoolFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<Pool | undefined> {
-  const reserveCoins = await getListedReservesFromSidecarPool(
-    sidecarPool
-  ).catch(() => null);
+  const poolId = getPoolIdFromChainPool(sidecarPool.chain_model);
+  return cachified({
+    cache: poolsCache,
+    key: "pool-" + poolId,
+    ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 5_000, // 5 seconds
+    getFreshValue: async () => {
+      const reserveCoins = await getListedReservesFromSidecarPool(
+        sidecarPool
+      ).catch(() => null);
 
-  // contains unlisted or invalid assets
-  if (!reserveCoins) return;
+      // contains unlisted or invalid assets
+      if (!reserveCoins) {
+        return;
+      }
 
-  return {
-    id: getPoolIdFromChainPool(sidecarPool.chain_model),
-    type: getPoolTypeFromChainPool(sidecarPool.chain_model),
-    raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
-    spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
-      reserveCoins
-    ),
-  };
+      return {
+        id: getPoolIdFromChainPool(sidecarPool.chain_model),
+        type: getPoolTypeFromChainPool(sidecarPool.chain_model),
+        raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
+        spreadFactor: new RatePretty(sidecarPool.spread_factor),
+        reserveCoins,
+        totalFiatValueLocked: await calcTotalFiatValueLockedFromReserve(
+          reserveCoins
+        ),
+      };
+    },
+  });
 }
 
 function getPoolIdFromChainPool(
