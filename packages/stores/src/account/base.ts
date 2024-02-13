@@ -3,7 +3,6 @@ import {
   AminoMsg,
   encodeSecp256k1Pubkey,
   encodeSecp256k1Signature,
-  makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
