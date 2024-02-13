@@ -229,4 +229,8 @@ export const tableColumns = [
     filterFn: boolEqualsString,
     enableHiding: true,
   }),
+  columnHelper.accessor("hasLockingDuration", {
+    filterFn: boolEquals,
+    enableHiding: true,
+  }),
 ];

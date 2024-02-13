@@ -60,6 +60,7 @@ export interface EarnStrategy {
   risk: number;
   balance: number;
   holdsTokens: boolean;
+  hasLockingDuration: boolean;
 }
 
 /** Queries numia for a earn strategies list. */

@@ -62,6 +62,7 @@ export async function getEarnStrategies() {
             risk: 0,
             balance: 0,
             holdsTokens: false,
+            hasLockingDuration: lockDuration > 0,
           });
         }
         return aggregatedStrategies;
