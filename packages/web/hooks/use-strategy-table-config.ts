@@ -35,6 +35,7 @@ export const useStrategyTableConfig = (
         provider: false,
         holdsTokens: false,
         hasLockingDuration: false,
+        type: false,
       },
       globalFilter: filters!.search,
       columnFilters,

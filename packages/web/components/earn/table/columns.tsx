@@ -17,7 +17,6 @@ import {
   boolEquals,
   boolEqualsString,
   listOptionValueEquals,
-  strictEqualFilter,
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
@@ -206,17 +205,9 @@ export const tableColumns = [
     cell: ActionsCell,
   }),
   columnHelper.accessor("type", {
-    header: () => {},
-    cell: ActionsCell,
-    filterFn: strictEqualFilter,
+    filterFn: listOptionValueEquals,
+    enableHiding: true,
   }),
-  // columnHelper.accessor("type", {
-  //   // here we need to take the type, strip and take the last word, which will correspond to valut | lp | perp lp ecc...
-  //   header: () => {},
-  //   cell: () => {},
-  //   filterFn: strictEqualFilter,
-  //   enableHiding: true,
-  // }),
   columnHelper.accessor("tokenDenoms.coinDenom", {
     header: () => {},
     cell: () => {},

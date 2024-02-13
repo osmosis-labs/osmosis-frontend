@@ -39,17 +39,13 @@ export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   filterValue
 ) => {
   const value = row.getValue(colID) as string;
-  const inputFilter = filterValue as ListOption<string>[];
+  const inputFilter = filterValue as ListOption<string>;
 
-  // If the passed filter is empty, show all strategies
-  if (inputFilter.length === 0) {
+  if (inputFilter.value === "") {
     return true;
   }
 
-  // this checks if in the passed filter contains the value present in the strategy
-  const filterResult = inputFilter.filter((option) => option.value === value);
-
-  return filterResult.length > 0;
+  return inputFilter.value === value;
 };
 
 export const boolEqualsString: FilterFn<EarnStrategy> = (
@@ -86,9 +82,9 @@ export const boolEquals: FilterFn<EarnStrategy> = (row, colID, filterValue) => {
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
-      return "category";
+      return "type";
     case "platform":
-      return "platform";
+      return "provider";
     case "rewardType":
       return "rewards";
     case "search":
