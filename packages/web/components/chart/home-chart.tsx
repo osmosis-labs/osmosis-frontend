@@ -3,29 +3,28 @@ import { ReactNode } from "react";
 import { useMemo } from "react";
 
 import { useChart } from "~/components/chart/lightweight-chart/hooks";
+import { HistoricalPriceData } from "~/components/home/hooks";
 import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
 
-type Data = {
-  time: number;
-  close: number;
-  denom: string;
-  originalClose?: number;
-};
-
 interface HomeChartProps {
-  data: Data[][];
+  data: HistoricalPriceData[][];
   loading?: boolean;
   children?: ReactNode | ((params?: MouseEventParams<Time>) => void);
 }
 
-const _getTransformedData = (data?: Data[]): AreaData[] =>
+const _getTransformedData = (
+  data?: HistoricalPriceData[],
+  crosshairBG?: string
+): AreaData[] =>
   data
     ? data.map((originalData) => ({
         time: originalData.time as Time,
         value: originalData.close,
         customValues: {
-          denom: originalData.denom,
+          denom: originalData.label ?? originalData.coinDenom,
+          crosshairImage: originalData.coinImageUrl,
+          crosshairBG,
         },
       }))
     : [];
@@ -33,8 +32,14 @@ const _getTransformedData = (data?: Data[]): AreaData[] =>
 export const HomeChart = (props: HomeChartProps) => {
   const { data, loading, children } = props;
   const [data1, data2] = data;
-  const firstSeriesData = useMemo(() => _getTransformedData(data1), [data1]);
-  const secondSeriesData = useMemo(() => _getTransformedData(data2), [data2]);
+  const firstSeriesData = useMemo(
+    () => _getTransformedData(data1, theme.colors.wosmongton["300"]),
+    [data1]
+  );
+  const secondSeriesData = useMemo(
+    () => _getTransformedData(data2, theme.colors.ammelia["400"]),
+    [data2]
+  );
 
   const { container, crosshairParams } = useChart({
     options: {

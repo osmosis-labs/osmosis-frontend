@@ -240,6 +240,7 @@ export const useChart = (props: UseChartProps) => {
     });
 
     let tooltipElement: HTMLDivElement;
+    let customCrosshairs: HTMLDivElement[] = [];
 
     if (tooltip) {
       tooltipElement = tooltip.init(container);
@@ -257,6 +258,7 @@ export const useChart = (props: UseChartProps) => {
 
     return () => {
       tooltipElement?.remove();
+      customCrosshairs.forEach((crosshair) => crosshair.remove());
       chart.current?.remove();
       chart.current = undefined;
     };
@@ -264,6 +266,7 @@ export const useChart = (props: UseChartProps) => {
 
   useEffect(() => {
     const areaSeries: ISeriesApi<"Area">[] = [];
+    const crosshairs: HTMLImageElement[] = [];
 
     areaSeriesOptions.forEach((areaSeriesOpt) => {
       const series = chart.current?.addAreaSeries(areaSeriesOpt.options);
@@ -272,12 +275,38 @@ export const useChart = (props: UseChartProps) => {
 
       if (series) {
         areaSeries.push(series);
+
+        const lastSeriesData = [...areaSeriesOpt.data].pop();
+
+        if (lastSeriesData) {
+          const crosshairImage = lastSeriesData.customValues
+            ?.crosshairImage as string;
+
+          if (crosshairImage) {
+            const crosshair = document.createElement("img");
+            crosshair.src = lastSeriesData.customValues
+              ?.crosshairImage as string;
+            crosshair.style.background = lastSeriesData.customValues
+              ?.crosshairBG as string;
+            crosshair.className = `rounded-full w-7 h-7 p-0.5 -translate-y-1/2 absolute pointer-events-none z-[1000]`;
+            container.current?.appendChild(crosshair);
+
+            crosshair.style.right = "0px";
+            crosshair.style.top =
+              series.priceToCoordinate(lastSeriesData.value) + "px";
+
+            crosshairs.push(crosshair);
+          }
+        }
       }
     });
 
     chart.current?.timeScale().fitContent();
 
     return () => {
+      crosshairs.forEach((crosshair) => {
+        crosshair.remove();
+      });
       areaSeries.forEach((series) => {
         chart.current?.removeSeries(series);
       });

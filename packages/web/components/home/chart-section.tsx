@@ -39,13 +39,19 @@ export const ChartSection = ({
       findMinDenomOrSymbol: to,
     });
 
-  const {
-    result: { data: fromAssetChartData, isLoading: isFromChartDataLoading },
-  } = useSwapHistoricalPrice(from, urlTimeFrame);
+  const { data: fromAssetChartData, isLoading: isFromChartDataLoading } =
+    useSwapHistoricalPrice({
+      coinDenom: from,
+      timeFrame: urlTimeFrame,
+      asset: fromAssetMarketData,
+    });
 
-  const {
-    result: { data: toAssetChartData, isLoading: isToChartDataLoading },
-  } = useSwapHistoricalPrice(to, urlTimeFrame);
+  const { data: toAssetChartData, isLoading: isToChartDataLoading } =
+    useSwapHistoricalPrice({
+      coinDenom: to,
+      timeFrame: urlTimeFrame,
+      asset: toAssetMarketData,
+    });
 
   const [showPairRatio, setShowPairRatio] = useState(false);
   const [isTimeFrameSelectorOpen, setIsTimeFrameSelectorOpen] = useState(false);
@@ -65,7 +71,7 @@ export const ChartSection = ({
     }
 
     return [];
-  }, [fromAssetChartData, pairRatios, showPairRatio, toAssetChartData]);
+  }, [pairRatios, fromAssetChartData, showPairRatio, toAssetChartData]);
 
   return (
     <section

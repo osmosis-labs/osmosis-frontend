@@ -1,4 +1,5 @@
 import { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
+import { DeepPartial } from "lightweight-charts";
 import { useRouter } from "next/router";
 import {
   parseAsString,
@@ -8,13 +9,25 @@ import {
 } from "nuqs";
 import { useMemo } from "react";
 
-import { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
+import {
+  Asset,
+  CommonPriceChartTimeFrame,
+} from "~/server/queries/complex/assets";
 import * as trpc from "~/utils/trpc";
 
-export const useSwapHistoricalPrice = (
-  coinDenom: string,
-  timeFrame?: CommonPriceChartTimeFrame
-) => {
+interface UseSwapHistoricalPriceProps {
+  asset?: Asset;
+  coinDenom: string;
+  timeFrame?: CommonPriceChartTimeFrame;
+}
+
+export type HistoricalPriceData = TokenHistoricalPrice &
+  DeepPartial<Asset> & {
+    label?: string;
+  };
+
+export const useSwapHistoricalPrice = (props: UseSwapHistoricalPriceProps) => {
+  const { coinDenom, timeFrame, asset } = props;
   /**
    * Need to have a custom graph so you have more points to plot
    */
@@ -47,29 +60,26 @@ export const useSwapHistoricalPrice = (
     };
   }, [timeFrame]);
 
-  const result = trpc.api.edge.assets.getAssetHistoricalPrice.useQuery(
-    {
+  const { data: dataRaw, ...rest } =
+    trpc.api.edge.assets.getAssetHistoricalPrice.useQuery({
       timeFrame: {
         custom: customTimeFrame,
       },
       coinDenom,
-    },
-    {
-      select: (data) =>
-        data.map(
-          (d) =>
-            ({
-              ...d,
-              denom: coinDenom,
-            } as TokenHistoricalPrice & {
-              denom: string;
-            })
-        ),
+    });
+
+  const data = useMemo(() => {
+    if (dataRaw) {
+      return dataRaw.map((assetHistoricalPrice) => ({
+        ...assetHistoricalPrice,
+        ...asset,
+      })) as (TokenHistoricalPrice & Asset)[];
     }
-  );
+  }, [asset, dataRaw]);
 
   return {
-    result,
+    data,
+    ...rest,
   };
 };
 

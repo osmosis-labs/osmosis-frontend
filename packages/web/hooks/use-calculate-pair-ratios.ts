@@ -1,16 +1,12 @@
-import { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
 import { useMemo } from "react";
 
-export type AssetChartData =
-  | (TokenHistoricalPrice & {
-      denom: string;
-    })[];
+import { HistoricalPriceData } from "~/components/home/hooks";
 
 const calculatePairRatios = (
-  from?: AssetChartData,
-  to?: AssetChartData
-): AssetChartData => {
-  const ratios: AssetChartData = [];
+  from?: HistoricalPriceData[],
+  to?: HistoricalPriceData[]
+) => {
+  const ratios: HistoricalPriceData[] = [];
 
   if (from && to && from.length === to.length) {
     from.forEach((from, i) => {
@@ -23,7 +19,7 @@ const calculatePairRatios = (
 
       // Push ratios to the array
       ratios.push({
-        denom: `${from.denom}/${to[i].denom}`,
+        label: `${from.coinDenom}/${to[i].coinDenom}`,
         close: closeRatio,
         high: highRatio,
         low: lowRatio,
@@ -33,12 +29,13 @@ const calculatePairRatios = (
       });
     });
   }
+
   return ratios;
 };
 
 export const useCalculatePairRatios = (
-  from?: AssetChartData,
-  to?: AssetChartData
+  from?: HistoricalPriceData[],
+  to?: HistoricalPriceData[]
 ) => {
   const ratios = useMemo(() => calculatePairRatios(from, to), [from, to]);
 
