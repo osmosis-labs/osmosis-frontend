@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { Fragment, FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { UserSetting } from "~/stores/user-settings";
@@ -24,8 +24,8 @@ export class HideBalancesUserSetting implements UserSetting<HideBalancesState> {
             <div className="flex items-center justify-between">
               <Icon id="zoom-out" className="text-osmoverse-200" />
               <Switch
-                isOn={hideBalances}
-                onToggle={() => {
+                checked={hideBalances}
+                onCheckedChange={() => {
                   this.setState({ hideBalances: !hideBalances });
                 }}
               />

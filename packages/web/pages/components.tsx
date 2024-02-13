@@ -35,7 +35,6 @@ import {
   Radio,
   Slider,
   StakeTab,
-  Switch,
 } from "~/components/control";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -53,7 +52,7 @@ import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Slider as SliderShadcn } from "~/components/ui/slider";
-import { Switch as SwitchShadcn } from "~/components/ui/switch";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -638,19 +637,19 @@ const CustomButtons = () => {
   );
 };
 
-const SwitchesShadcn = () => {
+const Switches = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   return (
     <Card title="Switch (Shadcn)">
       <Component title="Regular">
-        <SwitchShadcn
+        <Switch
           checked={isSwitchOn}
           onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
       </Component>
       <Component title="Disabled">
-        <SwitchShadcn
+        <Switch
           disabled
           checked={isSwitchOn}
           onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
@@ -661,59 +660,26 @@ const SwitchesShadcn = () => {
           <label className="text-white pr-[15px] text-[15px] leading-none">
             Child
           </label>
-          <SwitchShadcn
+          <Switch
             checked={isSwitchOn}
             onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
           >
             Child
-          </SwitchShadcn>
+          </Switch>
         </div>
       </Component>
       <Component title="Children - Right">
         <div className="flex items-center">
-          <SwitchShadcn
+          <Switch
             checked={isSwitchOn}
             onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
           >
             Child
-          </SwitchShadcn>
+          </Switch>
           <label className="text-white pl-[15px] text-[15px] leading-none">
             Child
           </label>
         </div>
-      </Component>
-    </Card>
-  );
-};
-
-const Switches = () => {
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
-
-  return (
-    <Card title="Switch">
-      <Component title="Regular">
-        <Switch isOn={isSwitchOn} onToggle={() => setIsSwitchOn(!isSwitchOn)} />
-      </Component>
-      <Component title="Disabled">
-        <Switch
-          disabled
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
-        />
-      </Component>
-      <Component title="Children - Left">
-        <Switch isOn={isSwitchOn} onToggle={() => setIsSwitchOn(!isSwitchOn)}>
-          <span>Child</span>
-        </Switch>
-      </Component>
-      <Component title="Children - Right">
-        <Switch
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
-          labelPosition="right"
-        >
-          <span>Child</span>
-        </Switch>
       </Component>
     </Card>
   );
@@ -1241,7 +1207,6 @@ const Components: NextPage = () => {
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
 
-      <SwitchesShadcn />
       <Switches />
 
       <ButtonsShadcn />

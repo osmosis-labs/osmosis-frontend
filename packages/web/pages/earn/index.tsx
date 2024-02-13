@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   FilterProvider,
