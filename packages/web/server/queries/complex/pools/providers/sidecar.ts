@@ -13,7 +13,7 @@ import { Pool, PoolType } from "../index";
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
 const poolsCache = new LRUCache<string, CacheEntry>({
-  max: 50,
+  max: 20,
 });
 
 /** Lightly cached pools from sidecar service. */
