@@ -14,5 +14,5 @@ export const LARGE_LRU_OPTIONS: LRUCache.Options<
   CacheEntry<unknown>,
   unknown
 > = {
-  max: 1_500,
+  max: 2_000,
 };
