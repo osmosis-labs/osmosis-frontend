@@ -1,4 +1,4 @@
-import { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
+import type { TokenHistoricalPrice } from "@osmosis-labs/stores/build/queries-external/token-historical-chart/types";
 import { DeepPartial } from "lightweight-charts";
 import { useRouter } from "next/router";
 import {
