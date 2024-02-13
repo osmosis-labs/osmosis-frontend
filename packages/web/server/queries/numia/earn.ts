@@ -46,6 +46,8 @@ export type RawEarnStrategy = {
   rewardDenoms: EarnStrategyToken[];
 };
 
+export type tokensType = "stablecoins" | "correlated" | "bluechip";
+
 export interface EarnStrategy {
   id: string;
   name: string;
@@ -61,6 +63,7 @@ export interface EarnStrategy {
   balance: number;
   holdsTokens: boolean;
   hasLockingDuration: boolean;
+  tokensType: tokensType;
 }
 
 /** Queries numia for a earn strategies list. */

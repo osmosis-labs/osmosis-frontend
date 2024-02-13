@@ -63,6 +63,7 @@ export async function getEarnStrategies() {
             balance: 0,
             holdsTokens: false,
             hasLockingDuration: lockDuration > 0,
+            tokensType: "stablecoins", // todo
           });
         }
         return aggregatedStrategies;

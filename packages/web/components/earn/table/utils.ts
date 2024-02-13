@@ -7,9 +7,8 @@ import { EarnStrategy } from "~/server/queries/numia/earn";
 export const strictEqualFilter: FilterFn<EarnStrategy> = (
   row,
   colID,
-  _filterValue
+  filterValue
 ) => {
-  const filterValue = _filterValue.value;
   if (filterValue === "") {
     return true;
   }
@@ -46,6 +45,25 @@ export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   }
 
   return inputFilter.value === value;
+};
+
+export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const value = row.getValue(colID) as string;
+  const inputFilter = filterValue as ListOption<string>[];
+
+  // If the passed filter is empty, show all strategies
+  if (inputFilter.length === 0) {
+    return true;
+  }
+
+  // this checks if in the passed filter contains the value present in the strategy
+  const filterResult = inputFilter.filter((option) => option.value === value);
+
+  return filterResult.length > 0;
 };
 
 export const boolEqualsString: FilterFn<EarnStrategy> = (
@@ -94,7 +112,7 @@ export const _getKey = (k: keyof Filters) => {
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "platform";
+      return "tokensType";
     default:
       return k;
   }

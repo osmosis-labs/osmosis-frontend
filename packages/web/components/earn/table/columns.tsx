@@ -17,6 +17,7 @@ import {
   boolEquals,
   boolEqualsString,
   listOptionValueEquals,
+  multiListOptionValueEquals,
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
@@ -226,6 +227,10 @@ export const tableColumns = [
   }),
   columnHelper.accessor("hasLockingDuration", {
     filterFn: boolEquals,
+    enableHiding: true,
+  }),
+  columnHelper.accessor("tokensType", {
+    filterFn: multiListOptionValueEquals,
     enableHiding: true,
   }),
 ];
