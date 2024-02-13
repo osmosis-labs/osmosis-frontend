@@ -550,6 +550,12 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7&token1=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
   },
+  ASTRO: {
+    depositUrlOverride:
+      "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4",
+    withdrawUrlOverride:
+      "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
