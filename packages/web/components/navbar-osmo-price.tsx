@@ -40,7 +40,7 @@ const NavbarOsmoPrice = observer(() => {
     findMinDenomOrSymbol: "OSMO",
   });
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
-    osmoCurrency!,
+    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
     { enabled: Boolean(osmoCurrency) }
   );
 
@@ -60,10 +60,7 @@ const NavbarOsmoPrice = observer(() => {
               />
             </div>
 
-            <p className="mt-[3px]">
-              {osmoPrice.fiatCurrency.symbol}
-              {Number(osmoPrice.toDec().toString()).toFixed(2)}
-            </p>
+            <p className="mt-[3px]">{osmoPrice.toString()}</p>
           </div>
         </SkeletonLoader>
 
