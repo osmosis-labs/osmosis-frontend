@@ -105,11 +105,15 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
               [
                 {
                   id: "fixed-amount",
-                  display: t("oneClickTrading.spendLimitScreen.fixedAmount"),
+                  display: t(
+                    "oneClickTrading.settings.spendLimitScreen.fixedAmount"
+                  ),
                 },
                 {
                   id: "share-of-balance",
-                  display: t("oneClickTrading.spendLimitScreen.shareOfBalance"),
+                  display: t(
+                    "oneClickTrading.settings.spendLimitScreen.shareOfBalance"
+                  ),
                 },
               ] as { id: SpendLimitViews; display: string }[]
             }
