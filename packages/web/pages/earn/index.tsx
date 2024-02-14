@@ -1,4 +1,5 @@
 import { PricePretty } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -27,7 +28,7 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-export default function Earn() {
+function Earn() {
   const { t } = useTranslation();
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
@@ -194,3 +195,5 @@ export default function Earn() {
     </div>
   );
 }
+
+export default observer(Earn);
