@@ -12,13 +12,7 @@
  */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import type {
-  Asset,
-  AssetList,
-  Chain,
-  ChainList,
-  ResponseAssetList,
-} from "@osmosis-labs/types";
+import type { Asset, AssetList, Chain, ChainList } from "@osmosis-labs/types";
 import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
@@ -43,6 +37,11 @@ import {
   getImageRelativeFilePath,
   getOsmosisChainId,
 } from "./utils";
+
+interface ResponseAssetList {
+  chain_name: string;
+  assets: Omit<Asset, "chain_id">[];
+}
 
 const repo = "osmosis-labs/assetlists";
 
