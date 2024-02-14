@@ -42,7 +42,7 @@ export default function Earn() {
       trpc: { context: { skipBatch: true } },
     });
 
-  const queries = api.useQueries((q) =>
+  const balanceQueries = api.useQueries((q) =>
     (isWalletConnected ? strategies ?? [] : []).map((strat) =>
       q.edge.earn.getStrategyBalance(
         {
@@ -59,15 +59,15 @@ export default function Earn() {
   );
 
   const areQueriesLoading = useMemo(
-    () => queries.some((q) => q.isLoading === true),
-    [queries]
+    () => balanceQueries.some((q) => q.isLoading === true),
+    [balanceQueries]
   );
 
   const { totalBalance, joinedStrategiesIds } = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     const joinedStrategiesIds: string[] = [];
 
-    queries.forEach((query) => {
+    balanceQueries.forEach((query) => {
       if (query.data) {
         if (!query.data.balance.usd.toDec().isZero()) {
           joinedStrategiesIds.push(query.data.id);
@@ -77,7 +77,7 @@ export default function Earn() {
     });
 
     return { totalBalance: accumulatedBalance, joinedStrategiesIds };
-  }, [queries]);
+  }, [balanceQueries]);
 
   const defaultFilters: Filters = useMemo(
     () => ({
