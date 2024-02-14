@@ -35,6 +35,7 @@ export default function Earn() {
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const userOsmoAddress = account?.address ?? "";
+  const isWalletConnected = account?.isWalletConnected;
 
   const { data: strategies, isLoading: areStrategiesLoading } =
     api.edge.earn.getEarnStrategies.useQuery(undefined, {
@@ -42,7 +43,7 @@ export default function Earn() {
     });
 
   const queries = api.useQueries((q) =>
-    (strategies ?? []).map((strat) =>
+    (isWalletConnected ? strategies ?? [] : []).map((strat) =>
       q.edge.earn.getStrategyBalance(
         {
           strategyId: strat.id,
