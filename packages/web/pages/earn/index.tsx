@@ -20,6 +20,7 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
+import { Spinner } from "~/components/loaders";
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
@@ -35,7 +36,11 @@ export default function Earn() {
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const userOsmoAddress = account?.address ?? "";
 
-  const { data: strategies } = api.edge.earn.getEarnStrategies.useQuery();
+  const { data: strategies, isLoading: areStrategiesLoading } =
+    api.edge.earn.getEarnStrategies.useQuery(undefined, {
+      trpc: { context: { skipBatch: true } },
+    });
+
   const queries = api.useQueries((q) =>
     (strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyBalance(
@@ -140,45 +145,51 @@ export default function Earn() {
         </div> */}
         <EarnRewards />
       </div>
-      <FilterProvider defaultFilters={defaultFilters}>
-        <Tabs className="flex flex-col">
-          <TabButtons>
-            <TabButton
-              withBasePadding
-              withTextOpacity
-              className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
-            >
-              {t("earnPage.discoverStrategies")}
-            </TabButton>
-            <TabButton
-              withBasePadding
-              withTextOpacity
-              className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
-            >
-              {t("earnPage.myStrategies")}
-            </TabButton>
-          </TabButtons>
-          <TabHeader>
-            <TopFilters />
-          </TabHeader>
-          <TabPanels>
-            <TabPanel
-              showBottomBlock
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
-              displayMode="flex"
-            >
-              <StrategiesTable showBalance={false} />
-            </TabPanel>
-            <TabPanel
-              showBottomBlock
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
-              displayMode="flex"
-            >
-              <StrategiesTable showBalance />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </FilterProvider>
+      {!areStrategiesLoading && strategies ? (
+        <FilterProvider defaultFilters={defaultFilters}>
+          <Tabs className="flex flex-col">
+            <TabButtons>
+              <TabButton
+                withBasePadding
+                withTextOpacity
+                className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
+              >
+                {t("earnPage.discoverStrategies")}
+              </TabButton>
+              <TabButton
+                withBasePadding
+                withTextOpacity
+                className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
+              >
+                {t("earnPage.myStrategies")}
+              </TabButton>
+            </TabButtons>
+            <TabHeader>
+              <TopFilters />
+            </TabHeader>
+            <TabPanels>
+              <TabPanel
+                showBottomBlock
+                className="flex-col rounded-br-5xl rounded-bl-5xl"
+                displayMode="flex"
+              >
+                <StrategiesTable strategies={strategies} showBalance={false} />
+              </TabPanel>
+              <TabPanel
+                showBottomBlock
+                className="flex-col rounded-br-5xl rounded-bl-5xl"
+                displayMode="flex"
+              >
+                <StrategiesTable strategies={strategies} showBalance />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </FilterProvider>
+      ) : (
+        <div className="flex items-center justify-center">
+          <Spinner />
+        </div>
+      )}
     </div>
   );
 }
