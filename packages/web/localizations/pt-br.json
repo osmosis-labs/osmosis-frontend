@@ -482,7 +482,13 @@
       "spendLimitTitle": "Limite de gastos",
       "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
-      "startButton": "Comece a negociação com 1 clique"
+      "startButton": "Comece a negociação com 1 clique",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Defina o valor máximo que você pode gastar em um período de sessão de negociação com 1 clique.",
+        "shareOfBalance": "Participação no saldo",
+        "shareOfBalanceInputTooltip": "Insira uma porcentagem do seu saldo total",
+        "shareOfBalanceDescription": "{shareOfBalance} do seu saldo total no Osmosis vale atualmente"
+      }
     },
     "welcomeBack": {
       "title": "bem vindo de volta",

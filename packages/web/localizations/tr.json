@@ -482,7 +482,13 @@
       "spendLimitTitle": "Harcama Limiti",
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
-      "startButton": "Tek Tıklamayla Ticareti Başlatın"
+      "startButton": "Tek Tıklamayla Ticareti Başlatın",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
+        "shareOfBalance": "Bakiye payı",
+        "shareOfBalanceInputTooltip": "Toplam bakiyenizin bir yüzdesini girin",
+        "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir"
+      }
     },
     "welcomeBack": {
       "title": "tekrar hoşgeldiniz",

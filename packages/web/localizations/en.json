@@ -482,7 +482,15 @@
       "spendLimitTitle": "Spend Limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
-      "startButton": "Start 1-Click Trading"
+      "startButton": "Start 1-Click Trading",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
+        "fixedAmount": "Fixed amount",
+        "shareOfBalance": "Share of balance",
+        "shareOfBalanceInputTooltip": "Enter a percentage of your total balance",
+        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
+        "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
+      }
     },
     "welcomeBack": {
       "title": "Welcome back",

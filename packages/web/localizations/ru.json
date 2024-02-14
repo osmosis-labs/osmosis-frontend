@@ -482,7 +482,13 @@
       "spendLimitTitle": "Лимит расходов",
       "networkFeeLimitTitle": "Лимит сетевой комиссии",
       "sessionPeriodTitle": "Период сессии",
-      "startButton": "Начать торговлю в 1 клик"
+      "startButton": "Начать торговлю в 1 клик",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Установите максимальную сумму, которую вы можете потратить в течение периода торговой сессии в 1 клик.",
+        "shareOfBalance": "Доля баланса",
+        "shareOfBalanceInputTooltip": "Введите процент от вашего общего баланса",
+        "shareOfBalanceDescription": "{shareOfBalance} вашего общего баланса на Osmosis в настоящее время составляет"
+      }
     },
     "welcomeBack": {
       "title": "Добро пожаловать",

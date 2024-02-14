@@ -482,7 +482,13 @@
       "spendLimitTitle": "Limit wydatków",
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
-      "startButton": "Rozpocznij handel jednym kliknięciem"
+      "startButton": "Rozpocznij handel jednym kliknięciem",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
+        "shareOfBalance": "Udział równowagi",
+        "shareOfBalanceInputTooltip": "Wprowadź procent całkowitego salda",
+        "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte"
+      }
     },
     "welcomeBack": {
       "title": "Witamy spowrotem",

@@ -482,7 +482,13 @@
       "spendLimitTitle": "ખર્ચ મર્યાદા",
       "networkFeeLimitTitle": "નેટવર્ક ફી મર્યાદા",
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
-      "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો"
+      "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
+      "spendLimitScreen": {
+        "spendLimitDescription": "1-ક્લિક ટ્રેડિંગ સત્ર સમયગાળામાં તમે ખર્ચ કરી શકો તે મહત્તમ રકમ સેટ કરો.",
+        "shareOfBalance": "સંતુલનનો હિસ્સો",
+        "shareOfBalanceInputTooltip": "તમારા કુલ બેલેન્સની ટકાવારી દાખલ કરો",
+        "shareOfBalanceDescription": "ઓસ્મોસિસ પરના તમારા કુલ બેલેન્સના {shareOfBalance} હાલમાં મૂલ્યના છે"
+      }
     },
     "welcomeBack": {
       "title": "ફરી સ્વાગત છે",

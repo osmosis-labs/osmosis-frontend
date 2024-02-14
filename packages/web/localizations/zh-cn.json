@@ -482,7 +482,13 @@
       "spendLimitTitle": "消费限额",
       "networkFeeLimitTitle": "网络费用限额",
       "sessionPeriodTitle": "会议期间",
-      "startButton": "开始一键交易"
+      "startButton": "开始一键交易",
+      "spendLimitScreen": {
+        "spendLimitDescription": "设置您在一键交易会话期间可以花费的最大金额。",
+        "shareOfBalance": "余额份额",
+        "shareOfBalanceInputTooltip": "输入占总余额的百分比",
+        "shareOfBalanceDescription": "您在 Osmosis 上的总余额的{shareOfBalance}目前价值"
+      }
     },
     "welcomeBack": {
       "title": "欢迎回来",

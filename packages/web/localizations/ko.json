@@ -482,7 +482,13 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "startButton": "1-클릭 거래 시작"
+      "startButton": "1-클릭 거래 시작",
+      "spendLimitScreen": {
+        "spendLimitDescription": "1-클릭 거래 세션 기간 내에 지출할 수 있는 최대 금액을 설정하세요.",
+        "shareOfBalance": "잔액의 점유율",
+        "shareOfBalanceInputTooltip": "총 잔액의 백분율을 입력하세요.",
+        "shareOfBalanceDescription": "귀하의 Osmosis 총 잔액 중 현재 가치는 {shareOfBalance}"
+      }
     },
     "welcomeBack": {
       "title": "돌아온 것을 환영합니다",

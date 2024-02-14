@@ -482,7 +482,13 @@
       "spendLimitTitle": "محدودیت هزینه",
       "networkFeeLimitTitle": "محدودیت هزینه شبکه",
       "sessionPeriodTitle": "دوره جلسه",
-      "startButton": "شروع تجارت با 1 کلیک"
+      "startButton": "شروع تجارت با 1 کلیک",
+      "spendLimitScreen": {
+        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "shareOfBalance": "سهم تعادل",
+        "shareOfBalanceInputTooltip": "درصدی از کل موجودی خود را وارد کنید",
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد"
+      }
     },
     "welcomeBack": {
       "title": "خوش برگشتی",

@@ -97,8 +97,7 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
           {t("oneClickTrading.settings.spendLimitTitle")}
         </h1>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
-          Set the maximum amount that you can spend within a 1-Click Trading
-          session period.
+          {t("oneClickTrading.settings.spendLimitScreen.spendLimitDescription")}
         </p>
         {!!account?.address && (
           <MenuToggle
@@ -222,8 +221,12 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
             </ul>
 
             <p className="subtitle2 rounded-xl border border-osmoverse-500 px-4 py-2 text-center text-osmoverse-300">
-              {formatShareOfBalance(shareOfBalance.value)} of you total balance
-              on Osmosis is currently worth{" "}
+              {t(
+                "oneClickTrading.settings.spendLimitScreen.shareOfBalanceDescription",
+                {
+                  shareOfBalance: formatShareOfBalance(shareOfBalance.value),
+                }
+              )}{" "}
               <SkeletonLoader
                 className="inline"
                 isLoaded={!isLoadingUserAssetsBreakdown}
@@ -245,8 +248,7 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
         </ScreenManager>
 
         <p className="text-center text-caption font-caption text-osmoverse-200">
-          Be advised that the USD value of your spend limit is based on the
-          value of your assets which may fluctuate.
+          {t("oneClickTrading.settings.spendLimitScreen.fluctuationNotice")}
         </p>
       </div>
     </>
