@@ -487,7 +487,6 @@
         "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
         "fixedAmount": "Sabit miktar",
         "shareOfBalance": "Bakiye payı",
-        "shareOfBalanceInputTooltip": "Toplam bakiyenizin bir yüzdesini girin",
         "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir",
         "fluctuationNotice": "Harcama limitinizin ABD doları değerinin, varlıklarınızın dalgalanabilecek değerine bağlı olduğunu unutmayın."
       }

@@ -487,7 +487,6 @@
         "spendLimitDescription": "Establezca la cantidad máxima que puede gastar dentro de un período de sesión de negociación con 1 clic.",
         "fixedAmount": "Cantidad fija",
         "shareOfBalance": "Participación del saldo",
-        "shareOfBalanceInputTooltip": "Ingrese un porcentaje de su saldo total",
         "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente",
         "fluctuationNotice": "Tenga en cuenta que el valor en USD de su límite de gasto se basa en el valor de sus activos, que pueden fluctuar."
       }

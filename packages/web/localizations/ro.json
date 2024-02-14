@@ -487,7 +487,6 @@
         "spendLimitDescription": "Setați suma maximă pe care o puteți cheltui într-o perioadă de sesiune de tranzacționare cu 1 clic.",
         "fixedAmount": "Cantitate fixă",
         "shareOfBalance": "Ponderea soldului",
-        "shareOfBalanceInputTooltip": "Introduceți un procent din soldul total",
         "shareOfBalanceDescription": "{shareOfBalance} din soldul total pe osmoză valorează în prezent",
         "fluctuationNotice": "Rețineți că valoarea în USD a limitei dvs. de cheltuieli se bazează pe valoarea activelor dvs., care poate fluctua."
       }

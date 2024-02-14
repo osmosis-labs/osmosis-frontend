@@ -487,7 +487,6 @@
         "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
         "fixedAmount": "Fester Betrag",
         "shareOfBalance": "Anteil des Guthabens",
-        "shareOfBalanceInputTooltip": "Geben Sie einen Prozentsatz Ihres Gesamtguthabens ein",
         "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
         "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
       }

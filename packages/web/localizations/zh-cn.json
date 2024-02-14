@@ -487,7 +487,6 @@
         "spendLimitDescription": "设置您在一键交易会话期间可以花费的最大金额。",
         "fixedAmount": "固定值",
         "shareOfBalance": "余额份额",
-        "shareOfBalanceInputTooltip": "输入占总余额的百分比",
         "shareOfBalanceDescription": "您在 Osmosis 上的总余额的{shareOfBalance}目前价值",
         "fluctuationNotice": "请注意，您的支出限额的美元价值取决于您的资产价值，该价值可能会波动。"
       }

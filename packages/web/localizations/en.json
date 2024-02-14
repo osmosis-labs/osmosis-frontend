@@ -487,7 +487,6 @@
         "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
         "fixedAmount": "Fixed amount",
         "shareOfBalance": "Share of balance",
-        "shareOfBalanceInputTooltip": "Enter a percentage of your total balance",
         "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
         "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
       }

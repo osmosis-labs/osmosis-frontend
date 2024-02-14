@@ -487,7 +487,6 @@
         "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
         "fixedAmount": "مقدار ثابت",
         "shareOfBalance": "سهم تعادل",
-        "shareOfBalanceInputTooltip": "درصدی از کل موجودی خود را وارد کنید",
         "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
         "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
       }
