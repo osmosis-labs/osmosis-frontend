@@ -485,9 +485,11 @@
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "spendLimitScreen": {
         "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
+        "fixedAmount": "Stała kwota",
         "shareOfBalance": "Udział równowagi",
         "shareOfBalanceInputTooltip": "Wprowadź procent całkowitego salda",
-        "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte"
+        "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte",
+        "fluctuationNotice": "Pamiętaj, że wartość Twojego limitu wydatków w USD opiera się na wartości Twoich aktywów, która może się zmieniać."
       }
     },
     "welcomeBack": {

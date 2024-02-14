@@ -485,9 +485,11 @@
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "spendLimitScreen": {
         "spendLimitDescription": "1-ક્લિક ટ્રેડિંગ સત્ર સમયગાળામાં તમે ખર્ચ કરી શકો તે મહત્તમ રકમ સેટ કરો.",
+        "fixedAmount": "નિશ્ચિત રકમ",
         "shareOfBalance": "સંતુલનનો હિસ્સો",
         "shareOfBalanceInputTooltip": "તમારા કુલ બેલેન્સની ટકાવારી દાખલ કરો",
-        "shareOfBalanceDescription": "ઓસ્મોસિસ પરના તમારા કુલ બેલેન્સના {shareOfBalance} હાલમાં મૂલ્યના છે"
+        "shareOfBalanceDescription": "ઓસ્મોસિસ પરના તમારા કુલ બેલેન્સના {shareOfBalance} હાલમાં મૂલ્યના છે",
+        "fluctuationNotice": "ધ્યાન રાખો કે તમારી ખર્ચ મર્યાદાનું USD મૂલ્ય તમારી સંપત્તિના મૂલ્ય પર આધારિત છે જેમાં વધઘટ થઈ શકે છે."
       }
     },
     "welcomeBack": {

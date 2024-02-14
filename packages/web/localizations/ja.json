@@ -485,9 +485,11 @@
       "startButton": "1-Click取引を開始する",
       "spendLimitScreen": {
         "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
+        "fixedAmount": "定額",
         "shareOfBalance": "残高のシェア",
         "shareOfBalanceInputTooltip": "総残高に対する割合を入力してください",
-        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります"
+        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
+        "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
       }
     },
     "welcomeBack": {

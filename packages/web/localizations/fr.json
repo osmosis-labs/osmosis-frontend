@@ -485,9 +485,11 @@
       "startButton": "Commencez le trading en 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
+        "fixedAmount": "Montant fixé",
         "shareOfBalance": "Part du solde",
         "shareOfBalanceInputTooltip": "Entrez un pourcentage de votre solde total",
-        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement"
+        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement",
+        "fluctuationNotice": "Sachez que la valeur en USD de votre limite de dépenses est basée sur la valeur de vos actifs, qui peut fluctuer."
       }
     },
     "welcomeBack": {
