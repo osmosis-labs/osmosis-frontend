@@ -103,8 +103,14 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
           <MenuToggle
             options={
               [
-                { id: "fixed-amount", display: "Fixed amount" },
-                { id: "share-of-balance", display: "Share of balance" },
+                {
+                  id: "fixed-amount",
+                  display: t("oneClickTrading.spendLimitScreen.fixedAmount"),
+                },
+                {
+                  id: "share-of-balance",
+                  display: t("oneClickTrading.spendLimitScreen.shareOfBalance"),
+                },
               ] as { id: SpendLimitViews; display: string }[]
             }
             selectedOptionId={selectedView}
