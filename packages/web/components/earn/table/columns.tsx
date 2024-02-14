@@ -88,7 +88,7 @@ export const tableColumns = [
             src={coinImageUrl ?? ""}
             alt={`${coinDenom} image`}
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
+            className={classNames("h-9 w-9 rounded-full", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
@@ -160,7 +160,7 @@ export const tableColumns = [
             src={coinImageUrl ?? ""}
             alt={`${coinDenom} image`}
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            className={classNames("h-6 w-6 rounded-full bg-osmoverse-300", {
+            className={classNames("h-6 w-6 rounded-full", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
