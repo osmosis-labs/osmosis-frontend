@@ -88,7 +88,7 @@ export const tableColumns = [
             src={coinImageUrl ?? ""}
             alt={`${coinDenom} image`}
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            className={classNames("h-9 w-9 rounded-full", {
+            className={classNames("h-9 min-w-[36px] rounded-full", {
               "-ml-4": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
