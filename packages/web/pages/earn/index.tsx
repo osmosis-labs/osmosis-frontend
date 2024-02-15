@@ -24,6 +24,7 @@ import {
 import { Spinner } from "~/components/loaders";
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -64,21 +65,47 @@ function Earn() {
     [balanceQueries]
   );
 
-  const { totalBalance, joinedStrategiesIds } = useMemo(() => {
+  const {
+    totalBalance,
+    joinedStrategiesIds,
+    myStrategies,
+    totalUnclaimedRewards,
+  } = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+    let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     const joinedStrategiesIds: string[] = [];
+    const myStrategies: EarnStrategy[] = [];
 
-    balanceQueries.forEach((query) => {
-      if (query.data) {
-        if (!query.data.balance.usd.toDec().isZero()) {
-          joinedStrategiesIds.push(query.data.id);
+    balanceQueries.forEach((balanceQuery) => {
+      if (balanceQuery.data) {
+        if (!balanceQuery.data.balance.usd.toDec().isZero()) {
+          const queriedStrategyId = balanceQuery.data.id;
+          joinedStrategiesIds.push(queriedStrategyId);
+          const earnStrategy = strategies?.find(
+            (s) => s.id === queriedStrategyId
+          );
+          if (earnStrategy)
+            myStrategies.push({
+              ...earnStrategy,
+              balance: balanceQuery.data.balance.usd,
+            });
         }
-        accumulatedBalance = accumulatedBalance.add(query.data.balance.usd);
+        accumulatedUnclaimedRewards = accumulatedUnclaimedRewards.add(
+          balanceQuery.data.unclaimed_rewards.usd
+        );
+        accumulatedBalance = accumulatedBalance.add(
+          balanceQuery.data.balance.usd
+        );
       }
     });
 
-    return { totalBalance: accumulatedBalance, joinedStrategiesIds };
-  }, [balanceQueries]);
+    return {
+      totalBalance: accumulatedBalance,
+      joinedStrategiesIds,
+      myStrategies,
+      totalUnclaimedRewards: accumulatedUnclaimedRewards,
+    };
+  }, [balanceQueries, strategies]);
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -145,7 +172,7 @@ function Earn() {
             </TabPanels>
           </Tabs>
         </div> */}
-        <EarnRewards />
+        <EarnRewards totalUnclaimedRewards={totalUnclaimedRewards} />
       </div>
       {!areStrategiesLoading && strategies ? (
         <FilterProvider defaultFilters={defaultFilters}>
@@ -182,7 +209,7 @@ function Earn() {
                 className="flex-col rounded-br-5xl rounded-bl-5xl"
                 displayMode="flex"
               >
-                <StrategiesTable strategies={strategies} showBalance />
+                <StrategiesTable strategies={myStrategies} showBalance />
               </TabPanel>
             </TabPanels>
           </Tabs>

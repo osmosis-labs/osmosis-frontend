@@ -1,7 +1,14 @@
+import { PricePretty } from "@keplr-wallet/unit";
+
 import { Button } from "~/components/buttons";
 import { useTranslation } from "~/hooks";
+import { formatPretty } from "~/utils/formatter";
 
-export const EarnRewards = () => {
+export const EarnRewards = ({
+  totalUnclaimedRewards,
+}: {
+  totalUnclaimedRewards: PricePretty;
+}) => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-6 pt-7 pb-6">
@@ -22,7 +29,9 @@ export const EarnRewards = () => {
         </div>
       </div> */}
       <div className="mt-3.5 flex justify-between">
-        <h4 className="text-osmoverse-200">$24.55</h4>
+        <h4 className="text-osmoverse-200">
+          {formatPretty(totalUnclaimedRewards)}
+        </h4>
         <small className="max-w-[54px] text-right text-xs font-subtitle2 font-medium text-osmoverse-300">
           {t("earnPage.availableToClaim")}
         </small>

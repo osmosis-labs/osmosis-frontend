@@ -69,7 +69,7 @@ export async function getEarnStrategies() {
             tvl: processedTvl,
             apy: processedApy,
             risk: 0,
-            balance: 0,
+            balance: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
             holdsTokens: false,
             hasLockingDuration: lockDuration > 0,
             tokensType: "stablecoins", // todo
@@ -93,10 +93,8 @@ export async function getStrategyBalance(
     key: `earn-strategy-balance-${strategyId}-${userOsmoAddress}`,
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
-        const { balance, strategy } = await queryEarnUserBalance(
-          strategyId,
-          userOsmoAddress
-        );
+        const { balance, strategy, unclaimed_rewards } =
+          await queryEarnUserBalance(strategyId, userOsmoAddress);
 
         return {
           balance: {
@@ -104,6 +102,12 @@ export async function getStrategyBalance(
             usd: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(balance.usd)),
           },
           id: strategy,
+          unclaimed_rewards: {
+            usd: new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(unclaimed_rewards.total_usd)
+            ),
+          },
         };
       } catch (error) {
         return undefined;

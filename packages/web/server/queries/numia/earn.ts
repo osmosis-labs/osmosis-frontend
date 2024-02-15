@@ -52,11 +52,14 @@ export interface RawEarnStrategyBalance {
     amount: string;
     usd: number;
   };
-  token: {
+  token?: {
     name: string;
     symbol: string;
     decimals: string;
     total_supply: string;
+  };
+  unclaimed_rewards: {
+    total_usd: number;
   };
 }
 
@@ -66,6 +69,9 @@ export interface EarnStrategyBalance {
     usd: PricePretty;
   };
   id: string;
+  unclaimed_rewards: {
+    usd: PricePretty;
+  };
 }
 
 export type tokensType = "stablecoins" | "correlated" | "bluechip";
@@ -82,7 +88,7 @@ export interface EarnStrategy {
   tvl: PricePretty;
   apy: RatePretty;
   risk: number;
-  balance: number;
+  balance: PricePretty;
   holdsTokens: boolean;
   hasLockingDuration: boolean;
   tokensType: tokensType;

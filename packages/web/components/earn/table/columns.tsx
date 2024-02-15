@@ -203,7 +203,7 @@ export const tableColumns = [
     header: () => <ColumnCellHeader tKey={"assets.table.columns.balance"} />,
     cell: (item) => (
       <div className="flex flex-col">
-        <ColumnCellCell>{item.getValue()}</ColumnCellCell>
+        <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
         {/* <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
           {item.row.original.balance.converted}
         </small> */}
