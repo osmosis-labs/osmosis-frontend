@@ -1,4 +1,3 @@
-import { PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -23,89 +22,23 @@ import {
 } from "~/components/earn/tabs";
 import { Spinner } from "~/components/loaders";
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { EarnStrategy } from "~/server/queries/numia/earn";
-import { useStore } from "~/stores";
+import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
 import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
 
 function Earn() {
   const { t } = useTranslation();
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
   useNavBar({ title: t("earnPage.title") });
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const userOsmoAddress = account?.address ?? "";
-  const isWalletConnected = account?.isWalletConnected;
-
-  const { data: strategies, isLoading: areStrategiesLoading } =
-    api.edge.earn.getEarnStrategies.useQuery(undefined, {
-      trpc: { context: { skipBatch: true } },
-    });
-
-  const balanceQueries = api.useQueries((q) =>
-    (isWalletConnected ? strategies ?? [] : []).map((strat) =>
-      q.edge.earn.getStrategyBalance(
-        {
-          strategyId: strat.id,
-          userOsmoAddress,
-        },
-        {
-          enabled: userOsmoAddress !== "",
-          staleTime: 1000 * 60 * 15,
-          cacheTime: 1000 * 60 * 30,
-        }
-      )
-    )
-  );
-
-  const areQueriesLoading = useMemo(
-    () => balanceQueries.some((q) => q.isLoading === true),
-    [balanceQueries]
-  );
-
   const {
-    totalBalance,
-    joinedStrategiesIds,
+    strategies,
     myStrategies,
+    totalBalance,
     totalUnclaimedRewards,
-  } = useMemo(() => {
-    let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
-    let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
-    const joinedStrategiesIds: string[] = [];
-    const myStrategies: EarnStrategy[] = [];
-
-    balanceQueries.forEach((balanceQuery) => {
-      if (balanceQuery.data) {
-        if (!balanceQuery.data.balance.usd.toDec().isZero()) {
-          const queriedStrategyId = balanceQuery.data.id;
-          joinedStrategiesIds.push(queriedStrategyId);
-          const earnStrategy = strategies?.find(
-            (s) => s.id === queriedStrategyId
-          );
-          if (earnStrategy)
-            myStrategies.push({
-              ...earnStrategy,
-              balance: balanceQuery.data.balance.usd,
-            });
-        }
-        accumulatedUnclaimedRewards = accumulatedUnclaimedRewards.add(
-          balanceQuery.data.unclaimed_rewards.usd
-        );
-        accumulatedBalance = accumulatedBalance.add(
-          balanceQuery.data.balance.usd
-        );
-      }
-    });
-
-    return {
-      totalBalance: accumulatedBalance,
-      joinedStrategiesIds,
-      myStrategies,
-      totalUnclaimedRewards: accumulatedUnclaimedRewards,
-    };
-  }, [balanceQueries, strategies]);
+    joinedStrategiesIds,
+    areQueriesLoading,
+    areStrategiesLoading,
+  } = useGetEarnStrategies();
 
   const defaultFilters: Filters = useMemo(
     () => ({
