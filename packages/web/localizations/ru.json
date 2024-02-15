@@ -200,6 +200,7 @@
       "titleWithdraw": "Вывести на"
     },
     "stakedAssets": "Ставка ОСМО",
+    "pooledAssets": "Объединенный",
     "table": {
       "columns": {
         "assetChain": "Актив / Цепочка",
@@ -227,6 +228,7 @@
       "activate": "Активировать"
     },
     "totalAssets": "Всего активов",
+    "totalBalance": "Итоговый баланс",
     "transfer": {
       "availableMobile": "Доступный",
       "availableOn": "Доступно в {network}",

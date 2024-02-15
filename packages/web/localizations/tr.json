@@ -200,6 +200,7 @@
       "titleWithdraw": "Adrese çek"
     },
     "stakedAssets": "Stake Edilmiş OSMO",
+    "pooledAssets": "havuzlanmış",
     "table": {
       "columns": {
         "assetChain": "Varlık / Ağ",
@@ -227,6 +228,7 @@
       "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
+    "totalBalance": "Toplam bakiye",
     "transfer": {
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",

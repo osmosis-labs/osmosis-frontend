@@ -200,6 +200,7 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
+    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -227,6 +228,7 @@
       "activate": "Aktywuj"
     },
     "totalAssets": "Aktywa ogółem",
+    "totalBalance": "Całkowita równowaga",
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",

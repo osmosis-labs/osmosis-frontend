@@ -200,6 +200,7 @@
       "titleWithdraw": "Retrage catre"
     },
     "stakedAssets": "Staked OSMO",
+    "pooledAssets": "Adunate",
     "table": {
       "columns": {
         "assetChain": "Active / Retea",
@@ -227,6 +228,7 @@
       "activate": "Activati"
     },
     "totalAssets": "Total",
+    "totalBalance": "Sold total",
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",

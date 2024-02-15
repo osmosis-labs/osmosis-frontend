@@ -200,6 +200,7 @@
       "titleWithdraw": "Sacar para"
     },
     "stakedAssets": "OSMO em stake",
+    "pooledAssets": "Agrupados",
     "table": {
       "columns": {
         "assetChain": "Ativo / Rede",
@@ -227,6 +228,7 @@
       "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
+    "totalBalance": "Balanço total",
     "transfer": {
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",

@@ -200,6 +200,7 @@
       "titleWithdraw": "출금할 지갑"
     },
     "stakedAssets": "스테이킹된 OSMO",
+    "pooledAssets": "풀링됨",
     "table": {
       "columns": {
         "assetChain": "자산 / 체인",
@@ -227,6 +228,7 @@
       "activate": "활성화"
     },
     "totalAssets": "총 자산",
+    "totalBalance": "전체 균형",
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",

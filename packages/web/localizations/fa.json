@@ -200,6 +200,7 @@
       "titleWithdraw": "پرداخت به"
     },
     "stakedAssets": "سپرده گذاری شده OSMO",
+    "pooledAssets": "جمع شده",
     "table": {
       "columns": {
         "assetChain": "دارایی/شبکه",
@@ -227,6 +228,7 @@
       "activate": "فعال کنید"
     },
     "totalAssets": "کل دارایی ها",
+    "totalBalance": "موجودی کل",
     "transfer": {
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",

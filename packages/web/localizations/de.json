@@ -200,6 +200,7 @@
       "titleWithdraw": "Sich zurückziehen"
     },
     "stakedAssets": "Abgestecktes OSMO",
+    "pooledAssets": "Gebündelt",
     "table": {
       "columns": {
         "assetChain": "Vermögenswert/Kette",
@@ -227,6 +228,7 @@
       "activate": "aktivieren Sie"
     },
     "totalAssets": "Gesamtvermögen",
+    "totalBalance": "Gesamtsaldo",
     "transfer": {
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",

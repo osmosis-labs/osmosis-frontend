@@ -200,6 +200,7 @@
       "titleWithdraw": "Retirer à"
     },
     "stakedAssets": "OSMO cautionné",
+    "pooledAssets": "Regroupé",
     "table": {
       "columns": {
         "assetChain": "Actif / Chaine",
@@ -227,6 +228,7 @@
       "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
+    "totalBalance": "Solde total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",

@@ -200,6 +200,7 @@
       "titleWithdraw": "Withdraw to"
     },
     "stakedAssets": "Staked OSMO",
+    "pooledAssets": "Pooled",
     "table": {
       "columns": {
         "assetChain": "Asset / Chain",
@@ -227,6 +228,7 @@
       "activate": "Activate"
     },
     "totalAssets": "Total assets",
+    "totalBalance": "Total balance",
     "transfer": {
       "availableMobile": "Available",
       "availableOn": "Available on {network}",

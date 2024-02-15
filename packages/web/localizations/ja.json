@@ -200,6 +200,7 @@
       "titleWithdraw": "に撤退する"
     },
     "stakedAssets": "ステークされたOSMO",
+    "pooledAssets": "プールされた",
     "table": {
       "columns": {
         "assetChain": "アセット/チェーン",
@@ -227,6 +228,7 @@
       "activate": "活性化"
     },
     "totalAssets": "総資産",
+    "totalBalance": "総合収支",
     "transfer": {
       "availableMobile": "利用可能",
       "availableOn": "{network}で利用可能",

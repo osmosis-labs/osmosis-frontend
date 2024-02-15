@@ -200,6 +200,7 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
+    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -227,6 +228,7 @@
       "activate": "启用"
     },
     "totalAssets": "总资产",
+    "totalBalance": "总余额",
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",

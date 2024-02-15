@@ -200,6 +200,7 @@
       "titleWithdraw": "માટે પાછી ખેંચો"
     },
     "stakedAssets": "સ્ટેક્ડ OSMO",
+    "pooledAssets": "પૂલ",
     "table": {
       "columns": {
         "assetChain": "સંપત્તિ / સાંકળ",
@@ -227,6 +228,7 @@
       "activate": "સક્રિય કરો"
     },
     "totalAssets": "કુલ સંપતિ",
+    "totalBalance": "કુલ બેલેન્સ",
     "transfer": {
       "availableMobile": "ઉપલબ્ધ છે",
       "availableOn": "{network} પર ઉપલબ્ધ",
