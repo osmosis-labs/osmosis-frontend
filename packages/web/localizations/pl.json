@@ -775,7 +775,7 @@
     "step4Title": "Stwórz portfel, aby zacząć",
     "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa."
   },
-  "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
+  "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
   "transactionSuccessful": "Transakcja Udana",

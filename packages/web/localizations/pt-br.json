@@ -775,7 +775,7 @@
     "step4Title": "Crie uma carteira para começar",
     "step4Content": "Configure sua primeira carteira e faça login! Envie, receba ou compre ativos."
   },
-  "swapFailed": "Troca falhou. Liquidez pode não ser o suficiente. Tente ajustar o spread permitido.",
+  "swapFailed": "Falha na troca. A liquidez pode não ser suficiente. Tente ajustar o deslizamento permitido.",
   "transactionBroadcasting": "Transmitindo Transação",
   "transactionFailed": "Transação falhou",
   "transactionSuccessful": "Transação Bem-Sucedida",
