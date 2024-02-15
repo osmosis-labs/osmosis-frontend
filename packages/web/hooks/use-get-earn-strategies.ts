@@ -41,18 +41,17 @@ const useGetEarnStrategies = (
     const myStrategies: EarnStrategy[] = [];
 
     balanceQueries.forEach((balanceQuery) => {
-      if (balanceQuery.data) {
-        if (!balanceQuery.data.balance.usd.toDec().isZero()) {
-          const queriedStrategyId = balanceQuery.data.id;
-          const earnStrategy = strategies?.find(
-            (s) => s.id === queriedStrategyId
-          );
-          if (earnStrategy)
-            myStrategies.push({
-              ...earnStrategy,
-              balance: balanceQuery.data.balance.usd,
-            });
-        }
+      if (!balanceQuery.data) return;
+      if (!balanceQuery.data.balance.usd.toDec().isZero()) {
+        const queriedStrategyId = balanceQuery.data.id;
+        const earnStrategy = strategies?.find(
+          (s) => s.id === queriedStrategyId
+        );
+        if (earnStrategy)
+          myStrategies.push({
+            ...earnStrategy,
+            balance: balanceQuery.data.balance.usd,
+          });
         accumulatedUnclaimedRewards = accumulatedUnclaimedRewards.add(
           balanceQuery.data.unclaimed_rewards.usd
         );
