@@ -283,11 +283,6 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
-  const isWalletConnected = Boolean(account?.isWalletConnected);
-
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
