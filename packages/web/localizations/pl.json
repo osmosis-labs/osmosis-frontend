@@ -489,6 +489,15 @@
         "shareOfBalance": "Udział równowagi",
         "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte",
         "fluctuationNotice": "Pamiętaj, że wartość Twojego limitu wydatków w USD opiera się na wartości Twoich aktywów, która może się zmieniać."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Limit opłat sieciowych",
+        "description": "Ustaw maksymalną kwotę, jaką możesz wydać na opłaty sieciowe za pojedynczą transakcję podczas sesji handlu 1-Click.",
+        "info": "Jeśli opłata przekracza tę kwotę, możesz kontynuować, ręcznie podpisując transakcje w swoim portfelu.",
+        "low": "Niski",
+        "average": "Przeciętny",
+        "high": "Wysoki",
+        "recommended": "Zalecana"
       }
     },
     "welcomeBack": {
