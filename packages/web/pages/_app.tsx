@@ -69,14 +69,12 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-function MyApp({ Component, pageProps, router }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   useMount(() => {
     initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
   });
-
-  const isStakePage = router.pathname === "/stake";
 
   return (
     <MultiLanguageProvider
@@ -93,7 +91,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
             }}
             transition={Bounce}
           />
-          <MainLayoutWrapper isStakePage={isStakePage}>
+          <MainLayoutWrapper>
             <ErrorBoundary fallback={ErrorFallback}>
               {Component && <Component {...pageProps} />}
             </ErrorBoundary>
@@ -111,8 +109,7 @@ interface LevanaGeoBlockedResponse {
 
 const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
-  isStakePage: boolean;
-}> = observer(({ children, isStakePage }) => {
+}> = observer(({ children }) => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const { data: levanaGeoblock, error } = useQuery(
