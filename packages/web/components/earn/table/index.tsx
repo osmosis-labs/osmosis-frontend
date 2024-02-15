@@ -16,7 +16,7 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
 
   return (
     <div className="no-scrollbar w-full overflow-scroll">
-      <table className="w-full">
+      <table className="mb-12 w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr className="bg-transparent" key={headerGroup.id}>

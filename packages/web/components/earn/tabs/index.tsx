@@ -108,11 +108,8 @@ export const TabPanel = ({
   children,
   tabIdx,
   className,
-  showBottomBlock,
   displayMode,
-}: PropsWithChildren<
-  TabButtonProps & { showBottomBlock?: boolean; displayMode?: "flex" | "block" }
->) => {
+}: PropsWithChildren<TabButtonProps & { displayMode?: "flex" | "block" }>) => {
   const { selectedIdx } = useContext(TabContext);
   const isSelected = selectedIdx === tabIdx;
   return (
@@ -126,9 +123,6 @@ export const TabPanel = ({
       )}
     >
       {isSelected && children}
-      {showBottomBlock && isSelected && (
-        <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-osmoverse-810" />
-      )}
     </div>
   );
 };
