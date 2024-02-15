@@ -135,7 +135,7 @@ export const swapRouter = createTRPCRouter({
           // supplementary data with display types
           name,
           timeMs,
-          amount: new CoinPretty(tokenOutAsset, new Int(99999999)),
+          amount: new CoinPretty(tokenOutAsset, quote.amount),
           priceImpactTokenOut: quote.priceImpactTokenOut
             ? new RatePretty(quote.priceImpactTokenOut.abs())
             : undefined,
