@@ -30,7 +30,6 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
-import { StakeOnboarding } from "~/components/stake/stake-onboarding";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
@@ -292,9 +291,6 @@ const MainLayoutWrapper: FunctionComponent<{
   const address = account?.address ?? "";
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
-  // should only render not on stake page, and if wallet is connected, and if address is not undefined
-  const renderStakeOnboarding = !isStakePage && isWalletConnected && address;
-
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
@@ -312,12 +308,6 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      {renderStakeOnboarding && (
-        <StakeOnboarding
-          address={address}
-          isWalletConnected={isWalletConnected}
-        />
-      )}
     </MainLayout>
   );
 });
