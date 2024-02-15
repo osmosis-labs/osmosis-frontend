@@ -182,7 +182,12 @@ export const tableColumns = [
     filterFn: boolEquals,
   }),
   columnHelper.accessor("risk", {
-    header: () => <ColumnCellHeader tKey={"earnPage.risk"} />,
+    header: () => (
+      <ColumnCellHeader
+        tKey={"earnPage.risk"}
+        tooltipClassname="!justify-center"
+      />
+    ),
     cell: (item) => (
       <div className="flex items-center justify-end gap-1">
         {[
