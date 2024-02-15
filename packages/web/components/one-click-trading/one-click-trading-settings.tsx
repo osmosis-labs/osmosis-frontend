@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
+import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import {
   Screen,
@@ -211,10 +212,11 @@ const OneClickTradingSettings = ({
 
           <Screen screenName={SettingsScreens.NetworkFeeLimit}>
             <div className={classNames("flex flex-col gap-12", classes?.root)}>
-              {screenGoBackButton}
-              <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                {t("oneClickTrading.settings.networkFeeLimitTitle")}
-              </h1>
+              <NetworkFeeLimitScreen
+                goBackButton={screenGoBackButton}
+                transaction1CTParams={transaction1CTParams}
+                setTransaction1CTParams={setTransaction1CTParams}
+              />
             </div>
           </Screen>
 

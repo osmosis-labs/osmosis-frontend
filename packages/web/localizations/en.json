@@ -489,6 +489,15 @@
         "shareOfBalance": "Share of balance",
         "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
         "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Network fee limit",
+        "description": "Set the maximum amount you can spend on network fees for any single transaction during your 1-Click Trading session.",
+        "info": "If a fee exceeds this amount, you may proceed by manually signing transactions in your wallet.",
+        "low": "Low",
+        "average": "Average",
+        "high": "High",
+        "recommended": "Recommended"
       }
     },
     "welcomeBack": {

@@ -3,7 +3,11 @@ import { DefaultGasPriceStep } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { RecommendedSwapDenoms } from "~/config/feature-flag";
-import { ChainList, MainnetChainIds } from "~/config/generated/chain-list";
+import {
+  ChainList,
+  MainnetChainIds,
+  TestnetChainIds,
+} from "~/config/generated/chain-list";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
@@ -54,20 +58,16 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress,
       });
     }),
-  getAssetGasPriceStep: publicProcedure
+  getFeeTokenGasPriceStep: publicProcedure
     .input(
       z.object({
-        chainId: z.custom<MainnetChainIds>((val) => typeof val === "string"),
+        chainId: z.custom<MainnetChainIds | TestnetChainIds>(
+          (val) => typeof val === "string"
+        ),
       })
     )
     .query(async ({ input: { chainId } }) => {
       const osmosisChainId = ChainList[0].chain_id;
-      const counterpartyChain = ChainList.find(
-        ({ chain_id }) => chain_id === chainId
-      );
-
-      if (!counterpartyChain)
-        throw new Error(`Chain (${chainId}) not found in chain list`);
 
       if (chainId === osmosisChainId) {
         const result = await queryOsmosisGasPrice();
@@ -79,6 +79,13 @@ export const assetsRouter = createTRPCRouter({
           high: osmosisGasPrice * 2.5,
         };
       }
+
+      const counterpartyChain = ChainList.find(
+        ({ chain_id }) => chain_id === chainId
+      );
+
+      if (!counterpartyChain)
+        throw new Error(`Chain (${chainId}) not found in chain list`);
 
       const feeCurrency = counterpartyChain.fees.fee_tokens[0];
 
