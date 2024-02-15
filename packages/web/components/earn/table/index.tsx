@@ -23,7 +23,7 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-20 bg-osmoverse-850 !text-left md:static md:left-0":
+                    "sticky left-[88px] bg-osmoverse-850 !text-left md:static md:left-0":
                       header.index === 1,
                     "sticky left-0 z-30 bg-osmoverse-850 !pl-4":
                       header.index === 0,
@@ -45,17 +45,18 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               className={classNames(
-                "group bg-osmoverse-810 transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
+                "group transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
               )}
               key={row.id}
             >
               {row.getVisibleCells().map((cell, rowIndex) => (
                 <td
                   className={classNames(
-                    "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
+                    "!rounded-none bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
                     {
-                      "sticky -left-1 z-30": rowIndex === 0,
-                      "sticky left-20 z-30 md:static md:left-0": rowIndex === 1,
+                      "sticky left-0 z-30": rowIndex === 0,
+                      "sticky left-[88px] z-30 md:static md:left-0":
+                        rowIndex === 1,
                     }
                   )}
                   key={cell.id}
