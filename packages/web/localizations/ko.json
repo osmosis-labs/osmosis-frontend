@@ -482,7 +482,14 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "startButton": "1-클릭 거래 시작"
+      "startButton": "1-클릭 거래 시작",
+      "spendLimitScreen": {
+        "spendLimitDescription": "1-클릭 거래 세션 기간 내에 지출할 수 있는 최대 금액을 설정하세요.",
+        "fixedAmount": "정액",
+        "shareOfBalance": "잔액의 점유율",
+        "shareOfBalanceDescription": "귀하의 Osmosis 총 잔액 중 현재 가치는 {shareOfBalance}",
+        "fluctuationNotice": "지출 한도의 USD 가치는 자산 가치에 따라 결정되며 변동될 수 있습니다."
+      }
     },
     "welcomeBack": {
       "title": "돌아온 것을 환영합니다",

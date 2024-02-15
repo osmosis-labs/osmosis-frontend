@@ -482,7 +482,14 @@
       "spendLimitTitle": "Лимит расходов",
       "networkFeeLimitTitle": "Лимит сетевой комиссии",
       "sessionPeriodTitle": "Период сессии",
-      "startButton": "Начать торговлю в 1 клик"
+      "startButton": "Начать торговлю в 1 клик",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Установите максимальную сумму, которую вы можете потратить в течение периода торговой сессии в 1 клик.",
+        "fixedAmount": "Фиксированное количество",
+        "shareOfBalance": "Доля баланса",
+        "shareOfBalanceDescription": "{shareOfBalance} вашего общего баланса на Osmosis в настоящее время составляет",
+        "fluctuationNotice": "Имейте в виду, что стоимость вашего лимита расходов в долларах США основана на стоимости ваших активов, которая может колебаться."
+      }
     },
     "welcomeBack": {
       "title": "Добро пожаловать",

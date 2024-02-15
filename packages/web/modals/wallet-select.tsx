@@ -47,6 +47,7 @@ import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { noop } from "~/utils/function";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 
@@ -677,6 +678,8 @@ const RightModalContent: FunctionComponent<
                 onClose={() => {
                   setShow1CTEditParams(false);
                 }}
+                setTransaction1CTParams={noop}
+                transaction1CTParams={transaction1CTParams}
               />
             )}
             {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (

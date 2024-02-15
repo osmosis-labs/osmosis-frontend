@@ -7,8 +7,8 @@ import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
-import { CheckBox } from "~/components/control";
 import { Spinner } from "~/components/loaders";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useAddAuthenticator } from "~/hooks/mutations/osmosis/add-authenticator";
@@ -172,20 +172,20 @@ const SmartAccounts: NextPage = observer(function () {
                     : "Create One Click Trading Account"}
                 </Button>
               </form>
-              <CheckBox
+              <Checkbox
                 className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
-                isOn={
+                checked={
                   accountStore.useOneClickTrading &&
                   !isNil(accountStore.oneClickTradingInfo)
                 }
-                onToggle={() => {
+                onCheckedChange={() => {
                   accountStore.setUseOneClickTrading({
                     nextValue: !accountStore.useOneClickTrading,
                   });
                 }}
               >
                 One Click Trading Enabled
-              </CheckBox>
+              </Checkbox>
             </div>
           </div>
         </div>

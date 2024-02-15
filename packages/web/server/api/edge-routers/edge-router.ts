@@ -1,4 +1,4 @@
-import { authenticatorsRouter } from "~/server/api/edge-routers/authenticators";
+import { authenticatorsRouter } from "~/server/api/edge-routers/authenticators-router";
 import { concentratedLiquidityRouter } from "~/server/api/edge-routers/concentrated-liquidity-router";
 import { createTRPCRouter } from "~/server/api/trpc";
 

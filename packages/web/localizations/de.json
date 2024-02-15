@@ -482,7 +482,14 @@
       "spendLimitTitle": "Ausgabenlimit",
       "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
       "sessionPeriodTitle": "Sitzungszeitraum",
-      "startButton": "Starten Sie den 1-Klick-Handel"
+      "startButton": "Starten Sie den 1-Klick-Handel",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
+        "fixedAmount": "Fester Betrag",
+        "shareOfBalance": "Anteil des Guthabens",
+        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
+        "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
+      }
     },
     "welcomeBack": {
       "title": "Willkommen zurück",

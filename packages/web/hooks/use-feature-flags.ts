@@ -54,6 +54,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newPoolsTable: true,
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
+  oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };

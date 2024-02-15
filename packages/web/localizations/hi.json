@@ -482,7 +482,14 @@
       "spendLimitTitle": "खर्च सीमा",
       "networkFeeLimitTitle": "नेटवर्क शुल्क सीमा",
       "sessionPeriodTitle": "सत्र अवधि",
-      "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें"
+      "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
+      "spendLimitScreen": {
+        "spendLimitDescription": "वह अधिकतम राशि निर्धारित करें जिसे आप 1-क्लिक ट्रेडिंग सत्र अवधि के भीतर खर्च कर सकते हैं।",
+        "fixedAmount": "निश्चित राशि",
+        "shareOfBalance": "शेष राशि का हिस्सा",
+        "shareOfBalanceDescription": "ऑस्मोसिस पर आपके कुल शेष {shareOfBalance} वर्तमान में मूल्य है",
+        "fluctuationNotice": "सावधान रहें कि आपकी खर्च सीमा का USD मूल्य आपकी संपत्ति के मूल्य पर आधारित है जिसमें उतार-चढ़ाव हो सकता है।"
+      }
     },
     "welcomeBack": {
       "title": "वापसी पर स्वागत है",

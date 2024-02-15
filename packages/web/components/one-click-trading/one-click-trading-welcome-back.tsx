@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { noop } from "~/utils/function";
 
@@ -56,9 +56,9 @@ const OneClickTradingWelcomeBack = ({
             </span>
           </div>
           <Switch
-            isOn={Boolean(transaction1CTParams)}
-            onToggle={noop}
-            containerClassName="pointer-events-none"
+            checked={Boolean(transaction1CTParams)}
+            onCheckedChange={noop}
+            className="pointer-events-none"
           />
         </button>
         <IconButton
