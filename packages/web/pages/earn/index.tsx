@@ -125,13 +125,17 @@ function Earn() {
               >
                 {t("earnPage.discoverStrategies")}
               </TabButton>
-              <TabButton
-                withBasePadding
-                withTextOpacity
-                className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
-              >
-                {t("earnPage.myStrategies")}
-              </TabButton>
+              {isWalletConnected ? (
+                <TabButton
+                  withBasePadding
+                  withTextOpacity
+                  className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
+                >
+                  {t("earnPage.myStrategies")}
+                </TabButton>
+              ) : (
+                <div className="min-h-[100px] flex-1"></div>
+              )}
             </TabButtons>
             <TabHeader>
               <TopFilters />
