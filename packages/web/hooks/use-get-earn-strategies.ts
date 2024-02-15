@@ -3,15 +3,12 @@ import { useMemo } from "react";
 
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { EarnStrategy } from "~/server/queries/numia/earn";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-const useGetEarnStrategies = () => {
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const userOsmoAddress = account?.address ?? "";
-  const isWalletConnected = account?.isWalletConnected;
-
+const useGetEarnStrategies = (
+  userOsmoAddress: string,
+  isWalletConnected: boolean
+) => {
   const { data: strategies, isLoading: areStrategiesLoading } =
     api.edge.earn.getEarnStrategies.useQuery(undefined, {
       trpc: { context: { skipBatch: true } },

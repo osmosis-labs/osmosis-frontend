@@ -23,13 +23,21 @@ import {
 import { Spinner } from "~/components/loaders";
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
 import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 function Earn() {
   const { t } = useTranslation();
   const { earnPage } = useFeatureFlags();
+  const { accountStore } = useStore();
   const router = useRouter();
+
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const userOsmoAddress = account?.address ?? "";
+  const isWalletConnected = account?.isWalletConnected ?? false;
+
   useNavBar({ title: t("earnPage.title") });
+
   const {
     strategies,
     myStrategies,
@@ -37,7 +45,7 @@ function Earn() {
     totalUnclaimedRewards,
     areQueriesLoading,
     areStrategiesLoading,
-  } = useGetEarnStrategies();
+  } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
   const defaultFilters: Filters = useMemo(
     () => ({
