@@ -284,7 +284,6 @@ const MainLayoutWrapper: FunctionComponent<{
   ];
 
   const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
