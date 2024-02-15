@@ -41,14 +41,12 @@ const useGetEarnStrategies = () => {
   const additionalStrategiesData = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
-    const joinedStrategiesIds: string[] = [];
     const myStrategies: EarnStrategy[] = [];
 
     balanceQueries.forEach((balanceQuery) => {
       if (balanceQuery.data) {
         if (!balanceQuery.data.balance.usd.toDec().isZero()) {
           const queriedStrategyId = balanceQuery.data.id;
-          joinedStrategiesIds.push(queriedStrategyId);
           const earnStrategy = strategies?.find(
             (s) => s.id === queriedStrategyId
           );
@@ -69,7 +67,6 @@ const useGetEarnStrategies = () => {
 
     return {
       totalBalance: accumulatedBalance,
-      joinedStrategiesIds,
       myStrategies,
       totalUnclaimedRewards: accumulatedUnclaimedRewards,
     };

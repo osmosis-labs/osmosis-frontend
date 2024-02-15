@@ -35,7 +35,6 @@ function Earn() {
     myStrategies,
     totalBalance,
     totalUnclaimedRewards,
-    joinedStrategiesIds,
     areQueriesLoading,
     areStrategiesLoading,
   } = useGetEarnStrategies();
@@ -65,7 +64,7 @@ function Earn() {
         <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
           <EarnPosition
             totalBalance={formatPretty(totalBalance)}
-            numberOfPositions={joinedStrategiesIds.length}
+            numberOfPositions={myStrategies.length}
             isLoading={areQueriesLoading}
           />
           {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
