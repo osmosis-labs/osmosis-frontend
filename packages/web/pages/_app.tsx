@@ -69,7 +69,7 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-function MyApp({ Component, pageProps, router }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   useMount(() => {
