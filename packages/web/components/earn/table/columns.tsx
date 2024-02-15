@@ -82,7 +82,12 @@ export const tableColumns = [
   columnHelper.accessor("involvedTokens", {
     header: () => {},
     cell: (item) => (
-      <div className="relative flex items-center justify-end">
+      <div
+        className={classNames("relative flex items-center", {
+          "justify-end": item.getValue().length > 1,
+          "justify-center": item.getValue().length === 1,
+        })}
+      >
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
           <Image
             src={coinImageUrl ?? ""}
@@ -90,7 +95,6 @@ export const tableColumns = [
             key={`${coinDenom} ${i} ${item.cell.id}`}
             className={classNames("h-9 min-w-[36px] rounded-full", {
               "-ml-4": i > 0,
-              "mr-2": item.getValue().length === 1,
             })}
             width={36}
             height={36}

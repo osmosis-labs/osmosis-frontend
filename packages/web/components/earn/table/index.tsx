@@ -41,7 +41,7 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="bg-osmoverse-810">
           {table.getRowModel().rows.map((row) => (
             <tr
               className={classNames(
