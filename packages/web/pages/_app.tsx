@@ -283,8 +283,6 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
-  const osmosisChainId = chainStore.osmosis.chainId;
-
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
