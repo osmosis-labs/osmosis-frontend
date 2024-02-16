@@ -3,7 +3,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
-import { getAsset } from "~/server/queries/complex/assets";
+import { type Asset, getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   EarnStrategy,
@@ -45,10 +45,14 @@ export async function getEarnStrategies() {
           } = rawStrategy;
 
           const rewards = await Promise.all(
-            rewardDenoms.map((reward) => getAsset({ anyDenom: reward.symbol }))
+            rewardDenoms.map((reward) =>
+              getAsset({ anyDenom: reward.symbol }).catch((_) => undefined)
+            )
           );
           const token = await Promise.all(
-            tokenDenoms.map((token) => getAsset({ anyDenom: token.symbol }))
+            tokenDenoms.map((token) =>
+              getAsset({ anyDenom: token.symbol }).catch((_) => undefined)
+            )
           );
 
           const processedApy = new RatePretty(new Dec(apy));
@@ -63,8 +67,8 @@ export async function getEarnStrategies() {
             category,
             provider,
             type,
-            involvedTokens: token,
-            rewardTokens: rewards,
+            involvedTokens: token.filter((reward) => !!reward) as Asset[],
+            rewardTokens: rewards.filter((reward) => !!reward) as Asset[],
             lockDuration,
             tvl: processedTvl,
             apy: processedApy,
