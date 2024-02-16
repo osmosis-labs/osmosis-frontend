@@ -498,6 +498,16 @@
         "average": "평균",
         "high": "높은",
         "recommended": "추천"
+      },
+      "sessionPeriodScreen": {
+        "title": "세션 기간",
+        "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요.",
+        "periods": {
+          "day": "낮",
+          "week": "주",
+          "month": "월",
+          "year": "년도"
+        }
       }
     },
     "welcomeBack": {

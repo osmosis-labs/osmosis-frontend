@@ -498,6 +498,16 @@
         "average": "સરેરાશ",
         "high": "ઉચ્ચ",
         "recommended": "ભલામણ કરેલ"
+      },
+      "sessionPeriodScreen": {
+        "title": "સત્રનો સમયગાળો",
+        "description": "આ ઉપકરણ પર 1-ક્લિક ટ્રેડિંગને મંજૂરી આપવા માટે સમયગાળો સેટ કરો.",
+        "periods": {
+          "day": "દિવસ",
+          "week": "સપ્તાહ",
+          "month": "માસ",
+          "year": "વર્ષ"
+        }
       }
     },
     "welcomeBack": {

@@ -498,6 +498,16 @@
         "average": "میانگین",
         "high": "بالا",
         "recommended": "توصیه شده"
+      },
+      "sessionPeriodScreen": {
+        "title": "دوره جلسه",
+        "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
+        "periods": {
+          "day": "روز",
+          "week": "هفته",
+          "month": "ماه",
+          "year": "سال"
+        }
       }
     },
     "welcomeBack": {

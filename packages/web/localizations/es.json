@@ -498,6 +498,16 @@
         "average": "Promedio",
         "high": "Alto",
         "recommended": "Recomendado"
+      },
+      "sessionPeriodScreen": {
+        "title": "Período de sesión",
+        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
+        "periods": {
+          "day": "Día",
+          "week": "Semana",
+          "month": "Mes",
+          "year": "Año"
+        }
       }
     },
     "welcomeBack": {

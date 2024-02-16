@@ -498,6 +498,16 @@
         "average": "平均的",
         "high": "高的",
         "recommended": "受到推崇的"
+      },
+      "sessionPeriodScreen": {
+        "title": "會議期間",
+        "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
+        "periods": {
+          "day": "天",
+          "week": "星期",
+          "month": "月",
+          "year": "年"
+        }
       }
     },
     "welcomeBack": {

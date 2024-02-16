@@ -498,6 +498,16 @@
         "average": "Przeciętny",
         "high": "Wysoki",
         "recommended": "Zalecana"
+      },
+      "sessionPeriodScreen": {
+        "title": "Okres sesji",
+        "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
+        "periods": {
+          "day": "Dzień",
+          "week": "Tydzień",
+          "month": "Miesiąc",
+          "year": "Rok"
+        }
       }
     },
     "welcomeBack": {
