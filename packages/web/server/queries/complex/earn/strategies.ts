@@ -46,12 +46,12 @@ export async function getEarnStrategies() {
 
           const rewards = await Promise.all(
             rewardDenoms.map((reward) =>
-              getAsset({ anyDenom: reward.symbol }).catch((_) => undefined)
+              getAsset({ anyDenom: reward.denom }).catch((_) => undefined)
             )
           );
           const token = await Promise.all(
             tokenDenoms.map((token) =>
-              getAsset({ anyDenom: token.symbol }).catch((_) => undefined)
+              getAsset({ anyDenom: token.denom }).catch((_) => undefined)
             )
           );
 
