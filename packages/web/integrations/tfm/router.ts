@@ -62,7 +62,9 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
       if (priceImpactTokenOut?.gt(new Dec(maxAllowedPriceImpact))) {
-        throw new Error(`{Price impact ${priceImpactTokenOut} is greater than max allowed of ${maxAllowedPriceImpact}`);
+        throw new Error(
+          `{Price impact ${priceImpactTokenOut} is greater than max allowed of ${maxAllowedPriceImpact}`
+        );
       }
 
       // convert quote response to SplitTokenInQuote
