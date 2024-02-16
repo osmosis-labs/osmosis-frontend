@@ -2,7 +2,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
-import React, { Fragment } from "react";
+import React from "react";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
