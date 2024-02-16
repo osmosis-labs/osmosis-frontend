@@ -18,12 +18,12 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
 
   const { rows } = table.getRowModel();
 
-  const topOffset = Number(theme.extend.height.navbar.replace("px", "")) + 800;
+  const topOffset = Number(theme.extend.height.navbar.replace("px", ""));
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 81,
-    overscan: 5,
+    estimateSize: () => 80,
+    overscan: 10,
     paddingStart: topOffset,
   });
 
@@ -41,7 +41,6 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
       style={{
         height: `${rowVirtualizer.getTotalSize()}px`,
       }}
-      className="no-scrollbar w-full overflow-scroll"
     >
       <table className="mb-12 w-full">
         <thead>
