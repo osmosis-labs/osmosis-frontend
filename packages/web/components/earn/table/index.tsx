@@ -1,9 +1,11 @@
 import { flexRender, useReactTable } from "@tanstack/react-table";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 import { EarnStrategy } from "~/server/queries/numia/earn";
+import { theme } from "~/tailwind.config";
 
 interface StrategiesTableProps {
   showBalance: boolean;
@@ -14,8 +16,33 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
   const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
   const table = useReactTable(tableConfig);
 
+  const { rows } = table.getRowModel();
+
+  const topOffset = Number(theme.extend.height.navbar.replace("px", "")) + 800;
+
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rows.length,
+    estimateSize: () => 81,
+    overscan: 5,
+    paddingStart: topOffset,
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
   return (
-    <div className="no-scrollbar w-full overflow-scroll">
+    <div
+      style={{
+        height: `${rowVirtualizer.getTotalSize()}px`,
+      }}
+      className="no-scrollbar w-full overflow-scroll"
+    >
       <table className="mb-12 w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -42,30 +69,44 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
           ))}
         </thead>
         <tbody className="bg-osmoverse-810">
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              className={classNames(
-                "group transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
-              )}
-              key={row.id}
-            >
-              {row.getVisibleCells().map((cell, rowIndex) => (
-                <td
-                  className={classNames(
-                    "!rounded-none bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
-                    {
-                      "sticky left-0 z-30": rowIndex === 0,
-                      "sticky left-[88px] z-30 md:static md:left-0":
-                        rowIndex === 1,
-                    }
-                  )}
-                  key={cell.id}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {paddingTop > 0 && paddingTop - topOffset > 0 && (
+            <tr>
+              <td style={{ height: paddingTop - topOffset }} />
             </tr>
-          ))}
+          )}
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+
+            return (
+              <tr
+                className={classNames(
+                  "group transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
+                )}
+                key={row.id}
+              >
+                {row.getVisibleCells().map((cell, rowIndex) => (
+                  <td
+                    className={classNames(
+                      "!rounded-none bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
+                      {
+                        "sticky left-0 z-30": rowIndex === 0,
+                        "sticky left-[88px] z-30 md:static md:left-0":
+                          rowIndex === 1,
+                      }
+                    )}
+                    key={cell.id}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: paddingBottom - topOffset }} />
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
