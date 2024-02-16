@@ -1,6 +1,8 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import type { SeriesPieOptions } from "highcharts";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
 
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
@@ -9,6 +11,7 @@ import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
 import { PieChart } from "../chart";
+import SkeletonLoader from "../loaders/skeleton-loader";
 import { AssetsInfoTable } from "../table/asset-info";
 import { CustomClasses } from "../types";
 
@@ -40,21 +43,22 @@ const AssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { t } = useTranslation();
 
-  const { data: userAssets } = api.edge.assets.getUserAssetsBreakdown.useQuery(
-    {
-      userOsmoAddress: account?.address ?? "",
-    },
-    {
-      enabled: !!account && !isWalletLoading,
-
-      // expensive query
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
+  const { data: userAssets, isFetched } =
+    api.edge.assets.getUserAssetsBreakdown.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
       },
-    }
-  );
+      {
+        enabled: !!account && !isWalletLoading,
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const pieChartOptions = useMemo(
     () =>
@@ -62,77 +66,107 @@ const AssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
         ? {
             series: generatePriceProportionSeries([
               {
-                label: "Staked",
+                label: t("assets.stakedAssets"),
                 price: userAssets.delegatedValue,
                 color: theme.colors.ion[400],
               },
               {
-                label: "Pooled",
+                label: t("assets.pooledAssets"),
                 price: userAssets.pooledValue,
                 color: theme.colors.ammelia[600],
               },
               {
-                label: "Available",
+                label: t("assets.unbondedAssets"),
                 price: userAssets.availableValue,
                 color: theme.colors.wosmongton[400],
               },
             ]),
           }
         : undefined,
-    [userAssets]
+    [userAssets, t]
   );
 
   return (
-    <div className="flex gap-8">
-      <div className="flex flex-col gap-2">
-        <span className="subtitle1 text-osmoverse-300">
-          {t("assets.totalBalance")}
-        </span>
-        <h3>{userAssets?.aggregatedValue.toString()}</h3>
-      </div>
-
-      <div className="flex gap-4">
-        {pieChartOptions && (
-          <PieChart options={pieChartOptions} height={138} width={138} />
-        )}
-
+    <div className="relative flex w-full place-content-between rounded-5xl bg-osmoverse-800">
+      <div className="flex items-center gap-8 p-5">
         <div className="flex flex-col gap-2">
-          <div className="flex gap-3">
-            <div className="h-full w-1 rounded-full bg-ion-400" />
-            <div className="flex flex-col text-left">
-              <span className="caption text-osmoverse-400">
-                {t("assets.stakedAssets")}
-              </span>
-              <span className="subtitle1 text-wosmongton-100">
-                {userAssets?.delegatedValue.toString()}
-              </span>
-            </div>
-          </div>
+          <span className="subtitle1 text-osmoverse-300">
+            {t("assets.totalBalance")}
+          </span>
+          <SkeletonLoader
+            className={classNames(isFetched ? null : "h-14 w-48")}
+            isLoaded={isFetched}
+          >
+            <h3>{userAssets?.aggregatedValue.toString()}</h3>
+          </SkeletonLoader>
+        </div>
 
-          <div className="flex gap-3">
-            <div className="h-full w-1 rounded-full bg-ammelia-600" />
-            <div className="flex flex-col text-left">
-              <span className="caption text-osmoverse-400">
-                {t("assets.pooledAssets")}
-              </span>
-              <span className="subtitle1 text-wosmongton-100">
-                {userAssets?.pooledValue.toString()}
-              </span>
-            </div>
-          </div>
+        <div className="flex gap-4">
+          {pieChartOptions && (
+            <PieChart options={pieChartOptions} height={138} width={138} />
+          )}
 
-          <div className="flex gap-3">
-            <div className="h-full w-1 rounded-full bg-wosmongton-400" />
-            <div className="flex flex-col text-left">
-              <span className="caption text-osmoverse-400">
-                {t("assets.unbondedAssets")}
-              </span>
-              <span className="subtitle1 text-wosmongton-100">
-                {userAssets?.availableValue.toString()}
-              </span>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <div className="h-full w-1 rounded-full bg-ion-400" />
+              <div className="flex flex-col text-left">
+                <span className="caption text-osmoverse-400">
+                  {t("assets.stakedAssets")}
+                </span>
+                <SkeletonLoader
+                  className={classNames(isFetched ? null : "h-5 w-20")}
+                  isLoaded={isFetched}
+                >
+                  <span className="subtitle1 text-osmoverse-100">
+                    {userAssets?.delegatedValue.toString()}
+                  </span>
+                </SkeletonLoader>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="h-full w-1 rounded-full bg-ammelia-600" />
+              <div className="flex flex-col text-left">
+                <span className="caption text-osmoverse-400">
+                  {t("assets.pooledAssets")}
+                </span>
+                <SkeletonLoader
+                  className={classNames(isFetched ? null : "h-5 w-20")}
+                  isLoaded={isFetched}
+                >
+                  <span className="subtitle1 text-osmoverse-100">
+                    {userAssets?.pooledValue.toString()}
+                  </span>
+                </SkeletonLoader>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="h-full w-1 rounded-full bg-wosmongton-400" />
+              <div className="flex flex-col text-left">
+                <span className="caption text-osmoverse-400">
+                  {t("assets.unbondedAssets")}
+                </span>
+                <SkeletonLoader
+                  className={classNames(isFetched ? null : "h-5 w-20")}
+                  isLoaded={isFetched}
+                >
+                  <span className="subtitle1 text-osmoverse-100">
+                    {userAssets?.availableValue.toString()}
+                  </span>
+                </SkeletonLoader>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute right-3 bottom-0  overflow-clip align-baseline">
+        <Image
+          alt="vials"
+          src="/images/osmosis-home-fg.png"
+          height={360}
+          width={360}
+        />
       </div>
     </div>
   );
