@@ -1,9 +1,8 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
+import { OneClickTradingPeriods } from "@osmosis-labs/types";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import Image from "next/image";
-import React from "react";
-import { useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
@@ -18,7 +17,6 @@ import {
 } from "~/components/screen-manager";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 
 type Classes = "root";
 
@@ -29,11 +27,20 @@ enum SettingsScreens {
   SessionPeriod = "sessionPeriod",
 }
 
+interface OneClickTradingTransactionParams {
+  isOneClickEnabled: boolean;
+  spendLimit: CoinPretty;
+  networkFeeLimit: CoinPretty;
+  sessionPeriod: OneClickTradingPeriods;
+}
+
 interface OneClickTradingSettingsProps {
   classes?: Partial<Record<Classes, string>>;
   onClose?: () => void;
-  transaction1CTParams: any; // TODO: Define type for 1CT
-  setTransaction1CTParams: (params: any) => void; // TODO: Define type for 1CT
+  transaction1CTParams: OneClickTradingTransactionParams;
+  setTransaction1CTParams: Dispatch<
+    SetStateAction<OneClickTradingTransactionParams>
+  >;
 }
 
 const OneClickTradingSettings = ({
@@ -44,14 +51,7 @@ const OneClickTradingSettings = ({
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
 
-  const [parameters, setParameters] = useState({
-    isOneClickEnabled: false,
-    spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5000)),
-    networkFeeLimit: new Dec(0.000708),
-    sessionPeriod: dayjs.duration(1, "hour"),
-  });
-
-  const isDisabled = !parameters.isOneClickEnabled;
+  const isDisabled = !transaction1CTParams.isOneClickEnabled;
 
   const screenGoBackButton = (
     <ScreenGoBackButton className="absolute top-7 left-7" />
@@ -104,9 +104,9 @@ const OneClickTradingSettings = ({
                   title={t("oneClickTrading.settings.enableTitle")}
                   content={
                     <Switch
-                      checked={parameters.isOneClickEnabled}
+                      checked={transaction1CTParams.isOneClickEnabled}
                       onCheckedChange={(nextValue) => {
-                        setParameters((params) => ({
+                        setTransaction1CTParams((params) => ({
                           ...params,
                           isOneClickEnabled: nextValue,
                         }));
@@ -126,8 +126,8 @@ const OneClickTradingSettings = ({
                       disabled={isDisabled}
                     >
                       <p>
-                        {parameters.spendLimit.toString()}{" "}
-                        {parameters.spendLimit.fiatCurrency.currency.toUpperCase()}
+                        {/* {transaction1CTParams.spendLimit.toString()}{" "}
+                        {transaction1CTParams.spendLimit.fiatCurrency.currency.toUpperCase()} */}
                       </p>
                       <Icon
                         id="chevron-right"
@@ -150,7 +150,9 @@ const OneClickTradingSettings = ({
                       }
                       disabled={isDisabled}
                     >
-                      <p>{parameters.networkFeeLimit.toString()} OSMO</p>
+                      <p>
+                        {transaction1CTParams.networkFeeLimit.toString()} OSMO
+                      </p>
                       <Icon
                         id="chevron-right"
                         width={18}
@@ -172,10 +174,7 @@ const OneClickTradingSettings = ({
                       }
                       disabled={isDisabled}
                     >
-                      <p>
-                        {parameters.sessionPeriod.asHours()} hour
-                        {parameters.sessionPeriod.asHours() > 1 ? "s" : ""}
-                      </p>
+                      <p>{transaction1CTParams.sessionPeriod}</p>
                       <Icon
                         id="chevron-right"
                         width={18}
@@ -188,7 +187,7 @@ const OneClickTradingSettings = ({
                 />
               </div>
 
-              {parameters.isOneClickEnabled && (
+              {transaction1CTParams.isOneClickEnabled && (
                 <div className="px-8">
                   <Button>{t("oneClickTrading.settings.startButton")}</Button>
                 </div>

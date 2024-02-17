@@ -1,16 +1,12 @@
+import { OneClickTradingAuthenticatorType } from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
 
 export interface Authenticator {
+  type: OneClickTradingAuthenticatorType;
   data: string;
   id: string;
-  type:
-    | "SignatureVerificationAuthenticator"
-    | "AnyOfAuthenticator"
-    | "AllOfAuthenticator"
-    | "SpendLimitAuthenticator"
-    | "MessageFilterAuthenticator";
 }
 
 export async function queryAuthenticators({ address }: { address: string }) {

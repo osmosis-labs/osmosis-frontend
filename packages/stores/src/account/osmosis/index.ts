@@ -2699,20 +2699,22 @@ export class OsmosisAccountImpl {
   }
 
   async sendAddAuthenticatorMsg(
-    authenticator: { type: string; data: any },
+    authenticators: { type: string; data: any }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const addAuthenticatorMsg = this.msgOpts.addAuthenticator.messageComposer({
-      type: authenticator.type,
-      data: authenticator.data,
-      sender: this.address,
-    });
+    const addAuthenticatorMsgs = authenticators.map((authenticator) =>
+      this.msgOpts.addAuthenticator.messageComposer({
+        type: authenticator.type,
+        data: authenticator.data,
+        sender: this.address,
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
       "addAuthenticator",
-      [addAuthenticatorMsg],
+      addAuthenticatorMsgs,
       memo,
       undefined,
       undefined,

@@ -1,5 +1,6 @@
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import type { GetServerSideProps, NextPage } from "next";
@@ -11,7 +12,11 @@ import { Spinner } from "~/components/loaders";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useAddAuthenticator } from "~/hooks/mutations/osmosis/add-authenticator";
+import {
+  getFirstAuthenticatorAuthenticator,
+  getOneClickTradingSessionAuthenticator,
+  useAddAuthenticator,
+} from "~/hooks/mutations/osmosis/add-authenticator";
 import { useRemoveAuthenticator } from "~/hooks/mutations/osmosis/remove-authenticator";
 import { useStore } from "~/stores";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -86,8 +91,9 @@ const SmartAccounts: NextPage = observer(function () {
     const accountPubKey = cosmosAccount.account.pub_key.key;
 
     addAuthenticator.mutate({
-      type: "SignatureVerificationAuthenticator",
-      data: fromBase64(accountPubKey),
+      authenticators: [
+        getFirstAuthenticatorAuthenticator({ pubKey: accountPubKey }),
+      ],
     });
   };
 
@@ -95,43 +101,27 @@ const SmartAccounts: NextPage = observer(function () {
     e.preventDefault();
 
     const key = PrivKeySecp256k1.generateRandomKey();
-    const allowedMessages = [
-      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-    ];
+    const allowedMessage: AvailableOneClickTradingMessages =
+      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn";
     const allowedAmount = "20000";
     const period = "day";
 
-    const authenticator = {
-      authenticator_type: "SignatureVerificationAuthenticator",
-      data: toBase64(key.getPubKey().toBytes()),
-    };
-
-    const spendlimit = {
-      authenticator_type: "SpendLimitAuthenticator",
-      data: toBase64(
-        Buffer.from(`{"allowed": ${allowedAmount}, "period": "${period}"}`)
-      ),
-    };
-
-    const messagefilter = {
-      authenticator_type: "MessageFilterAuthenticator",
-      data: toBase64(
-        Buffer.from(`{"type":"${allowedMessages[0]}","value":{}}`)
-      ),
-    };
-
-    const compositeAuthData = [authenticator, spendlimit, messagefilter];
-
     addAuthenticator.mutate(
       {
-        type: "AllOfAuthenticator",
-        data: Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data,
+        authenticators: [
+          getOneClickTradingSessionAuthenticator({
+            key,
+            allowedMessage,
+            allowedAmount,
+            period,
+          }),
+        ],
       },
       {
         onSuccess: () => {
           accountStore.setOneClickTradingInfo({
             allowed: allowedAmount,
-            allowedMessages: allowedMessages,
+            allowedMessages: [allowedMessage],
             period,
             privateKey: toBase64(key.toBytes()),
           });
