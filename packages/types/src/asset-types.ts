@@ -42,6 +42,7 @@ export interface LogoURIs {
 }
 
 export type IbcTransferMethod = {
+  name?: string;
   type: "ibc";
   /** Counterparty chain info.
    *  `channelId` here is commonly referred to as "destination channel". */
@@ -71,23 +72,25 @@ export type IntegratedBridgeTransferMethod = {
     evmChainId: number;
     sourceChainId: string;
   }[];
+  wrappedAssetId?: string;
+  unwrappedAssetId?: string;
 };
 
 export type ExternalInterfaceBridgeTransferMethod = {
   name: string;
   type: "external_interface";
-  depositUrl: string;
-  withdrawUrl: string;
+  depositUrl?: string;
+  withdrawUrl?: string;
 };
 
 export interface Counterparty {
   chainName: string;
   sourceDenom: string;
-  chainType: "cosmos" | "evm";
+  chainType: "cosmos" | "non-cosmos" | "evm";
   /** String keys: Cosmos. Number keys: EVM. */
-  chainId: string | number;
+  chainId?: string | number;
   symbol: string;
-  decimals: number;
+  decimals?: number;
   logoURIs: LogoURIs;
   address?: string;
 }
@@ -110,6 +113,24 @@ export interface Asset {
   decimals: number;
   logoURIs: LogoURIs;
   coingeckoId?: string;
+
+  // likely to be removed
+  /** @deprecated */
+  description?: string;
+  /** @deprecated */
+  twitterURL?: string;
+  /** @deprecated */
+  relatedAssets?: {
+    chainName: string;
+    sourceDenom: string;
+  }[];
+  /** @deprecated */
+  tooltipMessage?: string;
+  /** @deprecated */
+  sortWith?: {
+    chainName: string;
+    sourceDenom: string;
+  };
 
   /** "Endorsed", as is currently defined. */
   verified: boolean;
@@ -141,5 +162,5 @@ export interface Asset {
   relative_image_url: string;
 
   /** Denom key of variant of asset this is grouped with. */
-  variantGroupKey: string;
+  variantGroupKey?: string;
 }

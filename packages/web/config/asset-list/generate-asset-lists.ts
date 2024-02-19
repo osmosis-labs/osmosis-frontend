@@ -55,6 +55,12 @@ function getFilePath({
   chainId: string;
   fileType: "assetlist" | "chainlist";
 }) {
+  // TEMPORARY
+  // use legacy chain list
+  if (fileType === "chainlist") {
+    return `/${chainId}/${chainId}.${fileType}.json`;
+  }
+
   return `/${chainId}/generated/frontend/${fileType}.json`;
 }
 
