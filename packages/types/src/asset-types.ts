@@ -84,7 +84,8 @@ export interface Counterparty {
   chainName: string;
   sourceDenom: string;
   chainType: "cosmos" | "evm";
-  chainId: string;
+  /** String keys: Cosmos. Number keys: EVM. */
+  chainId: string | number;
   symbol: string;
   decimals: number;
   logoURIs: LogoURIs;
@@ -138,4 +139,7 @@ export interface Asset {
 
   /** Add to asset at build time. */
   relative_image_url: string;
+
+  /** Denom key of variant of asset this is grouped with. */
+  variantGroupKey: string;
 }

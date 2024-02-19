@@ -10,7 +10,13 @@
  */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import type { Asset, AssetList, Chain, ChainList } from "@osmosis-labs/types";
+import type {
+  Asset,
+  AssetList,
+  Chain,
+  ChainList,
+  IbcTransferMethod,
+} from "@osmosis-labs/types";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -36,7 +42,7 @@ import {
 } from "./utils";
 
 interface ResponseAssetList {
-  chain_name: string;
+  chainName: string;
   assets: Omit<Asset, "chain_id">[];
 }
 
@@ -209,7 +215,7 @@ async function generateAssetListFile({
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
     /** If there are no traces, assume it's an Osmosis asset */
-    if (asset.counterparty.length === 0) {
+    if (asset.transferMethods.length === 0) {
       const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
 
       if (!chain) {
@@ -219,22 +225,30 @@ async function generateAssetListFile({
       return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
-    for (const counterparty of asset.counterparty) {
-      const chain = chains.find(
-        (chain) => chain.chain_name === counterparty.chainName
+    /** Otherwise, assume IBC asset 1 hop counterparty. */
+    const cosmosCounterparty = [...asset.transferMethods]
+      .reverse()
+      .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
+
+    if (!cosmosCounterparty) {
+      throw new Error(
+        "Failed to find cosmos counterparty for IBC asset: " + asset.symbol
       );
-
-      if (!chain) {
-        console.warn(
-          `Failed to find chain ${counterparty.chainName}. ${asset.symbol} for that chain will be skipped.`
-        );
-        continue;
-      }
-
-      createOrAddToAssetList(acc, chain, asset, environment);
     }
 
-    return acc;
+    const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
+
+    const chain = chains.find(
+      (chain) => chain.chain_name === counterpartyChainName
+    );
+
+    if (!chain) {
+      throw new Error(
+        `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
+      );
+    }
+
+    return createOrAddToAssetList(acc, chain, asset, environment);
   }, [] as AssetList[]);
 
   let content: string = "";

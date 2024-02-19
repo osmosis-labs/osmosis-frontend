@@ -62,7 +62,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
         const originChainId = ibcAsset.counterparty[0]?.chainId;
 
-        if (!originChainId)
+        if (!originChainId || typeof originChainId !== "string")
           throw new Error(
             `No origin chain ID found for IBC asset ${ibcAsset.coinMinimalDenom}`
           );
