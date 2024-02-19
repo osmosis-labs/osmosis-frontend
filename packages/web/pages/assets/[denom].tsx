@@ -586,7 +586,7 @@ export default AssetInfoPage;
 
 const findIBCToken = (imperatorToken: ImperatorToken) => {
   const ibcAsset = AssetLists.flatMap(({ assets }) => assets).find(
-    (asset) => asset.base === imperatorToken.denom
+    (asset) => asset.coinMinimalDenom === imperatorToken.denom
   );
 
   return ibcAsset;

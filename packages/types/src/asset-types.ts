@@ -9,12 +9,6 @@ export interface AssetList {
   assets: Asset[];
 }
 
-export interface AssetDenomUnit {
-  denom: string;
-  exponent: number;
-  aliases?: string[];
-}
-
 interface GasPriceStep {
   low: number;
   average: number;
@@ -47,20 +41,19 @@ export interface LogoURIs {
   png?: string;
 }
 
-export interface TransferMethodChain {
-  port: string;
-  channelId: string;
-  path?: string;
-}
-
 export type IbcTransferMethod = {
   type: "ibc";
+  /** Counterparty chain info.
+   *  `channelId` here is commonly referred to as "destination channel". */
   counterparty: {
     chainName: string;
+    chainId: string;
     sourceDenom: string;
     port: string;
     channelId: string;
   };
+  /** Osmosis chain. `channelId` here is commonly
+   *  referred to as "source channel". */
   chain: {
     port: string;
     channelId: string;
@@ -98,13 +91,8 @@ export interface Counterparty {
   address?: string;
 }
 
-export interface RelatedAsset {
-  chainName: string;
-  sourceDenom: string;
-}
-
 export interface Price {
-  pool: string;
+  poolId: string;
   denom: string;
 }
 
@@ -112,21 +100,42 @@ export type Category = "stablecoin" | "defi" | "meme" | "liquid_staking";
 
 export interface Asset {
   chainName: string;
+  /** Denom as represented on source/origin chain. */
   sourceDenom: string;
+  /** Denom as represented on Osmosis chain. */
   coinMinimalDenom: string;
   symbol: string;
+  name: string;
   decimals: number;
   logoURIs: LogoURIs;
-  coingeckoId: string;
+  coingeckoId?: string;
+
+  /** "Endorsed", as is currently defined. */
   verified: boolean;
+  /** If true is preview only, not ready for production. */
+  preview: boolean;
+  /** Transfers are unstable. */
+  unstable: boolean;
+  /** Transfers should not be possible. */
+  disabled: boolean;
+
   categories: Category[];
+  /** Data needed for calculating this token's price via Osmosis pools. */
   price?: Price;
+  /** The supported methods for transferring this token.
+   *  Could be a router API, bespoke bridge, or IBC. */
   transferMethods: (
     | IbcTransferMethod
     | IntegratedBridgeTransferMethod
     | ExternalInterfaceBridgeTransferMethod
   )[];
+  /** Token and chain info for the possible chains this token can originate from. */
   counterparty: Counterparty[];
-  name: string;
-  relatedAssets: RelatedAsset[];
+  /** Example: `2024-01-24T10:58:00.000Z` */
+  listingDate?: string;
+
+  pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+
+  /** Add to asset at build time. */
+  relative_image_url: string;
 }

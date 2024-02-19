@@ -10,11 +10,7 @@ import {
   IPriceStore,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { Asset } from "@osmosis-labs/types";
-import {
-  getLastIbcTrace,
-  getSourceDenomFromAssetList,
-} from "@osmosis-labs/utils";
+import { Asset, IbcTransferMethod } from "@osmosis-labs/types";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -157,49 +153,53 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.assets
-      .filter((asset) => asset.origin_chain_id !== this.chain.chainId) // Filter osmosis native assets
+      .filter((asset) => asset.transferMethods.length === 0) // Filter osmosis native assets
       .filter((asset) => {
         if (typeof window === "undefined") return true;
 
         if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
           return true;
         }
-        return !asset.keywords?.includes("osmosis-unlisted");
+        return !asset.preview;
       }) // Remove unlisted assets if preview assets is disabled
       .map((ibcAsset) => {
-        const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
+        const chainInfo = this.chainStore.getChain(
+          ibcAsset.counterparty![0].chainId
+        );
 
-        const minimalDenom = getSourceDenomFromAssetList(ibcAsset);
+        const sourceDenom = ibcAsset.sourceDenom;
         const originCurrency = chainInfo.currencies.find((cur) => {
-          if (typeof minimalDenom === "undefined") return false;
+          if (typeof sourceDenom === "undefined") return false;
 
-          if (minimalDenom.startsWith("cw20:")) {
+          if (sourceDenom.startsWith("cw20:")) {
             /** Note: since we're searching on counterparty config, the coinMinimalDenom
              *  is not the Osmosis IBC denom, it's the source denom
              */
-            return cur.coinMinimalDenom.startsWith(minimalDenom);
+            return cur.coinMinimalDenom.startsWith(sourceDenom);
           }
-          return cur.coinMinimalDenom === minimalDenom;
+          return cur.coinMinimalDenom === sourceDenom;
         });
 
         if (!originCurrency) {
           throw new Error(
-            `Unknown currency ${minimalDenom} for ${ibcAsset.origin_chain_id}`
+            `Unknown currency ${sourceDenom} for ${ibcAsset.origin_chain_id}`
           );
         }
 
-        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
+        const ibcTransferMethod = ibcAsset.transferMethods.find(
+          ({ type }) => type === "ibc"
+        ) as IbcTransferMethod | undefined;
 
-        if (!ibcTrace) {
+        if (!ibcTransferMethod) {
           throw new Error(
             `Invalid IBC asset config: ${JSON.stringify(ibcAsset)}`
           );
         }
 
-        const sourceChannelId = ibcTrace.chain.channel_id;
-        const destChannelId = ibcTrace.counterparty.channel_id;
-        const isVerified = ibcAsset.keywords?.includes("osmosis-main");
-        const isUnstable = ibcAsset.keywords?.includes("osmosis-unstable");
+        const sourceChannelId = ibcTransferMethod.chain.channelId;
+        const destChannelId = ibcTransferMethod.counterparty.channelId;
+        const isVerified = !ibcAsset.verified;
+        const isUnstable = ibcAsset.unstable;
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -209,8 +209,10 @@ export class ObservableAssets {
          * to send the source denom for deposits.
          */
         let sourceDenom: string | undefined;
-        if ((ibcTrace.chain.path.match(/transfer/gi)?.length ?? 0) >= 2) {
-          sourceDenom = minimalDenom;
+        if (
+          (ibcTransferMethod.chain.path.match(/transfer/gi)?.length ?? 0) >= 2
+        ) {
+          sourceDenom = sourceDenom;
         }
 
         const balance = this.queries.queryBalances
@@ -220,7 +222,7 @@ export class ObservableAssets {
             coinGeckoId: originCurrency.coinGeckoId,
             coinImageUrl: originCurrency.coinImageUrl,
             coinDenom: originCurrency.coinDenom,
-            coinMinimalDenom: ibcAsset.base,
+            coinMinimalDenom: ibcAsset.coinMinimalDenom,
             paths: [
               {
                 portId: "transfer",
@@ -261,10 +263,11 @@ export class ObservableAssets {
           this._verifiedAssets.add(balance.currency.coinDenom);
         }
 
-        if (ibcTrace.type === "ibc-cw20") {
+        if (ibcTransferMethod.counterparty.sourceDenom.startsWith("cw20:")) {
           return {
             ...ibcBalance,
-            ics20ContractAddress: ibcTrace.counterparty.port.split(".")[1],
+            ics20ContractAddress:
+              ibcTransferMethod.counterparty.port.split(".")[1],
           } as IBCCW20ContractBalance;
         } else {
           return ibcBalance;
