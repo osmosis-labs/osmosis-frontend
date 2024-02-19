@@ -48,7 +48,7 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
       style={{
         height: `${rowVirtualizer.getTotalSize()}px`,
       }}
-      className="overflow-auto"
+      className="overflow-x-auto overflow-y-hidden"
     >
       <table className="mb-12 w-full">
         <thead>

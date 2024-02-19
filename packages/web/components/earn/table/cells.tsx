@@ -36,7 +36,7 @@ export const StrategyNameCell = ({
   return (
     <div className="flex items-center">
       <div className="flex flex-col">
-        <p className="text-white whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm">
+        <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
           {name}
         </p>
         <div className="flex items-center gap-2">
