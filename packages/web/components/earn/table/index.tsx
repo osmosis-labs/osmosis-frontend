@@ -2,6 +2,7 @@ import { flexRender, useReactTable } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useMemo } from "react";
 
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 import { EarnStrategy } from "~/server/queries/numia/earn";
@@ -29,12 +30,18 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
 
   const virtualRows = rowVirtualizer.getVirtualItems();
 
-  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-  const paddingBottom =
-    virtualRows.length > 0
-      ? rowVirtualizer.getTotalSize() -
-        (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0;
+  const paddingTop = useMemo(
+    () => (virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0),
+    [virtualRows]
+  );
+  const paddingBottom = useMemo(
+    () =>
+      virtualRows.length > 0
+        ? rowVirtualizer.getTotalSize() -
+          (virtualRows?.[virtualRows.length - 1]?.end || 0)
+        : 0,
+    [rowVirtualizer, virtualRows]
+  );
 
   return (
     <div

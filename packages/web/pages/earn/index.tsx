@@ -35,7 +35,7 @@ import { formatPretty } from "~/utils/formatter";
 
 function Earn() {
   const { t } = useTranslation();
-  const { earnPage } = useFeatureFlags();
+  const { earnPage, _isInitialized } = useFeatureFlags();
   const { accountStore } = useStore();
   const router = useRouter();
 
@@ -70,10 +70,10 @@ function Earn() {
   );
 
   useEffect(() => {
-    if (!earnPage) {
+    if (!earnPage && _isInitialized) {
       router.push("/");
     }
-  }, [earnPage, router]);
+  }, [earnPage, router, _isInitialized]);
 
   return (
     <div className="relative flex flex-col gap-10 py-10 pl-8 pr-9">
