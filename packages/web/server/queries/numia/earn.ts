@@ -89,7 +89,7 @@ export interface EarnStrategy {
   apy: RatePretty;
   risk: number;
   balance: PricePretty;
-  holdsTokens: boolean;
+  holdsTokens?: boolean;
   hasLockingDuration: boolean;
   tokensType: tokensType;
 }

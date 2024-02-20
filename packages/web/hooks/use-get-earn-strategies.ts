@@ -10,12 +10,35 @@ const useGetEarnStrategies = (
   isWalletConnected: boolean
 ) => {
   const {
-    data: strategies,
+    data: _strategies,
     isLoading: areStrategiesLoading,
     isError,
     refetch,
   } = api.edge.earn.getEarnStrategies.useQuery(undefined, {
     trpc: { context: { skipBatch: true } },
+  });
+
+  const { data: holdenDenoms } =
+    api.edge.assets.getUserAssetsBreakdown.useQuery(
+      { userOsmoAddress },
+      {
+        trpc: { context: { skipBatch: true } },
+        enabled: !!userOsmoAddress,
+        select: (assetsBreakdown): string[] =>
+          assetsBreakdown.aggregated.map((coin) => coin.denom),
+      }
+    );
+
+  const strategies: EarnStrategy[] = (_strategies ?? []).map((_strategy) => {
+    const involvedDenoms = _strategy.involvedTokens.map(
+      (asset) => asset.coinDenom
+    );
+    return {
+      ..._strategy,
+      holdsTokens: !!holdenDenoms?.find((holdenDenom) =>
+        involvedDenoms.includes(holdenDenom)
+      ),
+    };
   });
 
   const balanceQueries = api.useQueries((q) =>

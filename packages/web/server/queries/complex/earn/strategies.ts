@@ -74,7 +74,6 @@ export async function getEarnStrategies() {
             apy: processedApy,
             risk: 0,
             balance: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-            holdsTokens: false,
             hasLockingDuration: lockDuration > 0,
             tokensType: "stablecoins", // todo
           });
