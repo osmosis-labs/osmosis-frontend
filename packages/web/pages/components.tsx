@@ -108,8 +108,19 @@ const SlidersShadcn = () => {
 
   return (
     <Card title="Slider (Shadcn)">
-      <Component title="Slider">
+      <Component title="Slider Default">
         <SliderShadcn
+          variant="default"
+          min={0}
+          max={100}
+          step={1}
+          value={slider}
+          onValueChange={(value) => setSlider(value)}
+        />
+      </Component>
+      <Component title="Slider Supercharged">
+        <SliderShadcn
+          variant="secondary"
           min={0}
           max={100}
           step={1}
@@ -133,17 +144,6 @@ const Sliders = () => {
           onInput={(value) => {
             setSlider(value);
           }}
-          min={0}
-          max={100}
-          step={1}
-        />
-      </Component>
-      <Component title="Disabled">
-        <Slider
-          disabled
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => setSlider(value)}
           min={0}
           max={100}
           step={1}
