@@ -135,7 +135,7 @@ export default observer(StrategiesTable);
 
 const LoadingStrategies = () => {
   return (
-    <div className="mb-16 flex flex-col items-center justify-center gap-7">
+    <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
       <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
         <Image
           src={"/images/loading-gradient.svg"}
