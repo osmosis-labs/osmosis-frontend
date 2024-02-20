@@ -508,6 +508,12 @@
           "month": "Lună",
           "year": "An"
         }
+      },
+      "discardChanges": {
+        "title": "Renunțați la modificări?",
+        "message": "Doriți să vă păstrați setările existente de tranzacționare cu 1 clic?",
+        "cancelButton": "Anulare",
+        "discardButton": "Aruncă"
       }
     },
     "welcomeBack": {

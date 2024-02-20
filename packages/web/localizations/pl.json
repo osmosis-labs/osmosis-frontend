@@ -508,6 +508,12 @@
           "month": "Miesiąc",
           "year": "Rok"
         }
+      },
+      "discardChanges": {
+        "title": "Odrzucać zmiany?",
+        "message": "Czy chcesz zachować swoje dotychczasowe ustawienia handlu jednym kliknięciem?",
+        "cancelButton": "Anulować",
+        "discardButton": "Wyrzucać"
       }
     },
     "welcomeBack": {

@@ -508,6 +508,12 @@
           "month": "Mois",
           "year": "Année"
         }
+      },
+      "discardChanges": {
+        "title": "Annuler les modifications?",
+        "message": "Souhaitez-vous conserver vos paramètres de trading en 1-Click existants ?",
+        "cancelButton": "Annuler",
+        "discardButton": "Jeter"
       }
     },
     "welcomeBack": {

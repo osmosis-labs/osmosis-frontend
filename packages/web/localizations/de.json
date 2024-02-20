@@ -508,6 +508,12 @@
           "month": "Monat",
           "year": "Jahr"
         }
+      },
+      "discardChanges": {
+        "title": "Änderungen verwerfen?",
+        "message": "Möchten Sie Ihre bestehenden 1-Click-Trading-Einstellungen beibehalten?",
+        "cancelButton": "Stornieren",
+        "discardButton": "Verwerfen"
       }
     },
     "welcomeBack": {

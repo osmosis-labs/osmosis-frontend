@@ -508,6 +508,12 @@
           "month": "Mes",
           "year": "Año"
         }
+      },
+      "discardChanges": {
+        "title": "¿Descartar los cambios?",
+        "message": "¿Desea mantener su configuración actual de Trading con 1 clic?",
+        "cancelButton": "Cancelar",
+        "discardButton": "Desechar"
       }
     },
     "welcomeBack": {

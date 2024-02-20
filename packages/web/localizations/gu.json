@@ -508,6 +508,12 @@
           "month": "માસ",
           "year": "વર્ષ"
         }
+      },
+      "discardChanges": {
+        "title": "ફેરફારોને અવગણો?",
+        "message": "શું તમે તમારી હાલની 1-ક્લિક ટ્રેડિંગ સેટિંગ્સ રાખવા માંગો છો?",
+        "cancelButton": "રદ કરો",
+        "discardButton": "કાઢી નાખો"
       }
     },
     "welcomeBack": {

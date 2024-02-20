@@ -508,6 +508,12 @@
           "month": "ماه",
           "year": "سال"
         }
+      },
+      "discardChanges": {
+        "title": "لغو تغییرات؟",
+        "message": "آیا مایلید تنظیمات تجارت 1-کلیک موجود خود را حفظ کنید؟",
+        "cancelButton": "لغو کنید",
+        "discardButton": "دور انداختن"
       }
     },
     "welcomeBack": {

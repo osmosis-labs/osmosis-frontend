@@ -508,6 +508,12 @@
           "month": "월",
           "year": "년도"
         }
+      },
+      "discardChanges": {
+        "title": "변경 사항을 취소?",
+        "message": "기존 1-클릭 거래 설정을 유지하시겠습니까?",
+        "cancelButton": "취소",
+        "discardButton": "버리다"
       }
     },
     "welcomeBack": {

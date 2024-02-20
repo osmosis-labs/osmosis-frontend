@@ -508,6 +508,12 @@
           "month": "月",
           "year": "年"
         }
+      },
+      "discardChanges": {
+        "title": "放棄更改？",
+        "message": "您希望保留現有的一鍵交易設定嗎？",
+        "cancelButton": "取消",
+        "discardButton": "丟棄"
       }
     },
     "welcomeBack": {

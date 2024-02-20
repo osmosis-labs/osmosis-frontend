@@ -508,6 +508,12 @@
           "month": "Mês",
           "year": "Ano"
         }
+      },
+      "discardChanges": {
+        "title": "Descartar mudanças?",
+        "message": "Deseja manter suas configurações existentes de negociação em 1 clique?",
+        "cancelButton": "Cancelar",
+        "discardButton": "Descartar"
       }
     },
     "welcomeBack": {
