@@ -61,6 +61,11 @@ const StrategiesTable = ({
     return <StrategiesFetchingError refetch={refetch} />;
   }
 
+  if (strategies && strategies.length === 0) return <NoResult />;
+
+  if (strategies && virtualRows.length === 0 && strategies.length > 0)
+    return <NoResult isFilterError />;
+
   return (
     <div
       style={{
@@ -179,6 +184,24 @@ const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
             Retry
           </button>
         </span>
+      </h6>
+    </div>
+  );
+};
+
+const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
+  return (
+    <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
+      <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
+        <Image
+          src={"/images/magnifying-glass-error.svg"}
+          alt="Error"
+          width={38}
+          height={38}
+        />
+      </div>
+      <h6 className="text-wosmongton-400">
+        Sorry, we’ve got no results. {isFilterError && "Try changing filters"}
       </h6>
     </div>
   );
