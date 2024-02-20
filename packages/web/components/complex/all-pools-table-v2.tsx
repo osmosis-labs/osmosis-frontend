@@ -151,7 +151,7 @@ export const AllPoolsTable: FunctionComponent<{
             query: filters.searchQuery,
           }
         : undefined,
-      types: [...filters.poolTypesFilter, "cosmwasm"],
+      types: [...filters.poolTypesFilter, "cosmwasm", "cosmwasm-astroport-pcl"],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
         ? {
