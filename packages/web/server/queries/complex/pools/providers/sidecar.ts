@@ -2,7 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";

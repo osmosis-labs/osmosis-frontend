@@ -1,7 +1,7 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import { getPoolsFromSidecar } from "~/server/queries/complex/pools/providers/sidecar";
 import { search, SearchSchema } from "~/utils/search";
 
