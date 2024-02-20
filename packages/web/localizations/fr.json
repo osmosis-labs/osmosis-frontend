@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
-  "convertToStake": {
-    "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
-    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
-    "title": "Convertir en OSMO jalonné",
-    "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
-    "stakedOsmo": "OSMO jalonné",
-    "APR": "AVR",
-    "currentApr": "TAEG actuel",
-    "pool": "PISCINE #{poolId}",
-    "position": "POSITION # {positionId}",
-    "convertAndStake": "Convertir et miser"
-  },
   "clPositions": {
     "inRange": "DANS LA GAMME",
     "nearBounds": "PRÈS DES LIMITES",
@@ -130,18 +118,6 @@
     "applyButton": "Appliquer",
     "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
     "allAppsHeader": "Toutes les applications"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Boostez votre",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Apprenez comment cela fonctionne en 30 secondes, ou améliorez votre position en quelques clics.",
-    "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Gagnez plus de vos liquidités",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes ou améliorez vos liquidités en quelques clics.",
-    "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
   },
   "createFirstPositionCta": {
     "title": "Créez votre première position suralimentée",
@@ -783,21 +759,6 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "upgrades": {
-    "title": "Mises à niveau disponibles",
-    "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
-    "positionUpgrade": "Mise à niveau de poste",
-    "superchargedLiquidity": "Liquidité suralimentée",
-    "newSuperchargedPool": "Ce nouveau pool offre un potentiel de gain plus élevé et un TAP estimé le plus élevé.",
-    "upgrade": "Améliorer",
-    "pool": "PISCINE",
-    "new": "NOUVEAU",
-    "current": "ACTUEL",
-    "success": "Mise à niveau réussie !",
-    "clickHereToView": "Cliquez ici pour afficher",
-    "foundHere": "Les mises à jour peuvent être trouvées ici",
-    "availableHereCaption": "Les mises à jour disponibles peuvent être consultées ici. Vous pouvez choisir de mettre à niveau à tout moment."
-  },
   "seo": {
     "404": {
       "title": "404 Page non trouvée",
