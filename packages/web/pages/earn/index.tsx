@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -22,6 +23,8 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
+
 import {
   useFeatureFlags,
   useNavBar,
@@ -42,6 +45,8 @@ function Earn() {
   const userOsmoAddress = account?.address ?? "";
   const isWalletConnected = account?.isWalletConnected ?? false;
 
+  const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
+
   useNavBar({ title: t("earnPage.title") });
 
   const {
@@ -54,8 +59,6 @@ function Earn() {
     isError,
     refetch,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
-
-  const { onOpenWalletSelect } = useWalletSelect();
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -112,24 +115,26 @@ function Earn() {
           <EarnRewards totalUnclaimedRewards={totalUnclaimedRewards} />
         </div>
       ) : (
-        <div className="flex">
-          <div className="z-10 mb-5 flex flex-1 items-end gap-9 xl:flex-col">
-            <div className="flex flex-col gap-7">
-              <h4>{t("earnPage.startEarning")}</h4>
-              <p className="body2 text-osmoverse-200 opacity-50">
-                Phasellus libero nunc, sagittis vitae neque eu, ultrices dictum
-                sapien, phasellus egestas quam eu nunc gravida.
-              </p>
+        <SkeletonLoader isLoaded={!isWalletLoading}>
+          <div className="flex">
+            <div className="z-10 mb-5 flex flex-1 items-end gap-9 xl:flex-col">
+              <div className="flex flex-col gap-7">
+                <h4>{t("earnPage.startEarning")}</h4>
+                <p className="body2 text-osmoverse-200 opacity-50">
+                  Phasellus libero nunc, sagittis vitae neque eu, ultrices
+                  dictum sapien, phasellus egestas quam eu nunc gravida.
+                </p>
+              </div>
+              <Button
+                mode={"primary"}
+                onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
+              >
+                {t("connectWallet")}
+              </Button>
             </div>
-            <Button
-              mode={"primary"}
-              onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
-            >
-              {t("connectWallet")}
-            </Button>
+            <div className="flex-1 md:hidden"></div>
           </div>
-          <div className="flex-1 md:hidden"></div>
-        </div>
+        </SkeletonLoader>
       )}
 
       {/* <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
