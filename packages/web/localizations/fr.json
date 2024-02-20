@@ -777,7 +777,7 @@
     "step4Title": "Créez un portefeuille pour commencer",
     "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs."
   },
-  "swapFailed": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
+  "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
   "transactionFailed": "Échec de la transaction",
   "transactionSuccessful": "Succès de la transaction",

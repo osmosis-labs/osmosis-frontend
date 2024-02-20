@@ -777,7 +777,7 @@
     "step4Title": "Creați un portofel pentru a începe",
     "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
   },
-  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
+  "swapFailed": "Schimbarea a eșuat. Este posibil ca lichiditatea să nu fie suficientă. Încercați să reglați alunecarea permisă.",
   "transactionBroadcasting": "Transmitere tranzactie",
   "transactionFailed": "Tranzactie Esuata",
   "transactionSuccessful": "Tranzactie Finalizata",

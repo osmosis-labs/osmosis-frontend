@@ -777,7 +777,7 @@
     "step4Title": "创建一个钱包以开始",
     "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。"
   },
-  "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
+  "swapFailed": "兑换失败。流动性可能不够。尝试调整允许的滑点。",
   "transactionBroadcasting": "广播交易中",
   "transactionFailed": "交易失败",
   "transactionSuccessful": "交易成功",
