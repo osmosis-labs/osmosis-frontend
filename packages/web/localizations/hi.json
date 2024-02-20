@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "निवेशित कुल मूल्य",
     "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें",
-    "startEarning": "कमाई शुरू करें"
+    "startEarning": "कमाई शुरू करें",
+    "loadingStrategies": "रणनीतियाँ लोड हो रही हैं...",
+    "sorryErrorOccurred": "क्षमा करें, एक त्रुटि उत्पन्न हुई.",
+    "sorryNoResults": "क्षमा करें, हमें कोई परिणाम नहीं मिला।",
+    "tryChangingFilters": "फ़िल्टर बदलने का प्रयास करें",
+    "retry": "पुन: प्रयास करें"
   },
   "disclaimer": "अस्वीकरण"
 }

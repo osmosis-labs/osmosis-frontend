@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "Yatırılan Toplam Değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
-    "startEarning": "Kazanmaya başla"
+    "startEarning": "Kazanmaya başla",
+    "loadingStrategies": "Stratejiler yükleniyor...",
+    "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
+    "sorryNoResults": "Üzgünüz, sonuç alamadık.",
+    "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
+    "retry": "Yeniden dene"
   },
   "disclaimer": "Sorumluluk reddi beyanı"
 }

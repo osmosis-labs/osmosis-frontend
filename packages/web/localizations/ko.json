@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "총 투자 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요.",
-    "startEarning": "수익 창출 시작"
+    "startEarning": "수익 창출 시작",
+    "loadingStrategies": "전략 로드 중...",
+    "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",
+    "sorryNoResults": "죄송합니다. 결과가 없습니다.",
+    "tryChangingFilters": "필터를 바꿔보세요",
+    "retry": "다시 해 보다"
   },
   "disclaimer": "부인 성명"
 }

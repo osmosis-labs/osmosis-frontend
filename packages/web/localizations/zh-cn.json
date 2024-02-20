@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "投资总额",
     "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarning": "开始赚钱"
+    "startEarning": "开始赚钱",
+    "loadingStrategies": "加载策略...",
+    "sorryErrorOccurred": "抱歉，发生错误。",
+    "sorryNoResults": "抱歉，我们没有结果。",
+    "tryChangingFilters": "尝试更换过滤器",
+    "retry": "重试"
   },
   "disclaimer": "免责声明"
 }

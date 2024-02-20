@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
     "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો",
-    "startEarning": "કમાણી શરૂ કરો"
+    "startEarning": "કમાણી શરૂ કરો",
+    "loadingStrategies": "વ્યૂહરચના લોડ કરી રહ્યું છે...",
+    "sorryErrorOccurred": "માફ કરશો, એક ભૂલ આવી.",
+    "sorryNoResults": "માફ કરશો, અમને કોઈ પરિણામ મળ્યું નથી.",
+    "tryChangingFilters": "ફિલ્ટર્સ બદલવાનો પ્રયાસ કરો",
+    "retry": "ફરી પ્રયાસ કરો"
   },
   "disclaimer": "અસ્વીકરણ"
 }

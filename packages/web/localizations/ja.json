@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "投資総額",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください",
-    "startEarning": "稼ぎ始めましょう"
+    "startEarning": "稼ぎ始めましょう",
+    "loadingStrategies": "戦略を読み込んでいます...",
+    "sorryErrorOccurred": "申し訳ありませんが、エラーが発生しました。",
+    "sorryNoResults": "申し訳ありませんが、結果はありません。",
+    "tryChangingFilters": "フィルターを変更してみる",
+    "retry": "リトライ"
   },
   "disclaimer": "免責事項"
 }

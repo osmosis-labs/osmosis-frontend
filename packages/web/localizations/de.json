@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarning": "Anfangen zu verdienen"
+    "startEarning": "Anfangen zu verdienen",
+    "loadingStrategies": "Lade Strategien...",
+    "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
+    "sorryNoResults": "Leider haben wir keine Ergebnisse.",
+    "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
+    "retry": "Wiederholen"
   },
   "disclaimer": "Haftungsausschluss"
 }

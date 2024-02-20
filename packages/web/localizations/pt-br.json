@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "Valor total investido",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
-    "startEarning": "Comece a ganhar"
+    "startEarning": "Comece a ganhar",
+    "loadingStrategies": "Carregando estratégias...",
+    "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
+    "sorryNoResults": "Desculpe, não obtivemos resultados.",
+    "tryChangingFilters": "Tente alterar os filtros",
+    "retry": "Tentar novamente"
   },
   "disclaimer": "Isenção de responsabilidade"
 }
