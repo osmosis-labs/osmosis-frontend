@@ -17,21 +17,6 @@ const sliderRangeVariants = cva("absolute h-full", {
   },
 });
 
-const sliderTrackVariants = cva(
-  "relative h-[0.5rem] w-full grow overflow-hidden rounded-full",
-  {
-    variants: {
-      variant: {
-        default: "bg-osmoverse-700/50",
-        secondary: "bg-osmoverse-700/50",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
-
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> &
@@ -45,9 +30,7 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track
-      className={classNames(sliderTrackVariants({ variant, className }))}
-    >
+    <SliderPrimitive.Track className="relative h-[0.5rem] w-full grow overflow-hidden rounded-full bg-osmoverse-700/50">
       <SliderPrimitive.Range
         className={classNames(sliderRangeVariants({ variant, className }))}
       />
