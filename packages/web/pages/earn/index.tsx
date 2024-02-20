@@ -204,8 +204,8 @@ function Earn() {
               displayMode="flex"
             >
               <StrategiesTable
-                strategies={strategies}
-                showBalance={false}
+                strategies={myStrategies}
+                showBalance
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
                 refetch={refetch}
