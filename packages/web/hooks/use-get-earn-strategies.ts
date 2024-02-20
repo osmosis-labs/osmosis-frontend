@@ -12,7 +12,7 @@ const useGetEarnStrategies = (
   const {
     data: strategies,
     isLoading: areStrategiesLoading,
-    isError: areStrategiesError,
+    isError,
   } = api.edge.earn.getEarnStrategies.useQuery(undefined, {
     trpc: { context: { skipBatch: true } },
   });
@@ -35,11 +35,6 @@ const useGetEarnStrategies = (
 
   const areQueriesLoading = useMemo(
     () => balanceQueries.some((q) => q.isLoading === true),
-    [balanceQueries]
-  );
-
-  const areQueriesError = useMemo(
-    () => balanceQueries.some((q) => q.isError === true),
     [balanceQueries]
   );
 
@@ -81,7 +76,7 @@ const useGetEarnStrategies = (
     ...additionalStrategiesData,
     areQueriesLoading,
     areStrategiesLoading,
-    isError: areStrategiesError || areQueriesError,
+    isError,
   };
 };
 
