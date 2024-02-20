@@ -127,8 +127,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </SkeletonLoader>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
-            // className="w-[360px] xs:!w-[280px]"
-            // inputClassName="!w-[360px] xs:!w-[280px]"
             variant="secondary"
             value={[Math.round(config.percentage * 100)]}
             onValueChange={(value: number[]) => {
