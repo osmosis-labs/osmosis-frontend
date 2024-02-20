@@ -37,17 +37,17 @@ const Pool: FunctionComponent<Props> = observer(
 
     const [showTradeModal, setShowTradeModal] = useState(false);
 
-    // eject to pools page if pool does not exist
-    const poolExists =
-      poolId && typeof poolId === "string" && Boolean(poolId)
-        ? queryOsmosis.queryPools.poolExists(poolId)
-        : undefined;
+    const isValidPoolId =
+      poolId && typeof poolId === "string" && Boolean(poolId);
+
+    const poolExists = isValidPoolId
+      ? queryOsmosis.queryPools.poolExists(poolId)
+      : undefined;
 
     // the legacy query only supports transmuter cosmwasm pools
     // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     useEffect(() => {
-      if (!data || !(poolId && typeof poolId === "string" && Boolean(poolId)))
-        return;
+      if (!data || !isValidPoolId) return;
 
       const isCosmwasmNotTransmuter =
         data.type.startsWith("cosmwasm") && data.type !== "cosmwasm-transmuter";
@@ -55,7 +55,7 @@ const Pool: FunctionComponent<Props> = observer(
       const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
 
       if (isCosmwasmNotTransmuter) window.location.href = celatoneUrl;
-    }, [data, poolId]);
+    }, [data, poolId, isValidPoolId]);
 
     useEffect(() => {
       if (poolExists === false) {
