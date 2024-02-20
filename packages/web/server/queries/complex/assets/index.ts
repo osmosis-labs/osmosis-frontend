@@ -124,27 +124,23 @@ function simplifyAssetListForDisplay(
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter((asset) =>
-      params.includeUnlisted
-        ? true // Do not filter the unlisted assets
-        : !asset.keywords?.includes("osmosis-unlisted")
-    );
+    .filter((asset) => !asset.preview);
 
   let assetListAssets = listedAssets.filter((asset) => {
     if (params.findMinDenomOrSymbol) {
       return (
         params.findMinDenomOrSymbol.toUpperCase() ===
-          asset.base.toUpperCase() ||
+          asset.coinMinimalDenom.toUpperCase() ||
         params.findMinDenomOrSymbol.toUpperCase() === asset.symbol.toUpperCase()
       );
     }
 
     // Ensure denoms are unique on Osmosis chain
     // In the case the asset list has the same asset twice
-    if (coinMinimalDenomSet.has(asset.base)) {
+    if (coinMinimalDenomSet.has(asset.coinMinimalDenom)) {
       return false;
     } else {
-      coinMinimalDenomSet.add(asset.base);
+      coinMinimalDenomSet.add(asset.coinMinimalDenom);
       return true;
     }
   });
@@ -160,9 +156,7 @@ function simplifyAssetListForDisplay(
 
   // Filter by only verified
   if (params.onlyVerified) {
-    assetListAssets = assetListAssets.filter((asset) =>
-      Boolean(asset.keywords?.includes("osmosis-main"))
-    );
+    assetListAssets = assetListAssets.filter((asset) => asset.verified);
   }
 
   // Transform into a more compact object

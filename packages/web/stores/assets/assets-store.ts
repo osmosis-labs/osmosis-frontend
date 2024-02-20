@@ -125,7 +125,7 @@ export class ObservableAssets {
         if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
           return true;
         }
-        return !assetListAsset.keywords?.includes("osmosis-unlisted");
+        return !assetListAsset.preview;
       }) // Remove unlisted assets if preview assets is disabled
       .map((currency) => {
         const asset = this.assets.find(
@@ -140,7 +140,7 @@ export class ObservableAssets {
         return {
           balance: bal,
           fiatValue: this.priceStore.calculatePrice(bal),
-          isVerified: Boolean(asset?.keywords?.includes("osmosis-main")),
+          isVerified: asset?.verified ?? false,
         };
       });
   }
@@ -153,7 +153,7 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.assets
-      .filter((asset) => asset.transferMethods.length === 0) // Filter osmosis native assets
+      .filter((asset) => asset.transferMethods.length > 0) // Filter osmosis native assets
       .filter((asset) => {
         if (typeof window === "undefined") return true;
 
@@ -164,25 +164,27 @@ export class ObservableAssets {
       }) // Remove unlisted assets if preview assets is disabled
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(
-          ibcAsset.counterparty![0].chainId
+          ibcAsset.counterparty[0]?.chainId?.toString() ?? ""
         );
 
-        const sourceDenom = ibcAsset.sourceDenom;
+        const sourceDenom_ = ibcAsset.sourceDenom;
         const originCurrency = chainInfo.currencies.find((cur) => {
-          if (typeof sourceDenom === "undefined") return false;
+          if (typeof sourceDenom_ === "undefined") return false;
 
-          if (sourceDenom.startsWith("cw20:")) {
+          if (sourceDenom_.startsWith("cw20:")) {
             /** Note: since we're searching on counterparty config, the coinMinimalDenom
              *  is not the Osmosis IBC denom, it's the source denom
              */
-            return cur.coinMinimalDenom.startsWith(sourceDenom);
+            return cur.coinMinimalDenom.startsWith(sourceDenom_);
           }
-          return cur.coinMinimalDenom === sourceDenom;
+          return cur.coinMinimalDenom === sourceDenom_;
         });
 
         if (!originCurrency) {
           throw new Error(
-            `Unknown currency ${sourceDenom} for ${ibcAsset.origin_chain_id}`
+            `Unknown currency ${sourceDenom_} for ${
+              ibcAsset.counterparty![0].chainId
+            }`
           );
         }
 

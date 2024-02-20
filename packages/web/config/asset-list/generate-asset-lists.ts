@@ -334,7 +334,7 @@ async function generateAssetImages({
 }: {
   assetList: ResponseAssetList;
 }) {
-  console.time("Successfully downloaded images.");
+  console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
     await saveAssetImageToTokensDir(
       asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
