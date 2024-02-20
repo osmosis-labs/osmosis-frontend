@@ -2,6 +2,7 @@ import { flexRender, useReactTable } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useMemo } from "react";
 
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
@@ -10,10 +11,16 @@ import { theme } from "~/tailwind.config";
 
 interface StrategiesTableProps {
   showBalance: boolean;
-  strategies: EarnStrategy[];
+  strategies?: EarnStrategy[];
+  areStrategiesLoading?: boolean;
+  isError?: boolean;
 }
 
-const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
+const StrategiesTable = ({
+  showBalance,
+  strategies,
+  areStrategiesLoading,
+}: StrategiesTableProps) => {
   const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
   const table = useReactTable(tableConfig);
 
@@ -42,6 +49,10 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
         : 0,
     [rowVirtualizer, virtualRows]
   );
+
+  if (areStrategiesLoading) {
+    return <LoadingStrategies />;
+  }
 
   return (
     <div
@@ -121,3 +132,20 @@ const StrategiesTable = ({ showBalance, strategies }: StrategiesTableProps) => {
 };
 
 export default observer(StrategiesTable);
+
+const LoadingStrategies = () => {
+  return (
+    <div className="mb-16 flex flex-col items-center justify-center gap-7">
+      <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
+        <Image
+          src={"/images/loading-gradient.svg"}
+          alt="Loading spinner"
+          width={40}
+          height={40}
+          className="animate-spin"
+        />
+      </div>
+      <h6 className="text-wosmongton-400">Loading strategies...</h6>
+    </div>
+  );
+};

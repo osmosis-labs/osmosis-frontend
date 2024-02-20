@@ -35,6 +35,11 @@ const useGetEarnStrategies = (
     [balanceQueries]
   );
 
+  const isError = useMemo(
+    () => balanceQueries.some((q) => q.isError === true),
+    [balanceQueries]
+  );
+
   const additionalStrategiesData = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
@@ -73,6 +78,7 @@ const useGetEarnStrategies = (
     ...additionalStrategiesData,
     areQueriesLoading,
     areStrategiesLoading,
+    isError,
   };
 };
 

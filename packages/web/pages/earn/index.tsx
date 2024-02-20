@@ -51,6 +51,7 @@ function Earn() {
     totalUnclaimedRewards,
     areQueriesLoading,
     areStrategiesLoading,
+    isError,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
   const { onOpenWalletSelect } = useWalletSelect();
@@ -189,21 +190,23 @@ function Earn() {
               className="flex-col rounded-br-5xl rounded-bl-5xl"
               displayMode="flex"
             >
-              {!areStrategiesLoading && strategies ? (
-                <StrategiesTable strategies={strategies} showBalance={false} />
-              ) : (
-                <LoadingStrategies />
-              )}
+              <StrategiesTable
+                strategies={strategies}
+                showBalance={false}
+                areStrategiesLoading={areStrategiesLoading}
+                isError={isError}
+              />
             </TabPanel>
             <TabPanel
               className="flex-col rounded-br-5xl rounded-bl-5xl"
               displayMode="flex"
             >
-              {!areStrategiesLoading && strategies ? (
-                <StrategiesTable strategies={myStrategies} showBalance />
-              ) : (
-                <LoadingStrategies />
-              )}
+              <StrategiesTable
+                strategies={strategies}
+                showBalance={false}
+                areStrategiesLoading={areStrategiesLoading}
+                isError={isError}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -211,22 +214,5 @@ function Earn() {
     </div>
   );
 }
-
-const LoadingStrategies = () => {
-  return (
-    <div className="mb-16 flex flex-col items-center justify-center gap-7">
-      <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
-        <Image
-          src={"/images/loading-gradient.svg"}
-          alt="Loading spinner"
-          width={40}
-          height={40}
-          className="animate-spin"
-        />
-      </div>
-      <h6 className="text-wosmongton-400">Loading strategies...</h6>
-    </div>
-  );
-};
 
 export default observer(Earn);
