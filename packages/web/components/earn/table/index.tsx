@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useMemo } from "react";
 
+import { useTranslation } from "~/hooks";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 import { theme } from "~/tailwind.config";
@@ -146,6 +147,8 @@ const StrategiesTable = ({
 export default observer(StrategiesTable);
 
 const LoadingStrategies = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
       <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
@@ -157,12 +160,14 @@ const LoadingStrategies = () => {
           className="animate-spin"
         />
       </div>
-      <h6 className="text-wosmongton-400">Loading strategies...</h6>
+      <h6 className="text-wosmongton-400">{t("earnPage.loadingStrategies")}</h6>
     </div>
   );
 };
 
 const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
       <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
@@ -174,14 +179,14 @@ const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
         />
       </div>
       <h6 className="inline-flex items-center gap-1 text-wosmongton-400">
-        Sorry, an error occured.{" "}
+        {t("earnPage.sorryErrorOccurred")}
         <span>
           <button
             type="button"
             className="text-wosmongton-100"
             onClick={refetch}
           >
-            Retry
+            {t("earnPage.retry")}
           </button>
         </span>
       </h6>
@@ -190,6 +195,8 @@ const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
 };
 
 const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
       <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
@@ -201,7 +208,8 @@ const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
         />
       </div>
       <h6 className="text-wosmongton-400">
-        Sorry, we’ve got no results. {isFilterError && "Try changing filters"}
+        {t("earnPage.sorryNoResults")}{" "}
+        {isFilterError && t("earnPage.tryChangingFilters")}
       </h6>
     </div>
   );

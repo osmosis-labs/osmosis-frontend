@@ -912,7 +912,12 @@
     },
     "totalValueInvested": "Total Value Invested",
     "lookBelow": "Look below and find best strategies for you",
-    "startEarning": "Start Earning"
+    "startEarning": "Start Earning",
+    "loadingStrategies": "Loading strategies...",
+    "sorryErrorOccurred": "Sorry, an error occured.",
+    "sorryNoResults": "Sorry, we’ve got no results.",
+    "tryChangingFilters": "Try changing filters",
+    "retry": "Retry"
   },
   "disclaimer": "Disclaimer"
 }
