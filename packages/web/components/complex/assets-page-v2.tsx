@@ -164,8 +164,8 @@ const UserAssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
         <Image
           alt="vials"
           src="/images/osmosis-home-fg.png"
-          height={360}
-          width={360}
+          height={300}
+          width={300}
         />
       </div>
     </div>
