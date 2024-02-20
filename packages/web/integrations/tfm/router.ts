@@ -1,5 +1,4 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import {
   NoRouteError,
   SplitTokenInQuote,
@@ -9,6 +8,11 @@ import {
 import { apiClient } from "@osmosis-labs/utils";
 
 import { GetSwapRouteResponse } from "./types";
+
+// TFM tends to frequently return quotes with too high price impact
+// If we don't limit it, it will result in failed tx for many concurrent users.
+// A single swap with high price impact would invalidate the route.
+const maxAllowedPriceImpact = 0.5;
 
 export class TfmRemoteRouter implements TokenOutGivenInRouter {
   protected readonly baseUrl: URL;
@@ -57,8 +61,10 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
-      if (priceImpactTokenOut?.gt(new Dec(0.5))) {
-        throw new NotEnoughLiquidityError();
+      if (priceImpactTokenOut?.gt(new Dec(maxAllowedPriceImpact))) {
+        throw new Error(
+          `{Price impact ${priceImpactTokenOut} is greater than max allowed of ${maxAllowedPriceImpact}`
+        );
       }
 
       // convert quote response to SplitTokenInQuote
@@ -91,9 +97,12 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         throw new NoRouteError();
       }
 
-      throw new Error(
-        tfmJsonError?.data?.error?.message ?? "Unexpected TFM router error"
-      );
+      if (tfmJsonError?.data?.error?.message) {
+        throw new Error(tfmJsonError.data.error.message);
+      }
+
+      // if not a custom TFM error, throw the original error
+      throw e as Error;
     }
   }
 
