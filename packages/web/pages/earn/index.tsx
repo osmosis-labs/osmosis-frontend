@@ -52,6 +52,7 @@ function Earn() {
     areQueriesLoading,
     areStrategiesLoading,
     isError,
+    refetch,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
   const { onOpenWalletSelect } = useWalletSelect();
@@ -195,6 +196,7 @@ function Earn() {
                 showBalance={false}
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
+                refetch={refetch}
               />
             </TabPanel>
             <TabPanel
@@ -206,6 +208,7 @@ function Earn() {
                 showBalance={false}
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
+                refetch={refetch}
               />
             </TabPanel>
           </TabPanels>

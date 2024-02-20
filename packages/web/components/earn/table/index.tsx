@@ -14,12 +14,15 @@ interface StrategiesTableProps {
   strategies?: EarnStrategy[];
   areStrategiesLoading?: boolean;
   isError?: boolean;
+  refetch: () => void;
 }
 
 const StrategiesTable = ({
   showBalance,
   strategies,
   areStrategiesLoading,
+  isError,
+  refetch,
 }: StrategiesTableProps) => {
   const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
   const table = useReactTable(tableConfig);
@@ -52,6 +55,10 @@ const StrategiesTable = ({
 
   if (areStrategiesLoading) {
     return <LoadingStrategies />;
+  }
+
+  if (isError) {
+    return <StrategiesFetchingError refetch={refetch} />;
   }
 
   return (
@@ -146,6 +153,33 @@ const LoadingStrategies = () => {
         />
       </div>
       <h6 className="text-wosmongton-400">Loading strategies...</h6>
+    </div>
+  );
+};
+
+const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
+  return (
+    <div className="mb-16 mt-6 flex flex-col items-center justify-center gap-7">
+      <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
+        <Image
+          src={"/images/cross-thin.svg"}
+          alt="Error"
+          width={28}
+          height={28}
+        />
+      </div>
+      <h6 className="inline-flex items-center gap-1 text-wosmongton-400">
+        Sorry, an error occured.{" "}
+        <span>
+          <button
+            type="button"
+            className="text-wosmongton-100"
+            onClick={refetch}
+          >
+            Retry
+          </button>
+        </span>
+      </h6>
     </div>
   );
 };

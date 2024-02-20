@@ -13,6 +13,7 @@ const useGetEarnStrategies = (
     data: strategies,
     isLoading: areStrategiesLoading,
     isError,
+    refetch,
   } = api.edge.earn.getEarnStrategies.useQuery(undefined, {
     trpc: { context: { skipBatch: true } },
   });
@@ -77,6 +78,7 @@ const useGetEarnStrategies = (
     areQueriesLoading,
     areStrategiesLoading,
     isError,
+    refetch,
   };
 };
 
