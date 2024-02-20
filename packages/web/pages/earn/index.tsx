@@ -1,10 +1,8 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { Button } from "~/components/buttons";
 import {
@@ -24,7 +22,6 @@ import {
   Tabs,
 } from "~/components/earn/tabs";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
-
 import {
   useFeatureFlags,
   useNavBar,
