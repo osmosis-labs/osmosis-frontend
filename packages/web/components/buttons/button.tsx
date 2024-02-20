@@ -225,12 +225,13 @@ export const Button = forwardRef<
       loadingText?: string;
     }
 >((props, ref) => {
-  const { mode, size, className, children, isLoading, loadingText } = props;
+  const { mode, size, className, children, isLoading, loadingText, ...rest } =
+    props;
 
   return (
     <button
       ref={ref}
-      {...props}
+      {...rest}
       className={buttonCVA({
         className,
         mode,

@@ -705,6 +705,7 @@ const RightModalContent: FunctionComponent<
                 transaction1CTParams={transaction1CTParams!}
                 onStartTrading={() => {
                   setShowConnectAWalletToContinue(true);
+                  setShow1CTEditParams(false);
                 }}
               />
             )}
