@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAsset, getAssetPrice } from "~/server/queries/complex/assets";
+import { getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getFeeTokenGasPriceStep } from "~/server/queries/complex/assets/gas";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
@@ -27,29 +27,7 @@ export const oneClickTradingRouter = createTRPCRouter({
         "networkFeeLimit" | "sessionPeriod" | "spendLimit"
       >
     > => {
-      const osmosisChain = ChainList[0];
-      const osmoAsset = await getAsset({
-        anyDenom: osmosisChain.fees.fee_tokens[0].denom,
-      });
-
-      if (!osmoAsset) {
-        throw new Error("Osmo asset not found");
-      }
-
-      const [osmoPrice, osmosisGasPriceStep] = await Promise.all([
-        getAssetPrice({
-          asset: osmoAsset,
-        }),
-        getFeeTokenGasPriceStep({
-          chainId: osmosisChain.chain_id,
-        }),
-      ]);
-
-      if (!osmoPrice || !osmosisGasPriceStep) {
-        throw new Error("Error fetching osmo price");
-      }
-
-      const osmosisGasPrice = new Dec(osmosisGasPriceStep.average);
+      const networkFeeLimitStep = await getNetworkFeeLimitStep();
       // new CoinPretty(
       //   osmoAsset,
       //   new Dec("5000")
@@ -58,13 +36,13 @@ export const oneClickTradingRouter = createTRPCRouter({
       // )
       return {
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
-        networkFeeLimit: new CoinPretty(
-          osmoAsset,
-          osmosisGasPrice.mul(new Dec(OsmosisAverageGasLimit))
-        ),
+        networkFeeLimit: networkFeeLimitStep.average,
         sessionPeriod: "day" as const,
       };
     }
+  ),
+  getNetworkFeeLimitStep: publicProcedure.query(async () =>
+    getNetworkFeeLimitStep()
   ),
   getAuthenticators: publicProcedure
     .input(z.object({ userOsmoAddress: z.string() }))
@@ -97,3 +75,39 @@ export const oneClickTradingRouter = createTRPCRouter({
       return { account: result.account };
     }),
 });
+
+async function getNetworkFeeLimitStep() {
+  const osmosisChain = ChainList[0];
+  const osmoAsset = await getAsset({
+    anyDenom: osmosisChain.fees.fee_tokens[0].denom,
+  });
+
+  if (!osmoAsset) {
+    throw new Error("Osmo asset not found");
+  }
+
+  const osmosisGasPriceStep = await getFeeTokenGasPriceStep({
+    chainId: osmosisChain.chain_id,
+  });
+
+  if (!osmosisGasPriceStep) {
+    throw new Error("Error fetching osmo price");
+  }
+
+  const osmosisAverageGasLimitDec = new Dec(OsmosisAverageGasLimit);
+
+  return {
+    low: new CoinPretty(
+      osmoAsset,
+      new Dec(osmosisGasPriceStep.low).mul(osmosisAverageGasLimitDec)
+    ),
+    average: new CoinPretty(
+      osmoAsset,
+      new Dec(osmosisGasPriceStep.average).mul(osmosisAverageGasLimitDec)
+    ),
+    high: new CoinPretty(
+      osmoAsset,
+      new Dec(osmosisGasPriceStep.high).mul(osmosisAverageGasLimitDec)
+    ),
+  };
+}

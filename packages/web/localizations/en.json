@@ -508,6 +508,12 @@
           "month": "Month",
           "year": "Year"
         }
+      },
+      "discardChanges": {
+        "title": "Discard Changes?",
+        "message": "Do you wish to keep your existing 1-Click Trading settings?",
+        "cancelButton": "Cancel",
+        "discardButton": "Discard"
       }
     },
     "welcomeBack": {

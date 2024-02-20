@@ -703,6 +703,9 @@ const RightModalContent: FunctionComponent<
                 }}
                 setTransaction1CTParams={setTransaction1CTParams}
                 transaction1CTParams={transaction1CTParams!}
+                onStartTrading={() => {
+                  setShowConnectAWalletToContinue(true);
+                }}
               />
             )}
             {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (
@@ -725,6 +728,13 @@ const RightModalContent: FunctionComponent<
                     <IntroducingOneClick
                       onStartTrading={() => {
                         setShowConnectAWalletToContinue(true);
+                        setTransaction1CTParams((prev) => {
+                          if (!prev)
+                            throw new Error(
+                              "transaction1CTParams is undefined"
+                            );
+                          return { ...prev, isOneClickEnabled: true };
+                        });
                       }}
                       onClickEditParams={() => {
                         setShow1CTEditParams(true);

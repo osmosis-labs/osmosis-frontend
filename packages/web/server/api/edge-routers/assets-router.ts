@@ -2,10 +2,6 @@ import { PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { RecommendedSwapDenoms } from "~/config/feature-flag";
-import {
-  MainnetChainIds,
-  TestnetChainIds,
-} from "~/config/generated/chain-list";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
@@ -21,7 +17,6 @@ import {
   mapGetUserAssetCoins,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getFeeTokenGasPriceStep } from "~/server/queries/complex/assets/gas";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import {
   AvailableRangeValues,
@@ -56,19 +51,6 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress,
       });
     }),
-  getFeeTokenGasPriceStep: publicProcedure
-    .input(
-      z.object({
-        chainId: z.custom<MainnetChainIds | TestnetChainIds>(
-          (val) => typeof val === "string"
-        ),
-      })
-    )
-    .query(async ({ input: { chainId } }) =>
-      getFeeTokenGasPriceStep({
-        chainId,
-      })
-    ),
   getAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(

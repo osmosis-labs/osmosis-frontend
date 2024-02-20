@@ -1,5 +1,8 @@
+import classNames from "classnames";
+
 import { Button } from "~/components/buttons";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
+import { ScreenGoBackButton } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 
 const Periods = [
@@ -28,13 +31,14 @@ const Periods = [
 interface SessionPeriodScreenProps extends OneClickTradingBaseScreenProps {}
 
 export const SessionPeriodScreen = ({
-  goBackButton,
+  transaction1CTParams,
+  setTransaction1CTParams,
 }: SessionPeriodScreenProps) => {
   const { t } = useTranslation();
 
   return (
     <>
-      {goBackButton}
+      <ScreenGoBackButton className="absolute top-7 left-7" />
       <div className="flex flex-col items-center gap-6 px-16 ">
         <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
           {t("oneClickTrading.settings.sessionPeriodScreen.title")}
@@ -48,7 +52,22 @@ export const SessionPeriodScreen = ({
             <Button
               key={id}
               mode="unstyled"
-              className="subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  py-4 px-6 capitalize text-white-full hover:bg-osmoverse-900"
+              className={classNames(
+                "subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  py-4 px-6 capitalize text-white-full hover:bg-osmoverse-900",
+                {
+                  "bg-osmoverse-900":
+                    transaction1CTParams?.sessionPeriod === id,
+                }
+              )}
+              onClick={() => {
+                setTransaction1CTParams((prev) => {
+                  if (!prev) throw new Error("Transaction params is not set");
+                  return {
+                    ...prev,
+                    sessionPeriod: id,
+                  };
+                });
+              }}
             >
               {t(periodTranslationKey)}
             </Button>
