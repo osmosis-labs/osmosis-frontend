@@ -9,9 +9,7 @@ export type AvailableFlags =
   | "staking"
   | "swapsAdBanner"
   | "notifications"
-  | "convertToStake"
   | "mobileNotifications"
-  | "upgrades"
   | "tokenInfo"
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
@@ -37,8 +35,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
   notifications: true,
-  convertToStake: true,
-  upgrades: true,
   tokenInfo: true,
   newAssetsTable: false,
   sidebarOsmoChangeAndChart: true,
