@@ -33,7 +33,6 @@ import {
   CheckboxSelect,
   MenuDropdown,
   Radio,
-  Slider,
   StakeTab,
 } from "~/components/control";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
@@ -103,7 +102,7 @@ const Loaders = () => {
   );
 };
 
-const SlidersShadcn = () => {
+const Sliders = () => {
   const [slider, setSlider] = useState([50]);
 
   return (
@@ -126,38 +125,6 @@ const SlidersShadcn = () => {
           step={1}
           value={slider}
           onValueChange={(value) => setSlider(value)}
-        />
-      </Component>
-    </Card>
-  );
-};
-
-const Sliders = () => {
-  const [slider, setSlider] = useState(0);
-
-  return (
-    <Card title="Slider">
-      <Component title="Slider">
-        <Slider
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => {
-            setSlider(value);
-          }}
-          min={0}
-          max={100}
-          step={1}
-        />
-      </Component>
-      <Component title="Supercharged Gradient">
-        <Slider
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => setSlider(value)}
-          min={0}
-          max={100}
-          step={1}
-          useSuperchargedGradient
         />
       </Component>
     </Card>
@@ -1220,7 +1187,6 @@ const Components: NextPage = () => {
       <InputsShadcn />
       <Inputs />
 
-      <SlidersShadcn />
       <Sliders />
 
       <FontSize />
