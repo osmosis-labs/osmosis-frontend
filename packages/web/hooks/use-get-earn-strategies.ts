@@ -9,10 +9,13 @@ const useGetEarnStrategies = (
   userOsmoAddress: string,
   isWalletConnected: boolean
 ) => {
-  const { data: strategies, isLoading: areStrategiesLoading } =
-    api.edge.earn.getEarnStrategies.useQuery(undefined, {
-      trpc: { context: { skipBatch: true } },
-    });
+  const {
+    data: strategies,
+    isLoading: areStrategiesLoading,
+    isError: areStrategiesError,
+  } = api.edge.earn.getEarnStrategies.useQuery(undefined, {
+    trpc: { context: { skipBatch: true } },
+  });
 
   const balanceQueries = api.useQueries((q) =>
     (isWalletConnected ? strategies ?? [] : []).map((strat) =>
@@ -35,7 +38,7 @@ const useGetEarnStrategies = (
     [balanceQueries]
   );
 
-  const isError = useMemo(
+  const areQueriesError = useMemo(
     () => balanceQueries.some((q) => q.isError === true),
     [balanceQueries]
   );
@@ -78,7 +81,7 @@ const useGetEarnStrategies = (
     ...additionalStrategiesData,
     areQueriesLoading,
     areStrategiesLoading,
-    isError,
+    isError: areStrategiesError || areQueriesError,
   };
 };
 
