@@ -489,6 +489,25 @@
         "shareOfBalance": "余额份额",
         "shareOfBalanceDescription": "您在 Osmosis 上的总余额的{shareOfBalance}目前价值",
         "fluctuationNotice": "请注意，您的支出限额的美元价值取决于您的资产价值，该价值可能会波动。"
+      },
+      "networkFeeLimitScreen": {
+        "title": "网络费用限额",
+        "description": "设置一键交易会话期间任何单笔交易的网络费用最高金额。",
+        "info": "如果费用超过此金额，您可以通过在钱包中手动签署交易来继续。",
+        "low": "低的",
+        "average": "平均的",
+        "high": "高的",
+        "recommended": "受到推崇的"
+      },
+      "sessionPeriodScreen": {
+        "title": "会议期间",
+        "description": "设置允许在此设备上进行一键交易的持续时间。",
+        "periods": {
+          "day": "天",
+          "week": "星期",
+          "month": "月",
+          "year": "年"
+        }
       }
     },
     "welcomeBack": {

@@ -489,6 +489,25 @@
         "shareOfBalance": "Part du solde",
         "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement",
         "fluctuationNotice": "Sachez que la valeur en USD de votre limite de dépenses est basée sur la valeur de vos actifs, qui peut fluctuer."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Limite des frais de réseau",
+        "description": "Définissez le montant maximum que vous pouvez dépenser en frais de réseau pour toute transaction unique au cours de votre session de trading en 1 clic.",
+        "info": "Si les frais dépassent ce montant, vous pouvez procéder en signant manuellement les transactions dans votre portefeuille.",
+        "low": "Faible",
+        "average": "Moyenne",
+        "high": "Haut",
+        "recommended": "Recommandé"
+      },
+      "sessionPeriodScreen": {
+        "title": "Période de séance",
+        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
+        "periods": {
+          "day": "Jour",
+          "week": "Semaine",
+          "month": "Mois",
+          "year": "Année"
+        }
       }
     },
     "welcomeBack": {

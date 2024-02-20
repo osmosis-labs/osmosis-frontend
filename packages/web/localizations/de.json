@@ -489,6 +489,25 @@
         "shareOfBalance": "Anteil des Guthabens",
         "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
         "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Begrenzung der Netzwerkgebühr",
+        "description": "Legen Sie den Höchstbetrag fest, den Sie während Ihrer 1-Click-Handelssitzung für Netzwerkgebühren für jede einzelne Transaktion ausgeben können.",
+        "info": "Wenn die Gebühr diesen Betrag übersteigt, können Sie Transaktionen manuell in Ihrem Wallet signieren.",
+        "low": "Niedrig",
+        "average": "Durchschnitt",
+        "high": "Hoch",
+        "recommended": "Empfohlen"
+      },
+      "sessionPeriodScreen": {
+        "title": "Sitzungszeitraum",
+        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
+        "periods": {
+          "day": "Tag",
+          "week": "Woche",
+          "month": "Monat",
+          "year": "Jahr"
+        }
       }
     },
     "welcomeBack": {

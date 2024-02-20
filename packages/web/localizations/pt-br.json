@@ -489,6 +489,25 @@
         "shareOfBalance": "Participação no saldo",
         "shareOfBalanceDescription": "{shareOfBalance} do seu saldo total no Osmosis vale atualmente",
         "fluctuationNotice": "Esteja ciente de que o valor em dólares do seu limite de gastos é baseado no valor dos seus ativos, que pode flutuar."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Limite de taxa de rede",
+        "description": "Defina o valor máximo que você pode gastar em taxas de rede para qualquer transação durante sua sessão de negociação com 1 clique.",
+        "info": "Se uma taxa exceder esse valor, você poderá assinar manualmente as transações em sua carteira.",
+        "low": "Baixo",
+        "average": "Média",
+        "high": "Alto",
+        "recommended": "Recomendado"
+      },
+      "sessionPeriodScreen": {
+        "title": "Período da sessão",
+        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
+        "periods": {
+          "day": "Dia",
+          "week": "Semana",
+          "month": "Mês",
+          "year": "Ano"
+        }
       }
     },
     "welcomeBack": {

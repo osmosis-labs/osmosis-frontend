@@ -489,6 +489,25 @@
         "shareOfBalance": "Ponderea soldului",
         "shareOfBalanceDescription": "{shareOfBalance} din soldul total pe osmoză valorează în prezent",
         "fluctuationNotice": "Rețineți că valoarea în USD a limitei dvs. de cheltuieli se bazează pe valoarea activelor dvs., care poate fluctua."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Limită taxă de rețea",
+        "description": "Setați suma maximă pe care o puteți cheltui pentru taxele de rețea pentru orice tranzacție unică în timpul sesiunii de tranzacționare cu 1 clic.",
+        "info": "Dacă o taxă depășește această sumă, puteți continua prin semnarea manuală a tranzacțiilor în portofel.",
+        "low": "Scăzut",
+        "average": "In medie",
+        "high": "Înalt",
+        "recommended": "Recomandat"
+      },
+      "sessionPeriodScreen": {
+        "title": "Perioada de sesiune",
+        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
+        "periods": {
+          "day": "Zi",
+          "week": "Săptămână",
+          "month": "Lună",
+          "year": "An"
+        }
       }
     },
     "welcomeBack": {

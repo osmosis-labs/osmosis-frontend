@@ -489,6 +489,25 @@
         "shareOfBalance": "残高のシェア",
         "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
         "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
+      },
+      "networkFeeLimitScreen": {
+        "title": "ネットワーク料金の制限",
+        "description": "1-Click 取引セッション中の単一取引のネットワーク手数料に費やすことができる最大金額を設定します。",
+        "info": "手数料がこの金額を超える場合は、ウォレット内で手動でトランザクションに署名して続行できます。",
+        "low": "低い",
+        "average": "平均",
+        "high": "高い",
+        "recommended": "推奨"
+      },
+      "sessionPeriodScreen": {
+        "title": "会期",
+        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
+        "periods": {
+          "day": "日",
+          "week": "週",
+          "month": "月",
+          "year": "年"
+        }
       }
     },
     "welcomeBack": {

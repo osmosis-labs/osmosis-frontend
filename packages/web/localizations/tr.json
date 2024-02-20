@@ -489,6 +489,25 @@
         "shareOfBalance": "Bakiye payı",
         "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir",
         "fluctuationNotice": "Harcama limitinizin ABD doları değerinin, varlıklarınızın dalgalanabilecek değerine bağlı olduğunu unutmayın."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Ağ ücreti limiti",
+        "description": "Tek Tıkla Ticaret oturumunuz sırasında herhangi bir tek işlem için ağ ücretlerine harcayabileceğiniz maksimum tutarı belirleyin.",
+        "info": "Eğer ücret bu tutarı aşarsa cüzdanınızdaki işlemleri manuel olarak imzalayarak devam edebilirsiniz.",
+        "low": "Düşük",
+        "average": "Ortalama",
+        "high": "Yüksek",
+        "recommended": "Tavsiye edilen"
+      },
+      "sessionPeriodScreen": {
+        "title": "Oturum dönemi",
+        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
+        "periods": {
+          "day": "Gün",
+          "week": "Hafta",
+          "month": "Ay",
+          "year": "Yıl"
+        }
       }
     },
     "welcomeBack": {
