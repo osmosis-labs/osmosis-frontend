@@ -21,7 +21,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={heroRef}>
-        <AssetsBreakdown />
+        <UserAssetsBreakdown />
       </section>
 
       <AssetsInfoTable
@@ -37,7 +37,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   );
 });
 
-const AssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
+const UserAssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore, chainStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
