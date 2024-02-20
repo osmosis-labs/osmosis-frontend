@@ -556,6 +556,10 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
   },
+  "solana.USDC.wh": {
+    depositUrlOverride: "https://portalbridge.com/cosmos/",
+    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
