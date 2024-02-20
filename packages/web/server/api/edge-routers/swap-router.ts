@@ -110,15 +110,15 @@ export const swapRouter = createTRPCRouter({
           ? await calcAssetValue({
               anyDenom: tokenInDenom,
               amount: quote.tokenInFeeAmount,
-            })
+            }).catch(() => null)
           : undefined;
         const tokenOutPrice = await getAssetPrice({
           asset: { coinMinimalDenom: tokenOutDenom },
-        });
+        }).catch(() => null);
         const tokenOutValue = await calcAssetValue({
           anyDenom: tokenOutDenom,
           amount: quote.amount,
-        });
+        }).catch(() => null);
         const tokenInFeeAmountFiatValue = tokenInFeeAmountValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInFeeAmountValue)
           : undefined;
