@@ -2,6 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { IS_TESTNET } from "~/config";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";
@@ -91,11 +92,7 @@ async function makePoolFromSidecarPool({
   // contains unlisted or invalid assets
   // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
   // to ease integrations.
-  if (
-    (!reserveCoins || !totalFiatValueLocked) &&
-    process.env.NEXT_PUBLIC_IS_TESTNET !== "true"
-  )
-    return;
+  if ((!reserveCoins || !totalFiatValueLocked) && !IS_TESTNET) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
