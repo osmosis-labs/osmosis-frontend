@@ -22,7 +22,6 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import { Spinner } from "~/components/loaders";
 import {
   useFeatureFlags,
   useNavBar,
@@ -156,59 +155,78 @@ function Earn() {
           </Tabs>
         </div> */}
 
-      {!areStrategiesLoading && strategies ? (
-        <FilterProvider defaultFilters={defaultFilters}>
-          <Tabs
-            className={classNames("flex flex-col", {
-              "z-10": !isWalletConnected,
-            })}
-          >
-            <TabButtons>
+      <FilterProvider defaultFilters={defaultFilters}>
+        <Tabs
+          className={classNames("flex flex-col", {
+            "z-10": !isWalletConnected,
+          })}
+        >
+          <TabButtons>
+            <TabButton
+              withBasePadding
+              withTextOpacity
+              className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
+            >
+              {t("earnPage.discoverStrategies")}
+            </TabButton>
+            {isWalletConnected ? (
               <TabButton
                 withBasePadding
                 withTextOpacity
                 className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
               >
-                {t("earnPage.discoverStrategies")}
+                {t("earnPage.myStrategies")}
               </TabButton>
-              {isWalletConnected ? (
-                <TabButton
-                  withBasePadding
-                  withTextOpacity
-                  className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
-                >
-                  {t("earnPage.myStrategies")}
-                </TabButton>
-              ) : (
-                <div className="min-h-[100px] flex-1"></div>
-              )}
-            </TabButtons>
-            <TabHeader>
-              <TopFilters />
-            </TabHeader>
-            <TabPanels>
-              <TabPanel
-                className="flex-col rounded-br-5xl rounded-bl-5xl"
-                displayMode="flex"
-              >
+            ) : (
+              <div className="min-h-[100px] flex-1"></div>
+            )}
+          </TabButtons>
+          <TabHeader>
+            <TopFilters />
+          </TabHeader>
+          <TabPanels>
+            <TabPanel
+              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              displayMode="flex"
+            >
+              {!areStrategiesLoading && strategies ? (
                 <StrategiesTable strategies={strategies} showBalance={false} />
-              </TabPanel>
-              <TabPanel
-                className="flex-col rounded-br-5xl rounded-bl-5xl"
-                displayMode="flex"
-              >
+              ) : (
+                <LoadingStrategies />
+              )}
+            </TabPanel>
+            <TabPanel
+              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              displayMode="flex"
+            >
+              {!areStrategiesLoading && strategies ? (
                 <StrategiesTable strategies={myStrategies} showBalance />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </FilterProvider>
-      ) : (
-        <div className="flex items-center justify-center">
-          <Spinner />
-        </div>
-      )}
+              ) : (
+                <LoadingStrategies />
+              )}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </FilterProvider>
     </div>
   );
 }
+
+const LoadingStrategies = () => {
+  return (
+    <div className="mb-16 flex flex-col items-center justify-center gap-7">
+      <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-osmoverse-900">
+        <Image
+          src={"/images/loading-gradient.svg"}
+          alt="Loading spinner"
+          width={40}
+          height={40}
+          className="animate-spin"
+        />
+      </div>
+      <h6 className="text-wosmongton-400">Loading strategies...</h6>
+    </div>
+  );
+};
 
 export default observer(Earn);
