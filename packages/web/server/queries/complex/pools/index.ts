@@ -48,6 +48,7 @@ const searchablePoolKeys = ["id", "coinDenoms"];
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
 export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
+  console.log("--------- getPool ---------");
   const pools = await getPools({ poolIds: [poolId] });
   const pool = pools.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
@@ -63,6 +64,10 @@ export async function getPools(
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
   let pools = await poolProvider({ poolIds: params?.poolIds });
+
+  console.log("--------- getPools ---------");
+
+  console.log("params: ", params);
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>
