@@ -89,15 +89,25 @@ async function makePoolFromSidecarPool({
   totalFiatValueLocked: PricePretty | null;
 }): Promise<Pool | undefined> {
   // contains unlisted or invalid assets
-  if (!reserveCoins || !totalFiatValueLocked) return;
+  // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
+  // to ease integrations.
+  if (
+    (!reserveCoins || !totalFiatValueLocked) &&
+    process.env.NEXT_PUBLIC_IS_TESTNET !== "true"
+  )
+    return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
     type: getPoolTypeFromChainPool(sidecarPool.chain_model),
     raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
     spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked,
+
+    // We expect the else case to occur only in testnet
+    reserveCoins: reserveCoins ? reserveCoins : [],
+    totalFiatValueLocked: totalFiatValueLocked
+      ? totalFiatValueLocked
+      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
   };
 }
 

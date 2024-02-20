@@ -63,13 +63,22 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider({ poolIds: params?.poolIds });
 
-  if (params?.types || params?.minLiquidityUsd) {
-    pools = pools.filter(
-      ({ type, totalFiatValueLocked }) =>
-        (params?.types ? params.types.includes(type) : true) &&
-        (params?.minLiquidityUsd
-          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-          : true)
+  if (params?.types) {
+    pools = pools.filter(({ type }) =>
+      params?.types ? params.types.includes(type) : true
+    );
+  }
+
+  // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // information.
+  if (
+    params?.minLiquidityUsd &&
+    process.env.NEXT_PUBLIC_IS_TESTNET !== "true"
+  ) {
+    pools = pools.filter(({ totalFiatValueLocked }) =>
+      params?.minLiquidityUsd
+        ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+        : true
     );
   }
 
