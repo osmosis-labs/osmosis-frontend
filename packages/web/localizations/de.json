@@ -498,6 +498,16 @@
         "average": "Durchschnitt",
         "high": "Hoch",
         "recommended": "Empfohlen"
+      },
+      "sessionPeriodScreen": {
+        "title": "Sitzungszeitraum",
+        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
+        "periods": {
+          "day": "Tag",
+          "week": "Woche",
+          "month": "Monat",
+          "year": "Jahr"
+        }
       }
     },
     "welcomeBack": {

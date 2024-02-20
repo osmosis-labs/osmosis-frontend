@@ -498,6 +498,16 @@
         "average": "In medie",
         "high": "Înalt",
         "recommended": "Recomandat"
+      },
+      "sessionPeriodScreen": {
+        "title": "Perioada de sesiune",
+        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
+        "periods": {
+          "day": "Zi",
+          "week": "Săptămână",
+          "month": "Lună",
+          "year": "An"
+        }
       }
     },
     "welcomeBack": {

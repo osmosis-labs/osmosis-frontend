@@ -498,6 +498,16 @@
         "average": "Average",
         "high": "High",
         "recommended": "Recommended"
+      },
+      "sessionPeriodScreen": {
+        "title": "Session period",
+        "description": "Set a duration to allow 1-Click Trading on this device.",
+        "periods": {
+          "day": "Day",
+          "week": "Week",
+          "month": "Month",
+          "year": "Year"
+        }
       }
     },
     "welcomeBack": {

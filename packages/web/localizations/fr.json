@@ -498,6 +498,16 @@
         "average": "Moyenne",
         "high": "Haut",
         "recommended": "Recommandé"
+      },
+      "sessionPeriodScreen": {
+        "title": "Période de séance",
+        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
+        "periods": {
+          "day": "Jour",
+          "week": "Semaine",
+          "month": "Mois",
+          "year": "Année"
+        }
       }
     },
     "welcomeBack": {

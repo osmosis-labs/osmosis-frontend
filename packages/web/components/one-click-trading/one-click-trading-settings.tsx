@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
+import { SessionPeriodScreen } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import {
   Screen,
@@ -167,7 +168,7 @@ const OneClickTradingSettings = ({
                       mode="text"
                       className="flex items-center gap-2 text-wosmongton-200"
                       onClick={() =>
-                        setCurrentScreen(SettingsScreens.SpendLimit)
+                        setCurrentScreen(SettingsScreens.SessionPeriod)
                       }
                       disabled={isDisabled}
                     >
@@ -222,10 +223,11 @@ const OneClickTradingSettings = ({
 
           <Screen screenName={SettingsScreens.SessionPeriod}>
             <div className={classNames("flex flex-col gap-12", classes?.root)}>
-              {screenGoBackButton}
-              <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-                {t("oneClickTrading.settings.sessionPeriodTitle")}
-              </h1>
+              <SessionPeriodScreen
+                goBackButton={screenGoBackButton}
+                transaction1CTParams={transaction1CTParams}
+                setTransaction1CTParams={setTransaction1CTParams}
+              />
             </div>
           </Screen>
         </>

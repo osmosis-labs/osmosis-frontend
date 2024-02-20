@@ -498,6 +498,16 @@
         "average": "औसत",
         "high": "उच्च",
         "recommended": "अनुशंसित"
+      },
+      "sessionPeriodScreen": {
+        "title": "सत्र अवधि",
+        "description": "इस डिवाइस पर 1-क्लिक ट्रेडिंग की अनुमति देने के लिए एक अवधि निर्धारित करें।",
+        "periods": {
+          "day": "दिन",
+          "week": "सप्ताह",
+          "month": "महीना",
+          "year": "वर्ष"
+        }
       }
     },
     "welcomeBack": {

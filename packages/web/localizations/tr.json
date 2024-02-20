@@ -498,6 +498,16 @@
         "average": "Ortalama",
         "high": "Yüksek",
         "recommended": "Tavsiye edilen"
+      },
+      "sessionPeriodScreen": {
+        "title": "Oturum dönemi",
+        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
+        "periods": {
+          "day": "Gün",
+          "week": "Hafta",
+          "month": "Ay",
+          "year": "Yıl"
+        }
       }
     },
     "welcomeBack": {
