@@ -334,13 +334,6 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     readonly queryBalances: ObservableQueryBalances,
     raw: PoolRaw
   ) {
-    console.log("Raw: ", raw);
-
-    console.log(
-      "`/api/pools/${pool_id in raw ? raw.pool_id : raw.id}`: ",
-      `/api/pools/${"pool_id" in raw ? raw.pool_id : raw.id}`
-    );
-
     super(
       kvStore,
       baseUrl,

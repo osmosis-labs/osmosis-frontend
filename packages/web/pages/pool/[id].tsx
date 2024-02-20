@@ -31,10 +31,6 @@ const Pool: FunctionComponent<Props> = observer(
 
     const { data } = api.edge.pools.getPool.useQuery({ poolId });
 
-    console.log("data: ", data);
-
-    // call trpc with the poolId
-
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
     const flags = useFeatureFlags();
@@ -47,27 +43,14 @@ const Pool: FunctionComponent<Props> = observer(
         ? queryOsmosis.queryPools.poolExists(poolId)
         : undefined;
 
-    // click or navigate on a non-cosmwasm pool 2, 5, 8
-    // on a cosmwasm pool that is transmuter, opens basic pools page (balances, liquidity) - 1211
-
-    // on a cosmwasm pool that is not transmuter, open celatone - 352, 373
-
-    // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
-
-    // TODO - bring up - migrate pool detail page to tRPC
-
     // the legacy query only supports transmuter cosmwasm pools
+    // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     useEffect(() => {
-      // code ID of a CW contract
-      // open external URL if match
-
       if (!data || !(poolId && typeof poolId === "string" && Boolean(poolId)))
         return;
 
       const isCosmwasmNotTransmuter =
         data.type.startsWith("cosmwasm") && data.type !== "cosmwasm-transmuter";
-
-      // https://celatone.osmosis.zone/osmosis-1/pools/$%7Bpool.id%7D
 
       const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
 
@@ -75,20 +58,12 @@ const Pool: FunctionComponent<Props> = observer(
     }, [data, poolId]);
 
     useEffect(() => {
-      // code ID of a CW contract
-      // open external URL if match
-
       if (poolExists === false) {
         router.push("/pools");
       }
     }, [poolExists, router]);
 
-    console.log("poolId: ", poolId);
-
     const queryPool = queryOsmosis.queryPools.getPool(poolId);
-    // const queryPool = queryOsmosis.queryPools.getPool(poolId);
-
-    console.log("queryPool: ", queryPool);
 
     useNavBar(
       useMemo(
