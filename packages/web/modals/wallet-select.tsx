@@ -11,13 +11,16 @@ import {
   CosmosKitWalletLocalStorageKey,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, {
   ComponentPropsWithoutRef,
+  Dispatch,
   Fragment,
   FunctionComponent,
+  SetStateAction,
   Suspense,
   useEffect,
   useMemo,
@@ -45,9 +48,9 @@ import {
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { useOneClickTradingParams } from "~/hooks/use-one-click-trading-params";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { noop } from "~/utils/function";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 
@@ -135,6 +138,12 @@ export const WalletSelectModal: FunctionComponent<
   const [modalView, setModalView] = useState<ModalView>("list");
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
+
+  const {
+    transaction1CTParams,
+    setTransaction1CTParams,
+    isLoading: isLoading1CTParams,
+  } = useOneClickTradingParams();
 
   const current = walletRepoProp?.current;
   const walletStatus = current?.walletStatus;
@@ -303,6 +312,9 @@ export const WalletSelectModal: FunctionComponent<
             modalView={modalView}
             onConnect={onConnect}
             lazyWalletInfo={lazyWalletInfo}
+            transaction1CTParams={transaction1CTParams}
+            setTransaction1CTParams={setTransaction1CTParams}
+            isLoading1CTParams={isLoading1CTParams}
           />
           <IconButton
             aria-label="Close"
@@ -469,6 +481,11 @@ const RightModalContent: FunctionComponent<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
     "walletRepo" | "onRequestClose"
   > & {
+    transaction1CTParams: OneClickTradingTransactionParams | undefined;
+    setTransaction1CTParams: Dispatch<
+      SetStateAction<OneClickTradingTransactionParams | undefined>
+    >;
+    isLoading1CTParams?: boolean;
     modalView: ModalView;
     lazyWalletInfo?: (typeof WalletRegistry)[number];
     onConnect: (
@@ -477,7 +494,16 @@ const RightModalContent: FunctionComponent<
     ) => void;
   }
 > = observer(
-  ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
+  ({
+    walletRepo,
+    onRequestClose,
+    modalView,
+    onConnect,
+    lazyWalletInfo,
+    transaction1CTParams,
+    setTransaction1CTParams,
+    isLoading1CTParams,
+  }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
     const featureFlags = useFeatureFlags();
@@ -487,10 +513,7 @@ const RightModalContent: FunctionComponent<
     );
     const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
     const [show1CTEditParams, setShow1CTEditParams] = useState(false);
-    const [transaction1CTParams, setTransaction1CTParams] = useState<Record<
-      string,
-      any
-    > | null>(null);
+
     const [showConnectAWalletToContinue, setShowConnectAWalletToContinue] =
       useState(false);
 
@@ -678,8 +701,8 @@ const RightModalContent: FunctionComponent<
                 onClose={() => {
                   setShow1CTEditParams(false);
                 }}
-                setTransaction1CTParams={noop}
-                transaction1CTParams={transaction1CTParams}
+                setTransaction1CTParams={setTransaction1CTParams}
+                transaction1CTParams={transaction1CTParams!}
               />
             )}
             {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (
@@ -701,12 +724,13 @@ const RightModalContent: FunctionComponent<
                   <div className="flex flex-col px-8">
                     <IntroducingOneClick
                       onStartTrading={() => {
-                        // setTransaction1CTParams({});
                         setShowConnectAWalletToContinue(true);
                       }}
                       onClickEditParams={() => {
                         setShow1CTEditParams(true);
                       }}
+                      isLoading={isLoading1CTParams}
+                      isDisabled={!transaction1CTParams}
                     />
                   </div>
                 )}

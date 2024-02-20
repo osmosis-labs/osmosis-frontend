@@ -1,5 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-import { OneClickTradingPeriods } from "@osmosis-labs/types";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
@@ -27,19 +26,12 @@ enum SettingsScreens {
   SessionPeriod = "sessionPeriod",
 }
 
-interface OneClickTradingTransactionParams {
-  isOneClickEnabled: boolean;
-  spendLimit: CoinPretty;
-  networkFeeLimit: CoinPretty;
-  sessionPeriod: OneClickTradingPeriods;
-}
-
 interface OneClickTradingSettingsProps {
   classes?: Partial<Record<Classes, string>>;
   onClose?: () => void;
   transaction1CTParams: OneClickTradingTransactionParams;
   setTransaction1CTParams: Dispatch<
-    SetStateAction<OneClickTradingTransactionParams>
+    SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
 }
 
@@ -106,10 +98,13 @@ const OneClickTradingSettings = ({
                     <Switch
                       checked={transaction1CTParams.isOneClickEnabled}
                       onCheckedChange={(nextValue) => {
-                        setTransaction1CTParams((params) => ({
-                          ...params,
-                          isOneClickEnabled: nextValue,
-                        }));
+                        setTransaction1CTParams((params) => {
+                          if (!params) return;
+                          return {
+                            ...params,
+                            isOneClickEnabled: nextValue,
+                          };
+                        });
                       }}
                     />
                   }
@@ -126,8 +121,8 @@ const OneClickTradingSettings = ({
                       disabled={isDisabled}
                     >
                       <p>
-                        {/* {transaction1CTParams.spendLimit.toString()}{" "}
-                        {transaction1CTParams.spendLimit.fiatCurrency.currency.toUpperCase()} */}
+                        {transaction1CTParams.spendLimit.toString()}{" "}
+                        {transaction1CTParams.spendLimit.fiatCurrency.currency.toUpperCase()}
                       </p>
                       <Icon
                         id="chevron-right"
@@ -150,9 +145,7 @@ const OneClickTradingSettings = ({
                       }
                       disabled={isDisabled}
                     >
-                      <p>
-                        {transaction1CTParams.networkFeeLimit.toString()} OSMO
-                      </p>
+                      <p>{transaction1CTParams.networkFeeLimit.toString()}</p>
                       <Icon
                         id="chevron-right"
                         width={18}

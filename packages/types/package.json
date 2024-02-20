@@ -13,7 +13,8 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix"
   },
   "lint-staged": {
     "*": [

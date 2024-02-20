@@ -1,6 +1,7 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
+import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 
 export const buttonCVA = cva(
@@ -219,9 +220,12 @@ export const Button = forwardRef<
   HTMLButtonElement,
   VariantProps<typeof buttonCVA> &
     CustomClasses &
-    ButtonHTMLAttributes<HTMLButtonElement>
+    ButtonHTMLAttributes<HTMLButtonElement> & {
+      isLoading?: boolean;
+      loadingText?: string;
+    }
 >((props, ref) => {
-  const { mode, size, className, children } = props;
+  const { mode, size, className, children, isLoading, loadingText } = props;
 
   return (
     <button
@@ -232,8 +236,16 @@ export const Button = forwardRef<
         mode,
         size: size ?? modeToDefaultSize[mode as keyof typeof modeToDefaultSize],
       })}
+      disabled={props.disabled || isLoading}
     >
-      {children}
+      {isLoading ? (
+        <div className="flex items-center gap-2">
+          <Spinner />
+          {loadingText && <span>{loadingText}</span>}
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 });

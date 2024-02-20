@@ -46,7 +46,7 @@ const SmartAccounts: NextPage = observer(function () {
   const osmosisAddress = account?.address ?? "";
 
   const { data: authenticators, refetch: refetchAuthenticators } =
-    api.edge.authenticators.getAuthenticators.useQuery(
+    api.edge.oneClickTrading.getAuthenticators.useQuery(
       {
         userOsmoAddress: osmosisAddress,
       },
@@ -56,7 +56,7 @@ const SmartAccounts: NextPage = observer(function () {
     );
 
   const { data: cosmosAccount } =
-    api.edge.authenticators.getCosmosAccount.useQuery(
+    api.edge.oneClickTrading.getCosmosAccount.useQuery(
       {
         address: osmosisAddress,
       },
@@ -207,7 +207,7 @@ const SmartAccounts: NextPage = observer(function () {
 });
 
 const AuthenticatorCard: FunctionComponent<{
-  authenticator: RouterOutputs["edge"]["authenticators"]["getAuthenticators"][number];
+  authenticator: RouterOutputs["edge"]["oneClickTrading"]["getAuthenticators"][number];
   onRemoveAuthenticator: (id: string) => void;
 }> = ({ authenticator, onRemoveAuthenticator }) => {
   if (authenticator.type === "SignatureVerificationAuthenticator") {
@@ -326,7 +326,7 @@ const AuthenticatorCard: FunctionComponent<{
 };
 
 type SubAuthenticatorType = NonNullable<
-  RouterOutputs["edge"]["authenticators"]["getAuthenticators"][number]["subAuthenticators"]
+  RouterOutputs["edge"]["oneClickTrading"]["getAuthenticators"][number]["subAuthenticators"]
 >[number];
 
 const SubAuthenticator: FunctionComponent<{

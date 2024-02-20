@@ -38,7 +38,7 @@ export const DepositAmountGroup: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";
 
-    const currentValuePrice = useCoinFiatValue(
+    const { fiatValue: currentValuePrice } = useCoinFiatValue(
       useMemo(
         () =>
           currency

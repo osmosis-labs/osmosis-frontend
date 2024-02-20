@@ -7,11 +7,15 @@ import { useTranslation } from "~/hooks";
 interface IntroducingOneClickProps {
   onStartTrading: () => void;
   onClickEditParams?: () => void;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 export const IntroducingOneClick = ({
   onClickEditParams,
   onStartTrading,
+  isLoading,
+  isDisabled,
 }: IntroducingOneClickProps) => {
   const { t } = useTranslation();
 
@@ -41,12 +45,23 @@ export const IntroducingOneClick = ({
         src="/images/1ct-intro-graphics.svg"
         alt="1ct intro"
       />
-      <Button className="w-fit px-10" onClick={onStartTrading}>
+      <Button
+        className="w-fit px-10"
+        onClick={onStartTrading}
+        isLoading={isLoading}
+        disabled={isDisabled}
+        loadingText={t("oneClickTrading.introduction.startTradingButton")}
+      >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
       <p className="text-caption text-osmoverse-300">
         {t("oneClickTrading.introduction.activeHourLimit")} –{" "}
-        <Button mode="text" className="!inline" onClick={onClickEditParams}>
+        <Button
+          mode="text"
+          className="!inline"
+          onClick={onClickEditParams}
+          disabled={isLoading || isDisabled}
+        >
           {t("oneClickTrading.introduction.changeButton")}
         </Button>
       </p>

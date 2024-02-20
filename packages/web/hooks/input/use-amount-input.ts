@@ -99,7 +99,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  const fiatValue = useCoinFiatValue(amount);
+  const { fiatValue } = useCoinFiatValue(amount);
 
   const balance = useMemo(
     () =>
