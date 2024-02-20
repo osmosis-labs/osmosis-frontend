@@ -29,17 +29,21 @@ const useGetEarnStrategies = (
       }
     );
 
-  const strategies: EarnStrategy[] = (_strategies ?? []).map((_strategy) => {
-    const involvedDenoms = _strategy.involvedTokens.map(
-      (asset) => asset.coinDenom
-    );
-    return {
-      ..._strategy,
-      holdsTokens: !!holdenDenoms?.find((holdenDenom) =>
-        involvedDenoms.includes(holdenDenom)
-      ),
-    };
-  });
+  const strategies: EarnStrategy[] = useMemo(
+    () =>
+      (_strategies ?? []).map((_strategy) => {
+        const involvedDenoms = _strategy.involvedTokens.map(
+          (asset) => asset.coinDenom
+        );
+        return {
+          ..._strategy,
+          holdsTokens: !!holdenDenoms?.find((holdenDenom) =>
+            involvedDenoms.includes(holdenDenom)
+          ),
+        };
+      }),
+    [_strategies, holdenDenoms]
+  );
 
   const balanceQueries = api.useQueries((q) =>
     (isWalletConnected ? strategies ?? [] : []).map((strat) =>
