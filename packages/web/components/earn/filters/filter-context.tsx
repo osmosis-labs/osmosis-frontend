@@ -4,15 +4,13 @@ import {
   ListOption,
   RewardsTypes,
   StrategyButtonResponsibility,
-  StrategyMethods,
-  StrategyProviders,
   TokenHolder,
 } from "~/components/earn/table/types/filters";
 
 export interface Filters {
   tokenHolder: TokenHolder;
-  strategyMethod: ListOption<StrategyMethods>;
-  platform: ListOption<StrategyProviders>;
+  strategyMethod: ListOption<string>;
+  platform: ListOption<string>;
   noLockingDuration: boolean;
   search: string;
   specialTokens: ListOption<StrategyButtonResponsibility>[];

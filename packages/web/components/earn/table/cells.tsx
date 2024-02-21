@@ -29,24 +29,20 @@ export const StrategyTooltip = ({
   </div>
 );
 
-export const StrategyNameCell = ({
-  name,
-  platformName,
-  strategyMethod,
-}: StrategyNameCellProps) => {
+export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
   return (
     <div className="flex items-center">
       <div className="flex flex-col">
         <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
-          {name}
+          {item.getValue()}
         </p>
         <div className="flex items-center gap-2">
-          <small className="text-sm font-subtitle1 text-osmoverse-400 1.5xs:text-xs">
-            {platformName}
+          <small className="text-sm font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
+            {item.row.original.provider}
           </small>
           <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
             <span className="text-white text-sm font-subtitle1 leading-6 1.5xs:text-xs">
-              {strategyMethod}
+              {item.row.original.category}
             </span>
           </div>
         </div>

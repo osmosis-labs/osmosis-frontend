@@ -10,8 +10,6 @@ import { FilterContext } from "~/components/earn/filters/filter-context";
 import {
   ListOption,
   StrategyButtonResponsibility,
-  StrategyMethods,
-  StrategyProviders,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { useTranslation } from "~/hooks";
@@ -24,8 +22,8 @@ interface StrategiesFilter extends ListOption<string> {
 const FiltersModal = (
   props: ModalBaseProps & {
     rewardTypes: ListOption<string>[];
-    strategies: ListOption<StrategyMethods>[];
-    platforms: ListOption<StrategyProviders>[];
+    strategies: ListOption<string>[];
+    platforms: ListOption<string>[];
     strategiesFilters: StrategiesFilter[];
     tokenFilterOptions: ListOption<string>[];
   }
@@ -83,7 +81,7 @@ const FiltersModal = (
           options={props.rewardTypes}
         />
         <div className="flex flex-col gap-4">
-          <DropdownWithLabel<StrategyMethods>
+          <DropdownWithLabel<string>
             label={t("earnPage.strategyMethod")}
             allLabel={t("earnPage.allMethods")}
             options={props.strategies}
@@ -91,7 +89,7 @@ const FiltersModal = (
             onChange={(value) => setFilter("strategyMethod", value)}
             buttonClassName="flex-1"
           />
-          <DropdownWithLabel<StrategyProviders>
+          <DropdownWithLabel<string>
             label={t("earnPage.platforms")}
             allLabel={t("earnPage.allPlatforms")}
             options={props.platforms}

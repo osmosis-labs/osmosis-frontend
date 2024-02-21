@@ -6,18 +6,26 @@ import { Asset } from "~/server/queries/complex/assets";
 import { NUMIA_BASE_URL } from ".";
 
 export const EarnStrategyCategories = [
-  "LP",
-  "staking",
-  "liquid-staking",
+  "Perps Liquidity",
+  "Staking",
+  "Liquid Staking",
+  "Managed Liquidity",
 ] as const;
 
 export type EarnStrategyCategory = (typeof EarnStrategyCategories)[number];
 
-export const EarnStrategyProviders = ["quasar", "osmosis", "stride"] as const;
+export const EarnStrategyProviders = [
+  "quasar",
+  "osmosis",
+  "stride",
+  "levana",
+] as const;
 
 export type EarnStrategyProvider = (typeof EarnStrategyProviders)[number];
 
 export const EarnStrategyTypes = [
+  "levana-pool-xlp",
+  "levana-pool-lp",
   "quasar-cl-vault",
   "liquid-osmosis-staking",
   "osmosis-staking",

@@ -1,13 +1,7 @@
 import { FilterFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
-import {
-  ListOption,
-  STRATEGY_METHODS,
-  STRATEGY_PROVIDERS,
-  StrategyMethods,
-  StrategyProviders,
-} from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 
 export const arrLengthEquals: FilterFn<EarnStrategy> = (
@@ -121,26 +115,23 @@ export const getDefaultFiltersState = (filters: Filters) =>
 
 export const getListOptions = <T>(
   strategies: EarnStrategy[],
-  accessor: keyof Pick<EarnStrategy, "provider" | "type">,
+  valueAccessor: keyof Pick<EarnStrategy, "provider" | "type">,
+  labelAccessor: keyof Pick<EarnStrategy, "provider" | "category">,
   allLabel: string
 ) => {
-  const possibleOptions = new Set<string>();
-  let array: ListOption<T>[];
+  const uniqueOptionsMap = new Map<string, ListOption<T>>();
 
   strategies.forEach((strategy) => {
-    const selection = strategy[accessor];
-    possibleOptions.add(selection);
+    const value = strategy[valueAccessor] as T;
+    const label = strategy[labelAccessor];
+    const uniqueKey = `${label}-${String(value)}`;
+
+    if (!uniqueOptionsMap.has(uniqueKey)) {
+      uniqueOptionsMap.set(uniqueKey, { label, value });
+    }
   });
 
-  array = Array.from(possibleOptions).map((option) => ({
-    value: option as any as T,
-    label:
-      accessor === "type"
-        ? STRATEGY_METHODS[option as StrategyMethods]
-        : STRATEGY_PROVIDERS[option as StrategyProviders],
-  }));
+  uniqueOptionsMap.set("all", { value: "" as any as T, label: allLabel });
 
-  array.unshift({ value: "" as any as T, label: allLabel });
-
-  return array;
+  return Array.from(uniqueOptionsMap.values());
 };
