@@ -123,8 +123,7 @@ function Earn() {
               <div className="flex flex-col gap-7">
                 <h4>{t("earnPage.startEarning")}</h4>
                 <p className="body2 text-osmoverse-200 opacity-50">
-                  Phasellus libero nunc, sagittis vitae neque eu, ultrices
-                  dictum sapien, phasellus egestas quam eu nunc gravida.
+                  {t("earnPage.startEarningDescription")}
                 </p>
               </div>
               <Button
