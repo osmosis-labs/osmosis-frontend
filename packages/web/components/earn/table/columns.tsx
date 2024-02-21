@@ -155,7 +155,7 @@ export const tableColumns = [
             alt={`${coinDenom} image`}
             key={`${coinDenom} ${i} ${item.cell.id}`}
             className={classNames("h-6 w-6 rounded-full", {
-              "-ml-4": i > 0,
+              "-ml-2": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
             width={24}
