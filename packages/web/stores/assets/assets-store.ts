@@ -200,8 +200,6 @@ export class ObservableAssets {
 
         const sourceChannelId = ibcTransferMethod.chain.channelId;
         const destChannelId = ibcTransferMethod.counterparty.channelId;
-        const isVerified = !ibcAsset.verified;
-        const isUnstable = ibcAsset.unstable;
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -214,7 +212,7 @@ export class ObservableAssets {
         if (
           (ibcTransferMethod.chain.path.match(/transfer/gi)?.length ?? 0) >= 2
         ) {
-          sourceDenom = sourceDenom;
+          sourceDenom = ibcAsset.sourceDenom;
         }
 
         const balance = this.queries.queryBalances
@@ -253,9 +251,9 @@ export class ObservableAssets {
             : this.priceStore.calculatePrice(balance),
           sourceChannelId: sourceChannelId,
           destChannelId: destChannelId,
-          isVerified: Boolean(isVerified),
+          isVerified: ibcAsset.verified,
           depositingSrcMinDenom: sourceDenom,
-          isUnstable,
+          isUnstable: ibcAsset.unstable,
           ...IBCAdditionalData[
             ibcAsset.symbol as keyof typeof IBCAdditionalData
           ],
