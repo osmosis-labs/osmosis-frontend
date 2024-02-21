@@ -200,7 +200,9 @@ export function getKeplrCompatibleChain({
             ? sourceDenom + `:${asset.symbol}`
             : sourceDenom,
           // @ts-ignore
-          contractAddress: asset.address,
+          contractAddress: isCW20ContractToken
+            ? sourceDenom.split(":")[1]
+            : undefined,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingeckoId,
           coinImageUrl: getImageRelativeFilePath(
