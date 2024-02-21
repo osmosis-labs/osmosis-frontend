@@ -146,7 +146,11 @@ export const ActionsCell = (_: CellContext<EarnStrategy, unknown>) => {
         <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
           {t("earnPage.join")}
         </p>
-        {true ? (
+        <Icon
+          id="arrow-up-right"
+          className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+        />
+        {/* {true ? (
           <Icon
             id="arrow-up-right"
             className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
@@ -156,7 +160,7 @@ export const ActionsCell = (_: CellContext<EarnStrategy, unknown>) => {
             id="arrow-up-right"
             className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
           />
-        )}
+        )} */}
       </Button>
     </div>
   );
