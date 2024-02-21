@@ -78,7 +78,7 @@ function Earn() {
   }, [earnPage, router, _isInitialized]);
 
   return (
-    <div className="relative flex flex-col gap-10 py-10 pl-8 pr-9">
+    <div className="relative mx-auto flex max-w-[1508px] flex-col gap-10 py-10 pl-8 pr-9">
       {!isWalletConnected && (
         <Image
           src={"/images/staking-apr-full.svg"}
