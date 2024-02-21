@@ -34,7 +34,7 @@ export const Tabs = ({
 };
 
 interface TabButtonProps {
-  tabIdx?: number;
+  tabidx?: number;
   className?: string;
 }
 
@@ -45,7 +45,7 @@ export const TabButtons = ({
 }) => {
   const tabButtons = Children.map(children, (tabButton, idx) => {
     return cloneElement(tabButton, {
-      tabIdx: idx,
+      tabidx: idx,
     });
   });
   return <div className="flex">{tabButtons}</div>;
@@ -53,7 +53,7 @@ export const TabButtons = ({
 
 export const TabButton = ({
   children,
-  tabIdx,
+  tabidx,
   className,
   textClassName,
   withTextOpacity,
@@ -68,12 +68,12 @@ export const TabButton = ({
   const { selectedIdx, setSelectedIdx } = useContext(TabContext);
   return (
     <button
-      onClick={() => setSelectedIdx(tabIdx!)}
+      onClick={() => setSelectedIdx(tabidx!)}
       className={classNames(
         "flex items-center justify-center text-center transition-colors duration-300 ease-in-out",
         {
-          "bg-osmoverse-850 opacity-100": selectedIdx === tabIdx,
-          "opacity-30": withTextOpacity && selectedIdx !== tabIdx,
+          "bg-osmoverse-850 opacity-100": selectedIdx === tabidx,
+          "opacity-30": withTextOpacity && selectedIdx !== tabidx,
           "1.5xs:px-4": withBasePadding,
         },
         className
@@ -98,7 +98,7 @@ export const TabPanels = ({
 }) => {
   const tabPanels = Children.map(children, (tabPanel, idx) => {
     return cloneElement(tabPanel, {
-      tabIdx: idx,
+      tabidx: idx,
     });
   });
   return <>{tabPanels}</>;
@@ -106,12 +106,12 @@ export const TabPanels = ({
 
 export const TabPanel = ({
   children,
-  tabIdx,
+  tabidx,
   className,
   displayMode,
 }: PropsWithChildren<TabButtonProps & { displayMode?: "flex" | "block" }>) => {
   const { selectedIdx } = useContext(TabContext);
-  const isSelected = selectedIdx === tabIdx;
+  const isSelected = selectedIdx === tabidx;
   return (
     <div
       className={classNames(
