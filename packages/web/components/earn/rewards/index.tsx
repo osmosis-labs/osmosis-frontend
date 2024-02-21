@@ -57,24 +57,26 @@ export const EarnRewards = ({
       }
     });
 
-    await accountStore.signAndBroadcast(
-      accountStore.osmosisChainId,
-      "unknown",
-      messages,
-      undefined,
-      undefined,
-      undefined,
-      (tx) => {
-        if (!tx.code) {
-          unclaimedRewards.forEach(({ id }) => {
-            apiUtils.edge.earn.getStrategyBalance.invalidate({
-              strategyId: id,
-              userOsmoAddress: account.address ?? "",
+    try {
+      await accountStore.signAndBroadcast(
+        accountStore.osmosisChainId,
+        "unknown",
+        messages,
+        undefined,
+        undefined,
+        undefined,
+        (tx) => {
+          if (tx.code === 0) {
+            unclaimedRewards.forEach(({ id }) => {
+              apiUtils.edge.earn.getStrategyBalance.invalidate({
+                strategyId: id,
+                userOsmoAddress: account.address ?? "",
+              });
             });
-          });
+          }
         }
-      }
-    );
+      );
+    } catch (error) {}
   }, [
     account,
     accountStore,
