@@ -30,7 +30,6 @@ import {
 } from "~/hooks";
 import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 function Earn() {
   const { t } = useTranslation();
@@ -93,7 +92,7 @@ function Earn() {
         <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
           <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
             <EarnPosition
-              totalBalance={formatPretty(totalBalance)}
+              totalBalance={totalBalance.toString()}
               numberOfPositions={myStrategies.length}
               isLoading={areQueriesLoading}
             />
