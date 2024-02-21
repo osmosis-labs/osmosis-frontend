@@ -200,7 +200,7 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
-            icon: <Icon id="trade" className="h-5 w-5" />,
+            icon: <Icon id="earn" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
         : null,
