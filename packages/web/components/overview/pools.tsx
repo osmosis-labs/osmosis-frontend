@@ -11,6 +11,8 @@ import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import SkeletonLoader from "../loaders/skeleton-loader";
+
 const REWARD_EPOCH_IDENTIFIER = "day";
 
 export const PoolsOverview: FunctionComponent<
@@ -23,9 +25,11 @@ export const PoolsOverview: FunctionComponent<
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { t } = useTranslation();
 
-  const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery({
-    coinMinimalDenom: "uosmo",
-  });
+  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
+    {
+      coinMinimalDenom: "uosmo",
+    }
+  );
 
   // update time every second
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
@@ -67,9 +71,15 @@ export const PoolsOverview: FunctionComponent<
           {t("pools.priceOsmo")}
         </h6>
         {osmoPrice && (
-          <h2 className="text-white-full md:text-h4 md:font-h4">
-            {osmoPrice.toString()}
-          </h2>
+          <SkeletonLoader
+            className={classNames(isFetched ? null : "h-5 w-13")}
+            isLoaded={isFetched}
+          >
+            <h2 className="mt-[3px]">
+              {osmoPrice.fiatCurrency.symbol}
+              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+            </h2>
+          </SkeletonLoader>
         )}
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
