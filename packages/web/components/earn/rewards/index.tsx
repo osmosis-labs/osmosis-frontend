@@ -1,15 +1,87 @@
+import { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
+import { useCallback } from "react";
 
 import { Button } from "~/components/buttons";
+import { StrategyProviders } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 export const EarnRewards = ({
   totalUnclaimedRewards,
+  unclaimedRewards,
+  areQueriesLoading,
 }: {
   totalUnclaimedRewards: PricePretty;
+  unclaimedRewards: { id: string; provider: StrategyProviders }[];
+  areQueriesLoading: boolean;
 }) => {
   const { t } = useTranslation();
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const apiUtils = api.useUtils();
+
+  const claimAllRewards = useCallback(async () => {
+    const messages:
+      | EncodeObject[]
+      | (() => EncodeObject[] | Promise<EncodeObject[]>) = [];
+
+    if (!account) return;
+
+    unclaimedRewards.forEach(({ id, provider }) => {
+      switch (provider) {
+        case "osmosis":
+          messages.push(
+            account?.osmosis.msgOpts.withdrawDelegationRewards.messageComposer({
+              delegator: account.address ?? "",
+            })
+          );
+          break;
+        case "quasar":
+          messages.push(
+            account.cosmwasm.msgOpts.executeWasm.messageComposer({
+              contract: id,
+              msg: Buffer.from(
+                JSON.stringify({
+                  vault_extension: {
+                    claim_rewards: {},
+                  },
+                })
+              ),
+              sender: account.address ?? "",
+              funds: [],
+            })
+          );
+      }
+    });
+
+    await accountStore.signAndBroadcast(
+      accountStore.osmosisChainId,
+      "unknown",
+      messages,
+      undefined,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          unclaimedRewards.forEach(({ id }) => {
+            apiUtils.edge.earn.getStrategyBalance.invalidate({
+              strategyId: id,
+              userOsmoAddress: account.address ?? "",
+            });
+          });
+        }
+      }
+    );
+  }, [
+    account,
+    accountStore,
+    apiUtils.edge.earn.getStrategyBalance,
+    unclaimedRewards,
+  ]);
+
   return (
     <div className="flex flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-6 pt-7 pb-6">
       <h5 className="text-lg font-semibold text-osmoverse-100">
@@ -37,7 +109,16 @@ export const EarnRewards = ({
         </small>
       </div>
       <div className="mt-4.5 flex flex-col gap-3">
-        <Button mode={"primary"} className="max-h-11">
+        <Button
+          disabled={
+            totalUnclaimedRewards.toDec().isZero() ||
+            areQueriesLoading ||
+            account?.txTypeInProgress !== ""
+          }
+          mode={"primary"}
+          className="max-h-11"
+          onClick={claimAllRewards}
+        >
           {t("earnPage.claimAllRewards")}
         </Button>
       </div>

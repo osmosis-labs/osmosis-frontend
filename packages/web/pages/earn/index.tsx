@@ -55,6 +55,7 @@ function Earn() {
     areStrategiesLoading,
     isError,
     refetch,
+    unclaimedRewards,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
   const defaultFilters: Filters = useMemo(
@@ -109,7 +110,11 @@ function Earn() {
               className="translate-x-8 translate-y-10 -rotate-[75deg] overflow-visible object-cover 2xl:object-contain 1.5md:hidden"
             />
           </div>
-          <EarnRewards totalUnclaimedRewards={totalUnclaimedRewards} />
+          <EarnRewards
+            unclaimedRewards={unclaimedRewards}
+            totalUnclaimedRewards={totalUnclaimedRewards}
+            areQueriesLoading={areQueriesLoading}
+          />
         </div>
       ) : (
         <SkeletonLoader isLoaded={!isWalletLoading}>
