@@ -92,7 +92,7 @@ export async function getStrategyBalance(
 ) {
   return await cachified({
     cache: earnStrategyBalanceCache,
-    ttl: 1000 * 60 * 5,
+    ttl: 1000 * 20,
     key: `earn-strategy-balance-${strategyId}-${userOsmoAddress}`,
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
