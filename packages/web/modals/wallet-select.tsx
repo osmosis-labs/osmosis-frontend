@@ -6,12 +6,16 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { Popover } from "@headlessui/react";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  AvailableOneClickTradingMessages,
+  OneClickTradingTransactionParams,
+} from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -48,9 +52,15 @@ import {
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import {
+  getFirstAuthenticator,
+  getOneClickTradingSessionAuthenticator,
+  useAddAuthenticators,
+} from "~/hooks/mutations/osmosis/add-authenticator";
 import { useOneClickTradingParams } from "~/hooks/use-one-click-trading-params";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 
@@ -132,6 +142,9 @@ export const WalletSelectModal: FunctionComponent<
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const hasInstalledWallets = useHasWalletsInstalled();
+  const addAuthenticators = useAddAuthenticators();
+
+  const apiUtils = api.useUtils();
 
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
@@ -246,8 +259,39 @@ export const WalletSelectModal: FunctionComponent<
 
     return walletRepo
       .connect(wallet.name, sync)
-      .then(() => {
+      .then(async () => {
         onConnectProp?.();
+
+        if (transaction1CTParams?.isOneClickEnabled) {
+          if (!walletRepo.current) throw new Error("Wallet not found");
+          const { accountPubKey, shouldAddFirstAuthenticator } =
+            await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
+              { userOsmoAddress: walletRepo.current.address! }
+            );
+
+          const key = PrivKeySecp256k1.generateRandomKey();
+          const allowedMessage: AvailableOneClickTradingMessages =
+            "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn";
+          const allowedAmount = "20000";
+          const period = "day";
+
+          const oneClickTradingAuthenticator =
+            getOneClickTradingSessionAuthenticator({
+              key,
+              allowedAmount,
+              allowedMessage,
+              period,
+            });
+
+          addAuthenticators.mutate({
+            authenticators: shouldAddFirstAuthenticator
+              ? [
+                  getFirstAuthenticator({ pubKey: accountPubKey }),
+                  oneClickTradingAuthenticator,
+                ]
+              : [oneClickTradingAuthenticator],
+          });
+        }
       })
       .catch(handleConnectError);
   };

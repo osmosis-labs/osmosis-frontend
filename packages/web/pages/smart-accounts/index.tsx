@@ -13,9 +13,9 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import {
-  getFirstAuthenticatorAuthenticator,
+  getFirstAuthenticator,
   getOneClickTradingSessionAuthenticator,
-  useAddAuthenticator,
+  useAddAuthenticators,
 } from "~/hooks/mutations/osmosis/add-authenticator";
 import { useRemoveAuthenticator } from "~/hooks/mutations/osmosis/remove-authenticator";
 import { useStore } from "~/stores";
@@ -45,20 +45,10 @@ const SmartAccounts: NextPage = observer(function () {
 
   const osmosisAddress = account?.address ?? "";
 
-  const { data: authenticators, refetch: refetchAuthenticators } =
-    api.edge.oneClickTrading.getAuthenticators.useQuery(
+  const { data: authenticatorsAndPubKey, refetch: refetchAuthenticators } =
+    api.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.useQuery(
       {
         userOsmoAddress: osmosisAddress,
-      },
-      {
-        enabled: osmosisAddress.length > 0,
-      }
-    );
-
-  const { data: cosmosAccount } =
-    api.edge.oneClickTrading.getCosmosAccount.useQuery(
-      {
-        address: osmosisAddress,
       },
       {
         enabled: osmosisAddress.length > 0,
@@ -73,7 +63,7 @@ const SmartAccounts: NextPage = observer(function () {
     },
   });
 
-  const addAuthenticator = useAddAuthenticator({
+  const addAuthenticator = useAddAuthenticators({
     queryOptions: {
       onSuccess: () => {
         refetchAuthenticators();
@@ -82,18 +72,13 @@ const SmartAccounts: NextPage = observer(function () {
   });
 
   const onCreateFirstAuthenticator = async (e: any) => {
-    if (!cosmosAccount) {
-      throw new Error("Cosmos account not found");
-    }
+    const accountPubKey = authenticatorsAndPubKey?.accountPubKey;
 
+    if (!accountPubKey) throw new Error("Account public key not found");
     e.preventDefault();
 
-    const accountPubKey = cosmosAccount.account.pub_key.key;
-
     addAuthenticator.mutate({
-      authenticators: [
-        getFirstAuthenticatorAuthenticator({ pubKey: accountPubKey }),
-      ],
+      authenticators: [getFirstAuthenticator({ pubKey: accountPubKey })],
     });
   };
 
@@ -141,9 +126,12 @@ const SmartAccounts: NextPage = observer(function () {
               <h5 className="gap-1 text-white-mid">Authenticator Options</h5>
             </div>
             <div className="flex place-content-between items-center gap-7 px-9 py-7">
-              {authenticators && cosmosAccount && authenticators.length < 1 && (
+              {authenticatorsAndPubKey?.shouldAddFirstAuthenticator && (
                 <form onSubmit={onCreateFirstAuthenticator}>
-                  <Button type="submit" disabled={authenticators.length > 1}>
+                  <Button
+                    type="submit"
+                    disabled={authenticatorsAndPubKey.authenticators.length > 1}
+                  >
                     {removeAuthenticator.isLoading || addAuthenticator.isLoading
                       ? "Submitting..."
                       : "Create First Authenticator"}
@@ -188,16 +176,18 @@ const SmartAccounts: NextPage = observer(function () {
               <Spinner></Spinner>
             )}
             <div className="flex flex-col gap-3">
-              {authenticators?.map((authenticator, index) => (
-                <div key={index} className="">
-                  <AuthenticatorCard
-                    authenticator={authenticator}
-                    onRemoveAuthenticator={(id: string) => {
-                      removeAuthenticator.mutate({ id });
-                    }}
-                  />
-                </div>
-              ))}
+              {authenticatorsAndPubKey?.authenticators?.map(
+                (authenticator, index) => (
+                  <div key={index} className="">
+                    <AuthenticatorCard
+                      authenticator={authenticator}
+                      onRemoveAuthenticator={(id: string) => {
+                        removeAuthenticator.mutate({ id });
+                      }}
+                    />
+                  </div>
+                )
+              )}
             </div>
           </>
         </div>
@@ -207,7 +197,7 @@ const SmartAccounts: NextPage = observer(function () {
 });
 
 const AuthenticatorCard: FunctionComponent<{
-  authenticator: RouterOutputs["edge"]["oneClickTrading"]["getAuthenticators"][number];
+  authenticator: RouterOutputs["edge"]["oneClickTrading"]["getAccountPubKeyAndAuthenticators"]["authenticators"][number];
   onRemoveAuthenticator: (id: string) => void;
 }> = ({ authenticator, onRemoveAuthenticator }) => {
   if (authenticator.type === "SignatureVerificationAuthenticator") {
@@ -326,7 +316,7 @@ const AuthenticatorCard: FunctionComponent<{
 };
 
 type SubAuthenticatorType = NonNullable<
-  RouterOutputs["edge"]["oneClickTrading"]["getAuthenticators"][number]["subAuthenticators"]
+  RouterOutputs["edge"]["oneClickTrading"]["getAccountPubKeyAndAuthenticators"]["authenticators"][number]["subAuthenticators"]
 >[number];
 
 const SubAuthenticator: FunctionComponent<{

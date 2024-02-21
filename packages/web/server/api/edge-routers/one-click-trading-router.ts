@@ -8,16 +8,8 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getFeeTokenGasPriceStep } from "~/server/queries/complex/assets/gas";
+import { getAuthenticators } from "~/server/queries/complex/authenticators";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
-import {
-  Authenticator,
-  queryAuthenticators,
-} from "~/server/queries/osmosis/authenticators";
-
-interface NestedAuthenticator {
-  authenticator_type: Authenticator["type"];
-  data: Authenticator["data"];
-}
 
 export const oneClickTradingRouter = createTRPCRouter({
   getDefaultParameters: publicProcedure.query(
@@ -44,35 +36,19 @@ export const oneClickTradingRouter = createTRPCRouter({
   getNetworkFeeLimitStep: publicProcedure.query(async () =>
     getNetworkFeeLimitStep()
   ),
-  getAuthenticators: publicProcedure
+  getAccountPubKeyAndAuthenticators: publicProcedure
     .input(z.object({ userOsmoAddress: z.string() }))
     .query(async ({ input }) => {
-      const { authenticators } = await queryAuthenticators({
-        address: input.userOsmoAddress,
-      });
+      const [cosmosAccount, authenticators] = await Promise.all([
+        queryCosmosAccount({ address: input.userOsmoAddress }),
+        getAuthenticators({ userOsmoAddress: input.userOsmoAddress }),
+      ]);
 
-      return authenticators.map(({ data, id, type }) => {
-        let subAuthenticators: NestedAuthenticator[] | undefined;
-
-        if (type === "AllOfAuthenticator" || type === "AnyOfAuthenticator") {
-          const parsedData = Buffer.from(data, "base64").toString("utf-8");
-          subAuthenticators = JSON.parse(parsedData);
-        }
-
-        return {
-          id,
-          type,
-          data,
-          subAuthenticators,
-        };
-      });
-    }),
-
-  getCosmosAccount: publicProcedure
-    .input(z.object({ address: z.string() }))
-    .query(async ({ input }) => {
-      const result = await queryCosmosAccount({ address: input.address });
-      return { account: result.account };
+      return {
+        accountPubKey: cosmosAccount.account.pub_key.key,
+        authenticators,
+        shouldAddFirstAuthenticator: authenticators.length === 0,
+      };
     }),
 });
 

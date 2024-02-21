@@ -14,7 +14,7 @@ interface AddAuthenticatorVars {
   data: Uint8Array | number[];
 }
 
-export function getFirstAuthenticatorAuthenticator({
+export function getFirstAuthenticator({
   pubKey,
 }: {
   pubKey: string;
@@ -62,7 +62,7 @@ export function getOneClickTradingSessionAuthenticator({
   };
 }
 
-export const useAddAuthenticator = ({
+export const useAddAuthenticators = ({
   queryOptions,
 }: {
   queryOptions?: UseMutationOptions<
