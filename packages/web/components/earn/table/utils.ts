@@ -122,7 +122,7 @@ export const getListOptions = <T>(
   const uniqueOptionsMap = new Map<string, ListOption<T>>();
 
   strategies.forEach((strategy) => {
-    const value = strategy[valueAccessor] as T;
+    const value = strategy[valueAccessor] as unknown as T;
     const label = strategy[labelAccessor];
     const uniqueKey = `${label}-${String(value)}`;
 
@@ -131,7 +131,7 @@ export const getListOptions = <T>(
     }
   });
 
-  uniqueOptionsMap.set("all", { value: "" as any as T, label: allLabel });
+  uniqueOptionsMap.set("all", { value: "" as unknown as T, label: allLabel });
 
   return Array.from(uniqueOptionsMap.values());
 };

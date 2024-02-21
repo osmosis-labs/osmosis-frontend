@@ -1,10 +1,10 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
+import type { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
 import { useCallback } from "react";
 
 import { Button } from "~/components/buttons";
-import { StrategyProviders } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
+import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -15,7 +15,7 @@ export const EarnRewards = ({
   areQueriesLoading,
 }: {
   totalUnclaimedRewards: PricePretty;
-  unclaimedRewards: { id: string; provider: StrategyProviders }[];
+  unclaimedRewards: { id: string; provider: EarnStrategy["provider"] }[];
   areQueriesLoading: boolean;
 }) => {
   const { t } = useTranslation();
@@ -24,9 +24,7 @@ export const EarnRewards = ({
   const apiUtils = api.useUtils();
 
   const claimAllRewards = useCallback(async () => {
-    const messages:
-      | EncodeObject[]
-      | (() => EncodeObject[] | Promise<EncodeObject[]>) = [];
+    const messages: EncodeObject[] = [];
 
     if (!account) return;
 

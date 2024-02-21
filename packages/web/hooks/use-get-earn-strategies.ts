@@ -1,9 +1,8 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
-import { StrategyProviders } from "~/components/earn/table/types/filters";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { EarnStrategy } from "~/server/queries/numia/earn";
+import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { api } from "~/utils/trpc";
 
 const useGetEarnStrategies = (
@@ -70,7 +69,10 @@ const useGetEarnStrategies = (
   const additionalStrategiesData = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
-    const unclaimedRewards: { provider: StrategyProviders; id: string }[] = [];
+    const unclaimedRewards: {
+      provider: EarnStrategy["provider"];
+      id: string;
+    }[] = [];
     const myStrategies: EarnStrategy[] = [];
 
     balanceQueries.forEach((balanceQuery) => {
@@ -95,7 +97,8 @@ const useGetEarnStrategies = (
         if (!balanceQuery.data.unclaimed_rewards.usd.toDec().isZero()) {
           unclaimedRewards.push({
             id: balanceQuery.data.id,
-            provider: earnStrategy?.provider ?? ("" as StrategyProviders),
+            provider:
+              earnStrategy?.provider ?? ("" as EarnStrategy["provider"]),
           });
         }
       }
