@@ -119,20 +119,23 @@ function Earn() {
       ) : (
         <SkeletonLoader isLoaded={!isWalletLoading}>
           <div className="flex">
-            <div className="z-10 mb-5 flex flex-1 items-end gap-9 xl:flex-col">
-              <div className="flex flex-col gap-7">
-                <h4>{t("earnPage.startEarning")}</h4>
+            <div className="z-10 mb-5 flex flex-1 flex-col">
+              <h4 className="mb-7">{t("earnPage.startEarning")}</h4>
+              <div className="flex flex-row gap-24 xl:flex-col xl:gap-9">
                 <p className="body2 text-osmoverse-200 opacity-50">
                   {t("earnPage.startEarningDescription")}
                 </p>
+
+                <Button
+                  mode={"primary"}
+                  className="max-h-11 max-w-[260px] xl:max-w-none"
+                  onClick={() =>
+                    onOpenWalletSelect(accountStore.osmosisChainId)
+                  }
+                >
+                  {t("connectWallet")}
+                </Button>
               </div>
-              <Button
-                mode={"primary"}
-                className="max-w-[260px]"
-                onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
-              >
-                {t("connectWallet")}
-              </Button>
             </div>
             <div className="flex-1 md:hidden"></div>
           </div>
