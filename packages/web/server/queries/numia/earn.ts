@@ -44,6 +44,7 @@ export type RawEarnStrategy = {
   apy: number;
   tokenDenoms: EarnStrategyToken[];
   rewardDenoms: EarnStrategyToken[];
+  link: string;
 };
 
 export interface RawEarnStrategyBalance {
@@ -92,6 +93,7 @@ export interface EarnStrategy {
   holdsTokens?: boolean;
   hasLockingDuration: boolean;
   tokensType: tokensType;
+  link: string;
 }
 
 /** Queries numia for a earn strategies list. */

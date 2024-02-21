@@ -1,10 +1,11 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
-import { ReactNode } from "react";
+import Link from "next/link";
+import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { EarnStrategy } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
@@ -133,34 +134,50 @@ export const LockCell = (item: CellContext<EarnStrategy, number>) => {
   );
 };
 
-export const ActionsCell = (_: CellContext<EarnStrategy, unknown>) => {
+export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
+
+  const isOsmosisStrategy = useMemo(
+    () => item.row.original.provider === "osmosis",
+    [item]
+  );
+
+  const target = useMemo(
+    () => (isOsmosisStrategy ? undefined : "_blank"),
+    [isOsmosisStrategy]
+  );
+
+  const href = useMemo(() => {
+    if (isOsmosisStrategy) {
+      return item.row.original.link.replace("https://app.osmosis.zone", "");
+    }
+
+    return item.row.original.link;
+  }, [item, isOsmosisStrategy]);
 
   return (
     <div className="flex items-center justify-center">
-      <Button
-        onClick={() => {}}
-        mode={"quaternary"}
-        className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
-      >
-        <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
-          {t("earnPage.join")}
-        </p>
-        <Icon
-          id="arrow-up-right"
-          className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
-        />
-        {/* {true ? (
-          <Icon
-            id="arrow-up-right"
-            className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
-          />
-        ) : (
-          <Icon
-            id="arrow-up-right"
-            className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
-          />
-        )} */}
+      <Button asChild>
+        <Link
+          href={href}
+          target={target}
+          className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
+        >
+          <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
+            {t("earnPage.join")}
+          </p>
+          {isOsmosisStrategy ? (
+            <Icon
+              id="arrow-up-right"
+              className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+            />
+          ) : (
+            <Icon
+              id="arrow-up-right"
+              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+            />
+          )}
+        </Link>
       </Button>
     </div>
   );

@@ -42,6 +42,7 @@ export async function getEarnStrategies() {
             name,
             provider,
             type,
+            link,
           } = rawStrategy;
 
           const rewards = await Promise.all(
@@ -76,6 +77,7 @@ export async function getEarnStrategies() {
             balance: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
             hasLockingDuration: lockDuration > 0,
             tokensType: "stablecoins", // todo
+            link,
           });
         }
         return aggregatedStrategies;
