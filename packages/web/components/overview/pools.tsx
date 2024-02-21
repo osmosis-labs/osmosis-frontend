@@ -67,9 +67,10 @@ export const PoolsOverview: FunctionComponent<
           {t("pools.priceOsmo")}
         </h6>
         {osmoPrice && (
-          <h2 className="text-white-full md:text-h4 md:font-h4">
-            {osmoPrice.toString()}
-          </h2>
+          <p className="mt-[3px]">
+            {osmoPrice.fiatCurrency.symbol}
+            {Number(osmoPrice.toDec().toString()).toFixed(2)}
+          </p>
         )}
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">

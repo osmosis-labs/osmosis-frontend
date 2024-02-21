@@ -60,7 +60,10 @@ const NavbarOsmoPrice = observer(() => {
               />
             </div>
 
-            <p className="mt-[3px]">{osmoPrice.toString()}</p>
+            <p className="mt-[3px]">
+              {osmoPrice.fiatCurrency.symbol}
+              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+            </p>
           </div>
         </SkeletonLoader>
 
