@@ -128,6 +128,7 @@ function Earn() {
               </div>
               <Button
                 mode={"primary"}
+                className="max-w-[260px]"
                 onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
               >
                 {t("connectWallet")}
