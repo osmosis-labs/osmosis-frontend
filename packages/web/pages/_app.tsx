@@ -212,7 +212,6 @@ const MainLayoutWrapper: FunctionComponent<{
             link: "/stake",
             icon: <Icon id="ticket" className="h-5 w-5" />,
             selectionTest: /\/stake/,
-            isNew: true,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : {
