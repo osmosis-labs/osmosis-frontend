@@ -13,7 +13,7 @@ export const EarnStrategyCategories = [
 
 export type EarnStrategyCategory = (typeof EarnStrategyCategories)[number];
 
-export const EarnStrategyProviders = ["quasar", "osmosis", "strider"] as const;
+export const EarnStrategyProviders = ["quasar", "osmosis", "stride"] as const;
 
 export type EarnStrategyProvider = (typeof EarnStrategyProviders)[number];
 
