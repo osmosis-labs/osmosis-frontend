@@ -83,17 +83,40 @@ export type ExternalInterfaceBridgeTransferMethod = {
   withdrawUrl?: string;
 };
 
-export interface Counterparty {
+export interface CosmosCounterparty {
+  chainType: "cosmos";
+  chainId: string;
   chainName: string;
   sourceDenom: string;
-  chainType: "cosmos" | "non-cosmos" | "evm";
-  /** String keys: Cosmos. Number keys: EVM. */
-  chainId?: string | number;
   symbol: string;
-  decimals?: number;
+  decimals: number;
   logoURIs: LogoURIs;
-  address?: string;
 }
+
+export interface EVMCounterparty {
+  chainType: "evm";
+  chainName: string;
+  sourceDenom: string;
+  chainId: number;
+  address: string;
+  symbol: string;
+  decimals: number;
+  logoURIs: LogoURIs;
+}
+
+export interface NonCosmosCounterparty {
+  chainType: "non-cosmos";
+  chainName: string;
+  sourceDenom: string;
+  decimals: number;
+  symbol: string;
+  logoURIs: LogoURIs;
+}
+
+export type Counterparty =
+  | CosmosCounterparty
+  | EVMCounterparty
+  | NonCosmosCounterparty;
 
 export interface Price {
   poolId: string;

@@ -4,6 +4,7 @@ import type {
   AppCurrency,
   Asset,
   ChainInfo,
+  CosmosCounterparty,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
 
@@ -60,7 +61,8 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           throw new Error(`Invalid IBC path ${ibcInfo.chain.path}`);
         }
 
-        const originChainId = ibcAsset.counterparty[0]?.chainId;
+        const originChainId = (ibcAsset.counterparty[0] as CosmosCounterparty)
+          ?.chainId;
 
         if (!originChainId || typeof originChainId !== "string")
           throw new Error(

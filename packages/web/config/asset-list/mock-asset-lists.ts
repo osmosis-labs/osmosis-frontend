@@ -5994,6 +5994,7 @@ export const AssetLists: AssetList[] = [
             chainType: "cosmos",
             chainId: "juno-1",
             symbol: "DHK",
+            decimals: 0,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/dhk.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/dhk.svg",

@@ -10,7 +10,11 @@ import {
   IPriceStore,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { Asset, IbcTransferMethod } from "@osmosis-labs/types";
+import {
+  Asset,
+  CosmosCounterparty,
+  IbcTransferMethod,
+} from "@osmosis-labs/types";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -163,28 +167,29 @@ export class ObservableAssets {
         return !asset.preview;
       }) // Remove unlisted assets if preview assets is disabled
       .map((ibcAsset) => {
+        const cosmosCounterparty = ibcAsset
+          .counterparty[0] as CosmosCounterparty;
         const chainInfo = this.chainStore.getChain(
-          ibcAsset.counterparty[0]?.chainId?.toString() ?? ""
+          // first counterparty should be cosmos counterparty where it is bridged
+          cosmosCounterparty?.chainId ?? ""
         );
 
-        const sourceDenom_ = ibcAsset.sourceDenom;
+        const ibcAssetSourceDenom = ibcAsset.sourceDenom;
         const originCurrency = chainInfo.currencies.find((cur) => {
-          if (typeof sourceDenom_ === "undefined") return false;
+          if (typeof ibcAssetSourceDenom === "undefined") return false;
 
-          if (sourceDenom_.startsWith("cw20:")) {
+          if (ibcAssetSourceDenom.startsWith("cw20:")) {
             /** Note: since we're searching on counterparty config, the coinMinimalDenom
              *  is not the Osmosis IBC denom, it's the source denom
              */
-            return cur.coinMinimalDenom.startsWith(sourceDenom_);
+            return cur.coinMinimalDenom.startsWith(ibcAssetSourceDenom);
           }
-          return cur.coinMinimalDenom === sourceDenom_;
+          return cur.coinMinimalDenom === ibcAssetSourceDenom;
         });
 
         if (!originCurrency) {
           throw new Error(
-            `Unknown currency ${sourceDenom_} for ${
-              ibcAsset.counterparty![0].chainId
-            }`
+            `Unknown currency ${ibcAssetSourceDenom} for ${cosmosCounterparty}`
           );
         }
 
