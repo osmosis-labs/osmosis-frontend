@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -30,7 +30,11 @@ export const AssetFilterSchema = z.object({
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
+const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
+  "symbol",
+  "coinMinimalDenom",
+  "name",
+];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
 export async function getAsset({
@@ -75,12 +79,12 @@ export async function getAssets({
     return cachified({
       cache: minimalAssetsCache,
       key: JSON.stringify(params),
-      getFreshValue: () => simplifyAssetListForDisplay(assetList, params),
+      getFreshValue: () => filterAssetList(assetList, params),
     });
   }
 
   // otherwise process the given novel asset list
-  return simplifyAssetListForDisplay(assetList, params);
+  return filterAssetList(assetList, params);
 }
 
 /**
@@ -112,8 +116,8 @@ export async function mapRawCoinToPretty(
   return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
-/** Transform given asset list into an array of minimal asset types for user in frontend. */
-function simplifyAssetListForDisplay(
+/** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
+function filterAssetList(
   assetList: AssetList[],
   params: {
     findMinDenomOrSymbol?: string;
