@@ -25,7 +25,7 @@ export interface Params {
   /**
    * authorized_quote_denoms is a list of quote denoms that can be used as
    * token1 when creating a concentrated pool. We limit the quote assets to a
-   * small set for the purposes of having convinient price increments stemming
+   * small set for the purposes of having convenient price increments stemming
    * from tick to price conversion. These increments are in a human readable
    * magnitude only for token1 as a quote. For limit orders in the future, this
    * will be a desirable property in terms of UX as to allow users to set limit
@@ -46,7 +46,7 @@ export interface ParamsAmino {
   /**
    * authorized_quote_denoms is a list of quote denoms that can be used as
    * token1 when creating a concentrated pool. We limit the quote assets to a
-   * small set for the purposes of having convinient price increments stemming
+   * small set for the purposes of having convenient price increments stemming
    * from tick to price conversion. These increments are in a human readable
    * magnitude only for token1 as a quote. For limit orders in the future, this
    * will be a desirable property in terms of UX as to allow users to set limit
@@ -117,7 +117,7 @@ export interface TakerFeeParams {
   defaultTakerFee: string;
   /**
    * osmo_taker_fee_distribution defines the distribution of taker fees
-   * generated in OSMO. As of this writing, it has two catagories:
+   * generated in OSMO. As of this writing, it has two categories:
    * - staking_rewards: the percent of the taker fee that gets distributed to
    *   stakers.
    * - community_pool: the percent of the taker fee that gets sent to the
@@ -128,7 +128,7 @@ export interface TakerFeeParams {
    * non_osmo_taker_fee_distribution defines the distribution of taker fees
    * generated in non-OSMO. As of this writing, it has two categories:
    * - staking_rewards: the percent of the taker fee that gets swapped to OSMO
-   *   and then distirbuted to stakers.
+   *   and then distributed to stakers.
    * - community_pool: the percent of the taker fee that gets sent to the
    *   community pool. Note: If the non-OSMO asset is an authorized_quote_denom,
    *   that denom is sent directly to the community pool. Otherwise, it is
@@ -173,7 +173,7 @@ export interface TakerFeeParamsAmino {
   default_taker_fee: string;
   /**
    * osmo_taker_fee_distribution defines the distribution of taker fees
-   * generated in OSMO. As of this writing, it has two catagories:
+   * generated in OSMO. As of this writing, it has two categories:
    * - staking_rewards: the percent of the taker fee that gets distributed to
    *   stakers.
    * - community_pool: the percent of the taker fee that gets sent to the
@@ -184,7 +184,7 @@ export interface TakerFeeParamsAmino {
    * non_osmo_taker_fee_distribution defines the distribution of taker fees
    * generated in non-OSMO. As of this writing, it has two categories:
    * - staking_rewards: the percent of the taker fee that gets swapped to OSMO
-   *   and then distirbuted to stakers.
+   *   and then distributed to stakers.
    * - community_pool: the percent of the taker fee that gets sent to the
    *   community pool. Note: If the non-OSMO asset is an authorized_quote_denom,
    *   that denom is sent directly to the community pool. Otherwise, it is
