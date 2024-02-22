@@ -3,6 +3,7 @@ import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
+import DataLoader from "dataloader";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
@@ -40,6 +41,21 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
   });
 }
 
+/** Used with `DataLoader` to make batched calls to CoinGecko.
+ *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
+async function batchFetchCoingeckoPrices(
+  coinGeckoIds: readonly string[],
+  currency: CoingeckoVsCurrencies
+) {
+  const pricesObject = await querySimplePrice(coinGeckoIds as string[], [
+    currency,
+  ]);
+  return coinGeckoIds.map(
+    (key) =>
+      pricesObject[key][currency] ??
+      new Error(`No CoinGecko price result for ${key} and ${currency}`)
+  );
+}
 async function getCoingeckoPrice({
   coingeckoId,
   currency,
@@ -47,15 +63,28 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
+  /** Create a loader per given currency. */
+  const currencyBatchLoader = await cachified({
+    cache: pricesCache,
+    key: `prices-batch-loader-${currency}`,
+    getFreshValue: async () => {
+      return new DataLoader(
+        (ids: readonly string[]) => batchFetchCoingeckoPrices(ids, currency),
+        {
+          // workaround to work on Vercel Edge runtime
+          batchScheduleFn: (cb) => setTimeout(cb, 0),
+        }
+      );
+    },
+  });
+
+  /** Cache a result per CoinGecko ID *and* currency ID. */
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
     ttl: 60 * 1000, // 1 minute
-    getFreshValue: async () => {
-      const prices = await querySimplePrice([coingeckoId], [currency]);
-      const price = prices[coingeckoId]?.[currency];
-      return price ? new Dec(price) : undefined;
-    },
+    getFreshValue: () =>
+      currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
   });
 }
 

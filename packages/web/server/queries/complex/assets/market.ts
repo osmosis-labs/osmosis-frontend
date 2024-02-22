@@ -102,7 +102,7 @@ async function getAssetMarketCap({
 }
 
 /** Used with `DataLoader` to make batched calls to CoinGecko.
- *  This allows us to provide coins in a batch to CoinGecko, which is more efficient than making individual calls. */
+ *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
 async function batchFetchCoingeckoCoins(keys: readonly string[]) {
   const coins = await queryCoingeckoCoins(keys as string[]);
   return keys.map(
