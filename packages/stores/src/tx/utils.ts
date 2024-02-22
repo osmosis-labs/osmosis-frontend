@@ -15,8 +15,13 @@ export function isError(tx: any) {
 
 // isSlipageErrorMessage checks if the error message is related to slippage
 // Returns true if so, false otherwise.
+// Returns false if the message is empty.
 // Does simple string matching against chain errors.
 export function isSlipageErrorMessage(msg: string) {
+  if (!msg) {
+    return false;
+  }
+
   return (
     // https://github.com/osmosis-labs/osmosis/blob/b029dfed00128e0d3ca1b866c4e93dc48dd21456/x/concentrated-liquidity/swaps.go#L170
     // https://github.com/osmosis-labs/osmosis/blob/7f5dc22951ca99f31220540ec968de84ddb776f3/x/gamm/keeper/swap.go#L72
