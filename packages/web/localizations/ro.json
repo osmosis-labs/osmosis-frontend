@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
     "sorryNoResults": "Nu s-au găsit strategii.",
     "tryChangingFilters": "Încercați să schimbați filtrele",
-    "retry": "Reîncercați"
+    "retry": "Reîncercați",
+    "manage": "Administra"
   },
   "disclaimer": "Disclaimer"
 }

@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
     "sorryNoResults": "No se encontraron estrategias.",
     "tryChangingFilters": "Prueba a cambiar filtros",
-    "retry": "Rever"
+    "retry": "Rever",
+    "manage": "Administrar"
   },
   "disclaimer": "Descargo de responsabilidad"
 }

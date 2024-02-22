@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "抱歉，發生錯誤。",
     "sorryNoResults": "沒有找到策略。",
     "tryChangingFilters": "嘗試更換過濾器",
-    "retry": "重試"
+    "retry": "重試",
+    "manage": "管理"
   },
   "disclaimer": "免責聲明"
 }

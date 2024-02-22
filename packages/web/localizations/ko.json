@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",
     "sorryNoResults": "전략을 찾을 수 없습니다.",
     "tryChangingFilters": "필터를 바꿔보세요",
-    "retry": "다시 해 보다"
+    "retry": "다시 해 보다",
+    "manage": "관리하다"
   },
   "disclaimer": "부인 성명"
 }

@@ -145,6 +145,11 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
     return item.row.original.link;
   }, [item, isOsmosisStrategy]);
 
+  const isBalanceVisible = useMemo(
+    () => item.table.getColumn("balance")?.getIsVisible(),
+    [item.table]
+  );
+
   return (
     <div className="flex items-center justify-center">
       <Button asChild>
@@ -154,7 +159,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
           className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
         >
           <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
-            {t("earnPage.join")}
+            {isBalanceVisible ? t("earnPage.manage") : t("earnPage.join")}
           </p>
           {isOsmosisStrategy ? (
             <Icon

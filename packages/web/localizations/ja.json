@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "申し訳ありませんが、エラーが発生しました。",
     "sorryNoResults": "戦略が見つかりませんでした。",
     "tryChangingFilters": "フィルターを変更してみる",
-    "retry": "リトライ"
+    "retry": "リトライ",
+    "manage": "管理"
   },
   "disclaimer": "免責事項"
 }

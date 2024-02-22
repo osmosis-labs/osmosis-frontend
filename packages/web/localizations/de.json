@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
     "sorryNoResults": "Keine Strategien gefunden.",
     "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
-    "retry": "Wiederholen"
+    "retry": "Wiederholen",
+    "manage": "Verwalten"
   },
   "disclaimer": "Haftungsausschluss"
 }

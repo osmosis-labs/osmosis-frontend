@@ -918,7 +918,8 @@
     "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
     "sorryNoResults": "Hiçbir strateji bulunamadı.",
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
-    "retry": "Yeniden dene"
+    "retry": "Yeniden dene",
+    "manage": "Üstesinden gelmek"
   },
   "disclaimer": "Sorumluluk reddi beyanı"
 }
