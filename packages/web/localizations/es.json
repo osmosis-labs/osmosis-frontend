@@ -274,6 +274,10 @@
       "activate": "Activar activos no verificados",
       "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
+    },
+    "getStarted": {
+      "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
+      "addFunds": "Agregue fondos para comenzar"
     }
   },
   "buyTokens": "Comprar fichas",

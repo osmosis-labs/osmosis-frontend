@@ -274,6 +274,10 @@
       "activate": "Activați activele neverificate",
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
+    },
+    "getStarted": {
+      "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
+      "addFunds": "Adăugați fonduri pentru a începe"
     }
   },
   "buyTokens": "Cumpărați jetoane",

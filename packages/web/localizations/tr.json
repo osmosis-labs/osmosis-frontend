@@ -274,6 +274,10 @@
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
+    },
+    "getStarted": {
+      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
+      "addFunds": "Başlamak için para ekleyin"
     }
   },
   "buyTokens": "jeton satın al",

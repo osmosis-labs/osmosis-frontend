@@ -274,6 +274,10 @@
       "activate": "Aktywuj niezweryfikowane zasoby",
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
+    },
+    "getStarted": {
+      "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
+      "addFunds": "Dodaj środki, aby rozpocząć"
     }
   },
   "buyTokens": "Kup tokeny",

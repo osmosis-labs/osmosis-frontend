@@ -274,6 +274,10 @@
       "activate": "Aktivieren Sie nicht verifizierte Assets",
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
+    },
+    "getStarted": {
+      "description": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
+      "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
     }
   },
   "buyTokens": "Kaufen Sie Token",

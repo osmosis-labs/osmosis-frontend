@@ -274,6 +274,10 @@
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
+    },
+    "getStarted": {
+      "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
+      "addFunds": "Ajoutez des fonds pour commencer"
     }
   },
   "buyTokens": "Acheter jetons",
