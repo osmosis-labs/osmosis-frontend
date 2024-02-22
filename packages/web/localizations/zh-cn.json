@@ -276,6 +276,7 @@
       "reminder": "您始终可以在设置模式中停用此设置。"
     },
     "getStarted": {
+      "title": "开始使用{osmosis}",
       "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
       "addFunds": "添加资金即可开始"
     }

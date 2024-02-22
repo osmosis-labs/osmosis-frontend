@@ -276,6 +276,7 @@
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     },
     "getStarted": {
+      "title": "Comience con {osmosis}",
       "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
       "addFunds": "Agregue fondos para comenzar"
     }

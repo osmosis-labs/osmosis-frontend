@@ -276,6 +276,7 @@
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
     "getStarted": {
+      "title": "Commencez avec {osmosis}",
       "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
       "addFunds": "Ajoutez des fonds pour commencer"
     }

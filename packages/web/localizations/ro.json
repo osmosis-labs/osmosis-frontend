@@ -276,6 +276,7 @@
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
     "getStarted": {
+      "title": "Începeți cu {osmosis}",
       "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
       "addFunds": "Adăugați fonduri pentru a începe"
     }

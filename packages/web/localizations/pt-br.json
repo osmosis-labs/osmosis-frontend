@@ -276,6 +276,7 @@
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     },
     "getStarted": {
+      "title": "Comece com {osmosis}",
       "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
       "addFunds": "Adicione fundos para começar"
     }

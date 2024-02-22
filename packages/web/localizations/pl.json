@@ -276,6 +276,7 @@
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
     "getStarted": {
+      "title": "Zacznij od {osmosis}",
       "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
       "addFunds": "Dodaj środki, aby rozpocząć"
     }
