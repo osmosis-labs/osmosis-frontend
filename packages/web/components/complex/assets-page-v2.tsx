@@ -14,6 +14,7 @@ import { PieChart } from "../chart";
 import SkeletonLoader from "../loaders/skeleton-loader";
 import { AssetsInfoTable } from "../table/asset-info";
 import { CustomClasses } from "../types";
+import { Button } from "../ui/button";
 
 export const AssetsPageV2: FunctionComponent = observer(() => {
   const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
@@ -21,7 +22,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={heroRef}>
-        <UserAssetsBreakdown />
+        <AssetsOverview />
       </section>
 
       <AssetsInfoTable
@@ -37,20 +38,41 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
   );
 });
 
-const UserAssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
+const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore, chainStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isWalletLoading } = useWalletSelect();
+  const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
+
+  return (
+    <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
+      {wallet && wallet.isWalletConnected && wallet.address ? (
+        <UserAssetsBreakdown userOsmoAddress={wallet.address} />
+      ) : (
+        <GetStartedWithOsmosis />
+      )}
+
+      <div className="absolute right-3 bottom-0  overflow-clip align-baseline">
+        <Image
+          alt="vials"
+          src="/images/osmosis-home-fg.png"
+          height={320}
+          width={320}
+        />
+      </div>
+    </div>
+  );
+});
+
+const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
+  userOsmoAddress,
+}) => {
   const { t } = useTranslation();
 
   const { data: userAssets, isFetched } =
     api.edge.assets.getUserAssetsBreakdown.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress,
       },
       {
-        enabled: !!account && !isWalletLoading,
-
         // expensive query
         trpc: {
           context: {
@@ -87,90 +109,105 @@ const UserAssetsBreakdown: FunctionComponent<CustomClasses> = observer(() => {
   );
 
   return (
-    <div className="relative flex w-full place-content-between rounded-5xl bg-osmoverse-800">
-      <div className="flex items-center gap-8 p-5">
-        <div className="flex flex-col gap-2">
-          <span className="subtitle1 text-osmoverse-300">
-            {t("assets.totalBalance")}
-          </span>
-          <SkeletonLoader
-            className={classNames(isFetched ? null : "h-14 w-48")}
-            isLoaded={isFetched}
-          >
-            <h3>{userAssets?.aggregatedValue.toString()}</h3>
-          </SkeletonLoader>
-        </div>
+    <div className="flex items-center gap-8 p-5">
+      <div className="flex flex-col gap-2">
+        <span className="subtitle1 text-osmoverse-300">
+          {t("assets.totalBalance")}
+        </span>
+        <SkeletonLoader
+          className={classNames(isFetched ? null : "h-14 w-48")}
+          isLoaded={isFetched}
+        >
+          <h3>{userAssets?.aggregatedValue.toString()}</h3>
+        </SkeletonLoader>
+      </div>
 
-        <div className="flex gap-4">
-          {pieChartOptions && (
-            <PieChart options={pieChartOptions} height={138} width={138} />
-          )}
+      <div className="flex gap-4">
+        {pieChartOptions && (
+          <PieChart options={pieChartOptions} height={138} width={138} />
+        )}
 
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <div className="h-full w-1 rounded-full bg-ion-400" />
-              <div className="flex flex-col text-left">
-                <span className="caption text-osmoverse-400">
-                  {t("assets.stakedAssets")}
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <div className="h-full w-1 rounded-full bg-ion-400" />
+            <div className="flex flex-col text-left">
+              <span className="caption text-osmoverse-400">
+                {t("assets.stakedAssets")}
+              </span>
+              <SkeletonLoader
+                className={classNames(isFetched ? null : "h-5 w-20")}
+                isLoaded={isFetched}
+              >
+                <span className="subtitle1 text-osmoverse-100">
+                  {userAssets?.delegatedValue.toString()}
                 </span>
-                <SkeletonLoader
-                  className={classNames(isFetched ? null : "h-5 w-20")}
-                  isLoaded={isFetched}
-                >
-                  <span className="subtitle1 text-osmoverse-100">
-                    {userAssets?.delegatedValue.toString()}
-                  </span>
-                </SkeletonLoader>
-              </div>
+              </SkeletonLoader>
             </div>
+          </div>
 
-            <div className="flex gap-2">
-              <div className="h-full w-1 rounded-full bg-ammelia-600" />
-              <div className="flex flex-col text-left">
-                <span className="caption text-osmoverse-400">
-                  {t("assets.pooledAssets")}
+          <div className="flex gap-2">
+            <div className="h-full w-1 rounded-full bg-ammelia-600" />
+            <div className="flex flex-col text-left">
+              <span className="caption text-osmoverse-400">
+                {t("assets.pooledAssets")}
+              </span>
+              <SkeletonLoader
+                className={classNames(isFetched ? null : "h-5 w-20")}
+                isLoaded={isFetched}
+              >
+                <span className="subtitle1 text-osmoverse-100">
+                  {userAssets?.pooledValue.toString()}
                 </span>
-                <SkeletonLoader
-                  className={classNames(isFetched ? null : "h-5 w-20")}
-                  isLoaded={isFetched}
-                >
-                  <span className="subtitle1 text-osmoverse-100">
-                    {userAssets?.pooledValue.toString()}
-                  </span>
-                </SkeletonLoader>
-              </div>
+              </SkeletonLoader>
             </div>
+          </div>
 
-            <div className="flex gap-2">
-              <div className="h-full w-1 rounded-full bg-wosmongton-400" />
-              <div className="flex flex-col text-left">
-                <span className="caption text-osmoverse-400">
-                  {t("assets.unbondedAssets")}
+          <div className="flex gap-2">
+            <div className="h-full w-1 rounded-full bg-wosmongton-400" />
+            <div className="flex flex-col text-left">
+              <span className="caption text-osmoverse-400">
+                {t("assets.unbondedAssets")}
+              </span>
+              <SkeletonLoader
+                className={classNames(isFetched ? null : "h-5 w-20")}
+                isLoaded={isFetched}
+              >
+                <span className="subtitle1 text-osmoverse-100">
+                  {userAssets?.availableValue.toString()}
                 </span>
-                <SkeletonLoader
-                  className={classNames(isFetched ? null : "h-5 w-20")}
-                  isLoaded={isFetched}
-                >
-                  <span className="subtitle1 text-osmoverse-100">
-                    {userAssets?.availableValue.toString()}
-                  </span>
-                </SkeletonLoader>
-              </div>
+              </SkeletonLoader>
             </div>
           </div>
         </div>
       </div>
-      <div className="absolute right-3 bottom-0  overflow-clip align-baseline">
-        <Image
-          alt="vials"
-          src="/images/osmosis-home-fg.png"
-          height={300}
-          width={300}
-        />
-      </div>
     </div>
   );
-});
+};
+
+const GetStartedWithOsmosis: FunctionComponent = () => {
+  const { chainStore } = useStore();
+  const { t } = useTranslation();
+
+  const { onOpenWalletSelect } = useWalletSelect();
+
+  return (
+    <div className="flex max-w-sm flex-col gap-4 px-6">
+      <h5>{t("assets.getStarted.title", { osmosis: "Osmosis" })}</h5>
+      <p className="body2 text-osmoverse-300">
+        {t("assets.getStarted.description")}
+      </p>
+      <Button
+        className="w-fit px-0"
+        onClick={() => {
+          onOpenWalletSelect(chainStore.osmosis.chainId);
+        }}
+        variant="link"
+      >
+        <h6 className="text-wosmongton-200">{t("connectWallet")}</h6>
+      </Button>
+    </div>
+  );
+};
 
 /** Generates a series for representing a list of prices. */
 export const generatePriceProportionSeries = (
