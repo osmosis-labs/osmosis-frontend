@@ -708,7 +708,8 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
       if (tokenDetails) {
         if (tokenDetails.coingeckoID) {
-          coingeckoCoin = await queryCoingeckoCoin(tokenDetails.coingeckoID);
+          coingeckoCoin =
+            (await queryCoingeckoCoin(tokenDetails.coingeckoID)) ?? null;
         }
 
         if (tokenDetails.twitterURL) {
