@@ -35,16 +35,8 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: asset.coinDenom + asset.coinMinimalDenom,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const currentPrice = await getAssetPrice({ asset }).catch(() => {
-        // if not found, return undefined
-        return;
-      });
-      const marketCap = (
-        await queryTokenMarketCaps().catch(() => {
-          // if not found, return undefined
-          return undefined;
-        })
-      )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
+      const currentPrice = await getAssetPrice({ asset }).catch(() => null);
+      const marketCap = await getAssetMarketCap(asset).catch(() => null);
       const priceChange24h = (await getAssetMarketActivity(asset))
         ?.price_24h_change;
       const marketCapRank = await getAssetMarketCapRank(asset);
@@ -83,6 +75,29 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/** Fetches and caches asset market capitalization. */
+async function getAssetMarketCap({
+  coinDenom,
+}: {
+  coinDenom: string;
+}): Promise<number | undefined> {
+  const marketCapsMap = await cachified({
+    cache: marketInfoCache,
+    key: "assetMarketCaps",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    getFreshValue: async () => {
+      const marketCaps = await queryTokenMarketCaps();
+
+      if (!marketCaps) return new Map<string, number>();
+      return marketCaps.reduce((map, mCap) => {
+        return map.set(mCap.symbol, mCap.market_cap);
+      }, new Map<string, number>());
+    },
+  });
+
+  return marketCapsMap.get(coinDenom);
+}
 
 /** Gets the numerical market cap rank given a token symbol/denom.
  *  Returns `undefined` if a market cap is not available for the given symbol/denom. */
