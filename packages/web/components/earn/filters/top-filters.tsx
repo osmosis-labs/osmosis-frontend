@@ -189,7 +189,7 @@ export const TopFilters = () => {
           })}
         </div>
         <DropdownWithMultiSelect
-          label={t("earnPage.specialTokens")}
+          label={t("earnPage.allCategories")}
           options={strategiesFilters}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
@@ -251,7 +251,7 @@ export const TopFilters = () => {
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
-          label={t("earnPage.specialTokens")}
+          label={t("earnPage.allCategories")}
           options={strategiesFilters}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>

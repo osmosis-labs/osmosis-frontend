@@ -892,7 +892,7 @@
     "platforms": "Platformlar",
     "allPlatforms": "Tüm Platformlar",
     "lockingDuration": "Kilitleme Süresi",
-    "specialTokens": "Özel Kategoriler",
+    "allCategories": "Tüm Kategoriler",
     "filters": "Filtreler",
     "resetFilters": "Filtreleri Sıfırla",
     "saveFilters": "Filtreleri Kaydet",

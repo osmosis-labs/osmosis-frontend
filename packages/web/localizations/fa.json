@@ -892,7 +892,7 @@
     "platforms": "بستر، زمینه",
     "allPlatforms": "همه پلتفرم ها",
     "lockingDuration": "مدت زمان قفل کردن",
-    "specialTokens": "دسته بندی های ویژه",
+    "allCategories": "همه دسته بندی ها",
     "filters": "فیلترها",
     "resetFilters": "بازنشانی فیلترها",
     "saveFilters": "ذخیره فیلترها",

@@ -892,7 +892,7 @@
     "platforms": "Platforms",
     "allPlatforms": "All Platforms",
     "lockingDuration": "Locking Duration",
-    "specialTokens": "Special Categories",
+    "allCategories": "All Categories",
     "filters": "Filters",
     "resetFilters": "Reset Filters",
     "saveFilters": "Save Filters",

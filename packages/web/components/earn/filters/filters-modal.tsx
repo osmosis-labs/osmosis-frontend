@@ -98,7 +98,7 @@ const FiltersModal = (
             buttonClassName="flex-1"
           />
           <DropdownWithMultiSelect
-            label={t("earnPage.specialTokens")}
+            label={t("earnPage.allCategories")}
             options={props.strategiesFilters}
             stateValues={specialTokens}
             toggleFn={({ label, value }) =>

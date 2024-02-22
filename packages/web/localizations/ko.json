@@ -892,7 +892,7 @@
     "platforms": "플랫폼",
     "allPlatforms": "모든 플랫폼",
     "lockingDuration": "잠금 기간",
-    "specialTokens": "특별 카테고리",
+    "allCategories": "모든 카테고리",
     "filters": "필터",
     "resetFilters": "필터 재설정",
     "saveFilters": "필터 저장",

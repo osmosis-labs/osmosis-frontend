@@ -892,7 +892,7 @@
     "platforms": "Платформы",
     "allPlatforms": "Все платформы",
     "lockingDuration": "Продолжительность блокировки",
-    "specialTokens": "Специальные категории",
+    "allCategories": "Все категории",
     "filters": "Фильтры",
     "resetFilters": "Сбросить фильтры",
     "saveFilters": "Сохранить фильтры",

@@ -892,7 +892,7 @@
     "platforms": "プラットフォーム",
     "allPlatforms": "すべてのプラットフォーム",
     "lockingDuration": "ロック期間",
-    "specialTokens": "特別なカテゴリ",
+    "allCategories": "すべてのカテゴリ",
     "filters": "フィルター",
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターの保存",
