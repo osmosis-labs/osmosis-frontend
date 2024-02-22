@@ -1,12 +1,12 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
-import DataLoader from "dataloader";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 
+import { EdgeDataLoader } from "../../base-utils";
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
   queryAllTokenData,
@@ -111,10 +111,7 @@ async function batchFetchCoingeckoCoins(keys: readonly string[]) {
       new Error(`No CoinGecko coin result for ${key}`)
   );
 }
-const coingeckoCoinBatchLoader = new DataLoader(batchFetchCoingeckoCoins, {
-  // workaround to work on Vercel Edge runtime
-  batchScheduleFn: (cb) => setTimeout(cb, 0),
-});
+const coingeckoCoinBatchLoader = new EdgeDataLoader(batchFetchCoingeckoCoins);
 
 /** Gets the CoinGecko coin object for a given CoinGecko ID.
  *  Returns `undefined` if the token ID is not actively listed on CoinGecko. */

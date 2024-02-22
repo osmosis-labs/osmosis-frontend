@@ -3,7 +3,6 @@ import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
-import DataLoader from "dataloader";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
@@ -15,6 +14,7 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
 
+import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -63,22 +63,18 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
-  /** Create a loader per given currency. */
+  // Create a loader per given currency.
   const currencyBatchLoader = await cachified({
     cache: pricesCache,
     key: `prices-batch-loader-${currency}`,
     getFreshValue: async () => {
-      return new DataLoader(
-        (ids: readonly string[]) => batchFetchCoingeckoPrices(ids, currency),
-        {
-          // workaround to work on Vercel Edge runtime
-          batchScheduleFn: (cb) => setTimeout(cb, 0),
-        }
+      return new EdgeDataLoader((ids: readonly string[]) =>
+        batchFetchCoingeckoPrices(ids, currency)
       );
     },
   });
 
-  /** Cache a result per CoinGecko ID *and* currency ID. */
+  // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
