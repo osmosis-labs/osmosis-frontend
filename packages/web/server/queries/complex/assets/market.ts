@@ -1,12 +1,13 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
+import DataLoader from "dataloader";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 
-import { queryCoingeckoCoin } from "../../coingecko";
+import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -39,7 +40,8 @@ export async function getMarketAsset<TAsset extends Asset>({
       const marketCap = await getAssetMarketCap(asset).catch(() => null);
       const priceChange24h = (await getAssetMarketActivity(asset))
         ?.price_24h_change;
-      const marketCapRank = await getAssetMarketCapRank(asset);
+      const marketCapRank = (await getCoingeckoCoin(asset).catch(() => null))
+        ?.market_cap_rank;
 
       return {
         currentPrice: currentPrice
@@ -85,7 +87,7 @@ async function getAssetMarketCap({
   const marketCapsMap = await cachified({
     cache: marketInfoCache,
     key: "assetMarketCaps",
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 60 * 30, // 30 minutes
     getFreshValue: async () => {
       const marketCaps = await queryTokenMarketCaps();
 
@@ -99,28 +101,50 @@ async function getAssetMarketCap({
   return marketCapsMap.get(coinDenom);
 }
 
-/** Gets the numerical market cap rank given a token symbol/denom.
- *  Returns `undefined` if a market cap is not available for the given symbol/denom. */
-async function getAssetMarketCapRank({
+/** Used with `DataLoader` to make batched calls to CoinGecko.
+ *  This allows us to provide coins in a batch to CoinGecko, which is more efficient than making individual calls. */
+async function batchFetchCoingeckoCoins(keys: readonly string[]) {
+  const coins = await queryCoingeckoCoins(keys as string[]);
+  return keys.map(
+    (key) =>
+      coins.find(({ id }) => id === key) ??
+      new Error(`No CoinGecko coin result for ${key}`)
+  );
+}
+const coingeckoCoinBatchLoader = new DataLoader(batchFetchCoingeckoCoins, {
+  // workaround to work on Vercel Edge runtime
+  batchScheduleFn: (cb) => setTimeout(cb, 0),
+});
+
+/** Gets the CoinGecko coin object for a given CoinGecko ID.
+ *  Returns `undefined` if the token ID is not actively listed on CoinGecko. */
+async function getCoingeckoCoin({
   coinGeckoId,
 }: {
   coinGeckoId: string | undefined;
-}): Promise<number | undefined> {
+}) {
   if (!coinGeckoId) return;
+
+  // Given ID should be supported by CoinGecko
+  if (
+    !(await getActiveCoingeckoCoins()).some((coin) => coin.id === coinGeckoId)
+  )
+    return;
 
   return await cachified({
     cache: assetMarketCache,
-    ttl: 1000 * 60 * 15, // 15 minutes since market ranks don't change often
-    key: "market-cap-" + coinGeckoId,
-    getFreshValue: async () => {
-      try {
-        const coinGeckoCoin = await queryCoingeckoCoin(coinGeckoId);
+    ttl: 1000 * 60 * 5, // 5 minutes
+    key: "coingecko-coin-" + coinGeckoId,
+    getFreshValue: () => coingeckoCoinBatchLoader.load(coinGeckoId),
+  });
+}
 
-        return coinGeckoCoin.market_cap_rank;
-      } catch {
-        // ignore error and return undefined, since market cap rank is non-critical
-      }
-    },
+async function getActiveCoingeckoCoins() {
+  return await cachified({
+    cache: assetMarketCache,
+    ttl: 1000 * 60 * 60, // 1 hour
+    key: "coinGeckoIds",
+    getFreshValue: queryCoingeckoCoinIds,
   });
 }
 

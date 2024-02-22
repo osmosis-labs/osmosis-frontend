@@ -13,7 +13,7 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
-import { CoingeckoCoin } from "~/server/queries/coingecko/detail";
+import { CoingeckoCoin } from "~/server/queries/coingecko/coin";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
