@@ -1,9 +1,11 @@
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   TableOptions,
 } from "@tanstack/react-table";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
@@ -20,6 +22,7 @@ export const useStrategyTableConfig = (
     () => getDefaultFiltersState(filters!),
     [filters]
   );
+  const [sorting, setSorting] = useState<SortingState>([]);
   const { isMobile } = useWindowSize();
 
   const tableConfig: TableOptions<EarnStrategy> = {
@@ -27,6 +30,7 @@ export const useStrategyTableConfig = (
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility: {
         balance: showBalance,
@@ -40,7 +44,9 @@ export const useStrategyTableConfig = (
       },
       globalFilter: filters!.search,
       columnFilters,
+      sorting,
     },
+    onSortingChange: setSorting,
     globalFilterFn: "includesString",
     onGlobalFilterChange: (e) => setFilter("search", e),
   };

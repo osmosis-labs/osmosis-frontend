@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useMemo } from "react";
 
+import { Icon } from "~/components/assets";
 import { useTranslation } from "~/hooks";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 import { EarnStrategy } from "~/server/queries/numia/earn";
@@ -88,12 +89,26 @@ const StrategiesTable = ({
                   })}
                   key={header.id}
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+                  {header.isPlaceholder ? null : (
+                    <div
+                      {...{
+                        className: classNames({
+                          "cursor-pointer inline-flex items-center select-none gap-1":
+                            header.column.getCanSort(),
+                        }),
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                      {{
+                        asc: <Icon id="sort-up" width={16} height={16} />,
+                        desc: <Icon id="sort-down" width={16} height={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
                 </th>
               ))}
             </tr>
