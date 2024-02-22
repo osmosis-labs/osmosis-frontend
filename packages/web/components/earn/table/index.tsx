@@ -193,7 +193,7 @@ const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
           height={28}
         />
       </div>
-      <h6 className="inline-flex items-center gap-1 text-wosmongton-400">
+      <h6 className="inline-flex items-center gap-1 text-osmoverse-100">
         {t("earnPage.sorryErrorOccurred")}
         <span>
           <button
@@ -222,7 +222,7 @@ const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
           height={38}
         />
       </div>
-      <h6 className="text-wosmongton-400">
+      <h6 className="text-osmoverse-100">
         {t("earnPage.sorryNoResults")}{" "}
         {isFilterError && t("earnPage.tryChangingFilters")}
       </h6>
