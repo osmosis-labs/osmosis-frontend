@@ -37,8 +37,8 @@ const useGetEarnStrategies = (
         );
         return {
           ..._strategy,
-          holdsTokens: !!holdenDenoms?.find((holdenDenom) =>
-            involvedDenoms.includes(holdenDenom)
+          holdsTokens: involvedDenoms.every((involvedDenom) =>
+            holdenDenoms?.includes(involvedDenom)
           ),
         };
       }),
