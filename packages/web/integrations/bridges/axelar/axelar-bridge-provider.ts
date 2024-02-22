@@ -4,11 +4,8 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
-import {
-  getAssetFromAssetList,
-  getChain,
-  getChannelInfoFromAsset,
-} from "@osmosis-labs/utils";
+import type { IbcTransferMethod } from "@osmosis-labs/types";
+import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
@@ -613,12 +610,24 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
+      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+        ({ type }) => type === "ibc"
+      ) as IbcTransferMethod | undefined;
+
+      if (!ibcTransferMethod) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message: "Could not find IBC asset transfer info",
+          },
+        ]);
+      }
+
       const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
         {
           receiver: depositAddress,
           sender: fromAddress,
-          sourceChannel: getChannelInfoFromAsset(ibcAssetInfo.rawAsset)
-            .sourceChannelId,
+          sourceChannel: ibcTransferMethod.chain.channelId,
           sourcePort: "transfer",
           timeoutTimestamp: "0" as any,
           // @ts-ignore

@@ -75,31 +75,35 @@ async function calculatePriceFromPriceId({
   asset,
   currency,
 }: {
-  asset: Pick<Asset, "base" | "price_info" | "coingecko_id">;
+  asset: Pick<Asset, "coinMinimalDenom" | "price" | "coingeckoId">;
   currency: "usd";
 }): Promise<Dec | undefined> {
-  if (!asset.price_info && !asset.coingecko_id)
-    throw new Error("No price info or coingecko id for " + asset.base);
+  if (!asset.price && !asset.coingeckoId)
+    throw new Error(
+      "No price info or coingecko id for " + asset.coinMinimalDenom
+    );
 
   /**
    * Fetch directly from coingecko if there's no price info.
    */
-  if (!asset.price_info && asset.coingecko_id) {
+  if (!asset.price && asset.coingeckoId) {
     return await getCoingeckoPrice({
-      coingeckoId: asset.coingecko_id,
+      coingeckoId: asset.coingeckoId,
       currency,
     });
   }
 
-  if (!asset.price_info) throw new Error("No price info for " + asset.base);
+  if (!asset.price)
+    throw new Error("No price info for " + asset.coinMinimalDenom);
 
   const poolPriceRoute = {
-    destCoinMinimalDenom: asset.price_info.dest_coin_minimal_denom,
-    poolId: asset.price_info.pool_id,
-    sourceCoinMinimalDenom: asset.base,
+    destCoinMinimalDenom: asset.price.denom,
+    poolId: asset.price.poolId,
+    sourceCoinMinimalDenom: asset.coinMinimalDenom,
   };
 
-  if (!poolPriceRoute) throw new Error("No pool price route for " + asset.base);
+  if (!poolPriceRoute)
+    throw new Error("No pool price route for " + asset.coinMinimalDenom);
 
   const tokenInIbc = poolPriceRoute.sourceCoinMinimalDenom;
   const tokenOutIbc = poolPriceRoute.destCoinMinimalDenom;
