@@ -83,7 +83,7 @@ export interface EarnStrategyBalance {
   };
 }
 
-export type tokensType = "stablecoins" | "correlated" | "bluechip";
+export type TokensType = "stablecoins" | "correlated" | "bluechip";
 
 export interface EarnStrategy {
   id: string;
@@ -100,7 +100,7 @@ export interface EarnStrategy {
   balance: PricePretty;
   holdsTokens?: boolean;
   hasLockingDuration: boolean;
-  tokensType: tokensType;
+  tokensType: TokensType;
   link: string;
 }
 
