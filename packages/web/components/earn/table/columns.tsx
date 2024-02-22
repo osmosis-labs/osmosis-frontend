@@ -41,6 +41,7 @@ export const ColumnCellHeader = ({
 
   return (
     <Tooltip
+      enablePropagation
       className={classNames("justify-end", tooltipClassname)}
       content={
         <StrategyTooltip
