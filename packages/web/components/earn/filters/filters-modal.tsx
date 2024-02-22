@@ -26,6 +26,7 @@ const FiltersModal = (
     platforms: ListOption<string>[];
     strategiesFilters: StrategiesFilter[];
     tokenFilterOptions: ListOption<string>[];
+    isMyAllSwitchDisabled?: boolean;
   }
 ) => {
   const { filters, setFilter, resetFilters } = useContext(FilterContext);
@@ -111,6 +112,7 @@ const FiltersModal = (
           />
         </div>
         <RadioWithOptions
+          disabled={props.isMyAllSwitchDisabled}
           mode="primary"
           variant="large"
           value={tokenHolder}

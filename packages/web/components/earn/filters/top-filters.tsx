@@ -52,7 +52,11 @@ const strategiesFilters = [
   },
 ];
 
-export const TopFilters = () => {
+export const TopFilters = ({
+  isInMyStrategies,
+}: {
+  isInMyStrategies?: boolean;
+}) => {
   const { filters, setFilter } = useContext(FilterContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
@@ -127,6 +131,7 @@ export const TopFilters = () => {
     <div className="flex flex-col gap-5 px-10 py-8 1.5xs:px-7 1.5xs:py-7">
       <div className="flex items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-0 xl:flex-wrap xl:gap-4 lg:hidden">
         <RadioWithOptions
+          disabled={isInMyStrategies}
           mode="primary"
           variant="large"
           value={tokenHolder}
@@ -211,6 +216,7 @@ export const TopFilters = () => {
       {/** 512 - 1024 */}
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5xs:hidden">
         <RadioWithOptions
+          disabled={isInMyStrategies}
           mode="primary"
           variant="large"
           value={tokenHolder}
@@ -295,6 +301,7 @@ export const TopFilters = () => {
         strategies={strategies}
         strategiesFilters={strategiesFilters}
         tokenFilterOptions={tokenFilterOptions}
+        isMyAllSwitchDisabled={isInMyStrategies}
       />
     </div>
   );

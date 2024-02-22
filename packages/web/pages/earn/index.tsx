@@ -193,7 +193,9 @@ function Earn() {
             )}
           </TabButtons>
           <TabHeader>
-            <TopFilters />
+            {(selectedIdx) => (
+              <TopFilters isInMyStrategies={selectedIdx === 1} />
+            )}
           </TabHeader>
           <TabPanels>
             <TabPanel

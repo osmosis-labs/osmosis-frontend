@@ -129,7 +129,10 @@ export const TabPanel = ({
 
 export const TabHeader = ({
   children,
-}: PropsWithChildren<{ className?: string }>) => {
+}: {
+  className?: string;
+  children: ((selectedIdx: number) => ReactElement) | ReactElement;
+}) => {
   const { selectedIdx } = useContext(TabContext);
 
   return (
@@ -139,7 +142,7 @@ export const TabHeader = ({
         "rounded-tl-3x4pxlinset": selectedIdx !== 0,
       })}
     >
-      {children}
+      {typeof children === "function" ? children(selectedIdx) : children}
     </div>
   );
 };
