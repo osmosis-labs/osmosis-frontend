@@ -1,4 +1,3 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -70,7 +69,7 @@ const NavbarOsmoPrice = observer(() => {
         {flags.sidebarOsmoChangeAndChart && <OsmoPriceAndChart />}
       </div>
 
-      {wallet?.walletStatus === WalletStatus.Connected && (
+      {wallet?.isWalletConnected && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
             mode="unstyled"

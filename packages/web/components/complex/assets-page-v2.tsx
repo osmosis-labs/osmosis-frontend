@@ -5,7 +5,13 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
 
-import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
+import {
+  useDimension,
+  useDisclosure,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
+import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
@@ -16,7 +22,7 @@ import { AssetsInfoTable } from "../table/asset-info";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
 
-export const AssetsPageV2: FunctionComponent = observer(() => {
+export const AssetsPageV2: FunctionComponent = () => {
   const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
 
   return (
@@ -36,7 +42,7 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
       />
     </main>
   );
-});
+};
 
 const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore, chainStore } = useStore();
@@ -107,6 +113,12 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
         : undefined,
     [userAssets, t]
   );
+
+  if (userAssets && userAssets.aggregatedValue.toDec().isZero()) {
+    return (
+      <UserZeroBalanceCta currencySymbol={userAssets.aggregatedValue.symbol} />
+    );
+  }
 
   return (
     <div className="flex items-center gap-8 p-5">
@@ -184,6 +196,43 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   );
 };
 
+const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
+  currencySymbol,
+}) => {
+  const { t } = useTranslation();
+
+  const {
+    isOpen: isFiatOnrampSelectionOpen,
+    onClose: onCloseFiatOnrampSelection,
+    onOpen: onOpenFiatOnrampSelection,
+  } = useDisclosure();
+
+  return (
+    <div className="flex flex-col gap-2 px-6">
+      <span className="subtitle1 text-osmoverse-300">
+        {t("assets.totalBalance")}
+      </span>
+      <h3 className="text-osmoverse-600">{currencySymbol}0.00</h3>
+      <Button
+        className="!w-fit"
+        onClick={() => {
+          onOpenFiatOnrampSelection();
+        }}
+        variant="link"
+        size="icon"
+      >
+        <h6 className="text-wosmongton-200">
+          {t("assets.getStarted.addFunds")}
+        </h6>
+      </Button>
+      <FiatOnrampSelectionModal
+        isOpen={isFiatOnrampSelectionOpen}
+        onRequestClose={onCloseFiatOnrampSelection}
+      />
+    </div>
+  );
+};
+
 const GetStartedWithOsmosis: FunctionComponent = () => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
@@ -226,8 +275,10 @@ export const generatePriceProportionSeries = (
     innerSize: "80%",
     states: { hover: { enabled: false } },
     data: data.map((d) => ({
-      y: Number(d.price.toDec().quo(total).mul(new Dec(100)).toString()),
-      x: Number(d.price.toDec().toString()),
+      y: d.price.toDec().isZero()
+        ? 0
+        : Number(d.price.toDec().quo(total).mul(new Dec(100)).toString()),
+      x: d.price.toDec().isZero() ? 0 : Number(d.price.toDec().toString()),
       color: d.color,
     })),
   };

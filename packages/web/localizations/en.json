@@ -277,7 +277,8 @@
     },
     "getStarted": {
       "title": "Get started with {osmosis}",
-      "description": "Connect and fund your wallet to start trading in just a few steps."
+      "description": "Connect and fund your wallet to start trading in just a few steps.",
+      "addFunds": "Add funds to get started"
     }
   },
   "buyTokens": "Buy tokens",
