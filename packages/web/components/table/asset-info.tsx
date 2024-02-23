@@ -563,6 +563,7 @@ const TableControls: FunctionComponent<{
   setSelectedView,
 }) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
 
@@ -570,15 +571,31 @@ const TableControls: FunctionComponent<{
   // Only on debounced search query input
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
+  const tokensOptions = useConst([
+    { id: "myTokens", display: "My Tokens" },
+    { id: "allTokens", display: "All Tokens" },
+  ]);
+
   return (
-    <div className="flex h-12 w-full items-center gap-5">
+    <div className="flex h-12 w-full items-center gap-5 md:h-fit md:flex-col md:justify-end">
       <div className="flex h-12 w-full gap-3">
-        <SearchBox
-          className="!w-full"
-          currentValue={searchInput}
-          onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
-        />
+        {isMobile ? (
+          <MenuToggle
+            // className="md:ml-auto"
+            options={tokensOptions}
+            selectedOptionId={selectedView as string}
+            onSelect={(optionId) =>
+              setSelectedView(optionId as "myTokens" | "allTokens")
+            }
+          />
+        ) : (
+          <SearchBox
+            className="!w-full"
+            currentValue={searchInput}
+            onInput={setSearchInput}
+            placeholder={t("assets.table.search")}
+          />
+        )}
         <SelectMenu
           classes={useConst({ container: "h-full 1.5lg:hidden" })}
           options={useConst([
@@ -595,16 +612,23 @@ const TableControls: FunctionComponent<{
           )}
         />
       </div>
-      <MenuToggle
-        options={useConst([
-          { id: "myTokens", display: "My Tokens" },
-          { id: "allTokens", display: "All Tokens" },
-        ])}
-        selectedOptionId={selectedView as string}
-        onSelect={(optionId) =>
-          setSelectedView(optionId as "myTokens" | "allTokens")
-        }
-      />
+      {isMobile ? (
+        <SearchBox
+          className="!w-full"
+          currentValue={searchInput}
+          onInput={setSearchInput}
+          placeholder={t("assets.table.search")}
+        />
+      ) : (
+        <MenuToggle
+          // className="md:ml-auto"
+          options={tokensOptions}
+          selectedOptionId={selectedView as string}
+          onSelect={(optionId) =>
+            setSelectedView(optionId as "myTokens" | "allTokens")
+          }
+        />
+      )}
     </div>
   );
 };
