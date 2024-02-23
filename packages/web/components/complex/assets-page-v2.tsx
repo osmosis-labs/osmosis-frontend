@@ -78,7 +78,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   userOsmoAddress,
 }) => {
   const { t } = useTranslation();
-  const { width } = useWindowSize();
+  const { width, isMobile } = useWindowSize();
 
   const { data: userAssets, isFetched } =
     api.edge.assets.getUserAssetsBreakdown.useQuery(
@@ -130,14 +130,18 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   return (
     <div className="flex items-center gap-8 p-5 1.5lg:w-full 1.5lg:place-content-between">
       <div className="flex flex-col gap-2">
-        <span className="subtitle1 text-osmoverse-300">
+        <span className="subtitle1 md:caption text-osmoverse-300">
           {t("assets.totalBalance")}
         </span>
         <SkeletonLoader
           className={classNames(isFetched ? null : "h-14 w-48")}
           isLoaded={isFetched}
         >
-          <h3>{userAssets?.aggregatedValue.toString()}</h3>
+          {isMobile ? (
+            <h5>{userAssets?.aggregatedValue.toString()}</h5>
+          ) : (
+            <h3>{userAssets?.aggregatedValue.toString()}</h3>
+          )}
         </SkeletonLoader>
       </div>
 
@@ -148,7 +152,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
 
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
-            <div className="h-full w-1 rounded-full bg-ion-400" />
+            <div className="h-full w-1 rounded-full bg-ion-400 md:hidden" />
             <div className="flex flex-col text-left">
               <span className="caption text-osmoverse-400">
                 {t("assets.stakedAssets")}
@@ -165,7 +169,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
           </div>
 
           <div className="flex gap-2">
-            <div className="h-full w-1 rounded-full bg-ammelia-600" />
+            <div className="h-full w-1 rounded-full bg-ammelia-600 md:hidden" />
             <div className="flex flex-col text-left">
               <span className="caption text-osmoverse-400">
                 {t("assets.pooledAssets")}
@@ -182,7 +186,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
           </div>
 
           <div className="flex gap-2">
-            <div className="h-full w-1 rounded-full bg-wosmongton-400" />
+            <div className="h-full w-1 rounded-full bg-wosmongton-400 md:hidden" />
             <div className="flex flex-col text-left">
               <span className="caption text-osmoverse-400">
                 {t("assets.unbondedAssets")}

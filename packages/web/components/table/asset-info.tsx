@@ -580,7 +580,7 @@ const TableControls: FunctionComponent<{
           placeholder={t("assets.table.search")}
         />
         <SelectMenu
-          classes={useConst({ container: "h-full" })}
+          classes={useConst({ container: "h-full 1.5lg:hidden" })}
           options={useConst([
             { id: "1H", display: "1H" },
             { id: "1D", display: "1D" },
