@@ -1,7 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import Image from "next/image";
 import { PropsWithChildren } from "react";
 
@@ -18,6 +16,7 @@ import {
   boolEqualsString,
   listOptionValueEquals,
   multiListOptionValueEquals,
+  sortDecValues,
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
@@ -122,29 +121,22 @@ export const tableColumns = [
       />
     ),
     cell: TVLCell,
+    sortingFn: sortDecValues,
   }),
   columnHelper.accessor("apy", {
     header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
     cell: (item) => (
       <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
     ),
+    sortingFn: sortDecValues,
   }),
-  columnHelper.display({
-    id: "daily",
+  columnHelper.accessor("daily", {
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
     cell: (item) => {
-      const currentYear = dayjs().year();
-      const januaryFirst = dayjs(`${currentYear}-01-01`);
-      const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);
-
-      const totalDaysOfTheYear = nextYearJanuaryFirst.diff(januaryFirst, "day");
-
-      return (
-        <ColumnCellCell>
-          {formatPretty(item.row.original.apy.quo(new Dec(totalDaysOfTheYear)))}
-        </ColumnCellCell>
-      );
+      return <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>;
     },
+    enableSorting: true,
+    sortingFn: sortDecValues,
   }),
   columnHelper.accessor("rewardTokens", {
     header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
@@ -166,6 +158,7 @@ export const tableColumns = [
       </div>
     ),
     filterFn: arrLengthEquals,
+    enableSorting: false,
   }),
   columnHelper.accessor("lockDuration", {
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,

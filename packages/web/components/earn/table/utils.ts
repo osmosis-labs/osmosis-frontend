@@ -1,4 +1,4 @@
-import { FilterFn } from "@tanstack/react-table";
+import { FilterFn, SortingFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
@@ -71,6 +71,18 @@ export const boolEqualsString: FilterFn<EarnStrategy> = (
     default:
       return false;
   }
+};
+
+export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB) => {
+  const rowAConvertedValue = Number(rowA.original.tvl.toDec().toString());
+  const rowBConvertedValue = Number(rowB.original.tvl.toDec().toString());
+
+  if (rowAConvertedValue === rowBConvertedValue) return 0;
+  /**
+   * We can also write it as a === b ? 0 : a < b ? -1 : 1
+   * but I prefer using guard clauses as written above.
+   */
+  return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
 export const boolEquals: FilterFn<EarnStrategy> = (row, colID, filterValue) => {
