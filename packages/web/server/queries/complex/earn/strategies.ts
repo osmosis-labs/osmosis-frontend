@@ -82,7 +82,7 @@ export async function getEarnStrategies() {
         }
         return aggregatedStrategies;
       } catch (error) {
-        throw new Error("Error while fetching strategies: ", { cause: error });
+        throw new Error("Error while fetching strategies");
       }
     },
   });
@@ -115,9 +115,7 @@ export async function getStrategyBalance(
           },
         };
       } catch (error) {
-        throw new Error("Error while fetching strategy balance: ", {
-          cause: error,
-        });
+        throw new Error("Error while fetching strategy balance");
       }
     },
   });
