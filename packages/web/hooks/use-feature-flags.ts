@@ -23,7 +23,8 @@ export type AvailableFlags =
   | "aprBreakdown"
   | "newPoolsTable"
   | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton";
+  | "tfmProTradingNavbarButton"
+  | "positionRoi";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -49,6 +50,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newPoolsTable: true,
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
+  positionRoi: true,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
