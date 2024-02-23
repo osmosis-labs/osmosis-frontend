@@ -102,6 +102,7 @@ export interface EarnStrategy {
   hasLockingDuration: boolean;
   tokensType: TokensType;
   link: string;
+  daily: RatePretty;
 }
 
 /** Queries numia for a earn strategies list. */

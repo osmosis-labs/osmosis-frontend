@@ -1,5 +1,6 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
+import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
@@ -62,6 +63,20 @@ export async function getEarnStrategies() {
             new Dec(tvl)
           );
 
+          // Calculation of daily %
+          const currentYear = dayjs().year();
+          const januaryFirst = dayjs(`${currentYear}-01-01`);
+          const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);
+
+          const totalDaysOfTheYear = nextYearJanuaryFirst.diff(
+            januaryFirst,
+            "day"
+          );
+
+          const processedDaily = new RatePretty(
+            processedApy.quo(new Dec(totalDaysOfTheYear))
+          );
+
           aggregatedStrategies.push({
             id,
             name,
@@ -78,6 +93,7 @@ export async function getEarnStrategies() {
             hasLockingDuration: lockDuration > 0,
             tokensType: "stablecoins", // todo
             link,
+            daily: processedDaily,
           });
         }
         return aggregatedStrategies;
