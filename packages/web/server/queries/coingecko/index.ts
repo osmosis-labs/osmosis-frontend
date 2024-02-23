@@ -1,4 +1,5 @@
-export * from "./detail";
+export * from "./coin";
+export * from "./list";
 export * from "./price";
 export * from "./search";
 

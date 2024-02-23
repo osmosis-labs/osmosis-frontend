@@ -14,6 +14,7 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
 
+import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -40,6 +41,21 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
   });
 }
 
+/** Used with `DataLoader` to make batched calls to CoinGecko.
+ *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
+async function batchFetchCoingeckoPrices(
+  coinGeckoIds: readonly string[],
+  currency: CoingeckoVsCurrencies
+) {
+  const pricesObject = await querySimplePrice(coinGeckoIds as string[], [
+    currency,
+  ]);
+  return coinGeckoIds.map(
+    (key) =>
+      pricesObject[key][currency] ??
+      new Error(`No CoinGecko price result for ${key} and ${currency}`)
+  );
+}
 async function getCoingeckoPrice({
   coingeckoId,
   currency,
@@ -47,15 +63,24 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
+  // Create a loader per given currency.
+  const currencyBatchLoader = await cachified({
+    cache: pricesCache,
+    key: `prices-batch-loader-${currency}`,
+    getFreshValue: async () => {
+      return new EdgeDataLoader((ids: readonly string[]) =>
+        batchFetchCoingeckoPrices(ids, currency)
+      );
+    },
+  });
+
+  // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
     ttl: 60 * 1000, // 1 minute
-    getFreshValue: async () => {
-      const prices = await querySimplePrice([coingeckoId], [currency]);
-      const price = prices[coingeckoId]?.[currency];
-      return price ? new Dec(price) : undefined;
-    },
+    getFreshValue: () =>
+      currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
   });
 }
 
