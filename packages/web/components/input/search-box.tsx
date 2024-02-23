@@ -80,10 +80,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     const [isFocused, setIsFocused] = useState(false);
 
     const _onInput = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => {
-        console.log(e);
-        onInput(e.target.value);
-      },
+      (e: ChangeEvent<HTMLInputElement>) => onInput(e.target.value),
       [onInput]
     );
 
