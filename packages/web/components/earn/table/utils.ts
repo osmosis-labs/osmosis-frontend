@@ -21,6 +21,23 @@ export const arrLengthEquals: FilterFn<EarnStrategy> = (
   }
 };
 
+export const lockDurationFilter: FilterFn<EarnStrategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const hasLockDuration = row.getValue(colID) as boolean;
+
+  switch (filterValue) {
+    case "lock":
+      return hasLockDuration;
+    case "nolock":
+      return !hasLockDuration;
+    default:
+      return true;
+  }
+};
+
 export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
@@ -85,19 +102,6 @@ export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB) => {
   return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
-export const boolEquals: FilterFn<EarnStrategy> = (row, colID, filterValue) => {
-  const hasLockingDuration = row.getValue(colID) as boolean;
-  const inputFilter = filterValue as boolean;
-
-  if (!inputFilter) {
-    return true;
-  } else if (inputFilter === hasLockingDuration) {
-    return true;
-  }
-
-  return false;
-};
-
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
@@ -108,7 +112,7 @@ export const _getKey = (k: keyof Filters) => {
       return "rewardTokens";
     case "search":
       return "name";
-    case "noLockingDuration":
+    case "lockDurationType":
       return "hasLockingDuration";
     case "tokenHolder":
       return "holdsTokens";

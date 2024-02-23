@@ -2,6 +2,7 @@ import { createContext, PropsWithChildren, useCallback, useState } from "react";
 
 import {
   ListOption,
+  LockType,
   RewardsTypes,
   StrategyButtonResponsibility,
   TokenHolder,
@@ -11,7 +12,7 @@ export interface Filters {
   tokenHolder: TokenHolder;
   strategyMethod: ListOption<string>;
   platform: ListOption<string>;
-  noLockingDuration: boolean;
+  lockDurationType: LockType;
   search: string;
   specialTokens: ListOption<StrategyButtonResponsibility>[];
   rewardType: RewardsTypes;

@@ -3,7 +3,6 @@ import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control/switch";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -22,6 +21,7 @@ interface StrategiesFilter extends ListOption<string> {
 const FiltersModal = (
   props: ModalBaseProps & {
     rewardTypes: ListOption<string>[];
+    lockDurationTypes: ListOption<string>[];
     strategies: ListOption<string>[];
     platforms: ListOption<string>[];
     strategiesFilters: StrategiesFilter[];
@@ -36,7 +36,7 @@ const FiltersModal = (
     tokenHolder,
     strategyMethod,
     platform,
-    noLockingDuration,
+    lockDurationType,
     rewardType,
     specialTokens,
   } = filters!;
@@ -65,15 +65,13 @@ const FiltersModal = (
         />
       </div>
       <div className="mt-20 flex flex-col gap-10">
-        <div className="flex items-center justify-between gap-7">
-          <span className="font-subtitle1 font-bold">
-            {t("earnPage.lockingDuration")}
-          </span>
-          <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
-          />
-        </div>
+        <RadioWithOptions
+          mode="secondary"
+          onChange={(value) => setFilter("lockDurationType", value)}
+          options={props.lockDurationTypes}
+          value={lockDurationType}
+          variant="small"
+        />
         <RadioWithOptions
           mode="secondary"
           variant="small"

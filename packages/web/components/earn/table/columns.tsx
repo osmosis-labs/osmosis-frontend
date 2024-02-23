@@ -12,9 +12,9 @@ import {
 } from "~/components/earn/table/cells";
 import {
   arrLengthEquals,
-  boolEquals,
   boolEqualsString,
   listOptionValueEquals,
+  lockDurationFilter,
   multiListOptionValueEquals,
   sortDecValues,
 } from "~/components/earn/table/utils";
@@ -163,7 +163,6 @@ export const tableColumns = [
   columnHelper.accessor("lockDuration", {
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
     cell: LockCell,
-    filterFn: boolEquals,
   }),
   columnHelper.accessor("risk", {
     header: () => (
@@ -229,7 +228,7 @@ export const tableColumns = [
     enableHiding: true,
   }),
   columnHelper.accessor("hasLockingDuration", {
-    filterFn: boolEquals,
+    filterFn: lockDurationFilter,
     enableHiding: true,
   }),
   columnHelper.accessor("tokensType", {

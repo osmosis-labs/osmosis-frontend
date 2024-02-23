@@ -4,7 +4,6 @@ import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -81,6 +80,24 @@ export const TopFilters = ({
     [t]
   );
 
+  const lockDurationTypes = useMemo(
+    () => [
+      {
+        value: "all",
+        label: t("earnPage.rewardTypes.all"),
+      },
+      {
+        value: "lock",
+        label: t("earnPage.lock"),
+      },
+      {
+        value: "nolock",
+        label: t("earnPage.noLock"),
+      },
+    ],
+    [t]
+  );
+
   const tokenFilterOptions = useMemo(
     () => [
       {
@@ -121,10 +138,10 @@ export const TopFilters = ({
     tokenHolder,
     strategyMethod,
     platform,
-    noLockingDuration,
     search,
     rewardType,
     specialTokens,
+    lockDurationType,
   } = filters!;
 
   return (
@@ -154,15 +171,13 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">
-            {t("earnPage.lockingDuration")}
-          </span>
-          <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
-          />
-        </div>
+        <RadioWithOptions
+          mode="secondary"
+          onChange={(value) => setFilter("lockDurationType", value)}
+          options={lockDurationTypes}
+          value={lockDurationType}
+          variant="small"
+        />
       </div>
       <div className="flex items-center justify-between gap-7 lg:hidden">
         <SearchBox
@@ -245,15 +260,13 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">
-            {t("earnPage.lockingDuration")}
-          </span>
-          <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
-          />
-        </div>
+        <RadioWithOptions
+          mode="secondary"
+          onChange={(value) => setFilter("lockDurationType", value)}
+          options={lockDurationTypes}
+          value={lockDurationType}
+          variant="small"
+        />
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
@@ -298,6 +311,7 @@ export const TopFilters = ({
         hideCloseButton
         platforms={platforms}
         rewardTypes={rewardTypes}
+        lockDurationTypes={lockDurationTypes}
         strategies={strategies}
         strategiesFilters={strategiesFilters}
         tokenFilterOptions={tokenFilterOptions}

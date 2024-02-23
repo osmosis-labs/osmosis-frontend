@@ -62,7 +62,7 @@ function Earn() {
       tokenHolder: "all",
       strategyMethod: { label: t("earnPage.rewardTypes.all"), value: "" },
       platform: { label: t("earnPage.rewardTypes.all"), value: "" },
-      noLockingDuration: false,
+      lockDurationType: "all",
       search: "",
       specialTokens: [],
       rewardType: "all",
