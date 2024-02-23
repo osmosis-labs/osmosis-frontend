@@ -25,7 +25,7 @@ const useGetEarnStrategies = (
         trpc: { context: { skipBatch: true } },
         enabled: !!userOsmoAddress,
         select: (assetsBreakdown): string[] =>
-          assetsBreakdown.aggregated.map((coin) => coin.denom),
+          assetsBreakdown.available.map((coin) => coin.denom),
       }
     );
 
