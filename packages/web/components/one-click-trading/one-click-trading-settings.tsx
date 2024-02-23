@@ -97,6 +97,10 @@ const OneClickTradingSettings = ({
           return [...prev, "resetPeriod"];
         }
 
+        if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
+          return [...prev, "sessionPeriod"];
+        }
+
         return [...prev];
       });
 
@@ -275,7 +279,7 @@ const OneClickTradingSettings = ({
                     isDisabled={isDisabled}
                   />
                   <SettingRow
-                    title={t("oneClickTrading.settings.sessionPeriodTitle")}
+                    title={t("oneClickTrading.settings.resetPeriodTitle")}
                     content={
                       <Button
                         mode="text"

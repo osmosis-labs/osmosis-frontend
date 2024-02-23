@@ -482,6 +482,7 @@
       "spendLimitTitle": "Spend Limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
+      "resetPeriodTitle": "Reset period",
       "startButton": "Start 1-Click Trading",
       "spendLimitScreen": {
         "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
@@ -503,15 +504,21 @@
         "title": "Session period",
         "description": "Set a duration to allow 1-Click Trading on this device.",
         "periods": {
-          "day": "Day",
-          "week": "Week",
-          "month": "Month",
-          "year": "Year",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 hour",
           "3hours": "3 hours",
           "12hours": "12 hours"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Reset period",
+        "description": "Set a duration to reset the spend limit quota.",
+        "periods": {
+          "day": "Day",
+          "week": "Week",
+          "month": "Month",
+          "year": "Year"
         }
       },
       "discardChanges": {

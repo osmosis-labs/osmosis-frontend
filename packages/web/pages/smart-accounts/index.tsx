@@ -100,6 +100,7 @@ const SmartAccounts: NextPage = observer(function () {
             allowedMessages,
             allowedAmount,
             resetPeriod,
+            sessionPeriod: "1hour",
           }),
         ],
       },
@@ -110,6 +111,7 @@ const SmartAccounts: NextPage = observer(function () {
             allowedMessages,
             resetPeriod,
             privateKey: toBase64(key.toBytes()),
+            sessionPeriod: "1hour",
           });
 
           accountStore.setUseOneClickTrading({ nextValue: true });

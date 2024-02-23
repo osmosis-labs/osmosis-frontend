@@ -18,15 +18,15 @@ export function getResetPeriodTranslationKey(
 ): string {
   switch (id) {
     case "day":
-      return "oneClickTrading.settings.sessionPeriodScreen.periods.day";
+      return "oneClickTrading.settings.resetPeriodScreen.periods.day";
     case "week":
-      return "oneClickTrading.settings.sessionPeriodScreen.periods.week";
+      return "oneClickTrading.settings.resetPeriodScreen.periods.week";
     case "month":
-      return "oneClickTrading.settings.sessionPeriodScreen.periods.month";
+      return "oneClickTrading.settings.resetPeriodScreen.periods.month";
     case "year":
-      return "oneClickTrading.settings.sessionPeriodScreen.periods.year";
+      return "oneClickTrading.settings.resetPeriodScreen.periods.year";
     default:
-      return "oneClickTrading.settings.sessionPeriodScreen.periods.unknown";
+      return "oneClickTrading.settings.resetPeriodScreen.periods.unknown";
   }
 }
 
@@ -43,10 +43,10 @@ export const ResetPeriodScreen = ({
       <ScreenGoBackButton className="absolute top-7 left-7" />
       <div className="flex flex-col items-center gap-6 px-16 ">
         <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-          {t("oneClickTrading.settings.sessionPeriodScreen.title")}
+          {t("oneClickTrading.settings.resetPeriodScreen.title")}
         </h1>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
-          {t("oneClickTrading.settings.sessionPeriodScreen.description")}
+          {t("oneClickTrading.settings.resetPeriodScreen.description")}
         </p>
 
         <div className="flex w-full flex-col">

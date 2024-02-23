@@ -65,7 +65,7 @@ export const SessionPeriodScreen = ({
                   if (!prev) throw new Error("Transaction params is not set");
                   return {
                     ...prev,
-                    timeLimit: {
+                    sessionPeriod: {
                       end: id,
                     },
                   };
