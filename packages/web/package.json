@@ -93,6 +93,7 @@
     "chain-registry": "^1.20.0",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
+    "dataloader": "^2.2.2",
     "dayjs": "^1.10.7",
     "debounce": "^1.2.1",
     "dompurify": "^3.0.6",

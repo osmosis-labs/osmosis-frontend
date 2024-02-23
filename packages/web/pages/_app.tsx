@@ -196,6 +196,7 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
+            isNew: true,
             icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }

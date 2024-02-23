@@ -43,7 +43,7 @@ import {
 import {
   CoingeckoCoin,
   queryCoingeckoCoin,
-} from "~/server/queries/coingecko/detail";
+} from "~/server/queries/coingecko/coin";
 import {
   getTokenInfo,
   RichTweet,

@@ -1043,8 +1043,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        *  */
       const gas = String(Math.round(gasUsed * GasMultiplier));
 
-      console.log(signOptions);
-
       if (signOptions.preferNoSetFee) {
         return {
           gas,
