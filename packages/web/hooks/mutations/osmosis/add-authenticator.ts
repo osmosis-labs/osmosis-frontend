@@ -3,10 +3,14 @@ import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import {
   AvailableOneClickTradingMessages,
   OneClickTradingAuthenticatorType,
-  OneClickTradingPeriods,
+  OneClickTradingHumanizedSessionPeriod,
+  OneClickTradingResetPeriods,
 } from "@osmosis-labs/types";
+import { unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import dayjs from "dayjs";
 
+import { SPENT_LIMIT_CONTRACT_ADDRESS } from "~/config/env";
 import { useStore } from "~/stores";
 
 interface AddAuthenticatorVars {
@@ -28,33 +32,76 @@ export function getFirstAuthenticator({
 export function getOneClickTradingSessionAuthenticator({
   key,
   allowedAmount,
-  period,
-  allowedMessage,
+  resetPeriod,
+  allowedMessages,
+  sessionPeriod: rawSessionPeriod,
 }: {
   key: PrivKeySecp256k1;
-  allowedMessage: AvailableOneClickTradingMessages;
+  allowedMessages: AvailableOneClickTradingMessages[];
   allowedAmount: string;
-  period: OneClickTradingPeriods;
+  resetPeriod: OneClickTradingResetPeriods;
+  sessionPeriod: OneClickTradingHumanizedSessionPeriod;
 }): AddAuthenticatorVars {
-  const authenticator = {
+  const signatureVerification = {
     authenticator_type: "SignatureVerificationAuthenticator",
     data: toBase64(key.getPubKey().toBytes()),
   };
 
+  let sessionPeriod: { end: string };
+  switch (rawSessionPeriod) {
+    case "10min":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
+      };
+      break;
+    case "30min":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
+      };
+      break;
+    case "1hour":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+      };
+      break;
+    case "3hours":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
+      };
+      break;
+    case "12hours":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
+      };
+      break;
+    default:
+      throw new Error(`Unsupported time limit: ${rawSessionPeriod}`);
+  }
+
+  const spendLimitParams = toBase64(
+    Buffer.from(
+      JSON.stringify({
+        limit: allowedAmount,
+        reset_period: resetPeriod,
+        time_limit: sessionPeriod,
+      })
+    )
+  );
   const spendLimit = {
-    authenticator_type: "SpendLimitAuthenticator",
+    authenticator_type: "CosmwasmAuthenticatorV1",
     data: toBase64(
-      Buffer.from(`{"allowed": ${allowedAmount}, "period": "${period}"}`)
+      Buffer.from(
+        `{"contract": "${SPENT_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
+      )
     ),
   };
-
-  const allowedMessages = [allowedMessage];
+  // pub struct Timestamp(Uint64); end
   const messageFilter = {
     authenticator_type: "MessageFilterAuthenticator",
-    data: toBase64(Buffer.from(`{"type":"${allowedMessages[0]}","value":{}}`)),
+    data: toBase64(Buffer.from(`{"@type":"${allowedMessages[0]}"}`)),
   };
 
-  const compositeAuthData = [authenticator, spendLimit, messageFilter];
+  const compositeAuthData = [signatureVerification, spendLimit, messageFilter];
 
   return {
     type: "AllOfAuthenticator",

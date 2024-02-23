@@ -101,7 +101,7 @@ async function getAssetMarketCapRank({
       try {
         const coinGeckoCoin = await queryCoingeckoCoin(coinGeckoId);
 
-        return coinGeckoCoin.market_cap_rank;
+        return coinGeckoCoin?.market_cap_rank;
       } catch {
         // ignore error and return undefined, since market cap rank is non-critical
       }

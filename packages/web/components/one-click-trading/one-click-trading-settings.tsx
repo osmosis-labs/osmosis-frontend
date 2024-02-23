@@ -12,7 +12,14 @@ import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
-import { SessionPeriodScreen } from "~/components/one-click-trading/screens/session-period-screen";
+import {
+  getResetPeriodTranslationKey,
+  ResetPeriodScreen,
+} from "~/components/one-click-trading/screens/reset-period-screen";
+import {
+  getSessionPeriodTranslationKey,
+  SessionPeriodScreen,
+} from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Switch } from "~/components/ui/switch";
@@ -29,6 +36,7 @@ enum SettingsScreens {
   SpendLimit = "spendLimit",
   NetworkFeeLimit = "networkFeeLimit",
   SessionPeriod = "sessionPeriod",
+  ResetPeriod = "resetPeriod",
 }
 
 interface OneClickTradingSettingsProps {
@@ -50,7 +58,7 @@ const OneClickTradingSettings = ({
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [hasChanged, setHasChanged] = useState<
-    Array<"spendLimit" | "networkFeeLimit" | "sessionPeriod">
+    Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
   const initialTransaction1CTParams = useConst(transaction1CTParams);
 
@@ -85,8 +93,8 @@ const OneClickTradingSettings = ({
           return [...prev, "networkFeeLimit"];
         }
 
-        if (prevParams?.sessionPeriod !== nextParams?.sessionPeriod) {
-          return [...prev, "sessionPeriod"];
+        if (prevParams?.resetPeriod !== nextParams?.resetPeriod) {
+          return [...prev, "resetPeriod"];
         }
 
         return [...prev];
@@ -250,7 +258,43 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p className="capitalize">
-                          {transaction1CTParams.sessionPeriod}
+                          {t(
+                            getSessionPeriodTranslationKey(
+                              transaction1CTParams.sessionPeriod.end
+                            )
+                          )}
+                        </p>
+                        <Icon
+                          id="chevron-right"
+                          width={18}
+                          height={18}
+                          className="text-osmoverse-500"
+                        />
+                      </Button>
+                    }
+                    isDisabled={isDisabled}
+                  />
+                  <SettingRow
+                    title={t("oneClickTrading.settings.sessionPeriodTitle")}
+                    content={
+                      <Button
+                        mode="text"
+                        className={classNames(
+                          "flex items-center gap-2 text-wosmongton-200",
+                          hasChanged.includes("resetPeriod") &&
+                            "text-bullish-400"
+                        )}
+                        onClick={() =>
+                          setCurrentScreen(SettingsScreens.ResetPeriod)
+                        }
+                        disabled={isDisabled}
+                      >
+                        <p>
+                          {t(
+                            getResetPeriodTranslationKey(
+                              transaction1CTParams.resetPeriod
+                            )
+                          )}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -304,6 +348,17 @@ const OneClickTradingSettings = ({
                 className={classNames("flex flex-col gap-12", classes?.root)}
               >
                 <SessionPeriodScreen
+                  transaction1CTParams={transaction1CTParams}
+                  setTransaction1CTParams={setTransaction1CTParams}
+                />
+              </div>
+            </Screen>
+
+            <Screen screenName={SettingsScreens.ResetPeriod}>
+              <div
+                className={classNames("flex flex-col gap-12", classes?.root)}
+              >
+                <ResetPeriodScreen
                   transaction1CTParams={transaction1CTParams}
                   setTransaction1CTParams={setTransaction1CTParams}
                 />
@@ -372,4 +427,5 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
     </ModalBase>
   );
 };
+
 export default OneClickTradingSettings;

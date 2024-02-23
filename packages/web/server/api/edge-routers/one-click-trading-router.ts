@@ -16,20 +16,24 @@ export const oneClickTradingRouter = createTRPCRouter({
     async (): Promise<
       Pick<
         OneClickTradingTransactionParams,
-        "networkFeeLimit" | "sessionPeriod" | "spendLimit"
-      >
+        "networkFeeLimit" | "resetPeriod" | "spendLimit" | "sessionPeriod"
+      > & {
+        spendLimitTokenDecimals: number;
+      }
     > => {
-      const networkFeeLimitStep = await getNetworkFeeLimitStep();
-      // new CoinPretty(
-      //   osmoAsset,
-      //   new Dec("5000")
-      //     .quoRoundUp(osmoPrice)
-      //     .mul(DecUtils.getTenExponentN(osmoAsset.coinDecimals))
-      // )
+      const [networkFeeLimitStep, usdcAsset] = await Promise.all([
+        getNetworkFeeLimitStep(),
+        getAsset({ anyDenom: "usdc" }),
+      ]);
+
       return {
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
+        spendLimitTokenDecimals: usdcAsset.coinDecimals,
         networkFeeLimit: networkFeeLimitStep.average,
-        sessionPeriod: "day" as const,
+        resetPeriod: "day" as const,
+        sessionPeriod: {
+          end: "1hour" as const,
+        },
       };
     }
   ),

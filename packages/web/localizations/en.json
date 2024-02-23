@@ -506,7 +506,12 @@
           "day": "Day",
           "week": "Week",
           "month": "Month",
-          "year": "Year"
+          "year": "Year",
+          "10min": "10 minutes",
+          "30min": "30 minutes",
+          "1hour": "1 hour",
+          "3hours": "3 hours",
+          "12hours": "12 hours"
         }
       },
       "discardChanges": {

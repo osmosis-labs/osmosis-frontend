@@ -86,19 +86,20 @@ const SmartAccounts: NextPage = observer(function () {
     e.preventDefault();
 
     const key = PrivKeySecp256k1.generateRandomKey();
-    const allowedMessage: AvailableOneClickTradingMessages =
-      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn";
+    const allowedMessages: AvailableOneClickTradingMessages[] = [
+      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+    ];
     const allowedAmount = "20000";
-    const period = "day";
+    const resetPeriod = "day";
 
     addAuthenticator.mutate(
       {
         authenticators: [
           getOneClickTradingSessionAuthenticator({
             key,
-            allowedMessage,
+            allowedMessages,
             allowedAmount,
-            period,
+            resetPeriod,
           }),
         ],
       },
@@ -106,8 +107,8 @@ const SmartAccounts: NextPage = observer(function () {
         onSuccess: () => {
           accountStore.setOneClickTradingInfo({
             allowed: allowedAmount,
-            allowedMessages: [allowedMessage],
-            period,
+            allowedMessages,
+            resetPeriod,
             privateKey: toBase64(key.toBytes()),
           });
 

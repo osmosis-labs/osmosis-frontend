@@ -1,3 +1,4 @@
+import { toBase64 } from "@cosmjs/encoding";
 import {
   ChainWalletBase,
   ExpiredError,
@@ -7,6 +8,7 @@ import {
 } from "@cosmos-kit/core";
 import { Popover } from "@headlessui/react";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { DecUtils } from "@keplr-wallet/unit";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
@@ -156,6 +158,7 @@ export const WalletSelectModal: FunctionComponent<
     transaction1CTParams,
     setTransaction1CTParams,
     isLoading: isLoading1CTParams,
+    spendLimitTokenDecimals,
   } = useOneClickTradingParams();
 
   const current = walletRepoProp?.current;
@@ -263,34 +266,59 @@ export const WalletSelectModal: FunctionComponent<
         onConnectProp?.();
 
         if (transaction1CTParams?.isOneClickEnabled) {
-          if (!walletRepo.current) throw new Error("Wallet not found");
+          if (!walletRepo.current)
+            throw new Error("walletRepo.current is not defined.");
+          if (!spendLimitTokenDecimals)
+            throw new Error("Spend limit token decimals are not defined.");
+
           const { accountPubKey, shouldAddFirstAuthenticator } =
             await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
               { userOsmoAddress: walletRepo.current.address! }
             );
 
           const key = PrivKeySecp256k1.generateRandomKey();
-          const allowedMessage: AvailableOneClickTradingMessages =
-            "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn";
-          const allowedAmount = "20000";
-          const period = "day";
+          const allowedAmount = transaction1CTParams.spendLimit
+            .toDec()
+            .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
+            .truncate()
+            .toString();
+          const allowedMessages: AvailableOneClickTradingMessages[] = [
+            "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+          ];
+          const resetPeriod = transaction1CTParams.resetPeriod;
 
           const oneClickTradingAuthenticator =
             getOneClickTradingSessionAuthenticator({
               key,
               allowedAmount,
-              allowedMessage,
-              period,
+              allowedMessages,
+              resetPeriod,
+              sessionPeriod: transaction1CTParams.sessionPeriod.end,
             });
 
-          addAuthenticators.mutate({
-            authenticators: shouldAddFirstAuthenticator
-              ? [
-                  getFirstAuthenticator({ pubKey: accountPubKey }),
-                  oneClickTradingAuthenticator,
-                ]
-              : [oneClickTradingAuthenticator],
-          });
+          addAuthenticators.mutate(
+            {
+              authenticators: shouldAddFirstAuthenticator
+                ? [
+                    getFirstAuthenticator({ pubKey: accountPubKey }),
+                    oneClickTradingAuthenticator,
+                  ]
+                : [oneClickTradingAuthenticator],
+            },
+            {
+              onSuccess: () => {
+                accountStore.setOneClickTradingInfo({
+                  allowed: allowedAmount,
+                  allowedMessages,
+                  resetPeriod,
+                  privateKey: toBase64(key.toBytes()),
+                  sessionPeriod: transaction1CTParams.sessionPeriod.end,
+                });
+
+                accountStore.setUseOneClickTrading({ nextValue: true });
+              },
+            }
+          );
         }
       })
       .catch(handleConnectError);

@@ -19,5 +19,11 @@ export const useOneClickTradingParams = () => {
     }
   }, [defaultTransaction1CTParams, transaction1CTParams]);
 
-  return { transaction1CTParams, setTransaction1CTParams, isLoading };
+  return {
+    transaction1CTParams,
+    setTransaction1CTParams,
+    spendLimitTokenDecimals:
+      defaultTransaction1CTParams?.spendLimitTokenDecimals,
+    isLoading,
+  };
 };
