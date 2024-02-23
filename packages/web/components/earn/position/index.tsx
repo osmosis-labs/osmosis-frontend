@@ -114,9 +114,11 @@ export const EarnPosition = ({
           {t("earnPage.positions")}
         </h5>
         <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
-          {t("earnPage.strategiesCount", {
-            number: numberOfPositions.toString(),
-          })}
+          {numberOfPositions === 1
+            ? t("earnPage.oneStrategy")
+            : t("earnPage.strategiesCount", {
+                number: numberOfPositions.toString(),
+              })}
         </p>
       </div>
       <div className="flex flex-col gap-2">

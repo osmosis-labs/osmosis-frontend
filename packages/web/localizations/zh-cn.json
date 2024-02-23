@@ -874,6 +874,7 @@
     "allocation": "分配",
     "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
+    "oneStrategy": "1 策略",
     "value": "价值",
     "method": "方法",
     "platform": "平台",

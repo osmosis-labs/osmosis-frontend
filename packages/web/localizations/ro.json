@@ -874,6 +874,7 @@
     "allocation": "Alocare",
     "tokensCount": "{number} jetoane",
     "strategiesCount": "{number} strategii",
+    "oneStrategy": "1 strategie",
     "value": "Valoare",
     "method": "Metodă",
     "platform": "Platformă",

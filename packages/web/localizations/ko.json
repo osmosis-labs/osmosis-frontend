@@ -874,6 +874,7 @@
     "allocation": "배당",
     "tokensCount": "{number} 토큰",
     "strategiesCount": "{number} 전략",
+    "oneStrategy": "전략 1개",
     "value": "값",
     "method": "방법",
     "platform": "플랫폼",

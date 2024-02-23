@@ -874,6 +874,7 @@
     "allocation": "Przydział",
     "tokensCount": "tokeny {number}",
     "strategiesCount": "Strategie {number}",
+    "oneStrategy": "1 strategia",
     "value": "Wartość",
     "method": "metoda",
     "platform": "Platforma",

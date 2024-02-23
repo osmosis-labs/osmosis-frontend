@@ -874,6 +874,7 @@
     "allocation": "Allocation",
     "tokensCount": "{number} jetons",
     "strategiesCount": "Stratégies {number}",
+    "oneStrategy": "1 stratégie",
     "value": "Valeur",
     "method": "Méthode",
     "platform": "Plate-forme",

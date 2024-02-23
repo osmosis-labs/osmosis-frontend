@@ -874,6 +874,7 @@
     "allocation": "Распределение",
     "tokensCount": "токены {number}",
     "strategiesCount": "{number} стратегии",
+    "oneStrategy": "1 стратегия",
     "value": "Ценить",
     "method": "Метод",
     "platform": "Платформа",

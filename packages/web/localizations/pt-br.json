@@ -874,6 +874,7 @@
     "allocation": "Alocação",
     "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estratégias",
+    "oneStrategy": "1 estratégia",
     "value": "Valor",
     "method": "Método",
     "platform": "Plataforma",

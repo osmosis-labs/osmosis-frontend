@@ -874,6 +874,7 @@
     "allocation": "Paylaştırma",
     "tokensCount": "{number} jeton",
     "strategiesCount": "{number} stratejiler",
+    "oneStrategy": "1 strateji",
     "value": "Değer",
     "method": "Yöntem",
     "platform": "platformu",

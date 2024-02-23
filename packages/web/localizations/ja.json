@@ -874,6 +874,7 @@
     "allocation": "割り当て",
     "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
+    "oneStrategy": "1 戦略",
     "value": "価値",
     "method": "方法",
     "platform": "プラットホーム",

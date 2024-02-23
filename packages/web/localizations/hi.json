@@ -874,6 +874,7 @@
     "allocation": "आवंटन",
     "tokensCount": "{number} टोकन",
     "strategiesCount": "{number} रणनीतियाँ",
+    "oneStrategy": "1 रणनीति",
     "value": "कीमत",
     "method": "तरीका",
     "platform": "प्लैटफ़ॉर्म",

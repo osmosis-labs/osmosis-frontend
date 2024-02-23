@@ -874,6 +874,7 @@
     "allocation": "Zuweisung",
     "tokensCount": "{number} Token",
     "strategiesCount": "{number} Strategien",
+    "oneStrategy": "1 Strategie",
     "value": "Wert",
     "method": "Methode",
     "platform": "Plattform",

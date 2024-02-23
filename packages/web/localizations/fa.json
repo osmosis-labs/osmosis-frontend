@@ -874,6 +874,7 @@
     "allocation": "تخصیص",
     "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
+    "oneStrategy": "1 استراتژی",
     "value": "ارزش",
     "method": "روش",
     "platform": "سکو",
