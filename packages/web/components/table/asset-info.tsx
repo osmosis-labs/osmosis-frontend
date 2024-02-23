@@ -18,9 +18,11 @@ import {
 } from "react";
 
 import {
+  Breakpoint,
   useTranslation,
   useUserFavoriteAssetDenoms,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
@@ -55,6 +57,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const { chainStore, accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
+  const { width } = useWindowSize();
 
   // State
   const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
@@ -214,9 +217,18 @@ export const AssetsInfoTable: FunctionComponent<{
     ]
   );
 
+  /** Columns collapsed for screen size responsiveness. */
+  const collapsedColumns = useMemo(() => {
+    const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
+    if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
+    if (width < Breakpoint.lg) collapsedColIds.push("price");
+    return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
+  }, [columns, width]);
+
   const table = useReactTable({
     data: assetsData,
-    columns,
+    columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
     manualPagination: true,
@@ -295,7 +307,7 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {isLoading && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -317,7 +329,7 @@ export const AssetsInfoTable: FunctionComponent<{
           ))}
           {isFetchingNextPage && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
