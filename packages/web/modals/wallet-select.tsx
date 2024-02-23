@@ -16,9 +16,12 @@ import {
 } from "@osmosis-labs/stores";
 import {
   AvailableOneClickTradingMessages,
+  OneClickTradingTimeLimit,
   OneClickTradingTransactionParams,
 } from "@osmosis-labs/types";
+import { unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, {
@@ -32,7 +35,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useLocalStorage } from "react-use";
+import { useLocalStorage, useUpdateEffect } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -73,9 +76,21 @@ type ModalView =
   | "connected"
   | "error"
   | "doesNotExist"
-  | "rejected";
+  | "rejected"
+  | "initializingOneClickTrading"
+  | "initializeOneClickTradingError";
 
-function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
+function getModalView({
+  qrState,
+  isInitializingOneClickTrading,
+  hasOneClickTradingError,
+  walletStatus,
+}: {
+  qrState: State;
+  isInitializingOneClickTrading: boolean;
+  hasOneClickTradingError: boolean;
+  walletStatus?: WalletStatus;
+}): ModalView {
   switch (walletStatus) {
     case WalletStatus.Connecting:
       if (qrState === State.Init) {
@@ -84,6 +99,8 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
         return "qrCode";
       }
     case WalletStatus.Connected:
+      if (hasOneClickTradingError) return "initializeOneClickTradingError";
+      if (isInitializingOneClickTrading) return "initializingOneClickTrading";
       return "connected";
     case WalletStatus.Error:
       if (qrState === State.Init) {
@@ -120,6 +137,13 @@ const OnboardingSteps = (t: MultiLanguageT) => [
   },
 ];
 
+class WalletSelectOneClickError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "WalletSelectOneClickError";
+  }
+}
+
 const useHasWalletsInstalled = () => {
   return useMemo(() => {
     const wallets = WalletRegistry.filter(
@@ -151,6 +175,9 @@ export const WalletSelectModal: FunctionComponent<
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
+  const [isInitializingOneClickTrading, setIsInitializingOneClickTrading] =
+    useState(false);
+  const [hasOneClickTradingError, setHasOneClickTradingError] = useState(false);
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
 
@@ -159,6 +186,7 @@ export const WalletSelectModal: FunctionComponent<
     setTransaction1CTParams,
     isLoading: isLoading1CTParams,
     spendLimitTokenDecimals,
+    reset: reset1CTParams,
   } = useOneClickTradingParams();
 
   const current = walletRepoProp?.current;
@@ -167,9 +195,30 @@ export const WalletSelectModal: FunctionComponent<
 
   useEffect(() => {
     if (isOpen) {
-      setModalView(getModalView(qrState, walletStatus));
+      setModalView(
+        getModalView({
+          qrState,
+          walletStatus,
+          isInitializingOneClickTrading,
+          hasOneClickTradingError,
+        })
+      );
     }
-  }, [qrState, walletStatus, isOpen, qrMessage]);
+  }, [
+    qrState,
+    walletStatus,
+    isOpen,
+    qrMessage,
+    isInitializingOneClickTrading,
+    hasOneClickTradingError,
+  ]);
+
+  useUpdateEffect(() => {
+    if (!isOpen) {
+      setIsInitializingOneClickTrading(false);
+      setHasOneClickTradingError(false);
+    }
+  }, [addAuthenticators]);
 
   (current?.client as any)?.setActions?.({
     qrUrl: {
@@ -192,6 +241,113 @@ export const WalletSelectModal: FunctionComponent<
     ) {
       walletRepoProp?.disconnect();
     }
+  };
+
+  const onCreate1CTSession = async () => {
+    setIsInitializingOneClickTrading(true);
+
+    if (!transaction1CTParams)
+      throw new WalletSelectOneClickError(
+        "Transaction 1CT params are not defined."
+      );
+
+    const walletRepo = walletRepoProp;
+    if (!walletRepo.current)
+      throw new WalletSelectOneClickError("walletRepo.current is not defined.");
+    if (!spendLimitTokenDecimals)
+      throw new WalletSelectOneClickError(
+        "Spend limit token decimals are not defined."
+      );
+
+    const { accountPubKey, shouldAddFirstAuthenticator } =
+      await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
+        { userOsmoAddress: walletRepo.current.address! }
+      );
+
+    const key = PrivKeySecp256k1.generateRandomKey();
+    const allowedAmount = transaction1CTParams.spendLimit
+      .toDec()
+      .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
+      .truncate()
+      .toString();
+    const allowedMessages: AvailableOneClickTradingMessages[] = [
+      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+    ];
+    const resetPeriod = transaction1CTParams.resetPeriod;
+
+    let sessionPeriod: OneClickTradingTimeLimit;
+    switch (transaction1CTParams.sessionPeriod.end) {
+      case "10min":
+        sessionPeriod = {
+          end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
+        };
+        break;
+      case "30min":
+        sessionPeriod = {
+          end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
+        };
+        break;
+      case "1hour":
+        sessionPeriod = {
+          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+        };
+        break;
+      case "3hours":
+        sessionPeriod = {
+          end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
+        };
+        break;
+      case "12hours":
+        sessionPeriod = {
+          end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
+        };
+        break;
+      default:
+        throw new Error(
+          `Unsupported time limit: ${transaction1CTParams.sessionPeriod.end}`
+        );
+    }
+
+    const oneClickTradingAuthenticator = getOneClickTradingSessionAuthenticator(
+      {
+        key,
+        allowedAmount,
+        allowedMessages,
+        resetPeriod,
+        sessionPeriod,
+      }
+    );
+
+    addAuthenticators.mutate(
+      {
+        authenticators: shouldAddFirstAuthenticator
+          ? [
+              getFirstAuthenticator({ pubKey: accountPubKey }),
+              oneClickTradingAuthenticator,
+            ]
+          : [oneClickTradingAuthenticator],
+      },
+      {
+        onSuccess: () => {
+          accountStore.setOneClickTradingInfo({
+            allowed: allowedAmount,
+            allowedMessages,
+            resetPeriod,
+            privateKey: toBase64(key.toBytes()),
+            sessionPeriod,
+          });
+
+          accountStore.setUseOneClickTrading({ nextValue: true });
+          onRequestClose();
+        },
+        onError: () => {
+          setHasOneClickTradingError(true);
+        },
+        onSettled: () => {
+          setIsInitializingOneClickTrading(false);
+        },
+      }
+    );
   };
 
   const onConnect = async (
@@ -266,62 +422,26 @@ export const WalletSelectModal: FunctionComponent<
         onConnectProp?.();
 
         if (transaction1CTParams?.isOneClickEnabled) {
-          if (!walletRepo.current)
-            throw new Error("walletRepo.current is not defined.");
-          if (!spendLimitTokenDecimals)
-            throw new Error("Spend limit token decimals are not defined.");
+          try {
+            await onCreate1CTSession();
+          } catch (e) {
+            const error = e as WalletSelectOneClickError | Error;
+            setHasOneClickTradingError(true);
 
-          const { accountPubKey, shouldAddFirstAuthenticator } =
-            await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
-              { userOsmoAddress: walletRepo.current.address! }
-            );
-
-          const key = PrivKeySecp256k1.generateRandomKey();
-          const allowedAmount = transaction1CTParams.spendLimit
-            .toDec()
-            .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
-            .truncate()
-            .toString();
-          const allowedMessages: AvailableOneClickTradingMessages[] = [
-            "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-          ];
-          const resetPeriod = transaction1CTParams.resetPeriod;
-
-          const oneClickTradingAuthenticator =
-            getOneClickTradingSessionAuthenticator({
-              key,
-              allowedAmount,
-              allowedMessages,
-              resetPeriod,
-              sessionPeriod: transaction1CTParams.sessionPeriod.end,
-            });
-
-          addAuthenticators.mutate(
-            {
-              authenticators: shouldAddFirstAuthenticator
-                ? [
-                    getFirstAuthenticator({ pubKey: accountPubKey }),
-                    oneClickTradingAuthenticator,
-                  ]
-                : [oneClickTradingAuthenticator],
-            },
-            {
-              onSuccess: () => {
-                accountStore.setOneClickTradingInfo({
-                  allowed: allowedAmount,
-                  allowedMessages,
-                  resetPeriod,
-                  privateKey: toBase64(key.toBytes()),
-                  sessionPeriod: transaction1CTParams.sessionPeriod.end,
-                });
-
-                accountStore.setUseOneClickTrading({ nextValue: true });
-              },
+            if (error instanceof Error) {
+              throw new WalletSelectOneClickError(error.message);
             }
-          );
+
+            throw e;
+          }
         }
       })
-      .catch(handleConnectError);
+      .catch((e: Error | unknown) => {
+        if (e instanceof WalletSelectOneClickError) throw e;
+        handleConnectError(
+          e instanceof Error ? e : new Error("Unknown error.")
+        );
+      });
   };
 
   const onRequestBack =
@@ -330,11 +450,22 @@ export const WalletSelectModal: FunctionComponent<
           if (
             walletStatus === WalletStatus.Connecting ||
             walletStatus === WalletStatus.Rejected ||
-            walletStatus === WalletStatus.Error
+            walletStatus === WalletStatus.Error ||
+            walletStatus === WalletStatus.Connected
           ) {
             walletRepoProp?.disconnect();
             walletRepoProp?.activate();
           }
+
+          if (
+            modalView === "initializeOneClickTradingError" ||
+            modalView === "initializingOneClickTrading"
+          ) {
+            reset1CTParams();
+            setHasOneClickTradingError(false);
+            setIsInitializingOneClickTrading(false);
+          }
+
           setModalView("list");
         }
       : undefined;
@@ -365,6 +496,7 @@ export const WalletSelectModal: FunctionComponent<
             onConnect={onConnect}
             walletRepo={walletRepoProp}
             isMobile={isMobile}
+            modalView={modalView}
           />
         </ClientOnly>
 
@@ -387,6 +519,7 @@ export const WalletSelectModal: FunctionComponent<
             transaction1CTParams={transaction1CTParams}
             setTransaction1CTParams={setTransaction1CTParams}
             isLoading1CTParams={isLoading1CTParams}
+            onCreate1CTSession={onCreate1CTSession}
           />
           <IconButton
             aria-label="Close"
@@ -408,8 +541,9 @@ const LeftModalContent: FunctionComponent<
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => void;
     isMobile: boolean;
+    modalView: ModalView;
   }
-> = observer(({ walletRepo, onConnect, isMobile }) => {
+> = observer(({ walletRepo, onConnect, isMobile, modalView }) => {
   const { t } = useTranslation();
 
   const wallets = useMemo(
@@ -509,9 +643,15 @@ const LeftModalContent: FunctionComponent<
         {Object.entries(categories)
           .filter(([_, wallets]) => wallets.length > 0)
           .map(([categoryName, wallets]) => {
+            const isDisabled = modalView === "initializingOneClickTrading";
             return (
               <div key={categoryName} className="flex flex-col">
-                <h2 className="subtitle1 text-osmoverse-100 sm:hidden">
+                <h2
+                  className={classNames(
+                    "subtitle1 text-osmoverse-100 sm:hidden",
+                    isDisabled && "opacity-70"
+                  )}
+                >
                   {t(categoryName)}
                 </h2>
 
@@ -523,10 +663,12 @@ const LeftModalContent: FunctionComponent<
                         "col-span-2 py-3 font-normal",
                         "sm:w-fit sm:flex-col",
                         walletRepo?.current?.walletName === wallet.name &&
-                          "bg-osmoverse-700"
+                          "bg-osmoverse-700",
+                        "disabled:opacity-70"
                       )}
                       key={wallet.name}
                       onClick={() => onConnect(false, wallet)}
+                      disabled={isDisabled}
                     >
                       {typeof wallet.logo === "string" && (
                         <img
@@ -564,6 +706,7 @@ const RightModalContent: FunctionComponent<
       sync: boolean,
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => void;
+    onCreate1CTSession: () => void;
   }
 > = observer(
   ({
@@ -575,19 +718,20 @@ const RightModalContent: FunctionComponent<
     transaction1CTParams,
     setTransaction1CTParams,
     isLoading1CTParams,
+    onCreate1CTSession,
   }) => {
     const { t } = useTranslation();
-    const { accountStore } = useStore();
+    const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasWalletsInstalled();
     const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
       OneClickFloatingBannerDoNotShowKey
     );
-    const show1CT = hasInstalledWallets && featureFlags.oneClickTrading;
+    const show1CT =
+      hasInstalledWallets &&
+      featureFlags.oneClickTrading &&
+      walletRepo?.chainRecord.chain.chain_name === chainStore.osmosis.chainName;
     const [show1CTEditParams, setShow1CTEditParams] = useState(false);
-
-    const [showConnectAWalletToContinue, setShowConnectAWalletToContinue] =
-      useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -718,6 +862,59 @@ const RightModalContent: FunctionComponent<
       );
     }
 
+    if (modalView === "initializeOneClickTradingError") {
+      return (
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
+          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
+            <img
+              width={64}
+              height={64}
+              src="/images/1ct-small-icon.svg"
+              alt="One Click Trading small logo"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h1 className="text-center text-h6 font-h6">
+              {t("walletSelect.errorInitializingOneClickTradingSession")}
+            </h1>
+          </div>
+
+          <div className="flex  gap-2">
+            <Button mode="secondary" onClick={() => onRequestClose()}>
+              {t("walletSelect.continue")}
+            </Button>
+            <Button onClick={() => onCreate1CTSession()}>
+              {t("walletSelect.retry")}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    if (modalView === "initializingOneClickTrading") {
+      const title = t("walletSelect.initializingOneClickTradingSession");
+      const desc = t("walletSelect.approveOneClickTradingSession");
+
+      return (
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
+          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
+            <img
+              width={64}
+              height={64}
+              src="/images/1ct-small-icon.svg"
+              alt="One Click Trading small logo"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h1 className="text-center text-h6 font-h6">{title}</h1>
+            <p className="body2 text-center text-wosmongton-100">{desc}</p>
+          </div>
+        </div>
+      );
+    }
+
     if (modalView === "connecting") {
       const message = currentWallet?.message;
 
@@ -776,7 +973,6 @@ const RightModalContent: FunctionComponent<
                 setTransaction1CTParams={setTransaction1CTParams}
                 transaction1CTParams={transaction1CTParams!}
                 onStartTrading={() => {
-                  setShowConnectAWalletToContinue(true);
                   setShow1CTEditParams(false);
                 }}
               />
@@ -794,13 +990,12 @@ const RightModalContent: FunctionComponent<
             )}
             {!show1CTEditParams && !accountStore.hasUsedOneClickTrading && (
               <>
-                {showConnectAWalletToContinue ? (
+                {transaction1CTParams?.isOneClickEnabled ? (
                   <OneClickTradingConnectToContinue />
                 ) : (
                   <div className="flex flex-col px-8">
                     <IntroducingOneClick
                       onStartTrading={() => {
-                        setShowConnectAWalletToContinue(true);
                         setTransaction1CTParams((prev) => {
                           if (!prev)
                             throw new Error(

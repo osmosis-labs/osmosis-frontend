@@ -1,6 +1,9 @@
 import { AminoMsg, StdFee } from "@cosmjs/amino";
 import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
-import { OneClickTradingResetPeriods } from "@osmosis-labs/types";
+import {
+  OneClickTradingResetPeriods,
+  OneClickTradingTimeLimit,
+} from "@osmosis-labs/types";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
 
@@ -92,7 +95,7 @@ export interface OneClickTradingInfo {
   readonly resetPeriod: OneClickTradingResetPeriods;
 
   // Time limit for the session to be considered valid.
-  readonly sessionPeriod: string;
+  readonly sessionPeriod: OneClickTradingTimeLimit;
   readonly allowedMessages: string[];
 }
 

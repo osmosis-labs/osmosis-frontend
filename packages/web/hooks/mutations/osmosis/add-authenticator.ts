@@ -3,12 +3,10 @@ import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import {
   AvailableOneClickTradingMessages,
   OneClickTradingAuthenticatorType,
-  OneClickTradingHumanizedSessionPeriod,
   OneClickTradingResetPeriods,
+  OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
-import { unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
-import dayjs from "dayjs";
 
 import { SPENT_LIMIT_CONTRACT_ADDRESS } from "~/config/env";
 import { useStore } from "~/stores";
@@ -34,49 +32,18 @@ export function getOneClickTradingSessionAuthenticator({
   allowedAmount,
   resetPeriod,
   allowedMessages,
-  sessionPeriod: rawSessionPeriod,
+  sessionPeriod,
 }: {
   key: PrivKeySecp256k1;
   allowedMessages: AvailableOneClickTradingMessages[];
   allowedAmount: string;
   resetPeriod: OneClickTradingResetPeriods;
-  sessionPeriod: OneClickTradingHumanizedSessionPeriod;
+  sessionPeriod: OneClickTradingTimeLimit;
 }): AddAuthenticatorVars {
   const signatureVerification = {
     authenticator_type: "SignatureVerificationAuthenticator",
     data: toBase64(key.getPubKey().toBytes()),
   };
-
-  let sessionPeriod: { end: string };
-  switch (rawSessionPeriod) {
-    case "10min":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
-      };
-      break;
-    case "30min":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
-      };
-      break;
-    case "1hour":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
-      };
-      break;
-    case "3hours":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
-      };
-      break;
-    case "12hours":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
-      };
-      break;
-    default:
-      throw new Error(`Unsupported time limit: ${rawSessionPeriod}`);
-  }
 
   const spendLimitParams = toBase64(
     Buffer.from(
