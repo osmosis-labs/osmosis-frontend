@@ -482,6 +482,7 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
+      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "spendLimitScreen": {
         "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "会期",
         "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
+        "periods": {
+          "10min": "10分",
+          "30min": "30分",
+          "1hour": "1時間",
+          "3hours": "3時間",
+          "12hours": "12時間"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "リセット期間",
+        "description": "支出制限割り当てをリセットする期間を設定します。",
         "periods": {
           "day": "日",
           "week": "週",

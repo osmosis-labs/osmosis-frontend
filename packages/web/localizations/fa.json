@@ -482,6 +482,7 @@
       "spendLimitTitle": "محدودیت هزینه",
       "networkFeeLimitTitle": "محدودیت هزینه شبکه",
       "sessionPeriodTitle": "دوره جلسه",
+      "resetPeriodTitle": "بازنشانی دوره",
       "startButton": "شروع تجارت با 1 کلیک",
       "spendLimitScreen": {
         "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "دوره جلسه",
         "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
+        "periods": {
+          "10min": "10 دقیقه",
+          "30min": "30 دقیقه",
+          "1hour": "1 ساعت",
+          "3hours": "3 ساعت",
+          "12hours": "12 ساعت"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "بازنشانی دوره",
+        "description": "مدت زمانی را برای بازنشانی سهمیه محدودیت هزینه تنظیم کنید.",
         "periods": {
           "day": "روز",
           "week": "هفته",

@@ -482,6 +482,7 @@
       "spendLimitTitle": "खर्च सीमा",
       "networkFeeLimitTitle": "नेटवर्क शुल्क सीमा",
       "sessionPeriodTitle": "सत्र अवधि",
+      "resetPeriodTitle": "रीसेट अवधि",
       "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "spendLimitScreen": {
         "spendLimitDescription": "वह अधिकतम राशि निर्धारित करें जिसे आप 1-क्लिक ट्रेडिंग सत्र अवधि के भीतर खर्च कर सकते हैं।",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "सत्र अवधि",
         "description": "इस डिवाइस पर 1-क्लिक ट्रेडिंग की अनुमति देने के लिए एक अवधि निर्धारित करें।",
+        "periods": {
+          "10min": "10 मिनटों",
+          "30min": "30 मिनट",
+          "1hour": "1 घंटा",
+          "3hours": "3 घंटे",
+          "12hours": "12 घंटे"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "रीसेट अवधि",
+        "description": "व्यय सीमा कोटा रीसेट करने के लिए एक अवधि निर्धारित करें।",
         "periods": {
           "day": "दिन",
           "week": "सप्ताह",

@@ -482,6 +482,7 @@
       "spendLimitTitle": "Limite de gastos",
       "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
+      "resetPeriodTitle": "Período de redefinição",
       "startButton": "Comece a negociação com 1 clique",
       "spendLimitScreen": {
         "spendLimitDescription": "Defina o valor máximo que você pode gastar em um período de sessão de negociação com 1 clique.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "Período da sessão",
         "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
+        "periods": {
+          "10min": "10 minutos",
+          "30min": "30 minutos",
+          "1hour": "1 hora",
+          "3hours": "3 horas",
+          "12hours": "12 horas"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Período de redefinição",
+        "description": "Defina uma duração para redefinir a cota de limite de gastos.",
         "periods": {
           "day": "Dia",
           "week": "Semana",

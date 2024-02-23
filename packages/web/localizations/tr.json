@@ -482,6 +482,7 @@
       "spendLimitTitle": "Harcama Limiti",
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
+      "resetPeriodTitle": "Dönemi sıfırla",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "spendLimitScreen": {
         "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "Oturum dönemi",
         "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
+        "periods": {
+          "10min": "10 dakika",
+          "30min": "30 dakika",
+          "1hour": "1 saat",
+          "3hours": "3 saat",
+          "12hours": "12 saat"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Dönemi sıfırla",
+        "description": "Harcama sınırı kotasını sıfırlamak için bir süre ayarlayın.",
         "periods": {
           "day": "Gün",
           "week": "Hafta",

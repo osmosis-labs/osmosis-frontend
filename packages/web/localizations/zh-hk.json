@@ -482,6 +482,7 @@
       "spendLimitTitle": "消費限額",
       "networkFeeLimitTitle": "網路費用限額",
       "sessionPeriodTitle": "會議期間",
+      "resetPeriodTitle": "重置期",
       "startButton": "開始一鍵交易",
       "spendLimitScreen": {
         "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "會議期間",
         "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
+        "periods": {
+          "10min": "10分鐘",
+          "30min": "30分鐘",
+          "1hour": "1小時",
+          "3hours": "3小時",
+          "12hours": "12小時"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "重置期",
+        "description": "設定重置支出限額配額的持續時間。",
         "periods": {
           "day": "天",
           "week": "星期",

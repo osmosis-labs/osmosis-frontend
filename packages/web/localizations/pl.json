@@ -482,6 +482,7 @@
       "spendLimitTitle": "Limit wydatków",
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
+      "resetPeriodTitle": "Zresetuj okres",
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "spendLimitScreen": {
         "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "Okres sesji",
         "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
+        "periods": {
+          "10min": "10 minut",
+          "30min": "30 minut",
+          "1hour": "1 godzina",
+          "3hours": "3 godziny",
+          "12hours": "12 godzin"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Zresetuj okres",
+        "description": "Ustaw czas resetowania limitu wydatków.",
         "periods": {
           "day": "Dzień",
           "week": "Tydzień",

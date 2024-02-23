@@ -482,6 +482,7 @@
       "spendLimitTitle": "Limite de dépenses",
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
+      "resetPeriodTitle": "Période de réinitialisation",
       "startButton": "Commencez le trading en 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "Période de séance",
         "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
+        "periods": {
+          "10min": "10 minutes",
+          "30min": "30 minutes",
+          "1hour": "1 heure",
+          "3hours": "3 heures",
+          "12hours": "12 heures"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Période de réinitialisation",
+        "description": "Définissez une durée pour réinitialiser le quota de limite de dépenses.",
         "periods": {
           "day": "Jour",
           "week": "Semaine",

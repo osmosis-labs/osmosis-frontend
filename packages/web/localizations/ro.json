@@ -482,6 +482,7 @@
       "spendLimitTitle": "Limita de cheltuieli",
       "networkFeeLimitTitle": "Limită taxă de rețea",
       "sessionPeriodTitle": "Perioada de sesiune",
+      "resetPeriodTitle": "Perioada de resetare",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Setați suma maximă pe care o puteți cheltui într-o perioadă de sesiune de tranzacționare cu 1 clic.",
@@ -502,6 +503,17 @@
       "sessionPeriodScreen": {
         "title": "Perioada de sesiune",
         "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
+        "periods": {
+          "10min": "10 minute",
+          "30min": "30 minute",
+          "1hour": "1 oră",
+          "3hours": "3 ore",
+          "12hours": "12 ore"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Perioada de resetare",
+        "description": "Setați o durată pentru a reseta cota limită de cheltuieli.",
         "periods": {
           "day": "Zi",
           "week": "Săptămână",
