@@ -920,7 +920,8 @@
     "sorryNoResults": "Nu s-au găsit strategii.",
     "tryChangingFilters": "Încercați să schimbați filtrele",
     "retry": "Reîncercați",
-    "manage": "Administra"
+    "manage": "Administra",
+    "noLock": "Fără blocare"
   },
   "disclaimer": "Disclaimer"
 }

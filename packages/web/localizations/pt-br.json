@@ -920,7 +920,8 @@
     "sorryNoResults": "Nenhuma estratégia encontrada.",
     "tryChangingFilters": "Tente alterar os filtros",
     "retry": "Tentar novamente",
-    "manage": "Gerenciar"
+    "manage": "Gerenciar",
+    "noLock": "Não feche"
   },
   "disclaimer": "Isenção de responsabilidade"
 }

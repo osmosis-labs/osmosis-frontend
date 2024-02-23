@@ -920,7 +920,8 @@
     "sorryNoResults": "戦略が見つかりませんでした。",
     "tryChangingFilters": "フィルターを変更してみる",
     "retry": "リトライ",
-    "manage": "管理"
+    "manage": "管理",
+    "noLock": "ロックなし"
   },
   "disclaimer": "免責事項"
 }

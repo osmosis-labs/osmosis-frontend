@@ -920,7 +920,8 @@
     "sorryNoResults": "Hiçbir strateji bulunamadı.",
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
     "retry": "Yeniden dene",
-    "manage": "Üstesinden gelmek"
+    "manage": "Üstesinden gelmek",
+    "noLock": "Kilit yok"
   },
   "disclaimer": "Sorumluluk reddi beyanı"
 }

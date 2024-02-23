@@ -920,7 +920,8 @@
     "sorryNoResults": "没有找到策略。",
     "tryChangingFilters": "尝试更换过滤器",
     "retry": "重试",
-    "manage": "管理"
+    "manage": "管理",
+    "noLock": "无锁"
   },
   "disclaimer": "免责声明"
 }
