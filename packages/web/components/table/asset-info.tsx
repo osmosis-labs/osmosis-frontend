@@ -380,7 +380,7 @@ const AssetCell: AssetInfoCellComponent<{
   onRemoveFavorite,
 }) => (
   <div
-    className={classNames("group flex items-center gap-2", {
+    className={classNames("group flex items-center gap-2 md:gap-1", {
       "opacity-40": !isVerified,
     })}
   >
@@ -388,7 +388,7 @@ const AssetCell: AssetInfoCellComponent<{
       <Icon
         id="star"
         className={classNames(
-          "text-osmoverse-600 transition-opacity group-hover:opacity-100",
+          "text-osmoverse-600 transition-opacity group-hover:opacity-100 md:hidden",
           isFavorite ? "text-wosmongton-400" : "opacity-0"
         )}
         onClick={(event) => {
@@ -402,7 +402,7 @@ const AssetCell: AssetInfoCellComponent<{
         width={24}
       />
     </div>
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 md:gap-2">
       <div className="h-10 w-10">
         {coinImageUrl && (
           <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
@@ -412,7 +412,7 @@ const AssetCell: AssetInfoCellComponent<{
         <div className="flex">
           <span className="text-white-high">{coinDenom}</span>
         </div>
-        <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
+        <span className="md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
           {coinName}
         </span>
       </div>
@@ -581,7 +581,6 @@ const TableControls: FunctionComponent<{
       <div className="flex h-12 w-full gap-3">
         {isMobile ? (
           <MenuToggle
-            // className="md:ml-auto"
             options={tokensOptions}
             selectedOptionId={selectedView as string}
             onSelect={(optionId) =>
@@ -621,7 +620,6 @@ const TableControls: FunctionComponent<{
         />
       ) : (
         <MenuToggle
-          // className="md:ml-auto"
           options={tokensOptions}
           selectedOptionId={selectedView as string}
           onSelect={(optionId) =>
