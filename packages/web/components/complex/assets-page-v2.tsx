@@ -54,7 +54,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
 
   return (
     <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
-      <SkeletonLoader className="xl:w-full" isLoaded={!isWalletLoading}>
+      <SkeletonLoader className="1.5lg:w-full" isLoaded={!isWalletLoading}>
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <UserAssetsBreakdown userOsmoAddress={wallet.address} />
         ) : (
@@ -62,7 +62,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
         )}
       </SkeletonLoader>
 
-      <div className="absolute right-3 bottom-0 overflow-clip align-baseline xl:hidden">
+      <div className="absolute right-3 bottom-0 overflow-clip align-baseline 1.5lg:hidden">
         <Image
           alt="vials"
           src="/images/osmosis-home-fg.png"
@@ -128,7 +128,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   }
 
   return (
-    <div className="flex items-center gap-8 p-5 xl:w-full xl:place-content-between">
+    <div className="flex items-center gap-8 p-5 1.5lg:w-full 1.5lg:place-content-between">
       <div className="flex flex-col gap-2">
         <span className="subtitle1 text-osmoverse-300">
           {t("assets.totalBalance")}
