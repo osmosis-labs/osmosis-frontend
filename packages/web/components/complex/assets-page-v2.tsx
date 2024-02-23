@@ -6,10 +6,12 @@ import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
 
 import {
+  Breakpoint,
   useDimension,
   useDisclosure,
   useTranslation,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -52,7 +54,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
 
   return (
     <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
-      <SkeletonLoader isLoaded={!isWalletLoading}>
+      <SkeletonLoader className="xl:w-full" isLoaded={!isWalletLoading}>
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <UserAssetsBreakdown userOsmoAddress={wallet.address} />
         ) : (
@@ -60,7 +62,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
         )}
       </SkeletonLoader>
 
-      <div className="absolute right-3 bottom-0  overflow-clip align-baseline">
+      <div className="absolute right-3 bottom-0 overflow-clip align-baseline xl:hidden">
         <Image
           alt="vials"
           src="/images/osmosis-home-fg.png"
@@ -76,6 +78,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   userOsmoAddress,
 }) => {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
 
   const { data: userAssets, isFetched } =
     api.edge.assets.getUserAssetsBreakdown.useQuery(
@@ -125,7 +128,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   }
 
   return (
-    <div className="flex items-center gap-8 p-5">
+    <div className="flex items-center gap-8 p-5 xl:w-full xl:place-content-between">
       <div className="flex flex-col gap-2">
         <span className="subtitle1 text-osmoverse-300">
           {t("assets.totalBalance")}
@@ -139,7 +142,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
       </div>
 
       <div className="flex gap-4">
-        {pieChartOptions && (
+        {pieChartOptions && width > Breakpoint.lg && (
           <PieChart options={pieChartOptions} height={138} width={138} />
         )}
 

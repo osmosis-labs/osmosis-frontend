@@ -223,6 +223,7 @@ export const AssetsInfoTable: FunctionComponent<{
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
     if (width < Breakpoint.lg) collapsedColIds.push("price");
+    if (width < Breakpoint.md) collapsedColIds.push("assetActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
