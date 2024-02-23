@@ -48,13 +48,17 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore, chainStore } = useStore();
   const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  const { isLoading: isWalletLoading } = useWalletSelect();
+
   return (
     <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
-      {wallet && wallet.isWalletConnected && wallet.address ? (
-        <UserAssetsBreakdown userOsmoAddress={wallet.address} />
-      ) : (
-        <GetStartedWithOsmosis />
-      )}
+      <SkeletonLoader isLoaded={!isWalletLoading}>
+        {wallet && wallet.isWalletConnected && wallet.address ? (
+          <UserAssetsBreakdown userOsmoAddress={wallet.address} />
+        ) : (
+          <GetStartedWithOsmosis />
+        )}
+      </SkeletonLoader>
 
       <div className="absolute right-3 bottom-0  overflow-clip align-baseline">
         <Image
