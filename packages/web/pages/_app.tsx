@@ -196,6 +196,7 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
+            isNew: true,
             icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
@@ -212,7 +213,6 @@ const MainLayoutWrapper: FunctionComponent<{
             link: "/stake",
             icon: <Icon id="ticket" className="h-5 w-5" />,
             selectionTest: /\/stake/,
-            isNew: true,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : {
