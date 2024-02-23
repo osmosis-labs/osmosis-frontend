@@ -9,6 +9,8 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -58,6 +60,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width } = useWindowSize();
+  const router = useRouter();
 
   // State
   const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
@@ -317,13 +320,27 @@ export const AssetsInfoTable: FunctionComponent<{
             <tr
               className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
               key={rows[virtualRow.index].id}
+              onClick={() =>
+                router.push(
+                  `/assets/${rows[virtualRow.index].original.coinDenom}`
+                )
+              }
             >
               {rows[virtualRow.index].getVisibleCells().map((cell) => (
                 <td
                   className="transition-colors duration-200 ease-in-out"
                   key={cell.id}
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <Link
+                    href={`/assets/${
+                      rows[virtualRow.index].original.coinDenom
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                    prefetch={false}
+                    passHref
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Link>
                 </td>
               ))}
             </tr>
