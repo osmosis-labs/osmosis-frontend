@@ -200,7 +200,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.getUseOneClickTrading();
+      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
@@ -1305,7 +1305,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   async isOneCLickTradingEnabled() {
     return (
       !isNil(await this.getOneClickTradingInfo()) &&
-      Boolean(await this.getUseOneClickTrading())
+      Boolean(await this.getShouldUseOneClickTrading())
     );
   }
 
@@ -1318,7 +1318,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
   }
 
-  async getUseOneClickTrading() {
+  async getShouldUseOneClickTrading() {
     return Boolean(
       await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
     );

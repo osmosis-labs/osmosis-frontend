@@ -1,5 +1,6 @@
 export * from "./data";
 export * from "./language";
+export * from "./one-click-trading";
 export * from "./staking/use-get-apr";
 export * from "./ui-config";
 export * from "./use-amplitude-analytics";
@@ -11,7 +12,6 @@ export * from "./use-disclosure";
 export * from "./use-feature-flags";
 export * from "./use-ibc-transfer";
 export * from "./use-nav-bar";
-export * from "./use-one-click-trading-params";
 export * from "./use-previous-when";
 export * from "./user-settings";
 export * from "./wallet-select";

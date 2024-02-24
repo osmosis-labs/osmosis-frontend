@@ -62,7 +62,7 @@ import {
   getOneClickTradingSessionAuthenticator,
   useAddAuthenticators,
 } from "~/hooks/mutations/osmosis/add-authenticator";
-import { useOneClickTradingParams } from "~/hooks/use-one-click-trading-params";
+import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -243,7 +243,11 @@ export const WalletSelectModal: FunctionComponent<
     }
   };
 
-  const onCreate1CTSession = async () => {
+  const onCreate1CTSession = async ({
+    walletRepo,
+  }: {
+    walletRepo: WalletRepo;
+  }) => {
     setIsInitializingOneClickTrading(true);
 
     if (!transaction1CTParams)
@@ -251,7 +255,6 @@ export const WalletSelectModal: FunctionComponent<
         "Transaction 1CT params are not defined."
       );
 
-    const walletRepo = walletRepoProp;
     if (!walletRepo.current)
       throw new WalletSelectOneClickError("walletRepo.current is not defined.");
     if (!spendLimitTokenDecimals)
@@ -423,7 +426,7 @@ export const WalletSelectModal: FunctionComponent<
 
         if (transaction1CTParams?.isOneClickEnabled) {
           try {
-            await onCreate1CTSession();
+            await onCreate1CTSession({ walletRepo });
           } catch (e) {
             const error = e as WalletSelectOneClickError | Error;
             setHasOneClickTradingError(true);
@@ -519,7 +522,9 @@ export const WalletSelectModal: FunctionComponent<
             transaction1CTParams={transaction1CTParams}
             setTransaction1CTParams={setTransaction1CTParams}
             isLoading1CTParams={isLoading1CTParams}
-            onCreate1CTSession={onCreate1CTSession}
+            onCreate1CTSession={() =>
+              onCreate1CTSession({ walletRepo: walletRepoProp })
+            }
           />
           <IconButton
             aria-label="Close"
