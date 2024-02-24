@@ -43,8 +43,8 @@ import {
 import {
   AxelarChainIds_SourceChainMap,
   SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar";
-import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
+} from "~/integrations/bridges/axelar/types";
+import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,

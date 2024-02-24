@@ -249,9 +249,9 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
-        new AxelarTransferStatusSource(),
-        new SquidTransferStatusSource(),
-        new SkipTransferStatusSource(),
+        new AxelarTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SquidTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SkipTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
       ]
     );
 
