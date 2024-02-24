@@ -339,7 +339,7 @@ const RadiosWithOptions = () => {
         tokenHolder: "all",
         strategyMethod: { label: "All", value: "" },
         platform: { label: "All", value: "" },
-        noLockingDuration: false,
+        lockDurationType: "all",
         search: "",
         specialTokens: [],
         rewardType: "all",
