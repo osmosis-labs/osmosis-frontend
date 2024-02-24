@@ -114,6 +114,7 @@ const SmartAccounts: NextPage = observer(function () {
             allowedMessages,
             resetPeriod,
             privateKey: toBase64(key.toBytes()),
+            sessionStartedAtUnix: dayjs().unix(),
             sessionPeriod: {
               end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
             },

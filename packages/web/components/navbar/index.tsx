@@ -581,20 +581,21 @@ const OneClickTradingRadialProgress = observer(() => {
         unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
       );
 
-      const percentage = Math.max(
-        (dayjs().unix() / sessionEndDate.unix()) * 100,
-        0
-      );
+      const totalSessionTime =
+        sessionEndDate.unix() - oneClickTradingInfo.sessionStartedAtUnix;
+      const timeRemaining = sessionEndDate.unix() - dayjs().unix();
+
+      const percentage = Math.max((timeRemaining / totalSessionTime) * 100, 0);
 
       setPercentage(percentage);
     };
 
     updatePercentage();
 
-    // Update every 10 seconds
+    // Update every 5 seconds
     const intervalId = setInterval(() => {
       updatePercentage();
-    }, 10000);
+    }, 5_000);
 
     return () => {
       clearInterval(intervalId);

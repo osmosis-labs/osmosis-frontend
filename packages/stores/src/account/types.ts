@@ -96,6 +96,8 @@ export interface OneClickTradingInfo {
 
   // Time limit for the session to be considered valid.
   readonly sessionPeriod: OneClickTradingTimeLimit;
+  // Unix
+  readonly sessionStartedAtUnix: number;
   readonly allowedMessages: string[];
 }
 

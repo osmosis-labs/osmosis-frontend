@@ -338,6 +338,7 @@ export const WalletSelectModal: FunctionComponent<
             resetPeriod,
             privateKey: toBase64(key.toBytes()),
             sessionPeriod,
+            sessionStartedAtUnix: dayjs().unix(),
           });
 
           accountStore.setUseOneClickTrading({ nextValue: true });
