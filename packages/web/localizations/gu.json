@@ -830,6 +830,8 @@
     "reconnect": "ફરીથી કનેક્ટ કરો",
     "connectingWallet": "વૉલેટ કનેક્ટ કરી રહ્યું છે",
     "approveWalletConnect": "તમારા મોબાઇલ પર {walletName} કનેક્શન વિનંતીને મંજૂર કરો.",
+    "continue": "ચાલુ રાખો",
+    "retry": "ફરી પ્રયાસ કરો",
     "openExtension": "તમારા વૉલેટને કનેક્ટ કરવા માટે {walletName} બ્રાઉઝર એક્સ્ટેંશન ખોલો.",
     "initializingWallet": "વૉલેટ ક્લાયંટ શરૂ કરી રહ્યાં છીએ",
     "clickToRefresh": "તાજું કરવા માટે ક્લિક કરો.",

@@ -830,6 +830,8 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando Billetera",
     "approveWalletConnect": "Aprobar la solicitud de conexión {walletName} en su dispositivo móvil.",
+    "continue": "Continuar",
+    "retry": "Rever",
     "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",
     "initializingWallet": "Inicializando Cliente de Billetera",
     "clickToRefresh": "Haga clic para actualizar.",

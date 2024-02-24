@@ -830,6 +830,8 @@
     "reconnect": "Wieder verbinden",
     "connectingWallet": "Wallet verbinden",
     "approveWalletConnect": "Genehmigen Sie die Verbindungsanfrage {walletName} auf Ihrem Mobiltelefon.",
+    "continue": "Weitermachen",
+    "retry": "Wiederholen",
     "openExtension": "Öffnen Sie die Browsererweiterung {walletName} um Ihre Wallet zu verbinden.",
     "initializingWallet": "Wallet-Client wird initialisiert",
     "clickToRefresh": "Klicken Sie zum Aktualisieren.",

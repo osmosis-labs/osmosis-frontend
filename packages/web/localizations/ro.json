@@ -830,6 +830,8 @@
     "reconnect": "Reconectați",
     "connectingWallet": "Se conectează la portofel",
     "approveWalletConnect": "Aprobați cererea de conexiune {walletName} pe telefonul dvs. mobil.",
+    "continue": "Continua",
+    "retry": "Reîncercați",
     "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
     "initializingWallet": "Se inițializează clientul portofelului",
     "clickToRefresh": "Faceți clic pentru a reîmprospăta.",

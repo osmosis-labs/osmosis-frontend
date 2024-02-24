@@ -1,7 +1,8 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import type { GetServerSideProps, NextPage } from "next";
 import { FunctionComponent } from "react";
@@ -100,7 +101,9 @@ const SmartAccounts: NextPage = observer(function () {
             allowedMessages,
             allowedAmount,
             resetPeriod,
-            sessionPeriod: "1hour",
+            sessionPeriod: {
+              end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+            },
           }),
         ],
       },
@@ -111,7 +114,9 @@ const SmartAccounts: NextPage = observer(function () {
             allowedMessages,
             resetPeriod,
             privateKey: toBase64(key.toBytes()),
-            sessionPeriod: "1hour",
+            sessionPeriod: {
+              end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+            },
           });
 
           accountStore.setUseOneClickTrading({ nextValue: true });

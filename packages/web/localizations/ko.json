@@ -830,6 +830,8 @@
     "reconnect": "다시 연결",
     "connectingWallet": "지갑 연결 중",
     "approveWalletConnect": "모바일에서 {walletName} 연결 요청을 승인하세요.",
+    "continue": "계속하다",
+    "retry": "다시 해 보다",
     "openExtension": "{walletName} 브라우저 확장 프로그램을 열어서 지갑을 연결하세요.",
     "initializingWallet": "지갑 클라이언트 초기화 중",
     "clickToRefresh": "새로고침하려면 클릭하세요.",

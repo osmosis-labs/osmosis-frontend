@@ -830,6 +830,8 @@
     "reconnect": "再接続",
     "connectingWallet": "ウォレットを接続する",
     "approveWalletConnect": "モバイルで{walletName}接続リクエストを承認します。",
+    "continue": "続く",
+    "retry": "リトライ",
     "openExtension": "{walletName}ブラウザ拡張機能を開いてウォレットに接続します。",
     "initializingWallet": "ウォレットクライアントを初期化しています",
     "clickToRefresh": "クリックして更新します。",

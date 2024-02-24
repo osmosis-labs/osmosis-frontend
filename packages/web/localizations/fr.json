@@ -830,6 +830,8 @@
     "reconnect": "Reconnecter",
     "connectingWallet": "Connexion du Portefeuille",
     "approveWalletConnect": "Approuver la demande de connexion {walletName} sur votre mobile.",
+    "continue": "Continuer",
+    "retry": "Recommencez",
     "openExtension": "Ouvrez l'extension de navigateur {walletName} pour connecter votre portefeuille.",
     "initializingWallet": "Initialisation du Client de Portefeuille",
     "clickToRefresh": "Cliquez pour rafraîchir.",

@@ -830,6 +830,8 @@
     "reconnect": "دوباره وصل شوید",
     "connectingWallet": "اتصال کیف پول",
     "approveWalletConnect": "تایید",
+    "continue": "ادامه هید",
+    "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
     "initializingWallet": "راه اندازی سرویس گیرنده کیف پول",
     "clickToRefresh": "برای بازخوانی کلیک کنید.",

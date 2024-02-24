@@ -830,6 +830,8 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando carteira",
     "approveWalletConnect": "Aprovar solicitação de conexão {walletName} em seu dispositivo móvel.",
+    "continue": "Continuar",
+    "retry": "Tentar novamente",
     "openExtension": "Abra a extensão do navegador {walletName} para conectar sua carteira.",
     "initializingWallet": "Inicializando cliente de carteira",
     "clickToRefresh": "Clique para atualizar.",
