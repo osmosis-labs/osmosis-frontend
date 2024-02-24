@@ -40,7 +40,7 @@ const NavbarOsmoPrice = observer(() => {
     findMinDenomOrSymbol: "OSMO",
   });
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
-    osmoCurrency!,
+    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
     { enabled: Boolean(osmoCurrency) }
   );
 

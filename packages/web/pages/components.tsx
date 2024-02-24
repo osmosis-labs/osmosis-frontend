@@ -30,13 +30,10 @@ import LinkIconButton from "~/components/buttons/link-icon-button";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
-  CheckBox,
   CheckboxSelect,
   MenuDropdown,
   Radio,
-  Slider,
   StakeTab,
-  Switch,
 } from "~/components/control";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -47,6 +44,14 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { Button as ButtonShadcn } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Input as InputShadcn } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Skeleton } from "~/components/ui/skeleton";
+import { Slider as SliderShadcn } from "~/components/ui/slider";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
@@ -55,7 +60,7 @@ const Card: React.FC<{
   title: string;
   children: ReactNode;
 }> = ({ title, children }) => (
-  <div className="flex flex-col gap-4 rounded-3xl bg-osmoverse-850 p-6">
+  <div className="flex flex-col gap-4 rounded-3xl bg-osmoverse-800 p-6">
     <h6 className="text-center">{title}</h6>
     <div className="flex w-full flex-wrap items-start justify-start gap-4">
       {children}
@@ -90,47 +95,36 @@ const Loaders = () => {
       <Component title="Spinner">
         <Spinner />
       </Component>
+      <Component title="Skeleton (Shadcn)">
+        <Skeleton className="h-4 w-full rounded-full" />
+      </Component>
     </Card>
   );
 };
 
 const Sliders = () => {
-  const [slider, setSlider] = useState(0);
+  const [slider, setSlider] = useState([50]);
 
   return (
-    <Card title="Slider">
-      <Component title="Slider">
-        <Slider
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => {
-            setSlider(value);
-          }}
+    <Card title="Slider (Shadcn)">
+      <Component title="Slider Default">
+        <SliderShadcn
+          variant="default"
           min={0}
           max={100}
           step={1}
+          value={slider}
+          onValueChange={(value) => setSlider(value)}
         />
       </Component>
-      <Component title="Disabled">
-        <Slider
-          disabled
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => setSlider(value)}
+      <Component title="Slider Supercharged">
+        <SliderShadcn
+          variant="secondary"
           min={0}
           max={100}
           step={1}
-        />
-      </Component>
-      <Component title="Supercharged Gradient">
-        <Slider
-          className="my-8 w-full"
-          currentValue={slider}
-          onInput={(value) => setSlider(value)}
-          min={0}
-          max={100}
-          step={1}
-          useSuperchargedGradient
+          value={slider}
+          onValueChange={(value) => setSlider(value)}
         />
       </Component>
     </Card>
@@ -140,59 +134,105 @@ const Sliders = () => {
 const Checkboxes = () => {
   const [checked, setChecked] = useState(false);
   const handleCheckboxToggle = () => setChecked(!checked);
+
   return (
-    <Card title="Checkbox">
+    <Card title="Checkbox (Shadcn)">
       <Component title="Regular">
-        <CheckBox isOn={checked} onToggle={handleCheckboxToggle} />
+        <Checkbox checked={checked} onClick={handleCheckboxToggle} />
       </Component>
-
       <Component title="Indeterminate">
-        <CheckBox
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-          isIndeterminate={true}
+        <Checkbox
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          isIndeterminate
         />
       </Component>
-
       <Component title="Disabled">
-        <CheckBox
-          disabled={true}
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-        />
+        <Checkbox checked={checked} onClick={handleCheckboxToggle} disabled />
       </Component>
-
       <Component title="With Children">
-        <CheckBox isOn={checked} onToggle={handleCheckboxToggle}>
-          <span className="rounded-lg bg-osmoverse-700 p-2">child</span>
-        </CheckBox>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            checked={checked}
+            onClick={handleCheckboxToggle}
+            id="terms"
+          />
+          <label
+            htmlFor="terms"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Child
+          </label>
+        </div>
       </Component>
-
-      <Component title="Superfluid">
-        <CheckBox
-          borderStyles="border-superfluid"
-          backgroundStyles="bg-superfluid"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
+      <Component title="Secondary">
+        <Checkbox
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          variant="secondary"
         />
       </Component>
-
-      <Component title="Rust-700">
-        <CheckBox
-          borderStyles="border-rust-700"
-          backgroundStyles="bg-gradient-negative"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
+      <Component title="Destructive">
+        <Checkbox
+          checked={checked}
+          onClick={handleCheckboxToggle}
+          variant="destructive"
         />
       </Component>
+    </Card>
+  );
+};
 
-      <Component title="Wosmongton-200">
-        <CheckBox
-          backgroundStyles="bg-wosmongton-200"
-          borderStyles="border-wosmongton-200"
-          isOn={checked}
-          onToggle={handleCheckboxToggle}
-        />
+const RadiosShadcn = () => {
+  const [radio, setRadio] = useState("option-one");
+
+  return (
+    <Card title="Radio (Shadcn)">
+      <Component title="Regular (Shadcn)">
+        <RadioGroup defaultValue="option-one">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="option-one"
+              id="option-one"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-one"}
+            />
+            <Label htmlFor="option-one">Option One</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="option-two"
+              id="option-two"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-two"}
+            />
+            <Label htmlFor="option-two">Option Two</Label>
+          </div>
+        </RadioGroup>
+      </Component>
+      <Component title="Regular (Shadcn)">
+        <RadioGroup defaultValue="option-one">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              disabled
+              value="option-one"
+              id="option-one"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-one"}
+            />
+            <Label htmlFor="option-one">Option One</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              disabled
+              value="option-two"
+              id="option-two"
+              onClick={(e) => setRadio(e.currentTarget.value)}
+              checked={radio === "option-two"}
+            />
+            <Label htmlFor="option-two">Option Two</Label>
+          </div>
+        </RadioGroup>
       </Component>
     </Card>
   );
@@ -310,16 +350,11 @@ const Radios = () => {
 const Buttons = () => {
   return (
     <Card title="Buttons">
-      <Component title="Regular">
+      <Component title="Primary">
         <Button onClick={() => console.log("clicked")}>Click</Button>
       </Component>
       <Component title="Disabled">
         <Button disabled onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Primary">
-        <Button mode="primary" onClick={() => console.log("clicked")}>
           Click
         </Button>
       </Component>
@@ -407,6 +442,73 @@ const Buttons = () => {
         <Button mode="unstyled" onClick={() => console.log("clicked")}>
           Click
         </Button>
+      </Component>
+    </Card>
+  );
+};
+
+const ButtonsShadcn = () => {
+  return (
+    <Card title="Buttons (Shadcn)">
+      <Component title="Primary">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="default">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Disabled">
+        <ButtonShadcn disabled onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Secondary">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="secondary"
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Destructive">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          variant="destructive"
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Ghost">
+        <ButtonShadcn onClick={() => console.log("clicked")} variant="ghost">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Outline">
+        <ButtonShadcn variant="outline" onClick={() => console.log("clicked")}>
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Small">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="sm">
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Small Outline">
+        <ButtonShadcn
+          onClick={() => console.log("clicked")}
+          size="sm"
+          variant="outline"
+        >
+          Click
+        </ButtonShadcn>
+      </Component>
+      <Component title="Icon">
+        <ButtonShadcn onClick={() => console.log("clicked")} size="icon">
+          <Icon id="close" />
+        </ButtonShadcn>
+      </Component>
+      <Component title="Link">
+        <ButtonShadcn onClick={() => console.log("clicked")} variant="link">
+          Click
+        </ButtonShadcn>
       </Component>
     </Card>
   );
@@ -506,16 +608,45 @@ const Switches = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   return (
-    <Card title="Switch">
+    <Card title="Switch (Shadcn)">
       <Component title="Regular">
-        <Switch isOn={isSwitchOn} onToggle={() => setIsSwitchOn(!isSwitchOn)} />
+        <Switch
+          checked={isSwitchOn}
+          onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
+        />
       </Component>
       <Component title="Disabled">
         <Switch
           disabled
-          isOn={isSwitchOn}
-          onToggle={() => setIsSwitchOn(!isSwitchOn)}
+          checked={isSwitchOn}
+          onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
         />
+      </Component>
+      <Component title="Children - Left">
+        <div className="flex items-center">
+          <label className="text-white pr-[15px] text-[15px] leading-none">
+            Child
+          </label>
+          <Switch
+            checked={isSwitchOn}
+            onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
+          >
+            Child
+          </Switch>
+        </div>
+      </Component>
+      <Component title="Children - Right">
+        <div className="flex items-center">
+          <Switch
+            checked={isSwitchOn}
+            onCheckedChange={() => setIsSwitchOn(!isSwitchOn)}
+          >
+            Child
+          </Switch>
+          <label className="text-white pl-[15px] text-[15px] leading-none">
+            Child
+          </label>
+        </div>
       </Component>
     </Card>
   );
@@ -962,6 +1093,29 @@ const Inputs = () => {
   );
 };
 
+const InputsShadcn = () => {
+  const [searchBox, setSearchBox] = useState("");
+  return (
+    <Card title="Inputs (Shadcn)">
+      <Component title="Regular">
+        <InputShadcn
+          value={searchBox}
+          onChange={(e) => setSearchBox(e.currentTarget.value)}
+          placeholder="search"
+        />
+      </Component>
+      <Component title="Disabled">
+        <InputShadcn
+          disabled
+          value={searchBox}
+          onChange={(e) => setSearchBox(e.currentTarget.value)}
+          placeholder="search"
+        />
+      </Component>
+    </Card>
+  );
+};
+
 import QRCode from "~/components/qrcode";
 
 const QRCodes = () => (
@@ -1020,20 +1174,32 @@ const Components: NextPage = () => {
     <div className="flex flex-col gap-4 p-4">
       <h1>Components Library</h1>
 
+      <Switches />
+
+      <ButtonsShadcn />
+      <Buttons />
+
+      <Checkboxes />
+
+      <RadiosShadcn />
+      <Radios />
+
+      <InputsShadcn />
+      <Inputs />
+
+      <Sliders />
+
       <FontSize />
       <Color />
       <Icons />
       <Assets />
-      <Inputs />
-      <Buttons />
+
       <CustomButtons />
       <Tooltips />
       <Loaders />
-      <Checkboxes />
-      <Radios />
+
       <RadiosWithOptions />
-      <Switches />
-      <Sliders />
+
       <MenuDropdowns />
       <CheckboxSelects />
       <StakeTabs />

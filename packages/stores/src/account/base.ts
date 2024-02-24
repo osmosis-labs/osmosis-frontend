@@ -45,12 +45,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import {
-  apiClient,
-  ApiClientError,
-  getSourceDenomFromAssetList,
-  isNil,
-} from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -145,7 +140,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ...assetList,
       assets: assetList.assets.map((asset) => ({
         ...asset,
-        base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
+        base: asset.sourceDenom,
+        denom_units: [
+          {
+            denom: asset.sourceDenom,
+            exponent: 0,
+          },
+          {
+            denom: asset.symbol,
+            exponent: asset.decimals,
+          },
+        ],
+        display: asset.symbol,
       })),
     })) as CosmologyAssetList[];
   }
@@ -1036,8 +1042,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
        *  */
       const gas = String(Math.round(gasUsed * GasMultiplier));
-
-      console.log(signOptions);
 
       if (signOptions.preferNoSetFee) {
         return {

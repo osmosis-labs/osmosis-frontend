@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -7,8 +7,6 @@ import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { calcAssetValue } from "~/server/queries/complex/assets/price";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -32,7 +30,11 @@ export const AssetFilterSchema = z.object({
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
+const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
+  "symbol",
+  "coinMinimalDenom",
+  "name",
+];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
 export async function getAsset({
@@ -77,35 +79,28 @@ export async function getAssets({
     return cachified({
       cache: minimalAssetsCache,
       key: JSON.stringify(params),
-      getFreshValue: () => simplifyAssetListForDisplay(assetList, params),
+      getFreshValue: () => filterAssetList(assetList, params),
     });
   }
 
   // otherwise process the given novel asset list
-  return simplifyAssetListForDisplay(assetList, params);
+  return filterAssetList(assetList, params);
 }
 
 /**
- * This function maps raw assets to a CoinPretty. This is useful for
+ * This function coins to a CoinPretty if listed in asset list. This is useful for
  * converting raw assets returned from chain into coins listed in asset list.
- * It also optionally calculates the fiat value of the asset if the 'calculatePrice'
- * parameter is true.
  *
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
- * @param calculatePrice A boolean indicating whether to calculate the price of the asset.
  *
- * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset and has an optional 'fiatValue' property.
+ * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
  */
-export async function mapAssetsToCoins({
-  rawAssets,
-  calculatePrice,
-}: {
-  rawAssets?: {
+export async function mapRawCoinToPretty(
+  rawAssets: {
     amount: string | number | Int | Dec | { toDec(): Dec };
     denom: string;
-  }[];
-  calculatePrice?: boolean;
-}): Promise<(CoinPretty & { fiatValue?: PricePretty })[]> {
+  }[]
+): Promise<CoinPretty[]> {
   if (!rawAssets) return [];
   const result = await Promise.all(
     rawAssets.map(async ({ amount, denom }) => {
@@ -115,28 +110,14 @@ export async function mapAssetsToCoins({
 
       if (!asset) return undefined;
 
-      const coin = new CoinPretty(asset, amount);
-      if (calculatePrice) {
-        const fiatValue = await calcAssetValue({
-          amount: coin.toDec(),
-          anyDenom: denom,
-        });
-
-        if (!fiatValue)
-          throw new Error(`Could not calculate price for ${denom}`);
-
-        (coin as CoinPretty & { fiatValue?: PricePretty }).fiatValue =
-          new PricePretty(DEFAULT_VS_CURRENCY, fiatValue);
-      }
-
-      return coin;
+      return new CoinPretty(asset, amount);
     })
   );
   return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
-/** Transform given asset list into an array of minimal asset types for user in frontend. */
-function simplifyAssetListForDisplay(
+/** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
+function filterAssetList(
   assetList: AssetList[],
   params: {
     findMinDenomOrSymbol?: string;
@@ -147,27 +128,23 @@ function simplifyAssetListForDisplay(
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter((asset) =>
-      params.includeUnlisted
-        ? true // Do not filter the unlisted assets
-        : !asset.keywords?.includes("osmosis-unlisted")
-    );
+    .filter((asset) => !asset.preview);
 
   let assetListAssets = listedAssets.filter((asset) => {
     if (params.findMinDenomOrSymbol) {
       return (
         params.findMinDenomOrSymbol.toUpperCase() ===
-          asset.base.toUpperCase() ||
+          asset.coinMinimalDenom.toUpperCase() ||
         params.findMinDenomOrSymbol.toUpperCase() === asset.symbol.toUpperCase()
       );
     }
 
     // Ensure denoms are unique on Osmosis chain
     // In the case the asset list has the same asset twice
-    if (coinMinimalDenomSet.has(asset.base)) {
+    if (coinMinimalDenomSet.has(asset.coinMinimalDenom)) {
       return false;
     } else {
-      coinMinimalDenomSet.add(asset.base);
+      coinMinimalDenomSet.add(asset.coinMinimalDenom);
       return true;
     }
   });
@@ -183,9 +160,7 @@ function simplifyAssetListForDisplay(
 
   // Filter by only verified
   if (params.onlyVerified) {
-    assetListAssets = assetListAssets.filter((asset) =>
-      Boolean(asset.keywords?.includes("osmosis-main"))
-    );
+    assetListAssets = assetListAssets.filter((asset) => asset.verified);
   }
 
   // Transform into a more compact object

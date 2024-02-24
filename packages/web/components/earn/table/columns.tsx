@@ -6,6 +6,7 @@ import {
   ActionsCell,
   LockCell,
   StrategyNameCell,
+  StrategyTooltip,
   TVLCell,
 } from "~/components/earn/table/cells";
 import { Strategy } from "~/components/earn/table/types/strategy";
@@ -16,6 +17,7 @@ import {
   listOptionValueEquals,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
+import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
 
 const columnHelper = createColumnHelper<Strategy>();
@@ -23,18 +25,41 @@ const columnHelper = createColumnHelper<Strategy>();
 export const ColumnCellHeader = ({
   className,
   tKey,
-}: PropsWithChildren<{ tKey: TranslationPath; className?: string }>) => {
+  tooltipDescription,
+  tooltipClassname,
+}: PropsWithChildren<{
+  tKey: TranslationPath;
+  tooltipDescription?: string;
+  className?: string;
+  tooltipClassname?: string;
+}>) => {
   const { t } = useTranslation();
 
   return (
-    <small
-      className={classNames(
-        "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
-        className
-      )}
+    <Tooltip
+      className={classNames("justify-end", tooltipClassname)}
+      content={
+        <StrategyTooltip
+          header={t(tKey)}
+          body={
+            tooltipDescription && (
+              <p className="text-caption text-osmoverse-300">
+                {tooltipDescription}
+              </p>
+            )
+          }
+        />
+      }
     >
-      {t(tKey)}
-    </small>
+      <small
+        className={classNames(
+          "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
+          className
+        )}
+      >
+        {t(tKey)}
+      </small>
+    </Tooltip>
   );
 };
 export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
@@ -62,7 +87,12 @@ export const tableColumns = [
     enableHiding: true,
   }),
   columnHelper.accessor("strategyName", {
-    header: () => <ColumnCellHeader tKey={"earnPage.strategyPlatform"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipClassname="!justify-start"
+        tKey={"earnPage.strategyPlatform"}
+      />
+    ),
     cell: (item) => (
       <StrategyNameCell
         name={item.getValue()}
@@ -72,7 +102,12 @@ export const tableColumns = [
     ),
   }),
   columnHelper.accessor("tvl.value", {
-    header: () => <ColumnCellHeader tKey={"pools.TVL"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription="Description of TVL"
+        tKey={"pools.TVL"}
+      />
+    ),
     cell: TVLCell,
   }),
   columnHelper.accessor("apy", {
@@ -108,16 +143,21 @@ export const tableColumns = [
     header: () => <ColumnCellHeader tKey={"earnPage.risk"} />,
     cell: (item) => (
       <div className="flex items-center justify-end gap-1">
-        {Array(3)
-          .fill(null)
-          .map((_, i) => (
-            <div
-              key={`${item.cell.id} ${i} risk indicator`}
-              className={classNames(`h-5 w-2 rounded-lg bg-osmoverse-700`, {
-                "!bg-ion-400": i + 1 <= item.getValue(),
-              })}
-            />
-          ))}
+        {[
+          "bg-wosmongton-900",
+          "bg-wosmongton-800",
+          "bg-wosmongton-700",
+          "bg-wosmongton-500",
+          "bg-wosmongton-300",
+        ].map((bgColor, i) => (
+          <div
+            key={`${item.cell.id} ${i} risk indicator`}
+            className={classNames(`h-5 w-2 rounded-lg`, {
+              [bgColor]: i + 1 <= item.getValue(),
+              "bg-osmoverse-700": i + 1 > item.getValue(),
+            })}
+          />
+        ))}
       </div>
     ),
   }),

@@ -425,7 +425,7 @@ describe("ObservableAssets", () => {
             },
           },
           "ics20ContractAddress": "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
-          "isUnstable": true,
+          "isUnstable": false,
           "isVerified": true,
           "sourceChannelId": "channel-476",
         },

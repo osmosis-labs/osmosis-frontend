@@ -1,124 +1,54 @@
-import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
+import type { PositionStatus } from "~/server/queries/complex/concentrated-liquidity";
 
-const enum PositionStatus {
-  InRange,
-  NearBounds,
-  OutOfRange,
-  FullRange,
-  Unbonding,
-  SuperfluidStaked,
-  SuperfulidUnstaking,
-}
 export const MyPositionStatus: FunctionComponent<
   {
-    currentPrice: Dec;
-    lowerPrice: Dec;
-    upperPrice: Dec;
+    status: PositionStatus;
     negative?: boolean;
-    fullRange?: boolean;
-    isSuperfluid?: boolean;
-    isSuperfluidUnstaking?: boolean;
-    isUnbonding?: boolean;
   } & CustomClasses
-> = ({
-  className,
-  currentPrice,
-  lowerPrice,
-  upperPrice,
-  negative,
-  fullRange,
-  isSuperfluid,
-  isSuperfluidUnstaking,
-  isUnbonding = false,
-}) => {
+> = ({ className, status, negative = false }) => {
   const { t } = useTranslation();
 
-  const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
+  let label;
 
-  const diff = new Dec(
-    Math.min(
-      Number(currentPrice.sub(lowerPrice).toString()),
-      Number(upperPrice.sub(currentPrice).toString())
-    )
-  );
-
-  const rangeDiff = upperPrice.sub(lowerPrice);
-
-  const diffPercentage =
-    currentPrice.isZero() || rangeDiff.isZero()
-      ? new Dec(0)
-      : diff.quo(rangeDiff).mul(new Dec(100));
-
-  let label, status;
-
-  if (inRange) {
-    if (diffPercentage.lte(new Dec(15))) {
-      status = PositionStatus.NearBounds;
-      label = t("clPositions.nearBounds");
-    } else {
-      status = PositionStatus.InRange;
-      label = t("clPositions.inRange");
-    }
-  } else {
-    status = PositionStatus.OutOfRange;
-    label = t("clPositions.outOfRange");
-  }
-
-  if (fullRange) {
-    status = PositionStatus.FullRange;
-    label = t("clPositions.fullRange");
-  }
-
-  if (isUnbonding) {
-    status = PositionStatus.Unbonding;
-    label = t("clPositions.unbonding");
-  }
-
-  if (isSuperfluid) {
-    status = PositionStatus.SuperfluidStaked;
-    label = t("clPositions.superfluidStaked");
-  }
-  if (isSuperfluidUnstaking) {
-    status = PositionStatus.SuperfulidUnstaking;
+  if (status === "nearBounds") label = t("clPositions.nearBounds");
+  if (status === "inRange") label = t("clPositions.inRange");
+  if (status === "outOfRange") label = t("clPositions.outOfRange");
+  if (status === "fullRange") label = t("clPositions.fullRange");
+  if (status === "unbonding") label = t("clPositions.unbonding");
+  if (status === "superfluidStaked") label = t("clPositions.superfluidStaked");
+  if (status === "superfluidUnstaking")
     label = t("clPositions.superfluidUnstakingStatus");
-  }
+
+  const isSuperfluidStatus =
+    status === "superfluidStaked" || status === "superfluidUnstaking";
 
   return (
     <div
       className={classNames(
         "flex w-fit items-center gap-[10px] rounded-xl px-3 py-1",
         {
-          "bg-bullish-600/30": !negative && status === PositionStatus.InRange,
-          "bg-ammelia-600/30":
-            !negative && status === PositionStatus.NearBounds,
+          "bg-bullish-600/30": !negative && status === "inRange",
+          "bg-ammelia-600/30": !negative && status === "nearBounds",
           "bg-rust-600/30":
-            (!negative && status === PositionStatus.OutOfRange) ||
-            status === PositionStatus.Unbonding,
-          "bg-[#2994D04D]/30": !negative && status === PositionStatus.FullRange,
-          "bg-superfluid/30":
-            !negative &&
-            (status === PositionStatus.SuperfluidStaked ||
-              status === PositionStatus.SuperfulidUnstaking),
+            (!negative && status === "outOfRange") || status === "unbonding",
+          "bg-[#2994D04D]/30": !negative && status === "fullRange",
+          "bg-superfluid/30": !negative && isSuperfluidStatus,
         },
         className
       )}
     >
       <div
         className={classNames("h-3 w-3 rounded-full", {
-          "bg-bullish-500": status === PositionStatus.InRange,
-          "bg-ammelia-600": status === PositionStatus.NearBounds,
-          "bg-rust-500":
-            status === PositionStatus.OutOfRange ||
-            status === PositionStatus.Unbonding,
-          "bg-ion-400": status === PositionStatus.FullRange,
-          "bg-superfluid":
-            status === PositionStatus.SuperfluidStaked ||
-            status === PositionStatus.SuperfulidUnstaking,
+          "bg-bullish-500": status === "inRange",
+          "bg-ammelia-600": status === "nearBounds",
+          "bg-rust-500": status === "outOfRange" || status === "unbonding",
+          "bg-ion-400": status === "fullRange",
+          "bg-superfluid": isSuperfluidStatus,
         })}
       />
       <span className="subtitle1">{label}</span>

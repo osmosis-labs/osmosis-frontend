@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "ペグのメンテナンスに。現在のスケーリング係数は次のとおりです。",
     "scalingFactorInformation": "この要素により、リキッドステーキングトークンに発生する価値など、予測可能な価格の変化に合わせて曲線を調整することができます。",
     "singleAsset": "単一の資産",
-    "stablecoinWarning": "{denom}に裏付けられたステーブルコインである{mechanism}に流動性を追加しています。",
     "title": "流動性の追加",
     "titleInPool": "プールに流動性を追加 # {poolId}",
     "priceImpact": "価格への影響"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
-  "convertToStake": {
-    "adTitle": "私たちはより良い収益戦略を発見しました。",
-    "adSubtitle": "一部のポジションは{apr} % APR の OSMO をステーキングする場合よりも収益が低くなります。アップグレードするポジションを表示して選択します。",
-    "title": "ステークOSMOに変換",
-    "description": "選択したポジションは完全に OSMO に変換されます。すべての OSMO は、既存のバリデーター セットに自動的にステークされます。",
-    "stakedOsmo": "ステークされたOSMO",
-    "APR": "4月",
-    "currentApr": "現在の年利",
-    "pool": "プール # {poolId}",
-    "position": "POSITION # {positionId}",
-    "convertAndStake": "変換してステークする"
-  },
   "clPositions": {
     "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
@@ -108,7 +95,7 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール # {poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します"
   },
   "app": {
     "banner": {
@@ -131,18 +118,6 @@
     "applyButton": "適用する",
     "storeDisclaimer": "特定のコンテンツは、Osmosis Labs またはその関連会社と提携していない第三者によって作成されており、Osmosis Labs はそのようなコンテンツについて責任を負いません。 Osmosis Labs は、コンテンツのエラーや遅延、またはコンテンツに依存して行われた行為に対して責任を負いません。情報は情報提供のみを目的として提供されており、投資アドバイスではありません。これは、特定のデジタル資産を売買したり、特定の投資戦略を採用したりすることを推奨するものではありません。 Osmosis Labs は、提供された情報または特定の資産の正確性、適合性、有効性についていかなる表明も行いません。表示されている価格は例示のみを目的としています。実際の暗号通貨の価格および関連する統計は異なる場合があります。提示されたデータは、Osmosis Labs の取引所および一部の他の暗号通貨取引所で取引された資産を反映している可能性があります。",
     "allAppsHeader": "すべてのアプリ"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "{pair}を強化します",
-    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけでポジションをアップグレードできます。",
-    "primaryCta": "スーパーチャージャーにアップグレード",
-    "secondaryCta": "30秒で学べる"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "流動性からより多くの収益を得る",
-    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけで流動性をアップグレードできます。",
-    "primaryCta": "スーパーチャージャーにアップグレード",
-    "secondaryCta": "30秒で学べる"
   },
   "createFirstPositionCta": {
     "title": "最初のスーパーチャージポジションを作成する",
@@ -784,21 +759,6 @@
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
   "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
-  "upgrades": {
-    "title": "アップグレードが可能",
-    "detected": "以下にリストされている資産またはポジションのアップグレードが検出されました。",
-    "positionUpgrade": "ポジションのアップグレード",
-    "superchargedLiquidity": "流動性の高まり",
-    "newSuperchargedPool": "この新しいプールには、より高い収益の可能性があり、推定年利も最も高くなります。",
-    "upgrade": "アップグレード",
-    "pool": "プール",
-    "new": "新しい",
-    "current": "現在",
-    "success": "アップグレード成功！",
-    "clickHereToView": "ここをクリックしてご覧ください",
-    "foundHere": "アップグレードはここで見つけることができます",
-    "availableHereCaption": "利用可能なアップグレードはここで確認できます。いつでもアップグレードを選択できます。"
-  },
   "seo": {
     "404": {
       "title": "404 - ページが見つかりません",
@@ -910,7 +870,9 @@
       "all": "全て",
       "single": "シングル",
       "multi": "マルチ"
-    }
+    },
+    "totalValueInvested": "投資総額",
+    "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
   },
   "disclaimer": "免責事項"
 }

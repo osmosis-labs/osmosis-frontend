@@ -30,14 +30,7 @@ import {
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  when,
-} from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
@@ -94,6 +87,18 @@ export function useAddConcentratedLiquidityConfig(
   );
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
+
+  const { data: baseDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+    coinMinimalDenom: pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
+  });
+
+  const { data: quoteDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+    coinMinimalDenom: pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
+  });
+
+  if (baseDepositPrice && quoteDepositPrice) {
+    config.setPrices(baseDepositPrice, quoteDepositPrice);
+  }
 
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
@@ -225,42 +230,26 @@ export function useAddConcentratedLiquidityConfig(
   const increaseLiquidity = useCallback(
     (positionId: string) =>
       new Promise<void>(async (resolve, reject) => {
-        const amount0 = config.quoteDepositOnly
-          ? "0"
-          : config.baseDepositAmountIn.getAmountPrimitive().amount;
-        const amount1 = config.baseDepositOnly
-          ? "0"
-          : config.quoteDepositAmountIn.getAmountPrimitive().amount;
+        const coin0 = config.quoteDepositOnly
+          ? {
+              denom: config.baseDepositAmountIn.sendCurrency.coinMinimalDenom,
+              amount: "0",
+            }
+          : config.baseDepositAmountIn.getAmountPrimitive();
+        const coin1 = config.baseDepositOnly
+          ? {
+              denom: config.quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
+              amount: "0",
+            }
+          : config.quoteDepositAmountIn.getAmountPrimitive();
 
-        await when(() => Boolean(priceStore.response));
-        const value0 = priceStore.calculatePrice(
-          new CoinPretty(config.baseDepositAmountIn.sendCurrency, amount0)
-        );
-        const value1 = priceStore.calculatePrice(
-          new CoinPretty(config.quoteDepositAmountIn.sendCurrency, amount1)
-        );
-        const totalValue = Number(
-          value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
-        );
-        const baseEvent = {
-          isSingleAsset: amount0 === "0" || amount1 === "0",
-          liquidityUSD: totalValue,
-          positionId: positionId,
-          volatilityType: config.currentStrategy ?? "",
-          poolId,
-          rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
-          rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
-        };
-        logEvent([
-          EventName.ConcentratedLiquidity.addMoreLiquidityStarted,
-          baseEvent,
-        ]);
+        logEvent([EventName.ConcentratedLiquidity.addMoreLiquidityStarted]);
 
         try {
-          await account?.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
             positionId,
-            amount0,
-            amount1,
+            coin0,
+            coin1,
             undefined,
             undefined,
             (tx) => {
@@ -272,7 +261,6 @@ export function useAddConcentratedLiquidityConfig(
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
-                  baseEvent,
                 ]);
 
                 resolve();
@@ -291,10 +279,7 @@ export function useAddConcentratedLiquidityConfig(
       config.quoteDepositAmountIn,
       config.baseDepositOnly,
       config.quoteDepositOnly,
-      config.currentStrategy,
-      config.rangeWithCurrencyDecimals,
-      account?.osmosis,
-      priceStore,
+      account,
       logEvent,
     ]
   );
@@ -337,6 +322,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @observable
   protected _quoteDepositAmountIn: AmountConfig;
+
+  @observable
+  protected _baseDepositPrice: PricePretty | null = null;
+
+  @observable
+  protected _quoteDepositPrice: PricePretty | null = null;
 
   @observable
   protected _anchorAsset: "base" | "quote" = "base";
@@ -418,7 +409,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
@@ -426,19 +421,19 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     // query returns prices with decimals for display
     const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const maxPrice7d = this._priceRangeInput[1].removeCurrencyDecimals(max);
     const priceDiff = maxPrice7d
       .sub(minPrice7d)
       .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
 
     return [
       roundPriceToNearestTick(
-        minPrice7d.sub(priceDiff),
+        minPrice7d.sub(priceDiff).abs(),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        maxPrice7d.add(priceDiff),
+        maxPrice7d.add(priceDiff).abs(),
         this.pool.tickSpacing,
         false
       ),
@@ -495,7 +490,11 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
-    if (!this.pool || !this._minHistoricalPrice || !this._maxHistoricalPrice)
+    if (
+      !this.pool ||
+      this._minHistoricalPrice === null ||
+      this._maxHistoricalPrice === null
+    )
       return [new Dec(0.1), new Dec(100)];
 
     const min = this._minHistoricalPrice;
@@ -503,19 +502,19 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     // query returns prices with decimals for display
     const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const maxPrice1Mo = this._priceRangeInput[1].removeCurrencyDecimals(max);
     const priceDiff = maxPrice1Mo
       .sub(minPrice1Mo)
       .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
 
     return [
       roundPriceToNearestTick(
-        minPrice1Mo.sub(priceDiff),
+        minPrice1Mo.sub(priceDiff).abs(),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        maxPrice1Mo.add(priceDiff),
+        maxPrice1Mo.add(priceDiff).abs(),
         this.pool.tickSpacing,
         false
       ),
@@ -566,14 +565,17 @@ export class ObservableAddConcentratedLiquidityConfig {
       this.pool.currentSqrtPrice
     );
 
-    const amount0Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      ) ?? new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
-    const amount1Value =
-      this.priceStore.calculatePrice(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+    const amount0Value = this._baseDepositPrice
+      ? this._baseDepositPrice.mul(
+          new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+        )
+      : new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
+    const amount1Value = this._quoteDepositPrice
+      ? this._quoteDepositPrice.mul(
+          new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+        )
+      : new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+
     const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
     if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
@@ -1030,6 +1032,15 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
     this._minHistoricalPrice = min;
     this._maxHistoricalPrice = max;
+  };
+
+  @action
+  readonly setPrices = (
+    baseDepositPrice: PricePretty,
+    quoteDepositPrice: PricePretty
+  ) => {
+    this._baseDepositPrice = baseDepositPrice;
+    this._quoteDepositPrice = quoteDepositPrice;
   };
 
   @action

@@ -4,9 +4,9 @@ import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
-import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -163,15 +163,17 @@ export const LockTokensModal: FunctionComponent<
           ))}
         </div>
         {superfluidPoolDetail?.isSuperfluid && (
-          <CheckBox
-            backgroundStyles="bg-superfluid"
-            borderStyles="border-superfluid"
-            isOn={superfluidDurationSelected && electSuperfluid}
-            onToggle={() => setElectSuperfluid(!electSuperfluid)}
-            disabled={!superfluidDurationSelected || hasSuperfluidValidator}
-          >
-            <div
-              className={classNames("flex flex-col gap-1", {
+          <div className="flex gap-3">
+            <Checkbox
+              id="superfluid-checkbox"
+              variant="secondary"
+              checked={superfluidDurationSelected && electSuperfluid}
+              onClick={() => setElectSuperfluid(!electSuperfluid)}
+              disabled={!superfluidDurationSelected || hasSuperfluidValidator}
+            />
+            <label
+              htmlFor="superfluid-checkbox"
+              className={classNames("flex cursor-pointer flex-col gap-1", {
                 "opacity-30":
                   !superfluidDurationSelected || hasSuperfluidValidator,
               })}
@@ -189,8 +191,8 @@ export const LockTokensModal: FunctionComponent<
                   })}
                 </span>
               )}
-            </div>
-          </CheckBox>
+            </label>
+          </div>
         )}
         <div className="flex flex-col gap-2">
           <div className="flex place-content-between items-center">

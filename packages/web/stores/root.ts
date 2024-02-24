@@ -16,7 +16,6 @@ import {
   PoolFallbackPriceStore,
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
@@ -85,8 +84,6 @@ export class RootStore {
   public readonly userSettings: UserSettings;
 
   public readonly profileStore: ProfileStore;
-
-  public readonly userUpgrades: UserUpgradesConfig;
 
   constructor({
     txEvents,
@@ -272,13 +269,5 @@ export class RootStore {
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
-
-    this.userUpgrades = new UserUpgradesConfig(
-      this.chainStore.osmosis.chainId,
-      this.queriesStore,
-      this.accountStore,
-      this.derivedDataStore,
-      this.priceStore
-    );
   }
 }

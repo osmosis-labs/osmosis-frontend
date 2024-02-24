@@ -1,18 +1,13 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { mapAssetsToCoins } from "~/server/queries/complex/assets";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
-  getTotalClaimableRewards,
-  getTotalEarned,
-  mapGetUserPositionDetails,
+  getPositionHistoricalPerformance,
+  mapGetPositionDetails,
+  mapGetPositions,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
-import { queryPositionPerformance } from "~/server/queries/imperator";
 import { queryCLPosition } from "~/server/queries/osmosis/concentratedliquidity";
-import { sum } from "~/utils/math";
 import { sort } from "~/utils/sort";
 
 export const concentratedLiquidityRouter = createTRPCRouter({
@@ -21,83 +16,51 @@ export const concentratedLiquidityRouter = createTRPCRouter({
       z
         .object({
           sortDirection: z.enum(["asc", "desc"]).default("desc"),
+          forPoolId: z.string().optional(),
         })
         .merge(UserOsmoAddressSchema.required())
     )
-    .query(async ({ input: { userOsmoAddress, sortDirection } }) => {
-      const result = await mapGetUserPositionDetails({
+    .query(({ input: { userOsmoAddress, sortDirection, forPoolId } }) =>
+      mapGetPositions({
         userOsmoAddress,
-      });
-      return sort(result, "joinTime", sortDirection);
-    }),
+        forPoolId,
+      }).then((positions) => sort(positions, "joinTime", sortDirection))
+    ),
+  getPositionDetails: publicProcedure
+    .input(
+      z
+        .object({
+          positionId: z.string(),
+        })
+        .merge(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input: { positionId, userOsmoAddress } }) => {
+      const { position } = await queryCLPosition({ id: positionId });
 
-  getPositionPerformance: publicProcedure
+      if (!position) {
+        throw new Error("Position not found");
+      }
+
+      const details = (
+        await mapGetPositionDetails({
+          positions: [position],
+          userOsmoAddress,
+        })
+      )[0];
+
+      if (!details) {
+        throw new Error("Failed to get position details");
+      }
+
+      return details;
+    }),
+  getPositionHistoricalPerformance: publicProcedure
     .input(
       z.object({
         positionId: z.string(),
       })
     )
-    .query(async ({ input: { positionId } }) => {
-      const [position, performance] = await Promise.all([
-        queryCLPosition({ id: positionId }),
-        queryPositionPerformance({ positionId }),
-      ]);
-
-      const [
-        principalAssets,
-        currentPositionAssets,
-        unclaimedRewards,
-        totalEarned,
-      ] = await Promise.all([
-        mapAssetsToCoins({
-          rawAssets: performance.principal.assets,
-          calculatePrice: true,
-        }),
-        mapAssetsToCoins({
-          rawAssets: [position.position.asset0, position.position.asset1],
-          calculatePrice: true,
-        }),
-        getTotalClaimableRewards({
-          rawClaimableIncentiveRewards: position.position.claimable_incentives,
-          rawClaimableSpreadRewards: position.position.claimable_spread_rewards,
-          calculatePrice: true,
-        }),
-        getTotalEarned({
-          totalIncentivesRewards: performance.total_incentives_rewards,
-          totalSpreadRewards: performance.total_spread_rewards,
-        }),
-      ]);
-
-      const totalPrincipalValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        sum(principalAssets)
-      );
-      const currentPositionValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        sum(currentPositionAssets)
-      );
-      const unclaimedRewardsValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        sum(unclaimedRewards)
-      );
-      const totalEarnedValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        sum(totalEarned)
-      );
-
-      const roi = new RatePretty(
-        currentPositionValue
-          .toDec()
-          .add(unclaimedRewardsValue.toDec())
-          .add(totalEarnedValue.toDec())
-          .sub(totalPrincipalValue.toDec())
-          .quo(totalPrincipalValue.toDec())
-      );
-
-      return {
-        principalAssets,
-        totalEarned,
-        roi,
-      };
-    }),
+    .query(({ input: { positionId } }) =>
+      getPositionHistoricalPerformance({ positionId })
+    ),
 });

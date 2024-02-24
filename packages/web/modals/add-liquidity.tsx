@@ -2,7 +2,7 @@ import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
@@ -28,7 +28,7 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -117,10 +117,6 @@ export const AddLiquidityModal: FunctionComponent<
           <AddConcLiquidity
             addLiquidityConfig={addConliqConfig}
             actionButton={accountActionButton}
-            getFiatValue={useCallback(
-              (coin) => priceStore.calculatePrice(coin),
-              [priceStore]
-            )}
             onRequestClose={props.onRequestClose}
           />
         </ModalBase>
@@ -139,7 +135,6 @@ export const AddLiquidityModal: FunctionComponent<
         className="pt-4"
         addLiquidityConfig={config as ObservableAddLiquidityConfig}
         actionButton={accountActionButton}
-        getFiatValue={(coin) => priceStore.calculatePrice(coin)}
       />
     </ModalBase>
   );
