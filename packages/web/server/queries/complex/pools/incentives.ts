@@ -11,6 +11,7 @@ import { ExcludedExternalBoostPools } from "~/config/feature-flag";
 import { queryPriceRangeApr } from "~/server/queries/numia";
 import { queryLockableDurations } from "~/server/queries/osmosis";
 
+import { queryModerateRangeApr } from "../../numia/moderate-range-apr";
 import { queryPoolAprs } from "../../numia/pool-aprs";
 
 dayjs.extend(duration);
@@ -33,6 +34,16 @@ export type PoolIncentives = Partial<{
     osmosis: RatePretty;
     boost: RatePretty;
   }>;
+
+  moderateRangeAprBreakdown: Partial<{
+    total: RatePretty;
+
+    swapFee: RatePretty;
+    superfluid: RatePretty;
+    osmosis: RatePretty;
+    boost: RatePretty;
+  }>;
+
   incentiveTypes: PoolIncentiveType[];
 }>;
 
@@ -88,12 +99,28 @@ export function getCachedPoolIncentivesMap(): Promise<
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
 
+      const moderatePoolAprs = new Map(
+        (await queryModerateRangeApr()).map(
+          (obj) => [obj.pool_id, obj] as const
+        )
+      );
+
       return aprs.reduce((map, apr) => {
         let total = maybeMakeRatePretty(apr.total_apr);
         const swapFee = maybeMakeRatePretty(apr.swap_fees);
         const superfluid = maybeMakeRatePretty(apr.superfluid);
         const osmosis = maybeMakeRatePretty(apr.osmosis);
         let boost = maybeMakeRatePretty(apr.boost);
+
+        // get this pool's moderate range aprs from the moderate range map
+        let moderateApr = moderatePoolAprs.get(apr.pool_id);
+        let moderate_total = maybeMakeRatePretty(moderateApr?.total_apr || 0);
+        let moderate_swapFee = maybeMakeRatePretty(moderateApr?.swap_fees || 0);
+        let moderate_superfluid = maybeMakeRatePretty(
+          moderateApr?.superfluid || 0
+        );
+        let moderate_osmosis = maybeMakeRatePretty(moderateApr?.osmosis || 0);
+        let moderate_boost = maybeMakeRatePretty(moderateApr?.boost || 0);
 
         // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
         if (
@@ -114,6 +141,13 @@ export function getCachedPoolIncentivesMap(): Promise<
         const hasBreakdownData =
           total || swapFee || superfluid || osmosis || boost;
 
+        const hasModerateBreakdownData =
+          moderate_total ||
+          moderate_swapFee ||
+          moderate_superfluid ||
+          moderate_osmosis ||
+          moderate_boost;
+
         map.set(apr.pool_id, {
           aprBreakdown: hasBreakdownData
             ? {
@@ -122,6 +156,15 @@ export function getCachedPoolIncentivesMap(): Promise<
                 superfluid,
                 osmosis,
                 boost,
+              }
+            : undefined,
+          moderateRangeAprBreakdown: hasModerateBreakdownData
+            ? {
+                total: moderate_total,
+                swapFee: moderate_swapFee,
+                superfluid: moderate_superfluid,
+                osmosis: moderate_osmosis,
+                boost: moderate_boost,
               }
             : undefined,
           incentiveTypes,

@@ -1,3 +1,4 @@
+export * from "./moderate-range-apr";
 export * from "./price-range-apr";
 export * from "./staking-apr";
 
