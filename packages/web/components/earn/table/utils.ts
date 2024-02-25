@@ -92,8 +92,12 @@ export const boolEqualsString: FilterFn<EarnStrategy> = (
 };
 
 export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
-  const rowAConvertedValue = Number((rowA.getValue(colId) as RatePretty).toDec().toString())
-  const rowBConvertedValue = Number((rowB.getValue(colId) as RatePretty).toDec().toString())
+  const rowAConvertedValue = Number(
+    (rowA.getValue(colId) as RatePretty).toDec().toString()
+  );
+  const rowBConvertedValue = Number(
+    (rowB.getValue(colId) as RatePretty).toDec().toString()
+  );
 
   if (rowAConvertedValue === rowBConvertedValue) return 0;
   /**
