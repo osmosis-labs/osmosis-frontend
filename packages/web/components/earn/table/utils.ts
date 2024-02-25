@@ -1,3 +1,4 @@
+import { RatePretty } from "@keplr-wallet/unit";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
@@ -90,9 +91,9 @@ export const boolEqualsString: FilterFn<EarnStrategy> = (
   }
 };
 
-export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB) => {
-  const rowAConvertedValue = Number(rowA.original.tvl.toDec().toString());
-  const rowBConvertedValue = Number(rowB.original.tvl.toDec().toString());
+export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
+  const rowAConvertedValue = Number((rowA.getValue(colId) as RatePretty).toDec().toString())
+  const rowBConvertedValue = Number((rowB.getValue(colId) as RatePretty).toDec().toString())
 
   if (rowAConvertedValue === rowBConvertedValue) return 0;
   /**
