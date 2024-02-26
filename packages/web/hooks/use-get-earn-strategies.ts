@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
@@ -87,14 +87,16 @@ const useGetEarnStrategies = (
             ...earnStrategy,
             balance: balanceQuery.data.balance.usd,
           });
-        accumulatedUnclaimedRewards = accumulatedUnclaimedRewards.add(
-          balanceQuery.data.unclaimed_rewards.usd
-        );
         accumulatedBalance = accumulatedBalance.add(
           balanceQuery.data.balance.usd
         );
 
-        if (!balanceQuery.data.unclaimed_rewards.usd.toDec().isZero()) {
+        if (
+          balanceQuery.data.unclaimed_rewards.usd.toDec().gte(new Dec(0.01))
+        ) {
+          accumulatedUnclaimedRewards = accumulatedUnclaimedRewards.add(
+            balanceQuery.data.unclaimed_rewards.usd
+          );
           unclaimedRewards.push({
             id: balanceQuery.data.id,
             provider:
