@@ -23,12 +23,19 @@ export const EarnRewards = ({
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const apiUtils = api.useUtils();
 
+  const filteredUnclaimedRewards = unclaimedRewards.filter((unclaimedReward) =>
+    /**
+     * Currently, claiming rewards is only limited to osmosis and quasar
+     */
+    ["quasar", "osmosis"].includes(unclaimedReward.provider)
+  );
+
   const claimAllRewards = useCallback(async () => {
     const messages: EncodeObject[] = [];
 
     if (!account) return;
 
-    unclaimedRewards.forEach(({ id, provider }) => {
+    filteredUnclaimedRewards.forEach(({ id, provider }) => {
       switch (provider) {
         case "osmosis":
           messages.push(
@@ -79,6 +86,7 @@ export const EarnRewards = ({
     account,
     accountStore,
     apiUtils.edge.earn.getStrategyBalance,
+    filteredUnclaimedRewards,
     unclaimedRewards,
   ]);
 
@@ -113,7 +121,8 @@ export const EarnRewards = ({
           disabled={
             totalUnclaimedRewards.toDec().isZero() ||
             areQueriesLoading ||
-            account?.txTypeInProgress !== ""
+            account?.txTypeInProgress !== "" ||
+            filteredUnclaimedRewards.length === 0
           }
           mode={"primary"}
           className="max-h-11"
