@@ -34,7 +34,6 @@ import {
 } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { useStore } from "~/stores";
 import {
   CoinBalance,
@@ -767,7 +766,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           )}
         </div>
         <TransferHistoryTable className="mt-8 md:-mx-4 md:w-screen" />
-        <UnstableAssetWarning isOpen={true} />
+        {/* <UnstableAssetWarning isOpen={true} /> */}
       </section>
     );
   }
