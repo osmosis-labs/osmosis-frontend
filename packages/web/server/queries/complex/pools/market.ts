@@ -23,7 +23,8 @@ export function getCachedPoolMarketMetricsMap(): Promise<
   return cachified({
     cache: metricPoolsCache,
     key: "pools-metrics-map",
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 10, // 10 seconds
+    staleWhileRevalidate: 1000 * 25, // 25 seconds, edge function run time limit
     getFreshValue: async () => {
       const map = new Map<string, PoolMarketMetrics>();
 
