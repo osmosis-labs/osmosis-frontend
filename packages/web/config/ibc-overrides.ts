@@ -560,6 +560,10 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
+  "solana.USDC.wh": {
+    depositUrlOverride: "https://portalbridge.com/cosmos/",
+    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
