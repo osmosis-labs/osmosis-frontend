@@ -1,6 +1,5 @@
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import cachified, { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
+import cachified from "cachified";
 
 import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
@@ -15,12 +14,7 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache =
-  typeof window === "undefined"
-    ? new RemoteCache()
-    : new LRUCache<string, CacheEntry>({
-        max: 20,
-      });
+const poolsCache = new RemoteCache();
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
