@@ -6,7 +6,6 @@ import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";
-import { RemoteCache } from "~/utils/cache";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -15,12 +14,9 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache =
-  typeof window === "undefined"
-    ? new RemoteCache()
-    : new LRUCache<string, CacheEntry>({
-        max: 20,
-      });
+const poolsCache = new LRUCache<string, CacheEntry>({
+  max: 20,
+});
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
