@@ -832,7 +832,7 @@ export const TransferContent: FunctionComponent<
     (providerId: AvailableBridges, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
-          `${providerId.toLowerCase()}${JSON.stringify(params)}`,
+          `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
           osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
