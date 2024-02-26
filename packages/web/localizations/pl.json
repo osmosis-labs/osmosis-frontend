@@ -874,5 +874,8 @@
     "totalValueInvested": "Całkowita zainwestowana wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
-  "disclaimer": "Zastrzeżenie"
+  "disclaimer": "Zastrzeżenie",
+  "unstableAssetsWarning": {
+    "buttonCancel": "Anulować"
+  }
 }

@@ -874,5 +874,8 @@
     "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
     "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો"
   },
-  "disclaimer": "અસ્વીકરણ"
+  "disclaimer": "અસ્વીકરણ",
+  "unstableAssetsWarning": {
+    "buttonCancel": "રદ કરો"
+  }
 }

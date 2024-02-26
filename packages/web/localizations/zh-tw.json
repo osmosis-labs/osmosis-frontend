@@ -874,5 +874,8 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明"
+  "disclaimer": "免責聲明",
+  "unstableAssetsWarning": {
+    "buttonCancel": "取消"
+  }
 }

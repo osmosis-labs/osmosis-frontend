@@ -874,5 +874,8 @@
     "totalValueInvested": "Общая вложенная стоимость",
     "lookBelow": "Посмотрите ниже и найдите лучшие стратегии для вас"
   },
-  "disclaimer": "Отказ от ответственности"
+  "disclaimer": "Отказ от ответственности",
+  "unstableAssetsWarning": {
+    "buttonCancel": "Отмена"
+  }
 }

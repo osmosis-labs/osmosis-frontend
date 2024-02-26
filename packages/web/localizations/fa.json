@@ -874,5 +874,8 @@
     "totalValueInvested": "کل ارزش سرمایه گذاری شده",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
   },
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "unstableAssetsWarning": {
+    "buttonCancel": "لغو کنید"
+  }
 }

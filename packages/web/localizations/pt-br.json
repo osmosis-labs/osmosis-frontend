@@ -874,5 +874,8 @@
     "totalValueInvested": "Valor total investido",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
-  "disclaimer": "Isenção de responsabilidade"
+  "disclaimer": "Isenção de responsabilidade",
+  "unstableAssetsWarning": {
+    "buttonCancel": "Cancelar"
+  }
 }

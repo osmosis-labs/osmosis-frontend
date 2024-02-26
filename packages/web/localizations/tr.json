@@ -874,5 +874,8 @@
     "totalValueInvested": "Yatırılan Toplam Değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "unstableAssetsWarning": {
+    "buttonCancel": "İptal etmek"
+  }
 }

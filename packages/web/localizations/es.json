@@ -874,5 +874,8 @@
     "totalValueInvested": "Valor total invertido",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "unstableAssetsWarning": {
+    "buttonCancel": "Cancelar"
+  }
 }
