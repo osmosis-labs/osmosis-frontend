@@ -7,14 +7,14 @@ import { superjson } from "~/utils/superjson";
 
 const isTestEnv = process.env.NODE_ENV === "test";
 
-// inspired by: https://github.com/mannyv123/cachified-redis-adapter/blob/main/src/index.ts
+// Client implementation inspired by: https://github.com/mannyv123/cachified-redis-adapter/blob/main/src/index.ts
 /** `cachified`-compatible implementation of a cache living on a remote resource.
  *
- *  Data must be serializeable via `superjson` adapter.
+ *  Values must be serializeable via `superjson` transformer.
  *
- *  NOTE: uses an LRUCache in test environment to avoid hitting the remote resource as Vercel KV createClient secret env vars are not available in GH action.
+ *  NOTE: Uses an LRUCache in test environment to avoid hitting the remote resource as Vercel KV createClient secret env vars are not available in GH action.
  *
- *  WARNING: only available in node runtime.
+ *  WARNING: Only available in dev/prod node runtime (not browser).
  */
 export class RemoteCache implements Cache {
   protected kvStore: VercelKV | null = null;
