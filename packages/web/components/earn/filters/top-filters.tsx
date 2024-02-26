@@ -186,7 +186,7 @@ export const TopFilters = ({
           placeholder={t("store.searchPlaceholder")}
           size={"full"}
         />
-        <div className="flex 2xl:hidden">
+        <div className="pointer-events-none flex opacity-50 2xl:hidden">
           {strategiesFilters.map((props) => {
             return (
               <StrategyButton
@@ -218,7 +218,7 @@ export const TopFilters = ({
               value: value as StrategyButtonResponsibility,
             })
           }
-          containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
+          containerClassName="hidden opacity-50 pointer-events-none w-full max-w-sm items-center gap-7 2xl:flex"
         />
         <RadioWithOptions
           mode="secondary"
@@ -279,7 +279,7 @@ export const TopFilters = ({
               value: value as StrategyButtonResponsibility,
             })
           }
-          containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
+          containerClassName="hidden opacity-50 pointer-events-none w-full max-w-sm items-center gap-7 2xl:flex"
         />
         <RadioWithOptions
           mode="secondary"
