@@ -876,6 +876,9 @@
   },
   "disclaimer": "부인 성명",
   "unstableAssetsWarning": {
+    "title": "전송이 불안정함",
+    "buttonWithdraw": "어쨌든 출금",
+    "buttonDeposit": "어쨌든 입금",
     "buttonCancel": "취소"
   }
 }

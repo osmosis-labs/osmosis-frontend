@@ -876,6 +876,9 @@
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {
+    "title": "Transferuri instabile",
+    "buttonWithdraw": "Retrageți-vă oricum",
+    "buttonDeposit": "Depozit oricum",
     "buttonCancel": "Anulare"
   }
 }

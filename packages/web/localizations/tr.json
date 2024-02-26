@@ -876,6 +876,9 @@
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {
+    "title": "Transferler Kararsız",
+    "buttonWithdraw": "Yine de Çek",
+    "buttonDeposit": "Yine de Para Yatır",
     "buttonCancel": "İptal etmek"
   }
 }

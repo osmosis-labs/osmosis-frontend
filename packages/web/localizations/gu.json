@@ -876,6 +876,9 @@
   },
   "disclaimer": "અસ્વીકરણ",
   "unstableAssetsWarning": {
+    "title": "ટ્રાન્સફર અસ્થિર",
+    "buttonWithdraw": "કોઈપણ રીતે પાછો ખેંચો",
+    "buttonDeposit": "કોઈપણ રીતે જમા કરો",
     "buttonCancel": "રદ કરો"
   }
 }

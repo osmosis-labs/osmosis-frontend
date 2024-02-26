@@ -876,6 +876,9 @@
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {
+    "title": "Transfery niestabilne",
+    "buttonWithdraw": "Wycofaj się mimo to",
+    "buttonDeposit": "W każdym razie wpłać",
     "buttonCancel": "Anulować"
   }
 }

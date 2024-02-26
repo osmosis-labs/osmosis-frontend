@@ -876,6 +876,9 @@
   },
   "disclaimer": "سلب مسئولیت",
   "unstableAssetsWarning": {
+    "title": "نقل و انتقالات ناپایدار",
+    "buttonWithdraw": "به هر حال کنار بکش",
+    "buttonDeposit": "به هر حال سپرده گذاری کنید",
     "buttonCancel": "لغو کنید"
   }
 }

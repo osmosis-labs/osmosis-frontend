@@ -876,6 +876,9 @@
   },
   "disclaimer": "Отказ от ответственности",
   "unstableAssetsWarning": {
+    "title": "Трансферы нестабильны",
+    "buttonWithdraw": "Вывести все равно",
+    "buttonDeposit": "Депозит в любом случае",
     "buttonCancel": "Отмена"
   }
 }

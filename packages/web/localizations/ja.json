@@ -876,6 +876,9 @@
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {
+    "title": "転送が不安定",
+    "buttonWithdraw": "とにかく撤退する",
+    "buttonDeposit": "とにかく入金する",
     "buttonCancel": "キャンセル"
   }
 }

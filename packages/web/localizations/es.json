@@ -876,6 +876,9 @@
   },
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {
+    "title": "Transferencias inestables",
+    "buttonWithdraw": "Retirarse de todos modos",
+    "buttonDeposit": "Depositar de todos modos",
     "buttonCancel": "Cancelar"
   }
 }
