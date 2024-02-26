@@ -198,14 +198,18 @@ export const AllPoolsTable: FunctionComponent<{
   const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
         cell: PoolCompositionCell,
       }),
-      shouldFormatVolume &&
+    ];
+
+    // Only show volume if more than half of the pools have volume data.
+    if (shouldFormatVolume) {
+      allColumns.push(
         columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
           id: "volume24hUsd",
           header: () => (
@@ -219,7 +223,12 @@ export const AllPoolsTable: FunctionComponent<{
               setSortKey={setSortKey}
             />
           ),
-        }),
+        })
+      );
+    }
+
+    // Add all remaining columns
+    let remainingColumns = [
       columnHelper.accessor(
         (row) => row.totalFiatValueLocked?.toString() ?? "0",
         {
@@ -279,29 +288,34 @@ export const AllPoolsTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      columnHelper,
-      t,
-      isLoading,
-      sortKey,
-      sortParams.allPoolsSortDir,
-      setSortDirection,
-      setSortKey,
-      cellGroupEventEmitter,
-      quickAddLiquidity,
-    ]
-  );
+    ];
+
+    allColumns.push(...remainingColumns);
+
+    return allColumns;
+  }, [
+    columnHelper,
+    t,
+    isLoading,
+    sortKey,
+    sortParams.allPoolsSortDir,
+    setSortDirection,
+    setSortKey,
+    cellGroupEventEmitter,
+    quickAddLiquidity,
+    shouldFormatVolume,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
-    if (width < Breakpoint.lg) collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.lg && shouldFormatVolume)
+      collapsedColIds.push("volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
-  }, [columns, width]);
+  }, [columns, width, shouldFormatVolume]);
 
   const table = useReactTable({
     data: poolsData,
