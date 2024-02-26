@@ -101,7 +101,7 @@ export const PreTransferModal: FunctionComponent<
             <Button
               className="h-10 w-full"
               mode="secondary"
-              disabled={isUnstable}
+              // disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
@@ -138,7 +138,7 @@ export const PreTransferModal: FunctionComponent<
           {!isEthAsset && !externalDepositUrl && (
             <Button
               className="h-10 w-full"
-              disabled={isUnstable}
+              // disabled={isUnstable}
               onClick={onDeposit}
             >
               {t("assets.table.preTransfer.deposit")}

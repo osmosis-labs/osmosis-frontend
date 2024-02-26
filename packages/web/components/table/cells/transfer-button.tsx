@@ -46,7 +46,8 @@ export const TransferButtonCell: FunctionComponent<
           content={notSupportedTooltipText}
         >
           <TransferButton
-            disabled={!isWithdrawSupported || isUnstable}
+            // disabled={!isWithdrawSupported || isUnstable}
+            disabled={!isWithdrawSupported}
             externalUrl={withdrawUrlOverride}
             label={t("assets.table.withdrawButton")}
             action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
@@ -56,7 +57,8 @@ export const TransferButtonCell: FunctionComponent<
     ) : chainId && coinDenom && onDeposit ? (
       <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
         <TransferButton
-          disabled={!isDepositSupported || isUnstable}
+          // disabled={!isDepositSupported || isUnstable}
+          disabled={!isDepositSupported}
           externalUrl={depositUrlOverride}
           label={t("assets.table.depositButton")}
           action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
