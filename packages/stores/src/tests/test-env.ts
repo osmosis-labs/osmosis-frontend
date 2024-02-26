@@ -59,7 +59,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       MockChainList,
       TestOsmosisChainId,
-      assets as AssetList[],
+      assets as unknown as AssetList[],
       [testWallet],
       this.queriesStore,
       this.chainStore,

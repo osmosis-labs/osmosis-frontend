@@ -40,7 +40,8 @@ type Pool =
 type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 type PoolIncentiveFilter = NonNullable<Pool["incentiveTypes"]>[number];
 
-const poolTypes = [
+// These are the options for filtering the pools.
+const poolFilterTypes = [
   "weighted",
   "stable",
   "concentrated",
@@ -78,8 +79,8 @@ const useAllPoolsTable = () => {
     {
       searchQuery: parseAsString,
       poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
-        parseAsStringLiteral<PoolTypeFilter>(poolTypes)
-      ).withDefault([...poolTypes]),
+        parseAsStringLiteral<PoolTypeFilter>(poolFilterTypes)
+      ).withDefault([...poolFilterTypes]),
       poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
         parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
       ).withDefault([...incentiveTypes]),
@@ -151,7 +152,9 @@ export const AllPoolsTable: FunctionComponent<{
             query: filters.searchQuery,
           }
         : undefined,
-      types: [...filters.poolTypesFilter, "cosmwasm"],
+      // These are all of the pools that we support fetching.
+      // In addiion, to pool filters, there are also general cosmwasm pools and cosmwasm Astroport PCL pools.
+      types: [...filters.poolTypesFilter, "cosmwasm", "cosmwasm-astroport-pcl"],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
         ? {

@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "此资产与此钱包不兼容。",
-  "convertToStake": {
-    "adTitle": "我们发现了更好的盈利策略。",
-    "adSubtitle": "您的某些职位的收入低于您通过质押 OSMO 获得的收入",
-    "title": "转换为质押 OSMO",
-    "description": "选定的位置将完全转换为 OSMO。然后，所有 OSMO 将自动质押到您现有的验证器集。",
-    "stakedOsmo": "锁定 OSMO",
-    "APR": "年利率",
-    "currentApr": "当前年利率",
-    "pool": "水池 ＃{poolId}",
-    "position": "位置 # {positionId}",
-    "convertAndStake": "转换和质押"
-  },
   "clPositions": {
     "inRange": "在范围内",
     "nearBounds": "接近极限",
@@ -130,18 +118,6 @@
     "applyButton": "申请",
     "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
     "allAppsHeader": "所有应用"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "为您的增压",
-    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的职位。",
-    "primaryCta": "升级至增压",
-    "secondaryCta": "30秒学会"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "从您的流动性中赚取更多",
-    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的流动性。",
-    "primaryCta": "升级至增压",
-    "secondaryCta": "30秒学会"
   },
   "createFirstPositionCta": {
     "title": "创建您的第一个 Supercharged 职位",
@@ -783,21 +759,6 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "upgrades": {
-    "title": "可升级",
-    "detected": "我们检测到下列资产或头寸的升级。",
-    "positionUpgrade": "职位升级",
-    "superchargedLiquidity": "流动性充沛",
-    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
-    "upgrade": "升级",
-    "pool": "水池",
-    "new": "新的",
-    "current": "当前的",
-    "success": "升级成功！",
-    "clickHereToView": "点击此处查看",
-    "foundHere": "可以在这里找到升级",
-    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
-  },
   "seo": {
     "404": {
       "title": "404页面不存在",

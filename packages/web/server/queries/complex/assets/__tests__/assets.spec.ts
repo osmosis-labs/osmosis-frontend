@@ -31,11 +31,13 @@ describe("getAssets", () => {
 
     it("should not return unlisted assets", async () => {
       const assets = await getAssets({
-        search: { query: "PYTH" },
+        search: { query: "PURSE" },
         assetList: AssetLists,
       });
 
-      expect(assets).toEqual([]);
+      expect(
+        assets.find(({ coinDenom }) => coinDenom === "PURSE")
+      ).toBeUndefined();
     });
 
     it("should filter unverified assets if specified", async () => {

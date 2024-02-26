@@ -6,8 +6,8 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 
 import { Button } from "~/components/buttons";
-import { Slider } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -63,9 +63,9 @@ export const RemoveLiquidity: FunctionComponent<
         </div>
         <Slider
           className="my-8 w-full"
-          currentValue={removeLiquidityConfig.percentage}
-          onInput={(value) =>
-            removeLiquidityConfig.setPercentage(value.toString())
+          value={[removeLiquidityConfig.percentage]}
+          onValueChange={(value: number[]) =>
+            removeLiquidityConfig.setPercentage(value[0].toString())
           }
           min={0}
           max={100}
