@@ -8,7 +8,7 @@ interface SimplePriceResponse {
   /**
    * price of coin for this currency
    */
-  [coin: string]: Partial<Record<CoingeckoVsCurrencies, number>>;
+  [coinGeckoId: string]: Partial<Record<CoingeckoVsCurrencies, number>>;
 }
 
 export async function querySimplePrice(

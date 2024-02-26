@@ -2,9 +2,10 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
+import timeout, { AsyncTimeoutError } from "~/utils/async";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -13,7 +14,9 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const poolsCache = new LRUCache<string, CacheEntry>({
+  max: 20,
+});
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
@@ -24,17 +27,41 @@ export function getPoolsFromSidecar({
   return cachified({
     cache: poolsCache,
     key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
-    ttl: 1000, // 1 second
+    ttl: 5_000, // 5 seconds
+    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
-      const sidecarPools = await queryPools({ poolIds });
+      const sidecarPools = await timeout(
+        () => queryPools({ poolIds }),
+        9_000, // 9 seconds
+        "sidecarQueryPools"
+      )();
       const reserveCoins = await Promise.all(
         sidecarPools.map((sidecarPool) =>
-          getListedReservesFromSidecarPool(sidecarPool).catch(() => null)
+          timeout(
+            () => getListedReservesFromSidecarPool(sidecarPool),
+            9_000, // 9 seconds
+            "getListedReservesFromSidecarPool"
+          )().catch((e) => {
+            if (e instanceof AsyncTimeoutError) {
+              console.error(
+                `Timeout while fetching reserves for pool ${getPoolIdFromChainPool(
+                  sidecarPool.chain_model
+                )}`
+              );
+            }
+            return null;
+          })
         )
       );
       const totalFiatLockedValues = await Promise.all(
         reserveCoins.map((reserve) =>
-          reserve ? calcTotalFiatValueLockedFromReserve(reserve) : null
+          reserve
+            ? timeout(
+                () => calcTotalFiatValueLockedFromReserve(reserve),
+                9_000, // 9 seconds
+                "sidecarCalcTotalFiatValueLockedFromReserve"
+              )()
+            : null
         )
       );
 
@@ -63,15 +90,21 @@ async function makePoolFromSidecarPool({
   totalFiatValueLocked: PricePretty | null;
 }): Promise<Pool | undefined> {
   // contains unlisted or invalid assets
-  if (!reserveCoins || !totalFiatValueLocked) return;
+  // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
+  // to ease integrations.
+  if ((!reserveCoins || !totalFiatValueLocked) && !IS_TESTNET) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
     type: getPoolTypeFromChainPool(sidecarPool.chain_model),
     raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
     spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked,
+
+    // We expect the else case to occur only in testnet
+    reserveCoins: reserveCoins ? reserveCoins : [],
+    totalFiatValueLocked: totalFiatValueLocked
+      ? totalFiatValueLocked
+      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
   };
 }
 

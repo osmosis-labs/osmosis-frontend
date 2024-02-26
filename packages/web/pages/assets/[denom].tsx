@@ -21,7 +21,6 @@ import TokenPairHistoricalChart, {
 } from "~/components/chart/token-pair-historical";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
-import RelatedAssets from "~/components/related-assets/related-assets";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
@@ -41,11 +40,10 @@ import {
   useLocalStorageState,
   useNavBar,
 } from "~/hooks";
-import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
   CoingeckoCoin,
   queryCoingeckoCoin,
-} from "~/server/queries/coingecko/detail";
+} from "~/server/queries/coingecko/coin";
 import {
   getTokenInfo,
   RichTweet,
@@ -160,8 +158,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       [assetInfoConfig]
     );
 
-    const routablePools = useRoutablePools();
-    const memoedPools = routablePools ?? [];
+    // const routablePools = useRoutablePools();
 
     const denom = useMemo(() => {
       return tokenDenom as string;
@@ -278,7 +275,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 />
               </div>
 
-              <RelatedAssets memoedPools={memoedPools} tokenDenom={denom} />
+              {/* {routablePools && (
+                <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
+              )} */}
             </div>
           </div>
         </main>
@@ -587,7 +586,7 @@ export default AssetInfoPage;
 
 const findIBCToken = (imperatorToken: ImperatorToken) => {
   const ibcAsset = AssetLists.flatMap(({ assets }) => assets).find(
-    (asset) => asset.base === imperatorToken.denom
+    (asset) => asset.coinMinimalDenom === imperatorToken.denom
   );
 
   return ibcAsset;

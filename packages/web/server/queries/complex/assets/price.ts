@@ -14,6 +14,7 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
 
+import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -40,6 +41,21 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
   });
 }
 
+/** Used with `DataLoader` to make batched calls to CoinGecko.
+ *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
+async function batchFetchCoingeckoPrices(
+  coinGeckoIds: readonly string[],
+  currency: CoingeckoVsCurrencies
+) {
+  const pricesObject = await querySimplePrice(coinGeckoIds as string[], [
+    currency,
+  ]);
+  return coinGeckoIds.map(
+    (key) =>
+      pricesObject[key][currency] ??
+      new Error(`No CoinGecko price result for ${key} and ${currency}`)
+  );
+}
 async function getCoingeckoPrice({
   coingeckoId,
   currency,
@@ -47,15 +63,24 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
+  // Create a loader per given currency.
+  const currencyBatchLoader = await cachified({
+    cache: pricesCache,
+    key: `prices-batch-loader-${currency}`,
+    getFreshValue: async () => {
+      return new EdgeDataLoader((ids: readonly string[]) =>
+        batchFetchCoingeckoPrices(ids, currency)
+      );
+    },
+  });
+
+  // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
     ttl: 60 * 1000, // 1 minute
-    getFreshValue: async () => {
-      const prices = await querySimplePrice([coingeckoId], [currency]);
-      const price = prices[coingeckoId]?.[currency];
-      return price ? new Dec(price) : undefined;
-    },
+    getFreshValue: () =>
+      currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
   });
 }
 
@@ -75,31 +100,35 @@ async function calculatePriceFromPriceId({
   asset,
   currency,
 }: {
-  asset: Pick<Asset, "base" | "price_info" | "coingecko_id">;
+  asset: Pick<Asset, "coinMinimalDenom" | "price" | "coingeckoId">;
   currency: "usd";
 }): Promise<Dec | undefined> {
-  if (!asset.price_info && !asset.coingecko_id)
-    throw new Error("No price info or coingecko id for " + asset.base);
+  if (!asset.price && !asset.coingeckoId)
+    throw new Error(
+      "No price info or coingecko id for " + asset.coinMinimalDenom
+    );
 
   /**
    * Fetch directly from coingecko if there's no price info.
    */
-  if (!asset.price_info && asset.coingecko_id) {
+  if (!asset.price && asset.coingeckoId) {
     return await getCoingeckoPrice({
-      coingeckoId: asset.coingecko_id,
+      coingeckoId: asset.coingeckoId,
       currency,
     });
   }
 
-  if (!asset.price_info) throw new Error("No price info for " + asset.base);
+  if (!asset.price)
+    throw new Error("No price info for " + asset.coinMinimalDenom);
 
   const poolPriceRoute = {
-    destCoinMinimalDenom: asset.price_info.dest_coin_minimal_denom,
-    poolId: asset.price_info.pool_id,
-    sourceCoinMinimalDenom: asset.base,
+    destCoinMinimalDenom: asset.price.denom,
+    poolId: asset.price.poolId,
+    sourceCoinMinimalDenom: asset.coinMinimalDenom,
   };
 
-  if (!poolPriceRoute) throw new Error("No pool price route for " + asset.base);
+  if (!poolPriceRoute)
+    throw new Error("No pool price route for " + asset.coinMinimalDenom);
 
   const tokenInIbc = poolPriceRoute.sourceCoinMinimalDenom;
   const tokenOutIbc = poolPriceRoute.destCoinMinimalDenom;
@@ -194,7 +223,7 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
     cache: pricesCache,
-    ttl: 3_000, // 3 seconds
+    ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const assetListAsset = getAssetFromAssetList({
         sourceDenom: asset.sourceDenom,

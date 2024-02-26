@@ -1,5 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { isSlipageErrorMessage } from "@osmosis-labs/stores";
 
 import { MultiLanguageT } from "~/hooks";
 
@@ -26,6 +27,10 @@ export function prettifyTxError(
   message: string,
   currencies: AppCurrency[]
 ): Parameters<MultiLanguageT> | string | undefined {
+  if (isSlipageErrorMessage(message)) {
+    return ["swapFailed"];
+  }
+
   try {
     const matchLegacySignatureVerificationFailed = message.match(
       regexLegacySignatureVerificationFailed

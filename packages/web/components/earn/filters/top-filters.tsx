@@ -16,6 +16,7 @@ import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
 

@@ -1,4 +1,3 @@
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -10,26 +9,26 @@ import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+import SkeletonLoader from "../loaders/skeleton-loader";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 
 export const PoolsOverview: FunctionComponent<
   { setIsCreatingPool: () => void } & CustomClasses
 > = observer(({ className, setIsCreatingPool }) => {
-  const { chainStore, priceStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
   const { width } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { t } = useTranslation();
 
-  const osmoPrice = priceStore.calculatePrice(
-    new CoinPretty(
-      chainStore.osmosis.stakeCurrency,
-      DecUtils.getTenExponentNInPrecisionRange(
-        chainStore.osmosis.stakeCurrency.coinDecimals
-      )
-    )
+  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
+    {
+      coinMinimalDenom: "uosmo",
+    }
   );
 
   // update time every second
@@ -71,9 +70,17 @@ export const PoolsOverview: FunctionComponent<
         <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        <h2 className="text-white-full md:text-h4 md:font-h4">
-          {osmoPrice?.toString()}
-        </h2>
+        {osmoPrice && (
+          <SkeletonLoader
+            className={classNames(isFetched ? null : "h-5 w-13")}
+            isLoaded={isFetched}
+          >
+            <h2 className="mt-[3px]">
+              {osmoPrice.fiatCurrency.symbol}
+              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+            </h2>
+          </SkeletonLoader>
+        )}
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
         <h6 className="md:text-subtitle1 md:font-subtitle1">

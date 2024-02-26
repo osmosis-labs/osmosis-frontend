@@ -1,10 +1,12 @@
 import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
-import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
-import {
-  getLastIbcTrace,
-  getSourceDenomFromAssetList,
-} from "@osmosis-labs/utils";
+import type {
+  AppCurrency,
+  Asset,
+  ChainInfo,
+  CosmosCounterparty,
+  IbcTransferMethod,
+} from "@osmosis-labs/types";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -39,29 +41,33 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
     const ibcCache = new Map<string, OriginChainCurrencyInfo>();
     assets
-      .filter((asset) =>
-        asset.traces.some(
-          (trace) => trace.type === "ibc" || trace.type === "ibc-cw20"
-        )
-      ) // Filter Osmosis assets
+      .filter((asset) => asset.transferMethods.some((m) => m.type === "ibc")) // Filter Osmosis assets
       .forEach((ibcAsset) => {
-        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
-        const ibcDenom = ibcAsset.base; // The IBC denom will also be the multihop hash when needed
+        const ibcInfo = ibcAsset.transferMethods.find(
+          (m) => m.type === "ibc"
+        ) as IbcTransferMethod;
+        const ibcDenom = ibcAsset.coinMinimalDenom; // The IBC denom will also be the multihop hash when needed
 
-        if (!ibcTrace) {
+        if (!ibcInfo) {
           throw new Error(
             `Invalid IBC asset config: ${JSON.stringify(ibcAsset)}`
           );
         }
 
-        const sourceDenom = getSourceDenomFromAssetList(ibcAsset);
-
-        const channels = ibcTrace.chain.path.match(/channel-(\d+)/g);
+        const channels = ibcInfo.chain.path.match(/channel-(\d+)/g);
         const paths = [];
 
         if (!channels) {
-          throw new Error(`Invalid IBC path ${ibcTrace.chain.path}`);
+          throw new Error(`Invalid IBC path ${ibcInfo.chain.path}`);
         }
+
+        const originChainId = (ibcAsset.counterparty[0] as CosmosCounterparty)
+          ?.chainId;
+
+        if (!originChainId || typeof originChainId !== "string")
+          throw new Error(
+            `No origin chain ID found for IBC asset ${ibcAsset.coinMinimalDenom}`
+          );
 
         for (const channel of channels) {
           paths.push({
@@ -70,7 +76,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           });
         }
 
-        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, sourceDenom, paths]);
+        ibcCache.set(ibcDenom, [originChainId, ibcAsset.sourceDenom, paths]);
       });
 
     this._configuredIbcHashToOriginChainAndCoinMinimalDenom = ibcCache;

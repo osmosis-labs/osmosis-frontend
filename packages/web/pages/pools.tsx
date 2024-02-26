@@ -1,43 +1,27 @@
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
-import {
-  ObservableConcentratedPoolDetail,
-  ObservableQueryPool,
-  ObservableSharePoolDetail,
-} from "@osmosis-labs/stores";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
-import { ComponentProps, useCallback, useState } from "react";
+import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable as AllPoolsTableV1 } from "~/components/complex/all-pools-table-v1";
 import { AllPoolsTable as AllPoolsTableV2 } from "~/components/complex/all-pools-table-v2";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
-import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
-import { MetricLoader } from "~/components/loaders";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useHideDustUserSetting, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
-  useDisclosure,
-  useHideDustUserSetting,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
-import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
@@ -46,14 +30,12 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
-import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { ConvertToStakeModal } from "~/modals/convert-to-stake";
-import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
@@ -70,12 +52,6 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPositionsRef, { height: myPositionsHeight }] =
-    useDimension<HTMLDivElement>();
-
-  const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
-    useDimension<HTMLDivElement>();
-
-  const [convertToStakeRef, { height: convertToStakeHeight }] =
     useDimension<HTMLDivElement>();
 
   const featureFlags = useFeatureFlags();
@@ -237,24 +213,6 @@ const Pools: NextPage = observer(function () {
     }
   }, [createPoolConfig, account]);
 
-  // CL funnel
-  const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
-    useState(false);
-  const {
-    isOpen: isUserUpgradesOpen,
-    onOpen: onOpenUserUpgrades,
-    onClose: onCloseUserUpgrades,
-  } = useDisclosure();
-  const { isMobile } = useWindowSize();
-
-  // convert to stake funnel
-  const convertToStakeConfig = useConvertToStakeConfig();
-  const {
-    isOpen: isConvertToStakeOpen,
-    onOpen: onOpenConvertToStake,
-    onClose: onCloseConvertToStake,
-  } = useDisclosure();
-
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <NextSeo
@@ -308,59 +266,15 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.convertToStake &&
-        convertToStakeConfig.isConvertToStakeFeatureRelevantToUser && (
-          <section
-            ref={convertToStakeRef}
-            className="pt-8 pb-10 md:pt-4 md:pb-5"
-          >
-            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-            <ConvertToStakeModal
-              isOpen={isConvertToStakeOpen}
-              onRequestClose={onCloseConvertToStake}
-            />
-          </section>
-        )}
-      {featureFlags.concentratedLiquidity &&
-        featureFlags.upgrades &&
-        userUpgrades.availableCfmmToClUpgrades.length > 0 &&
-        !isMobile && (
-          <section
-            ref={superchargeLiquidityRef}
-            className="pt-8 pb-10 md:pt-4 md:pb-5"
-          >
-            <SuperchargePool
-              title={t("addConcentratedLiquidityeEarnMore.title")}
-              caption={t("addConcentratedLiquidityeEarnMore.caption")}
-              primaryCta={t("addConcentratedLiquidityeEarnMore.primaryCta")}
-              secondaryCta={t("addConcentratedLiquidityeEarnMore.secondaryCta")}
-              onCtaClick={onOpenUserUpgrades}
-              onSecondaryClick={() => {
-                setShowConcentratedLiqIntro(true);
-              }}
-            />
-            {showConcentratedLiqIntro && (
-              <ConcentratedLiquidityLearnMoreModal
-                isOpen
-                onRequestClose={() => setShowConcentratedLiqIntro(false)}
-              />
-            )}
-            <UserUpgradesModal
-              isOpen={isUserUpgradesOpen}
-              onRequestClose={onCloseUserUpgrades}
-            />
-          </section>
-        )}
-      {featureFlags.concentratedLiquidity &&
-        queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
-          .positions.length > 0 && (
-          <section ref={myPositionsRef}>
-            <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
-              <h5>{t("clPositions.yourPositions")}</h5>
-              <MyPositionsSection />
-            </div>
-          </section>
-        )}
+      {featureFlags.concentratedLiquidity && account?.address && (
+        <section ref={myPositionsRef}>
+          <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+            <h5>{t("clPositions.yourPositions")}</h5>
+            <MyPositionsSection />
+          </div>
+        </section>
+      )}
+
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
@@ -368,24 +282,12 @@ const Pools: NextPage = observer(function () {
       <section>
         {featureFlags.newPoolsTable ? (
           <AllPoolsTableV2
-            topOffset={
-              myPositionsHeight +
-              myPoolsHeight +
-              poolsOverviewHeight +
-              superchargeLiquidityHeight +
-              convertToStakeHeight
-            }
+            topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
             {...quickActionProps}
           />
         ) : featureFlags._isInitialized ? (
           <AllPoolsTableV1
-            topOffset={
-              myPositionsHeight +
-              myPoolsHeight +
-              poolsOverviewHeight +
-              superchargeLiquidityHeight +
-              convertToStakeHeight
-            }
+            topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
             {...quickActionProps}
           />
         ) : null}
@@ -394,214 +296,154 @@ const Pools: NextPage = observer(function () {
   );
 });
 
-const MyPoolsSection = observer(() => {
-  const {
-    accountStore,
-    derivedDataStore,
-    queriesStore,
-    chainStore,
-    priceStore,
-  } = useStore();
-  const featureFlags = useFeatureFlags();
+export const MyPoolsSection = observer(() => {
+  const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
-  // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
 
   const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getWallet(chainId);
 
-  // my pools
-  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account?.address ?? ""
-  );
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
-  const myPoolDetails = (
-    isMobile && !showMoreMyPools
-      ? myPoolIds.slice(0, poolCountShowMoreThreshold)
-      : myPoolIds
-  )
-    .map<
-      | {
-          queryPool: ObservableQueryPool;
-          poolDetail:
-            | ObservableSharePoolDetail
-            | ObservableConcentratedPoolDetail;
-        }
-      | undefined
-    >((myPoolId) => {
-      const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
-
-      if (!queryPool) return undefined;
-
-      return {
-        queryPool,
-        poolDetail:
-          queryPool.type === "concentrated"
-            ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
-            : derivedDataStore.sharePoolDetails.get(myPoolId),
-      };
-    })
-    .filter(
-      (
-        pool
-      ): pool is {
-        queryPool: ObservableQueryPool;
-        poolDetail:
-          | ObservableSharePoolDetail
-          | ObservableConcentratedPoolDetail;
-      } => {
-        if (pool === undefined) return false;
-
-        // concentrated liquidity liquidity feature flag
-        if (
-          !featureFlags.concentratedLiquidity &&
-          pool.poolDetail instanceof ObservableConcentratedPoolDetail
-        )
-          return false;
-
-        return true;
+  const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
+    api.edge.pools.getUserPools.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
+      {
+        enabled: Boolean(account?.address),
       }
     );
 
-  const dustFilteredPools = useHideDustUserSetting(
-    myPoolDetails,
-    useCallback(
-      (myPool) => {
-        const pool = myPool.poolDetail;
-        // user share value
-        if (pool instanceof ObservableSharePoolDetail) {
-          return pool.totalValueLocked.mul(
-            queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-              account?.address ?? "",
-              (pool as ObservableSharePoolDetail).querySharePool!.pool.id
-            )
-          );
-        }
-        // user positions' assets value
-        if (pool instanceof ObservableConcentratedPoolDetail) {
-          return priceStore.calculateTotalPrice(
-            pool.userPoolAssets.map(({ asset }) => asset)
-          );
-        }
-      },
-      [queryOsmosis, account, priceStore]
-    )
+  const myPoolDetails = useMemo(
+    () =>
+      showMoreMyPools
+        ? allMyPoolDetails
+        : allMyPoolDetails?.slice(0, poolCountShowMoreThreshold),
+    [allMyPoolDetails, poolCountShowMoreThreshold, showMoreMyPools]
   );
 
-  if (dustFilteredPools.length === 0) return null;
+  const dustFilteredPools = useHideDustUserSetting(
+    myPoolDetails ?? [],
+    useCallback((myPool) => myPool.userValue, [])
+  );
+
+  if (
+    (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) ||
+    !account?.address
+  ) {
+    return null;
+  }
 
   return (
-    <div className="mx-auto pb-[3.75rem]">
-      <h5 className="md:px-3">{t("pools.myPools")}</h5>
+    <div className="pb-[3.75rem]">
+      <h5 ref={titleRef} className="md:px-3">
+        {t("pools.myPools")}
+      </h5>
       <div className="flex flex-col gap-4">
         <div className="grid-cards mt-5 grid md:gap-3">
-          {dustFilteredPools.map(({ queryPool, poolDetail }) => {
-            const poolBonding = derivedDataStore.poolsBonding.get(
-              poolDetail.poolId
-            );
-            const apr =
-              poolDetail instanceof ObservableSharePoolDetail
-                ? poolBonding.highestBondDuration?.aggregateApr ??
-                  new RatePretty(0)
-                : poolDetail.totalApr;
+          {isLoadingMyPoolDetails ? (
+            <>
+              {new Array(6).fill(undefined).map((_, i) => (
+                <SkeletonLoader
+                  key={i}
+                  className="h-[226px] w-[341px] rounded-4xl"
+                />
+              ))}
+            </>
+          ) : (
+            <>
+              {dustFilteredPools.map(
+                ({
+                  id,
+                  type,
+                  apr = new RatePretty(new Dec(0)),
+                  poolLiquidity,
+                  userValue,
+                  reserveCoins,
+                  isSuperfluid,
+                  weightedPoolInfo,
+                }) => {
+                  const poolLiqudity_ = formatPretty(poolLiquidity);
 
-            const poolLiquidity = formatPretty(poolDetail.totalValueLocked, {
-              maxDecimals: 0,
-            });
-            const userValue =
-              poolDetail instanceof ObservableSharePoolDetail
-                ? formatPretty(poolDetail.userBondedValue)
-                : poolDetail.userPoolAssets
-                    .reduce(
-                      (sum, { asset }) =>
-                        sum.add(
-                          priceStore.calculatePrice(asset) ??
-                            new PricePretty(fiat, 0)
-                        ),
-                      new PricePretty(fiat, 0)
-                    )
-                    .maxDecimals(2)
-                    .toString();
-
-            let myPoolMetrics = [
-              {
-                label: t("pools.APR"),
-                value: isMobile ? (
-                  apr.maxDecimals(0).toString()
-                ) : (
-                  <MetricLoader
-                    isLoading={
-                      queryPool instanceof ObservableSharePoolDetail &&
-                      queryOsmosis.queryIncentivizedPools.isAprFetching
-                    }
-                  >
-                    <h6>{apr.maxDecimals(2).toString()}</h6>
-                  </MetricLoader>
-                ),
-              },
-              {
-                label: t("pools.TVL"),
-                value: isMobile ? poolLiquidity : <h6>{poolLiquidity}</h6>,
-              },
-              {
-                label:
-                  queryPool instanceof ObservableSharePoolDetail
-                    ? t("pools.bonded")
-                    : t("pools.myLiquidity"),
-                value: isMobile ? userValue.toString() : <h6>{userValue}</h6>,
-              },
-            ];
-
-            return (
-              <PoolCard
-                key={poolDetail.poolId}
-                poolId={poolDetail.poolId}
-                poolAssets={queryPool.poolAssets.map((poolAsset) => ({
-                  coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                  coinDenom: poolAsset.amount.currency.coinDenom,
-                }))}
-                poolMetrics={myPoolMetrics}
-                isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                  poolDetail.poolId
-                )}
-                isSupercharged={Boolean(
-                  queryPool.concentratedLiquidityPoolInfo
-                )}
-                mobileShowFirstLabel
-                onClick={() =>
-                  logEvent([
-                    EventName.Pools.myPoolsCardClicked,
+                  let myPoolMetrics = [
                     {
-                      poolId: poolDetail.poolId,
-                      poolName: queryPool.poolAssets
-                        .map((poolAsset) => poolAsset.amount.currency.coinDenom)
-                        .join(" / "),
-                      poolWeight: queryPool.weightedPoolInfo?.assets
-                        .map((poolAsset) =>
-                          poolAsset.weightFraction?.toString()
-                        )
-                        .join(" / "),
-                      isSuperfluidPool:
-                        queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                          poolDetail.poolId
-                        ),
+                      label: t("pools.APR"),
+                      value: isMobile ? (
+                        apr.maxDecimals(0).toString()
+                      ) : (
+                        <h6>{apr.maxDecimals(2).toString()}</h6>
+                      ),
                     },
-                  ])
+                    {
+                      label: t("pools.TVL"),
+                      value: isMobile ? (
+                        poolLiqudity_
+                      ) : (
+                        <h6>{poolLiqudity_}</h6>
+                      ),
+                    },
+                    {
+                      label:
+                        type === "concentrated"
+                          ? t("pools.myLiquidity")
+                          : t("pools.bonded"),
+                      value: isMobile ? (
+                        userValue.toString()
+                      ) : (
+                        <h6>{formatPretty(userValue)}</h6>
+                      ),
+                    },
+                  ];
+
+                  return (
+                    <PoolCard
+                      key={id}
+                      poolId={id}
+                      poolAssets={reserveCoins.map((coin) => ({
+                        coinImageUrl: coin.currency.coinImageUrl,
+                        coinDenom: coin.currency.coinDenom,
+                      }))}
+                      poolMetrics={myPoolMetrics}
+                      isSuperfluid={isSuperfluid}
+                      isSupercharged={type === "concentrated"}
+                      mobileShowFirstLabel
+                      onClick={() =>
+                        logEvent([
+                          EventName.Pools.myPoolsCardClicked,
+                          {
+                            poolId: id,
+                            poolName: reserveCoins
+                              .map((coin) => coin.currency.coinDenom)
+                              .join(" / "),
+                            poolWeight: weightedPoolInfo?.weights
+                              .map(({ weight }) => weight.toString())
+                              .join(" / "),
+                            isSuperfluidPool: isSuperfluid,
+                          },
+                        ])
+                      }
+                    />
+                  );
                 }
-              />
-            );
-          })}
+              )}
+            </>
+          )}
         </div>
-        {isMobile && myPoolIds.length > poolCountShowMoreThreshold && (
+        {(allMyPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
           <div className="mx-auto">
             <ShowMoreButton
               isOn={showMoreMyPools}
-              onToggle={() => setShowMoreMyPools(!showMoreMyPools)}
+              onToggle={() => {
+                setShowMoreMyPools(!showMoreMyPools);
+                if (showMoreMyPools) {
+                  titleRef.current?.scrollIntoView();
+                }
+              }}
             />
           </div>
         )}
