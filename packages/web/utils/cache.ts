@@ -12,7 +12,7 @@ const isTestEnv = process.env.NODE_ENV === "test";
  *
  *  Data must be serializeable via `superjson` adapter.
  *
- *  NOTE: uses an LRUCache in test environment to avoid hitting the remote resource.
+ *  NOTE: uses an LRUCache in test environment to avoid hitting the remote resource as Vercel KV createClient secret env vars are not available in GH action.
  *
  *  WARNING: only available in node runtime.
  */
