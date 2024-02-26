@@ -766,7 +766,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           )}
         </div>
         <TransferHistoryTable className="mt-8 md:-mx-4 md:w-screen" />
-        {/* <UnstableAssetWarning isOpen={true} /> */}
       </section>
     );
   }

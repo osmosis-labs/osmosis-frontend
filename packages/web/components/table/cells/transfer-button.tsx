@@ -70,14 +70,12 @@ export const TransferButtonCell: FunctionComponent<
             }
           />
         </Tooltip>
-        {isUnstable && (
-          <UnstableAssetWarning
-            type={type}
-            isOpen={showUnstableAssetWarning}
-            onRequestClose={() => setShowUnstableAssetWarning(false)}
-            onContinue={action}
-          />
-        )}
+        <UnstableAssetWarning
+          type={type}
+          isOpen={showUnstableAssetWarning}
+          onRequestClose={() => setShowUnstableAssetWarning(false)}
+          onContinue={action}
+        />
       </>
     );
   }
