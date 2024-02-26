@@ -1,7 +1,6 @@
 name: Jest Tests Workflow
 
 on: [push]
-env: ${{ secrets.TWITTER_KV_STORE_REST_API_TOKEN, secrets.TWITTER_KV_STORE_REST_API_URL }}
 
 jobs:
   test:

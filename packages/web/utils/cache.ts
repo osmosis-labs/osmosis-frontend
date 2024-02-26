@@ -1,26 +1,45 @@
 import { isNil } from "@osmosis-labs/utils";
 import { createClient, VercelKV } from "@vercel/kv";
 import { Cache, CacheEntry, totalTtl } from "cachified";
+import { LRUCache } from "lru-cache";
 
 import { superjson } from "~/utils/superjson";
+
+const isTestEnv = process.env.NODE_ENV === "test";
 
 // inspired by: https://github.com/mannyv123/cachified-redis-adapter/blob/main/src/index.ts
 /** `cachified`-compatible implementation of a cache living on a remote resource.
  *
  *  Data must be serializeable via `superjson` adapter.
  *
+ *  NOTE: uses an LRUCache in test environment to avoid hitting the remote resource.
+ *
  *  WARNING: only available in node runtime.
  */
 export class RemoteCache implements Cache {
-  protected kvStore: VercelKV = createClient({
-    url: process.env.TWITTER_KV_STORE_REST_API_URL!,
-    token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
-  });
+  protected kvStore: VercelKV | null = null;
+
+  protected testEnvKvStore = isTestEnv
+    ? new LRUCache<string, CacheEntry>({ max: 50 })
+    : null;
 
   name = "RemoteCache";
 
+  constructor() {
+    if (!isTestEnv) {
+      this.kvStore = createClient({
+        url: process.env.TWITTER_KV_STORE_REST_API_URL!,
+        token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
+      });
+    }
+  }
+
   async get<T>(key: string) {
-    const value = await this.kvStore.get(key);
+    if (this.testEnvKvStore) {
+      return this.testEnvKvStore.get(key);
+    }
+
+    const value = await this.kvStore!.get(key);
     if (isNil(value) || typeof value !== "string") {
       return null;
     }
@@ -29,10 +48,15 @@ export class RemoteCache implements Cache {
   }
 
   async set<T>(key: string, value: CacheEntry<T>) {
+    if (this.testEnvKvStore) {
+      this.testEnvKvStore.set(key, value);
+      return;
+    }
+
     const ttl = totalTtl(value?.metadata);
     const createdTime = value?.metadata?.createdTime;
 
-    await this.kvStore.set(
+    await this.kvStore!.set(
       key,
       superjson.stringify(value),
       ttl > 0 && ttl < Infinity && typeof createdTime === "number"
@@ -45,6 +69,11 @@ export class RemoteCache implements Cache {
   }
 
   async delete(key: string) {
-    await this.kvStore.del(key);
+    if (this.testEnvKvStore) {
+      this.testEnvKvStore.delete(key);
+      return;
+    }
+
+    await this.kvStore!.del(key);
   }
 }
