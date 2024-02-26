@@ -23,11 +23,12 @@ export const EarnRewards = ({
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const apiUtils = api.useUtils();
 
-  const filteredUnclaimedRewards = unclaimedRewards.filter((unclaimedReward) =>
-    /**
-     * Currently, claiming rewards is only limited to osmosis and quasar
-     */
-    ["quasar", "osmosis"].includes(unclaimedReward.provider)
+  const filteredUnclaimedRewards = unclaimedRewards.filter(
+    (unclaimedReward) =>
+      /**
+       * Currently, claiming rewards is unsupported for stride
+       */
+      unclaimedReward.provider !== "stride"
   );
 
   const claimAllRewards = useCallback(async () => {
@@ -53,6 +54,19 @@ export const EarnRewards = ({
                   vault_extension: {
                     claim_rewards: {},
                   },
+                })
+              ),
+              sender: account.address ?? "",
+              funds: [],
+            })
+          );
+        case "levana":
+          messages.push(
+            account.cosmwasm.msgOpts.executeWasm.messageComposer({
+              contract: id.split("-")[0], // this strips the -x|lp part of the contract id
+              msg: Buffer.from(
+                JSON.stringify({
+                  claim_yield: {},
                 })
               ),
               sender: account.address ?? "",
