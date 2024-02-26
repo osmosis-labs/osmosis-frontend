@@ -90,8 +90,10 @@ export class SkipTransferStatusSource implements ITxStatusSource {
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .then((s) => this.receiveConclusiveStatus(snapshotKey, s))
-      .catch((e) => console.error(`Polling Skip has failed`, e));
+      .catch((e) => console.error(`Polling Skip has failed`, e))
+      .then((s) => {
+        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+      });
   }
 
   makeExplorerUrl(serializedParams: string): string {
