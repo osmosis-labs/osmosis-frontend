@@ -11,20 +11,19 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
 
 export const UnstableAssetWarning: FunctionComponent<
   ExtendedModalBaseProps
-> = ({ onRequestClose, isOpen, onContinue }) => {
+> = ({ onRequestClose, isOpen, onContinue, type }) => {
   const { t } = useTranslation();
 
   return (
     <ModalBase
-      title={"Transfers Unstable"}
+      title={t("unstableAssetsWarning.title")}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="flex max-w-[428px] flex-col items-center gap-6 text-center"
       hideCloseButton
     >
       <p className="text-base text-osmoverse-200">
-        You may experience significant delays or transaction failure. Proceed at
-        your own risk.
+        {t("unstableAssetsWarning.description")}
       </p>
       <div className="flex w-full flex-col gap-2">
         <Button
@@ -36,7 +35,9 @@ export const UnstableAssetWarning: FunctionComponent<
             onRequestClose();
           }}
         >
-          Deposit Anyway / Withdraw Anyway
+          {type === "deposit"
+            ? t("unstableAssetsWarning.buttonDeposit")
+            : t("unstableAssetsWarning.buttonWithdraw")}
         </Button>
         <Button
           variant="ghost"
@@ -46,7 +47,7 @@ export const UnstableAssetWarning: FunctionComponent<
             onRequestClose();
           }}
         >
-          Cancel
+          {t("unstableAssetsWarning.buttonCancel")}
         </Button>
       </div>
     </ModalBase>
