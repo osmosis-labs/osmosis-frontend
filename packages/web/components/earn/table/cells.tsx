@@ -1,5 +1,6 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
+import classNames from "classnames";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 
@@ -156,7 +157,10 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
         <Link
           href={href}
           target={target}
-          className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
+          className={classNames(
+            "group/button inline-flex max-h-10 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700",
+            { "w-24": !isBalanceVisible, "w-32": isBalanceVisible }
+          )}
         >
           <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
             {isBalanceVisible ? t("earnPage.manage") : t("earnPage.join")}
