@@ -877,6 +877,7 @@
   "disclaimer": "અસ્વીકરણ",
   "unstableAssetsWarning": {
     "title": "ટ્રાન્સફર અસ્થિર",
+    "description": "તમે નોંધપાત્ર વિલંબ અથવા વ્યવહાર નિષ્ફળતા અનુભવી શકો છો. તમારા પોતાના જોખમે આગળ વધો.",
     "buttonWithdraw": "કોઈપણ રીતે પાછો ખેંચો",
     "buttonDeposit": "કોઈપણ રીતે જમા કરો",
     "buttonCancel": "રદ કરો"

@@ -877,6 +877,7 @@
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {
     "title": "Transferencias inestables",
+    "description": "Es posible que experimente retrasos importantes o errores en la transacción. Proceda bajo su propio riesgo.",
     "buttonWithdraw": "Retirarse de todos modos",
     "buttonDeposit": "Depositar de todos modos",
     "buttonCancel": "Cancelar"

@@ -877,6 +877,7 @@
   "disclaimer": "부인 성명",
   "unstableAssetsWarning": {
     "title": "전송이 불안정함",
+    "description": "상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
     "buttonWithdraw": "어쨌든 출금",
     "buttonDeposit": "어쨌든 입금",
     "buttonCancel": "취소"

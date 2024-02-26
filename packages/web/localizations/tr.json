@@ -877,6 +877,7 @@
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {
     "title": "Transferler Kararsız",
+    "description": "Önemli gecikmeler veya işlem başarısızlığı yaşayabilirsiniz. Riski size ait olmak üzere devam edin.",
     "buttonWithdraw": "Yine de Çek",
     "buttonDeposit": "Yine de Para Yatır",
     "buttonCancel": "İptal etmek"

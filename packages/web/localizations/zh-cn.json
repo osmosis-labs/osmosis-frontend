@@ -877,6 +877,7 @@
   "disclaimer": "免责声明",
   "unstableAssetsWarning": {
     "title": "传输不稳定",
+    "description": "您可能会遇到严重的延迟或交易失败。继续需要您自担风险。",
     "buttonWithdraw": "无论如何都要撤回",
     "buttonDeposit": "无论如何存款",
     "buttonCancel": "取消"

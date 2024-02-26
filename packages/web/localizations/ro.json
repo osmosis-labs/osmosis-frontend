@@ -877,6 +877,7 @@
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {
     "title": "Transferuri instabile",
+    "description": "Este posibil să întâmpinați întârzieri semnificative sau eșec în tranzacție. Procedați pe propriul risc.",
     "buttonWithdraw": "Retrageți-vă oricum",
     "buttonDeposit": "Depozit oricum",
     "buttonCancel": "Anulare"

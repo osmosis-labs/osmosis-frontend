@@ -877,6 +877,7 @@
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {
     "title": "Transferências instáveis",
+    "description": "Você pode enfrentar atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
     "buttonWithdraw": "Retirar de qualquer maneira",
     "buttonDeposit": "Deposite de qualquer maneira",
     "buttonCancel": "Cancelar"
