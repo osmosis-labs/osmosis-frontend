@@ -28,20 +28,34 @@ export function getCachedPoolMarketMetricsMap(): Promise<
       const map = new Map<string, PoolMarketMetrics>();
 
       // append fee revenue data to volume data
-      const poolsFees = await queryPoolsFees();
-      poolsFees.data.forEach(
-        ({ pool_id, volume_24h, volume_7d, fees_spent_24h, fees_spent_7d }) => {
-          map.set(pool_id, {
-            volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_24h),
-            volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_7d),
-            feesSpent24hUsd: new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              fees_spent_24h
-            ),
-            feesSpent7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees_spent_7d),
-          });
-        }
-      );
+      try {
+        const poolsFees = await queryPoolsFees();
+        poolsFees.data.forEach(
+          ({
+            pool_id,
+            volume_24h,
+            volume_7d,
+            fees_spent_24h,
+            fees_spent_7d,
+          }) => {
+            map.set(pool_id, {
+              volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_24h),
+              volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, volume_7d),
+              feesSpent24hUsd: new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                fees_spent_24h
+              ),
+              feesSpent7dUsd: new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                fees_spent_7d
+              ),
+            });
+          }
+        );
+      } catch (err) {
+        // Return empty map if it fails
+        console.error("Failed to fetch pool metrics", err);
+      }
 
       return map;
     },

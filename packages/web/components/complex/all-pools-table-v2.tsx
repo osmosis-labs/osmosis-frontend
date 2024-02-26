@@ -184,6 +184,16 @@ export const AllPoolsTable: FunctionComponent<{
     [poolsPagesData]
   );
 
+  // If more than half of the pools have volume data, we should format the volume column.
+  // Otherwise, we should not format the volume column.
+  let volumePresenceCount = 0;
+  poolsData.forEach((pool) => {
+    if (pool.volume24hUsd) {
+      volumePresenceCount++;
+    }
+  });
+  let shouldFormatVolume = volumePresenceCount > poolsData.length / 2;
+
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
@@ -195,20 +205,21 @@ export const AllPoolsTable: FunctionComponent<{
         header: t("pools.allPools.sort.poolName"),
         cell: PoolCompositionCell,
       }),
-      columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "0", {
-        id: "volume24hUsd",
-        header: () => (
-          <SortHeader
-            label={t("pools.allPools.sort.volume24h")}
-            sortKey="volume24hUsd"
-            disabled={isLoading}
-            currentSortKey={sortKey}
-            currentDirection={sortParams.allPoolsSortDir}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+      shouldFormatVolume &&
+        columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
+          id: "volume24hUsd",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.volume24h")}
+              sortKey="volume24hUsd"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }),
       columnHelper.accessor(
         (row) => row.totalFiatValueLocked?.toString() ?? "0",
         {
