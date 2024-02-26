@@ -100,10 +100,12 @@ export const EarnPosition = ({
   totalBalance,
   isLoading,
   numberOfPositions,
+  setTabIdx,
 }: {
   totalBalance: string;
   isLoading: boolean;
   numberOfPositions: number;
+  setTabIdx: (v: number) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -113,13 +115,19 @@ export const EarnPosition = ({
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
           {t("earnPage.positions")}
         </h5>
-        <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
-          {numberOfPositions === 1
-            ? t("earnPage.oneStrategy")
-            : t("earnPage.strategiesCount", {
-                number: numberOfPositions.toString(),
-              })}
-        </p>
+        <button
+          disabled={numberOfPositions === 0}
+          onClick={() => setTabIdx(1)}
+          type="button"
+        >
+          <p className="whitespace-nowrap text-sm font-semibold text-wosmongton-300">
+            {numberOfPositions === 1
+              ? t("earnPage.oneStrategy")
+              : t("earnPage.strategiesCount", {
+                  number: numberOfPositions.toString(),
+                })}
+          </p>
+        </button>
       </div>
       <div className="flex flex-col gap-2">
         <span className="inline-flex items-center gap-4">

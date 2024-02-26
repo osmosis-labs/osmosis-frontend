@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "~/components/buttons";
 import {
@@ -36,6 +36,11 @@ function Earn() {
   const { earnPage, _isInitialized } = useFeatureFlags();
   const { accountStore } = useStore();
   const router = useRouter();
+  /**
+   * Control the selected table idx for external control
+   * such as the {num} positions onClick on EarnPosition
+   */
+  const [tabIdx, setTabIdx] = useState(0);
 
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const userOsmoAddress = account?.address ?? "";
@@ -92,6 +97,7 @@ function Earn() {
         <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
           <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
             <EarnPosition
+              setTabIdx={setTabIdx}
               totalBalance={totalBalance.toString()}
               numberOfPositions={myStrategies.length}
               isLoading={areQueriesLoading}
@@ -168,6 +174,9 @@ function Earn() {
 
       <FilterProvider defaultFilters={defaultFilters}>
         <Tabs
+          externalControl
+          controlledIdx={tabIdx}
+          setIdx={setTabIdx}
           className={classNames("flex flex-col", {
             "z-10": !isWalletConnected,
           })}
