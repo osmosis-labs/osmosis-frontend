@@ -19,15 +19,42 @@ const TabContext = createContext<TabContextProps>({
   setSelectedIdx: () => {},
 });
 
+interface TabProps {
+  controlledIdx: number;
+  setIdx: (v: number) => void;
+  externalControl: boolean;
+  className: string;
+}
+
 export const Tabs = ({
   children,
   className,
-}: PropsWithChildren<{ className?: string }>) => {
-  const [selectedIdx, setSelectedIdx] = useState(0);
-  const set = (idx: number) => setSelectedIdx(idx);
+  controlledIdx,
+  setIdx,
+  externalControl,
+}: PropsWithChildren<Partial<TabProps>>) => {
+  const [internalIdx, setInternalIdx] = useState(0);
+
+  if (externalControl && controlledIdx && setIdx) {
+    return (
+      <TabContext.Provider
+        value={{
+          selectedIdx: controlledIdx,
+          setSelectedIdx: setIdx,
+        }}
+      >
+        <div className={className}>{children}</div>
+      </TabContext.Provider>
+    );
+  }
 
   return (
-    <TabContext.Provider value={{ selectedIdx, setSelectedIdx: set }}>
+    <TabContext.Provider
+      value={{
+        selectedIdx: internalIdx,
+        setSelectedIdx: setInternalIdx,
+      }}
+    >
       <div className={className}>{children}</div>
     </TabContext.Provider>
   );
