@@ -11,7 +11,6 @@ import {
   StrategyButtonResponsibility,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
-import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
