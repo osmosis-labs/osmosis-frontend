@@ -44,6 +44,8 @@ export class RemoteCache implements CachifiedCache {
 
   /** To avoid data integrity issues in the shared cache, we need to prefix all keys per environment.
    *
+   *  ref: https://vercel.com/docs/projects/environment-variables/system-environment-variables
+   *
    *  The environment identifiers include:
    *  - The current commit hash of the frontend stack, to avoid unexpected data types across deployments.
    *  - The current Osmosis node environment (e.g. mainnet, testnet, etc.), to avoid unexpected data values across environments.
@@ -117,7 +119,6 @@ export class RemoteCache implements CachifiedCache {
     const ttl = totalTtl(value?.metadata);
     const createdTime = value?.metadata?.createdTime;
 
-    console.log("set: ", this.keyPrefix + key);
     await this.kvStore!.set(
       this.keyPrefix + key,
       superjson.stringify(value),
