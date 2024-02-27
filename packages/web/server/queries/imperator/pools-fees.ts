@@ -16,5 +16,6 @@ export interface PoolFees {
 
 export function queryPoolsFees(): Promise<PoolFees> {
   const url = new URL("/fees/v1/pools", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  throw new Error("Not implemented");
   return apiClient<PoolFees>(url.toString());
 }
