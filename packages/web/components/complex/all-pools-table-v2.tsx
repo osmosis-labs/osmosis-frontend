@@ -184,31 +184,53 @@ export const AllPoolsTable: FunctionComponent<{
     [poolsPagesData]
   );
 
+  // If more than half of the pools have volume data, we should format the volume column.
+  // Otherwise, we should not format the volume column.
+  const shouldDisplayVolumeColumn = useMemo(() => {
+    let volumePresenceCount = 0;
+    poolsData.forEach((pool) => {
+      if (pool.volume24hUsd) {
+        volumePresenceCount++;
+      }
+    });
+    return volumePresenceCount > poolsData.length / 2;
+  }, [poolsData]);
+
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
         cell: PoolCompositionCell,
       }),
-      columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "0", {
-        id: "volume24hUsd",
-        header: () => (
-          <SortHeader
-            label={t("pools.allPools.sort.volume24h")}
-            sortKey="volume24hUsd"
-            disabled={isLoading}
-            currentSortKey={sortKey}
-            currentDirection={sortParams.allPoolsSortDir}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+    ];
+
+    // Only show volume if more than half of the pools have volume data.
+    if (shouldDisplayVolumeColumn) {
+      allColumns.push(
+        columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
+          id: "volume24hUsd",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.volume24h")}
+              sortKey="volume24hUsd"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        })
+      );
+    }
+
+    // Add all remaining columns
+    let remainingColumns = [
       columnHelper.accessor(
         (row) => row.totalFiatValueLocked?.toString() ?? "0",
         {
@@ -268,29 +290,34 @@ export const AllPoolsTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      columnHelper,
-      t,
-      isLoading,
-      sortKey,
-      sortParams.allPoolsSortDir,
-      setSortDirection,
-      setSortKey,
-      cellGroupEventEmitter,
-      quickAddLiquidity,
-    ]
-  );
+    ];
+
+    allColumns.push(...remainingColumns);
+
+    return allColumns;
+  }, [
+    columnHelper,
+    t,
+    isLoading,
+    sortKey,
+    sortParams.allPoolsSortDir,
+    setSortDirection,
+    setSortKey,
+    cellGroupEventEmitter,
+    quickAddLiquidity,
+    shouldDisplayVolumeColumn,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
-    if (width < Breakpoint.lg) collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.lg && shouldDisplayVolumeColumn)
+      collapsedColIds.push("volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
-  }, [columns, width]);
+  }, [columns, width, shouldDisplayVolumeColumn]);
 
   const table = useReactTable({
     data: poolsData,
