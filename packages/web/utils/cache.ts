@@ -19,24 +19,34 @@ const isTestEnv = process.env.NODE_ENV === "test";
 export class RemoteCache implements Cache {
   protected kvStore: VercelKV | null = null;
 
-  protected testEnvKvStore = isTestEnv
-    ? new LRUCache<string, CacheEntry>({ max: 50 })
-    : null;
+  protected fallbackCache: Cache | null = null;
 
   name = "RemoteCache";
 
   constructor() {
     if (!isTestEnv) {
-      this.kvStore = createClient({
-        url: process.env.TWITTER_KV_STORE_REST_API_URL!,
-        token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
-      });
+      try {
+        this.kvStore = createClient({
+          url: process.env.TWITTER_KV_STORE_REST_API_URL!,
+          token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
+        });
+      } catch (e) {
+        console.error(
+          "Failed to create RemoteCache client. Falling back to in-memory cache.."
+        );
+        this.fallbackCache = new LRUCache<string, CacheEntry>({ max: 50 });
+      }
+    } else {
+      console.warn(
+        "RemoteCache is not available in test environment. Falling back to in-memory cache.."
+      );
+      this.fallbackCache = new LRUCache<string, CacheEntry>({ max: 50 });
     }
   }
 
   async get<T>(key: string) {
-    if (this.testEnvKvStore) {
-      return this.testEnvKvStore.get(key);
+    if (this.fallbackCache) {
+      return this.fallbackCache.get(key);
     }
 
     const value = await this.kvStore!.get(key);
@@ -48,8 +58,8 @@ export class RemoteCache implements Cache {
   }
 
   async set<T>(key: string, value: CacheEntry<T>) {
-    if (this.testEnvKvStore) {
-      this.testEnvKvStore.set(key, value);
+    if (this.fallbackCache) {
+      this.fallbackCache.set(key, value);
       return;
     }
 
@@ -69,8 +79,8 @@ export class RemoteCache implements Cache {
   }
 
   async delete(key: string) {
-    if (this.testEnvKvStore) {
-      this.testEnvKvStore.delete(key);
+    if (this.fallbackCache) {
+      this.fallbackCache.delete(key);
       return;
     }
 
