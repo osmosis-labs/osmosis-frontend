@@ -125,10 +125,17 @@ export class RemoteCache implements CachifiedCache {
       ttl > 0 && ttl < Infinity && typeof createdTime === "number"
         ? {
             // convert the exat to seconds by dividing by 1000
+            // ref: https://redis.io/commands/set/
             exat: Math.ceil((ttl + createdTime) / 1000),
           }
         : undefined
-    );
+    ).catch((e) => {
+      console.error(
+        "Failed to set value in RemoteCache:",
+        e instanceof Error ? e.message : e
+      );
+      return e;
+    });
   }
 
   async delete(key: string) {
