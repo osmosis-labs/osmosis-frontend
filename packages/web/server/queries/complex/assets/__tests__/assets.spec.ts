@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 
 import { getAsset, getAssets } from "../index";
