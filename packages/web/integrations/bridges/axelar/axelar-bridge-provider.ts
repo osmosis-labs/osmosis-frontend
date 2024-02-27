@@ -31,20 +31,18 @@ import {
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
-  BridgeTransferStatus,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
 import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
-import { getTransferStatus } from "./queries";
 import {
   AxelarChainIds_SourceChainMap,
   CosmosChainIds_AxelarChainIds,
+  providerName,
 } from "./types";
 
-const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
@@ -371,61 +369,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
       },
       ttl: 20 * 1000, // 20 seconds,
     });
-  }
-
-  async getTransferStatus(params: {
-    sendTxHash: string;
-  }): Promise<BridgeTransferStatus | undefined> {
-    const { sendTxHash } = params;
-
-    const transferStatus = await getTransferStatus(
-      sendTxHash,
-      this.axelarApiBaseUrl
-    );
-
-    // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
-    if (
-      !Array.isArray(transferStatus) ||
-      (Array.isArray(transferStatus) && transferStatus.length === 0)
-    ) {
-      return;
-    }
-
-    try {
-      const [data] = transferStatus;
-      const idWithoutSourceChain =
-        data.type && data.type === "wrap" && data.wrap
-          ? data.wrap.tx_hash
-          : data?.id.split("_")[0].toLowerCase();
-
-      // insufficient fee
-      if (data.send && data.send.insufficient_fee) {
-        return {
-          id: idWithoutSourceChain,
-          status: "failed",
-          reason: "insufficientFee",
-        };
-      }
-
-      if (data.status === "executed") {
-        return { id: idWithoutSourceChain, status: "success" };
-      }
-
-      if (
-        // any of all complete stages does not return success
-        data.send &&
-        data.link &&
-        data.confirm_deposit &&
-        data.ibc_send && // transfer is complete
-        (data.send.status !== "success" ||
-          data.confirm_deposit.status !== "success" ||
-          data.ibc_send.status !== "success")
-      ) {
-        return { id: idWithoutSourceChain, status: "failed" };
-      }
-    } catch {
-      return undefined;
-    }
   }
 
   async estimateGasCost(
