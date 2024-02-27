@@ -50,7 +50,8 @@ export class RemoteCache implements Cache {
         });
       } catch (e) {
         console.error(
-          "Failed to create RemoteCache client. Falling back to in-memory cache.."
+          "Failed to create RemoteCache client. Falling back to in-memory cache..",
+          e instanceof Error ? e.message : e
         );
         this.fallbackCache = new LRUCache<string, CacheEntry>(
           DEFAULT_LRU_OPTIONS
