@@ -186,13 +186,15 @@ export const AllPoolsTable: FunctionComponent<{
 
   // If more than half of the pools have volume data, we should format the volume column.
   // Otherwise, we should not format the volume column.
-  let volumePresenceCount = 0;
-  poolsData.forEach((pool) => {
-    if (pool.volume24hUsd) {
-      volumePresenceCount++;
-    }
-  });
-  let shouldFormatVolume = volumePresenceCount > poolsData.length / 2;
+  const shouldDisplayVolumeColumn = useMemo(() => {
+    let volumePresenceCount = 0;
+    poolsData.forEach((pool) => {
+      if (pool.volume24hUsd) {
+        volumePresenceCount++;
+      }
+    });
+    return volumePresenceCount > poolsData.length / 2;
+  }, [poolsData]);
 
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
@@ -208,7 +210,7 @@ export const AllPoolsTable: FunctionComponent<{
     ];
 
     // Only show volume if more than half of the pools have volume data.
-    if (shouldFormatVolume) {
+    if (shouldDisplayVolumeColumn) {
       allColumns.push(
         columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
           id: "volume24hUsd",
@@ -303,7 +305,7 @@ export const AllPoolsTable: FunctionComponent<{
     setSortKey,
     cellGroupEventEmitter,
     quickAddLiquidity,
-    shouldFormatVolume,
+    shouldDisplayVolumeColumn,
   ]);
 
   /** Columns collapsed for screen size responsiveness. */
@@ -311,11 +313,11 @@ export const AllPoolsTable: FunctionComponent<{
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
-    if (width < Breakpoint.lg && shouldFormatVolume)
+    if (width < Breakpoint.lg && shouldDisplayVolumeColumn)
       collapsedColIds.push("volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
-  }, [columns, width, shouldFormatVolume]);
+  }, [columns, width, shouldDisplayVolumeColumn]);
 
   const table = useReactTable({
     data: poolsData,
