@@ -10,7 +10,6 @@ import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   calcCoinValue,
@@ -36,6 +35,7 @@ import {
   queryDelegatedClPositions,
   queryUndelegatingClPositions,
 } from "~/server/queries/osmosis/superfluid";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
 
 import { queryPositionPerformance } from "../../imperator";

@@ -5,6 +5,22 @@ import { LRUCache } from "lru-cache";
 
 import { superjson } from "~/utils/superjson";
 
+export const DEFAULT_LRU_OPTIONS: LRUCache.Options<
+  string,
+  CacheEntry<unknown>,
+  unknown
+> = {
+  max: 500,
+};
+
+export const LARGE_LRU_OPTIONS: LRUCache.Options<
+  string,
+  CacheEntry<unknown>,
+  unknown
+> = {
+  max: 1_500,
+};
+
 const isTestEnv = process.env.NODE_ENV === "test";
 
 // Client implementation inspired by: https://github.com/mannyv123/cachified-redis-adapter/blob/main/src/index.ts
@@ -36,13 +52,17 @@ export class RemoteCache implements Cache {
         console.error(
           "Failed to create RemoteCache client. Falling back to in-memory cache.."
         );
-        this.fallbackCache = new LRUCache<string, CacheEntry>({ max: 50 });
+        this.fallbackCache = new LRUCache<string, CacheEntry>(
+          DEFAULT_LRU_OPTIONS
+        );
       }
     } else {
       console.warn(
         "RemoteCache is not available in test environment. Falling back to in-memory cache.."
       );
-      this.fallbackCache = new LRUCache<string, CacheEntry>({ max: 50 });
+      this.fallbackCache = new LRUCache<string, CacheEntry>(
+        DEFAULT_LRU_OPTIONS
+      );
     }
   }
 

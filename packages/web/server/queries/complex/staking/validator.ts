@@ -3,9 +3,9 @@ import { BondStatus } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryValidators } from "~/server/queries/cosmos";
 import { queryValidatorThumbnail } from "~/server/queries/keybase";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const validatorsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

@@ -5,8 +5,8 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */

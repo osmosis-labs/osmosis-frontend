@@ -2,8 +2,8 @@ import { Dec } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryStakingApr } from "~/server/queries/numia/staking-apr";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const averageStakingAprCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
