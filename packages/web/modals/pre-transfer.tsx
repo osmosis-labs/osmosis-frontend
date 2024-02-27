@@ -40,8 +40,6 @@ export const PreTransferModal: FunctionComponent<
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
-  console.log("isUnstable: ", isUnstable);
-
   const tokenValue = useCoinFiatValue(selectedToken.balance);
 
   const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";
@@ -103,7 +101,7 @@ export const PreTransferModal: FunctionComponent<
             <Button
               className="h-10 w-full"
               mode="secondary"
-              // disabled={isUnstable}
+              disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
@@ -140,7 +138,7 @@ export const PreTransferModal: FunctionComponent<
           {!isEthAsset && !externalDepositUrl && (
             <Button
               className="h-10 w-full"
-              // disabled={isUnstable}
+              disabled={isUnstable}
               onClick={onDeposit}
             >
               {t("assets.table.preTransfer.deposit")}

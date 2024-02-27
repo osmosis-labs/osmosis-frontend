@@ -574,7 +574,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 <Button
                   size="sm"
                   className="whitespace-nowrap !px-10 !text-base"
-                  // disabled={!isDepositSupported || Boolean(data?.isUnstable)}
                   disabled={!isDepositSupported}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
@@ -584,11 +583,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               <Button
                 size="sm"
                 className="whitespace-nowrap !px-10 !text-base"
-                disabled={
-                  !tokenChain?.chainId || !isDepositSupported
-                  // ||
-                  // Boolean(data?.isUnstable)
-                }
+                disabled={!tokenChain?.chainId || !isDepositSupported}
                 onClick={() => {
                   if (tokenChain?.chainId) {
                     if (!data?.isVerified && !shouldDisplayUnverifiedAssets) {
