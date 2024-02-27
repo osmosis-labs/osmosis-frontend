@@ -3,8 +3,10 @@ import { createNodeQuery } from "~/server/queries/base-utils";
 import { ICNS_RESOLVER_CONTRACT_ADDRESS } from ".";
 
 interface ICNSNameResponse {
-  names: string[];
-  primary_name: string;
+  data: {
+    names: string[];
+    primary_name: string;
+  };
 }
 
 export const queryICNSName = createNodeQuery<

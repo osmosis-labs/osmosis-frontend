@@ -408,7 +408,7 @@ export async function mapGetPositionDetails({
           delegationLockId: delegatedSuperfluidPosition.lockId,
           equivalentStakedAmount:
             delegatedSuperfluidPosition.equivalentStakedAmount,
-          superfluidApr: superfluidApr!,
+          superfluidApr: superfluidApr ?? new RatePretty(0),
           humanizedStakeDuration: longestLockDuration.humanize(),
         };
       } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
@@ -423,7 +423,7 @@ export async function mapGetPositionDetails({
           undelegationEndTime: undelegatingSuperfluidPosition.endTime,
           equivalentStakedAmount:
             undelegatingSuperfluidPosition.equivalentStakedAmount,
-          superfluidApr: superfluidApr!,
+          superfluidApr: superfluidApr ?? new RatePretty(0),
         };
       }
 
