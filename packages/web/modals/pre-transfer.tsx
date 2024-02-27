@@ -40,6 +40,8 @@ export const PreTransferModal: FunctionComponent<
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
+  console.log("isUnstable: ", isUnstable);
+
   const tokenValue = useCoinFiatValue(selectedToken.balance);
 
   const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";

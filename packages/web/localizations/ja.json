@@ -878,8 +878,7 @@
   "unstableAssetsWarning": {
     "title": "転送が不安定",
     "description": "大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
-    "buttonWithdraw": "とにかく撤退する",
-    "buttonDeposit": "とにかく入金する",
+    "buttonContinue": "とにかく続けます",
     "buttonCancel": "キャンセル"
   }
 }

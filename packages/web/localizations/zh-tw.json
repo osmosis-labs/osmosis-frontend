@@ -878,8 +878,7 @@
   "unstableAssetsWarning": {
     "title": "傳輸不穩定",
     "description": "您可能會遇到嚴重的延遲或交易失敗。繼續需要您自擔風險。",
-    "buttonWithdraw": "無論如何都要撤回",
-    "buttonDeposit": "無論如何存款",
+    "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
   }
 }

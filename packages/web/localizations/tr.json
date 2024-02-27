@@ -878,8 +878,7 @@
   "unstableAssetsWarning": {
     "title": "Transferler Kararsız",
     "description": "Önemli gecikmeler veya işlem başarısızlığı yaşayabilirsiniz. Riski size ait olmak üzere devam edin.",
-    "buttonWithdraw": "Yine de Çek",
-    "buttonDeposit": "Yine de Para Yatır",
+    "buttonContinue": "Her halükarda devam et",
     "buttonCancel": "İptal etmek"
   }
 }

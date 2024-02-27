@@ -6,12 +6,11 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
   onContinue: () => void;
-  type: "deposit" | "withdraw";
 }
 
 export const UnstableAssetWarning: FunctionComponent<
   ExtendedModalBaseProps
-> = ({ onRequestClose, isOpen, onContinue, type }) => {
+> = ({ onRequestClose, isOpen, onContinue }) => {
   const { t } = useTranslation();
 
   return (
@@ -35,9 +34,7 @@ export const UnstableAssetWarning: FunctionComponent<
             onRequestClose();
           }}
         >
-          {type === "deposit"
-            ? t("unstableAssetsWarning.buttonDeposit")
-            : t("unstableAssetsWarning.buttonWithdraw")}
+          {t("unstableAssetsWarning.buttonContinue")}
         </Button>
         <Button
           variant="ghost"

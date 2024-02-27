@@ -71,7 +71,6 @@ export const TransferButtonCell: FunctionComponent<
           />
         </Tooltip>
         <UnstableAssetWarning
-          type={type}
           isOpen={showUnstableAssetWarning}
           onRequestClose={() => setShowUnstableAssetWarning(false)}
           onContinue={action}

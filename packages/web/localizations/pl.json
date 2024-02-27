@@ -878,8 +878,7 @@
   "unstableAssetsWarning": {
     "title": "Transfery niestabilne",
     "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
-    "buttonWithdraw": "Wycofaj się mimo to",
-    "buttonDeposit": "W każdym razie wpłać",
+    "buttonContinue": "Kontynuować mimo to",
     "buttonCancel": "Anulować"
   }
 }
