@@ -83,19 +83,16 @@ export const EarnRewards = ({
         messages,
         undefined,
         undefined,
-        undefined,
-        (tx) => {
-          if (tx.code === 0) {
-            unclaimedRewards.forEach(({ id }) => {
-              apiUtils.edge.earn.getStrategyBalance.invalidate({
-                strategyId: id,
-                userOsmoAddress: account.address ?? "",
-              });
-            });
-          }
-        }
+        undefined
       );
-    } catch (error) {}
+    } finally {
+      unclaimedRewards.forEach(({ id }) => {
+        apiUtils.edge.earn.getStrategyBalance.invalidate({
+          strategyId: id,
+          userOsmoAddress: account.address ?? "",
+        });
+      });
+    }
   }, [
     account,
     accountStore,
