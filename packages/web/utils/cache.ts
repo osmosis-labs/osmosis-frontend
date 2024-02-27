@@ -3,6 +3,7 @@ import { createClient, VercelKV } from "@vercel/kv";
 import { Cache, CacheEntry, totalTtl } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { ChainList } from "~/config/generated/chain-list";
 import { superjson } from "~/utils/superjson";
 
 export const DEFAULT_LRU_OPTIONS: LRUCache.Options<
@@ -39,14 +40,39 @@ export class RemoteCache implements Cache {
 
   protected fallbackCache: Cache | null = null;
 
-  name = "RemoteCache";
+  name = "RemoteCache:" + this.keyPrefix;
+
+  /** To avoid data integrity issues in the shared cache, we need to prefix all keys per environment.
+   *
+   *  The environment identifiers include:
+   *  - The current commit hash of the frontend stack, to avoid unexpected data types across deployments.
+   *  - The current Osmosis node environment (e.g. mainnet, testnet, etc.), to avoid unexpected data values across environments.
+   *  - The current Vercel env, to avoid unexpected data types and values across deployments.
+   */
+  get keyPrefix() {
+    return `${process.env.VERCEL_GIT_COMMIT_SHA}-${ChainList[0].chain_id}-${process.env.VERCEL_ENV}/`;
+  }
 
   constructor() {
     if (!isTestEnv) {
+      const url = process.env.KV_STORE_REST_API_URL;
+      const token = process.env.KV_STORE_REST_API_TOKEN;
+
+      if (!url || !token) {
+        console.error(
+          "RemoteCache requires KV_STORE_REST_API_URL and KV_STORE_REST_API_TOKEN environment variables to be set. Falling back to in memory cache."
+        );
+
+        this.fallbackCache = new LRUCache<string, CacheEntry>(
+          DEFAULT_LRU_OPTIONS
+        );
+        return;
+      }
+
       try {
         this.kvStore = createClient({
-          url: process.env.TWITTER_KV_STORE_REST_API_URL!,
-          token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
+          url,
+          token,
         });
       } catch (e) {
         console.error(
@@ -72,7 +98,7 @@ export class RemoteCache implements Cache {
       return this.fallbackCache.get(key);
     }
 
-    const value = await this.kvStore!.get(key);
+    const value = await this.kvStore!.get(this.keyPrefix + key);
     if (isNil(value) || typeof value !== "string") {
       return null;
     }
@@ -90,7 +116,7 @@ export class RemoteCache implements Cache {
     const createdTime = value?.metadata?.createdTime;
 
     await this.kvStore!.set(
-      key,
+      this.keyPrefix + key,
       superjson.stringify(value),
       ttl > 0 && ttl < Infinity && typeof createdTime === "number"
         ? {
@@ -107,6 +133,6 @@ export class RemoteCache implements Cache {
       return;
     }
 
-    await this.kvStore!.del(key);
+    await this.kvStore!.del(this.keyPrefix + key);
   }
 }
