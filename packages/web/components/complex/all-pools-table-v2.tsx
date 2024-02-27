@@ -225,7 +225,7 @@ export const AllPoolsTable: FunctionComponent<{
               setSortKey={setSortKey}
             />
           ),
-        })
+        }) as (typeof allColumns)[number]
       );
     }
 
@@ -290,7 +290,7 @@ export const AllPoolsTable: FunctionComponent<{
           />
         ),
       }),
-    ];
+    ] as (typeof allColumns)[number][];
 
     allColumns.push(...remainingColumns);
 
