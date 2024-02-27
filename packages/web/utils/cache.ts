@@ -1,6 +1,6 @@
 import { isNil } from "@osmosis-labs/utils";
 import { createClient, VercelKV } from "@vercel/kv";
-import { Cache, CacheEntry, totalTtl } from "cachified";
+import { Cache as CachifiedCache, CacheEntry, totalTtl } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -35,10 +35,10 @@ const isTestEnv = process.env.NODE_ENV === "test";
  *
  *  Falls back to in-memory cache if the remote client is not able to be created.
  */
-export class RemoteCache implements Cache {
+export class RemoteCache implements CachifiedCache {
   protected kvStore: VercelKV | null = null;
 
-  protected fallbackCache: Cache | null = null;
+  protected fallbackCache: CachifiedCache | null = null;
 
   name = "RemoteCache:" + this.keyPrefix;
 
@@ -50,7 +50,9 @@ export class RemoteCache implements Cache {
    *  - The current Vercel env, to avoid unexpected data types and values across deployments.
    */
   get keyPrefix() {
-    return `${process.env.VERCEL_GIT_COMMIT_SHA}-${ChainList[0].chain_id}-${process.env.VERCEL_ENV}/`;
+    return `${process.env.VERCEL_GIT_COMMIT_SHA ?? "localdev"}-${
+      ChainList[0].chain_id
+    }-${process.env.VERCEL_ENV ?? process.env.NODE_ENV}/`;
   }
 
   constructor() {
@@ -115,6 +117,7 @@ export class RemoteCache implements Cache {
     const ttl = totalTtl(value?.metadata);
     const createdTime = value?.metadata?.createdTime;
 
+    console.log("set: ", this.keyPrefix + key);
     await this.kvStore!.set(
       this.keyPrefix + key,
       superjson.stringify(value),
