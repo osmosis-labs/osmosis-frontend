@@ -190,8 +190,11 @@ export const AllPoolsTable: FunctionComponent<{
     let volumePresenceCount = 0;
     let feesPresenceCount = 0;
     poolsData.forEach((pool) => {
-      if (pool.volume24hUsd && pool.feesSpent7dUsd) {
+      if (pool.volume24hUsd) {
         volumePresenceCount++;
+      }
+
+      if (pool.feesSpent7dUsd) {
         feesPresenceCount++;
       }
     });
