@@ -56,6 +56,7 @@ import {
   DefaultGasPriceStep,
   getSourceDenomFromAssetList,
   isNil,
+  unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
@@ -68,6 +69,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import dayjs from "dayjs";
 import Long from "long";
 import { LRUCache } from "lru-cache";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
@@ -718,9 +720,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
     if (
+      oneClickTradingInfo &&
       isOneClickTradingEnabled &&
       messages.every(({ typeUrl }) =>
         oneClickTradingInfo?.allowedMessages.includes(typeUrl)
+      ) &&
+      /**
+       * Should not surpass network fee limit.
+       */
+      fee.amount.length === 1 &&
+      fee.amount[0].denom === "uosmo" &&
+      new Dec(fee.amount[0].amount).lte(
+        new Dec(oneClickTradingInfo.networkFeeLimit.amount)
       )
     ) {
       return this.signOneClick(
@@ -1302,15 +1313,32 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return this._kvStore.set(OneClickTradingLocalStorageKey, data);
   }
 
-  async isOneCLickTradingEnabled() {
+  async isOneCLickTradingEnabled(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return false;
+
     return (
-      !isNil(await this.getOneClickTradingInfo()) &&
+      !(await this.isOneClickTradingExpired()) &&
       Boolean(await this.getShouldUseOneClickTrading())
     );
   }
 
+  async isOneClickTradingExpired(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return true;
+
+    return dayjs
+      .unix(unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end))
+      .isBefore(dayjs());
+  }
+
+  /**
+   * Sets the preference for using one-click trading.
+   */
   @action
-  async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+  async setShouldUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
     this.useOneClickTrading = nextValue;
     await this._kvStore.set<boolean>(
       UseOneClickTradingLocalStorageKey,
@@ -1318,6 +1346,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
   }
 
+  /**
+   * Retrieves the user's preference for using one-click trading.
+   * This preference is used to determine if one-click trading should be enabled or not.
+   */
   async getShouldUseOneClickTrading() {
     return Boolean(
       await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)

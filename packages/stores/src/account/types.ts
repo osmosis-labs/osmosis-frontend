@@ -91,6 +91,11 @@ export interface OneClickTradingInfo {
   readonly privateKey: string;
   readonly allowed: string;
 
+  networkFeeLimit: {
+    denom: string;
+    amount: string;
+  };
+
   // Period to reset the spend limit quota.
   readonly resetPeriod: OneClickTradingResetPeriods;
 
@@ -103,7 +108,7 @@ export interface OneClickTradingInfo {
 
 /**
  * The document to be signed
- * Referenced from CosmjsL
+ * Referenced from Cosmjs
  * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
  *
  * We copied it over to work around dependency updates.

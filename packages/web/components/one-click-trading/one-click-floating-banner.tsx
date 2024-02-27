@@ -1,5 +1,6 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { Fragment } from "react";
 import { useLocalStorage } from "react-use";
@@ -8,22 +9,29 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {
+  useFeatureFlags,
+  useIsOneClickTradingEnabled,
+  useTranslation,
+} from "~/hooks";
+import { useGlobalIs1CTIntroModalOpen } from "~/modals";
 import { useStore } from "~/stores";
 
 export const OneClickFloatingBannerDoNotShowKey =
   "do-not-show-one-click-trading-floating-notification";
 
-export const OneClickFloatingBanner = () => {
+export const OneClickFloatingBanner = observer(() => {
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const isConnected = !!account?.address;
+  const { isOneClickTradingEnabled } = useIsOneClickTradingEnabled();
 
-  if (!isConnected || !featureFlags.oneClickTrading) return null;
+  if (!isConnected || !featureFlags.oneClickTrading || isOneClickTradingEnabled)
+    return null;
 
   return <OneClickFloatingBannerContent />;
-};
+});
 
 const OneClickFloatingBannerContent = () => {
   const { t } = useTranslation();
@@ -31,6 +39,7 @@ const OneClickFloatingBannerContent = () => {
     OneClickFloatingBannerDoNotShowKey,
     false
   );
+  const [, setIs1CTIntroModalOpen] = useGlobalIs1CTIntroModalOpen();
 
   return (
     <Transition
@@ -106,6 +115,7 @@ const OneClickFloatingBannerContent = () => {
                   "text-subtitle1 font-subtitle1",
                   "sm:text-left sm:text-caption sm:font-caption"
                 )}
+                onClick={() => setIs1CTIntroModalOpen(true)}
               >
                 {t("oneClickTrading.floatingBanner.tradeFasterButton")}
               </ArrowButton>
@@ -117,7 +127,7 @@ const OneClickFloatingBannerContent = () => {
             mode="icon-primary"
             size="unstyled"
             className={classNames(
-              "group mt-5 h-8 w-8 flex-shrink-0 self-start rounded-full bg-osmoverse-600",
+              "group mt-5 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
               "sm:mt-0 sm:ml-2 sm:self-center"
             )}
             icon={

@@ -17,6 +17,7 @@ import {
 } from "react";
 import { useLocalStorage } from "react-use";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
@@ -204,6 +205,45 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
+    const onClick1CT = () => {
+      displayToast(
+        {
+          message: "1-Click Trading active",
+          caption: "59 minutes remaining",
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          message: "1-Click Trading expired",
+          captionElement: (
+            <Button mode="text" className="caption">
+              Enable 1-Click Trading
+            </Button>
+          ),
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          message: "1-Click Trading disabled",
+          caption: "Session ended on this device",
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          message: "Network fee too high",
+          captionElement: (
+            <Button mode="text" className="caption">
+              Increase network fee limit
+            </Button>
+          ),
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+    };
+
     return (
       <>
         <div
@@ -212,6 +252,7 @@ export const NavBar: FunctionComponent<
             className
           )}
         >
+          <button onClick={onClick1CT}>Open!</button>
           <div className="relative hidden shrink-0 items-center md:flex">
             <Popover>
               {({ close: closeMobileMainMenu }) => {
@@ -468,6 +509,7 @@ const WalletInfo: FunctionComponent<
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useIsOneClickTradingEnabled();
+  const flags = useFeatureFlags();
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -510,7 +552,7 @@ const WalletInfo: FunctionComponent<
             className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
             <div className="relative">
-              {isOneClickTradingEnabled && (
+              {isOneClickTradingEnabled && flags.oneClickTrading && (
                 <>
                   <OneClickTradingRadialProgress />
                   <div className="absolute -bottom-0.5 -right-1">
@@ -602,38 +644,43 @@ const OneClickTradingRadialProgress = observer(() => {
     };
   }, [oneClickTradingInfo]);
 
-  return (
-    <div className="absolute h-full w-full scale-[1.35] transform">
-      <svg className="h-full w-full" viewBox="0 0 100 100">
-        <circle
-          className="origin-[50%_50%] rotate-45 transform transition-[stroke-dashoffset] duration-[0.35s]"
-          strokeWidth="5"
-          strokeLinecap="round"
-          stroke="url(#grad1)"
-          cx="50"
-          cy="50"
-          r="40"
-          fill="transparent"
-          /**
-           * Should be the circumference times the percentage
-           * circumference × ((100 - progress)/100)
-           */
-          strokeDashoffset={`calc(251.2 * ((100 - ${percentage})/100))`}
-          /**
-           * Should be the circumference of the circle
-           * circumference = 2πr = 2 * 3.14 * 40 = 251.2
-           */
-          strokeDasharray="251.2"
-        ></circle>
+  console.log(percentage);
+  if (percentage === 0) return null;
 
-        <defs>
-          <linearGradient id="grad1" gradientTransform="rotate(90)">
-            <stop offset="0.04%" stopColor={theme.colors.superfluid} />
-            <stop offset="99.5%" stopColor={theme.colors.ammelia["600"]} />
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
+  return (
+    <>
+      <div className="absolute h-full w-full scale-[1.35] transform">
+        <svg className="h-full w-full" viewBox="0 0 100 100">
+          <circle
+            className="origin-[50%_50%] rotate-45 transform transition-[stroke-dashoffset] duration-[0.35s]"
+            strokeWidth="5"
+            strokeLinecap="round"
+            stroke="url(#grad1)"
+            cx="50"
+            cy="50"
+            r="40"
+            fill="transparent"
+            /**
+             * Should be the circumference times the percentage
+             * circumference × ((100 - progress)/100)
+             */
+            strokeDashoffset={`calc(251.2 * ((100 - ${percentage})/100))`}
+            /**
+             * Should be the circumference of the circle
+             * circumference = 2πr = 2 * 3.14 * 40 = 251.2
+             */
+            strokeDasharray="251.2"
+          ></circle>
+
+          <defs>
+            <linearGradient id="grad1" gradientTransform="rotate(90)">
+              <stop offset="0.04%" stopColor={theme.colors.superfluid} />
+              <stop offset="99.5%" stopColor={theme.colors.ammelia["600"]} />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </>
   );
 });
 

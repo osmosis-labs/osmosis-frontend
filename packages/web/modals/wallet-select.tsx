@@ -1,4 +1,3 @@
-import { toBase64 } from "@cosmjs/encoding";
 import {
   ChainWalletBase,
   ExpiredError,
@@ -7,21 +6,13 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { Popover } from "@headlessui/react";
-import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { DecUtils } from "@keplr-wallet/unit";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
-import {
-  AvailableOneClickTradingMessages,
-  OneClickTradingTimeLimit,
-  OneClickTradingTransactionParams,
-} from "@osmosis-labs/types";
-import { unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, {
@@ -58,14 +49,12 @@ import { AvailableWallets, WalletRegistry } from "~/config";
 import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import {
-  getFirstAuthenticator,
-  getOneClickTradingSessionAuthenticator,
-  useAddAuthenticators,
-} from "~/hooks/mutations/osmosis/add-authenticator";
+  CreateOneClickSessionError,
+  useCreateOneClickTradingSession,
+} from "~/hooks/one-click-trading/use-create-one-click-trading-session";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 
@@ -137,13 +126,6 @@ const OnboardingSteps = (t: MultiLanguageT) => [
   },
 ];
 
-class WalletSelectOneClickError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WalletSelectOneClickError";
-  }
-}
-
 const useHasWalletsInstalled = () => {
   return useMemo(() => {
     const wallets = WalletRegistry.filter(
@@ -168,9 +150,19 @@ export const WalletSelectModal: FunctionComponent<
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const hasInstalledWallets = useHasWalletsInstalled();
-  const addAuthenticators = useAddAuthenticators();
-
-  const apiUtils = api.useUtils();
+  const create1CTSessionMutation = useCreateOneClickTradingSession({
+    addAuthenticatorsQueryOptions: {
+      onSuccess: () => {
+        onRequestClose();
+      },
+      onError: () => {
+        setHasOneClickTradingError(true);
+      },
+      onSettled: () => {
+        setIsInitializingOneClickTrading(false);
+      },
+    },
+  });
 
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
@@ -218,7 +210,7 @@ export const WalletSelectModal: FunctionComponent<
       setIsInitializingOneClickTrading(false);
       setHasOneClickTradingError(false);
     }
-  }, [addAuthenticators]);
+  }, [isOpen]);
 
   (current?.client as any)?.setActions?.({
     qrUrl: {
@@ -245,113 +237,17 @@ export const WalletSelectModal: FunctionComponent<
 
   const onCreate1CTSession = async ({
     walletRepo,
+    transaction1CTParams,
   }: {
     walletRepo: WalletRepo;
+    transaction1CTParams: OneClickTradingTransactionParams | undefined;
   }) => {
     setIsInitializingOneClickTrading(true);
-
-    if (!transaction1CTParams)
-      throw new WalletSelectOneClickError(
-        "Transaction 1CT params are not defined."
-      );
-
-    if (!walletRepo.current)
-      throw new WalletSelectOneClickError("walletRepo.current is not defined.");
-    if (!spendLimitTokenDecimals)
-      throw new WalletSelectOneClickError(
-        "Spend limit token decimals are not defined."
-      );
-
-    const { accountPubKey, shouldAddFirstAuthenticator } =
-      await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
-        { userOsmoAddress: walletRepo.current.address! }
-      );
-
-    const key = PrivKeySecp256k1.generateRandomKey();
-    const allowedAmount = transaction1CTParams.spendLimit
-      .toDec()
-      .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
-      .truncate()
-      .toString();
-    const allowedMessages: AvailableOneClickTradingMessages[] = [
-      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-    ];
-    const resetPeriod = transaction1CTParams.resetPeriod;
-
-    let sessionPeriod: OneClickTradingTimeLimit;
-    switch (transaction1CTParams.sessionPeriod.end) {
-      case "10min":
-        sessionPeriod = {
-          end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
-        };
-        break;
-      case "30min":
-        sessionPeriod = {
-          end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
-        };
-        break;
-      case "1hour":
-        sessionPeriod = {
-          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
-        };
-        break;
-      case "3hours":
-        sessionPeriod = {
-          end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
-        };
-        break;
-      case "12hours":
-        sessionPeriod = {
-          end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
-        };
-        break;
-      default:
-        throw new Error(
-          `Unsupported time limit: ${transaction1CTParams.sessionPeriod.end}`
-        );
-    }
-
-    const oneClickTradingAuthenticator = getOneClickTradingSessionAuthenticator(
-      {
-        key,
-        allowedAmount,
-        allowedMessages,
-        resetPeriod,
-        sessionPeriod,
-      }
-    );
-
-    addAuthenticators.mutate(
-      {
-        authenticators: shouldAddFirstAuthenticator
-          ? [
-              getFirstAuthenticator({ pubKey: accountPubKey }),
-              oneClickTradingAuthenticator,
-            ]
-          : [oneClickTradingAuthenticator],
-      },
-      {
-        onSuccess: () => {
-          accountStore.setOneClickTradingInfo({
-            allowed: allowedAmount,
-            allowedMessages,
-            resetPeriod,
-            privateKey: toBase64(key.toBytes()),
-            sessionPeriod,
-            sessionStartedAtUnix: dayjs().unix(),
-          });
-
-          accountStore.setUseOneClickTrading({ nextValue: true });
-          onRequestClose();
-        },
-        onError: () => {
-          setHasOneClickTradingError(true);
-        },
-        onSettled: () => {
-          setIsInitializingOneClickTrading(false);
-        },
-      }
-    );
+    create1CTSessionMutation.onCreate1CTSession({
+      walletRepo,
+      transaction1CTParams,
+      spendLimitTokenDecimals: spendLimitTokenDecimals,
+    });
   };
 
   const onConnect = async (
@@ -427,13 +323,13 @@ export const WalletSelectModal: FunctionComponent<
 
         if (transaction1CTParams?.isOneClickEnabled) {
           try {
-            await onCreate1CTSession({ walletRepo });
+            await onCreate1CTSession({ walletRepo, transaction1CTParams });
           } catch (e) {
-            const error = e as WalletSelectOneClickError | Error;
+            const error = e as CreateOneClickSessionError | Error;
             setHasOneClickTradingError(true);
 
             if (error instanceof Error) {
-              throw new WalletSelectOneClickError(error.message);
+              throw new CreateOneClickSessionError(error.message);
             }
 
             throw e;
@@ -441,7 +337,7 @@ export const WalletSelectModal: FunctionComponent<
         }
       })
       .catch((e: Error | unknown) => {
-        if (e instanceof WalletSelectOneClickError) throw e;
+        if (e instanceof CreateOneClickSessionError) throw e;
         handleConnectError(
           e instanceof Error ? e : new Error("Unknown error.")
         );
@@ -524,7 +420,10 @@ export const WalletSelectModal: FunctionComponent<
             setTransaction1CTParams={setTransaction1CTParams}
             isLoading1CTParams={isLoading1CTParams}
             onCreate1CTSession={() =>
-              onCreate1CTSession({ walletRepo: walletRepoProp })
+              onCreate1CTSession({
+                walletRepo: walletRepoProp,
+                transaction1CTParams,
+              })
             }
           />
           <IconButton

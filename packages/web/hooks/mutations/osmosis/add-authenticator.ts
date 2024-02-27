@@ -16,6 +16,13 @@ interface AddAuthenticatorVars {
   data: Uint8Array | number[];
 }
 
+export type AddAuthenticatorQueryOptions = UseMutationOptions<
+  unknown,
+  unknown,
+  { authenticators: AddAuthenticatorVars[] },
+  unknown
+>;
+
 export function getFirstAuthenticator({
   pubKey,
 }: {
@@ -79,12 +86,7 @@ export function getOneClickTradingSessionAuthenticator({
 export const useAddAuthenticators = ({
   queryOptions,
 }: {
-  queryOptions?: UseMutationOptions<
-    unknown,
-    unknown,
-    { authenticators: AddAuthenticatorVars[] },
-    unknown
-  >;
+  queryOptions?: AddAuthenticatorQueryOptions;
 } = {}) => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);

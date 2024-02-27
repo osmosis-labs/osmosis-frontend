@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import { toast, ToastOptions } from "react-toastify";
 
 import { Alert, ToastType } from "~/components/alert";
@@ -48,10 +48,17 @@ export function displayToast(
     case ToastType.LOADING:
       toast(<LoadingToast {...alert} />, toastOptions);
       break;
+    case ToastType.ONE_CLICK_TRADING:
+      toast(<OneClickTradingToast {...alert} />, toastOptions);
+      break;
   }
 }
 
-const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
+const LoadingToast: FunctionComponent<Alert> = ({
+  message,
+  caption,
+  captionElement,
+}) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
       <Image
@@ -63,6 +70,7 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {captionElement}
       {caption && (
         <p className="text-sm md:text-xs">
           {typeof caption === "string" ? t(caption) : t(...caption)}
@@ -72,13 +80,18 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
   </div>
 );
 
-const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
+const ErrorToast: FunctionComponent<Alert> = ({
+  message,
+  caption,
+  captionElement,
+}) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {captionElement}
       {caption && (
         <p className="text-sm md:text-xs">
           {typeof caption === "string" ? t(caption) : t(...caption)}
@@ -93,6 +106,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
   learnMoreUrl,
   learnMoreUrlCaption,
   caption,
+  captionElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
@@ -100,6 +114,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {captionElement}
       {caption && (
         <p className="text-sm md:text-xs">
           {typeof caption === "string" ? t(caption) : t(...caption)}
@@ -116,6 +131,32 @@ const SuccessToast: FunctionComponent<Alert> = ({
             <Icon aria-label="link" id="external-link" height={12} width={12} />
           </div>
         </a>
+      )}
+    </div>
+  </div>
+);
+
+const OneClickTradingToast: FunctionComponent<Alert> = ({
+  message,
+  caption,
+  captionElement,
+}) => (
+  <div className="flex items-center gap-3 md:gap-2">
+    <div className="h-8 w-8 shrink-0">
+      <Image
+        alt="One Click Trading Small Icon"
+        src="/images/1ct-small-icon.svg"
+        height={32}
+        width={32}
+      />
+    </div>
+    <div className="text-white-high">
+      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {captionElement}
+      {caption && (
+        <p className="text-sm text-osmoverse-300 md:text-xs">
+          {typeof caption === "string" ? t(caption) : t(...caption)}
+        </p>
       )}
     </div>
   </div>
