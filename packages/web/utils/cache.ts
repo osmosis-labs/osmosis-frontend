@@ -15,6 +15,8 @@ const isTestEnv = process.env.NODE_ENV === "test";
  *  NOTE: Uses an LRUCache in test environment to avoid hitting the remote resource as Vercel KV createClient secret env vars are not available in GH action.
  *
  *  WARNING: Only available in dev/prod node runtime (not browser).
+ *
+ *  Falls back to in-memory cache if the remote client is not able to be created.
  */
 export class RemoteCache implements Cache {
   protected kvStore: VercelKV | null = null;
