@@ -21,8 +21,6 @@ export const queryICNSName = createNodeQuery<
     });
     const encodedMsg = Buffer.from(msg).toString("base64");
 
-    console.log("query ICNS Name");
-
     return `/cosmwasm/wasm/v1/contract/${ICNS_RESOLVER_CONTRACT_ADDRESS}/smart/${encodedMsg}`;
   },
 });
