@@ -290,7 +290,7 @@ export const AllPoolsTable: FunctionComponent<{
           />
         ),
       }),
-    ];
+    ] as (typeof allColumns)[number][];
 
     allColumns.push(...remainingColumns);
 
