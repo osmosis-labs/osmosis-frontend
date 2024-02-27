@@ -184,8 +184,8 @@ export const AllPoolsTable: FunctionComponent<{
     [poolsPagesData]
   );
 
-  // If more than half of the pools have volume and fees data, we should format the volume column.
-  // Otherwise, we should not format the volume column.
+  // If more than half of the pools have volume and fees data, we should format their respective columns.
+  // Otherwise, we should not display them.
   const { shouldDisplayVolumeData, shouldDisplayFeesData } = useMemo(() => {
     let volumePresenceCount = 0;
     let feesPresenceCount = 0;
@@ -254,6 +254,7 @@ export const AllPoolsTable: FunctionComponent<{
       )
     );
 
+    // Only show fees if more than half of the pools have fees data.
     if (shouldDisplayFeesData) {
       allColumns.push(
         columnHelper.accessor((row) => row.feesSpent7dUsd?.toString() ?? "0", {
