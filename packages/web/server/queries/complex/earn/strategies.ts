@@ -11,6 +11,7 @@ import {
   EarnStrategyBalance,
   queryEarnStrategies,
   queryEarnUserBalance,
+  queryStrategyAPY,
 } from "~/server/queries/numia/earn";
 
 const earnStrategiesCache = new LRUCache<string, CacheEntry>(
@@ -18,6 +19,10 @@ const earnStrategiesCache = new LRUCache<string, CacheEntry>(
 );
 
 const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+const earnStrategyAPYCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -132,6 +137,24 @@ export async function getStrategyBalance(
         };
       } catch (error) {
         throw new Error("Error while fetching strategy balance");
+      }
+    },
+  });
+}
+
+export async function getStrategyAPY(strategyId: string) {
+  return await cachified({
+    cache: earnStrategyAPYCache,
+    ttl: 1000 * 20,
+    key: `earn-strategy-apy-${strategyId}`,
+    getFreshValue: async () => {
+      try {
+        const { apy } = await queryStrategyAPY(strategyId);
+        return {
+          apy: new RatePretty(apy),
+        };
+      } catch (error) {
+        throw new Error("Error while fetching strategy APY");
       }
     },
   });

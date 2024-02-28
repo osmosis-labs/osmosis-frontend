@@ -72,6 +72,10 @@ export interface RawEarnStrategyBalance {
   };
 }
 
+export interface RawStrategyAPY {
+  apy: number;
+}
+
 export interface EarnStrategyBalance {
   balance: {
     amount: string;
@@ -119,5 +123,10 @@ export function queryEarnUserBalance(
     `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
     NUMIA_BASE_URL
   );
+  return apiClient(url.toString());
+}
+
+export function queryStrategyAPY(strategyId: string): Promise<RawStrategyAPY> {
+  const url = new URL(`/earn/strategies/${strategyId}/apy`, NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
