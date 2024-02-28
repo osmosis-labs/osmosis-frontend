@@ -1,3 +1,4 @@
+import { sleep } from "@axelar-network/axelarjs-sdk";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
 import { useCallback } from "react";
@@ -86,6 +87,12 @@ export const EarnRewards = ({
         undefined
       );
     } finally {
+      /**
+       * The sleep is needed in order to match the refetch time
+       * of the backend service (getStrategyBalance) that is going to be re-called
+       * after the TX.
+       */
+      await sleep(1);
       unclaimedRewards.forEach(({ id }) => {
         apiUtils.edge.earn.getStrategyBalance.invalidate({
           strategyId: id,
