@@ -11,7 +11,8 @@ export function getDistributionParams({ chainId }: { chainId: string }) {
   return cachified({
     cache: distributionCache,
     key: `distribution-params-${chainId}`,
-    ttl: 30 * 1000, // 30 seconds
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const { params } = await queryDistributionParams({ chainId });
       return {

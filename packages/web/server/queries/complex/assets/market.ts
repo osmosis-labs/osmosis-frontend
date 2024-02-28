@@ -35,6 +35,7 @@ export async function getMarketAsset<TAsset extends Asset>({
     cache: marketInfoCache,
     key: asset.coinDenom + asset.coinMinimalDenom,
     ttl: 1000 * 60 * 5, // 5 minutes
+    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       const currentPrice = await getAssetPrice({ asset }).catch(() => null);
       const marketCap = await getAssetMarketCap(asset).catch(() => null);

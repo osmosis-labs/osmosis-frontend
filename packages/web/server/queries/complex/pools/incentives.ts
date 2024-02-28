@@ -84,7 +84,8 @@ export function getCachedPoolIncentivesMap(): Promise<
   return cachified({
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
 

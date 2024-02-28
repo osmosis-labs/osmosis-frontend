@@ -12,7 +12,8 @@ export async function getOsmosisMintParams() {
   return cachified({
     cache: paramsCache,
     key: "osmosis-mint-params",
-    ttl: 30 * 1000, // 30 seconds
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const { params: mintParams } = await queryOsmosisMintParams();
 
@@ -47,7 +48,8 @@ export async function getSuperfluidParams() {
   return cachified({
     cache: paramsCache,
     key: "osmosis-superfluid-params",
-    ttl: 30 * 1000, // 30 seconds
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const { params } = await querySuperfluidParams();
 
