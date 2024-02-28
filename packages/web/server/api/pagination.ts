@@ -1,7 +1,7 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 /** Uses numerical cursor-based pagination that is compatible with and similar to offest pagination.
  *  This means if you have a cursor of 50 and a limit of 20, you will get items 50-69.

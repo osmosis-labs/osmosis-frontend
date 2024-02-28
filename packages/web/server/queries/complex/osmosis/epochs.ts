@@ -2,13 +2,13 @@ import { CoinPretty, Int } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { getAsset } from "~/server/queries/complex/assets";
 import { queryEpochs } from "~/server/queries/osmosis/epochs";
 import {
   queryEpochProvisions,
   queryOsmosisMintParams,
 } from "~/server/queries/osmosis/mint";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const epochsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

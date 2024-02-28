@@ -5,7 +5,6 @@ import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
@@ -13,6 +12,7 @@ import {
   querySimplePrice,
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
+import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/utils/cache";
 
 import { EdgeDataLoader } from "../../base-utils";
 import {

@@ -2,8 +2,8 @@ import { RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryDistributionParams } from "~/server/queries/cosmos/distribution";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const distributionCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

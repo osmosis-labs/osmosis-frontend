@@ -2,9 +2,9 @@ import { Dec } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryOsmosisMintParams } from "~/server/queries/osmosis/mint";
 import { querySuperfluidParams } from "~/server/queries/osmosis/superfluid/superfluid-params";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const paramsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

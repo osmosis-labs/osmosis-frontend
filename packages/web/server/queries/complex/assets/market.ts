@@ -3,8 +3,8 @@ import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { EdgeDataLoader } from "../../base-utils";
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";

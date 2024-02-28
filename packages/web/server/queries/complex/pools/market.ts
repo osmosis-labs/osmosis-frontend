@@ -2,7 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolsFees } from "../../imperator";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
@@ -23,13 +23,12 @@ export function getCachedPoolMarketMetricsMap(): Promise<
   return cachified({
     cache: metricPoolsCache,
     key: "pools-metrics-map",
-    ttl: 1000 * 10, // 10 seconds
-    staleWhileRevalidate: 1000 * 25, // 25 seconds, edge function run time limit
-    getFreshValue: async () => {
+    ttl: 1000 * 60 * 5, // 5 mins
+    staleWhileRevalidate: 1000 * 60 * 60, // 1 hour
+    getFreshValue: async (context) => {
       const map = new Map<string, PoolMarketMetrics>();
-
-      // append fee revenue data to volume data
       try {
+        // append fee revenue data to volume data
         const poolsFees = await queryPoolsFees();
         poolsFees.data.forEach(
           ({
@@ -53,9 +52,15 @@ export function getCachedPoolMarketMetricsMap(): Promise<
             });
           }
         );
-      } catch (err) {
-        // Return empty map if it fails
-        console.error("Failed to fetch pool metrics", err);
+      } catch (e) {
+        // no stale values were available to serve request
+        // return an empty map to indicate data isn't available
+        if (!context.background) {
+          return map;
+        }
+
+        // re-throw to indicate that the stale value should be used
+        throw e;
       }
 
       return map;

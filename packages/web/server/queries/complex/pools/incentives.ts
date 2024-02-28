@@ -6,10 +6,10 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ExcludedExternalBoostPools } from "~/config/feature-flag";
 import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { queryLockableDurations } from "~/server/queries/osmosis";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
 
