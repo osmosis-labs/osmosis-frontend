@@ -12,6 +12,7 @@ import {
   queryEarnStrategies,
   queryEarnUserBalance,
   queryStrategyAPY,
+  queryStrategyTVL,
 } from "~/server/queries/numia/earn";
 
 const earnStrategiesCache = new LRUCache<string, CacheEntry>(
@@ -23,6 +24,10 @@ const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
 );
 
 const earnStrategyAPYCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+const earnStrategyTVLCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -155,6 +160,24 @@ export async function getStrategyAPY(strategyId: string) {
         };
       } catch (error) {
         throw new Error("Error while fetching strategy APY");
+      }
+    },
+  });
+}
+
+export async function getStrategyTVL(strategyId: string) {
+  return await cachified({
+    cache: earnStrategyTVLCache,
+    ttl: 1000 * 20,
+    key: `earn-strategy-tvl-${strategyId}`,
+    getFreshValue: async () => {
+      try {
+        const { tvl } = await queryStrategyTVL(strategyId);
+        return {
+          tvl: new PricePretty(DEFAULT_VS_CURRENCY, tvl),
+        };
+      } catch (error) {
+        throw new Error("Error while fetching strategy TVL");
       }
     },
   });

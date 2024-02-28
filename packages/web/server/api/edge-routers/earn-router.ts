@@ -5,6 +5,7 @@ import {
   getEarnStrategies,
   getStrategyAPY,
   getStrategyBalance,
+  getStrategyTVL,
 } from "~/server/queries/complex/earn/strategies";
 
 export default createTRPCRouter({
@@ -22,6 +23,12 @@ export default createTRPCRouter({
     .input(z.object({ strategyId: z.string() }))
     .query(async ({ input: { strategyId } }) => {
       const res = await getStrategyAPY(strategyId);
+      return res;
+    }),
+  getStrategyTVL: publicProcedure
+    .input(z.object({ strategyId: z.string() }))
+    .query(async ({ input: { strategyId } }) => {
+      const res = await getStrategyTVL(strategyId);
       return res;
     }),
 });
