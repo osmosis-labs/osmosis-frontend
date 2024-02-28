@@ -254,26 +254,29 @@ export const AllPoolsTable: FunctionComponent<{
             />
           ),
         }
-      )
+      ) as (typeof allColumns)[number]
     );
 
     // Only show fees if more than half of the pools have fees data.
     if (shouldDisplayFeesData) {
       allColumns.push(
-        columnHelper.accessor((row) => row.feesSpent7dUsd?.toString() ?? "0", {
-          id: "feesSpent7dUsd",
-          header: () => (
-            <SortHeader
-              label={t("pools.allPools.sort.fees")}
-              sortKey="feesSpent7dUsd"
-              disabled={isLoading}
-              currentSortKey={sortKey}
-              currentDirection={sortParams.allPoolsSortDir}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            />
-          ),
-        })
+        columnHelper.accessor(
+          (row) => row.feesSpent7dUsd?.toString() ?? "N/A",
+          {
+            id: "feesSpent7dUsd",
+            header: () => (
+              <SortHeader
+                label={t("pools.allPools.sort.fees")}
+                sortKey="feesSpent7dUsd"
+                disabled={isLoading}
+                currentSortKey={sortKey}
+                currentDirection={sortParams.allPoolsSortDir}
+                setSortDirection={setSortDirection}
+                setSortKey={setSortKey}
+              />
+            ),
+          }
+        ) as (typeof allColumns)[number]
       );
     }
 
