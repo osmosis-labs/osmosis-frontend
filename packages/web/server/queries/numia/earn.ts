@@ -80,6 +80,14 @@ export interface RawStrategyTVL {
   tvl: number;
 }
 
+export interface StrategyAPY {
+  apy: RatePretty;
+}
+
+export interface StrategyTVL {
+  tvl: PricePretty;
+}
+
 export interface EarnStrategyBalance {
   balance: {
     amount: string;

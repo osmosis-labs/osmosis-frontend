@@ -13,6 +13,8 @@ import {
   queryEarnUserBalance,
   queryStrategyAPY,
   queryStrategyTVL,
+  StrategyAPY,
+  StrategyTVL,
 } from "~/server/queries/numia/earn";
 
 const earnStrategiesCache = new LRUCache<string, CacheEntry>(
@@ -152,7 +154,7 @@ export async function getStrategyAPY(strategyId: string) {
     cache: earnStrategyAPYCache,
     ttl: 1000 * 20,
     key: `earn-strategy-apy-${strategyId}`,
-    getFreshValue: async () => {
+    getFreshValue: async (): Promise<StrategyAPY> => {
       try {
         const { apy } = await queryStrategyAPY(strategyId);
         return {
@@ -170,7 +172,7 @@ export async function getStrategyTVL(strategyId: string) {
     cache: earnStrategyTVLCache,
     ttl: 1000 * 20,
     key: `earn-strategy-tvl-${strategyId}`,
-    getFreshValue: async () => {
+    getFreshValue: async (): Promise<StrategyTVL> => {
       try {
         const { tvl } = await queryStrategyTVL(strategyId);
         return {
