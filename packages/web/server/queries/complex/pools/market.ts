@@ -1,7 +1,8 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import cachified from "cachified";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
-import { RemoteCache } from "~/utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolsFees } from "../../imperator";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
@@ -14,7 +15,7 @@ export type PoolMarketMetrics = Partial<{
   feesSpent7dUsd: PricePretty;
 }>;
 
-const metricPoolsCache = new RemoteCache();
+const metricPoolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Get a cached Map with pool IDs mapped to market metrics for that pool. */
 export function getCachedPoolMarketMetricsMap(): Promise<
   Map<string, PoolMarketMetrics>
