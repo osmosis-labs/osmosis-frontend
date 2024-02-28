@@ -643,8 +643,6 @@ const OneClickTradingRadialProgress = observer(() => {
     };
   }, [oneClickTradingInfo]);
 
-  console.log(percentage);
-
   return (
     <>
       <div className="absolute h-full w-full scale-[1.35] transform">

@@ -38,6 +38,7 @@ import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-tradi
 import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import OneClickTradingWelcomeBack from "~/components/one-click-trading/one-click-trading-welcome-back";
+import { Screen, ScreenManager } from "~/components/screen-manager";
 import {
   Step,
   Stepper,
@@ -599,6 +600,13 @@ const LeftModalContent: FunctionComponent<
   );
 });
 
+enum WalletSelect1CTScreens {
+  Introduction = "Introduction",
+  Settings = "Settings",
+  WelcomeBack = "WelcomeBack",
+  ConnectAWallet = "ConnectAWallet",
+}
+
 const RightModalContent: FunctionComponent<
   Pick<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
@@ -872,16 +880,22 @@ const RightModalContent: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
-    const shouldDisplay1CTWelcomeBack =
-      !show1CTEditParams && accountStore.hasUsedOneClickTrading;
-    const shouldDisplay1CTIntro =
-      !show1CTEditParams && !accountStore.hasUsedOneClickTrading;
+    let oneClickTradingScreen: WalletSelect1CTScreens;
+    if (show1CTConnectAWallet) {
+      oneClickTradingScreen = WalletSelect1CTScreens.ConnectAWallet;
+    } else if (show1CTEditParams) {
+      oneClickTradingScreen = WalletSelect1CTScreens.Settings;
+    } else if (!show1CTEditParams && accountStore.hasUsedOneClickTrading) {
+      oneClickTradingScreen = WalletSelect1CTScreens.WelcomeBack;
+    } else {
+      oneClickTradingScreen = WalletSelect1CTScreens.Introduction;
+    }
 
     return (
       <>
         {show1CT ? (
-          <>
-            {show1CTEditParams && (
+          <ScreenManager currentScreen={oneClickTradingScreen}>
+            <Screen screenName={WalletSelect1CTScreens.Settings}>
               <OneClickTradingSettings
                 classes={{
                   root: "pt-1.5",
@@ -896,9 +910,11 @@ const RightModalContent: FunctionComponent<
                   setShow1CTEditParams(false);
                 }}
               />
-            )}
-            {show1CTConnectAWallet && <OneClickTradingConnectToContinue />}
-            {shouldDisplay1CTWelcomeBack && !show1CTConnectAWallet && (
+            </Screen>
+            <Screen screenName={WalletSelect1CTScreens.ConnectAWallet}>
+              <OneClickTradingConnectToContinue />
+            </Screen>
+            <Screen screenName={WalletSelect1CTScreens.WelcomeBack}>
               <div className="flex flex-col px-8 pt-14">
                 <OneClickTradingWelcomeBack
                   setTransaction1CTParams={setTransaction1CTParams}
@@ -910,8 +926,8 @@ const RightModalContent: FunctionComponent<
                   isDisabled={!transaction1CTParams}
                 />
               </div>
-            )}
-            {shouldDisplay1CTIntro && !show1CTConnectAWallet && (
+            </Screen>
+            <Screen screenName={WalletSelect1CTScreens.Introduction}>
               <div className="flex flex-col px-8">
                 <IntroducingOneClick
                   onStartTrading={() => {
@@ -930,8 +946,8 @@ const RightModalContent: FunctionComponent<
                   isDisabled={!transaction1CTParams}
                 />
               </div>
-            )}
-          </>
+            </Screen>
+          </ScreenManager>
         ) : (
           <div className="flex flex-col px-8 pt-1.5">
             <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
