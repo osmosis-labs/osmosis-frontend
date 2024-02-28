@@ -79,7 +79,8 @@ async function getCoingeckoPrice({
   return cachified({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
-    ttl: 60 * 1000, // 1 minute
+    ttl: 1000 * 60, // 1 minute
+    staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
       currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
   });
@@ -224,7 +225,8 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
     cache: pricesCache,
-    ttl: 5_000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 10, // 5 seconds
     getFreshValue: async () => {
       const assetListAsset = getAssetFromAssetList({
         sourceDenom: asset.sourceDenom,
@@ -410,6 +412,7 @@ export function getAssetHistoricalPrice({
       numRecentFrames ?? "all"
     }`,
     ttl: 1000 * 60 * 3, // 3 minutes
+    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () =>
       queryTokenHistoricalChart({
         coinDenom,
@@ -439,7 +442,8 @@ export function getPoolAssetPairHistoricalPrice({
   return cachified({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
-    ttl: 1000 * 60 * 3, // 3 minutes,
+    ttl: 1000 * 60 * 3, // 3 minutes
+    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () =>
       queryTokenPairHistoricalChart(
         poolId,
