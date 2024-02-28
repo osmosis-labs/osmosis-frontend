@@ -1327,7 +1327,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   async isOneClickTradingExpired(): Promise<boolean> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
-    if (isNil(oneClickTradingInfo)) return true;
+    if (isNil(oneClickTradingInfo)) return false;
 
     return dayjs
       .unix(unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end))

@@ -32,8 +32,7 @@ import {
   useDisclosure,
   useLocalStorageState,
 } from "~/hooks";
-import { useIsOneClickTradingEnabled } from "~/hooks/one-click-trading/use-is-one-click-trading-enabled";
-import { useOneCLickTradingInfo } from "~/hooks/one-click-trading/use-one-click-trading-info";
+import { useOneClickTradingInfo } from "~/hooks/one-click-trading/use-one-click-trading-info";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -208,14 +207,14 @@ export const NavBar: FunctionComponent<
     const onClick1CT = () => {
       displayToast(
         {
-          message: "1-Click Trading active",
+          message: t("oneClickTrading.toast.oneClickTradingActive"),
           caption: "59 minutes remaining",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: "1-Click Trading expired",
+          message: t("oneClickTrading.toast.oneClickTradingExpired"),
           captionElement: (
             <Button mode="text" className="caption">
               Enable 1-Click Trading
@@ -226,14 +225,14 @@ export const NavBar: FunctionComponent<
       );
       displayToast(
         {
-          message: "1-Click Trading disabled",
+          message: t("oneClickTrading.toast.oneClickTradingDisabled"),
           caption: "Session ended on this device",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: "Network fee too high",
+          message: t("oneClickTrading.toast.networkFeeTooHigh"),
           captionElement: (
             <Button mode="text" className="caption">
               Increase network fee limit
@@ -508,7 +507,7 @@ const WalletInfo: FunctionComponent<
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
-  const { isOneClickTradingEnabled } = useIsOneClickTradingEnabled();
+  const { isOneClickTradingEnabled } = useOneClickTradingInfo();
   const flags = useFeatureFlags();
 
   const { t } = useTranslation();
@@ -613,7 +612,7 @@ const WalletInfo: FunctionComponent<
 });
 
 const OneClickTradingRadialProgress = observer(() => {
-  const { oneClickTradingInfo } = useOneCLickTradingInfo();
+  const { oneClickTradingInfo } = useOneClickTradingInfo();
   const [percentage, setPercentage] = useState(100);
 
   useEffect(() => {
@@ -645,7 +644,6 @@ const OneClickTradingRadialProgress = observer(() => {
   }, [oneClickTradingInfo]);
 
   console.log(percentage);
-  if (percentage === 0) return null;
 
   return (
     <>

@@ -47,6 +47,7 @@ interface OneClickTradingSettingsProps {
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
   onStartTrading: () => void;
+  isLoading?: boolean;
 }
 
 const OneClickTradingSettings = ({
@@ -55,6 +56,7 @@ const OneClickTradingSettings = ({
   transaction1CTParams,
   setTransaction1CTParams: setTransaction1CTParamsProp,
   onStartTrading,
+  isLoading,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [hasChanged, setHasChanged] = useState<
@@ -108,7 +110,7 @@ const OneClickTradingSettings = ({
     });
   };
 
-  const isDisabled = !transaction1CTParams.isOneClickEnabled;
+  const isDisabled = !transaction1CTParams.isOneClickEnabled || isLoading;
 
   return (
     <>
@@ -314,7 +316,11 @@ const OneClickTradingSettings = ({
 
                 {transaction1CTParams.isOneClickEnabled && (
                   <div className="px-8">
-                    <Button onClick={onStartTrading}>
+                    <Button
+                      onClick={onStartTrading}
+                      isLoading={isLoading}
+                      loadingText={t("oneClickTrading.settings.startButton")}
+                    >
                       {t("oneClickTrading.settings.startButton")}
                     </Button>
                   </div>
@@ -349,7 +355,10 @@ const OneClickTradingSettings = ({
 
             <Screen screenName={SettingsScreens.SessionPeriod}>
               <div
-                className={classNames("flex flex-col gap-12", classes?.root)}
+                className={classNames(
+                  "flex w-full flex-col gap-12",
+                  classes?.root
+                )}
               >
                 <SessionPeriodScreen
                   transaction1CTParams={transaction1CTParams}
@@ -360,7 +369,10 @@ const OneClickTradingSettings = ({
 
             <Screen screenName={SettingsScreens.ResetPeriod}>
               <div
-                className={classNames("flex flex-col gap-12", classes?.root)}
+                className={classNames(
+                  "flex w-full flex-col gap-12",
+                  classes?.root
+                )}
               >
                 <ResetPeriodScreen
                   transaction1CTParams={transaction1CTParams}

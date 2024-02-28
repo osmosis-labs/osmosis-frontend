@@ -7,10 +7,17 @@ import {
   OneClickTradingTimeLimit,
   OneClickTradingTransactionParams,
 } from "@osmosis-labs/types";
-import { unixSecondsToNanoSeconds } from "@osmosis-labs/utils";
+import {
+  unixNanoSecondsToSeconds,
+  unixSecondsToNanoSeconds,
+} from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback } from "react";
+import { useLocalStorage } from "react-use";
 
+import { displayToast, ToastType } from "~/components/alert";
+import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import { useTranslation } from "~/hooks/language";
 import {
   AddAuthenticatorQueryOptions,
   getFirstAuthenticator,
@@ -18,6 +25,7 @@ import {
   useAddAuthenticators,
 } from "~/hooks/mutations/osmosis/add-authenticator";
 import { useStore } from "~/stores";
+import { humanizeTime } from "~/utils/date";
 import { api } from "~/utils/trpc";
 
 export class CreateOneClickSessionError extends Error {
@@ -37,6 +45,11 @@ export const useCreateOneClickTradingSession = ({
     queryOptions: addAuthenticatorsQueryOptions,
   });
   const apiUtils = api.useUtils();
+  const [, setDoNotShowFloatingBannerAgain] = useLocalStorage(
+    OneClickFloatingBannerDoNotShowKey,
+    false
+  );
+  const { t } = useTranslation();
 
   const onCreate1CTSession = useCallback(
     async ({
@@ -141,7 +154,22 @@ export const useCreateOneClickTradingSession = ({
               networkFeeLimit: transaction1CTParams.networkFeeLimit.toCoin(),
             });
 
+            setDoNotShowFloatingBannerAgain(true);
             accountStore.setShouldUseOneClickTrading({ nextValue: true });
+
+            const sessionEndDate = dayjs.unix(
+              unixNanoSecondsToSeconds(sessionPeriod.end)
+            );
+            const humanizedTime = humanizeTime(sessionEndDate);
+            displayToast(
+              {
+                message: t("oneClickTrading.toast.oneClickTradingActive"),
+                caption: `${humanizedTime.value} ${t(
+                  humanizedTime.unitTranslationKey
+                )} ${t("remaining")}`,
+              },
+              ToastType.ONE_CLICK_TRADING
+            );
           },
         }
       );
@@ -150,6 +178,8 @@ export const useCreateOneClickTradingSession = ({
       accountStore,
       addAuthenticators,
       apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators,
+      setDoNotShowFloatingBannerAgain,
+      t,
     ]
   );
 

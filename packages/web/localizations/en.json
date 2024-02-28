@@ -461,6 +461,12 @@
     "clearAllHistory": "Clear all"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click Trading active",
+      "oneClickTradingExpired": "1-Click Trading expired",
+      "oneClickTradingDisabled": "1-Click Trading disabled",
+      "networkFeeTooHigh": "Network fee too high"
+    },
     "introduction": {
       "newFeature": "New Feature",
       "introducingTitle": "Introducing 1-Click Trading",
@@ -998,5 +1004,14 @@
     "totalValueInvested": "Total Value Invested",
     "lookBelow": "Look below and find best strategies for you"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "remaining": "remaining",
+  "timeUnits": {
+    "second": "second",
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours"
+  }
 }

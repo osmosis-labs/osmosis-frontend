@@ -172,6 +172,7 @@ export const WalletSelectModal: FunctionComponent<
   const [hasOneClickTradingError, setHasOneClickTradingError] = useState(false);
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
+  const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
 
   const {
     transaction1CTParams,
@@ -364,6 +365,7 @@ export const WalletSelectModal: FunctionComponent<
             reset1CTParams();
             setHasOneClickTradingError(false);
             setIsInitializingOneClickTrading(false);
+            setShow1CTConnectAWallet(false);
           }
 
           setModalView("list");
@@ -425,6 +427,8 @@ export const WalletSelectModal: FunctionComponent<
                 transaction1CTParams,
               })
             }
+            show1CTConnectAWallet={show1CTConnectAWallet}
+            setShow1CTConnectAWallet={setShow1CTConnectAWallet}
           />
           <IconButton
             aria-label="Close"
@@ -612,6 +616,8 @@ const RightModalContent: FunctionComponent<
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => void;
     onCreate1CTSession: () => void;
+    show1CTConnectAWallet: boolean;
+    setShow1CTConnectAWallet: Dispatch<SetStateAction<boolean>>;
   }
 > = observer(
   ({
@@ -624,6 +630,8 @@ const RightModalContent: FunctionComponent<
     setTransaction1CTParams,
     isLoading1CTParams,
     onCreate1CTSession,
+    show1CTConnectAWallet,
+    setShow1CTConnectAWallet,
   }) => {
     const { t } = useTranslation();
     const { accountStore, chainStore } = useStore();
@@ -632,6 +640,7 @@ const RightModalContent: FunctionComponent<
     const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
       OneClickFloatingBannerDoNotShowKey
     );
+
     const show1CT =
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
@@ -863,6 +872,11 @@ const RightModalContent: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
+    const shouldDisplay1CTWelcomeBack =
+      !show1CTEditParams && accountStore.hasUsedOneClickTrading;
+    const shouldDisplay1CTIntro =
+      !show1CTEditParams && !accountStore.hasUsedOneClickTrading;
+
     return (
       <>
         {show1CT ? (
@@ -878,11 +892,13 @@ const RightModalContent: FunctionComponent<
                 setTransaction1CTParams={setTransaction1CTParams}
                 transaction1CTParams={transaction1CTParams!}
                 onStartTrading={() => {
+                  setShow1CTConnectAWallet(true);
                   setShow1CTEditParams(false);
                 }}
               />
             )}
-            {!show1CTEditParams && accountStore.hasUsedOneClickTrading && (
+            {show1CTConnectAWallet && <OneClickTradingConnectToContinue />}
+            {shouldDisplay1CTWelcomeBack && !show1CTConnectAWallet && (
               <div className="flex flex-col px-8 pt-14">
                 <OneClickTradingWelcomeBack
                   setTransaction1CTParams={setTransaction1CTParams}
@@ -890,34 +906,30 @@ const RightModalContent: FunctionComponent<
                   onClickEditParams={() => {
                     setShow1CTEditParams(true);
                   }}
+                  isLoading={isLoading1CTParams}
+                  isDisabled={!transaction1CTParams}
                 />
               </div>
             )}
-            {!show1CTEditParams && !accountStore.hasUsedOneClickTrading && (
-              <>
-                {transaction1CTParams?.isOneClickEnabled ? (
-                  <OneClickTradingConnectToContinue />
-                ) : (
-                  <div className="flex flex-col px-8">
-                    <IntroducingOneClick
-                      onStartTrading={() => {
-                        setTransaction1CTParams((prev) => {
-                          if (!prev)
-                            throw new Error(
-                              "transaction1CTParams is undefined"
-                            );
-                          return { ...prev, isOneClickEnabled: true };
-                        });
-                      }}
-                      onClickEditParams={() => {
-                        setShow1CTEditParams(true);
-                      }}
-                      isLoading={isLoading1CTParams}
-                      isDisabled={!transaction1CTParams}
-                    />
-                  </div>
-                )}
-              </>
+            {shouldDisplay1CTIntro && !show1CTConnectAWallet && (
+              <div className="flex flex-col px-8">
+                <IntroducingOneClick
+                  onStartTrading={() => {
+                    setShow1CTConnectAWallet(true);
+
+                    setTransaction1CTParams((prev) => {
+                      if (!prev)
+                        throw new Error("transaction1CTParams is undefined");
+                      return { ...prev, isOneClickEnabled: true };
+                    });
+                  }}
+                  onClickEditParams={() => {
+                    setShow1CTEditParams(true);
+                  }}
+                  isLoading={isLoading1CTParams}
+                  isDisabled={!transaction1CTParams}
+                />
+              </div>
             )}
           </>
         ) : (

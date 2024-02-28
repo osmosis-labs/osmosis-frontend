@@ -1,24 +1,38 @@
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
+import { Spinner } from "~/components/loaders";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
-import { noop } from "~/utils/function";
 
 interface OneClickTradingWelcomeBackProps {
-  transaction1CTParams: any; // TODO: Define type for 1CT
-  setTransaction1CTParams: (params: any) => void; // TODO: Define type for 1CT
+  transaction1CTParams: OneClickTradingTransactionParams | undefined;
+  setTransaction1CTParams: Dispatch<
+    SetStateAction<OneClickTradingTransactionParams | undefined>
+  >;
   onClickEditParams?: () => void;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 const OneClickTradingWelcomeBack = ({
   transaction1CTParams,
   setTransaction1CTParams,
   onClickEditParams,
+  isLoading,
+  isDisabled,
 }: OneClickTradingWelcomeBackProps) => {
   const { t } = useTranslation();
-  const is1CTEnabled = Boolean(transaction1CTParams);
+
+  const onEnableOneClickTrading = () => {
+    setTransaction1CTParams((prev) => {
+      if (!prev) throw new Error("transaction1CTParams is undefined");
+      return { ...prev, isOneClickEnabled: !prev.isOneClickEnabled };
+    });
+  };
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -33,15 +47,17 @@ const OneClickTradingWelcomeBack = ({
         height={354}
       />
 
-      <div className="flex w-full">
+      <div className="relative flex w-full">
+        {(isLoading || isDisabled) && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center rounded-2xl bg-osmoverse-900/40">
+            {isLoading && <Spinner />}
+          </div>
+        )}
+
         <button
           className="flex flex-1 justify-between rounded-l-2xl border-r border-r-osmoverse-800 bg-osmoverse-700 p-4"
-          onClick={() => {
-            if (is1CTEnabled) {
-              return setTransaction1CTParams(null);
-            }
-            setTransaction1CTParams({});
-          }}
+          onClick={onEnableOneClickTrading}
+          disabled={isLoading || isDisabled}
         >
           <div className="flex items-center gap-3">
             <Image
@@ -56,9 +72,10 @@ const OneClickTradingWelcomeBack = ({
             </span>
           </div>
           <Switch
-            checked={Boolean(transaction1CTParams)}
-            onCheckedChange={noop}
+            checked={transaction1CTParams?.isOneClickEnabled}
+            onCheckedChange={onEnableOneClickTrading}
             className="pointer-events-none"
+            disabled={isDisabled || isLoading}
           />
         </button>
         <IconButton

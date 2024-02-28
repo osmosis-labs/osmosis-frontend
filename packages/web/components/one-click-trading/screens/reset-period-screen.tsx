@@ -41,7 +41,7 @@ export const ResetPeriodScreen = ({
   return (
     <>
       <ScreenGoBackButton className="absolute top-7 left-7" />
-      <div className="flex flex-col items-center gap-6 px-16 ">
+      <div className="flex flex-col items-center gap-6 px-16">
         <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
           {t("oneClickTrading.settings.resetPeriodScreen.title")}
         </h1>

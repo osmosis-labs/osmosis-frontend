@@ -9,11 +9,8 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
-import {
-  useFeatureFlags,
-  useIsOneClickTradingEnabled,
-  useTranslation,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useOneClickTradingInfo } from "~/hooks/one-click-trading/use-one-click-trading-info";
 import { useGlobalIs1CTIntroModalOpen } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -25,7 +22,7 @@ export const OneClickFloatingBanner = observer(() => {
   const featureFlags = useFeatureFlags();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const isConnected = !!account?.address;
-  const { isOneClickTradingEnabled } = useIsOneClickTradingEnabled();
+  const { isOneClickTradingEnabled } = useOneClickTradingInfo();
 
   if (!isConnected || !featureFlags.oneClickTrading || isOneClickTradingEnabled)
     return null;
