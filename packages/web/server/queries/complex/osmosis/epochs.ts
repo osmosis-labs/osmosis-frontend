@@ -16,8 +16,8 @@ export function getEpochs() {
   return cachified({
     cache: epochsCache,
     key: "epochs",
-    // 30 seconds
-    ttl: 30 * 1000,
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const { epochs } = await queryEpochs();
       return epochs;
@@ -29,7 +29,8 @@ export async function getEpochProvisions(): Promise<CoinPretty | undefined> {
   return cachified({
     cache: epochsCache,
     key: "epoch-provisions",
-    ttl: 30 * 1000,
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const [mintParams, provisionsResponse] = await Promise.all([
         queryOsmosisMintParams(),

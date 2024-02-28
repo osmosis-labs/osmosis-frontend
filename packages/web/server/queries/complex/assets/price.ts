@@ -31,7 +31,8 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
   return cachified({
     cache: pricesCache,
     key: `coingecko-coin-${denom}`,
-    ttl: 60 * 1000, // 1 minute
+    ttl: 1000 * 60, // 1 minute
+    staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: async () => {
       const { coins } = await queryCoingeckoSearch(denom);
       return coins?.find(
