@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import cases from "jest-in-case";
 

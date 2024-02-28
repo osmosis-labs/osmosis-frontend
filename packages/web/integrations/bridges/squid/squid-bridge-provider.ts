@@ -2,7 +2,6 @@ import type {
   ChainsResponse,
   GetRoute as SquidGetRouteParams,
   RouteResponse,
-  StatusResponse,
   TransactionRequest,
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
@@ -14,10 +13,7 @@ import { ethers } from "ethers";
 import Long from "long";
 import { toHex } from "web3-utils";
 
-import {
-  BridgeQuoteError,
-  BridgeTransferStatusError,
-} from "~/integrations/bridges/errors";
+import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { removeAllCommas } from "~/integrations/bridges/squid/squid-bridge-utils";
 import {
   Erc20Abi,
@@ -33,14 +29,12 @@ import {
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
-  BridgeTransferStatus,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
-  GetTransferStatusParams,
 } from "../types";
+import { providerName } from "./const";
 
-const providerName = "Squid" as const;
 const logoUrl = "/bridges/squid.svg" as const;
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
@@ -436,76 +430,6 @@ export class SquidBridgeProvider implements BridgeProvider {
       }
 
       throw error;
-    }
-  }
-
-  /**
-   * Get the transfer status of the given transaction hash.
-   * @see https://docs.squidrouter.com/sdk/get-route-status
-   */
-  async getTransferStatus(
-    params: GetTransferStatusParams
-  ): Promise<BridgeTransferStatus | undefined> {
-    try {
-      const { sendTxHash } = params;
-
-      const url = new URL(`${this.apiURL}/v1/status`);
-      url.searchParams.append("transactionId", sendTxHash);
-      if (params.fromChainId) {
-        url.searchParams.append("fromChainId", params.fromChainId.toString());
-      }
-      if (params.toChainId) {
-        url.searchParams.append("toChainId", params.toChainId.toString());
-      }
-
-      const data = await apiClient<StatusResponse>(url.toString());
-
-      if (!data || !data.id || !data.squidTransactionStatus) {
-        return;
-      }
-
-      const squidTransactionStatus = data.squidTransactionStatus as
-        | "success"
-        | "needs_gas"
-        | "ongoing"
-        | "partial_success"
-        | "not_found";
-
-      if (
-        squidTransactionStatus === "not_found" ||
-        squidTransactionStatus === "ongoing" ||
-        squidTransactionStatus === "partial_success"
-      ) {
-        return;
-      }
-
-      return {
-        id: sendTxHash,
-        status: squidTransactionStatus === "success" ? "success" : "failed",
-        reason:
-          squidTransactionStatus === "needs_gas"
-            ? "insufficientFee"
-            : undefined,
-      };
-    } catch (e) {
-      const error = e as ApiClientError<{
-        errors: { errorType?: string; message?: string }[];
-      }>;
-
-      throw new BridgeTransferStatusError(
-        error.data?.errors?.map(
-          ({ errorType, message }) =>
-            ({
-              errorType: errorType ?? ErrorTypes.UnexpectedError,
-              message: message ?? "",
-            } ?? [
-              {
-                errorType: ErrorTypes.UnexpectedError,
-                message: "Failed to fetch transfer status",
-              },
-            ])
-        )
-      );
     }
   }
 
