@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { getAsset } from "../../../assets";
 import { makePoolFromImperatorPool } from "../imperator";
 

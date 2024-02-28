@@ -3,8 +3,8 @@ import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { EdgeDataLoader } from "../../base-utils";
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
@@ -35,6 +35,7 @@ export async function getMarketAsset<TAsset extends Asset>({
     cache: marketInfoCache,
     key: asset.coinDenom + asset.coinMinimalDenom,
     ttl: 1000 * 60 * 5, // 5 minutes
+    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       const currentPrice = await getAssetPrice({ asset }).catch(() => null);
       const marketCap = await getAssetMarketCap(asset).catch(() => null);

@@ -6,10 +6,10 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ExcludedExternalBoostPools } from "~/config/feature-flag";
 import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { queryLockableDurations } from "~/server/queries/osmosis";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
 
@@ -84,7 +84,8 @@ export function getCachedPoolIncentivesMap(): Promise<
   return cachified({
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
 
