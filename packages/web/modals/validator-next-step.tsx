@@ -56,29 +56,24 @@ export const ValidatorNextStepModal: FunctionComponent<
       title={title}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="flex flex-col items-center gap-[32px] text-center"
+      className="flex flex-col items-center gap-8 text-center"
       hideCloseButton
     >
       {isNewUser ? (
         <>
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
-            <Button
-              mode="unstyled"
-              className="!inline !w-max whitespace-nowrap !p-0 !text-bullish-300 underline"
-              onClick={() => {
-                onRequestClose();
-                setShowStakeLearnMoreModal();
-              }}
-            >
-              {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-            </Button>
           </p>
           <Button
-            mode="primary-bullish"
-            onClick={handleNewUserClick}
-            className="max-w-[23.938rem]" // 383px
+            variant="link"
+            onClick={() => {
+              onRequestClose();
+              setShowStakeLearnMoreModal();
+            }}
           >
+            {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
+          </Button>
+          <Button variant="secondary" onClick={handleNewUserClick}>
             {t("stake.validatorNextStep.newUser.button")}
           </Button>
         </>
