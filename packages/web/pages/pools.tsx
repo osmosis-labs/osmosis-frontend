@@ -5,13 +5,13 @@ import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable as AllPoolsTableV1 } from "~/components/complex/all-pools-table-v1";
 import { AllPoolsTable as AllPoolsTableV2 } from "~/components/complex/all-pools-table-v2";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { PoolsOverview } from "~/components/overview/pools";
+import { ShowMoreButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useHideDustUserSetting, useTranslation } from "~/hooks";
 import {
