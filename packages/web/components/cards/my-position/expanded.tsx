@@ -28,9 +28,9 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import type {
-  ClPosition,
   ClPositionDetails,
   PositionHistoricalPerformance,
+  UserPosition,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
@@ -48,7 +48,7 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  position: ClPosition;
+  position: UserPosition;
   positionDetails: ClPositionDetails | undefined;
   positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
@@ -72,6 +72,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
 
     const {
+      position: rawPosition,
       priceRange: [lowerPrice, upperPrice],
       isFullRange,
       currentCoins,
@@ -103,7 +104,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       "increase" | "remove" | null
     >(null);
 
-    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(poolId);
     const {
       xRange,
       yRange,
@@ -125,10 +126,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
     const sendCollectAllRewardsMsg = useCallback(() => {
       logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
+      const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
+      const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
       account!.osmosis
         .sendCollectAllPositionsRewardsMsgs(
-          [position.id],
-          undefined,
+          hasSpreadRewards ? [rawPosition.position.position_id] : [],
+          hasIncentiveRewards ? [rawPosition.position.position_id] : [],
           undefined,
           (tx) => {
             if (!tx.code) {
@@ -139,7 +142,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           }
         )
         .catch(console.error);
-    }, [account, logEvent, position.id]);
+    }, [account, logEvent, rawPosition]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
@@ -520,7 +523,7 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-  position: ClPosition;
+  position: UserPosition;
 }> = observer(({ config, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;

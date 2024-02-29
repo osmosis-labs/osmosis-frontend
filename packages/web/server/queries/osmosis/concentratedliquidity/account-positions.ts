@@ -37,7 +37,7 @@ interface AddressPositionsResponse {
   positions: LiquidityPosition[];
 }
 
-export const queryCLPositions = createNodeQuery<
+export const queryAccountPositions = createNodeQuery<
   AddressPositionsResponse,
   {
     bech32Address: string;

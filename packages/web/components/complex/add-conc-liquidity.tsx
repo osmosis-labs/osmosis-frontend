@@ -347,9 +347,8 @@ const AddConcLiqView: FunctionComponent<
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+  const { derivedDataStore, queriesExternalStore } = useStore();
+  const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);

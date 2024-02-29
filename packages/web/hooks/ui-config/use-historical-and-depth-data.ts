@@ -5,18 +5,17 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/conc
 import { api } from "~/utils/trpc";
 
 export function useHistoricalAndLiquidityData(
-  osmosisChainId: string,
   poolId: string
 ): ObservableHistoricalAndLiquidityData {
   const { queriesStore, chainStore } = useStore();
 
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const [config] = useState(
     () =>
       new ObservableHistoricalAndLiquidityData(
         chainStore,
-        osmosisChainId,
+        chainStore.osmosis.chainId,
         poolId,
         queriesStore,
         osmosisQueries.queryLiquiditiesPerTickRange.getForPoolId(poolId),
