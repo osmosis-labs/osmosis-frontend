@@ -883,5 +883,11 @@
     "manage": "Üstesinden gelmek",
     "noLock": "Kilit yok"
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "unstableAssetsWarning": {
+    "title": "Transferler Kararsız",
+    "description": "Önemli gecikmeler veya işlem başarısızlığı yaşayabilirsiniz. Riski size ait olmak üzere devam edin.",
+    "buttonContinue": "Her halükarda devam et",
+    "buttonCancel": "İptal etmek"
+  }
 }

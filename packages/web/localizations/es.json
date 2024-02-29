@@ -883,5 +883,11 @@
     "manage": "Administrar",
     "noLock": "Sin bloqueo"
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "unstableAssetsWarning": {
+    "title": "Transferencias inestables",
+    "description": "Es posible que experimente retrasos importantes o errores en la transacción. Proceda bajo su propio riesgo.",
+    "buttonContinue": "De todas maneras, continúe",
+    "buttonCancel": "Cancelar"
+  }
 }

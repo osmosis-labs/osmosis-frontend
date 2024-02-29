@@ -883,5 +883,11 @@
     "manage": "管理",
     "noLock": "ロックなし"
   },
-  "disclaimer": "免責事項"
+  "disclaimer": "免責事項",
+  "unstableAssetsWarning": {
+    "title": "転送が不安定",
+    "description": "大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
+    "buttonContinue": "とにかく続けます",
+    "buttonCancel": "キャンセル"
+  }
 }

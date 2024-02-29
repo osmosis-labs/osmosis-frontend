@@ -883,5 +883,11 @@
     "manage": "Zarządzać",
     "noLock": "Brak blokady"
   },
-  "disclaimer": "Zastrzeżenie"
+  "disclaimer": "Zastrzeżenie",
+  "unstableAssetsWarning": {
+    "title": "Transfery niestabilne",
+    "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
+    "buttonContinue": "Kontynuować mimo to",
+    "buttonCancel": "Anulować"
+  }
 }

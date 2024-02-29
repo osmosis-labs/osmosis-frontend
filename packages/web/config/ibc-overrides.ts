@@ -9,8 +9,6 @@ import type {
   TestnetAssetSymbols,
 } from "./generated/asset-lists";
 
-export const UNSTABLE_MSG = "Transfers are disabled due to instability";
-
 type AdditionalDataValue = {
   /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
   depositUrlOverride?: string;
@@ -327,7 +325,7 @@ const MainnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  "polygon.USDC": {
+  "polygon.USDC.axl": {
     sourceChainNameOverride: "Polygon",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -336,7 +334,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.polygonusdc.polygon],
     },
   },
-  "avalanche.USDC": {
+  "avalanche.USDC.axl": {
     sourceChainNameOverride: "Avalanche",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -347,7 +345,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "DOT.axl": {
+  "moonbeam.DOT.axl": {
     sourceChainNameOverride: "Moonbeam",
     originBridgeInfo: {
       bridge: "axelar" as const,

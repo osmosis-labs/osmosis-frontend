@@ -36,7 +36,7 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
-import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
+import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
@@ -249,9 +249,9 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
-        new AxelarTransferStatusSource(),
-        new SquidTransferStatusSource(),
-        new SkipTransferStatusSource(),
+        new AxelarTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SquidTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SkipTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
       ]
     );
 

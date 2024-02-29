@@ -16,7 +16,7 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import {
   FilteredPoolsResponse,

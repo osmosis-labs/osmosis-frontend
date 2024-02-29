@@ -883,5 +883,11 @@
     "manage": "Administra",
     "noLock": "Fără blocare"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "unstableAssetsWarning": {
+    "title": "Transferuri instabile",
+    "description": "Este posibil să întâmpinați întârzieri semnificative sau eșec în tranzacție. Procedați pe propriul risc.",
+    "buttonContinue": "Continua oricum",
+    "buttonCancel": "Anulare"
+  }
 }
