@@ -1,6 +1,7 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
+import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 
@@ -132,6 +133,42 @@ export const LockCell = (item: CellContext<EarnStrategy, number>) => {
           {t("earnPage.days")}
         </small>
       )}
+    </div>
+  );
+};
+
+function _getRiskLabel(risk: number) {
+  if (risk <= 0.25) return "Low";
+  else if (risk <= 0.5) return "Medium";
+  else if (risk <= 0.75) return "High";
+  else if (risk <= 1) return "Very High";
+  else return "Very Low";
+}
+
+export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
+  return (
+    <div className="flex justify-end">
+      <div className="flex flex-col items-center gap-1">
+        <div className="relative h-6">
+          <Image
+            src={"/images/risk-indicator-bg.svg"}
+            alt="Risk indicator background"
+            width={36}
+            height={36}
+          />
+          <Image
+            src={"/images/risk-indicator-dial.svg"}
+            alt="Risk indicator background"
+            width={44}
+            height={8}
+            className="absolute left-3.5 -top-1 h-11 w-2"
+            style={{ rotate: `${item.getValue() * 180 - 90}deg` }}
+          />
+        </div>
+        <p className="text-caption text-osmoverse-200">
+          {_getRiskLabel(item.getValue())}
+        </p>
+      </div>
     </div>
   );
 };
