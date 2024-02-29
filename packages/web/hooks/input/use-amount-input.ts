@@ -150,6 +150,9 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
       [fraction]
     ),
     reset,
+    get isMax() {
+      return balance && amount?.toDec().equals(balance.toDec());
+    },
   };
 }
 

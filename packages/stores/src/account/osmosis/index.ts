@@ -1090,16 +1090,9 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
-      sender: this.address,
-      routes: routes.map(({ pools, tokenInAmount }) => ({
-        pools: pools.map(({ id, tokenOutDenom }) => ({
-          poolId: BigInt(id),
-          tokenOutDenom: tokenOutDenom,
-        })),
-        tokenInAmount: tokenInAmount,
-      })),
-      tokenInDenom: tokenIn.currency.coinMinimalDenom,
+    const msg = this.makeSplitRoutesSwapExactAmountIn({
+      routes,
+      tokenIn,
       tokenOutMinAmount,
     });
 
@@ -1144,6 +1137,63 @@ export class OsmosisAccountImpl {
     );
   }
 
+  makeSplitRoutesSwapExactAmountIn({
+    routes,
+    tokenIn,
+    tokenOutMinAmount,
+  }: {
+    routes: {
+      pools: {
+        id: string;
+        tokenOutDenom: string;
+      }[];
+      tokenInAmount: string;
+    }[];
+    tokenIn: { currency: Currency };
+    tokenOutMinAmount: string;
+  }) {
+    return this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
+      sender: this.address,
+      routes: routes.map(({ pools, tokenInAmount }) => ({
+        pools: pools.map(({ id, tokenOutDenom }) => ({
+          poolId: BigInt(id),
+          tokenOutDenom: tokenOutDenom,
+        })),
+        tokenInAmount: tokenInAmount,
+      })),
+      tokenInDenom: tokenIn.currency.coinMinimalDenom,
+      tokenOutMinAmount,
+    });
+  }
+
+  makeSwapExactAmountIn({
+    pools,
+    tokenIn,
+    tokenOutMinAmount,
+  }: {
+    pools: {
+      id: string;
+      tokenOutDenom: string;
+    }[];
+    tokenIn: { currency: Currency; amount: string };
+    tokenOutMinAmount: string;
+  }) {
+    return this.msgOpts.swapExactAmountIn.messageComposer({
+      sender: this.address,
+      routes: pools.map(({ id, tokenOutDenom }) => {
+        return {
+          poolId: BigInt(id),
+          tokenOutDenom: tokenOutDenom,
+        };
+      }),
+      tokenIn: {
+        denom: tokenIn.currency.coinMinimalDenom,
+        amount: tokenIn.amount.toString(),
+      },
+      tokenOutMinAmount,
+    });
+  }
+
   /**
    * Perform swap through one or more pools, with a desired input token.
    *
@@ -1168,18 +1218,9 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = this.msgOpts.swapExactAmountIn.messageComposer({
-      sender: this.address,
-      routes: pools.map(({ id, tokenOutDenom }) => {
-        return {
-          poolId: BigInt(id),
-          tokenOutDenom: tokenOutDenom,
-        };
-      }),
-      tokenIn: {
-        denom: tokenIn.currency.coinMinimalDenom,
-        amount: tokenIn.amount.toString(),
-      },
+    const msg = this.makeSwapExactAmountIn({
+      pools,
+      tokenIn,
       tokenOutMinAmount,
     });
 
