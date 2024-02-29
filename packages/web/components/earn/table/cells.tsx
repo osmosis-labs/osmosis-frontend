@@ -1,4 +1,3 @@
-import { PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import Link from "next/link";
@@ -8,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { ColumnCellCell } from "~/components/earn/table/columns";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { EarnStrategy } from "~/server/queries/numia/earn";
+import { EarnStrategy, StrategyTVL } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
 export const StrategyTooltip = ({
@@ -46,7 +45,7 @@ export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
   );
 };
 
-export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
+export const TVLCell = (item: CellContext<EarnStrategy, StrategyTVL>) => {
   // const fluctuation = item.row.original.tvl.fluctuation;
   // const depositCap = item.row.original.tvl.depositCap;
   // const depositCapOccupied = depositCap
@@ -55,7 +54,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
 
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
+      <ColumnCellCell>{formatPretty(item.getValue().tvlUsd)}</ColumnCellCell>
       {/* {fluctuation && (
         <small
           className={classNames("text-xs font-subtitle2 font-medium", {
