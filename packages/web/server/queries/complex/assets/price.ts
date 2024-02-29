@@ -8,6 +8,7 @@ import { LRUCache } from "lru-cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
+  queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
@@ -26,6 +27,24 @@ import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
+/** Cached CoinGecko ID for needs of price function. */
+async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
+  return cachified({
+    cache: pricesCache,
+    key: `coingecko-coin-${symbol}`,
+    ttl: 1000 * 60 * 60, // 1 hour since the coin api ID won't change often
+    staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hours
+    getFreshValue: async () =>
+      queryCoingeckoSearch(symbol).then(
+        ({ coins }) =>
+          coins?.find(
+            ({ symbol: symbol_ }) =>
+              symbol_?.toLowerCase() === symbol.toLowerCase()
+          )?.api_symbol
+      ),
+  });
+}
+
 /** Used with `DataLoader` to make batched calls to CoinGecko.
  *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
 async function batchFetchCoingeckoPrices(
@@ -42,10 +61,10 @@ async function batchFetchCoingeckoPrices(
   );
 }
 async function getCoingeckoPrice({
-  coingeckoId,
+  coinGeckoId,
   currency,
 }: {
-  coingeckoId: string;
+  coinGeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
   // Create a loader per given currency.
@@ -62,11 +81,11 @@ async function getCoingeckoPrice({
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: pricesCache,
-    key: `coingecko-price-${coingeckoId}-${currency}`,
+    key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
-      currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
+      currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
   });
 }
 
@@ -86,9 +105,24 @@ async function calculatePriceThroughPools({
   asset,
   currency,
 }: {
-  asset: Pick<Asset, "coinMinimalDenom" | "price">;
+  asset: Pick<Asset, "coinMinimalDenom" | "price" | "coingeckoId">;
   currency: "usd";
 }): Promise<Dec | undefined> {
+  if (!asset.price && !asset.coingeckoId)
+    throw new Error(
+      "No price info or coingecko id for " + asset.coinMinimalDenom
+    );
+
+  /**
+   * Fetch directly from coingecko if there's no price info.
+   */
+  if (!asset.price && asset.coingeckoId) {
+    return await getCoingeckoPrice({
+      coinGeckoId: asset.coingeckoId,
+      currency,
+    });
+  }
+
   if (!asset.price)
     throw new Error("No price info for " + asset.coinMinimalDenom);
 
@@ -209,23 +243,29 @@ export async function getAssetPrice({
         );
       }
 
-      if (assetListAsset?.priceInfo && assetListAsset) {
+      if (assetListAsset.priceInfo && assetListAsset) {
         return await calculatePriceThroughPools({
           asset: assetListAsset.rawAsset,
           currency,
         });
       }
 
-      // Fetch price from Coingecko
-      if (!assetListAsset?.coinGeckoId) {
+      let coinGeckoId = assetListAsset.coinGeckoId;
+
+      // Try to search CoinGecko for it's ID if it wasn't in asset list
+      // This is especially applicable in the bridge providers for calculating quotes
+      if (!coinGeckoId) {
+        coinGeckoId = await searchCoinGeckoCoinId(assetListAsset);
+      }
+
+      if (!coinGeckoId) {
         throw new Error(
-          `Asset ${
-            asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
-          } has no identifier for pricing.`
+          `Asset ${assetListAsset.symbol} has no identifier for pricing.`
         );
       }
+
       return await getCoingeckoPrice({
-        coingeckoId: assetListAsset?.coinGeckoId,
+        coinGeckoId,
         currency,
       });
     },
