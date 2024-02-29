@@ -3,7 +3,6 @@ import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { type Asset, getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
@@ -20,6 +19,7 @@ import {
   StrategyTVL,
 } from "~/server/queries/numia/earn";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const earnStrategiesCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
