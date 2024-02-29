@@ -16,7 +16,6 @@ import { useStore } from "~/stores";
 const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
   isWalletConnected,
   setShowValidatorModal,
-  modal,
 }) => {
   const { t } = useTranslation();
   const { chainStore } = useStore();
@@ -116,7 +115,6 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
                 <BuildStakeSquadButton
                   isWalletConnected={isWalletConnected}
                   setShowValidatorModal={setShowValidatorModal}
-                  modal={modal}
                 />
               )}
             </div>
