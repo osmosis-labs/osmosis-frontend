@@ -7,7 +7,6 @@ import { FunctionComponent } from "react";
 import { Info } from "~/components/alert";
 import { Button, buttonCVA } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
-import { UNSTABLE_MSG } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -68,7 +67,12 @@ export const PreTransferModal: FunctionComponent<
             </span>
           )}
         </div>
-        {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
+        {isUnstable && (
+          <Info
+            message={t("unstableAssetsWarning.warning")}
+            isMobile={isMobile}
+          />
+        )}
         <div className="flex place-content-between gap-3 py-2">
           {externalWithdrawUrl ? (
             <a
