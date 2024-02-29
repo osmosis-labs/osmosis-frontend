@@ -325,7 +325,7 @@ const MainnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  "polygon.USDC": {
+  "polygon.USDC.axl": {
     sourceChainNameOverride: "Polygon",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -334,7 +334,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.polygonusdc.polygon],
     },
   },
-  "avalanche.USDC": {
+  "avalanche.USDC.axl": {
     sourceChainNameOverride: "Avalanche",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -345,7 +345,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "DOT.axl": {
+  "moonbeam.DOT.axl": {
     sourceChainNameOverride: "Moonbeam",
     originBridgeInfo: {
       bridge: "axelar" as const,

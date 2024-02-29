@@ -184,31 +184,60 @@ export const AllPoolsTable: FunctionComponent<{
     [poolsPagesData]
   );
 
+  // If more than half of the pools have volume and fees data, we should format their respective columns.
+  // Otherwise, we should not display them.
+  const { shouldDisplayVolumeData, shouldDisplayFeesData } = useMemo(() => {
+    let volumePresenceCount = 0;
+    let feesPresenceCount = 0;
+    poolsData.forEach((pool) => {
+      if (pool.volume24hUsd) {
+        volumePresenceCount++;
+      }
+
+      if (pool.feesSpent7dUsd) {
+        feesPresenceCount++;
+      }
+    });
+    return {
+      shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
+      shouldDisplayFeesData: feesPresenceCount > poolsData.length / 2,
+    };
+  }, [poolsData]);
+
   // Define columns
   const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
         cell: PoolCompositionCell,
       }),
-      columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "0", {
-        id: "volume24hUsd",
-        header: () => (
-          <SortHeader
-            label={t("pools.allPools.sort.volume24h")}
-            sortKey="volume24hUsd"
-            disabled={isLoading}
-            currentSortKey={sortKey}
-            currentDirection={sortParams.allPoolsSortDir}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+    ];
+
+    // Only show volume if more than half of the pools have volume data.
+    if (shouldDisplayVolumeData) {
+      allColumns.push(
+        columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
+          id: "volume24hUsd",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.volume24h")}
+              sortKey="volume24hUsd"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }) as (typeof allColumns)[number]
+      );
+    }
+
+    allColumns.push(
       columnHelper.accessor(
         (row) => row.totalFiatValueLocked?.toString() ?? "0",
         {
@@ -225,21 +254,33 @@ export const AllPoolsTable: FunctionComponent<{
             />
           ),
         }
-      ),
-      columnHelper.accessor((row) => row.feesSpent7dUsd?.toString() ?? "0", {
-        id: "feesSpent7dUsd",
-        header: () => (
-          <SortHeader
-            label={t("pools.allPools.sort.fees")}
-            sortKey="feesSpent7dUsd"
-            disabled={isLoading}
-            currentSortKey={sortKey}
-            currentDirection={sortParams.allPoolsSortDir}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+      ) as (typeof allColumns)[number]
+    );
+
+    // Only show fees if more than half of the pools have fees data.
+    if (shouldDisplayFeesData) {
+      allColumns.push(
+        columnHelper.accessor(
+          (row) => row.feesSpent7dUsd?.toString() ?? "N/A",
+          {
+            id: "feesSpent7dUsd",
+            header: () => (
+              <SortHeader
+                label={t("pools.allPools.sort.fees")}
+                sortKey="feesSpent7dUsd"
+                disabled={isLoading}
+                currentSortKey={sortKey}
+                currentDirection={sortParams.allPoolsSortDir}
+                setSortDirection={setSortDirection}
+                setSortKey={setSortKey}
+              />
+            ),
+          }
+        ) as (typeof allColumns)[number]
+      );
+    }
+
+    let remainingColumns = [
       columnHelper.accessor((row) => row, {
         id: "aprBreakdown.total",
         header: () => (
@@ -268,29 +309,36 @@ export const AllPoolsTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      columnHelper,
-      t,
-      isLoading,
-      sortKey,
-      sortParams.allPoolsSortDir,
-      setSortDirection,
-      setSortKey,
-      cellGroupEventEmitter,
-      quickAddLiquidity,
-    ]
-  );
+    ] as (typeof allColumns)[number][];
+
+    allColumns.push(...remainingColumns);
+
+    return allColumns;
+  }, [
+    columnHelper,
+    t,
+    isLoading,
+    sortKey,
+    sortParams.allPoolsSortDir,
+    setSortDirection,
+    setSortKey,
+    cellGroupEventEmitter,
+    quickAddLiquidity,
+    shouldDisplayVolumeData,
+    shouldDisplayFeesData,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.xxl) collapsedColIds.push("feesSpent7dUsd");
+    if (width < Breakpoint.xxl && shouldDisplayFeesData)
+      collapsedColIds.push("feesSpent7dUsd");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
-    if (width < Breakpoint.lg) collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.lg && shouldDisplayVolumeData)
+      collapsedColIds.push("volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
-  }, [columns, width]);
+  }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
 
   const table = useReactTable({
     data: poolsData,
