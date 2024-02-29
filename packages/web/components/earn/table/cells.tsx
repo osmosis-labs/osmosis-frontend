@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import Link from "next/link";
@@ -6,6 +6,7 @@ import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ColumnCellCell } from "~/components/earn/table/columns";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { EarnStrategy } from "~/server/queries/numia/earn";
@@ -47,15 +48,25 @@ export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
 };
 
 export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
-  // const fluctuation = item.row.original.tvl.fluctuation;
-  // const depositCap = item.row.original.tvl.depositCap;
-  // const depositCapOccupied = depositCap
-  //   ? Math.round((depositCap.actual / depositCap.total) * 100)
-  //   : 0;
+  const tvlUsd = item.getValue();
+
+  const { depositCap, depositCapOccupied } = useMemo(() => {
+    const depositCap = item.row.original.tvl.maxTvlUsd;
+    const depositCapOccupied =
+      depositCap && depositCap.toDec().gt(new Dec(0))
+        ? Math.round(
+            (Number(tvlUsd.toDec().toString()) /
+              Number(depositCap.toDec().toString())) *
+              100
+          )
+        : 0;
+
+    return { depositCapOccupied, depositCap };
+  }, [item.row.original.tvl.maxTvlUsd, tvlUsd]);
 
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
+      <ColumnCellCell>{formatPretty(tvlUsd)}</ColumnCellCell>
       {/* {fluctuation && (
         <small
           className={classNames("text-xs font-subtitle2 font-medium", {
@@ -65,7 +76,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
         >
           {fluctuation}%
         </small>
-      )}
+      )} */}
       {depositCap && (
         <Tooltip
           content={
@@ -73,11 +84,11 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
               header="Deposit Cap"
               body={
                 <p className="text-caption text-osmoverse-300">
-                  {formatPretty(new Dec(depositCap.actual), {
+                  {formatPretty(tvlUsd, {
                     unitDisplay: "narrow",
                   })}
                   /
-                  {formatPretty(new Dec(depositCap.total), {
+                  {formatPretty(depositCap, {
                     unitDisplay: "narrow",
                   })}
                 </p>
@@ -102,7 +113,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
             </p>
           </span>
         </Tooltip>
-      )} */}
+      )}
     </div>
   );
 };
