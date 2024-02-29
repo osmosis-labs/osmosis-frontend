@@ -76,10 +76,15 @@ export function getOneClickTradingSessionAuthenticator({
     data: toBase64(Buffer.from(`{"@type":"${message}"}`)),
   }));
 
+  const messageFilterAnyOfAuthenticator = {
+    authenticator_type: "AnyOfAuthenticator",
+    data: Buffer.from(JSON.stringify(messageFilters)).toJSON().data,
+  };
+
   const compositeAuthData = [
     signatureVerification,
     spendLimit,
-    ...messageFilters,
+    messageFilterAnyOfAuthenticator,
   ];
 
   return {
