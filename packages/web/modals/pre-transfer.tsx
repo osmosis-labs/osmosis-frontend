@@ -69,7 +69,9 @@ export const PreTransferModal: FunctionComponent<
         </div>
         {isUnstable && (
           <Info
-            message={t("unstableAssetsWarning.warning")}
+            caption={t("unstableAssetsWarning.title")}
+            size="subtle"
+            message={t("unstableAssetsWarning.description")}
             isMobile={isMobile}
           />
         )}
@@ -84,14 +86,10 @@ export const PreTransferModal: FunctionComponent<
                 }),
                 { "opacity-30": isUnstable }
               )}
-              href={isUnstable ? "" : externalWithdrawUrl}
+              href={externalWithdrawUrl}
               rel="noreferrer"
               target="_blank"
-              style={
-                isUnstable
-                  ? { pointerEvents: "none", cursor: "default" }
-                  : undefined
-              }
+              style={{ pointerEvents: "none", cursor: "default" }}
             >
               {t("assets.table.preTransfer.withdraw")}
               <Image
@@ -105,7 +103,6 @@ export const PreTransferModal: FunctionComponent<
             <Button
               className="h-10 w-full"
               mode="secondary"
-              disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
@@ -118,17 +115,12 @@ export const PreTransferModal: FunctionComponent<
                   className:
                     "h-10 w-full gap-2 border-wosmongton-300 bg-wosmongton-300",
                   mode: "primary",
-                }),
-                { "opacity-30": isUnstable }
+                })
               )}
-              href={isUnstable ? "" : externalDepositUrl}
+              href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
-              style={
-                isUnstable
-                  ? { pointerEvents: "none", cursor: "default" }
-                  : undefined
-              }
+              style={{ pointerEvents: "none", cursor: "default" }}
             >
               <span>{t("assets.table.preTransfer.deposit")}</span>
               <Image
@@ -140,11 +132,7 @@ export const PreTransferModal: FunctionComponent<
             </a>
           )}
           {!isEthAsset && !externalDepositUrl && (
-            <Button
-              className="h-10 w-full"
-              disabled={isUnstable}
-              onClick={onDeposit}
-            >
+            <Button className="h-10 w-full" onClick={onDeposit}>
               {t("assets.table.preTransfer.deposit")}
             </Button>
           )}
