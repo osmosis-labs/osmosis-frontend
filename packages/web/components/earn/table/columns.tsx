@@ -113,7 +113,7 @@ export const tableColumns = [
       />
     ), */
   }),
-  columnHelper.accessor("tvl", {
+  columnHelper.accessor("tvl.tvlUsd", {
     header: () => (
       <ColumnCellHeader
         tooltipDescription="Description of TVL"
