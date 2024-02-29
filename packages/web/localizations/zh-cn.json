@@ -879,7 +879,6 @@
     "title": "传输不稳定",
     "description": "您可能会遇到严重的延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
-    "buttonCancel": "取消",
-    "warning": "由于不稳定，传输被禁用"
+    "buttonCancel": "取消"
   }
 }

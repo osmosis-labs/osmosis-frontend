@@ -879,7 +879,6 @@
     "title": "Transferts instables",
     "description": "Vous pourriez rencontrer des retards importants ou un échec de transaction. Procédez à vos propres risques.",
     "buttonContinue": "Continuer quand même",
-    "buttonCancel": "Annuler",
-    "warning": "Les transferts sont désactivés en raison de l'instabilité"
+    "buttonCancel": "Annuler"
   }
 }

@@ -879,7 +879,6 @@
     "title": "Transfery niestabilne",
     "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
     "buttonContinue": "Kontynuować mimo to",
-    "buttonCancel": "Anulować",
-    "warning": "Transfery są wyłączone z powodu niestabilności"
+    "buttonCancel": "Anulować"
   }
 }
