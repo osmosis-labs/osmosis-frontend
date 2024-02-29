@@ -29,11 +29,10 @@ import React, {
 import { useLocalStorage, useUpdateEffect } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
+import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
@@ -46,6 +45,7 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
+import { Button } from "~/components/ui/button";
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
@@ -695,15 +695,17 @@ const RightModalContent: FunctionComponent<
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
-              {t("walletSelect.somethingWentWrong")}
-            </h1>
-            <p className="body2 text-center text-wosmongton-100">{message}</p>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-center text-h6 font-h6">
+                {t("walletSelect.somethingWentWrong")}
+              </h1>
+              <p className="body2 text-center text-wosmongton-100">{message}</p>
+            </div>
+            <Button onClick={() => onConnect(false, currentWallet)}>
+              {t("walletSelect.reconnect")}
+            </Button>
           </div>
-          <Button onClick={() => onConnect(false, currentWallet)}>
-            {t("walletSelect.reconnect")}
-          </Button>
         </div>
       );
     }
@@ -768,18 +770,20 @@ const RightModalContent: FunctionComponent<
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
-              {t("walletSelect.requestRejected")}
-            </h1>
-            <p className="body2 text-center text-wosmongton-100">
-              {currentWallet?.rejectMessageTarget ??
-                t("walletSelect.connectionDenied")}
-            </p>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-center text-h6 font-h6">
+                {t("walletSelect.requestRejected")}
+              </h1>
+              <p className="body2 text-center text-wosmongton-100">
+                {currentWallet?.rejectMessageTarget ??
+                  t("walletSelect.connectionDenied")}
+              </p>
+            </div>
+            <Button onClick={() => onConnect(false, currentWallet)}>
+              {t("walletSelect.reconnect")}
+            </Button>
           </div>
-          <Button onClick={() => onConnect(false, currentWallet)}>
-            {t("walletSelect.reconnect")}
-          </Button>
         </div>
       );
     }
@@ -796,19 +800,25 @@ const RightModalContent: FunctionComponent<
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
-              {t("walletSelect.errorInitializingOneClickTradingSession")}
-            </h1>
-          </div>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-center text-h6 font-h6">
+                {t("walletSelect.errorInitializingOneClickTradingSession")}
+              </h1>
+            </div>
 
-          <div className="flex  gap-2">
-            <Button mode="secondary" onClick={() => onRequestClose()}>
-              {t("walletSelect.continue")}
-            </Button>
-            <Button onClick={() => onCreate1CTSession()}>
-              {t("walletSelect.retry")}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => onRequestClose()}
+                className="!w-full"
+              >
+                {t("walletSelect.continue")}
+              </Button>
+              <Button onClick={() => onCreate1CTSession()} className="!w-full">
+                {t("walletSelect.retry")}
+              </Button>
+            </div>
           </div>
         </div>
       );

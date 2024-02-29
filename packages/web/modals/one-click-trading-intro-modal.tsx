@@ -6,7 +6,7 @@ import { createGlobalState, useMount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
-import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click";
+import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import {
   useOneClickTradingInfo,

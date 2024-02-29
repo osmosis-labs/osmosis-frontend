@@ -9,7 +9,6 @@ import React, {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button, buttonCVA } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
@@ -22,6 +21,7 @@ import {
 } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
@@ -163,8 +163,8 @@ const OneClickTradingSettings = ({
                     <p className="text-body2 font-body2 text-osmoverse-300">
                       {t("oneClickTrading.settings.description")}{" "}
                       <a
-                        className={buttonCVA({
-                          mode: "text",
+                        className={buttonVariants({
+                          variant: "link",
                           className:
                             "!inline w-auto px-0 text-body2 font-body2",
                         })}
@@ -199,9 +199,10 @@ const OneClickTradingSettings = ({
                     title={t("oneClickTrading.settings.spendLimitTitle")}
                     content={
                       <Button
-                        mode="text"
+                        variant="link"
+                        size="sm"
                         className={classNames(
-                          "flex items-center gap-2 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 text-wosmongton-200",
                           hasChanged.includes("spendLimit") &&
                             "text-bullish-400"
                         )}
@@ -228,9 +229,10 @@ const OneClickTradingSettings = ({
                     title={t("oneClickTrading.settings.networkFeeLimitTitle")}
                     content={
                       <Button
-                        mode="text"
+                        variant="link"
+                        size="sm"
                         className={classNames(
-                          "flex items-center gap-2 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 text-wosmongton-200",
                           hasChanged.includes("networkFeeLimit") &&
                             "text-bullish-400"
                         )}
@@ -256,9 +258,10 @@ const OneClickTradingSettings = ({
                     title={t("oneClickTrading.settings.sessionPeriodTitle")}
                     content={
                       <Button
-                        mode="text"
+                        variant="link"
+                        size="sm"
                         className={classNames(
-                          "flex items-center gap-2 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 text-wosmongton-200",
                           hasChanged.includes("sessionPeriod") &&
                             "text-bullish-400"
                         )}
@@ -288,9 +291,10 @@ const OneClickTradingSettings = ({
                     title={t("oneClickTrading.settings.resetPeriodTitle")}
                     content={
                       <Button
-                        mode="text"
+                        variant="link"
+                        size="sm"
                         className={classNames(
-                          "flex items-center gap-2 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 text-wosmongton-200",
                           hasChanged.includes("resetPeriod") &&
                             "text-bullish-400"
                         )}
@@ -321,6 +325,7 @@ const OneClickTradingSettings = ({
                 {transaction1CTParams.isOneClickEnabled && (
                   <div className="px-8">
                     <Button
+                      className="w-full"
                       onClick={onStartTrading}
                       isLoading={isLoading}
                       loadingText={t("oneClickTrading.settings.startButton")}
@@ -436,10 +441,10 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
         </div>
 
         <div className="flex gap-3">
-          <Button onClick={onCancel} mode="text" className="!w-full">
+          <Button onClick={onCancel} variant="link" className="!w-full">
             {t("oneClickTrading.settings.discardChanges.cancelButton")}
           </Button>
-          <Button onClick={onDiscard} mode="primary-warning">
+          <Button onClick={onDiscard} variant="destructive" className="!w-full">
             {t("oneClickTrading.settings.discardChanges.discardButton")}
           </Button>
         </div>
