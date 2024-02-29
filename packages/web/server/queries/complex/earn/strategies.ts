@@ -13,9 +13,13 @@ import {
   queryEarnUserBalance,
   queryStrategyAPY,
   queryStrategyTVL,
+  RawStrategyCMSData,
+  RawStrategyTVL,
   StrategyAPY,
+  StrategyCMSData,
   StrategyTVL,
 } from "~/server/queries/numia/earn";
+import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const earnStrategiesCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -30,6 +34,10 @@ const earnStrategyAPYCache = new LRUCache<string, CacheEntry>(
 );
 
 const earnStrategyTVLCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -69,11 +77,7 @@ export async function getEarnStrategies() {
             )
           );
 
-          const processedApy = new RatePretty(new Dec(apy));
-          const processedTvl = new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            new Dec(tvl)
-          );
+          const processedApr = new RatePretty(new Dec(apy));
 
           // Calculation of daily %
           const currentYear = dayjs().year();
@@ -86,7 +90,7 @@ export async function getEarnStrategies() {
           );
 
           const processedDaily = new RatePretty(
-            processedApy.quo(new Dec(totalDaysOfTheYear))
+            processedApr.quo(new Dec(totalDaysOfTheYear))
           );
 
           aggregatedStrategies.push({
@@ -98,8 +102,8 @@ export async function getEarnStrategies() {
             involvedTokens: token.filter((reward) => !!reward) as Asset[],
             rewardTokens: rewards.filter((reward) => !!reward) as Asset[],
             lockDuration,
-            tvl: processedTvl,
-            apy: processedApy,
+            tvl: processTVL(tvl),
+            apy: processedApr,
             risk: 0,
             balance: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
             hasLockingDuration: lockDuration > 0,
@@ -174,13 +178,126 @@ export async function getStrategyTVL(strategyId: string) {
     key: `earn-strategy-tvl-${strategyId}`,
     getFreshValue: async (): Promise<StrategyTVL> => {
       try {
-        const { tvl } = await queryStrategyTVL(strategyId);
-        return {
-          tvl: new PricePretty(DEFAULT_VS_CURRENCY, tvl),
-        };
+        const rawTvl = await queryStrategyTVL(strategyId);
+        return processTVL(rawTvl);
       } catch (error) {
         throw new Error("Error while fetching strategy TVL");
       }
     },
   });
+}
+
+/**
+ * Gets the (cached) strategies data from the CMS
+ * @returns An array containing the strategies info from the CMS without TVL & APY, which needs to be calculated separately.
+ */
+export async function getStrategiesCMSData() {
+  return await cachified({
+    cache: earnRawStrategyCMSDataCache,
+    ttl: 1000 * 60 * 30,
+    key: "earn-strategy-cmsData",
+    getFreshValue: async (): Promise<StrategyCMSData[]> => {
+      try {
+        const cmsData = await queryOsmosisCMS<{
+          strategies: RawStrategyCMSData[];
+        }>({ filePath: `cms/earn/strategies.json` });
+
+        const aggregatedStrategies: StrategyCMSData[] = [];
+
+        for (let rawStrategy of cmsData.strategies) {
+          const { depositDenoms, positionDenoms, rewardDenoms, lockDuration } =
+            rawStrategy;
+
+          const depositAssets = await Promise.all(
+            depositDenoms.map((token) =>
+              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
+                (_) => undefined
+              )
+            )
+          );
+
+          const positionAssets = await Promise.all(
+            positionDenoms.map((token) =>
+              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
+                (_) => undefined
+              )
+            )
+          );
+
+          const rewardAssets = await Promise.all(
+            rewardDenoms.map((reward) =>
+              getAsset({ anyDenom: reward.coinMinimalDenom }).catch(
+                (_) => undefined
+              )
+            )
+          );
+
+          aggregatedStrategies.push({
+            ...rawStrategy,
+            depositAssets: depositAssets.filter(
+              (deposit) => !!deposit
+            ) as Asset[],
+            positionAssets: positionAssets.filter(
+              (position) => !!position
+            ) as Asset[],
+            rewardAssets: rewardAssets.filter((reward) => !!reward) as Asset[],
+            hasLockingDuration: dayjs.duration(lockDuration).milliseconds() > 0,
+          });
+        }
+
+        return aggregatedStrategies;
+      } catch (error) {
+        throw new Error("Error while fetching strategy CMS data");
+      }
+    },
+  });
+}
+
+/**
+ * Calculation of daily %
+ * @param apr The Annual Percentage Rate
+ * @returns The daily income in percentage
+ */
+export function getDailyApr(apr: RatePretty) {
+  const currentYear = dayjs().year();
+  const januaryFirst = dayjs(`${currentYear}-01-01`);
+  const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);
+
+  const totalDaysOfTheYear = nextYearJanuaryFirst.diff(januaryFirst, "day");
+
+  return new RatePretty(apr.quo(new Dec(totalDaysOfTheYear)));
+}
+
+/**
+ * Converts a Dec or BigNumber to a PricePretty instance
+ * @param value The value to convert
+ * @returns A PricePretty instance representing the passed value
+ */
+export function convertToPricePretty(
+  value:
+    | Dec
+    | {
+        toDec(): Dec;
+      }
+    | bigInt.BigNumber
+) {
+  return new PricePretty(DEFAULT_VS_CURRENCY, value);
+}
+
+/**
+ * Converts a raw tvl object's values into PricePretty instances
+ * @param rawTvl The raw strategy TVL
+ * @returns The processed strategy TVL with PricePretty instances
+ */
+export function processTVL(rawTvl: RawStrategyTVL): StrategyTVL {
+  const { tvlUsd, assets, maxTvlUsd } = rawTvl;
+  return {
+    tvlUsd: convertToPricePretty(tvlUsd),
+    maxTvlUsd: maxTvlUsd ? convertToPricePretty(maxTvlUsd) : undefined,
+    assets: assets.map(({ coinMinimalDenom, tvl, maxTvl }) => ({
+      coinMinimalDenom,
+      tvl: convertToPricePretty(tvl),
+      maxTvl: maxTvl ? convertToPricePretty(maxTvl) : undefined,
+    })),
+  };
 }
