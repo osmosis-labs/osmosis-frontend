@@ -282,13 +282,8 @@
       "transakSubtitle": "OSMO का समर्थन करता है",
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है"
     },
-    "incentive": {
-      "mobileTitle": "प्रोत्साहन",
-      "title": "प्रोत्साहन प्रकार"
-    },
     "MAX": "अधिकतम",
     "pool": {
-      "mobileTitle": "पूल",
       "title": "पूल के प्रकार"
     },
     "searchTokens": "खोज",
@@ -312,9 +307,6 @@
       "weighted": "भारित",
       "concentrated": "सुपरचार्ज",
       "transmuter": "ट्रांसमीटर",
-      "internal": "आंतरिक प्रोत्साहन",
-      "external": "बाहरी प्रोत्साहन",
-      "superfluid": "अतितरल",
       "noIncentives": "कोई प्रोत्साहन नहीं"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "पूल खोजें",
       "sort": {
         "APRIncentivized": "एपीआर",
         "fees": "फीस (7डी)",

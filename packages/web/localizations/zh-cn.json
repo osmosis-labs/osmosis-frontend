@@ -282,13 +282,8 @@
       "transakSubtitle": "支持OSMO",
       "onrampMoneySubtitle": "支持OSMO、USDC"
     },
-    "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
-    },
     "MAX": "最大",
     "pool": {
-      "mobileTitle": "游泳池",
       "title": "游泳池類型"
     },
     "searchTokens": "搜索",
@@ -312,9 +307,6 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
-      "internal": "内部激励",
-      "external": "外部激励",
-      "superfluid": "超流体",
       "noIncentives": "无激励"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜索资金池",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
