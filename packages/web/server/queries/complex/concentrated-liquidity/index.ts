@@ -576,9 +576,9 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
-      aggregateCoinsByDenom
-    ),
+    mapRawCoinToPretty(performance.principal?.assets ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
     mapRawCoinToPretty([position.asset0, position.asset1]),
     mapRawCoinToPretty(position.claimable_incentives).then(
       aggregateCoinsByDenom
@@ -586,12 +586,12 @@ export async function getPositionHistoricalPerformance({
     mapRawCoinToPretty(position.claimable_spread_rewards).then(
       aggregateCoinsByDenom
     ),
-    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
+    mapRawCoinToPretty(performance?.total_incentives_rewards ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
+    mapRawCoinToPretty(performance?.total_spread_rewards ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
   ]);
 
   if (currentCoins.length !== 2)
