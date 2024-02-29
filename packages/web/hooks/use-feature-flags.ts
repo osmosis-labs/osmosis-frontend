@@ -14,7 +14,6 @@ export type AvailableFlags =
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
-  | "unlistedAssets"
   | "earnPage"
   | "sidecarRouter"
   | "legacyRouter"
@@ -40,7 +39,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newAssetsTable: false,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
-  unlistedAssets: false,
   earnPage: false,
   sidecarRouter: true,
   legacyRouter: true,

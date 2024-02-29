@@ -158,13 +158,14 @@ export class ObservableAssets {
     return this.assets
       .filter((asset) => asset.transferMethods.length > 0) // Filter osmosis native assets
       .filter((asset) => {
+        // Remove preview assets if preview assets is disabled
         if (typeof window === "undefined") return true;
 
         if (sessionStorage.getItem(ShowPreviewAssetsKey) === "true") {
           return true;
         }
         return !asset.preview;
-      }) // Remove unlisted assets if preview assets is disabled
+      })
       .map((ibcAsset) => {
         const cosmosCounterparty = ibcAsset
           .counterparty[0] as CosmosCounterparty;
