@@ -30,10 +30,10 @@ import {
 
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { StakeOrEdit } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -634,9 +634,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           <div className="mb-6 flex justify-center justify-self-end">
             <Button
               disabled={setSquadButtonDisabled}
-              mode="special-1"
+              variant="secondary"
               onClick={handleSetSquadClick}
-              className="w-[383px] disabled:cursor-not-allowed disabled:opacity-75"
             >
               {action === "stake"
                 ? t("stake.validatorSquad.button2")
