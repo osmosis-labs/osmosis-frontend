@@ -1,4 +1,5 @@
-import { FE_CONTENT_COMMIT_HASH, OsmosisCmsRepo } from "~/config";
+import { FE_CONTENT_COMMIT_HASH } from "~/config/env";
+import { OsmosisCmsRepo } from "~/config/osmosis-repos";
 import { queryGithubFile } from "~/server/queries/github";
 
 export async function queryOsmosisCMS<T>({
