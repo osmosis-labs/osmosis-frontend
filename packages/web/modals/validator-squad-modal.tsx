@@ -633,6 +633,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           </div>
           <div className="mb-6 flex justify-center justify-self-end">
             <Button
+              className="w-80"
               disabled={setSquadButtonDisabled}
               variant="secondary"
               onClick={handleSetSquadClick}
