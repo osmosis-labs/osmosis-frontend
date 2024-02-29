@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { FunctionComponent } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -56,29 +56,24 @@ export const ValidatorNextStepModal: FunctionComponent<
       title={title}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="flex flex-col items-center gap-[32px] text-center"
+      className="flex flex-col items-center gap-8 text-center"
       hideCloseButton
     >
       {isNewUser ? (
         <>
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
-            <Button
-              mode="unstyled"
-              className="!inline !w-max whitespace-nowrap !p-0 !text-bullish-300 underline"
-              onClick={() => {
-                onRequestClose();
-                setShowStakeLearnMoreModal();
-              }}
-            >
-              {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-            </Button>
           </p>
           <Button
-            mode="primary-bullish"
-            onClick={handleNewUserClick}
-            className="max-w-[23.938rem]" // 383px
+            variant="link"
+            onClick={() => {
+              onRequestClose();
+              setShowStakeLearnMoreModal();
+            }}
           >
+            {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
+          </Button>
+          <Button variant="secondary" onClick={handleNewUserClick}>
             {t("stake.validatorNextStep.newUser.button")}
           </Button>
         </>
@@ -89,15 +84,15 @@ export const ValidatorNextStepModal: FunctionComponent<
           </p>
           <div className="flex w-full gap-8 md:gap-2">
             <Button
-              className="w-full md:h-[4.688rem]" // 75px
-              mode="primary-bullish"
+              className="w-full"
+              variant="secondary"
               onClick={handleExistingUserKeepClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonKeep")}
             </Button>
             <Button
-              className="w-full md:h-[4.688rem]" // 75px
-              mode="secondary-bullish"
+              className="w-full"
+              variant="secondary"
               onClick={handleExistingUserSelectClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonSelect")}
