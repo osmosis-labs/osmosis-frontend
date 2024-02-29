@@ -1,8 +1,9 @@
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import {
+  AuthenticatorType,
   AvailableOneClickTradingMessages,
-  OneClickTradingAuthenticatorType,
   OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
@@ -12,14 +13,14 @@ import { SPENT_LIMIT_CONTRACT_ADDRESS } from "~/config/env";
 import { useStore } from "~/stores";
 
 interface AddAuthenticatorVars {
-  type: OneClickTradingAuthenticatorType;
-  data: Uint8Array | number[];
+  type: AuthenticatorType;
+  data: Uint8Array;
 }
 
 export type AddAuthenticatorQueryOptions = UseMutationOptions<
   unknown,
   unknown,
-  { authenticators: AddAuthenticatorVars[] },
+  { addAuthenticators: AddAuthenticatorVars[] },
   unknown
 >;
 
@@ -69,21 +70,27 @@ export function getOneClickTradingSessionAuthenticator({
       )
     ),
   };
-  // pub struct Timestamp(Uint64); end
-  const messageFilter = {
-    authenticator_type: "MessageFilterAuthenticator",
-    data: toBase64(Buffer.from(`{"@type":"${allowedMessages[0]}"}`)),
-  };
 
-  const compositeAuthData = [signatureVerification, spendLimit, messageFilter];
+  const messageFilters = allowedMessages.map((message) => ({
+    authenticator_type: "MessageFilterAuthenticator",
+    data: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+  }));
+
+  const compositeAuthData = [
+    signatureVerification,
+    spendLimit,
+    ...messageFilters,
+  ];
 
   return {
     type: "AllOfAuthenticator",
-    data: Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data,
+    data: new Uint8Array(
+      Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
+    ),
   };
 }
 
-export const useAddAuthenticators = ({
+export const useAddOrRemoveAuthenticators = ({
   queryOptions,
 }: {
   queryOptions?: AddAuthenticatorQueryOptions;
@@ -92,19 +99,30 @@ export const useAddAuthenticators = ({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   return useMutation(
-    async ({ authenticators }: { authenticators: AddAuthenticatorVars[] }) => {
+    async ({
+      addAuthenticators,
+      removeAuthenticators,
+    }: {
+      addAuthenticators: AddAuthenticatorVars[];
+      removeAuthenticators: bigint[];
+    }) => {
       if (!account?.osmosis) {
         throw new Error("Osmosis account not found");
       }
 
-      return new Promise((resolve, reject) => {
+      return new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis
-          .sendAddAuthenticatorMsg(authenticators, "", (tx: any) => {
-            if (tx.code === 0) {
-              resolve(tx);
-            } else {
-              reject(new Error("Transaction failed"));
-            }
+          .sendAddOrRemoveAuthenticatorsMsg({
+            addAuthenticators,
+            removeAuthenticators,
+            memo: "",
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
           })
           .catch((error) => {
             reject(error);

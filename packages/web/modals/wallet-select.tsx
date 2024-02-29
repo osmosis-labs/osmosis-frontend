@@ -245,7 +245,7 @@ export const WalletSelectModal: FunctionComponent<
     transaction1CTParams: OneClickTradingTransactionParams | undefined;
   }) => {
     setIsInitializingOneClickTrading(true);
-    create1CTSessionMutation.onCreate1CTSession({
+    return create1CTSessionMutation.onCreate1CTSession({
       walletRepo,
       transaction1CTParams,
       spendLimitTokenDecimals: spendLimitTokenDecimals,

@@ -461,6 +461,13 @@
     "clearAllHistory": "Curata tot"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
+      "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
+      "oneClickTradingDisabled": "1-Click Trading este dezactivat",
+      "networkFeeTooHigh": "Taxa de rețea prea mare",
+      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic"
+    },
     "introduction": {
       "newFeature": "Optiune noua",
       "introducingTitle": "Vă prezentăm tranzacționarea cu 1 clic",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "Valoarea totală investită",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "remaining": "rămas",
+  "timeUnits": {
+    "second": "al doilea",
+    "seconds": "secunde",
+    "minute": "minut",
+    "minutes": "minute",
+    "hour": "ora",
+    "hours": "ore"
+  }
 }

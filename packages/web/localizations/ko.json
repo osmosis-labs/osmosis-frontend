@@ -461,6 +461,13 @@
     "clearAllHistory": "모두 지우기"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-클릭 거래 활성화",
+      "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
+      "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
+      "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
+      "enableOneClickTrading": "1-클릭 거래 활성화"
+    },
     "introduction": {
       "newFeature": "새로운 기능",
       "introducingTitle": "1-클릭 거래 소개",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "총 투자 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "remaining": "남은",
+  "timeUnits": {
+    "second": "두번째",
+    "seconds": "초",
+    "minute": "분",
+    "minutes": "분",
+    "hour": "시간",
+    "hours": "시간"
+  }
 }

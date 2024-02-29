@@ -461,6 +461,13 @@
     "clearAllHistory": "Очистить все"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Торговля в 1 клик активна",
+      "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
+      "oneClickTradingDisabled": "Торговля в 1 клик отключена",
+      "networkFeeTooHigh": "Плата за сеть слишком высока",
+      "enableOneClickTrading": "Включить торговлю в 1 клик"
+    },
     "introduction": {
       "newFeature": "Новая особенность",
       "introducingTitle": "Представляем торговлю в 1 клик",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "Общая вложенная стоимость",
     "lookBelow": "Посмотрите ниже и найдите лучшие стратегии для вас"
   },
-  "disclaimer": "Отказ от ответственности"
+  "disclaimer": "Отказ от ответственности",
+  "remaining": "оставшийся",
+  "timeUnits": {
+    "second": "второй",
+    "seconds": "секунды",
+    "minute": "минута",
+    "minutes": "минуты",
+    "hour": "час",
+    "hours": "часы"
+  }
 }

@@ -461,6 +461,13 @@
     "clearAllHistory": "Limpiar todo"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Comercio con 1 clic activo",
+      "oneClickTradingExpired": "El comercio con 1 clic expiró",
+      "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
+      "networkFeeTooHigh": "Tarifa de red demasiado alta",
+      "enableOneClickTrading": "Habilite el comercio con 1 clic"
+    },
     "introduction": {
       "newFeature": "Nueva caracteristica",
       "introducingTitle": "Presentamos el comercio con 1 clic",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "Valor total invertido",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "remaining": "restante",
+  "timeUnits": {
+    "second": "segundo",
+    "seconds": "segundos",
+    "minute": "minuto",
+    "minutes": "minutos",
+    "hour": "hora",
+    "hours": "horas"
+  }
 }

@@ -461,6 +461,13 @@
     "clearAllHistory": "همه را پاک کن"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
+      "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
+      "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
+      "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید"
+    },
     "introduction": {
       "newFeature": "خصوصیت جدید",
       "introducingTitle": "معرفی تجارت 1 کلیک",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "کل ارزش سرمایه گذاری شده",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
   },
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "remaining": "باقی مانده است",
+  "timeUnits": {
+    "second": "دومین",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقایق",
+    "hour": "ساعت",
+    "hours": "ساعت ها"
+  }
 }

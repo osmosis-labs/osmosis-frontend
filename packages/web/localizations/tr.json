@@ -461,6 +461,13 @@
     "clearAllHistory": "Hepsini temizle"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Tıkla Ticaret aktif",
+      "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
+      "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
+      "networkFeeTooHigh": "Ağ ücreti çok yüksek",
+      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir"
+    },
     "introduction": {
       "newFeature": "Yeni özellik",
       "introducingTitle": "Tek Tıklamayla Ticarete Giriş",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "Yatırılan Toplam Değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "remaining": "geriye kalan",
+  "timeUnits": {
+    "second": "ikinci",
+    "seconds": "saniye",
+    "minute": "dakika",
+    "minutes": "dakika",
+    "hour": "saat",
+    "hours": "saat"
+  }
 }

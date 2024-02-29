@@ -1,13 +1,9 @@
 import type { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 
 export type AvailableOneClickTradingMessages =
-  "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn";
-export type OneClickTradingAuthenticatorType =
-  | "SignatureVerificationAuthenticator"
-  | "AnyOfAuthenticator"
-  | "AllOfAuthenticator"
-  | "SpendLimitAuthenticator"
-  | "MessageFilterAuthenticator";
+  | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn"
+  | "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn";
+
 export type OneClickTradingResetPeriods = "day" | "week" | "month" | "year";
 export interface OneClickTradingTimeLimit {
   /** Unix numeric in nanoseconds */

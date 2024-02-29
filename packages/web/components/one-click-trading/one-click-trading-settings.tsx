@@ -48,6 +48,7 @@ interface OneClickTradingSettingsProps {
   >;
   onStartTrading: () => void;
   isLoading?: boolean;
+  hideBackButton?: boolean;
 }
 
 const OneClickTradingSettings = ({
@@ -57,6 +58,7 @@ const OneClickTradingSettings = ({
   setTransaction1CTParams: setTransaction1CTParamsProp,
   onStartTrading,
   isLoading,
+  hideBackButton,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [hasChanged, setHasChanged] = useState<
@@ -127,21 +129,23 @@ const OneClickTradingSettings = ({
           <>
             <Screen screenName="main">
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
-                <IconButton
-                  onClick={() => {
-                    if (
-                      JSON.stringify(initialTransaction1CTParams) !==
-                      JSON.stringify(transaction1CTParams)
-                    ) {
-                      return onOpenDiscardDialog();
-                    }
-                    onClose();
-                  }}
-                  className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
-                  icon={<Icon id="chevron-left" width={16} height={16} />}
-                  aria-label="Go Back"
-                  mode="unstyled"
-                />
+                {!hideBackButton && (
+                  <IconButton
+                    onClick={() => {
+                      if (
+                        JSON.stringify(initialTransaction1CTParams) !==
+                        JSON.stringify(transaction1CTParams)
+                      ) {
+                        return onOpenDiscardDialog();
+                      }
+                      onClose();
+                    }}
+                    className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
+                    icon={<Icon id="chevron-left" width={16} height={16} />}
+                    aria-label="Go Back"
+                    mode="unstyled"
+                  />
+                )}
 
                 <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
                   {t("oneClickTrading.settings.header")}
@@ -419,7 +423,7 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
       isOpen={isOpen}
       onRequestClose={onCancel}
       hideCloseButton
-      className="max-h-[90vh] w-full max-w-[360px] overflow-hidden px-6 py-6 sm:max-h-[80vh]"
+      className="max-h-[90vh] w-full !max-w-[360px] overflow-hidden px-6 py-6 sm:max-h-[80vh]"
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">

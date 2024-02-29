@@ -461,6 +461,13 @@
     "clearAllHistory": "全部清除"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "一鍵交易活躍",
+      "oneClickTradingExpired": "一鍵交易已過期",
+      "oneClickTradingDisabled": "一鍵交易已停用",
+      "networkFeeTooHigh": "網路費太高",
+      "enableOneClickTrading": "啟用一鍵交易"
+    },
     "introduction": {
       "newFeature": "新功能",
       "introducingTitle": "一鍵交易簡介",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明"
+  "disclaimer": "免責聲明",
+  "remaining": "其餘的",
+  "timeUnits": {
+    "second": "第二",
+    "seconds": "秒",
+    "minute": "分分鐘",
+    "minutes": "分分鐘",
+    "hour": "小時",
+    "hours": "小時"
+  }
 }

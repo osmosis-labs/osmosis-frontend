@@ -88,6 +88,7 @@ export interface TxEvents {
 }
 
 export interface OneClickTradingInfo {
+  readonly publicKey: string;
   readonly privateKey: string;
   readonly allowed: string;
 
@@ -101,9 +102,9 @@ export interface OneClickTradingInfo {
 
   // Time limit for the session to be considered valid.
   readonly sessionPeriod: OneClickTradingTimeLimit;
-  // Unix
   readonly sessionStartedAtUnix: number;
   readonly allowedMessages: string[];
+  readonly hasSeenExpiryToast: boolean;
 }
 
 /**

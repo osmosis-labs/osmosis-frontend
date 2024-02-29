@@ -1,14 +1,17 @@
+import type { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useAsync } from "react-use";
 
-import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 
-export const useOneClickTradingInfo = () => {
+export const useOneClickTradingInfo = ({
+  onExpire,
+}: {
+  onExpire?: (params: { oneClickTradingInfo: OneClickTradingInfo }) => void;
+} = {}) => {
   const { accountStore } = useStore();
   const [isExpired, setIsExpired] = useState(false);
   const { t } = useTranslation();
@@ -31,22 +34,14 @@ export const useOneClickTradingInfo = () => {
     const timeRemaining = sessionEndDate.unix() - dayjs().unix();
 
     const timeoutId = setTimeout(() => {
+      if (!value?.info) return;
+
       setIsExpired(true);
-      displayToast(
-        {
-          message: t("oneClickTrading.toast.oneClickTradingExpired"),
-          captionElement: (
-            <Button mode="text" className="caption">
-              Enable 1-Click Trading
-            </Button>
-          ),
-        },
-        ToastType.ONE_CLICK_TRADING
-      );
+      onExpire?.({ oneClickTradingInfo: value.info });
     }, timeRemaining * 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [isExpired, t, value?.info]);
+  }, [isExpired, t, value?.info, onExpire]);
 
   return {
     oneClickTradingInfo: value?.info,

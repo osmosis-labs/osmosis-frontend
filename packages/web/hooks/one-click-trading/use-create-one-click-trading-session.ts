@@ -1,13 +1,15 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   AvailableOneClickTradingMessages,
   OneClickTradingTimeLimit,
   OneClickTradingTransactionParams,
+  ParsedAuthenticator,
 } from "@osmosis-labs/types";
 import {
+  isNil,
   unixNanoSecondsToSeconds,
   unixSecondsToNanoSeconds,
 } from "@osmosis-labs/utils";
@@ -15,15 +17,15 @@ import dayjs from "dayjs";
 import { useCallback } from "react";
 import { useLocalStorage } from "react-use";
 
-import { displayToast, ToastType } from "~/components/alert";
+import { dismissAllToasts, displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import { useTranslation } from "~/hooks/language";
 import {
   AddAuthenticatorQueryOptions,
   getFirstAuthenticator,
   getOneClickTradingSessionAuthenticator,
-  useAddAuthenticators,
-} from "~/hooks/mutations/osmosis/add-authenticator";
+  useAddOrRemoveAuthenticators,
+} from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
 import { api } from "~/utils/trpc";
@@ -41,7 +43,7 @@ export const useCreateOneClickTradingSession = ({
   addAuthenticatorsQueryOptions: AddAuthenticatorQueryOptions;
 }) => {
   const { accountStore } = useStore();
-  const addAuthenticators = useAddAuthenticators({
+  const addAuthenticators = useAddOrRemoveAuthenticators({
     queryOptions: addAuthenticatorsQueryOptions,
   });
   const apiUtils = api.useUtils();
@@ -75,10 +77,19 @@ export const useCreateOneClickTradingSession = ({
           "Spend limit token decimals are not defined."
         );
 
-      const { accountPubKey, shouldAddFirstAuthenticator } =
-        await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
-          { userOsmoAddress: walletRepo.current.address! }
+      let accountPubKey: string,
+        shouldAddFirstAuthenticator: boolean,
+        authenticators: ParsedAuthenticator[];
+      try {
+        ({ accountPubKey, shouldAddFirstAuthenticator, authenticators } =
+          await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
+            { userOsmoAddress: walletRepo.current.address! }
+          ));
+      } catch (error) {
+        throw new CreateOneClickSessionError(
+          "Failed to fetch account public key and authenticators."
         );
+      }
 
       const key = PrivKeySecp256k1.generateRandomKey();
       const allowedAmount = transaction1CTParams.spendLimit
@@ -88,6 +99,7 @@ export const useCreateOneClickTradingSession = ({
         .toString();
       const allowedMessages: AvailableOneClickTradingMessages[] = [
         "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
       ];
       const resetPeriod = transaction1CTParams.resetPeriod;
 
@@ -133,9 +145,31 @@ export const useCreateOneClickTradingSession = ({
           sessionPeriod,
         });
 
+      /**
+       * If the user has 15 authenticators, remove the oldest AllOfAuthenticator which is are previous OneClickTrading session
+       */
+      const authenticatorToRemoveId =
+        authenticators.length === 15
+          ? authenticators
+              .filter(({ type }) => type === "AllOfAuthenticator")
+              /**
+               * Find the oldest AllOfAuthenticator by comparing the id.
+               * The smallest id is the oldest authenticator.
+               */
+              .reduce((min, authenticator) => {
+                if (isNil(min)) return authenticator.id;
+                return new Dec(authenticator.id).lt(new Dec(min))
+                  ? authenticator.id
+                  : min;
+              }, null as string | null)
+          : undefined;
+
       addAuthenticators.mutate(
         {
-          authenticators: shouldAddFirstAuthenticator
+          removeAuthenticators: authenticatorToRemoveId
+            ? [BigInt(authenticatorToRemoveId)]
+            : [],
+          addAuthenticators: shouldAddFirstAuthenticator
             ? [
                 getFirstAuthenticator({ pubKey: accountPubKey }),
                 oneClickTradingAuthenticator,
@@ -145,13 +179,15 @@ export const useCreateOneClickTradingSession = ({
         {
           onSuccess: () => {
             accountStore.setOneClickTradingInfo({
+              publicKey: toBase64(key.getPubKey().toBytes()),
+              privateKey: toBase64(key.toBytes()),
               allowed: allowedAmount,
               allowedMessages,
               resetPeriod,
-              privateKey: toBase64(key.toBytes()),
               sessionPeriod,
               sessionStartedAtUnix: dayjs().unix(),
               networkFeeLimit: transaction1CTParams.networkFeeLimit.toCoin(),
+              hasSeenExpiryToast: false,
             });
 
             setDoNotShowFloatingBannerAgain(true);
@@ -161,6 +197,7 @@ export const useCreateOneClickTradingSession = ({
               unixNanoSecondsToSeconds(sessionPeriod.end)
             );
             const humanizedTime = humanizeTime(sessionEndDate);
+            dismissAllToasts();
             displayToast(
               {
                 message: t("oneClickTrading.toast.oneClickTradingActive"),

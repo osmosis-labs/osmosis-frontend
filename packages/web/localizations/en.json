@@ -465,7 +465,8 @@
       "oneClickTradingActive": "1-Click Trading active",
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
-      "networkFeeTooHigh": "Network fee too high"
+      "networkFeeTooHigh": "Network fee too high",
+      "enableOneClickTrading": "Enable 1-Click Trading"
     },
     "introduction": {
       "newFeature": "New Feature",

@@ -461,6 +461,13 @@
     "clearAllHistory": "બધું સાફ કરો"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
+      "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
+      "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
+      "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
+      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો"
+    },
     "introduction": {
       "newFeature": "નવી સુવિધા",
       "introducingTitle": "1-ક્લિક ટ્રેડિંગનો પરિચય",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
     "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો"
   },
-  "disclaimer": "અસ્વીકરણ"
+  "disclaimer": "અસ્વીકરણ",
+  "remaining": "બાકી",
+  "timeUnits": {
+    "second": "બીજું",
+    "seconds": "સેકન્ડ",
+    "minute": "મિનિટ",
+    "minutes": "મિનિટ",
+    "hour": "કલાક",
+    "hours": "કલાક"
+  }
 }

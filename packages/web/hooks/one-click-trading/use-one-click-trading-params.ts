@@ -3,6 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import { api } from "~/utils/trpc";
 
+/**
+ * Hook to get the one click trading default parameters.
+ * It also provides methods to reset or modify the parameters.
+ * This is used in the one click trading settings modal.
+ */
 export const useOneClickTradingParams = () => {
   const { data: defaultTransaction1CTParams, isLoading } =
     api.edge.oneClickTrading.getDefaultParameters.useQuery(undefined);

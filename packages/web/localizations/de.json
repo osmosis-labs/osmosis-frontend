@@ -461,6 +461,13 @@
     "clearAllHistory": "Alles löschen"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click-Handel aktiv",
+      "oneClickTradingExpired": "1-Click-Handel abgelaufen",
+      "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
+      "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
+      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel"
+    },
     "introduction": {
       "newFeature": "Neue Funktion",
       "introducingTitle": "Einführung des 1-Click-Handels",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
-  "disclaimer": "Haftungsausschluss"
+  "disclaimer": "Haftungsausschluss",
+  "remaining": "übrig",
+  "timeUnits": {
+    "second": "zweite",
+    "seconds": "Sekunden",
+    "minute": "Minute",
+    "minutes": "Protokoll",
+    "hour": "Stunde",
+    "hours": "Std."
+  }
 }

@@ -461,6 +461,13 @@
     "clearAllHistory": "すべてクリア"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click取引が有効です",
+      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
+      "oneClickTradingDisabled": "1-Click 取引が無効になっています",
+      "networkFeeTooHigh": "ネットワーク料金が高すぎる",
+      "enableOneClickTrading": "1-Click取引を有効にする"
+    },
     "introduction": {
       "newFeature": "新機能",
       "introducingTitle": "1-Click取引の導入",
@@ -998,5 +1005,14 @@
     "totalValueInvested": "投資総額",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
   },
-  "disclaimer": "免責事項"
+  "disclaimer": "免責事項",
+  "remaining": "残り",
+  "timeUnits": {
+    "second": "2番",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間"
+  }
 }
