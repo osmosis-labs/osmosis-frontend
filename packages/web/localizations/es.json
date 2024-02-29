@@ -879,6 +879,7 @@
     "title": "Transferencias inestables",
     "description": "Es posible que experimente retrasos importantes o errores en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
-    "buttonCancel": "Cancelar"
+    "buttonCancel": "Cancelar",
+    "warning": "Las transferencias están inhabilitadas por inestabilidad"
   }
 }

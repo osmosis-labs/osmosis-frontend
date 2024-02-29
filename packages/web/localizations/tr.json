@@ -879,6 +879,7 @@
     "title": "Transferler Kararsız",
     "description": "Önemli gecikmeler veya işlem başarısızlığı yaşayabilirsiniz. Riski size ait olmak üzere devam edin.",
     "buttonContinue": "Her halükarda devam et",
-    "buttonCancel": "İptal etmek"
+    "buttonCancel": "İptal etmek",
+    "warning": "İstikrarsızlık nedeniyle transferler devre dışı bırakıldı"
   }
 }

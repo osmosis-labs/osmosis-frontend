@@ -879,6 +879,7 @@
     "title": "Transferuri instabile",
     "description": "Este posibil să întâmpinați întârzieri semnificative sau eșec în tranzacție. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
-    "buttonCancel": "Anulare"
+    "buttonCancel": "Anulare",
+    "warning": "Transferurile sunt dezactivate din cauza instabilității"
   }
 }
