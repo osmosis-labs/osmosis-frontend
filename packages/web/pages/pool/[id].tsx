@@ -1,7 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import {
@@ -11,6 +11,7 @@ import {
 } from "~/components/pool-detail";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
+import { useConst } from "~/hooks/use-const";
 import { TradeTokens } from "~/modals";
 import { api } from "~/utils/trpc";
 
@@ -33,9 +34,17 @@ const Pool: FunctionComponent<Props> = ({
     poolId && typeof poolId === "string" && Boolean(poolId) && !isNaN(+poolId)
   );
 
-  // the legacy query only supports transmuter cosmwasm pools
-  // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
+  useNavBar(
+    useConst({
+      title: t("pool.title", { id: poolId ?? "" }),
+      ctas: [{ label: t("pool.swap"), onClick: () => setShowTradeModal(true) }],
+    })
+  );
+
+  // Redirects
   useEffect(() => {
+    // the legacy query only supports transmuter cosmwasm pools
+    // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     if (!pool || !isValidPoolId) return;
 
     const isCosmwasmNotTransmuter =
@@ -45,20 +54,6 @@ const Pool: FunctionComponent<Props> = ({
 
     if (isCosmwasmNotTransmuter) window.location.href = celatoneUrl;
   }, [pool, poolId, isValidPoolId]);
-
-  useNavBar(
-    useMemo(
-      () => ({
-        title: t("pool.title", { id: poolId ?? "" }),
-        ctas: [
-          { label: t("pool.swap"), onClick: () => setShowTradeModal(true) },
-        ],
-      }),
-      [t, poolId]
-    )
-  );
-
-  // Redirects
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {
       router.push("/pools");
