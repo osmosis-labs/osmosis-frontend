@@ -9,8 +9,6 @@ import type {
   TestnetAssetSymbols,
 } from "./generated/asset-lists";
 
-export const UNSTABLE_MSG = "Transfers are disabled due to instability";
-
 type AdditionalDataValue = {
   /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
   depositUrlOverride?: string;
