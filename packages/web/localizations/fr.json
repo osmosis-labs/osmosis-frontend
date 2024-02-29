@@ -825,9 +825,9 @@
     "osmosisUpdates": "Mises à jour sur l'osmose !",
     "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
-  "unlistedAssetsEnabled": "Actifs non répertoriés activés",
-  "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "previewAssetsEnabled": "Aperçu des éléments activé",
+  "previewAssetsDisabled": "Aperçu des éléments désactivé",
+  "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
     "position": "Position",

@@ -825,9 +825,9 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "unlistedAssetsEnabled": "非公開アセットの有効化",
-  "unlistedAssetsDisabled": "非公開アセットの無効化",
-  "unlistedAssetsEnabledForSession": "このセッションでは非リストのアセットが有効になりました。無効にするには、新しいタブを開くか、「show_unlisted_assets=false」を追加します。",
+  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
+  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "position": "位置",
