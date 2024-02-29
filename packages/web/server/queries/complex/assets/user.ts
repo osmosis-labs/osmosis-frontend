@@ -42,7 +42,7 @@ export async function getUserAssetCoin<TAsset extends Asset>({
     assetList,
     assets: [asset],
     userOsmoAddress,
-    includeUnlisted: true,
+    includePreview: true,
   });
   return userAssets[0];
 }

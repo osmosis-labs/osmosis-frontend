@@ -24,7 +24,7 @@ import {
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
-import { useShowUnlistedAssets } from "~/hooks/use-show-unlisted-assets";
+import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -77,7 +77,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const showUnverifiedAssets =
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
-  const { showUnlistedAssets } = useShowUnlistedAssets();
+  const { showPreviewAssets } = useShowPreviewAssets();
 
   // Query
   const {
@@ -93,7 +93,7 @@ export const AssetsInfoTable: FunctionComponent<{
       limit: 20,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
-      includeUnlisted: showUnlistedAssets,
+      includePreview: showPreviewAssets,
       sort: sortKey
         ? {
             keyPath: sortKey,

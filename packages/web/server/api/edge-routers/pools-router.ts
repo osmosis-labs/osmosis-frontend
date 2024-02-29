@@ -23,7 +23,10 @@ import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid"
 import { queryBalances } from "~/server/queries/cosmos";
 import { WeightedPoolRawResponse } from "~/server/queries/osmosis";
 import { queryCLPositions } from "~/server/queries/osmosis/concentratedliquidity";
-import { queryAccountLockedCoins } from "~/server/queries/osmosis/lockup/account-locked-coins";
+import {
+  queryAccountLockedCoins,
+  queryAccountUnlockingCoins,
+} from "~/server/queries/osmosis/lockup";
 import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
 import { createSortSchema, sort } from "~/utils/sort";
@@ -63,6 +66,7 @@ export const poolsRouter = createTRPCRouter({
       const [
         userBalances,
         lockedCoins,
+        unlockingCoins,
         accountPositions,
         poolIncentives,
         superfluidPools,
@@ -79,6 +83,14 @@ export const poolsRouter = createTRPCRouter({
             }),
           10_000, // 10 seconds
           "queryAccountLockedCoins"
+        )(),
+        timeout(
+          () =>
+            queryAccountUnlockingCoins({
+              bech32Address: userOsmoAddress,
+            }),
+          10_000, // 10 seconds
+          "queryAccountUnlockingCoins"
         )(),
         timeout(
           () => queryCLPositions({ bech32Address: userOsmoAddress }),
@@ -100,6 +112,7 @@ export const poolsRouter = createTRPCRouter({
       const gammAssets = [
         ...userBalances.balances,
         ...lockedCoins.coins,
+        ...unlockingCoins.coins,
       ].filter(({ denom }) => denom && denom.startsWith("gamm/pool/"));
 
       const userPoolIdsSet: Set<string> = new Set(
