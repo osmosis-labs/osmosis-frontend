@@ -7,7 +7,13 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -39,6 +45,7 @@ import { ProfileModal } from "~/modals/profile";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
 import { getDeepValue } from "~/utils/object";
 import { formatICNSName, getShortAddress } from "~/utils/string";

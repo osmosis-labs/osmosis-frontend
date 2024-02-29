@@ -56,6 +56,7 @@ const OneClickTradingIntroModal = observer(() => {
       ToastType.ONE_CLICK_TRADING,
       {
         toastId: "one-click-trading-expired", // Provide an id to prevent duplicates
+        autoClose: 50000,
       }
     );
   }, [t, setIsOpen]);
