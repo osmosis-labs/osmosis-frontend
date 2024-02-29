@@ -27,18 +27,21 @@ import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
-async function getCoingeckoCoin({ denom }: { denom: string }) {
+/** Cached CoinGecko ID for needs of price function. */
+async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
   return cachified({
     cache: pricesCache,
-    key: `coingecko-coin-${denom}`,
-    ttl: 1000 * 60, // 1 minute
-    staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
-    getFreshValue: async () => {
-      const { coins } = await queryCoingeckoSearch(denom);
-      return coins?.find(
-        ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
-      );
-    },
+    key: `coingecko-coin-${symbol}`,
+    ttl: 1000 * 60 * 60, // 1 hour since the coin api ID won't change often
+    staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hours
+    getFreshValue: async () =>
+      queryCoingeckoSearch(symbol).then(
+        ({ coins }) =>
+          coins?.find(
+            ({ symbol: symbol_ }) =>
+              symbol_?.toLowerCase() === symbol.toLowerCase()
+          )?.api_symbol
+      ),
   });
 }
 
@@ -58,10 +61,10 @@ async function batchFetchCoingeckoPrices(
   );
 }
 async function getCoingeckoPrice({
-  coingeckoId,
+  coinGeckoId,
   currency,
 }: {
-  coingeckoId: string;
+  coinGeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
   // Create a loader per given currency.
@@ -78,11 +81,11 @@ async function getCoingeckoPrice({
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: pricesCache,
-    key: `coingecko-price-${coingeckoId}-${currency}`,
+    key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
-      currencyBatchLoader.load(coingeckoId).then((price) => new Dec(price)),
+      currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
   });
 }
 
@@ -98,7 +101,7 @@ async function getCoingeckoPrice({
  *
  * @throws If the asset is not found in the asset list registry or the asset's price info is not found.
  */
-async function calculatePriceFromPriceId({
+async function calculatePriceThroughPools({
   asset,
   currency,
 }: {
@@ -115,7 +118,7 @@ async function calculatePriceFromPriceId({
    */
   if (!asset.price && asset.coingeckoId) {
     return await getCoingeckoPrice({
-      coingeckoId: asset.coingeckoId,
+      coinGeckoId: asset.coingeckoId,
       currency,
     });
   }
@@ -195,7 +198,7 @@ async function calculatePriceFromPriceId({
     ? new Dec(0)
     : new Dec(1).quo(inSpotPrice.toDec());
 
-  const destCoinPrice = await calculatePriceFromPriceId({
+  const destCoinPrice = await calculatePriceThroughPools({
     asset: tokenOutAsset.rawAsset,
     currency,
   });
@@ -240,47 +243,31 @@ export async function getAssetPrice({
         );
       }
 
-      let coingeckoAsset:
-        | NonNullable<
-            Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
-          >[number]
-        | undefined;
-
-      const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
-
-      /**
-       * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
-       */
-      try {
-        if (
-          (!assetListAsset || !assetListAsset.coinGeckoId) &&
-          !shouldCalculateUsingPools &&
-          asset.coinDenom
-        ) {
-          coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
-        }
-      } catch (e) {
-        console.error("Failed to fetch asset from coingecko registry", e);
-      }
-
-      const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
-
-      if (shouldCalculateUsingPools && assetListAsset) {
-        return await calculatePriceFromPriceId({
+      if (assetListAsset.priceInfo && assetListAsset) {
+        return await calculatePriceThroughPools({
           asset: assetListAsset.rawAsset,
           currency,
         });
       }
 
-      if (!id) {
+      let coinGeckoId = assetListAsset.coinGeckoId;
+
+      // Try to search CoinGecko for it's ID if it wasn't in asset list
+      // This is especially applicable in the bridge providers for calculating quotes
+      if (!coinGeckoId) {
+        coinGeckoId = await searchCoinGeckoCoinId(assetListAsset);
+      }
+
+      if (!coinGeckoId) {
         throw new Error(
-          `Asset ${
-            asset.sourceDenom ?? asset.coinDenom ?? asset.coinMinimalDenom
-          } has no identifier for pricing.`
+          `Asset ${assetListAsset.symbol} has no identifier for pricing.`
         );
       }
 
-      return await getCoingeckoPrice({ coingeckoId: id, currency });
+      return await getCoingeckoPrice({
+        coinGeckoId,
+        currency,
+      });
     },
   });
 }
