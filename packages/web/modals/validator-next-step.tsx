@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { FunctionComponent } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -89,15 +89,15 @@ export const ValidatorNextStepModal: FunctionComponent<
           </p>
           <div className="flex w-full gap-8 md:gap-2">
             <Button
-              className="w-full md:h-[4.688rem]" // 75px
-              mode="primary-bullish"
+              className="w-full"
+              variant="secondary"
               onClick={handleExistingUserKeepClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonKeep")}
             </Button>
             <Button
-              className="w-full md:h-[4.688rem]" // 75px
-              mode="secondary-bullish"
+              className="w-full"
+              variant="secondary"
               onClick={handleExistingUserSelectClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonSelect")}
