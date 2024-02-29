@@ -31,7 +31,6 @@ import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
-import { StakeOnboarding } from "~/components/stake/stake-onboarding";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
@@ -72,14 +71,12 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-function MyApp({ Component, pageProps, router }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   useMount(() => {
     initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
   });
-
-  const isStakePage = router.pathname === "/stake";
 
   return (
     <MultiLanguageProvider
@@ -96,7 +93,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
             }}
             transition={Bounce}
           />
-          <MainLayoutWrapper isStakePage={isStakePage}>
+          <MainLayoutWrapper>
             <ErrorBoundary fallback={ErrorFallback}>
               {Component && <Component {...pageProps} />}
             </ErrorBoundary>
@@ -114,8 +111,7 @@ interface LevanaGeoBlockedResponse {
 
 const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
-  isStakePage: boolean;
-}> = observer(({ children, isStakePage }) => {
+}> = observer(({ children }) => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const { data: levanaGeoblock, error } = useQuery(
@@ -202,6 +198,7 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
+            isNew: true,
             icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
@@ -218,7 +215,6 @@ const MainLayoutWrapper: FunctionComponent<{
             link: "/stake",
             icon: <Icon id="ticket" className="h-5 w-5" />,
             selectionTest: /\/stake/,
-            isNew: true,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : {
@@ -291,14 +287,6 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
-  const isWalletConnected = Boolean(account?.isWalletConnected);
-
-  // should only render not on stake page, and if wallet is connected, and if address is not undefined
-  const renderStakeOnboarding = !isStakePage && isWalletConnected && address;
-
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
@@ -316,12 +304,6 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      {renderStakeOnboarding && (
-        <StakeOnboarding
-          address={address}
-          isWalletConnected={isWalletConnected}
-        />
-      )}
       {flags.oneClickTrading && (
         <>
           <OneClickTradingIntroModal />

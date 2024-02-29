@@ -47,7 +47,7 @@ export const PoolCard: FunctionComponent<
         onClick?.();
       }}
     >
-      <div className="flex h-full w-full cursor-pointer flex-col place-content-between gap-14 rounded-3xl bg-osmoverse-800 px-9 py-7 transition-colors hover:bg-osmoverse-700">
+      <div className="flex h-full w-full cursor-pointer flex-col place-content-between gap-14 rounded-[1.688rem] bg-osmoverse-800 px-9 py-7 transition-colors hover:bg-osmoverse-700">
         <div className="flex place-content-between items-center">
           <PoolAssetsIcon assets={poolAssets} />
           <div className="ml-5 flex flex-col">

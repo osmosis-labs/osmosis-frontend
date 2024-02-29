@@ -13,9 +13,6 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a GetBridgeQuoteResponse object.
    */
   getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote>;
-  getTransferStatus(
-    params: GetTransferStatusParams
-  ): Promise<BridgeTransferStatus | undefined>;
   getTransactionData: (
     params: GetBridgeQuoteParams
   ) => Promise<BridgeTransactionRequest>;

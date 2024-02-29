@@ -54,7 +54,6 @@ import {
   apiClient,
   ApiClientError,
   DefaultGasPriceStep,
-  getSourceDenomFromAssetList,
   isNil,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
@@ -168,7 +167,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ...assetList,
       assets: assetList.assets.map((asset) => ({
         ...asset,
-        base: asset.traces ? getSourceDenomFromAssetList(asset) : asset.base,
+        base: asset.sourceDenom,
+        denom_units: [
+          {
+            denom: asset.sourceDenom,
+            exponent: 0,
+          },
+          {
+            denom: asset.symbol,
+            exponent: asset.decimals,
+          },
+        ],
+        display: asset.symbol,
       })),
     })) as CosmologyAssetList[];
   }

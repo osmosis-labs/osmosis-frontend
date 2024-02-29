@@ -252,7 +252,7 @@ export const poolsRouter = createTRPCRouter({
             const marketIncentivePools = pools
               .map((pool) => {
                 const incentivesForPool = incentives.get(pool.id);
-                const metricsForPool = marketMetrics.get(pool.id);
+                const metricsForPool = marketMetrics.get(pool.id) ?? {};
 
                 const isIncentiveFiltered =
                   incentivesForPool &&

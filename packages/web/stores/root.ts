@@ -16,7 +16,6 @@ import {
   PoolFallbackPriceStore,
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 import {
   makeIndexedKVStore,
@@ -41,7 +40,7 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
-import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
+import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";
 import { NavBarStore } from "~/stores/nav-bar";
@@ -88,8 +87,6 @@ export class RootStore {
   public readonly userSettings: UserSettings;
 
   public readonly profileStore: ProfileStore;
-
-  public readonly userUpgrades: UserUpgradesConfig;
 
   constructor({
     txEvents,
@@ -255,9 +252,9 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
-        new AxelarTransferStatusSource(),
-        new SquidTransferStatusSource(),
-        new SkipTransferStatusSource(),
+        new AxelarTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SquidTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new SkipTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
       ]
     );
 
@@ -275,13 +272,5 @@ export class RootStore {
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
-
-    this.userUpgrades = new UserUpgradesConfig(
-      this.chainStore.osmosis.chainId,
-      this.queriesStore,
-      this.accountStore,
-      this.derivedDataStore,
-      this.priceStore
-    );
   }
 }

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
