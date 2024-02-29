@@ -6,8 +6,9 @@ import { FunctionComponent } from "react";
 
 import { Info } from "~/components/alert";
 import { Icon } from "~/components/assets";
-import { Button, buttonCVA } from "~/components/buttons";
+import { buttonCVA } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -110,39 +111,31 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <Button
-              className="h-10 w-full"
-              mode="secondary"
-              onClick={onWithdraw}
-            >
+            <Button className="w-full" variant="outline" onClick={onWithdraw}>
               {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
           {Boolean(externalDepositUrl) && (
             <a
-              className={classNames(
-                buttonCVA({
-                  className:
-                    "h-10 w-full gap-2 border-wosmongton-300 bg-wosmongton-300",
-                  mode: "primary",
-                })
-              )}
               href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
               style={{ pointerEvents: "none", cursor: "default" }}
+              className="w-full"
             >
-              <span>{t("assets.table.preTransfer.deposit")}</span>
-              <Image
-                alt="external transfer link"
-                src="/icons/external-link-white.svg"
-                height={12}
-                width={12}
-              />
+              <Button className="flex w-full gap-2">
+                <span>{t("assets.table.preTransfer.deposit")}</span>
+                <Image
+                  alt="external transfer link"
+                  src="/icons/external-link-white.svg"
+                  height={12}
+                  width={12}
+                />
+              </Button>
             </a>
           )}
           {!isEthAsset && !externalDepositUrl && (
-            <Button className="h-10 w-full" onClick={onDeposit}>
+            <Button className="w-full" onClick={onDeposit}>
               {t("assets.table.preTransfer.deposit")}
             </Button>
           )}

@@ -4,9 +4,9 @@ import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { useStore } from "~/stores";
@@ -118,8 +118,8 @@ const TransferButton: FunctionComponent<{
     </a>
   ) : (
     <Button
-      mode="text"
-      className="gap-2"
+      variant="ghost"
+      className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();

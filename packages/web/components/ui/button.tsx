@@ -12,7 +12,7 @@ const buttonVariants = cva(
           "bg-wosmongton-700 text-primary-foreground shadow hover:bg-wosmongton-700/90",
         destructive: "bg-rust-700 shadow-sm hover:bg-destructive/90",
         outline:
-          "border-wosmongton-400 border border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
