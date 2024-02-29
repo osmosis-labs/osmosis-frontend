@@ -4,6 +4,7 @@ import { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
@@ -13,7 +14,8 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <button
+    <Button
+      variant="ghost"
       className={classNames("button flex flex-col gap-1", className)}
       onClick={() => onToggle(isOn)}
     >
@@ -28,6 +30,6 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
           className="text-osmoverse-400"
         />
       </div>
-    </button>
+    </Button>
   );
 };
