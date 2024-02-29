@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from "react";
 
-import { Button } from "~/components/buttons";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import {
   Step,
@@ -9,6 +8,7 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
@@ -43,7 +43,7 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
 
   return (
     <Button
-      mode={modal ? "quaternary-modal" : "quaternary"}
+      variant="secondary"
       className={"w-1/2 self-center lg:w-full"}
       onClick={onStakeButtonClick}
     >
