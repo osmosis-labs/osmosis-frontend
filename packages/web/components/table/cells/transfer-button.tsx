@@ -1,13 +1,14 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
+import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { useStore } from "~/stores";
 
 export const TransferButtonCell: FunctionComponent<
@@ -30,39 +31,54 @@ export const TransferButtonCell: FunctionComponent<
     const { t } = useTranslation();
     const { accountStore } = useStore();
 
+    const onOperation = type === "deposit" ? onDeposit : onWithdraw;
+
+    const shouldRender = chainId && coinDenom && onOperation;
+    if (!shouldRender) return null;
+
     const isChainSupported = Boolean(
       accountStore.connectedWalletSupportsChain(chainId ?? "")?.value ?? true
     );
+    const isOperationSupported =
+      type === "deposit"
+        ? isChainSupported || Boolean(depositUrlOverride)
+        : isChainSupported || Boolean(withdrawUrlOverride);
 
-    const isDepositSupported = isChainSupported || Boolean(depositUrlOverride);
-    const isWithdrawSupported =
-      isChainSupported || Boolean(withdrawUrlOverride);
     const notSupportedTooltipText = t("assetNotCompatible");
 
-    return type === "withdraw" ? (
-      chainId && coinDenom && onWithdraw ? (
+    const [showUnstableAssetWarning, setShowUnstableAssetWarning] =
+      useState(false);
+    const operationUrlOverride =
+      type === "deposit" ? depositUrlOverride : withdrawUrlOverride;
+
+    const operationLabel = t(`assets.table.${type}Button`);
+
+    const action = () => onOperation(chainId, coinDenom, operationUrlOverride);
+
+    return (
+      <>
         <Tooltip
-          disabled={isWithdrawSupported}
+          disabled={isOperationSupported}
           content={notSupportedTooltipText}
         >
           <TransferButton
-            disabled={!isWithdrawSupported || isUnstable}
-            externalUrl={withdrawUrlOverride}
-            label={t("assets.table.withdrawButton")}
-            action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+            disabled={!isOperationSupported}
+            externalUrl={operationUrlOverride}
+            label={operationLabel}
+            action={() =>
+              isUnstable ? setShowUnstableAssetWarning(true) : action()
+            }
           />
         </Tooltip>
-      ) : null
-    ) : chainId && coinDenom && onDeposit ? (
-      <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
-        <TransferButton
-          disabled={!isDepositSupported || isUnstable}
-          externalUrl={depositUrlOverride}
-          label={t("assets.table.depositButton")}
-          action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
-        />
-      </Tooltip>
-    ) : null;
+        {isUnstable && (
+          <UnstableAssetWarning
+            isOpen={showUnstableAssetWarning}
+            onRequestClose={() => setShowUnstableAssetWarning(false)}
+            onContinue={action}
+          />
+        )}
+      </>
+    );
   }
 );
 
@@ -71,8 +87,8 @@ const TransferButton: FunctionComponent<{
   disabled?: boolean;
   label: string;
   action: () => void;
-}> = ({ externalUrl, disabled, label, action }) => {
-  return externalUrl ? (
+}> = ({ externalUrl, disabled, label, action }) =>
+  externalUrl ? (
     <a
       className={classNames(
         "subtitle1 flex shrink-0 items-center gap-1 pt-2 text-wosmongton-200 lg:pt-0",
@@ -85,6 +101,7 @@ const TransferButton: FunctionComponent<{
         disabled ? { pointerEvents: "none", cursor: "default" } : undefined
       }
       onClick={(event) => {
+        event.preventDefault();
         event.stopPropagation();
         action();
       }}
@@ -111,10 +128,8 @@ const TransferButton: FunctionComponent<{
       disabled={disabled}
     >
       <span>{label}</span>
-
       <div className="h-fit shrink-0">
         <Icon id="chevron-right" width={8} height={14} />
       </div>
     </Button>
   );
-};

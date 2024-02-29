@@ -260,7 +260,6 @@ export const Transfer = observer(
             />
           </div>
         )}
-
         <div className="body1 relative flex w-full flex-col gap-12 text-osmoverse-400 transition-opacity duration-300">
           <BridgeFromToNetwork
             transferPath={[from, to]}
@@ -434,7 +433,6 @@ export const Transfer = observer(
             </div>
           </div>
         </div>
-
         <div
           className={classNames(
             "flex flex-col gap-4 transition-opacity duration-300",
