@@ -8,7 +8,7 @@ import { MyPositionCardExpandedSection } from "~/components/cards/my-position/ex
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import type { ClPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
@@ -36,6 +36,7 @@ export const MyPositionCard: FunctionComponent<{
   } = props;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
+  const featureFlags = useFeatureFlags();
 
   const { data: positionPerformance } =
     api.edge.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
@@ -129,7 +130,7 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          {positionPerformance && (
+          {positionPerformance && featureFlags.positionRoi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
               value={positionPerformance.roi.maxDecimals(0).toString()}

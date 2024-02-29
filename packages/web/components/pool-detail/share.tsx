@@ -23,13 +23,11 @@ import { ArrowButton, Button } from "~/components/buttons";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
-import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
-  useDisclosure,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
@@ -41,8 +39,6 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
-import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -62,7 +58,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         queryPoolAprs,
       },
       derivedDataStore,
-      userUpgrades,
     } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
@@ -324,17 +319,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const setShowModal = useCallback(
       (setter: Function, show: boolean) => () => setter(show),
       []
-    );
-
-    // migrate to CL from this pool
-    const [showClLearnMoreModal, setShowClLearnMoreModal] = useState(false);
-    const {
-      isOpen: isUserUpgradesOpen,
-      onOpen: onOpenUserUpgrades,
-      onClose: onCloseUserUpgrades,
-    } = useDisclosure();
-    const relevantCfmmToClUpgrade = userUpgrades.availableCfmmToClUpgrades.find(
-      ({ cfmmPoolId }) => cfmmPoolId === poolId
     );
 
     return (
@@ -615,39 +599,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {!isMobile &&
-          flags.concentratedLiquidity &&
-          flags.upgrades &&
-          relevantCfmmToClUpgrade &&
-          pool && (
-            <section>
-              <SuperchargePool
-                title={t("addConcentratedLiquidityPoolCta.title", {
-                  pair: pool.poolAssets
-                    .map((asset) => asset.amount.denom)
-                    .join("/"),
-                })}
-                caption={t("addConcentratedLiquidityPoolCta.caption")}
-                primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-                secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-                onCtaClick={onOpenUserUpgrades}
-                onSecondaryClick={() => {
-                  setShowClLearnMoreModal(true);
-                }}
-              />
-              {showClLearnMoreModal && (
-                <ConcentratedLiquidityLearnMoreModal
-                  isOpen={true}
-                  onRequestClose={() => setShowClLearnMoreModal(false)}
-                />
-              )}
-              <UserUpgradesModal
-                explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
-                isOpen={isUserUpgradesOpen}
-                onRequestClose={onCloseUserUpgrades}
-              />
-            </section>
-          )}
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
             <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>

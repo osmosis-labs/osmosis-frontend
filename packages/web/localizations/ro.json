@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
-  "convertToStake": {
-    "adTitle": "Am detectat o strategie de câștig mai bună.",
-    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
-    "title": "Convertiți în OSMO mizat",
-    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
-    "stakedOsmo": "Mizat OSMO",
-    "APR": "APRILIE",
-    "currentApr": "DAE curentă",
-    "pool": "BAZIN #{poolId}",
-    "position": "POZIȚIA # {positionId}",
-    "convertAndStake": "Convertiți și mizați"
-  },
   "clPositions": {
     "inRange": "ÎN GAME",
     "nearBounds": "Aproape de limite",
@@ -130,18 +118,6 @@
     "applyButton": "Aplică",
     "storeDisclaimer": "Anumite conținuturi au fost pregătite de terțe părți neafiliate cu Osmosis Labs sau cu oricare dintre afilierile sale, iar Osmosis Labs nu este responsabilă pentru astfel de conținuturi. Osmosis Labs nu este responsabilă pentru eventualele erori sau întârzieri în conținut sau pentru orice acțiuni întreprinse bazându-se pe orice conținut. Informațiile sunt furnizate numai în scop informativ și nu constituie sfaturi de investiții. Aceasta nu este o recomandare de a cumpăra sau vinde un anumit activ digital sau de a utiliza o anumită strategie de investiții. Osmosis Labs nu face nicio declarație cu privire la acuratețea, adecvarea sau validitatea oricăror informații furnizate sau pentru un anumit activ. Prețurile prezentate sunt doar în scop ilustrativ. Prețurile reale ale criptomonedelor și statisticile asociate pot varia. Datele prezentate pot reflecta active tranzacționate pe bursa Osmosis Labs și pe alte burse de criptomonede selectate.",
     "allAppsHeader": "Toate aplicațiile"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Supraîncărcați-vă",
-    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă poziția în câteva clicuri.",
-    "primaryCta": "Faceți upgrade la Supercharged",
-    "secondaryCta": "Învață în 30 de secunde"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Câștigați mai mult din lichiditatea dvs",
-    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă lichiditatea în câteva clicuri.",
-    "primaryCta": "Faceți upgrade la Supercharged",
-    "secondaryCta": "Învață în 30 de secunde"
   },
   "createFirstPositionCta": {
     "title": "Creați-vă prima poziție Supercharged",
@@ -837,7 +813,7 @@
     "step4Title": "Creați un portofel pentru a începe",
     "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
   },
-  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
+  "swapFailed": "Schimbarea a eșuat. Este posibil ca lichiditatea să nu fie suficientă. Încercați să reglați alunecarea permisă.",
   "transactionBroadcasting": "Transmitere tranzactie",
   "transactionFailed": "Tranzactie Esuata",
   "transactionSuccessful": "Tranzactie Finalizata",
@@ -845,21 +821,6 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "upgrades": {
-    "title": "Upgrade-uri disponibile",
-    "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
-    "positionUpgrade": "Upgrade de poziție",
-    "superchargedLiquidity": "Lichiditate supraalimentată",
-    "newSuperchargedPool": "Acest nou grup are un potențial de câștig mai mare și o DAE estimată cea mai mare.",
-    "upgrade": "Actualizare",
-    "pool": "BAZIN",
-    "new": "NOU",
-    "current": "ACTUAL",
-    "success": "Upgrade succes!",
-    "clickHereToView": "Click aici pentru a vizualiza",
-    "foundHere": "Upgrade-urile pot fi găsite aici",
-    "availableHereCaption": "Upgrade-urile disponibile pot fi vizualizate aici. Puteți alege să faceți upgrade în orice moment."
-  },
   "seo": {
     "404": {
       "title": "404 Pagina nu a fost găsită",

@@ -1,17 +1,11 @@
 import { CW20Currency, Secret20Currency } from "@keplr-wallet/types";
 import type {
-  AppCurrency,
   Asset,
   AssetList,
   Chain,
   ChainInfo,
   ChainInfoWithExplorer,
 } from "@osmosis-labs/types";
-import {
-  getDisplayDecimalsFromAsset,
-  getSourceDenomFromAssetList,
-  hasMatchingSourceDenom,
-} from "@osmosis-labs/utils";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";
@@ -26,38 +20,6 @@ import {
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
-}
-
-function findSourceDenomAndDecimals({
-  asset,
-  chainName,
-}: {
-  asset?: Asset;
-  chainName: string;
-}) {
-  if (!asset) {
-    return {
-      sourceDenom: undefined,
-      displayDecimals: undefined,
-    };
-  }
-
-  const sourceDenom = getSourceDenomFromAssetList(asset);
-  const displayDecimals = getDisplayDecimalsFromAsset(asset);
-
-  if (typeof sourceDenom === "undefined") {
-    console.warn(
-      `Failed to find source denom for ${asset?.symbol} on ${chainName}`
-    );
-  }
-
-  if (typeof displayDecimals === "undefined") {
-    console.warn(
-      `Failed to find decimals for ${asset?.symbol} on ${chainName}`
-    );
-  }
-
-  return { sourceDenom, displayDecimals };
 }
 
 const tokensDir = "/tokens/generated";
@@ -77,10 +39,10 @@ export function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
 
 /**
  * Download an image from the provided URL and save it to the local file system.
- * @param {string} imageUrl The URL of the image to download.
- * @returns {Promise<string>} The filename of the saved image.
+ * @param imageUrl The URL of the image to download.
+ * @returns The filename of the saved image.
  */
-export async function downloadAndSaveImage(
+export async function saveAssetImageToTokensDir(
   imageUrl: string,
   asset: Pick<Asset, "symbol">
 ) {
@@ -159,8 +121,8 @@ export function getKeplrCompatibleChain({
   }
 
   const stakingTokenSourceDenom = chain.staking.staking_tokens[0].denom;
-  const stakeAsset = assetList!.assets.find((asset) =>
-    hasMatchingSourceDenom(asset, stakingTokenSourceDenom)
+  const stakeAsset = assetList!.assets.find(
+    (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
 
   if (!stakeAsset) {
@@ -169,13 +131,8 @@ export function getKeplrCompatibleChain({
     );
   }
 
-  const {
-    displayDecimals: stakeDisplayDecimals,
-    sourceDenom: stakeSourceDenom,
-  } = findSourceDenomAndDecimals({
-    asset: stakeAsset,
-    chainName: chain.chain_name,
-  });
+  const stakeDisplayDecimals = stakeAsset?.decimals;
+  const stakeSourceDenom = stakeAsset?.sourceDenom;
 
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
@@ -194,17 +151,8 @@ export function getKeplrCompatibleChain({
     },
     currencies: assetList!.assets.reduce<ChainInfoWithExplorer["currencies"]>(
       (acc, asset) => {
-        const { displayDecimals, sourceDenom } = findSourceDenomAndDecimals({
-          asset,
-          chainName: chain.chain_name,
-        });
-
-        if (
-          typeof displayDecimals === "undefined" ||
-          typeof sourceDenom === "undefined"
-        ) {
-          return acc;
-        }
+        const sourceDenom = asset.sourceDenom;
+        const displayDecimals = asset.decimals;
 
         const isCW20ContractToken =
           sourceDenom
@@ -218,7 +166,7 @@ export function getKeplrCompatibleChain({
           type = "cw20";
         }
 
-        if (!asset.logo_URIs.svg && !asset.logo_URIs.png) {
+        if (!asset.logoURIs.svg && !asset.logoURIs.png) {
           throw new Error(
             `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
           );
@@ -252,17 +200,17 @@ export function getKeplrCompatibleChain({
             ? sourceDenom + `:${asset.symbol}`
             : sourceDenom,
           // @ts-ignore
-          contractAddress: asset.address,
+          contractAddress: isCW20ContractToken
+            ? sourceDenom.split(":")[1]
+            : undefined,
           coinDecimals: displayDecimals,
-          coinGeckoId: asset.coingecko_id,
+          coinGeckoId: asset.coingeckoId,
           coinImageUrl: getImageRelativeFilePath(
-            asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+            asset.logoURIs.svg ?? asset.logoURIs.png!,
             asset.symbol
           ),
-          base: asset.base,
-          pegMechanism: asset.keywords
-            ?.find((keyword) => keyword.startsWith("peg:"))
-            ?.split(":")[1] as AppCurrency["pegMechanism"],
+          base: asset.coinMinimalDenom,
+          pegMechanism: asset.pegMechanism,
           gasPriceStep,
         });
         return acc;
@@ -273,38 +221,29 @@ export function getKeplrCompatibleChain({
       coinDecimals: stakeDisplayDecimals ?? 0,
       coinDenom: stakeAsset?.symbol ?? stakingTokenSourceDenom,
       coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom,
-      coinGeckoId: stakeAsset?.coingecko_id,
+      coinGeckoId: stakeAsset?.coingeckoId,
       coinImageUrl:
-        stakeAsset?.logo_URIs.svg || stakeAsset?.logo_URIs.png
+        stakeAsset?.logoURIs.svg || stakeAsset?.logoURIs.png
           ? getImageRelativeFilePath(
-              stakeAsset.logo_URIs.svg ?? stakeAsset.logo_URIs.png!,
+              stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
               stakeAsset.symbol
             )
           : undefined,
-      base: stakeAsset?.base,
+      base: stakeAsset?.coinMinimalDenom,
     },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
-      const asset = assetList!.assets.find((asset) =>
-        hasMatchingSourceDenom(asset, token.denom)
+      const asset = assetList!.assets.find(
+        (asset) => asset.sourceDenom === token.denom
       );
 
       if (!asset) {
         return acc;
       }
 
-      const { displayDecimals, sourceDenom } = findSourceDenomAndDecimals({
-        asset,
-        chainName: chain.chain_name,
-      });
-
-      if (
-        typeof displayDecimals === "undefined" ||
-        typeof sourceDenom === "undefined"
-      ) {
-        return acc;
-      }
+      const sourceDenom = asset.sourceDenom;
+      const displayDecimals = asset.decimals;
 
       const isContractToken =
         sourceDenom
@@ -349,15 +288,15 @@ export function getKeplrCompatibleChain({
           ? sourceDenom.split(":")[1]
           : undefined,
         coinDecimals: displayDecimals,
-        coinGeckoId: asset.coingecko_id,
+        coinGeckoId: asset.coingeckoId,
         coinImageUrl:
-          asset?.logo_URIs.svg || asset?.logo_URIs.png
+          asset?.logoURIs.svg || asset?.logoURIs.png
             ? getImageRelativeFilePath(
-                asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+                asset.logoURIs.svg ?? asset.logoURIs.png!,
                 asset.symbol
               )
             : undefined,
-        base: asset.base,
+        base: asset.coinMinimalDenom,
         gasPriceStep,
       });
       return acc;

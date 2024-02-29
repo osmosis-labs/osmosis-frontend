@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
-  "convertToStake": {
-    "adTitle": "Wykryliśmy lepszą strategię zarabiania.",
-    "adSubtitle": "Na niektórych Twoich pozycjach zarabiasz mniej, niż zarabiałbyś, stawiając OSMO za",
-    "title": "Konwertuj na Stakowane OSMO",
-    "description": "Wybrane stanowiska zostaną w pełni przekonwertowane na OSMO. Całe OSMO zostanie następnie automatycznie postawione do istniejącego zestawu walidatorów.",
-    "stakedOsmo": "Stawiane OSMO",
-    "APR": "KWIECIEŃ",
-    "currentApr": "Aktualna RRSO",
-    "pool": "BASEN #{poolId}",
-    "position": "POZYCJA # {positionId}",
-    "convertAndStake": "Konwertuj i stawiaj"
-  },
   "clPositions": {
     "inRange": "W ZAKRESIE",
     "nearBounds": "BLISKO GRANIC",
@@ -130,18 +118,6 @@
     "applyButton": "Aplikuj",
     "storeDisclaimer": "Niektóre treści zostały przygotowane przez osoby trzecie niezwiązane z Osmosis Labs ani żadnym z jego partnerów, a Osmosis Labs nie ponosi odpowiedzialności za takie treści. Osmosis Labs nie ponosi odpowiedzialności za błędy lub opóźnienia w treści ani za żadne działania podjęte w oparciu o jakąkolwiek treść. Informacje są dostarczane wyłącznie w celach informacyjnych i nie stanowią porady inwestycyjnej. To nie jest rekomendacja zakupu lub sprzedaży konkretnego aktywa cyfrowego ani stosowania konkretnej strategii inwestycyjnej. Osmosis Labs nie składa żadnych deklaracji co do dokładności, przydatności lub ważności żadnych dostarczonych informacji ani co do konkretnego aktywa. Ceny prezentowane są tylko w celach ilustracyjnych. Rzeczywiste ceny kryptowalut i powiązane dane statystyczne mogą się różnić. Prezentowane dane mogą odzwierciedlać aktywa handlowane na giełdzie Osmosis Labs oraz na wybranych innych giełdach kryptowalut.",
     "allAppsHeader": "Wszystkie aplikacje"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Doładuj swoje",
-    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowe zyski. Dowiedz się, jak to działa w 30 sekund lub popraw swoją pozycję kilkoma kliknięciami.",
-    "primaryCta": "Ulepsz do doładowania",
-    "secondaryCta": "Naucz się w 30 sekund"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Zarabiaj więcej na swojej płynności",
-    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowy zysk. Dowiedz się, jak to działa w 30 sekund lub zwiększ swoją płynność za pomocą kilku kliknięć.",
-    "primaryCta": "Ulepsz do doładowania",
-    "secondaryCta": "Naucz się w 30 sekund"
   },
   "createFirstPositionCta": {
     "title": "Stwórz swoją pierwszą superdoładowaną pozycję",
@@ -837,7 +813,7 @@
     "step4Title": "Stwórz portfel, aby zacząć",
     "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa."
   },
-  "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
+  "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
   "transactionSuccessful": "Transakcja Udana",
@@ -845,21 +821,6 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "upgrades": {
-    "title": "Dostępne aktualizacje",
-    "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
-    "positionUpgrade": "Ulepszenie pozycji",
-    "superchargedLiquidity": "Doładowana płynność",
-    "newSuperchargedPool": "Ta nowa pula ma wyższy potencjał zarobkowy i najwyższą szacowaną RRSO.",
-    "upgrade": "Aktualizacja",
-    "pool": "BASEN",
-    "new": "NOWY",
-    "current": "AKTUALNY",
-    "success": "Sukces aktualizacji!",
-    "clickHereToView": "Kliknij tu aby zobaczyć",
-    "foundHere": "Aktualizacje można znaleźć tutaj",
-    "availableHereCaption": "Dostępne aktualizacje można zobaczyć tutaj. W każdej chwili możesz zdecydować się na aktualizację."
-  },
   "seo": {
     "404": {
       "title": "404 — Nie znaleziono strony",

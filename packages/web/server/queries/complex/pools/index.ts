@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { IS_TESTNET } from "~/config/env";
 import { getPoolsFromSidecar } from "~/server/queries/complex/pools/providers/sidecar";
 import { search, SearchSchema } from "~/utils/search";
 
@@ -63,13 +64,19 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider({ poolIds: params?.poolIds });
 
-  if (params?.types || params?.minLiquidityUsd) {
-    pools = pools.filter(
-      ({ type, totalFiatValueLocked }) =>
-        (params?.types ? params.types.includes(type) : true) &&
-        (params?.minLiquidityUsd
-          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-          : true)
+  if (params?.types) {
+    pools = pools.filter(({ type }) =>
+      params?.types ? params.types.includes(type) : true
+    );
+  }
+
+  // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // information.
+  if (params?.minLiquidityUsd && !IS_TESTNET) {
+    pools = pools.filter(({ totalFiatValueLocked }) =>
+      params?.minLiquidityUsd
+        ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+        : true
     );
   }
 

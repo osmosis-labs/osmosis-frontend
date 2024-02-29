@@ -57,6 +57,7 @@ export type EventProperties = {
   amountUSD: string | undefined;
   type: string;
   router: string;
+  errorMessage: string | undefined;
 };
 
 export type UserProperties = {
@@ -238,4 +239,5 @@ export const EventName = {
     viewMoreClicked: "Token Info: View more clicked",
     socialPostClicked: "Token Info: Social post clicked",
   },
+  QueryError: "Query error",
 };

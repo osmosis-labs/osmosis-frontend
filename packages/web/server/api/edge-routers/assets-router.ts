@@ -317,7 +317,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      })
+      }).catch(() => [])
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
@@ -344,6 +344,6 @@ export const assetsRouter = createTRPCRouter({
           quoteCoinMinimalDenom,
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
-        })
+        }).catch(() => ({ prices: [], min: 0, max: 0 }))
     ),
 });

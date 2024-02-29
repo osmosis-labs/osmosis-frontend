@@ -4,11 +4,8 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
-import {
-  getAssetFromAssetList,
-  getChain,
-  getChannelInfoFromAsset,
-} from "@osmosis-labs/utils";
+import type { IbcTransferMethod } from "@osmosis-labs/types";
+import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
@@ -34,20 +31,18 @@ import {
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
-  BridgeTransferStatus,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
 import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
-import { getTransferStatus } from "./queries";
 import {
   AxelarChainIds_SourceChainMap,
   CosmosChainIds_AxelarChainIds,
+  providerName,
 } from "./types";
 
-const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
@@ -376,61 +371,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
     });
   }
 
-  async getTransferStatus(params: {
-    sendTxHash: string;
-  }): Promise<BridgeTransferStatus | undefined> {
-    const { sendTxHash } = params;
-
-    const transferStatus = await getTransferStatus(
-      sendTxHash,
-      this.axelarApiBaseUrl
-    );
-
-    // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
-    if (
-      !Array.isArray(transferStatus) ||
-      (Array.isArray(transferStatus) && transferStatus.length === 0)
-    ) {
-      return;
-    }
-
-    try {
-      const [data] = transferStatus;
-      const idWithoutSourceChain =
-        data.type && data.type === "wrap" && data.wrap
-          ? data.wrap.tx_hash
-          : data?.id.split("_")[0].toLowerCase();
-
-      // insufficient fee
-      if (data.send && data.send.insufficient_fee) {
-        return {
-          id: idWithoutSourceChain,
-          status: "failed",
-          reason: "insufficientFee",
-        };
-      }
-
-      if (data.status === "executed") {
-        return { id: idWithoutSourceChain, status: "success" };
-      }
-
-      if (
-        // any of all complete stages does not return success
-        data.send &&
-        data.link &&
-        data.confirm_deposit &&
-        data.ibc_send && // transfer is complete
-        (data.send.status !== "success" ||
-          data.confirm_deposit.status !== "success" ||
-          data.ibc_send.status !== "success")
-      ) {
-        return { id: idWithoutSourceChain, status: "failed" };
-      }
-    } catch {
-      return undefined;
-    }
-  }
-
   async estimateGasCost(
     params: GetBridgeQuoteParams
   ): Promise<BridgeCoin | undefined> {
@@ -613,12 +553,24 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
+      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+        ({ type }) => type === "ibc"
+      ) as IbcTransferMethod | undefined;
+
+      if (!ibcTransferMethod) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message: "Could not find IBC asset transfer info",
+          },
+        ]);
+      }
+
       const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
         {
           receiver: depositAddress,
           sender: fromAddress,
-          sourceChannel: getChannelInfoFromAsset(ibcAssetInfo.rawAsset)
-            .sourceChannelId,
+          sourceChannel: ibcTransferMethod.chain.channelId,
           sourcePort: "transfer",
           timeoutTimestamp: "0" as any,
           // @ts-ignore

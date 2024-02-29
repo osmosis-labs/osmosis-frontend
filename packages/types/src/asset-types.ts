@@ -3,193 +3,10 @@ import type {
   Currency as KeplrBaseCurrency,
 } from "@keplr-wallet/types";
 
-export interface ChainList {
-  zone: string;
-  chains: Chain[];
-}
-
-export interface Chain {
-  chain_name: string;
-  status: string;
-  network_type: string;
-  pretty_name: string;
-  chain_id: string;
-  description?: string;
-  bech32_prefix: string;
-  bech32_config: Bech32Config;
-  slip44: number;
-  alternative_slip44s?: number[];
-  fees: {
-    fee_tokens: FeeToken[];
-  };
-  staking: {
-    staking_tokens: StakingToken[];
-    lock_duration?: LockDuration;
-  };
-  apis: {
-    rpc: Api[];
-    rest: Api[];
-  };
-  explorers: Explorer[];
-  features: string[];
-}
-
-export interface ResponseAssetList {
-  chain_name: string;
-  assets: Omit<Asset, "chain_id">[];
-}
-
 export interface AssetList {
   chain_name: string;
   chain_id: string;
   assets: Asset[];
-}
-
-interface TraceCounterpartyChain {
-  chain_name: string;
-  base_denom: string;
-  contract?: string;
-}
-
-interface TestMintageTrace {
-  type: "test-mintage";
-  counterparty: TraceCounterpartyChain;
-  provider: string;
-}
-
-interface LiquidStakeTrace {
-  type: "liquid-stake";
-  counterparty: TraceCounterpartyChain;
-  provider: string;
-}
-interface AdditionalMintageTrace {
-  type: "additional-mintage";
-  counterparty: TraceCounterpartyChain;
-  provider: string;
-}
-
-interface SynthethicTrace {
-  type: "synthetic";
-  counterparty: TraceCounterpartyChain;
-  provider: string;
-}
-
-interface WrappedTrace {
-  type: "wrapped";
-  counterparty: TraceCounterpartyChain;
-  chain?: {
-    contract: string;
-  };
-  provider: string;
-}
-
-interface BridgeTrace {
-  type: "bridge";
-  counterparty: TraceCounterpartyChain;
-  provider: string;
-}
-
-interface TraceChain {
-  channel_id: string;
-  path: string;
-}
-
-export interface IBCTrace {
-  type: "ibc";
-  counterparty: TraceCounterpartyChain & {
-    channel_id: string;
-  };
-  chain: TraceChain;
-}
-
-export interface IbcCW20Trace {
-  type: "ibc-cw20";
-  counterparty: TraceCounterpartyChain & {
-    port: string;
-    channel_id: string;
-  };
-  chain: TraceChain & {
-    port: string;
-  };
-}
-
-export interface Asset {
-  denom_units: AssetDenomUnit[];
-  base: string;
-  name: string;
-  description?: string;
-  display: string;
-  symbol: string;
-  address?: string;
-  type_asset?: string;
-  traces: (
-    | IbcCW20Trace
-    | IBCTrace
-    | BridgeTrace
-    | WrappedTrace
-    | SynthethicTrace
-    | AdditionalMintageTrace
-    | LiquidStakeTrace
-    | TestMintageTrace
-  )[];
-  logo_URIs: LogoURIs;
-  relative_image_url: string;
-  coingecko_id?: string;
-  keywords?: string[];
-  origin_chain_name: string;
-  origin_chain_id: string;
-  price_info?: {
-    dest_coin_minimal_denom: string;
-    pool_id: string;
-  };
-}
-
-export interface AssetDenomUnit {
-  denom: string;
-  exponent: number;
-  aliases?: string[];
-}
-
-interface LogoURIs {
-  png?: string;
-  svg?: string;
-}
-
-interface Bech32Config {
-  bech32PrefixAccAddr: string;
-  bech32PrefixAccPub: string;
-  bech32PrefixValAddr: string;
-  bech32PrefixValPub: string;
-  bech32PrefixConsAddr: string;
-  bech32PrefixConsPub: string;
-}
-
-interface FeeToken {
-  denom: string;
-  fixed_min_gas_price?: number;
-  low_gas_price?: number;
-  average_gas_price?: number;
-  high_gas_price?: number;
-  gas_costs?: {
-    cosmos_send: number;
-    ibc_transfer: number;
-  };
-}
-
-interface StakingToken {
-  denom: string;
-}
-
-interface LockDuration {
-  time: string;
-}
-
-interface Api {
-  address: string;
-}
-
-interface Explorer {
-  tx_page: string;
 }
 
 interface GasPriceStep {
@@ -218,3 +35,155 @@ export type FeeCurrency = AppCurrency & {
 export type StakeCurrency = Currency & {
   base?: string;
 };
+
+export interface LogoURIs {
+  svg?: string;
+  png?: string;
+}
+
+export type IbcTransferMethod = {
+  name?: string;
+  type: "ibc";
+  /** Counterparty chain info.
+   *  `channelId` here is commonly referred to as "destination channel". */
+  counterparty: {
+    chainName: string;
+    chainId: string;
+    sourceDenom: string;
+    port: string;
+    channelId: string;
+  };
+  /** Osmosis chain. `channelId` here is commonly
+   *  referred to as "source channel". */
+  chain: {
+    port: string;
+    channelId: string;
+    path: string;
+  };
+};
+
+export type IntegratedBridgeTransferMethod = {
+  name: string;
+  type: "integrated_bridge";
+  counterparty: {
+    /** If asset is wrapped */
+    wrappedAssetId?: string;
+    unwrappedAssetId: string;
+    evmChainId: number;
+    sourceChainId: string;
+  }[];
+  wrappedAssetId?: string;
+  unwrappedAssetId?: string;
+};
+
+export type ExternalInterfaceBridgeTransferMethod = {
+  name: string;
+  type: "external_interface";
+  depositUrl?: string;
+  withdrawUrl?: string;
+};
+
+export interface CosmosCounterparty {
+  chainType: "cosmos";
+  chainId: string;
+  chainName: string;
+  sourceDenom: string;
+  symbol: string;
+  decimals: number;
+  logoURIs: LogoURIs;
+}
+
+export interface EVMCounterparty {
+  chainType: "evm";
+  chainName: string;
+  sourceDenom: string;
+  chainId: number;
+  address: string;
+  symbol: string;
+  decimals: number;
+  logoURIs: LogoURIs;
+}
+
+export interface NonCosmosCounterparty {
+  chainType: "non-cosmos";
+  chainName: string;
+  sourceDenom: string;
+  decimals: number;
+  symbol: string;
+  logoURIs: LogoURIs;
+}
+
+export type Counterparty =
+  | CosmosCounterparty
+  | EVMCounterparty
+  | NonCosmosCounterparty;
+
+export interface Price {
+  poolId: string;
+  denom: string;
+}
+
+export type Category = "stablecoin" | "defi" | "meme" | "liquid_staking";
+
+export interface Asset {
+  chainName: string;
+  /** Denom as represented on source/origin chain. */
+  sourceDenom: string;
+  /** Denom as represented on Osmosis chain. */
+  coinMinimalDenom: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  logoURIs: LogoURIs;
+  coingeckoId?: string;
+
+  // likely to be removed
+  /** @deprecated */
+  description?: string;
+  /** @deprecated */
+  twitterURL?: string;
+  /** @deprecated */
+  relatedAssets?: {
+    chainName: string;
+    sourceDenom: string;
+  }[];
+  /** @deprecated */
+  tooltipMessage?: string;
+  /** @deprecated */
+  sortWith?: {
+    chainName: string;
+    sourceDenom: string;
+  };
+
+  /** "Endorsed", as is currently defined. */
+  verified: boolean;
+  /** If true is preview only, not ready for production. */
+  preview: boolean;
+  /** Transfers are unstable. */
+  unstable: boolean;
+  /** Transfers should not be possible. */
+  disabled: boolean;
+
+  categories: Category[];
+  /** Data needed for calculating this token's price via Osmosis pools. */
+  price?: Price;
+  /** The supported methods for transferring this token.
+   *  Could be a router API, bespoke bridge, or IBC. */
+  transferMethods: (
+    | IbcTransferMethod
+    | IntegratedBridgeTransferMethod
+    | ExternalInterfaceBridgeTransferMethod
+  )[];
+  /** Token and chain info for the possible chains this token can originate from. */
+  counterparty: Counterparty[];
+  /** Example: `2024-01-24T10:58:00.000Z` */
+  listingDate?: string;
+
+  pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+
+  /** Add to asset at build time. */
+  relative_image_url: string;
+
+  /** Denom key of variant of asset this is grouped with. */
+  variantGroupKey?: string;
+}

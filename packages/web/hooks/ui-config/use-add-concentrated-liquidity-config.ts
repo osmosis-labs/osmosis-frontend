@@ -421,19 +421,19 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     // query returns prices with decimals for display
     const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const maxPrice7d = this._priceRangeInput[1].removeCurrencyDecimals(max);
     const priceDiff = maxPrice7d
       .sub(minPrice7d)
       .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
 
     return [
       roundPriceToNearestTick(
-        minPrice7d.sub(priceDiff),
+        minPrice7d.sub(priceDiff).abs(),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        maxPrice7d.add(priceDiff),
+        maxPrice7d.add(priceDiff).abs(),
         this.pool.tickSpacing,
         false
       ),
@@ -502,19 +502,19 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     // query returns prices with decimals for display
     const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const maxPrice1Mo = this._priceRangeInput[1].removeCurrencyDecimals(max);
     const priceDiff = maxPrice1Mo
       .sub(minPrice1Mo)
       .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
 
     return [
       roundPriceToNearestTick(
-        minPrice1Mo.sub(priceDiff),
+        minPrice1Mo.sub(priceDiff).abs(),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        maxPrice1Mo.add(priceDiff),
+        maxPrice1Mo.add(priceDiff).abs(),
         this.pool.tickSpacing,
         false
       ),
@@ -821,8 +821,8 @@ export class ObservableAddConcentratedLiquidityConfig {
           this.pool &&
           this._baseDepositAmountIn.sendCurrency &&
           this._quoteDepositAmountIn.sendCurrency &&
-          this._minHistoricalPrice &&
-          this._maxHistoricalPrice &&
+          this._minHistoricalPrice !== null &&
+          this._maxHistoricalPrice !== null &&
           !initialized
         ) {
           const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
