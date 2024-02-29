@@ -10,7 +10,6 @@ import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   calcCoinValue,
@@ -36,6 +35,7 @@ import {
   queryDelegatedClPositions,
   queryUndelegatingClPositions,
 } from "~/server/queries/osmosis/superfluid";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
 
 import { queryPositionPerformance } from "../../imperator";
@@ -173,7 +173,8 @@ function getUnbondingClPositions({ bech32Address }: { bech32Address: string }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryCLUnbondingPositions({ bech32Address }),
   });
 }
@@ -182,7 +183,8 @@ function getDelegatedClPositions({ bech32Address }: { bech32Address: string }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryDelegatedClPositions({ bech32Address }),
   });
 }
@@ -195,7 +197,8 @@ function getUndelegatingClPositions({
   return cachified({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryUndelegatingClPositions({ bech32Address }),
   });
 }

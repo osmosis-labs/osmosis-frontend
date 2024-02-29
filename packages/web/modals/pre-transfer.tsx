@@ -5,14 +5,15 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Info } from "~/components/alert";
+import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
-import { UNSTABLE_MSG } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { ObservableAssets } from "~/stores/assets/assets-store";
+import { theme } from "~/tailwind.config";
 
 /** MOBILE: Pre transfer to select whether to deposit/withdraw */
 export const PreTransferModal: FunctionComponent<
@@ -68,7 +69,22 @@ export const PreTransferModal: FunctionComponent<
             </span>
           )}
         </div>
-        {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
+
+        {isUnstable && (
+          <div className="flex flex-col gap-2">
+            <Icon
+              id="alert-triangle"
+              color={theme.colors.rust[500]}
+              className="w-8"
+            />
+            <Info
+              caption={t("unstableAssetsWarning.title")}
+              size="subtle"
+              message={t("unstableAssetsWarning.description")}
+              isMobile={isMobile}
+            />
+          </div>
+        )}
         <div className="flex place-content-between gap-3 py-2">
           {externalWithdrawUrl ? (
             <a
@@ -80,14 +96,10 @@ export const PreTransferModal: FunctionComponent<
                 }),
                 { "opacity-30": isUnstable }
               )}
-              href={isUnstable ? "" : externalWithdrawUrl}
+              href={externalWithdrawUrl}
               rel="noreferrer"
               target="_blank"
-              style={
-                isUnstable
-                  ? { pointerEvents: "none", cursor: "default" }
-                  : undefined
-              }
+              style={{ pointerEvents: "none", cursor: "default" }}
             >
               {t("assets.table.preTransfer.withdraw")}
               <Image
@@ -101,7 +113,6 @@ export const PreTransferModal: FunctionComponent<
             <Button
               className="h-10 w-full"
               mode="secondary"
-              disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
@@ -114,17 +125,12 @@ export const PreTransferModal: FunctionComponent<
                   className:
                     "h-10 w-full gap-2 border-wosmongton-300 bg-wosmongton-300",
                   mode: "primary",
-                }),
-                { "opacity-30": isUnstable }
+                })
               )}
-              href={isUnstable ? "" : externalDepositUrl}
+              href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
-              style={
-                isUnstable
-                  ? { pointerEvents: "none", cursor: "default" }
-                  : undefined
-              }
+              style={{ pointerEvents: "none", cursor: "default" }}
             >
               <span>{t("assets.table.preTransfer.deposit")}</span>
               <Image
@@ -136,11 +142,7 @@ export const PreTransferModal: FunctionComponent<
             </a>
           )}
           {!isEthAsset && !externalDepositUrl && (
-            <Button
-              className="h-10 w-full"
-              disabled={isUnstable}
-              onClick={onDeposit}
-            >
+            <Button className="h-10 w-full" onClick={onDeposit}>
               {t("assets.table.preTransfer.deposit")}
             </Button>
           )}

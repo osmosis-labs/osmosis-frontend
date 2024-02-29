@@ -821,8 +821,8 @@ export class ObservableAddConcentratedLiquidityConfig {
           this.pool &&
           this._baseDepositAmountIn.sendCurrency &&
           this._quoteDepositAmountIn.sendCurrency &&
-          this._minHistoricalPrice &&
-          this._maxHistoricalPrice &&
+          this._minHistoricalPrice !== null &&
+          this._maxHistoricalPrice !== null &&
           !initialized
         ) {
           const multiplicationQuoteOverBase = DecUtils.getTenExponentN(

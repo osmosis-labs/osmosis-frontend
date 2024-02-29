@@ -42,6 +42,7 @@ import {
   SelectAssetSourceModal,
   TransferAssetSelectModal,
 } from "~/modals";
+import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -519,6 +520,14 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     [transferConfig]
   );
 
+  const [withdrawOrDeposit, setWithdrawOrDeposit] = useState<
+    "withdraw" | "deposit"
+  >("withdraw");
+  const [showUnstableAssetWarning, setShowUnstableAssetWarning] =
+    useState(false);
+
+  const isUnstable = data?.isUnstable;
+
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
       <div
@@ -565,7 +574,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 <Button
                   size="sm"
                   className="whitespace-nowrap !px-10 !text-base"
-                  disabled={!isDepositSupported || Boolean(data?.isUnstable)}
+                  disabled={!isDepositSupported}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
@@ -574,21 +583,22 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               <Button
                 size="sm"
                 className="whitespace-nowrap !px-10 !text-base"
-                disabled={
-                  !tokenChain?.chainId ||
-                  !isDepositSupported ||
-                  Boolean(data?.isUnstable)
-                }
+                disabled={!tokenChain?.chainId || !isDepositSupported}
                 onClick={() => {
                   if (tokenChain?.chainId) {
                     if (!data?.isVerified && !shouldDisplayUnverifiedAssets) {
                       setConfirmUnverifiedTokenDenom(denom);
                     } else {
-                      onDeposit(
-                        tokenChain.chainId,
-                        denom,
-                        ibcBalance?.depositUrlOverride
-                      );
+                      if (isUnstable) {
+                        setShowUnstableAssetWarning(true);
+                        setWithdrawOrDeposit("deposit");
+                      } else {
+                        onDeposit(
+                          tokenChain.chainId,
+                          denom,
+                          ibcBalance?.depositUrlOverride
+                        );
+                      }
                     }
                   }
                 }}
@@ -604,7 +614,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                   mode="secondary"
                   disabled={
                     !isWithdrawSupported ||
-                    Boolean(data?.isUnstable) ||
                     !data?.amount?.toDec() ||
                     data.amount.toDec().isZero()
                   }
@@ -619,18 +628,22 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
-                  Boolean(data?.isUnstable) ||
                   !data?.amount?.toDec() ||
                   data.amount.toDec().isZero()
                 }
                 mode="secondary"
                 onClick={() => {
                   if (tokenChain?.chainId) {
-                    onWithdraw(
-                      tokenChain.chainId,
-                      denom,
-                      ibcBalance?.withdrawUrlOverride
-                    );
+                    if (isUnstable) {
+                      setShowUnstableAssetWarning(true);
+                      setWithdrawOrDeposit("withdraw");
+                    } else {
+                      onWithdraw(
+                        tokenChain.chainId,
+                        denom,
+                        ibcBalance?.withdrawUrlOverride
+                      );
+                    }
                   }
                 }}
               >
@@ -694,6 +707,25 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         ) : (
           <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
         ))}
+      <UnstableAssetWarning
+        isOpen={showUnstableAssetWarning}
+        onRequestClose={() => setShowUnstableAssetWarning(false)}
+        onContinue={() => {
+          if (!tokenChain?.chainId) return;
+
+          withdrawOrDeposit === "withdraw"
+            ? onWithdraw(
+                tokenChain.chainId,
+                denom,
+                ibcBalance?.withdrawUrlOverride
+              )
+            : onDeposit(
+                tokenChain.chainId,
+                denom,
+                ibcBalance?.depositUrlOverride
+              );
+        }}
+      />
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
         onRequestClose={onCloseFiatOnrampSelection}

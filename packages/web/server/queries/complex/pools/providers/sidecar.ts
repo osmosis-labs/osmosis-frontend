@@ -1,11 +1,12 @@
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import cachified from "cachified";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";
-import { RemoteCache } from "~/utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -14,7 +15,7 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new RemoteCache();
+const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
