@@ -640,7 +640,7 @@ const PoolCompositionCell: PoolCellComponent = ({
 
 const AprBreakdownCell: PoolCellComponent = ({
   row: {
-    original: { aprBreakdown },
+    original: { aprBreakdown, moderateRangeAprBreakdown },
   },
 }) =>
   (aprBreakdown && (
@@ -662,6 +662,7 @@ const AprBreakdownCell: PoolCellComponent = ({
         ) : (
           <Icon id="info" className="h-4 w-4" />
         )}
+        {moderateRangeAprBreakdown?.total?.maxDecimals(0).toString() ?? ""} asdf
         {aprBreakdown.total?.maxDecimals(0).toString() ?? ""}
       </p>
     </Tooltip>
