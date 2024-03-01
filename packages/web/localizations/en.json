@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "Session period",
       "resetPeriodTitle": "Reset period",
       "startButton": "Start 1-Click Trading",
+      "editSessionButton": "Save changes",
+      "endingSession": "Ending session",
       "spendLimitScreen": {
         "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
         "fixedAmount": "Fixed amount",
@@ -521,6 +523,9 @@
       "altText": "One Click Trading Graphic",
       "header": "Connect a wallet to continue",
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
+    },
+    "profile": {
+      "sessionExpired": "Session expired"
     }
   },
   "pool": {
@@ -639,7 +644,8 @@
     "balance": "Balance",
     "modalTitle": "Profile",
     "viewAllAssets": "View all assets",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "oneClickTrading": "1-Click Trading"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",

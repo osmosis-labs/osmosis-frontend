@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "세션 기간",
       "resetPeriodTitle": "재설정 기간",
       "startButton": "1-클릭 거래 시작",
+      "editSessionButton": "변경 사항을 저장하다",
+      "endingSession": "세션 종료",
       "spendLimitScreen": {
         "spendLimitDescription": "1-클릭 거래 세션 기간 내에 지출할 수 있는 최대 금액을 설정하세요.",
         "fixedAmount": "정액",
@@ -521,6 +523,9 @@
       "altText": "원클릭 거래 그래픽",
       "header": "계속하려면 지갑을 연결하세요",
       "description": "선택한 지갑에서 거래를 승인하면 1-클릭 거래 세션이 시작됩니다."
+    },
+    "profile": {
+      "sessionExpired": "세션이 만료되었습니다."
     }
   },
   "pool": {
@@ -639,7 +644,8 @@
     "balance": "잔액",
     "modalTitle": "프로필",
     "viewAllAssets": "모든 자산 보기",
-    "wallet": "지갑"
+    "wallet": "지갑",
+    "oneClickTrading": "1-클릭 거래"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",

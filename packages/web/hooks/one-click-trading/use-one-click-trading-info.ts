@@ -1,13 +1,13 @@
 import type { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAsync } from "react-use";
 
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 
-export const useOneClickTradingInfo = ({
+export const useOneClickTradingSession = ({
   onExpire,
 }: {
   onExpire?: (params: { oneClickTradingInfo: OneClickTradingInfo }) => void;
@@ -43,9 +43,31 @@ export const useOneClickTradingInfo = ({
     return () => clearTimeout(timeoutId);
   }, [isExpired, t, value?.info, onExpire]);
 
+  const getTimeRemaining = useCallback(() => {
+    const oneClickTradingInfo = value?.info;
+    if (!oneClickTradingInfo) return 0;
+    const sessionEndDate = dayjs.unix(
+      unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
+    );
+
+    return sessionEndDate.unix() - dayjs().unix();
+  }, [value?.info]);
+
+  const getTotalSessionTime = useCallback(() => {
+    const oneClickTradingInfo = value?.info;
+    if (!oneClickTradingInfo) return 0;
+    const sessionEndDate = dayjs.unix(
+      unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
+    );
+
+    return sessionEndDate.unix() - oneClickTradingInfo.sessionStartedAtUnix;
+  }, [value?.info]);
+
   return {
     oneClickTradingInfo: value?.info,
     isOneClickTradingEnabled: value?.isEnabled,
     isOneClickTradingExpired: isExpired,
+    getTimeRemaining,
+    getTotalSessionTime,
   };
 };

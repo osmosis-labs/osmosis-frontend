@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "会期",
       "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
+      "editSessionButton": "変更内容を保存",
+      "endingSession": "セッションの終了",
       "spendLimitScreen": {
         "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
         "fixedAmount": "定額",
@@ -521,6 +523,9 @@
       "altText": "ワンクリック取引グラフィック",
       "header": "続行するにはウォレットに接続してください",
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
+    },
+    "profile": {
+      "sessionExpired": "セッションの有効期限が切れ"
     }
   },
   "pool": {
@@ -639,7 +644,8 @@
     "balance": "バランス",
     "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
-    "wallet": "財布"
+    "wallet": "財布",
+    "oneClickTrading": "1クリック取引"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",

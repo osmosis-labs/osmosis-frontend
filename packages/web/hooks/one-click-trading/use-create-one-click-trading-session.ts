@@ -40,8 +40,8 @@ export class CreateOneClickSessionError extends Error {
 export const useCreateOneClickTradingSession = ({
   addAuthenticatorsQueryOptions,
 }: {
-  addAuthenticatorsQueryOptions: AddAuthenticatorQueryOptions;
-}) => {
+  addAuthenticatorsQueryOptions?: AddAuthenticatorQueryOptions;
+} = {}) => {
   const { accountStore } = useStore();
   const addAuthenticators = useAddOrRemoveAuthenticators({
     queryOptions: addAuthenticatorsQueryOptions,
@@ -181,13 +181,21 @@ export const useCreateOneClickTradingSession = ({
             accountStore.setOneClickTradingInfo({
               publicKey: toBase64(key.getPubKey().toBytes()),
               privateKey: toBase64(key.toBytes()),
-              allowed: allowedAmount,
               allowedMessages,
               resetPeriod,
               sessionPeriod,
               sessionStartedAtUnix: dayjs().unix(),
-              networkFeeLimit: transaction1CTParams.networkFeeLimit.toCoin(),
+              networkFeeLimit: {
+                ...transaction1CTParams.networkFeeLimit.currency,
+                amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
+              },
+              spendLimit: {
+                amount: allowedAmount,
+                decimals: spendLimitTokenDecimals,
+              },
               hasSeenExpiryToast: false,
+              humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
+              userOsmoAddress: walletRepo.current!.address!,
             });
 
             setDoNotShowFloatingBannerAgain(true);

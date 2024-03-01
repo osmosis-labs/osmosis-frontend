@@ -2,6 +2,7 @@ import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 import { createGlobalState, useMount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -9,8 +10,8 @@ import { Button } from "~/components/buttons";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import {
-  useOneClickTradingInfo,
   useOneClickTradingParams,
+  useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/one-click-trading/use-create-one-click-trading-session";
@@ -36,6 +37,7 @@ const OneClickTradingIntroModal = observer(() => {
   });
 
   const displayExpiredToast = useCallback(() => {
+    const toastId = "one-click-trading-expired";
     displayToast(
       {
         message: t("oneClickTrading.toast.oneClickTradingExpired"),
@@ -47,6 +49,7 @@ const OneClickTradingIntroModal = observer(() => {
               setIsOpen(true);
               setShow1CTEditParams(true);
               setShouldHideSettingsBackButton(true);
+              toast.dismiss(toastId);
             }}
           >
             {t("oneClickTrading.toast.enableOneClickTrading")}
@@ -55,8 +58,8 @@ const OneClickTradingIntroModal = observer(() => {
       },
       ToastType.ONE_CLICK_TRADING,
       {
-        toastId: "one-click-trading-expired", // Provide an id to prevent duplicates
-        autoClose: 50000,
+        toastId, // Provide an id to prevent duplicates
+        autoClose: false,
       }
     );
   }, [t, setIsOpen]);
@@ -83,13 +86,18 @@ const OneClickTradingIntroModal = observer(() => {
     const main = async () => {
       const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
       const isExpired = await accountStore.isOneClickTradingExpired();
-      if (!isExpired || oneClickTradingInfo?.hasSeenExpiryToast) return;
-      displayExpiredToast();
+      if (
+        !isExpired ||
+        !oneClickTradingInfo ||
+        oneClickTradingInfo?.hasSeenExpiryToast
+      )
+        return;
+      on1CTSessionExpire({ oneClickTradingInfo });
     };
     main();
   });
 
-  useOneClickTradingInfo({
+  useOneClickTradingSession({
     onExpire: on1CTSessionExpire,
   });
 
@@ -99,6 +107,7 @@ const OneClickTradingIntroModal = observer(() => {
     isLoading: isLoading1CTParams,
     spendLimitTokenDecimals,
     reset: reset1CTParams,
+    isError: isError1CTParams,
   } = useOneClickTradingParams();
 
   const onClose = () => {
@@ -121,13 +130,13 @@ const OneClickTradingIntroModal = observer(() => {
       >
         {show1CTEditParams ? (
           <OneClickTradingSettings
-            onClose={() => {
+            onGoBack={() => {
               setShow1CTEditParams(false);
             }}
             hideBackButton={shouldHideSettingsBackButton}
             setTransaction1CTParams={setTransaction1CTParams}
             transaction1CTParams={transaction1CTParams!}
-            isLoading={create1CTSessionMutation.isLoading}
+            isSendingTx={create1CTSessionMutation.isLoading}
             onStartTrading={() => {
               create1CTSessionMutation.onCreate1CTSession({
                 spendLimitTokenDecimals,
@@ -140,6 +149,7 @@ const OneClickTradingIntroModal = observer(() => {
           />
         ) : (
           <IntroducingOneClick
+            isDisabled={isError1CTParams}
             isLoading={isLoading1CTParams || create1CTSessionMutation.isLoading}
             onStartTrading={() => {
               reset1CTParams();

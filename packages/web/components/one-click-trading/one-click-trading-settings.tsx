@@ -5,11 +5,13 @@ import React, {
   Dispatch,
   FunctionComponent,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
+import { Spinner } from "~/components/loaders";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getResetPeriodTranslationKey,
@@ -24,7 +26,6 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useDisclosure, useTranslation } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { ModalBase } from "~/modals";
 import { formatPretty } from "~/utils/formatter";
 import { runIfFn } from "~/utils/function";
@@ -41,30 +42,40 @@ enum SettingsScreens {
 
 interface OneClickTradingSettingsProps {
   classes?: Partial<Record<Classes, string>>;
-  onClose: () => void;
-  transaction1CTParams: OneClickTradingTransactionParams;
+  onGoBack: () => void;
+  transaction1CTParams: OneClickTradingTransactionParams | undefined;
   setTransaction1CTParams: Dispatch<
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
   onStartTrading: () => void;
   isLoading?: boolean;
+  isSendingTx?: boolean;
   hideBackButton?: boolean;
+  hasExistingSession?: boolean;
 }
 
 const OneClickTradingSettings = ({
   classes,
-  onClose,
+  onGoBack,
   transaction1CTParams,
   setTransaction1CTParams: setTransaction1CTParamsProp,
   onStartTrading,
+  isSendingTx,
   isLoading,
   hideBackButton,
+  hasExistingSession,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [hasChanged, setHasChanged] = useState<
     Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
-  const initialTransaction1CTParams = useConst(transaction1CTParams);
+  const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
+    useState<OneClickTradingTransactionParams>();
+
+  useEffect(() => {
+    if (!transaction1CTParams) return;
+    setInitialTransaction1CTParams(transaction1CTParams);
+  }, [transaction1CTParams]);
 
   const {
     isOpen: isDiscardDialogOpen,
@@ -112,7 +123,8 @@ const OneClickTradingSettings = ({
     });
   };
 
-  const isDisabled = !transaction1CTParams.isOneClickEnabled || isLoading;
+  const isDisabled =
+    !transaction1CTParams?.isOneClickEnabled || isSendingTx || isLoading;
 
   return (
     <>
@@ -121,7 +133,7 @@ const OneClickTradingSettings = ({
         onCancel={onCloseDiscardDialog}
         onDiscard={() => {
           setTransaction1CTParams(initialTransaction1CTParams);
-          onClose();
+          onGoBack();
         }}
       />
       <ScreenManager defaultScreen={SettingsScreens.Main}>
@@ -138,7 +150,7 @@ const OneClickTradingSettings = ({
                       ) {
                         return onOpenDiscardDialog();
                       }
-                      onClose();
+                      onGoBack();
                     }}
                     className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
                     icon={<Icon id="chevron-left" width={16} height={16} />}
@@ -180,19 +192,32 @@ const OneClickTradingSettings = ({
                   <SettingRow
                     title={t("oneClickTrading.settings.enableTitle")}
                     content={
-                      <Switch
-                        checked={transaction1CTParams.isOneClickEnabled}
-                        onCheckedChange={(nextValue) => {
-                          setTransaction1CTParams((params) => {
-                            if (!params)
-                              throw new Error("1CT Params is undefined");
-                            return {
-                              ...params,
-                              isOneClickEnabled: nextValue,
-                            };
-                          });
-                        }}
-                      />
+                      <div className="flex items-center gap-3">
+                        {hasExistingSession && isSendingTx && (
+                          <>
+                            <p className="text-wosmongton-200">
+                              {t("oneClickTrading.settings.endingSession")}
+                            </p>
+                            <Spinner className="text-wosmongton-200" />
+                          </>
+                        )}
+                        <Switch
+                          disabled={hasExistingSession && isSendingTx}
+                          checked={
+                            transaction1CTParams?.isOneClickEnabled ?? false
+                          }
+                          onCheckedChange={(nextValue) => {
+                            setTransaction1CTParams((params) => {
+                              if (!params)
+                                throw new Error("1CT Params is undefined");
+                              return {
+                                ...params,
+                                isOneClickEnabled: nextValue,
+                              };
+                            });
+                          }}
+                        />
+                      </div>
                     }
                   />
                   <SettingRow
@@ -212,8 +237,8 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p>
-                          {transaction1CTParams.spendLimit.toString()}{" "}
-                          {transaction1CTParams.spendLimit.fiatCurrency.currency.toUpperCase()}
+                          {transaction1CTParams?.spendLimit.toString()}{" "}
+                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -242,7 +267,11 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p>
-                          {formatPretty(transaction1CTParams.networkFeeLimit)}
+                          {transaction1CTParams
+                            ? formatPretty(
+                                transaction1CTParams?.networkFeeLimit
+                              )
+                            : ""}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -271,11 +300,13 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p className="capitalize">
-                          {t(
-                            getSessionPeriodTranslationKey(
-                              transaction1CTParams.sessionPeriod.end
-                            )
-                          )}
+                          {transaction1CTParams
+                            ? t(
+                                getSessionPeriodTranslationKey(
+                                  transaction1CTParams.sessionPeriod.end
+                                )
+                              )
+                            : ""}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -304,11 +335,13 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p>
-                          {t(
-                            getResetPeriodTranslationKey(
-                              transaction1CTParams.resetPeriod
-                            )
-                          )}
+                          {transaction1CTParams
+                            ? t(
+                                getResetPeriodTranslationKey(
+                                  transaction1CTParams.resetPeriod
+                                )
+                              )
+                            : ""}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -322,18 +355,34 @@ const OneClickTradingSettings = ({
                   />
                 </div>
 
-                {transaction1CTParams.isOneClickEnabled && (
+                {hasExistingSession && !isSendingTx && (
                   <div className="px-8">
                     <Button
                       className="w-full"
                       onClick={onStartTrading}
-                      isLoading={isLoading}
-                      loadingText={t("oneClickTrading.settings.startButton")}
+                      isLoading={isSendingTx}
+                      loadingText={t(
+                        "oneClickTrading.settings.editSessionButton"
+                      )}
                     >
-                      {t("oneClickTrading.settings.startButton")}
+                      {t("oneClickTrading.settings.editSessionButton")}
                     </Button>
                   </div>
                 )}
+
+                {!hasExistingSession &&
+                  transaction1CTParams?.isOneClickEnabled && (
+                    <div className="px-8">
+                      <Button
+                        className="w-full"
+                        onClick={onStartTrading}
+                        isLoading={isSendingTx}
+                        loadingText={t("oneClickTrading.settings.startButton")}
+                      >
+                        {t("oneClickTrading.settings.startButton")}
+                      </Button>
+                    </div>
+                  )}
               </div>
             </Screen>
 
@@ -345,7 +394,7 @@ const OneClickTradingSettings = ({
                 )}
               >
                 <SpendLimitScreen
-                  transaction1CTParams={transaction1CTParams}
+                  transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
@@ -356,7 +405,7 @@ const OneClickTradingSettings = ({
                 className={classNames("flex flex-col gap-12", classes?.root)}
               >
                 <NetworkFeeLimitScreen
-                  transaction1CTParams={transaction1CTParams}
+                  transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
@@ -370,7 +419,7 @@ const OneClickTradingSettings = ({
                 )}
               >
                 <SessionPeriodScreen
-                  transaction1CTParams={transaction1CTParams}
+                  transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
@@ -384,7 +433,7 @@ const OneClickTradingSettings = ({
                 )}
               >
                 <ResetPeriodScreen
-                  transaction1CTParams={transaction1CTParams}
+                  transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>

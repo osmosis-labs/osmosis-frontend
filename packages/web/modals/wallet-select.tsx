@@ -910,7 +910,7 @@ const RightModalContent: FunctionComponent<
                 classes={{
                   root: "pt-1.5",
                 }}
-                onClose={() => {
+                onGoBack={() => {
                   setShow1CTEditParams(false);
                 }}
                 setTransaction1CTParams={setTransaction1CTParams}

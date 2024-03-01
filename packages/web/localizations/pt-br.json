@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "Período da sessão",
       "resetPeriodTitle": "Período de redefinição",
       "startButton": "Comece a negociação com 1 clique",
+      "editSessionButton": "Salvar alterações",
+      "endingSession": "Encerrando sessão",
       "spendLimitScreen": {
         "spendLimitDescription": "Defina o valor máximo que você pode gastar em um período de sessão de negociação com 1 clique.",
         "fixedAmount": "Quantia fixa",
@@ -521,6 +523,9 @@
       "altText": "Gráfico de negociação com um clique",
       "header": "Conecte uma carteira para continuar",
       "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
+    },
+    "profile": {
+      "sessionExpired": "Sessão expirada"
     }
   },
   "pool": {
@@ -639,7 +644,8 @@
     "balance": "Saldo",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos os ativos",
-    "wallet": "Carteira"
+    "wallet": "Carteira",
+    "oneClickTrading": "Negociação em 1 Clique"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",

@@ -12,7 +12,7 @@ import { getAuthenticators } from "~/server/queries/complex/authenticators";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
 
 export const oneClickTradingRouter = createTRPCRouter({
-  getDefaultParameters: publicProcedure.query(
+  getParameters: publicProcedure.query(
     async (): Promise<
       Pick<
         OneClickTradingTransactionParams,

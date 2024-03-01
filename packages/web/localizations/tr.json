@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "Oturum dönemi",
       "resetPeriodTitle": "Dönemi sıfırla",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
+      "editSessionButton": "Değişiklikleri Kaydet",
+      "endingSession": "Oturumu sonlandır",
       "spendLimitScreen": {
         "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
         "fixedAmount": "Sabit miktar",
@@ -521,6 +523,9 @@
       "altText": "Tek Tıklamayla Ticaret Grafiği",
       "header": "Devam etmek için bir cüzdan bağlayın",
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
+    },
+    "profile": {
+      "sessionExpired": "Oturum süresi doldu"
     }
   },
   "pool": {
@@ -639,7 +644,8 @@
     "balance": "denklemek",
     "modalTitle": "Profil",
     "viewAllAssets": "Tüm varlıkları görüntüle",
-    "wallet": "Cüzdan"
+    "wallet": "Cüzdan",
+    "oneClickTrading": "Tek Tıklamayla Ticaret"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
