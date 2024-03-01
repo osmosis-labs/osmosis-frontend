@@ -145,8 +145,13 @@ async function fetchAndProcessAllPools({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     async getFreshValue() {
-      const poolManagerParams = await queryPoolmanagerParams();
-      const numPools = await queryNumPools();
+      const poolManagerParamsPromise = queryPoolmanagerParams();
+      const numPoolsPromise = queryNumPools();
+
+      const [poolManagerParams, numPools] = await Promise.all([
+        poolManagerParamsPromise,
+        numPoolsPromise,
+      ]);
 
       // Fetch all pools from imperator, except cosmwasm pools for now
       const filteredPoolsResponse = await queryFilteredPools(
