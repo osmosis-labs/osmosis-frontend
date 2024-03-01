@@ -20,7 +20,6 @@ export type AvailableFlags =
   | "tfmRouter"
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
-  | "newPoolsTable"
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton"
   | "positionRoi";
@@ -45,7 +44,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   tfmRouter: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
-  newPoolsTable: true,
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
   positionRoi: true,

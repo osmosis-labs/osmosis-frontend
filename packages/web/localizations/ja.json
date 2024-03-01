@@ -282,13 +282,8 @@
       "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
-    "incentive": {
-      "mobileTitle": "インセンティブ",
-      "title": "インセンティブの種類"
-    },
     "MAX": "マックス",
     "pool": {
-      "mobileTitle": "プール",
       "title": "プールの種類"
     },
     "searchTokens": "検索",
@@ -312,9 +307,6 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
-      "internal": "社内インセンティブ",
-      "external": "外部からのインセンティブ",
-      "superfluid": "超流動体",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "検索プール",
       "sort": {
         "APRIncentivized": "4月",
         "fees": "料金（7D）",
@@ -874,11 +865,5 @@
     "totalValueInvested": "投資総額",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
   },
-  "disclaimer": "免責事項",
-  "unstableAssetsWarning": {
-    "title": "転送が不安定",
-    "description": "大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
-    "buttonContinue": "とにかく続けます",
-    "buttonCancel": "キャンセル"
-  }
+  "disclaimer": "免責事項"
 }

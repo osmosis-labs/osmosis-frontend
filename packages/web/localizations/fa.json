@@ -282,13 +282,8 @@
       "transakSubtitle": "پشتیبانی OSMO",
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
-    "incentive": {
-      "mobileTitle": "جایزه",
-      "title": "نوع جوایز"
-    },
     "MAX": "حداکثر",
     "pool": {
-      "mobileTitle": "استخر",
       "title": "استخرها"
     },
     "searchTokens": "جستجو",
@@ -312,9 +307,6 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
-      "internal": "مشوق های داخلی",
-      "external": "مشوق های خارجی",
-      "superfluid": "ابر سیال",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "جستجوی استخرها",
       "sort": {
         "APRIncentivized": "نرخ بازدهی",
         "fees": "کارمزد (7 روز)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "کل ارزش سرمایه گذاری شده",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
   },
-  "disclaimer": "سلب مسئولیت",
-  "unstableAssetsWarning": {
-    "title": "نقل و انتقالات ناپایدار",
-    "description": "ممکن است تاخیرهای قابل توجهی یا شکست معاملات را تجربه کنید. با مسئولیت خود ادامه دهید.",
-    "buttonContinue": "ادامه دادن به هر طریق",
-    "buttonCancel": "لغو کنید"
-  }
+  "disclaimer": "سلب مسئولیت"
 }

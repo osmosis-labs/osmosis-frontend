@@ -282,13 +282,8 @@
       "transakSubtitle": "Suporta OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Incentivo",
-      "title": "Tipos de incentivo"
-    },
     "MAX": "MÁX",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscina"
     },
     "searchTokens": "Procurar",
@@ -312,9 +307,6 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sem incentivos"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Pesquisar piscinas",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxas (7D)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "Valor total investido",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
-  "disclaimer": "Isenção de responsabilidade",
-  "unstableAssetsWarning": {
-    "title": "Transferências instáveis",
-    "description": "Você pode enfrentar atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
-    "buttonContinue": "Continue de qualquer maneira",
-    "buttonCancel": "Cancelar"
-  }
+  "disclaimer": "Isenção de responsabilidade"
 }

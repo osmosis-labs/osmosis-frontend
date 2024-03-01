@@ -282,13 +282,8 @@
       "transakSubtitle": "Obsługuje OSMO",
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Motywacja",
-      "title": "Typy motywacji"
-    },
     "MAX": "MAKSIMUM",
     "pool": {
-      "mobileTitle": "Basen",
       "title": "Typy basenów"
     },
     "searchTokens": "Szukaj",
@@ -312,9 +307,6 @@
       "weighted": "Ważone",
       "concentrated": "Skoncentrowana płynność",
       "transmuter": "Transmutator",
-      "internal": "Wewnętrzne zachęty",
-      "external": "Zewnętrzne zachęty",
-      "superfluid": "Superfluid",
       "noIncentives": "Brak zachęt"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Wyszukaj pulę",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Prowizje (7D)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "Całkowita zainwestowana wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
-  "disclaimer": "Zastrzeżenie",
-  "unstableAssetsWarning": {
-    "title": "Transfery niestabilne",
-    "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
-    "buttonContinue": "Kontynuować mimo to",
-    "buttonCancel": "Anulować"
-  }
+  "disclaimer": "Zastrzeżenie"
 }

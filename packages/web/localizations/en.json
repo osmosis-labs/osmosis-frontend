@@ -282,13 +282,8 @@
       "transakSubtitle": "Supports OSMO",
       "onrampMoneySubtitle": "Supports OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Incentive",
-      "title": "Incentive types"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Pool",
       "title": "Pool types"
     },
     "searchTokens": "Search",
@@ -312,9 +307,6 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
-      "internal": "Internal incentives",
-      "external": "External incentives",
-      "superfluid": "Superfluid",
       "noIncentives": "No incentives"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Search pools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "Total Value Invested",
     "lookBelow": "Look below and find best strategies for you"
   },
-  "disclaimer": "Disclaimer",
-  "unstableAssetsWarning": {
-    "title": "Transfers Unstable",
-    "description": "You may experience significant delays or transaction failure. Proceed at your own risk.",
-    "buttonContinue": "Continue Anyway",
-    "buttonCancel": "Cancel"
-  }
+  "disclaimer": "Disclaimer"
 }

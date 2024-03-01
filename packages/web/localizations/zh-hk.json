@@ -282,13 +282,8 @@
       "transakSubtitle": "支援OSMO",
       "onrampMoneySubtitle": "支援OSMO、USDC"
     },
-    "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
-    },
     "MAX": "全部",
     "pool": {
-      "mobileTitle": "流動性池",
       "title": "流動性池類型"
     },
     "searchTokens": "搜尋代幣",
@@ -312,9 +307,6 @@
       "weighted": "加權",
       "concentrated": "流動性集中",
       "transmuter": "轉換器",
-      "internal": "內部激勵",
-      "external": "外部激勵",
-      "superfluid": "超流體",
       "noIncentives": "無激勵"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜尋流動性池",
       "sort": {
         "APRIncentivized": "年利率(APR)",
         "fees": "交易費 (7日)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明",
-  "unstableAssetsWarning": {
-    "title": "傳輸不穩定",
-    "description": "您可能會遇到嚴重的延遲或交易失敗。繼續需要您自擔風險。",
-    "buttonContinue": "無論如何繼續",
-    "buttonCancel": "取消"
-  }
+  "disclaimer": "免責聲明"
 }

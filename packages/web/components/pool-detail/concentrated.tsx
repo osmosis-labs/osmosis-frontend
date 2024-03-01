@@ -20,11 +20,13 @@ import Spinner from "~/components/loaders/spinner";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
 import { api } from "~/utils/trpc";

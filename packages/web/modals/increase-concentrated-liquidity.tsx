@@ -15,14 +15,16 @@ import {
   useConnectWalletModalRedirect,
   useTranslation,
 } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import type {
   ClPositionDetails,
   UserPosition,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(

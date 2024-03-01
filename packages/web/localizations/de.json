@@ -282,13 +282,8 @@
       "transakSubtitle": "Unterstützt OSMO",
       "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Anreiz",
-      "title": "Anreizarten"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Schwimmbad",
       "title": "Pooltypen"
     },
     "searchTokens": "Suchen",
@@ -312,9 +307,6 @@
       "weighted": "Gewichtet",
       "concentrated": "Aufgeladen",
       "transmuter": "Transmuter",
-      "internal": "Interne Anreize",
-      "external": "Externe Anreize",
-      "superfluid": "Superflüssig",
       "noIncentives": "Keine Anreize"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Suchpools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Gebühren (7D)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
-  "disclaimer": "Haftungsausschluss",
-  "unstableAssetsWarning": {
-    "title": "Übertragungen instabil",
-    "description": "Es kann zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
-    "buttonContinue": "Mache trotzdem weiter",
-    "buttonCancel": "Stornieren"
-  }
+  "disclaimer": "Haftungsausschluss"
 }

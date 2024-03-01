@@ -282,13 +282,8 @@
       "transakSubtitle": "Acceptă OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Stimulent",
-      "title": "Tipuri de stimulente"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Piscină",
       "title": "Tipuri de piscine"
     },
     "searchTokens": "Cauta tokeni",
@@ -312,9 +307,6 @@
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
       "transmuter": "Transmutator",
-      "internal": "Incentive interne",
-      "external": "Incentive externe",
-      "superfluid": "Superfluid",
       "noIncentives": "Fără incentivi"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Cauta pool-uri",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxe (7z)",
@@ -874,11 +865,5 @@
     "totalValueInvested": "Valoarea totală investită",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
-  "disclaimer": "Disclaimer",
-  "unstableAssetsWarning": {
-    "title": "Transferuri instabile",
-    "description": "Este posibil să întâmpinați întârzieri semnificative sau eșec în tranzacție. Procedați pe propriul risc.",
-    "buttonContinue": "Continua oricum",
-    "buttonCancel": "Anulare"
-  }
+  "disclaimer": "Disclaimer"
 }
