@@ -103,6 +103,7 @@ export class RemoteCache implements CachifiedCache {
     }
 
     const value = await this.kvStore!.get(this.keyPrefix + key);
+    // Cache miss: `volume === null`
     if (!value || isNil(value) || typeof value !== "object") {
       return null;
     }
