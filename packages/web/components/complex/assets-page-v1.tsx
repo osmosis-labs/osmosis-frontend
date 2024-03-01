@@ -251,7 +251,6 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         />
       )}
       <AssetsOverview />
-
       <AssetsTableV1
         nativeBalances={nativeBalances}
         unverifiedNativeBalances={unverifiedNativeBalances}

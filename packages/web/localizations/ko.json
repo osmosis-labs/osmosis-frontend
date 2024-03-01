@@ -289,13 +289,8 @@
       "transakSubtitle": "OSMO를 지원합니다",
       "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
-    "incentive": {
-      "mobileTitle": "인센티브",
-      "title": "인센티브 유형"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "풀",
       "title": "풀 유형"
     },
     "searchTokens": "검색",
@@ -319,9 +314,6 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
-      "internal": "내부 인센티브",
-      "external": "외부 인센티브",
-      "superfluid": "슈퍼플루이드",
       "noIncentives": "인센티브 없음"
     }
   },
@@ -496,7 +488,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "풀 검색하기",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "수수료 (7D)",
@@ -832,9 +823,9 @@
     "osmosisUpdates": "오스모시스 업데이트!",
     "seeWhatsNew": "새로운 소식 보기"
   },
-  "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
-  "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
-  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요.",
+  "previewAssetsEnabled": "자산 미리보기가 활성화되었습니다.",
+  "previewAssetsDisabled": "자산 미리보기가 비활성화되었습니다.",
+  "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
     "position": "위치",

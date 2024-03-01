@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 
 import { getAsset, getAssets } from "../index";
@@ -29,7 +33,7 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("stLUNA");
     });
 
-    it("should not return unlisted assets", async () => {
+    it("should not return preview assets", async () => {
       const assets = await getAssets({
         search: { query: "PURSE" },
         assetList: AssetLists,

@@ -289,13 +289,8 @@
       "transakSubtitle": "支援OSMO",
       "onrampMoneySubtitle": "支援OSMO、USDC"
     },
-    "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
-    },
     "MAX": "全部",
     "pool": {
-      "mobileTitle": "流動性池",
       "title": "流動性池類型"
     },
     "searchTokens": "搜尋代幣",
@@ -319,9 +314,6 @@
       "weighted": "加權",
       "concentrated": "集中流動性",
       "transmuter": "轉換器",
-      "internal": "內部激勵",
-      "external": "外部激勵",
-      "superfluid": "超流體",
       "noIncentives": "無激勵"
     }
   },
@@ -496,7 +488,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜尋流動性池",
       "sort": {
         "APRIncentivized": "年利率(APR)",
         "fees": "交易費 (7日)",
@@ -832,9 +823,9 @@
     "osmosisUpdates": "滲透更新！",
     "seeWhatsNew": "看看有什麼新鮮事"
   },
-  "unlistedAssetsEnabled": "啟用非上市資產",
-  "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "previewAssetsEnabled": "啟用預覽資源",
+  "previewAssetsDisabled": "預覽資源已停用",
+  "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "earnPage": {
     "title": "賺",
     "position": "位置",

@@ -1,42 +1,44 @@
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
-import { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
-
-import { IS_TESTNET } from "~/config";
-import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
-import { SkipBridgeProvider } from "~/integrations/bridges/skip/skip-bridge-provider";
 import {
+  ITxStatusReceiver,
+  ITxStatusSource,
+  TxStatus,
+} from "@osmosis-labs/stores";
+
+import SkipApiClient from "~/integrations/bridges/skip/queries";
+import type {
+  BridgeProviderContext,
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
+import { providerName } from "./types";
+
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusSource implements ITxStatusSource {
-  readonly keyPrefix = SkipBridgeProvider.providerName.toLowerCase();
+  readonly keyPrefix = providerName;
 
   sourceDisplayName = "Skip Bridge";
 
   statusReceiverDelegate?: ITxStatusReceiver | undefined;
 
-  private skipProvider: SkipBridgeProvider;
+  private skipClient: SkipApiClient;
+
   private axelarScanBaseUrl:
     | "https://axelarscan.io"
     | "https://testnet.axelarscan.io";
 
-  constructor() {
-    this.skipProvider = new SkipBridgeProvider({
-      env: IS_TESTNET ? "testnet" : "mainnet",
-      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
-    });
+  constructor(env: BridgeProviderContext["env"]) {
+    this.skipClient = new SkipApiClient();
 
-    this.axelarScanBaseUrl = IS_TESTNET
-      ? "https://testnet.axelarscan.io"
-      : "https://axelarscan.io";
+    this.axelarScanBaseUrl =
+      env === "mainnet"
+        ? "https://axelarscan.io"
+        : "https://testnet.axelarscan.io";
   }
 
   trackTxStatus(serializedParams: string): void {
-    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
+    const { sendTxHash, fromChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
@@ -45,15 +47,37 @@ export class SkipTransferStatusSource implements ITxStatusSource {
     poll({
       fn: async () => {
         try {
-          return this.skipProvider.getTransferStatus({
-            sendTxHash,
-            fromChainId,
-            toChainId,
+          const txStatus = await this.skipClient.transactionStatus({
+            chainID: fromChainId.toString(),
+            txHash: sendTxHash,
           });
-        } catch (e) {
-          if (e instanceof BridgeTransferStatusError) {
-            throw new Error(e.errors.map((err) => err.message).join(", "));
+
+          let status: TxStatus = "pending";
+          if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
+            status = "success";
           }
+
+          if (txStatus.state === "STATE_COMPLETED_ERROR") {
+            status = "failed";
+          }
+
+          return {
+            id: sendTxHash,
+            status,
+          };
+        } catch (error: any) {
+          if ("message" in error) {
+            if (error.message.includes("not found")) {
+              await this.skipClient.trackTransaction({
+                chainID: fromChainId.toString(),
+                txHash: sendTxHash,
+              });
+
+              return undefined;
+            }
+          }
+
+          throw error;
         }
       },
       validate: (incomingStatus) => {
@@ -66,8 +90,10 @@ export class SkipTransferStatusSource implements ITxStatusSource {
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .then((s) => this.receiveConclusiveStatus(snapshotKey, s))
-      .catch((e) => console.error(`Polling Skip has failed`, e));
+      .catch((e) => console.error(`Polling Skip has failed`, e))
+      .then((s) => {
+        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+      });
   }
 
   makeExplorerUrl(serializedParams: string): string {

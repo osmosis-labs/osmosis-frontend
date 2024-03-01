@@ -289,13 +289,8 @@
       "transakSubtitle": "Suporta OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Incentivo",
-      "title": "Tipos de incentivo"
-    },
     "MAX": "MÁX",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscina"
     },
     "searchTokens": "Procurar",
@@ -319,9 +314,6 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sem incentivos"
     }
   },
@@ -496,7 +488,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Pesquisar piscinas",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxas (7D)",
@@ -832,9 +823,9 @@
     "osmosisUpdates": "Atualizações de osmose!",
     "seeWhatsNew": "Veja o que é novo"
   },
-  "unlistedAssetsEnabled": "Recursos não listados ativados",
-  "unlistedAssetsDisabled": "Recursos não listados desativados",
-  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Pré-visualizar recursos ativados",
+  "previewAssetsDisabled": "Visualização de recursos desativada",
+  "previewAssetsEnabledForSession": "Visualize os ativos habilitados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganhar",
     "position": "Posição",

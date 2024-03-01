@@ -6,7 +6,6 @@ import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SortMenu } from "~/components/control";
 import { SearchBox } from "~/components/input";
@@ -21,6 +20,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -712,8 +712,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       displayCell: (cell) =>
                         !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
                           <Button
-                            mode="text"
-                            className="whitespace-nowrap !p-0"
+                            variant="ghost"
+                            className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();

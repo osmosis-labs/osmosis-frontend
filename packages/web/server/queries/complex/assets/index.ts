@@ -5,8 +5,8 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -24,7 +24,7 @@ export type Asset = {
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
-  includeUnlisted: z.boolean().default(false).optional(),
+  includePreview: z.boolean().default(false).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
@@ -40,7 +40,6 @@ const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
-  ...params
 }: {
   assetList?: AssetList[];
   anyDenom: string;
@@ -48,8 +47,7 @@ export async function getAsset({
   const assets = await getAssets({
     assetList,
     findMinDenomOrSymbol: anyDenom,
-    includeUnlisted: true,
-    ...params,
+    includePreview: true,
   });
   const asset = assets[0];
   if (!asset) throw new Error(anyDenom + " not found in asset list");
@@ -108,8 +106,6 @@ export async function mapRawCoinToPretty(
         anyDenom: denom,
       });
 
-      if (!asset) return undefined;
-
       return new CoinPretty(asset, amount);
     })
   );
@@ -128,7 +124,7 @@ function filterAssetList(
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter((asset) => !asset.preview);
+    .filter((asset) => params.includePreview || !asset.preview);
 
   let assetListAssets = listedAssets.filter((asset) => {
     if (params.findMinDenomOrSymbol) {

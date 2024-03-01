@@ -12,7 +12,7 @@ const buttonVariants = cva(
           "bg-wosmongton-700 text-primary-foreground shadow hover:bg-wosmongton-700/90",
         destructive: "bg-rust-700 shadow-sm hover:bg-destructive/90",
         outline:
-          "border-wosmongton-400 border border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -20,7 +20,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-14 px-6 py-2 rounded-xl",
-        sm: "h-6 rounded-md px-3 text-xs",
+        sm: "h-6 rounded-md text-caption py-1 px-1.5",
         // lg: "h-14 rounded-xl px-8", // note - we don't use this size
         icon: "h-9 w-9",
       },

@@ -3,9 +3,9 @@ import { BondStatus } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryValidators } from "~/server/queries/cosmos";
 import { queryValidatorThumbnail } from "~/server/queries/keybase";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const validatorsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -13,10 +13,11 @@ export async function getValidators({ status }: { status: BondStatus }) {
   return cachified({
     cache: validatorsCache,
     key: "validators",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       return (await queryValidators({ status })).validators;
     },
-    ttl: 1000 * 60 * 5, // 5 minutes
   });
 }
 
@@ -29,6 +30,7 @@ export async function getValidatorInfo({
     cache: validatorsCache,
     key: `validator-${validatorBech32Address}`,
     ttl: 1000 * 10, // 10 seconds
+    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       let jailed = false;
       let inactive = false;

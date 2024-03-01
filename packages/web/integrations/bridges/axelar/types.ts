@@ -4,6 +4,8 @@ import type {
 } from "~/config/generated/chain-list";
 import { SourceChain } from "~/integrations/bridge-info";
 
+export const providerName = "Axelar" as const;
+
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export interface AxelarBridgeConfig {

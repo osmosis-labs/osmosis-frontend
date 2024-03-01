@@ -6,6 +6,7 @@ import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -14,9 +15,7 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new LRUCache<string, CacheEntry>({
-  max: 20,
-});
+const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
@@ -134,7 +133,7 @@ export function getPoolTypeFromChainPool(
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
-/** @throws if an asset is unlisted */
+/** @throws if an asset is not in asset list */
 export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {

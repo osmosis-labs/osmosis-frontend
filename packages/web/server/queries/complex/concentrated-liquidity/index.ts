@@ -10,7 +10,6 @@ import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   calcCoinValue,
@@ -28,14 +27,15 @@ import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   LiquidityPosition,
+  queryAccountPositions,
   queryCLPosition,
-  queryCLPositions,
   queryCLUnbondingPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
 import {
   queryDelegatedClPositions,
   queryUndelegatingClPositions,
 } from "~/server/queries/osmosis/superfluid";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
 
 import { queryPositionPerformance } from "../../imperator";
@@ -48,7 +48,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
 }: {
   userOsmoAddress: string;
 }): Promise<CoinPretty[]> {
-  const clPositions = await queryCLPositions({
+  const clPositions = await queryAccountPositions({
     bech32Address: userOsmoAddress,
   });
 
@@ -173,7 +173,8 @@ function getUnbondingClPositions({ bech32Address }: { bech32Address: string }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryCLUnbondingPositions({ bech32Address }),
   });
 }
@@ -182,7 +183,8 @@ function getDelegatedClPositions({ bech32Address }: { bech32Address: string }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryDelegatedClPositions({ bech32Address }),
   });
 }
@@ -195,7 +197,8 @@ function getUndelegatingClPositions({
   return cachified({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
-    ttl: 5 * 1000, // 5 seconds
+    ttl: 1000 * 5, // 5 seconds
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryUndelegatingClPositions({ bech32Address }),
   });
 }
@@ -215,7 +218,7 @@ export async function mapGetPositionDetails({
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
   const lockableDurationsPromise = getLockableDurations();
@@ -408,7 +411,7 @@ export async function mapGetPositionDetails({
           delegationLockId: delegatedSuperfluidPosition.lockId,
           equivalentStakedAmount:
             delegatedSuperfluidPosition.equivalentStakedAmount,
-          superfluidApr: superfluidApr!,
+          superfluidApr: superfluidApr ?? new RatePretty(0),
           humanizedStakeDuration: longestLockDuration.humanize(),
         };
       } else if (isSuperfluidUnstaking && undelegatingSuperfluidPosition) {
@@ -423,7 +426,7 @@ export async function mapGetPositionDetails({
           undelegationEndTime: undelegatingSuperfluidPosition.endTime,
           equivalentStakedAmount:
             undelegatingSuperfluidPosition.equivalentStakedAmount,
-          superfluidApr: superfluidApr!,
+          superfluidApr: superfluidApr ?? new RatePretty(0),
         };
       }
 
@@ -455,9 +458,11 @@ export async function mapGetPositionDetails({
   );
 }
 
-export type ClPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
+export type UserPosition = Awaited<
+  ReturnType<typeof mapGetUserPositions>
+>[number];
 
-export async function mapGetPositions({
+export async function mapGetUserPositions({
   positions: initialPositions,
   userOsmoAddress,
   forPoolId,
@@ -468,7 +473,7 @@ export async function mapGetPositions({
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
 
@@ -483,7 +488,7 @@ export async function mapGetPositions({
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
 
-  const eventualPositions = await Promise.all(
+  const userPositions = await Promise.all(
     positions
       .filter((position) => {
         if (Boolean(forPoolId) && position.position.pool_id !== forPoolId) {
@@ -529,6 +534,7 @@ export async function mapGetPositions({
         return {
           id: position.position_id,
           poolId: position.pool_id,
+          position: position_,
           currentCoins: [baseCoin, quoteCoin],
           currentValue,
           isFullRange,
@@ -539,7 +545,7 @@ export async function mapGetPositions({
       })
   );
 
-  return eventualPositions.filter((p): p is NonNullable<typeof p> => !!p);
+  return userPositions.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 export type PositionHistoricalPerformance = Awaited<
@@ -573,9 +579,9 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
-      aggregateCoinsByDenom
-    ),
+    mapRawCoinToPretty(performance.principal?.assets ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
     mapRawCoinToPretty([position.asset0, position.asset1]),
     mapRawCoinToPretty(position.claimable_incentives).then(
       aggregateCoinsByDenom
@@ -583,12 +589,12 @@ export async function getPositionHistoricalPerformance({
     mapRawCoinToPretty(position.claimable_spread_rewards).then(
       aggregateCoinsByDenom
     ),
-    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
+    mapRawCoinToPretty(performance?.total_incentives_rewards ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
+    mapRawCoinToPretty(performance?.total_spread_rewards ?? [])
+      .then(aggregateCoinsByDenom)
+      .catch(() => []),
   ]);
 
   if (currentCoins.length !== 2)

@@ -289,13 +289,8 @@
       "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
-    "incentive": {
-      "mobileTitle": "インセンティブ",
-      "title": "インセンティブの種類"
-    },
     "MAX": "マックス",
     "pool": {
-      "mobileTitle": "プール",
       "title": "プールの種類"
     },
     "searchTokens": "検索",
@@ -319,9 +314,6 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
-      "internal": "社内インセンティブ",
-      "external": "外部からのインセンティブ",
-      "superfluid": "超流動体",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -496,7 +488,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "検索プール",
       "sort": {
         "APRIncentivized": "4月",
         "fees": "料金（7D）",
@@ -832,9 +823,9 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "unlistedAssetsEnabled": "非公開アセットの有効化",
-  "unlistedAssetsDisabled": "非公開アセットの無効化",
-  "unlistedAssetsEnabledForSession": "このセッションでは非リストのアセットが有効になりました。無効にするには、新しいタブを開くか、「show_unlisted_assets=false」を追加します。",
+  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
+  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "position": "位置",
