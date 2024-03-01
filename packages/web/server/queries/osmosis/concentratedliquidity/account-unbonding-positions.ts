@@ -25,7 +25,7 @@ interface AddressUnbondingPositionsResponse {
   positions_with_period_lock: PositionWithPeriodLock[];
 }
 
-export const queryCLUnbondingPositions = createNodeQuery<
+export const queryAccountUnbondingPositions = createNodeQuery<
   AddressUnbondingPositionsResponse,
   {
     bech32Address: string;

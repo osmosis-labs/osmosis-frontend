@@ -28,12 +28,12 @@ import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
-  queryCLPosition,
-  queryCLUnbondingPositions,
+  queryAccountUnbondingPositions,
+  queryPositionById,
 } from "~/server/queries/osmosis/concentratedliquidity";
 import {
-  queryDelegatedClPositions,
-  queryUndelegatingClPositions,
+  queryAccountDelegatedPositions,
+  queryAccountUndelegatingPositions,
 } from "~/server/queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
@@ -148,7 +148,7 @@ export function getPriceFromSqrtPrice({
   return price;
 }
 
-export function getClTickPrice({
+export function getTickPrice({
   tick,
   baseCoin,
   quoteCoin,
@@ -169,27 +169,35 @@ const concentratedLiquidityCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-function getUnbondingClPositions({ bech32Address }: { bech32Address: string }) {
+function getUserUnbondingPositions({
+  bech32Address,
+}: {
+  bech32Address: string;
+}) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
     staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
-    getFreshValue: () => queryCLUnbondingPositions({ bech32Address }),
+    getFreshValue: () => queryAccountUnbondingPositions({ bech32Address }),
   });
 }
 
-function getDelegatedClPositions({ bech32Address }: { bech32Address: string }) {
+function getUserDelegatedPositions({
+  bech32Address,
+}: {
+  bech32Address: string;
+}) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
     staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
-    getFreshValue: () => queryDelegatedClPositions({ bech32Address }),
+    getFreshValue: () => queryAccountDelegatedPositions({ bech32Address }),
   });
 }
 
-function getUndelegatingClPositions({
+function getUserUndelegatingPositions({
   bech32Address,
 }: {
   bech32Address: string;
@@ -199,17 +207,17 @@ function getUndelegatingClPositions({
     key: `undelegating-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
     staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
-    getFreshValue: () => queryUndelegatingClPositions({ bech32Address }),
+    getFreshValue: () => queryAccountUndelegatingPositions({ bech32Address }),
   });
 }
 
-export type ClPositionDetails = Awaited<
-  ReturnType<typeof mapGetPositionDetails>
+export type UserPositionDetails = Awaited<
+  ReturnType<typeof mapGetUserPositionDetails>
 >[number];
 
 /** Appends user and position details to a given set of positions.
  *  If positions are not provided, they will be fetched with the given user address. */
-export async function mapGetPositionDetails({
+export async function mapGetUserPositionDetails({
   positions: initialPositions,
   userOsmoAddress,
 }: {
@@ -222,13 +230,13 @@ export async function mapGetPositionDetails({
         ({ positions }) => positions
       );
   const lockableDurationsPromise = getLockableDurations();
-  const userUnbondingPositionsPromise = getUnbondingClPositions({
+  const userUnbondingPositionsPromise = getUserUnbondingPositions({
     bech32Address: userOsmoAddress,
   });
-  const delegatedPositionsPromise = getDelegatedClPositions({
+  const delegatedPositionsPromise = getUserDelegatedPositions({
     bech32Address: userOsmoAddress,
   });
-  const undelegatingPositionsPromise = getUndelegatingClPositions({
+  const undelegatingPositionsPromise = getUserUndelegatingPositions({
     bech32Address: userOsmoAddress,
   });
   const stakeCurrencyPromise = getAsset({
@@ -278,12 +286,12 @@ export async function mapGetPositionDetails({
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
       const priceRangePromise = Promise.all([
-        getClTickPrice({
+        getTickPrice({
           tick: lowerTick,
           baseCoin,
           quoteCoin,
         }),
-        getClTickPrice({
+        getTickPrice({
           tick: upperTick,
           baseCoin,
           quoteCoin,
@@ -516,12 +524,12 @@ export async function mapGetUserPositions({
         const lowerTick = new Int(position.lower_tick);
         const upperTick = new Int(position.upper_tick);
         const priceRange = await Promise.all([
-          getClTickPrice({
+          getTickPrice({
             tick: lowerTick,
             baseCoin,
             quoteCoin,
           }),
-          getClTickPrice({
+          getTickPrice({
             tick: upperTick,
             baseCoin,
             quoteCoin,
@@ -559,7 +567,7 @@ export async function getPositionHistoricalPerformance({
   positionId: string;
 }) {
   const [{ position }, performance] = await Promise.all([
-    queryCLPosition({ id: positionId }),
+    queryPositionById({ id: positionId }),
     queryPositionPerformance({
       positionId,
     }),

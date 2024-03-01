@@ -31,9 +31,9 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import type {
-  ClPositionDetails,
   PositionHistoricalPerformance,
   UserPosition,
+  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -51,7 +51,7 @@ const TokenPairHistoricalChart = dynamic(
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
   position: UserPosition;
-  positionDetails: ClPositionDetails | undefined;
+  positionDetails: UserPositionDetails | undefined;
   positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
 }> = observer(

@@ -15,7 +15,7 @@ type AccountUndelegatingClPositionsResponse = {
   })[];
 };
 
-export const queryUndelegatingClPositions = createNodeQuery<
+export const queryAccountUndelegatingPositions = createNodeQuery<
   AccountUndelegatingClPositionsResponse,
   { bech32Address: string }
 >({
