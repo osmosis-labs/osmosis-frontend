@@ -106,8 +106,6 @@ export async function mapRawCoinToPretty(
         anyDenom: denom,
       });
 
-      if (!asset) return undefined;
-
       return new CoinPretty(asset, amount);
     })
   );

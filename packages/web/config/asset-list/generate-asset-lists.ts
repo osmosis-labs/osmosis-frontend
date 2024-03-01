@@ -58,10 +58,10 @@ function getFilePath({
   // TEMPORARY
   // use legacy chain list
   if (fileType === "chainlist") {
-    return `/${chainId}/${chainId}.${fileType}.json`;
+    return `${chainId}/${chainId}.${fileType}.json`;
   }
 
-  return `/${chainId}/generated/frontend/${fileType}.json`;
+  return `${chainId}/generated/frontend/${fileType}.json`;
 }
 
 async function generateChainListFile({

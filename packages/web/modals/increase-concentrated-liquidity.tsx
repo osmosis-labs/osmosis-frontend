@@ -21,8 +21,8 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import type {
-  ClPosition,
   ClPositionDetails,
+  UserPosition,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -39,7 +39,7 @@ const TokenPairHistoricalChart = dynamic(
 export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: ClPosition;
+    position: UserPosition;
     status: ClPositionDetails["status"];
   } & ModalBaseProps
 > = observer((props) => {
@@ -51,7 +51,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = Boolean(account?.txTypeInProgress);
 
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+  const chartConfig = useHistoricalAndLiquidityData(poolId);
   const {
     xRange,
     yRange,
@@ -323,7 +323,7 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
-  position: ClPosition;
+  position: UserPosition;
 }> = observer(({ chartConfig, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     chartConfig;
