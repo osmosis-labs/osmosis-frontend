@@ -282,13 +282,8 @@
       "transakSubtitle": "OSMO ને સપોર્ટ કરે છે",
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે"
     },
-    "incentive": {
-      "mobileTitle": "પ્રોત્સાહન",
-      "title": "પ્રોત્સાહન પ્રકારો"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "પૂલ",
       "title": "પૂલ પ્રકારો"
     },
     "searchTokens": "શોધો",
@@ -312,9 +307,6 @@
       "weighted": "ભારિત",
       "concentrated": "સુપરચાર્જ્ડ",
       "transmuter": "ટ્રાન્સમ્યુટર",
-      "internal": "આંતરિક પ્રોત્સાહનો",
-      "external": "બાહ્ય પ્રોત્સાહનો",
-      "superfluid": "અતિપ્રવાહી",
       "noIncentives": "કોઈ પ્રોત્સાહન નથી"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "પૂલ શોધો",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "ફી (7D)",

@@ -282,13 +282,8 @@
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
-    "incentive": {
-      "mobileTitle": "Incentivo",
-      "title": "Tipos de incentivos"
-    },
     "MAX": "Máximo",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscinas"
     },
     "searchTokens": "Buscar",
@@ -312,9 +307,6 @@
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
       "transmuter": "transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sin incentivos"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Buscar piscinas",
       "sort": {
         "APRIncentivized": "TPA",
         "fees": "Tarifas (7d)",

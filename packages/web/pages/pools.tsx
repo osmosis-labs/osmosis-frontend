@@ -7,8 +7,7 @@ import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
-import { AllPoolsTable as AllPoolsTableV1 } from "~/components/complex/all-pools-table-v1";
-import { AllPoolsTable as AllPoolsTableV2 } from "~/components/complex/all-pools-table-v2";
+import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { PoolsOverview } from "~/components/overview/pools";
@@ -280,17 +279,10 @@ const Pools: NextPage = observer(function () {
       </section>
 
       <section>
-        {featureFlags.newPoolsTable ? (
-          <AllPoolsTableV2
-            topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
-            {...quickActionProps}
-          />
-        ) : featureFlags._isInitialized ? (
-          <AllPoolsTableV1
-            topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
-            {...quickActionProps}
-          />
-        ) : null}
+        <AllPoolsTable
+          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
+          {...quickActionProps}
+        />
       </section>
     </main>
   );

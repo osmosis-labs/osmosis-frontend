@@ -22,7 +22,10 @@ import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
@@ -33,7 +36,6 @@ import type {
   PositionHistoricalPerformance,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 

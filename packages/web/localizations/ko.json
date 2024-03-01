@@ -282,13 +282,8 @@
       "transakSubtitle": "OSMO를 지원합니다",
       "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
-    "incentive": {
-      "mobileTitle": "인센티브",
-      "title": "인센티브 유형"
-    },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "풀",
       "title": "풀 유형"
     },
     "searchTokens": "검색",
@@ -312,9 +307,6 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
-      "internal": "내부 인센티브",
-      "external": "외부 인센티브",
-      "superfluid": "슈퍼플루이드",
       "noIncentives": "인센티브 없음"
     }
   },
@@ -489,7 +481,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "풀 검색하기",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "수수료 (7D)",
