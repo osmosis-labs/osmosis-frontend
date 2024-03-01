@@ -229,8 +229,8 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
     cache: pricesCache,
-    ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 10, // 10 seconds
+    ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+    staleWhileRevalidate: 1000 * 60, // 1 minute
     getFreshValue: async () => {
       const assetListAsset = getAssetFromAssetList({
         sourceDenom: asset.sourceDenom,
