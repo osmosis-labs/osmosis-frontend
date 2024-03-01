@@ -282,6 +282,9 @@
       "transakSubtitle": "پشتیبانی OSMO",
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
+    "incentive": {
+      "title": "انواع مشوق"
+    },
     "MAX": "حداکثر",
     "pool": {
       "title": "استخرها"

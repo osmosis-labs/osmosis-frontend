@@ -282,6 +282,9 @@
       "transakSubtitle": "Unterstützt OSMO",
       "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
     },
+    "incentive": {
+      "title": "Anreizarten"
+    },
     "MAX": "MAX",
     "pool": {
       "title": "Pooltypen"

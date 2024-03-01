@@ -282,6 +282,9 @@
       "transakSubtitle": "Prend en charge OSMO",
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
+    "incentive": {
+      "title": "Types d'incitations"
+    },
     "MAX": "MAX",
     "pool": {
       "title": "Types de piscines"
