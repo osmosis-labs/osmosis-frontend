@@ -282,6 +282,9 @@
       "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
+    "incentive": {
+      "title": "インセンティブの種類"
+    },
     "MAX": "マックス",
     "pool": {
       "title": "プールの種類"

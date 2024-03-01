@@ -282,6 +282,9 @@
       "transakSubtitle": "Поддерживает ОСМО",
       "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
     },
+    "incentive": {
+      "title": "Типы стимулов"
+    },
     "MAX": "МАКС",
     "pool": {
       "title": "Типы бассейнов"

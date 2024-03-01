@@ -282,6 +282,9 @@
       "transakSubtitle": "OSMO를 지원합니다",
       "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
+    "incentive": {
+      "title": "인센티브 유형"
+    },
     "MAX": "MAX",
     "pool": {
       "title": "풀 유형"

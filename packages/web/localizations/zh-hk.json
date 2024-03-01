@@ -282,6 +282,9 @@
       "transakSubtitle": "支援OSMO",
       "onrampMoneySubtitle": "支援OSMO、USDC"
     },
+    "incentive": {
+      "title": "激勵類型"
+    },
     "MAX": "全部",
     "pool": {
       "title": "流動性池類型"
