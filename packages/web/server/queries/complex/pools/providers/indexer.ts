@@ -35,11 +35,15 @@ import { TransmuterPoolCodeIds } from "../env";
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-/** Get pools from imperator that are listed in asset list. */
-export async function getPoolsFromImperator(): Promise<Pool[]> {
+/** Get pools from indexer that are listed in asset list. */
+export async function getPoolsFromIndexer({
+  poolIds,
+}: {
+  poolIds?: string[];
+} = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: "imperator-pools",
+    key: poolIds ? `indexer-pools-${poolIds.join(",")}` : "indexer-pools",
     ttl: 5_000, // 5 seconds
     staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
@@ -53,7 +57,8 @@ export async function getPoolsFromImperator(): Promise<Pool[]> {
         { offset: 0, limit: Number(numPools.num_pools) }
       );
       return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
-        (pool): pool is Pool => !!pool
+        (pool): pool is Pool =>
+          !!pool && (poolIds ? poolIds.includes(pool.id) : true)
       );
     },
   });

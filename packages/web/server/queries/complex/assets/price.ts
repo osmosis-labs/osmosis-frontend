@@ -11,7 +11,7 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 import { DEFAULT_LRU_OPTIONS, RemoteCache } from "~/utils/cache";
 
 import { EdgeDataLoader } from "../../base-utils";

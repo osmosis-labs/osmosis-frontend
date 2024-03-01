@@ -3,7 +3,7 @@
  */
 
 import { getAsset } from "../../../assets";
-import { makePoolFromImperatorPool } from "../imperator";
+import { makePoolFromImperatorPool } from "../indexer";
 
 export const mockAsset = {
   coinDenom: "mockCoinDenom",

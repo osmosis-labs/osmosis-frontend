@@ -24,7 +24,7 @@ import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryNumPools } from "../../osmosis";
-import { queryPaginatedPools } from "./providers/imperator";
+import { queryPaginatedPools } from "./providers/indexer";
 
 /**
  * This function routes a given token to a specified output token denomination.
