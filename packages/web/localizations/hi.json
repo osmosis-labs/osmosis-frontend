@@ -282,6 +282,9 @@
       "transakSubtitle": "OSMO का समर्थन करता है",
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है"
     },
+    "incentive": {
+      "title": "प्रोत्साहन के प्रकार"
+    },
     "MAX": "अधिकतम",
     "pool": {
       "title": "पूल के प्रकार"

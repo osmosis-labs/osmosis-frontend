@@ -282,6 +282,9 @@
       "transakSubtitle": "Obsługuje OSMO",
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
+    "incentive": {
+      "title": "Rodzaje zachęt"
+    },
     "MAX": "MAKSIMUM",
     "pool": {
       "title": "Typy basenów"
