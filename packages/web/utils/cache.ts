@@ -103,11 +103,12 @@ export class RemoteCache implements CachifiedCache {
     }
 
     const value = await this.kvStore!.get(this.keyPrefix + key);
-    if (isNil(value) || typeof value !== "string") {
+    if (!value || isNil(value) || typeof value !== "object") {
       return null;
     }
-    // Note that parse can potentially throw an error here and the expectation is that the user of the adapter catches it
-    return superjson.parse(value) as CacheEntry<T>;
+
+    // Vercel KV provides value as a JSON-serialized JS object
+    return superjson.parse(JSON.stringify(value)) as CacheEntry<T>;
   }
 
   async set<T>(key: string, value: CacheEntry<T>) {
