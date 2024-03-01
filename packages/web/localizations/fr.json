@@ -874,11 +874,5 @@
     "totalValueInvested": "Valeur totale investie",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
-  "disclaimer": "Clause de non-responsabilité",
-  "unstableAssetsWarning": {
-    "title": "Transferts instables",
-    "description": "Vous pourriez rencontrer des retards importants ou un échec de transaction. Procédez à vos propres risques.",
-    "buttonContinue": "Continuer quand même",
-    "buttonCancel": "Annuler"
-  }
+  "disclaimer": "Clause de non-responsabilité"
 }

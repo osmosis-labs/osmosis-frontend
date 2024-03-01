@@ -874,11 +874,5 @@
     "totalValueInvested": "Całkowita zainwestowana wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
-  "disclaimer": "Zastrzeżenie",
-  "unstableAssetsWarning": {
-    "title": "Transfery niestabilne",
-    "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
-    "buttonContinue": "Kontynuować mimo to",
-    "buttonCancel": "Anulować"
-  }
+  "disclaimer": "Zastrzeżenie"
 }
