@@ -39,7 +39,9 @@ export interface SignatureVerificationAuthenticator {
 export type NestedAuthenticator =
   | Omit<SignatureVerificationAuthenticator, "id">
   | Omit<CosmwasmAuthenticatorV1, "id">
-  | Omit<MessageFilterAuthenticator, "id">;
+  | Omit<MessageFilterAuthenticator, "id">
+  | Omit<AnyOfAuthenticator, "id">
+  | Omit<AllOfAuthenticator, "id">;
 
 export interface AnyOfAuthenticator {
   id: string;

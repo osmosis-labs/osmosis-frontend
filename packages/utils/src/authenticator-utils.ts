@@ -124,6 +124,26 @@ export function parseNestedAuthenticator({
       };
     }
 
+    if (
+      rawNestedAuthenticator.authenticator_type === "AnyOfAuthenticator" ||
+      rawNestedAuthenticator.authenticator_type === "AllOfAuthenticator"
+    ) {
+      const subAuthenticators: RawNestedAuthenticator[] = JSON.parse(
+        Buffer.from(rawNestedAuthenticator.data, "base64").toString("utf-8")
+      );
+
+      return {
+        type: rawNestedAuthenticator.authenticator_type,
+        subAuthenticators: subAuthenticators.map(
+          (subAuthenticator: RawNestedAuthenticator) => {
+            return parseNestedAuthenticator({
+              authenticator: subAuthenticator,
+            });
+          }
+        ),
+      };
+    }
+
     throw new Error(
       `Unknown nested authenticator type: ${rawNestedAuthenticator.authenticator_type}`
     );
