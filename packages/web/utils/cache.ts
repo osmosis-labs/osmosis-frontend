@@ -54,7 +54,7 @@ export class RemoteCache implements CachifiedCache {
   get keyPrefix() {
     return `${process.env.VERCEL_GIT_COMMIT_SHA ?? "localdev"}-${
       ChainList[0].chain_id
-    }-${process.env.VERCEL_ENV ?? process.env.NODE_ENV}/`;
+    }-${process.env.VERCEL_ENV ?? process.env.NODE_ENV}--`;
   }
 
   constructor() {
@@ -138,6 +138,8 @@ export class RemoteCache implements CachifiedCache {
       );
       return e;
     });
+
+    console.log("set", this.keyPrefix + key);
   }
 
   async delete(key: string) {
