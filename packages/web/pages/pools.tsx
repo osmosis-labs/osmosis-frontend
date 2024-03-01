@@ -316,6 +316,13 @@ export const MyPoolsSection = observer(() => {
       },
       {
         enabled: Boolean(account?.address),
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
       }
     );
 
