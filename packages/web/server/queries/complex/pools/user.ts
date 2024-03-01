@@ -86,13 +86,11 @@ export async function getUserPools(bech32Address: string) {
     }
   }
 
-  const eventualPools = (
-    await timeout(
-      () => getPools(),
-      10_000, // 10 seconds
-      "getPools"
-    )()
-  ).filter((pool) => userPoolIdsSet.has(pool.id));
+  const eventualPools = await timeout(
+    () => getPools({ poolIds: Array.from(userPoolIdsSet) }),
+    10_000, // 10 seconds
+    "getPools"
+  )();
 
   return await Promise.all(
     eventualPools.map(async (pool) => {
