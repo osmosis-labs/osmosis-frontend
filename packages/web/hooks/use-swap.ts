@@ -125,25 +125,25 @@ export function useSwap({
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
-      let error = quoteError;
+    let error = quoteError;
 
-      // only show spot price error if there's no quote
-      if (quote && !quote.amount.toDec().isPositive() && !error)
-        error = spotPriceQuoteError;
+    // only show spot price error if there's no quote
+    if (quote && !quote.amount.toDec().isPositive() && !error)
+      error = spotPriceQuoteError;
 
-      const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
-      if (errorFromTrpc) return errorFromTrpc;
+    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+    if (errorFromTrpc) return errorFromTrpc;
 
-      // prioritize router errors over user input errors
-      if (!inAmountInput.isEmpty && inAmountInput.error)
-        return inAmountInput.error;
-    }, [
-      quoteError,
-      quote,
-      spotPriceQuoteError,
-      inAmountInput.error,
-      inAmountInput.isEmpty,
-    ]);
+    // prioritize router errors over user input errors
+    if (!inAmountInput.isEmpty && inAmountInput.error)
+      return inAmountInput.error;
+  }, [
+    quoteError,
+    quote,
+    spotPriceQuoteError,
+    inAmountInput.error,
+    inAmountInput.isEmpty,
+  ]);
 
   const tokenIn = useMemo(
     () => ({
@@ -320,8 +320,8 @@ export function useSwap({
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
         : !Boolean(quoteError)
-          ? quote
-          : undefined,
+        ? quote
+        : undefined,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
@@ -584,13 +584,13 @@ function useQueryRouterBestQuote(
       !featureFlags._isInitialized
         ? []
         : routerKeys.filter((key) => {
-          if (!featureFlags.sidecarRouter && key === "sidecar") return false;
-          if (!featureFlags.legacyRouter && key === "legacy") return false;
-          // TFM doesn't support force swap through pool
-          if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
-            return false;
-          return true;
-        }),
+            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
+            if (!featureFlags.legacyRouter && key === "legacy") return false;
+            // TFM doesn't support force swap through pool
+            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
+              return false;
+            return true;
+          }),
     [
       featureFlags._isInitialized,
       featureFlags.sidecarRouter,
@@ -665,7 +665,7 @@ function useQueryRouterBestQuote(
     () =>
       !isOneSuccessful && isOneErrored
         ? routerResults.find((routerResults) => Boolean(routerResults.error))
-          ?.error
+            ?.error
         : undefined,
     [isOneSuccessful, isOneErrored, routerResults]
   );
@@ -690,13 +690,13 @@ function makeRouterErrorFromTrpcError(
     | undefined
 ):
   | {
-    error:
-    | NoRouteError
-    | NotEnoughLiquidityError
-    | NotEnoughQuotedError
-    | Error;
-    isUnexpected: boolean;
-  }
+      error:
+        | NoRouteError
+        | NotEnoughLiquidityError
+        | NotEnoughQuotedError
+        | Error;
+      isUnexpected: boolean;
+    }
   | undefined {
   if (isNil(error)) return;
   const tprcShapeMsg = error.shape?.message;
