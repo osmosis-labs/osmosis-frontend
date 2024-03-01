@@ -282,6 +282,9 @@
       "transakSubtitle": "支持OSMO",
       "onrampMoneySubtitle": "支持OSMO、USDC"
     },
+    "incentive": {
+      "title": "激励类型"
+    },
     "MAX": "最大",
     "pool": {
       "title": "游泳池類型"

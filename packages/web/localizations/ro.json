@@ -282,6 +282,9 @@
       "transakSubtitle": "Acceptă OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
+    "incentive": {
+      "title": "Tipuri de stimulente"
+    },
     "MAX": "MAX",
     "pool": {
       "title": "Tipuri de piscine"

@@ -282,6 +282,9 @@
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
+    "incentive": {
+      "title": "Tipos de incentivos"
+    },
     "MAX": "Máximo",
     "pool": {
       "title": "Tipos de piscinas"

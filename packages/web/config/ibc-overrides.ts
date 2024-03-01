@@ -560,6 +560,9 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
+  BERLIN: {
+    depositUrlOverride: "https://app.evmos.org/assets",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
