@@ -14,7 +14,10 @@ import {
 } from "~/server/queries/complex/pools/incentives";
 import { getCachedPoolMarketMetricsMap } from "~/server/queries/complex/pools/market";
 import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid";
-import { getUserPools } from "~/server/queries/complex/pools/user";
+import {
+  getUserPools,
+  getUserSharePools,
+} from "~/server/queries/complex/pools/user";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -50,6 +53,13 @@ export const poolsRouter = createTRPCRouter({
     .input(UserOsmoAddressSchema.required())
     .query(async ({ input: { userOsmoAddress } }) =>
       getUserPools(userOsmoAddress).then((pools) => sort(pools, "userValue"))
+    ),
+  getUserSharePools: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input: { userOsmoAddress } }) =>
+      getUserSharePools(userOsmoAddress).then((pools) =>
+        sort(pools, "totalValue")
+      )
     ),
   getMarketIncentivePools: publicProcedure
     .input(
