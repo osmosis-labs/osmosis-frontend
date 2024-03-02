@@ -198,13 +198,13 @@ const OneClickTradingSettings = ({
                     content={
                       <div className="flex items-center gap-3">
                         {hasExistingSession && isEndingSession && (
-                          <>
-                            <p className="text-wosmongton-200">
-                              {t("oneClickTrading.settings.endingSession")}
-                            </p>
-                            <Spinner className="text-wosmongton-200" />
-                          </>
+                          <p className="text-wosmongton-200">
+                            {t("oneClickTrading.settings.endingSession")}
+                          </p>
                         )}
+                        {(isLoading || isEndingSession) && (
+                          <Spinner className="text-wosmongton-200" />
+                        )}{" "}
                         <Switch
                           disabled={isSendingTx || isEndingSession || isLoading}
                           checked={

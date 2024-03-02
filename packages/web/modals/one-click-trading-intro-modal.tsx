@@ -22,6 +22,8 @@ export const useGlobalIs1CTIntroModalOpen = createGlobalState(false);
 
 const OneClickTradingIntroModal = observer(() => {
   const { accountStore, chainStore } = useStore();
+  const { oneClickTradingInfo } = useOneClickTradingSession();
+
   const [isOpen, setIsOpen] = useGlobalIs1CTIntroModalOpen();
   const [show1CTEditParams, setShow1CTEditParams] = useState(false);
   const [shouldHideSettingsBackButton, setShouldHideSettingsBackButton] =
@@ -108,7 +110,9 @@ const OneClickTradingIntroModal = observer(() => {
     spendLimitTokenDecimals,
     reset: reset1CTParams,
     isError: isError1CTParams,
-  } = useOneClickTradingParams();
+  } = useOneClickTradingParams({
+    oneClickTradingInfo,
+  });
 
   const onClose = () => {
     setIsOpen(false);

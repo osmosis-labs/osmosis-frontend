@@ -561,6 +561,12 @@ const ProfileOneClickTradingSettings = ({
             spendLimitTokenDecimals,
             transaction1CTParams,
             walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
+            /**
+             * If the user has an existing session, remove it and add the new one.
+             */
+            additionalAuthenticatorsToRemove: sessionAuthenticator
+              ? [BigInt(sessionAuthenticator.id)]
+              : undefined,
           },
           {
             onSuccess: () => {
@@ -624,7 +630,7 @@ const OneClickTradingRemainingTime = () => {
     useState<ReturnType<typeof humanizeTime>>();
 
   useEffect(() => {
-    if (!oneClickTradingInfo) return;
+    if (!oneClickTradingInfo) return setHumanizedTime(undefined);
 
     const updateTime = () => {
       setHumanizedTime(

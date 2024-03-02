@@ -33,11 +33,28 @@ function getParametersFromOneClickTradingInfo({
 }
 
 /**
- * Hook to get the one click trading default parameters.
- * It also provides methods to reset or modify the parameters.
- * This is used in the one click trading settings modal.
+ * Custom React hook to manage and provide parameters for one-click trading transactions.
  *
- * This hook reconstructs the transaction1CTParams from the oneClickTradingInfo if it's provided.
+ * This hook is designed to fetch and maintain the default parameters for one-click trading,
+ * allowing for easy access and modification within components. If `oneClickTradingInfo` is provided, it uses
+ * this to set initial parameters. Otherwise, it fetches the default parameters from the application's API.
+ *
+ * The hook also provides a mechanism to reset the parameters to their initial values, which
+ * can be either the custom parameters passed at initialization or the fetched default parameters.
+ *
+ * This hook is primarily intended for the one click trading settings modal.
+ *
+ * @param {Object} params - The parameters object for initializing the hook.
+ * @param {OneClickTradingInfo} params.oneClickTradingInfo - Optional. Custom initial parameters for one-click trading.
+ * @param {boolean} params.defaultIsOneClickEnabled - Optional. Specifies if one-click trading is enabled by default.
+ *                                                     Defaults to false if not provided.
+ * @returns {Object} An object containing:
+ *                    - `transaction1CTParams`: The current parameters for one-click trading transactions.
+ *                    - `setTransaction1CTParams`: Function to manually set the transaction parameters.
+ *                    - `spendLimitTokenDecimals`: The decimal precision for the spend limit token.
+ *                    - `isLoading`: Boolean indicating if the default parameters are being fetched.
+ *                    - `isError`: Boolean indicating if there was an error fetching the default parameters.
+ *                    - `reset`: Function to reset the parameters to their initial values.
  */
 export const useOneClickTradingParams = ({
   oneClickTradingInfo,

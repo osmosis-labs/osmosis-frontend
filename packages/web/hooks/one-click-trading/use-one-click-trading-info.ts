@@ -7,22 +7,61 @@ import { useAsync } from "react-use";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 
+/**
+ * This hook manages and provides information about the one-click trading session.
+ *
+ * This hook encapsulates the logic for fetching one-click trading session information,
+ * determining if the session is enabled and if it has expired. It also provides utility
+ * functions to calculate the remaining time for the session and the total session time.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {Function} params.onExpire - Optional callback function that gets called when the trading session expires.
+ *                                      It receives an object with `oneClickTradingInfo` as a parameter.
+ * @returns {Object} An object containing:
+ *                    - `oneClickTradingInfo`: Information about the one-click trading session.
+ *                    - `isOneClickTradingEnabled`: A boolean indicating if one-click trading is enabled.
+ *                    - `isOneClickTradingExpired`: A boolean indicating if the one-click trading session has expired.
+ *                    - `getTimeRemaining`: A function that returns the remaining time for the session in seconds.
+ *                    - `getTotalSessionTime`: A function that returns the total session time in seconds.
+ */
 export const useOneClickTradingSession = ({
   onExpire,
 }: {
+  // Optional callback function that gets called when the trading session expires.
   onExpire?: (params: { oneClickTradingInfo: OneClickTradingInfo }) => void;
 } = {}) => {
-  const { accountStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const [isExpired, setIsExpired] = useState(false);
   const { t } = useTranslation();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const { value } = useAsync(async () => {
+    const defaultReturn = {
+      info: undefined,
+      isEnabled: false,
+      isExpired: false,
+    };
+
+    if (!account?.address) {
+      return defaultReturn;
+    }
+
     const info = await accountStore.getOneClickTradingInfo();
     const isEnabled = await accountStore.isOneCLickTradingEnabled();
     setIsExpired(await accountStore.isOneClickTradingExpired());
 
+    if (info?.userOsmoAddress !== account?.address) {
+      setIsExpired(false);
+      return defaultReturn;
+    }
+
     return { info, isEnabled, isExpired };
-  }, [accountStore, isExpired, accountStore.oneClickTradingInfo]);
+  }, [
+    accountStore,
+    isExpired,
+    accountStore.oneClickTradingInfo,
+    account?.address,
+  ]);
 
   // Set a timeout to update the isExpired state
   useEffect(() => {

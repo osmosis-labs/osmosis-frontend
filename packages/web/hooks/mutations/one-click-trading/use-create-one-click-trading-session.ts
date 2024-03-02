@@ -1,10 +1,12 @@
-import { toBase64 } from "@cosmjs/encoding";
+import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import {
+  AuthenticatorType,
   AvailableOneClickTradingMessages,
+  OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
   OneClickTradingTransactionParams,
   ParsedAuthenticator,
@@ -20,11 +22,8 @@ import { useLocalStorage } from "react-use";
 
 import { dismissAllToasts, displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import { SPENT_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
-import {
-  getFirstAuthenticator,
-  getOneClickTradingSessionAuthenticator,
-} from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
 import { api } from "~/utils/trpc";
@@ -34,6 +33,104 @@ export class CreateOneClickSessionError extends Error {
     super(message);
     this.name = "WalletSelectOneClickError";
   }
+}
+
+function getFirstAuthenticator({ pubKey }: { pubKey: string }): {
+  type: AuthenticatorType;
+  data: Uint8Array;
+} {
+  return {
+    type: "SignatureVerificationAuthenticator",
+    data: fromBase64(pubKey),
+  };
+}
+
+export function isAuthenticatorOneClickTradingSession({
+  authenticator,
+}: {
+  authenticator: ParsedAuthenticator;
+}) {
+  return (
+    authenticator.type === "AllOfAuthenticator" &&
+    authenticator.subAuthenticators.some(
+      (sub) => sub.type === "SignatureVerificationAuthenticator"
+    ) &&
+    authenticator.subAuthenticators.some(
+      (sub) =>
+        sub.type === "CosmwasmAuthenticatorV1" &&
+        sub.contract === SPENT_LIMIT_CONTRACT_ADDRESS
+    ) &&
+    authenticator.subAuthenticators.some(
+      (sub) =>
+        sub.type === "AnyOfAuthenticator" &&
+        sub.subAuthenticators.every(
+          (sub) => sub.type === "MessageFilterAuthenticator"
+        )
+    )
+  );
+}
+
+export function getOneClickTradingSessionAuthenticator({
+  key,
+  allowedAmount,
+  resetPeriod,
+  allowedMessages,
+  sessionPeriod,
+}: {
+  key: PrivKeySecp256k1;
+  allowedMessages: AvailableOneClickTradingMessages[];
+  allowedAmount: string;
+  resetPeriod: OneClickTradingResetPeriods;
+  sessionPeriod: OneClickTradingTimeLimit;
+}): {
+  type: AuthenticatorType;
+  data: Uint8Array;
+} {
+  const signatureVerification = {
+    authenticator_type: "SignatureVerificationAuthenticator",
+    data: toBase64(key.getPubKey().toBytes()),
+  };
+
+  const spendLimitParams = toBase64(
+    Buffer.from(
+      JSON.stringify({
+        limit: allowedAmount,
+        reset_period: resetPeriod,
+        time_limit: sessionPeriod,
+      })
+    )
+  );
+  const spendLimit = {
+    authenticator_type: "CosmwasmAuthenticatorV1",
+    data: toBase64(
+      Buffer.from(
+        `{"contract": "${SPENT_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
+      )
+    ),
+  };
+
+  const messageFilters = allowedMessages.map((message) => ({
+    authenticator_type: "MessageFilterAuthenticator",
+    data: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+  }));
+
+  const messageFilterAnyOfAuthenticator = {
+    authenticator_type: "AnyOfAuthenticator",
+    data: Buffer.from(JSON.stringify(messageFilters)).toJSON().data,
+  };
+
+  const compositeAuthData = [
+    signatureVerification,
+    spendLimit,
+    messageFilterAnyOfAuthenticator,
+  ];
+
+  return {
+    type: "AllOfAuthenticator",
+    data: new Uint8Array(
+      Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
+    ),
+  };
 }
 
 export const useCreateOneClickTradingSession = ({
@@ -46,6 +143,7 @@ export const useCreateOneClickTradingSession = ({
       walletRepo: WalletRepo;
       spendLimitTokenDecimals: number | undefined;
       transaction1CTParams: OneClickTradingTransactionParams | undefined;
+      additionalAuthenticatorsToRemove?: bigint[];
     },
     unknown
   >;
@@ -61,23 +159,33 @@ export const useCreateOneClickTradingSession = ({
   const { t } = useTranslation();
 
   return useMutation(
-    async ({ walletRepo, transaction1CTParams, spendLimitTokenDecimals }) => {
+    async ({
+      walletRepo,
+      transaction1CTParams,
+      spendLimitTokenDecimals,
+      additionalAuthenticatorsToRemove,
+    }) => {
       if (!account?.osmosis) {
         throw new Error("Osmosis account not found");
       }
-      if (!transaction1CTParams)
+
+      if (!transaction1CTParams) {
         throw new CreateOneClickSessionError(
           "Transaction 1CT params are not defined."
         );
+      }
 
-      if (!walletRepo.current)
+      if (!walletRepo.current) {
         throw new CreateOneClickSessionError(
           "walletRepo.current is not defined."
         );
-      if (!spendLimitTokenDecimals)
+      }
+
+      if (!spendLimitTokenDecimals) {
         throw new CreateOneClickSessionError(
           "Spend limit token decimals are not defined."
         );
+      }
 
       let accountPubKey: string,
         shouldAddFirstAuthenticator: boolean,
@@ -148,12 +256,15 @@ export const useCreateOneClickTradingSession = ({
         });
 
       /**
-       * If the user has 15 authenticators, remove the oldest AllOfAuthenticator which is are previous OneClickTrading session
+       * If the user has 15 authenticators, remove the oldest AllOfAuthenticator
+       * which is are previous OneClickTrading session
        */
       const authenticatorToRemoveId =
         authenticators.length === 15
           ? authenticators
-              .filter(({ type }) => type === "AllOfAuthenticator")
+              .filter((authenticator) =>
+                isAuthenticatorOneClickTradingSession({ authenticator })
+              )
               /**
                * Find the oldest AllOfAuthenticator by comparing the id.
                * The smallest id is the oldest authenticator.
@@ -169,6 +280,10 @@ export const useCreateOneClickTradingSession = ({
       const authenticatorsToRemove = authenticatorToRemoveId
         ? [BigInt(authenticatorToRemoveId)]
         : [];
+
+      if (additionalAuthenticatorsToRemove) {
+        authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
+      }
 
       const authenticatorsToAdd = shouldAddFirstAuthenticator
         ? [
