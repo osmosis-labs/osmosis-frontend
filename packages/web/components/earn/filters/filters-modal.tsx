@@ -106,7 +106,7 @@ const FiltersModal = (
                 value: value as StrategyButtonResponsibility,
               })
             }
-            containerClassName="hidden opacity-50 pointer-events-none w-full max-w-sm items-center gap-7 2xl:flex"
+            containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
           />
         </div>
         <RadioWithOptions

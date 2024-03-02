@@ -59,7 +59,7 @@ export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
   colID,
   filterValue
 ) => {
-  const value = row.getValue(colID) as string;
+  const values = row.getValue(colID) as string[];
   const inputFilter = filterValue as ListOption<string>[];
 
   // If the passed filter is empty, show all strategies
@@ -67,10 +67,7 @@ export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
     return true;
   }
 
-  // this checks if in the passed filter contains the value present in the strategy
-  const filterResult = inputFilter.filter((option) => option.value === value);
-
-  return filterResult.length > 0;
+  return inputFilter.every((f) => values.includes(f.label));
 };
 
 export const boolEqualsString: FilterFn<EarnStrategy> = (
