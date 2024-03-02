@@ -105,7 +105,7 @@ export async function getStrategyTVL(strategyId: string) {
  * Gets the (cached) strategies data from the CMS
  * @returns An array containing the strategies info from the CMS without TVL & APY, which needs to be calculated separately.
  */
-export async function getStrategiesCMSData() {
+export async function getStrategies() {
   return await cachified({
     cache: earnRawStrategyCMSDataCache,
     ttl: 1000 * 60 * 30,

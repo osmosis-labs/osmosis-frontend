@@ -61,7 +61,7 @@ export const TopFilters = ({
   const { t } = useTranslation();
 
   const { data: earnStrategies } =
-    api.edge.earn.getStrategiesCMSData.useQuery();
+    api.edge.earn.getStrategies.useQuery();
 
   const rewardTypes = useMemo(
     () => [

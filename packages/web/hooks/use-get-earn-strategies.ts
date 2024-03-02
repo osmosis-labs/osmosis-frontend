@@ -15,7 +15,7 @@ const useGetEarnStrategies = (
     isLoading: areStrategiesLoading,
     isError,
     refetch,
-  } = api.edge.earn.getStrategiesCMSData.useQuery(undefined, {
+  } = api.edge.earn.getStrategies.useQuery(undefined, {
     trpc: { context: { skipBatch: true } },
   });
 
