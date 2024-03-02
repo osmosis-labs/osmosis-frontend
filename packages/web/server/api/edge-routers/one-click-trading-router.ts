@@ -1,6 +1,10 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  AllOfAuthenticator,
+  OneClickTradingTransactionParams,
+} from "@osmosis-labs/types";
 import { OsmosisAverageGasLimit } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -40,6 +44,49 @@ export const oneClickTradingRouter = createTRPCRouter({
   getNetworkFeeLimitStep: publicProcedure.query(async () =>
     getNetworkFeeLimitStep()
   ),
+  getSessionAuthenticator: publicProcedure
+    .input(z.object({ userOsmoAddress: z.string(), publicKey: z.string() }))
+    .query(async ({ input }) => {
+      const authenticators = await getAuthenticators({
+        userOsmoAddress: input.userOsmoAddress,
+      });
+
+      const subAuthenticators = authenticators
+        .filter(
+          (authenticator): authenticator is AllOfAuthenticator =>
+            authenticator.type === "AllOfAuthenticator"
+        )
+        .flatMap((authenticator) =>
+          authenticator.subAuthenticators.map((sub) => ({
+            ...sub,
+            authenticatorId: authenticator.id,
+          }))
+        );
+
+      if (subAuthenticators.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Session not found: authenticators array is empty",
+        });
+      }
+
+      const authenticatorId = subAuthenticators.find(
+        (authenticator) =>
+          authenticator.type === "SignatureVerificationAuthenticator" &&
+          authenticator.publicKey === input.publicKey
+      )?.authenticatorId;
+
+      if (!authenticatorId) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Session not found",
+        });
+      }
+
+      return authenticators.find(
+        (authenticator) => authenticator.id === authenticatorId
+      );
+    }),
   getAccountPubKeyAndAuthenticators: publicProcedure
     .input(z.object({ userOsmoAddress: z.string() }))
     .query(async ({ input }) => {

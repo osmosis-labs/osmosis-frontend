@@ -2,6 +2,7 @@ import { toBase64 } from "@cosmjs/encoding";
 import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import {
   AvailableOneClickTradingMessages,
   OneClickTradingTimeLimit,
@@ -13,18 +14,16 @@ import {
   unixNanoSecondsToSeconds,
   unixSecondsToNanoSeconds,
 } from "@osmosis-labs/utils";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useCallback } from "react";
 import { useLocalStorage } from "react-use";
 
 import { dismissAllToasts, displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import { useTranslation } from "~/hooks/language";
 import {
-  AddAuthenticatorQueryOptions,
   getFirstAuthenticator,
   getOneClickTradingSessionAuthenticator,
-  useAddOrRemoveAuthenticators,
 } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
@@ -38,14 +37,22 @@ export class CreateOneClickSessionError extends Error {
 }
 
 export const useCreateOneClickTradingSession = ({
-  addAuthenticatorsQueryOptions,
+  queryOptions,
 }: {
-  addAuthenticatorsQueryOptions?: AddAuthenticatorQueryOptions;
+  queryOptions?: UseMutationOptions<
+    unknown,
+    unknown,
+    {
+      walletRepo: WalletRepo;
+      spendLimitTokenDecimals: number | undefined;
+      transaction1CTParams: OneClickTradingTransactionParams | undefined;
+    },
+    unknown
+  >;
 } = {}) => {
-  const { accountStore } = useStore();
-  const addAuthenticators = useAddOrRemoveAuthenticators({
-    queryOptions: addAuthenticatorsQueryOptions,
-  });
+  const { accountStore, chainStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
   const apiUtils = api.useUtils();
   const [, setDoNotShowFloatingBannerAgain] = useLocalStorage(
     OneClickFloatingBannerDoNotShowKey,
@@ -53,16 +60,11 @@ export const useCreateOneClickTradingSession = ({
   );
   const { t } = useTranslation();
 
-  const onCreate1CTSession = useCallback(
-    async ({
-      walletRepo,
-      transaction1CTParams,
-      spendLimitTokenDecimals,
-    }: {
-      walletRepo: WalletRepo;
-      spendLimitTokenDecimals: number | undefined;
-      transaction1CTParams: OneClickTradingTransactionParams | undefined;
-    }) => {
+  return useMutation(
+    async ({ walletRepo, transaction1CTParams, spendLimitTokenDecimals }) => {
+      if (!account?.osmosis) {
+        throw new Error("Osmosis account not found");
+      }
       if (!transaction1CTParams)
         throw new CreateOneClickSessionError(
           "Transaction 1CT params are not defined."
@@ -164,69 +166,74 @@ export const useCreateOneClickTradingSession = ({
               }, null as string | null)
           : undefined;
 
-      addAuthenticators.mutate(
-        {
-          removeAuthenticators: authenticatorToRemoveId
-            ? [BigInt(authenticatorToRemoveId)]
-            : [],
-          addAuthenticators: shouldAddFirstAuthenticator
-            ? [
-                getFirstAuthenticator({ pubKey: accountPubKey }),
-                oneClickTradingAuthenticator,
-              ]
-            : [oneClickTradingAuthenticator],
+      const authenticatorsToRemove = authenticatorToRemoveId
+        ? [BigInt(authenticatorToRemoveId)]
+        : [];
+
+      const authenticatorsToAdd = shouldAddFirstAuthenticator
+        ? [
+            getFirstAuthenticator({ pubKey: accountPubKey }),
+            oneClickTradingAuthenticator,
+          ]
+        : [oneClickTradingAuthenticator];
+
+      await new Promise<DeliverTxResponse>((resolve, reject) => {
+        account.osmosis
+          .sendAddOrRemoveAuthenticatorsMsg({
+            addAuthenticators: authenticatorsToAdd,
+            removeAuthenticators: authenticatorsToRemove,
+            memo: "",
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+
+      accountStore.setOneClickTradingInfo({
+        publicKey: toBase64(key.getPubKey().toBytes()),
+        privateKey: toBase64(key.toBytes()),
+        allowedMessages,
+        resetPeriod,
+        sessionPeriod,
+        sessionStartedAtUnix: dayjs().unix(),
+        networkFeeLimit: {
+          ...transaction1CTParams.networkFeeLimit.currency,
+          amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
         },
+        spendLimit: {
+          amount: allowedAmount,
+          decimals: spendLimitTokenDecimals,
+        },
+        hasSeenExpiryToast: false,
+        humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
+        userOsmoAddress: walletRepo.current!.address!,
+      });
+
+      setDoNotShowFloatingBannerAgain(true);
+      accountStore.setShouldUseOneClickTrading({ nextValue: true });
+
+      const sessionEndDate = dayjs.unix(
+        unixNanoSecondsToSeconds(sessionPeriod.end)
+      );
+      const humanizedTime = humanizeTime(sessionEndDate);
+      dismissAllToasts();
+      displayToast(
         {
-          onSuccess: () => {
-            accountStore.setOneClickTradingInfo({
-              publicKey: toBase64(key.getPubKey().toBytes()),
-              privateKey: toBase64(key.toBytes()),
-              allowedMessages,
-              resetPeriod,
-              sessionPeriod,
-              sessionStartedAtUnix: dayjs().unix(),
-              networkFeeLimit: {
-                ...transaction1CTParams.networkFeeLimit.currency,
-                amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
-              },
-              spendLimit: {
-                amount: allowedAmount,
-                decimals: spendLimitTokenDecimals,
-              },
-              hasSeenExpiryToast: false,
-              humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
-              userOsmoAddress: walletRepo.current!.address!,
-            });
-
-            setDoNotShowFloatingBannerAgain(true);
-            accountStore.setShouldUseOneClickTrading({ nextValue: true });
-
-            const sessionEndDate = dayjs.unix(
-              unixNanoSecondsToSeconds(sessionPeriod.end)
-            );
-            const humanizedTime = humanizeTime(sessionEndDate);
-            dismissAllToasts();
-            displayToast(
-              {
-                message: t("oneClickTrading.toast.oneClickTradingActive"),
-                caption: `${humanizedTime.value} ${t(
-                  humanizedTime.unitTranslationKey
-                )} ${t("remaining")}`,
-              },
-              ToastType.ONE_CLICK_TRADING
-            );
-          },
-        }
+          message: t("oneClickTrading.toast.oneClickTradingActive"),
+          caption: `${humanizedTime.value} ${t(
+            humanizedTime.unitTranslationKey
+          )} ${t("remaining")}`,
+        },
+        ToastType.ONE_CLICK_TRADING
       );
     },
-    [
-      accountStore,
-      addAuthenticators,
-      apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators,
-      setDoNotShowFloatingBannerAgain,
-      t,
-    ]
+    queryOptions
   );
-
-  return { onCreate1CTSession, isLoading: addAuthenticators.isLoading };
 };

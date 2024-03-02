@@ -48,8 +48,10 @@ interface OneClickTradingSettingsProps {
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
   onStartTrading: () => void;
+  onEndSession?: () => void;
   isLoading?: boolean;
   isSendingTx?: boolean;
+  isEndingSession?: boolean;
   hideBackButton?: boolean;
   hasExistingSession?: boolean;
 }
@@ -61,9 +63,11 @@ const OneClickTradingSettings = ({
   setTransaction1CTParams: setTransaction1CTParamsProp,
   onStartTrading,
   isSendingTx,
+  isEndingSession,
   isLoading,
   hideBackButton,
   hasExistingSession,
+  onEndSession,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [hasChanged, setHasChanged] = useState<
@@ -193,7 +197,7 @@ const OneClickTradingSettings = ({
                     title={t("oneClickTrading.settings.enableTitle")}
                     content={
                       <div className="flex items-center gap-3">
-                        {hasExistingSession && isSendingTx && (
+                        {hasExistingSession && isEndingSession && (
                           <>
                             <p className="text-wosmongton-200">
                               {t("oneClickTrading.settings.endingSession")}
@@ -202,11 +206,12 @@ const OneClickTradingSettings = ({
                           </>
                         )}
                         <Switch
-                          disabled={hasExistingSession && isSendingTx}
+                          disabled={isSendingTx || isEndingSession || isLoading}
                           checked={
                             transaction1CTParams?.isOneClickEnabled ?? false
                           }
                           onCheckedChange={(nextValue) => {
+                            if (hasExistingSession) onEndSession?.();
                             setTransaction1CTParams((params) => {
                               if (!params)
                                 throw new Error("1CT Params is undefined");
@@ -219,6 +224,7 @@ const OneClickTradingSettings = ({
                         />
                       </div>
                     }
+                    isDisabled={isSendingTx || isEndingSession}
                   />
                   <SettingRow
                     title={t("oneClickTrading.settings.spendLimitTitle")}
@@ -355,20 +361,22 @@ const OneClickTradingSettings = ({
                   />
                 </div>
 
-                {hasExistingSession && !isSendingTx && (
-                  <div className="px-8">
-                    <Button
-                      className="w-full"
-                      onClick={onStartTrading}
-                      isLoading={isSendingTx}
-                      loadingText={t(
-                        "oneClickTrading.settings.editSessionButton"
-                      )}
-                    >
-                      {t("oneClickTrading.settings.editSessionButton")}
-                    </Button>
-                  </div>
-                )}
+                {hasExistingSession &&
+                  hasChanged.length > 0 &&
+                  (!isSendingTx || !isEndingSession) && (
+                    <div className="px-8">
+                      <Button
+                        className="w-full"
+                        onClick={onStartTrading}
+                        isLoading={isSendingTx || isEndingSession}
+                        loadingText={t(
+                          "oneClickTrading.settings.editSessionButton"
+                        )}
+                      >
+                        {t("oneClickTrading.settings.editSessionButton")}
+                      </Button>
+                    </div>
+                  )}
 
                 {!hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (

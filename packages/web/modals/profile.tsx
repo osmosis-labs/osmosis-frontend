@@ -20,6 +20,7 @@ import {
 } from "react";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
+import { displayToast, ToastType } from "~/components/alert";
 import {
   CopyIcon,
   ExternalLinkIcon,
@@ -40,13 +41,14 @@ import Spinner from "~/components/loaders/spinner";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import { EventName } from "~/config";
 import {
-  useCreateOneClickTradingSession,
   useFeatureFlags,
   useOneClickTradingParams,
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
+import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
@@ -503,14 +505,33 @@ const ProfileOneClickTradingSettings = ({
   const { accountStore, chainStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
     useOneClickTradingSession();
-  const { onCreate1CTSession, isLoading: isLoadingCreate1CTSession } =
-    useCreateOneClickTradingSession({
-      addAuthenticatorsQueryOptions: {
-        onSuccess: () => {
-          onGoBack();
-        },
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+  const shouldFetchSessionAuthenticator =
+    !!account?.address && !!oneClickTradingInfo;
+  const {
+    data: sessionAuthenticator,
+    isLoading: isLoadingSessionAuthenticator,
+    refetch: refetchSessionAuthenticator,
+  } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+      publicKey: oneClickTradingInfo?.publicKey ?? "",
+    },
+    {
+      enabled: shouldFetchSessionAuthenticator,
+      cacheTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
+  );
+  const create1CTSession = useCreateOneClickTradingSession({
+    queryOptions: {
+      onSuccess: () => {
+        onGoBack();
       },
-    });
+    },
+  });
+  const removeAuthenticator = useAddOrRemoveAuthenticators();
 
   const {
     transaction1CTParams,
@@ -527,20 +548,69 @@ const ProfileOneClickTradingSettings = ({
     <OneClickTradingSettings
       transaction1CTParams={transaction1CTParams}
       setTransaction1CTParams={setTransaction1CTParams}
-      isLoading={isLoading1CTParams}
-      isSendingTx={isLoadingCreate1CTSession}
+      isLoading={
+        isLoading1CTParams ||
+        (shouldFetchSessionAuthenticator
+          ? isLoadingSessionAuthenticator
+          : false)
+      }
+      isSendingTx={create1CTSession.isLoading}
       onStartTrading={() => {
-        onCreate1CTSession({
-          spendLimitTokenDecimals,
-          transaction1CTParams,
-          walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
-        });
+        create1CTSession.mutate(
+          {
+            spendLimitTokenDecimals,
+            transaction1CTParams,
+            walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
+          },
+          {
+            onSuccess: () => {
+              onGoBack();
+            },
+          }
+        );
       }}
       onGoBack={() => {
         reset1CTParams();
         onGoBack();
       }}
       hasExistingSession={isOneClickTradingEnabled}
+      onEndSession={() => {
+        const rollback = () => {
+          if (!transaction1CTParams) return;
+          setTransaction1CTParams({
+            ...transaction1CTParams,
+            isOneClickEnabled: true,
+          });
+        };
+
+        if (!sessionAuthenticator) {
+          displayToast(
+            {
+              message: "Failed to get session authenticator. Please try again.",
+            },
+            ToastType.ERROR
+          );
+          refetchSessionAuthenticator();
+          return rollback();
+        }
+
+        removeAuthenticator.mutate(
+          {
+            addAuthenticators: [],
+            removeAuthenticators: [BigInt(sessionAuthenticator?.id)],
+          },
+          {
+            onSuccess: () => {
+              accountStore.setOneClickTradingInfo(undefined);
+              onGoBack();
+            },
+            onError: () => {
+              rollback();
+            },
+          }
+        );
+      }}
+      isEndingSession={removeAuthenticator.isLoading}
     />
   );
 };

@@ -14,7 +14,7 @@ import {
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
-import { useCreateOneClickTradingSession } from "~/hooks/one-click-trading/use-create-one-click-trading-session";
+import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { ModalBase } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -28,8 +28,8 @@ const OneClickTradingIntroModal = observer(() => {
     useState(false);
   const { t } = useTranslation();
 
-  const create1CTSessionMutation = useCreateOneClickTradingSession({
-    addAuthenticatorsQueryOptions: {
+  const create1CTSession = useCreateOneClickTradingSession({
+    queryOptions: {
       onSuccess: () => {
         setIsOpen(false);
       },
@@ -136,9 +136,9 @@ const OneClickTradingIntroModal = observer(() => {
             hideBackButton={shouldHideSettingsBackButton}
             setTransaction1CTParams={setTransaction1CTParams}
             transaction1CTParams={transaction1CTParams!}
-            isSendingTx={create1CTSessionMutation.isLoading}
+            isSendingTx={create1CTSession.isLoading}
             onStartTrading={() => {
-              create1CTSessionMutation.onCreate1CTSession({
+              create1CTSession.mutate({
                 spendLimitTokenDecimals,
                 transaction1CTParams,
                 walletRepo: accountStore.getWalletRepo(
@@ -150,10 +150,10 @@ const OneClickTradingIntroModal = observer(() => {
         ) : (
           <IntroducingOneClick
             isDisabled={isError1CTParams}
-            isLoading={isLoading1CTParams || create1CTSessionMutation.isLoading}
+            isLoading={isLoading1CTParams || create1CTSession.isLoading}
             onStartTrading={() => {
               reset1CTParams();
-              create1CTSessionMutation.onCreate1CTSession({
+              create1CTSession.mutate({
                 spendLimitTokenDecimals,
                 transaction1CTParams,
                 walletRepo: accountStore.getWalletRepo(
