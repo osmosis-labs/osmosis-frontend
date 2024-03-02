@@ -43,9 +43,9 @@ const useGetEarnStrategies = (
           ),
           balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           tvl: undefined,
-          apy: undefined,
+          apr: undefined,
         };
-      }) as EarnStrategy[],
+      }),
     [cmsStrategies, holdenDenoms]
   );
 
@@ -66,9 +66,9 @@ const useGetEarnStrategies = (
     )
   );
 
-  const apyQueries = api.useQueries((q) =>
+  const aprQueries = api.useQueries((q) =>
     (_strategies ?? []).map((strat) =>
-      q.edge.earn.getStrategyAPY(
+      q.edge.earn.getStrategyAPR(
         {
           strategyId: strat.id,
         },
@@ -104,21 +104,21 @@ const useGetEarnStrategies = (
         const tvlQuery = tvlQueries.find(
           (tvlQuery) => tvlQuery.data?.strategyId === strat.id
         );
-        const apyQuery = apyQueries.find(
-          (apyQuery) => apyQuery.data?.strategyId === strat.id
+        const aprQuery = aprQueries.find(
+          (aprQuery) => aprQuery.data?.strategyId === strat.id
         );
         return {
           ...strat,
           tvl: tvlQuery?.data,
-          apy: apyQuery?.data,
-          daily: getDailyApr(apyQuery?.data?.apy),
+          apr: aprQuery?.data,
+          daily: getDailyApr(aprQuery?.data?.apr),
           isLoadingTVL: tvlQuery?.isLoading,
-          isLoadingAPR: apyQuery?.isLoading,
+          isLoadingAPR: aprQuery?.isLoading,
           isErrorTVL: tvlQuery?.isError,
-          isErrorAPR: apyQuery?.isError,
+          isErrorAPR: aprQuery?.isError,
         };
       }),
-    [_strategies, apyQueries, tvlQueries]
+    [_strategies, aprQueries, tvlQueries]
   );
 
   const areBalancesLoading = useMemo(

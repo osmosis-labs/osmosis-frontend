@@ -8,11 +8,11 @@ import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   EarnStrategyBalance,
   queryEarnUserBalance,
-  queryStrategyAPY,
+  queryStrategyAPR,
   queryStrategyTVL,
   RawStrategyCMSData,
   RawStrategyTVL,
-  StrategyAPY,
+  StrategyAPR,
   StrategyCMSData,
   StrategyTVL,
 } from "~/server/queries/numia/earn";
@@ -23,7 +23,7 @@ const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-const earnStrategyAPYCache = new LRUCache<string, CacheEntry>(
+const earnStrategyAPRCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -67,19 +67,19 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAPY(strategyId: string) {
+export async function getStrategyAPR(strategyId: string) {
   return await cachified({
-    cache: earnStrategyAPYCache,
+    cache: earnStrategyAPRCache,
     ttl: 1000 * 20,
-    key: `earn-strategy-apy-${strategyId}`,
-    getFreshValue: async (): Promise<StrategyAPY> => {
+    key: `earn-strategy-apr-${strategyId}`,
+    getFreshValue: async (): Promise<StrategyAPR> => {
       try {
-        const { apy } = await queryStrategyAPY(strategyId);
+        const { apy: apr } = await queryStrategyAPR(strategyId);
         return {
-          apy: new RatePretty(apy),
+          apr: new RatePretty(apr),
         };
       } catch (error) {
-        throw new Error("Error while fetching strategy APY");
+        throw new Error("Error while fetching strategy APR");
       }
     },
   });

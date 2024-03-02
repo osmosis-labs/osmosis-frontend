@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   getStrategiesCMSData,
-  getStrategyAPY,
+  getStrategyAPR,
   getStrategyBalance,
   getStrategyTVL,
 } from "~/server/queries/complex/earn/strategies";
@@ -15,10 +15,10 @@ export default createTRPCRouter({
       const res = await getStrategyBalance(strategyId, userOsmoAddress);
       return res;
     }),
-  getStrategyAPY: publicProcedure
+  getStrategyAPR: publicProcedure
     .input(z.object({ strategyId: z.string() }))
     .query(async ({ input: { strategyId } }) => {
-      const res = await getStrategyAPY(strategyId);
+      const res = await getStrategyAPR(strategyId);
       return res;
     }),
   getStrategyTVL: publicProcedure

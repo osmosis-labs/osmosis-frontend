@@ -74,7 +74,7 @@ export interface RawEarnStrategyBalance {
   };
 }
 
-export interface RawStrategyAPY {
+export interface RawStrategyAPR {
   apy: number;
 }
 
@@ -84,8 +84,8 @@ export interface RawStrategyTVL {
   assets: { coinMinimalDenom: string; tvl: string; maxTvl?: string }[];
 }
 
-export interface StrategyAPY {
-  apy: RatePretty;
+export interface StrategyAPR {
+  apr: RatePretty;
 }
 
 export interface StrategyTVL {
@@ -236,7 +236,7 @@ export interface EarnStrategy extends StrategyCMSData {
   holdsTokens: boolean;
   daily?: RatePretty;
   tvl?: StrategyTVL;
-  apy?: StrategyAPY;
+  apr?: StrategyAPR;
   isLoadingTVL?: boolean;
   isLoadingAPR?: boolean;
   isErrorTVL?: boolean;
@@ -260,7 +260,7 @@ export function queryEarnUserBalance(
   return apiClient(url.toString());
 }
 
-export function queryStrategyAPY(strategyId: string): Promise<RawStrategyAPY> {
+export function queryStrategyAPR(strategyId: string): Promise<RawStrategyAPR> {
   const url = new URL(`/earn/strategies/${strategyId}/apy`, NUMIA_BASE_URL);
   return apiClient(url.toString());
 }

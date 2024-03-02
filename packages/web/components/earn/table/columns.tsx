@@ -125,8 +125,8 @@ export const tableColumns = [
     cell: TVLCell,
     sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("apy.apy", {
-    header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
+  columnHelper.accessor("apr.apr", {
+    header: () => <ColumnCellHeader tKey={"pool.APR"} />,
     cell: APRCell,
     sortingFn: sortDecValues,
   }),
