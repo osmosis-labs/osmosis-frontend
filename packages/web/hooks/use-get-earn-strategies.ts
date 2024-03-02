@@ -130,7 +130,7 @@ const useGetEarnStrategies = (
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     const unclaimedRewards: {
-      provider: EarnStrategy["platform"];
+      platform: EarnStrategy["platform"];
       id: string;
     }[] = [];
     const myStrategies: EarnStrategy[] = [];
@@ -159,7 +159,7 @@ const useGetEarnStrategies = (
           );
           unclaimedRewards.push({
             id: balanceQuery.data.id,
-            provider:
+            platform:
               earnStrategy?.platform ?? ("" as EarnStrategy["platform"]),
           });
         }

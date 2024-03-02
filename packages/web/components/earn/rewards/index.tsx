@@ -16,7 +16,7 @@ export const EarnRewards = ({
   areBalancesLoading,
 }: {
   totalUnclaimedRewards: PricePretty;
-  unclaimedRewards: { id: string; provider: EarnStrategy["platform"] }[];
+  unclaimedRewards: { id: string; platform: EarnStrategy["platform"] }[];
   areBalancesLoading: boolean;
 }) => {
   const { t } = useTranslation();
@@ -24,21 +24,32 @@ export const EarnRewards = ({
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const apiUtils = api.useUtils();
 
-  const filteredUnclaimedRewards = unclaimedRewards.filter(
-    (unclaimedReward) =>
-      /**
-       * Currently, claiming rewards is unsupported for stride
-       */
-      unclaimedReward.provider !== "stride"
-  );
+  const filteredUnclaimedRewards = unclaimedRewards
+    .filter(
+      (unclaimedReward) =>
+        /**
+         * Currently, claiming rewards is unsupported for stride
+         */
+        unclaimedReward.platform !== "stride"
+    )
+    // This whole code is a temporary workaround as there is no platform id which is standardized
+    .map(({ id, platform }) => {
+      return {
+        id,
+        platform:
+          platform === "Cosmos SDK (Staking Module on Osmosis)"
+            ? "osmosis"
+            : platform,
+      };
+    });
 
   const claimAllRewards = useCallback(async () => {
     const messages: EncodeObject[] = [];
 
     if (!account) return;
 
-    filteredUnclaimedRewards.forEach(({ id, provider }) => {
-      switch (provider) {
+    filteredUnclaimedRewards.forEach(({ id, platform }) => {
+      switch (platform) {
         case "osmosis":
           messages.push(
             account?.osmosis.msgOpts.withdrawDelegationRewards.messageComposer({
@@ -46,7 +57,7 @@ export const EarnRewards = ({
             })
           );
           break;
-        case "quasar":
+        case "Quasar":
           messages.push(
             account.cosmwasm.msgOpts.executeWasm.messageComposer({
               contract: id,
@@ -61,7 +72,7 @@ export const EarnRewards = ({
               funds: [],
             })
           );
-        case "levana":
+        case "Levana":
           messages.push(
             account.cosmwasm.msgOpts.executeWasm.messageComposer({
               contract: id.split("-")[0], // this strips the -x|lp part of the contract id
