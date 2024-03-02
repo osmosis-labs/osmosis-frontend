@@ -38,7 +38,7 @@ export const DropdownWithLabel = <T,>({
             <span className="font-subtitle1 capitalize leading-6 2xl:hidden">
               {value.label}
             </span>
-            <span className="hidden overflow-hidden text-ellipsis whitespace-nowrap font-subtitle1 capitalize leading-6 2xl:block">
+            <span className="hidden max-w-[100px] truncate font-subtitle1 capitalize leading-6 2xl:block">
               {(value.value as unknown as string) === "" && allLabel
                 ? allLabel
                 : value.label}
