@@ -5,6 +5,7 @@ import { PropsWithChildren } from "react";
 
 import {
   ActionsCell,
+  APRCell,
   LockCell,
   RiskCell,
   StrategyNameCell,
@@ -74,7 +75,7 @@ export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
 );
 
 export const tableColumns = [
-  columnHelper.accessor("involvedTokens", {
+  columnHelper.accessor("depositAssets", {
     header: () => {},
     cell: (item) => (
       <div
@@ -124,22 +125,20 @@ export const tableColumns = [
     cell: TVLCell,
     sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("apy", {
+  columnHelper.accessor("apy.apy", {
     header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
-    cell: (item) => (
-      <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
-    ),
+    cell: APRCell,
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("daily", {
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
     cell: (item) => {
-      return <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>;
+      return <ColumnCellCell>{item.getValue() ? formatPretty(item.getValue()!) : "N/A"}</ColumnCellCell>;
     },
     enableSorting: true,
     sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("rewardTokens", {
+  columnHelper.accessor("rewardAssets", {
     header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
     cell: (item) => (
       <div className="relative flex items-center justify-end">
@@ -165,7 +164,7 @@ export const tableColumns = [
     header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
     cell: LockCell,
   }),
-  columnHelper.accessor("risk", {
+  columnHelper.accessor("riskLevel", {
     header: () => (
       <ColumnCellHeader
         tKey={"earnPage.risk"}
@@ -194,13 +193,13 @@ export const tableColumns = [
     filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
-  columnHelper.accessor("involvedTokens.coinDenom", {
+  columnHelper.accessor("depositAssets.coinDenom", {
     header: () => {},
     cell: () => {},
     filterFn: boolEqualsString,
     enableHiding: true,
   }),
-  columnHelper.accessor("provider", {
+  columnHelper.accessor("platform", {
     header: () => {},
     cell: () => {},
     filterFn: listOptionValueEquals,
@@ -214,7 +213,7 @@ export const tableColumns = [
     filterFn: lockDurationFilter,
     enableHiding: true,
   }),
-  columnHelper.accessor("tokensType", {
+  columnHelper.accessor("tags", {
     filterFn: multiListOptionValueEquals,
     enableHiding: true,
   }),

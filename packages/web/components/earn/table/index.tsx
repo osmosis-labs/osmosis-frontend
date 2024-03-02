@@ -84,8 +84,9 @@ const StrategiesTable = ({
                   className={classNames("text-right first:bg-osmoverse-850", {
                     "sticky left-[88px] bg-osmoverse-850 !text-left md:static md:left-0":
                       header.index === 1,
-                    "sticky left-0 z-30 bg-osmoverse-850 !pl-4":
+                    "sticky md:!text-left left-0 z-30 bg-osmoverse-850 !pl-4":
                       header.index === 0,
+                    "!text-center": header.index === 7
                   })}
                   key={header.id}
                 >

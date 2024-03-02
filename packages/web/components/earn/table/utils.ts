@@ -3,7 +3,7 @@ import { FilterFn, SortingFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
-import { EarnStrategy } from "~/server/queries/numia/earn";
+import { EarnStrategy, StrategyCMSData } from "~/server/queries/numia/earn";
 
 export const arrLengthEquals: FilterFn<EarnStrategy> = (
   row,
@@ -92,6 +92,11 @@ export const boolEqualsString: FilterFn<EarnStrategy> = (
 };
 
 export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
+  const valueA: RatePretty | undefined = rowA.getValue(colId);
+  const valueB: RatePretty | undefined = rowB.getValue(colId);
+
+  if (!valueA || !valueB) return -1;
+
   const rowAConvertedValue = Number(
     (rowA.getValue(colId) as RatePretty).toDec().toString()
   );
@@ -111,10 +116,8 @@ export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
       return "type";
-    case "platform":
-      return "provider";
     case "rewardType":
-      return "rewardTokens";
+      return "rewardAssets";
     case "search":
       return "name";
     case "lockDurationType":
@@ -122,7 +125,7 @@ export const _getKey = (k: keyof Filters) => {
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "tokensType";
+      return "tags";
     default:
       return k;
   }
@@ -135,9 +138,9 @@ export const getDefaultFiltersState = (filters: Filters) =>
   }));
 
 export const getListOptions = <T>(
-  strategies: EarnStrategy[],
-  valueAccessor: keyof Pick<EarnStrategy, "provider" | "type">,
-  labelAccessor: keyof Pick<EarnStrategy, "provider" | "category">,
+  strategies: StrategyCMSData[],
+  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type">,
+  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "category">,
   allLabel: string
 ) => {
   const uniqueOptionsMap = new Map<string, ListOption<T>>();

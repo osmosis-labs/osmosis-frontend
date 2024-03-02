@@ -1,16 +1,18 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ColumnCellCell } from "~/components/earn/table/columns";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { EarnStrategy } from "~/server/queries/numia/earn";
+import { type EarnStrategy } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
 export const StrategyTooltip = ({
@@ -28,14 +30,13 @@ export const StrategyTooltip = ({
 
 export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
   return (
-    <div className="flex items-center">
-      <div className="flex flex-col">
+      <>
         <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
           {item.getValue()}
         </p>
         <div className="flex items-center gap-2">
-          <small className="text-sm font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
-            {item.row.original.provider}
+          <small className="text-sm text-left font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
+            {item.row.original.platform}
           </small>
           <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
             <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm font-subtitle1 leading-6 1.5xs:text-xs">
@@ -43,15 +44,16 @@ export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
             </span>
           </div>
         </div>
-      </div>
-    </div>
+      </>
   );
 };
 
 export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   const tvlUsd = item.getValue();
+  const isLoadingTVL = item.row.original.isLoadingTVL;
 
   const { depositCap, depositCapOccupied } = useMemo(() => {
+    if (!item.row.original.tvl) return { depositCapOccupied: undefined, depositCap: undefined };
     const depositCap = item.row.original.tvl.maxTvlUsd;
     const depositCapOccupied =
       depositCap && depositCap.toDec().gt(new Dec(0))
@@ -63,11 +65,15 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
         : 0;
 
     return { depositCapOccupied, depositCap };
-  }, [item.row.original.tvl.maxTvlUsd, tvlUsd]);
+  }, [item.row.original.tvl, tvlUsd]);
+
+  if (isLoadingTVL) {
+    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+  }
 
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>{formatPretty(tvlUsd)}</ColumnCellCell>
+      <ColumnCellCell>{tvlUsd ? formatPretty(tvlUsd) : "N/A"}</ColumnCellCell>
       {/* {fluctuation && (
         <small
           className={classNames("text-xs font-subtitle2 font-medium", {
@@ -119,14 +125,26 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   );
 };
 
-export const LockCell = (item: CellContext<EarnStrategy, number>) => {
+export const APRCell = (item: CellContext<EarnStrategy, RatePretty>) => {
+  const isLoadingAPR = item.row.original.isLoadingAPR;
+
+  if (isLoadingAPR) {
+    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+  }
+  return (
+    <ColumnCellCell>{item.getValue() ? formatPretty(item.getValue()) : "N/A"}</ColumnCellCell>
+  )
+}
+
+export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   const { t } = useTranslation();
-  const hasLockingDuration = item.getValue() > 0;
+  const lockingDuration = dayjs.duration(item.getValue()).asDays()
+  const hasLockingDuration = lockingDuration > 0;
 
   return (
     <div className="flex flex-col">
       <ColumnCellCell>
-        {hasLockingDuration ? item.getValue() : "N/A"}
+        {hasLockingDuration ? lockingDuration : "N/A"}
       </ColumnCellCell>
       {hasLockingDuration && (
         <small className="text-sm font-subtitle2 text-osmoverse-400">
@@ -147,7 +165,7 @@ function _getRiskLabel(risk: number) {
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
   return (
-    <div className="flex justify-end">
+    <div className="flex items-center justify-center">
       <div className="flex flex-col items-center gap-1">
         <div className="relative h-6">
           <Image
@@ -177,7 +195,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
 
   const isOsmosisStrategy = useMemo(
-    () => item.row.original.provider === "osmosis",
+    () => item.row.original.platform === "osmosis",
     [item]
   );
 
