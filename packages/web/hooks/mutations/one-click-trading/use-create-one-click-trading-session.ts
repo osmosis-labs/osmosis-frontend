@@ -22,7 +22,7 @@ import { useLocalStorage } from "react-use";
 
 import { dismissAllToasts, displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import { SPENT_LIMIT_CONTRACT_ADDRESS } from "~/config";
+import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
@@ -58,7 +58,7 @@ export function isAuthenticatorOneClickTradingSession({
     authenticator.subAuthenticators.some(
       (sub) =>
         sub.type === "CosmwasmAuthenticatorV1" &&
-        sub.contract === SPENT_LIMIT_CONTRACT_ADDRESS
+        sub.contract === SPEND_LIMIT_CONTRACT_ADDRESS
     ) &&
     authenticator.subAuthenticators.some(
       (sub) =>
@@ -104,7 +104,7 @@ export function getOneClickTradingSessionAuthenticator({
     authenticator_type: "CosmwasmAuthenticatorV1",
     data: toBase64(
       Buffer.from(
-        `{"contract": "${SPENT_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
+        `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
       )
     ),
   };

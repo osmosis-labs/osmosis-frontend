@@ -2,13 +2,20 @@ import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import { parseAuthenticator } from "@osmosis-labs/utils";
 
+import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
+
 import {
   getOneClickTradingSessionAuthenticator,
   isAuthenticatorOneClickTradingSession,
 } from "../use-create-one-click-trading-session";
 
+jest.mock("~/config", () => ({
+  ...jest.requireActual("~/config"),
+  SPEND_LIMIT_CONTRACT_ADDRESS: "contract",
+}));
+
 describe("isAuthenticatorOneClickTradingSession", () => {
-  const key = PrivKeySecp256k1.generateRandomKey();
+  const key = new PrivKeySecp256k1(Buffer.from("key"));
   const allowedAmount = "1000";
   const resetPeriod = "day";
   const allowedMessages: AvailableOneClickTradingMessages[] = [
@@ -18,6 +25,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
   const sessionPeriod = { end: "3600000000000" }; // 1 hour in nanoseconds
 
   it("should return true for a valid One Click Trading Session authenticator", () => {
+    console.log(SPEND_LIMIT_CONTRACT_ADDRESS);
     const rawAuthenticator = getOneClickTradingSessionAuthenticator({
       key,
       allowedAmount,
