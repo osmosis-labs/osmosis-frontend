@@ -133,7 +133,11 @@ export const tableColumns = [
   columnHelper.accessor("daily", {
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
     cell: (item) => {
-      return <ColumnCellCell>{item.getValue() ? formatPretty(item.getValue()!) : "N/A"}</ColumnCellCell>;
+      return (
+        <ColumnCellCell>
+          {item.getValue() ? formatPretty(item.getValue()!) : "N/A"}
+        </ColumnCellCell>
+      );
     },
     enableSorting: true,
     sortingFn: sortDecValues,

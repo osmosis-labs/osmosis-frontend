@@ -30,21 +30,21 @@ export const StrategyTooltip = ({
 
 export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
   return (
-      <>
-        <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
-          {item.getValue()}
-        </p>
-        <div className="flex items-center gap-2">
-          <small className="text-sm text-left font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
-            {item.row.original.platform}
-          </small>
-          <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
-            <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm font-subtitle1 leading-6 1.5xs:text-xs">
-              {item.row.original.category}
-            </span>
-          </div>
+    <>
+      <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
+        {item.getValue()}
+      </p>
+      <div className="flex items-center gap-2">
+        <small className="text-left text-sm font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
+          {item.row.original.platform}
+        </small>
+        <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
+          <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm font-subtitle1 leading-6 1.5xs:text-xs">
+            {item.row.original.category}
+          </span>
         </div>
-      </>
+      </div>
+    </>
   );
 };
 
@@ -53,7 +53,8 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   const isLoadingTVL = item.row.original.isLoadingTVL;
 
   const { depositCap, depositCapOccupied } = useMemo(() => {
-    if (!item.row.original.tvl) return { depositCapOccupied: undefined, depositCap: undefined };
+    if (!item.row.original.tvl)
+      return { depositCapOccupied: undefined, depositCap: undefined };
     const depositCap = item.row.original.tvl.maxTvlUsd;
     const depositCapOccupied =
       depositCap && depositCap.toDec().gt(new Dec(0))
@@ -68,7 +69,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   }, [item.row.original.tvl, tvlUsd]);
 
   if (isLoadingTVL) {
-    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
 
   return (
@@ -129,16 +130,18 @@ export const APRCell = (item: CellContext<EarnStrategy, RatePretty>) => {
   const isLoadingAPR = item.row.original.isLoadingAPR;
 
   if (isLoadingAPR) {
-    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
   return (
-    <ColumnCellCell>{item.getValue() ? formatPretty(item.getValue()) : "N/A"}</ColumnCellCell>
-  )
-}
+    <ColumnCellCell>
+      {item.getValue() ? formatPretty(item.getValue()) : "N/A"}
+    </ColumnCellCell>
+  );
+};
 
 export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   const { t } = useTranslation();
-  const lockingDuration = dayjs.duration(item.getValue()).asDays()
+  const lockingDuration = dayjs.duration(item.getValue()).asDays();
   const hasLockingDuration = lockingDuration > 0;
 
   return (
