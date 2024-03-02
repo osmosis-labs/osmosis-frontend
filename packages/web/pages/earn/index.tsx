@@ -55,7 +55,7 @@ function Earn() {
     myStrategies,
     totalBalance,
     totalUnclaimedRewards,
-    areQueriesLoading,
+    areBalancesLoading,
     areStrategiesLoading,
     isError,
     refetch,
@@ -100,7 +100,7 @@ function Earn() {
               setTabIdx={setTabIdx}
               totalBalance={totalBalance.toString()}
               numberOfPositions={myStrategies.length}
-              isLoading={areQueriesLoading}
+              isLoading={areBalancesLoading}
             />
             {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation /> */}
@@ -118,7 +118,7 @@ function Earn() {
           <EarnRewards
             unclaimedRewards={unclaimedRewards}
             totalUnclaimedRewards={totalUnclaimedRewards}
-            areQueriesLoading={areQueriesLoading}
+            areBalancesLoading={areBalancesLoading}
           />
         </div>
       ) : (

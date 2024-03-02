@@ -6,9 +6,7 @@ import { LRUCache } from "lru-cache";
 import { type Asset, getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
-  EarnStrategy,
   EarnStrategyBalance,
-  queryEarnStrategies,
   queryEarnUserBalance,
   queryStrategyAPY,
   queryStrategyTVL,
@@ -20,10 +18,6 @@ import {
 } from "~/server/queries/numia/earn";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-
-const earnStrategiesCache = new LRUCache<string, CacheEntry>(
-  DEFAULT_LRU_OPTIONS
-);
 
 const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -40,86 +34,6 @@ const earnStrategyTVLCache = new LRUCache<string, CacheEntry>(
 const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
-
-export async function getEarnStrategies() {
-  return await cachified({
-    cache: earnStrategiesCache,
-    ttl: 1000 * 60 * 60,
-    key: "earn-strategies",
-    getFreshValue: async (): Promise<EarnStrategy[]> => {
-      try {
-        const strategies = await queryEarnStrategies();
-        const aggregatedStrategies: EarnStrategy[] = [];
-
-        for (let rawStrategy of strategies) {
-          const {
-            rewardDenoms,
-            tokenDenoms,
-            apy,
-            tvl,
-            id,
-            category,
-            lockDuration,
-            name,
-            provider,
-            type,
-            link,
-          } = rawStrategy;
-
-          const rewards = await Promise.all(
-            rewardDenoms.map((reward) =>
-              getAsset({ anyDenom: reward.symbol }).catch((_) => undefined)
-            )
-          );
-          const token = await Promise.all(
-            tokenDenoms.map((token) =>
-              getAsset({ anyDenom: token.symbol }).catch((_) => undefined)
-            )
-          );
-
-          const processedApr = new RatePretty(new Dec(apy));
-
-          // Calculation of daily %
-          const currentYear = dayjs().year();
-          const januaryFirst = dayjs(`${currentYear}-01-01`);
-          const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);
-
-          const totalDaysOfTheYear = nextYearJanuaryFirst.diff(
-            januaryFirst,
-            "day"
-          );
-
-          const processedDaily = new RatePretty(
-            processedApr.quo(new Dec(totalDaysOfTheYear))
-          );
-
-          aggregatedStrategies.push({
-            id,
-            name,
-            category,
-            provider,
-            type,
-            involvedTokens: token.filter((reward) => !!reward) as Asset[],
-            rewardTokens: rewards.filter((reward) => !!reward) as Asset[],
-            lockDuration,
-            tvl: processTVL(tvl),
-            apy: processedApr,
-            risk: 0,
-            balance: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-            hasLockingDuration: lockDuration > 0,
-            tokensType: "stablecoins", // todo
-            link,
-            daily: processedDaily,
-          });
-        }
-        return aggregatedStrategies;
-      } catch (error) {
-        throw new Error("Error while fetching strategies");
-      }
-    },
-  });
-}
-
 export async function getStrategyBalance(
   strategyId: string,
   userOsmoAddress: string
@@ -241,7 +155,8 @@ export async function getStrategiesCMSData() {
               (position) => !!position
             ) as Asset[],
             rewardAssets: rewardAssets.filter((reward) => !!reward) as Asset[],
-            hasLockingDuration: dayjs.duration(lockDuration).milliseconds() > 0,
+            hasLockingDuration:
+              dayjs.duration(lockDuration).asMilliseconds() > 0,
           });
         }
 
@@ -258,7 +173,9 @@ export async function getStrategiesCMSData() {
  * @param apr The Annual Percentage Rate
  * @returns The daily income in percentage
  */
-export function getDailyApr(apr: RatePretty) {
+export function getDailyApr(apr?: RatePretty) {
+  if (!apr) return new RatePretty(0);
+
   const currentYear = dayjs().year();
   const januaryFirst = dayjs(`${currentYear}-01-01`);
   const nextYearJanuaryFirst = dayjs(`${currentYear + 1}-01-01`);

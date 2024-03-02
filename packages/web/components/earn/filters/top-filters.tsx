@@ -60,7 +60,7 @@ export const TopFilters = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { data: earnStrategies } = api.edge.earn.getEarnStrategies.useQuery();
+  const { data: earnStrategies } = api.edge.earn.getStrategiesCMSData.useQuery();
 
   const rewardTypes = useMemo(
     () => [
@@ -127,8 +127,8 @@ export const TopFilters = ({
     () =>
       getListOptions<string>(
         earnStrategies ?? [],
-        "provider",
-        "provider",
+        "platform",
+        "platform",
         t("earnPage.rewardTypes.all")
       ),
     [earnStrategies, t]

@@ -2,6 +2,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { getDailyApr } from "~/server/queries/complex/earn/strategies";
 import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { api } from "~/utils/trpc";
 
@@ -10,11 +11,11 @@ const useGetEarnStrategies = (
   isWalletConnected: boolean
 ) => {
   const {
-    data: _strategies,
+    data: cmsStrategies,
     isLoading: areStrategiesLoading,
     isError,
     refetch,
-  } = api.edge.earn.getEarnStrategies.useQuery(undefined, {
+  } = api.edge.earn.getStrategiesCMSData.useQuery(undefined, {
     trpc: { context: { skipBatch: true } },
   });
 
@@ -29,10 +30,10 @@ const useGetEarnStrategies = (
       }
     );
 
-  const strategies: EarnStrategy[] = useMemo(
+  const _strategies: EarnStrategy[] = useMemo(
     () =>
-      (_strategies ?? []).map((_strategy) => {
-        const involvedDenoms = _strategy.involvedTokens.map(
+      (cmsStrategies ?? []).map((_strategy) => {
+        const involvedDenoms = _strategy.depositAssets.map(
           (asset) => asset.coinDenom
         );
         return {
@@ -40,13 +41,16 @@ const useGetEarnStrategies = (
           holdsTokens: involvedDenoms.every((involvedDenom) =>
             holdenDenoms?.includes(involvedDenom)
           ),
+          balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+          tvl: undefined,
+          apy: undefined,
         };
-      }),
-    [_strategies, holdenDenoms]
+      }) as EarnStrategy[],
+    [cmsStrategies, holdenDenoms]
   );
 
   const balanceQueries = api.useQueries((q) =>
-    (isWalletConnected ? strategies ?? [] : []).map((strat) =>
+    (isWalletConnected ? _strategies ?? [] : []).map((strat) =>
       q.edge.earn.getStrategyBalance(
         {
           strategyId: strat.id,
@@ -56,21 +60,77 @@ const useGetEarnStrategies = (
           enabled: userOsmoAddress !== "",
           staleTime: 1000 * 60 * 15,
           cacheTime: 1000 * 60 * 30,
+          trpc: { context: { skipBatch: true } },
         }
       )
     )
   );
 
-  const areQueriesLoading = useMemo(
+  const apyQueries = api.useQueries((q) =>
+    (_strategies ?? []).map((strat) =>
+      q.edge.earn.getStrategyAPY(
+        {
+          strategyId: strat.id,
+        },
+        {
+          staleTime: 1000 * 60 * 15,
+          cacheTime: 1000 * 60 * 30,
+          select: (data) => ({ ...data, strategyId: strat.id }),
+          trpc: { context: { skipBatch: true } },
+        }
+      )
+    )
+  );
+
+  const tvlQueries = api.useQueries((q) =>
+    (_strategies ?? []).map((strat) =>
+      q.edge.earn.getStrategyTVL(
+        {
+          strategyId: strat.id,
+        },
+        {
+          staleTime: 1000 * 60 * 15,
+          cacheTime: 1000 * 60 * 30,
+          select: (data) => ({ ...data, strategyId: strat.id }),
+          trpc: { context: { skipBatch: true } },
+        }
+      )
+    )
+  );
+
+  const strategies: EarnStrategy[] = useMemo(
+    () =>
+      _strategies.map((strat) => {
+        const tvlQuery = tvlQueries.find(
+          (tvlQuery) => tvlQuery.data?.strategyId === strat.id
+        );
+        const apyQuery = apyQueries.find(
+          (apyQuery) => apyQuery.data?.strategyId === strat.id
+        );
+        return {
+          ...strat,
+          tvl: tvlQuery?.data,
+          apy: apyQuery?.data,
+          daily: getDailyApr(apyQuery?.data?.apy),
+          isLoadingTVL: tvlQuery?.isLoading,
+          isLoadingAPR: apyQuery?.isLoading,
+          isErrorTVL: tvlQuery?.isError,
+          isErrorAPR: apyQuery?.isError,
+        };
+      }),
+    [_strategies, apyQueries, tvlQueries]
+  );
+
+  const areBalancesLoading = useMemo(
     () => balanceQueries.some((q) => q.isLoading === true),
     [balanceQueries]
   );
 
-  const additionalStrategiesData = useMemo(() => {
+  const additionalBalanceData = useMemo(() => {
     let accumulatedBalance = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     let accumulatedUnclaimedRewards = new PricePretty(DEFAULT_VS_CURRENCY, 0);
     const unclaimedRewards: {
-      provider: EarnStrategy["provider"];
+      provider: EarnStrategy["platform"];
       id: string;
     }[] = [];
     const myStrategies: EarnStrategy[] = [];
@@ -100,7 +160,7 @@ const useGetEarnStrategies = (
           unclaimedRewards.push({
             id: balanceQuery.data.id,
             provider:
-              earnStrategy?.provider ?? ("" as EarnStrategy["provider"]),
+              earnStrategy?.platform ?? ("" as EarnStrategy["platform"]),
           });
         }
       }
@@ -116,8 +176,8 @@ const useGetEarnStrategies = (
 
   return {
     strategies,
-    ...additionalStrategiesData,
-    areQueriesLoading,
+    ...additionalBalanceData,
+    areBalancesLoading,
     areStrategiesLoading,
     isError,
     refetch,

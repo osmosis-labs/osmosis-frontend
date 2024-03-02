@@ -104,7 +104,7 @@ export interface StrategyTVL {
 export interface RawStrategyCMSData {
   id: string;
   name: string;
-  platfrom: string;
+  platform: string;
   category: EarnStrategyCategory;
   type: EarnStrategyType;
   link: string;
@@ -139,7 +139,7 @@ export interface StrategyCMSData {
   /**
    * Platform providing the earn strategy.
    */
-  platfrom: string;
+  platform: string;
   /**
    * Broad category classification for the strategy.
    *
@@ -231,24 +231,16 @@ export interface EarnStrategyBalance {
 
 export type TokensType = "stablecoins" | "correlated" | "bluechip";
 
-export interface EarnStrategy {
-  id: string;
-  name: string;
-  category: EarnStrategyCategory;
-  provider: EarnStrategyProvider;
-  type: EarnStrategyType;
-  involvedTokens: Asset[];
-  rewardTokens: Asset[];
-  lockDuration: number;
-  tvl: StrategyTVL;
-  apy: RatePretty;
-  risk: number;
+export interface EarnStrategy extends StrategyCMSData {
   balance: PricePretty;
-  holdsTokens?: boolean;
-  hasLockingDuration: boolean;
-  tokensType: TokensType;
-  link: string;
-  daily: RatePretty;
+  holdsTokens: boolean;
+  daily?: RatePretty;
+  tvl?: StrategyTVL;
+  apy?: StrategyAPY;
+  isLoadingTVL?: boolean;
+  isLoadingAPR?: boolean;
+  isErrorTVL?: boolean;
+  isErrorAPR?: boolean;
 }
 
 /** Queries numia for a earn strategies list. */

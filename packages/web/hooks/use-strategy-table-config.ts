@@ -34,13 +34,14 @@ export const useStrategyTableConfig = (
     state: {
       columnVisibility: {
         balance: showBalance,
-        involvedTokens: !isMobile,
-        involvedTokens_coinDenom: false,
+        depositAssets: !isMobile,
         provider: false,
         holdsTokens: false,
         hasLockingDuration: false,
         type: false,
-        tokensType: false,
+        tags: false,
+        platform: false,
+        depositAssets_coinDenom: false,
       },
       globalFilter: filters!.search,
       columnFilters,

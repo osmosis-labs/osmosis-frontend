@@ -13,11 +13,11 @@ import { api } from "~/utils/trpc";
 export const EarnRewards = ({
   totalUnclaimedRewards,
   unclaimedRewards,
-  areQueriesLoading,
+  areBalancesLoading,
 }: {
   totalUnclaimedRewards: PricePretty;
-  unclaimedRewards: { id: string; provider: EarnStrategy["provider"] }[];
-  areQueriesLoading: boolean;
+  unclaimedRewards: { id: string; provider: EarnStrategy["platform"] }[];
+  areBalancesLoading: boolean;
 }) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
@@ -138,7 +138,7 @@ export const EarnRewards = ({
         <Button
           disabled={
             totalUnclaimedRewards.toDec().isZero() ||
-            areQueriesLoading ||
+            areBalancesLoading ||
             account?.txTypeInProgress !== "" ||
             filteredUnclaimedRewards.length === 0
           }
