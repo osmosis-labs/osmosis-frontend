@@ -38,6 +38,8 @@ export const Staking: React.FC = observer(() => {
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
+  console.log("showValidatorModal: ", showValidatorModal);
+
   const { t } = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics({
@@ -142,23 +144,23 @@ export const Staking: React.FC = observer(() => {
     return delegationsMap;
   }, [userValidatorDelegations]);
 
-  const usersValidatorSetPreferenceMap = useMemo(() => {
-    const validatorSetPreferenceMap = new Map<string, string>();
+  // const usersValidatorSetPreferenceMap = useMemo(() => {
+  //   const validatorSetPreferenceMap = new Map<string, string>();
 
-    userValidatorPreferences.forEach(
-      ({
-        val_oper_address,
-        weight,
-      }: {
-        val_oper_address: string;
-        weight: string;
-      }) => {
-        validatorSetPreferenceMap.set(val_oper_address, weight);
-      }
-    );
+  //   userValidatorPreferences.forEach(
+  //     ({
+  //       val_oper_address,
+  //       weight,
+  //     }: {
+  //       val_oper_address: string;
+  //       weight: string;
+  //     }) => {
+  //       validatorSetPreferenceMap.set(val_oper_address, weight);
+  //     }
+  //   );
 
-    return validatorSetPreferenceMap;
-  }, [userValidatorPreferences]);
+  //   return validatorSetPreferenceMap;
+  // }, [userValidatorPreferences]);
 
   const validatorSquadModalAction: StakeOrEdit = Boolean(
     Number(stakeTabAmountConfig.amount)
@@ -417,16 +419,18 @@ export const Staking: React.FC = observer(() => {
           unbondings={groupByCompletionTime(unbondingBalances)}
         />
       )}
-      <ValidatorSquadModal
-        isOpen={showValidatorModal}
-        onRequestClose={() => setShowValidatorModal(false)}
-        usersValidatorsMap={usersValidatorsMap}
-        usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
-        validators={activeValidators}
-        action={validatorSquadModalAction}
-        coin={coin}
-        queryValidators={queryValidators}
-      />
+      {showValidatorModal && (
+        <ValidatorSquadModal
+          isOpen={showValidatorModal}
+          onRequestClose={() => setShowValidatorModal(false)}
+          usersValidatorsMap={usersValidatorsMap}
+          // usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
+          validators={activeValidators}
+          action={validatorSquadModalAction}
+          coin={coin}
+          queryValidators={queryValidators}
+        />
+      )}
       <ValidatorNextStepModal
         setShowStakeLearnMoreModal={() => setShowStakeLearnMoreModal(true)}
         isNewUser={isNewUser}
