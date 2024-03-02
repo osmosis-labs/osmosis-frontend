@@ -35,6 +35,25 @@ import { TransmuterPoolCodeIds } from "../env";
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
+function getNumPools() {
+  return cachified({
+    cache: poolsCache,
+    key: "num-pools",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
+    getFreshValue: () => queryNumPools(),
+  });
+}
+function getPoolmanagerParams() {
+  return cachified({
+    cache: poolsCache,
+    key: "pool-manager-params",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
+    getFreshValue: () => queryPoolmanagerParams(),
+  });
+}
+
 /** Get pools from indexer that are listed in asset list. */
 export async function getPoolsFromIndexer({
   poolIds,
@@ -47,7 +66,7 @@ export async function getPoolsFromIndexer({
     ttl: 5_000, // 5 seconds
     staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
-      const numPools = await queryNumPools();
+      const numPools = await getNumPools();
       const { pools } = await queryFilteredPools(
         {
           min_liquidity: 0,
@@ -144,9 +163,11 @@ async function fetchAndProcessAllPools({
   return cachified({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
+    ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: 1000 * 60, // 60 seconds
     async getFreshValue() {
-      const poolManagerParamsPromise = queryPoolmanagerParams();
-      const numPoolsPromise = queryNumPools();
+      const poolManagerParamsPromise = getPoolmanagerParams();
+      const numPoolsPromise = getNumPools();
 
       const [poolManagerParams, numPools] = await Promise.all([
         poolManagerParamsPromise,
@@ -183,7 +204,6 @@ async function fetchAndProcessAllPools({
           filteredPoolsResponse.pagination.total_pools.toString(),
       };
     },
-    ttl: 30 * 1000, // 30 seconds
   });
 }
 
