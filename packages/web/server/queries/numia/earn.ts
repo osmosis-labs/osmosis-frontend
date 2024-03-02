@@ -40,23 +40,6 @@ export type EarnStrategyToken = {
   symbol: string;
 };
 
-export type RawEarnStrategy = {
-  /**
-   * A unique identifier to the element, with some elements it has reference to the contract address but for example for a native pool it is the pool ID
-   */
-  id: string;
-  name: string;
-  category: EarnStrategyCategory;
-  provider: EarnStrategyProvider;
-  type: EarnStrategyType;
-  lockDuration: number;
-  tvl: RawStrategyTVL;
-  apy: number;
-  tokenDenoms: EarnStrategyToken[];
-  rewardDenoms: EarnStrategyToken[];
-  link: string;
-};
-
 export interface RawEarnStrategyBalance {
   strategy: string;
   balance: {
@@ -241,12 +224,6 @@ export interface EarnStrategy extends StrategyCMSData {
   isLoadingAPR?: boolean;
   isErrorTVL?: boolean;
   isErrorAPR?: boolean;
-}
-
-/** Queries numia for a earn strategies list. */
-export function queryEarnStrategies(): Promise<RawEarnStrategy[]> {
-  const url = new URL("/earn/strategies", NUMIA_BASE_URL);
-  return apiClient(url.toString());
 }
 
 export function queryEarnUserBalance(
