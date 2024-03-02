@@ -525,7 +525,8 @@
       "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
     },
     "profile": {
-      "sessionExpired": "Sessão expirada"
+      "sessionExpired": "Sessão expirada",
+      "failedToGetSession": "Falha ao obter o autenticador de sessão. Por favor, tente novamente."
     }
   },
   "pool": {

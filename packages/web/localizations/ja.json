@@ -525,7 +525,8 @@
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     },
     "profile": {
-      "sessionExpired": "セッションの有効期限が切れ"
+      "sessionExpired": "セッションの有効期限が切れ",
+      "failedToGetSession": "セッション認証子の取得に失敗しました。もう一度試してください。"
     }
   },
   "pool": {

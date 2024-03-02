@@ -525,7 +525,8 @@
       "description": "Twoja sesja handlu 1-Click rozpocznie się w momencie zatwierdzenia transakcji w wybranym portfelu."
     },
     "profile": {
-      "sessionExpired": "Sesja wygasła"
+      "sessionExpired": "Sesja wygasła",
+      "failedToGetSession": "Nie udało się uzyskać uwierzytelnienia sesji. Proszę spróbuj ponownie."
     }
   },
   "pool": {

@@ -525,7 +525,8 @@
       "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
     },
     "profile": {
-      "sessionExpired": "La session a expiré"
+      "sessionExpired": "La session a expiré",
+      "failedToGetSession": "Échec de l'obtention de l'authentificateur de session. Veuillez réessayer."
     }
   },
   "pool": {

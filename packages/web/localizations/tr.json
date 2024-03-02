@@ -525,7 +525,8 @@
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     },
     "profile": {
-      "sessionExpired": "Oturum süresi doldu"
+      "sessionExpired": "Oturum süresi doldu",
+      "failedToGetSession": "Oturum kimlik doğrulayıcısı alınamadı. Lütfen tekrar deneyin."
     }
   },
   "pool": {
