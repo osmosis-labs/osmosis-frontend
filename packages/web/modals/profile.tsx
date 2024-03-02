@@ -506,6 +506,7 @@ const ProfileOneClickTradingSettings = ({
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
     useOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { t } = useTranslation();
 
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
@@ -592,7 +593,7 @@ const ProfileOneClickTradingSettings = ({
         if (!sessionAuthenticator) {
           displayToast(
             {
-              message: "Failed to get session authenticator. Please try again.",
+              message: t("oneClickTrading.profile.sessionExpired"),
             },
             ToastType.ERROR
           );
