@@ -13,6 +13,6 @@ type PoolApr = {
 
 /** Queries numia for a breakdown of APRs per pool. */
 export function queryPoolAprs(): Promise<PoolApr[]> {
-  const url = new URL("/pools_apr", NUMIA_BASE_URL);
+  const url = new URL("/pools_apr_v2", NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
