@@ -8,7 +8,6 @@ import { z } from "zod";
 
 import { ExcludedExternalBoostPools } from "~/config/feature-flag";
 import { queryPriceRangeApr } from "~/server/queries/imperator";
-import { queryLockableDurations } from "~/server/queries/osmosis";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
@@ -173,24 +172,4 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
   }
 
   return new RatePretty(new Dec(value).quo(new Dec(100)));
-}
-
-export function getLockableDurations() {
-  return cachified({
-    cache: incentivePoolsCache,
-    key: "lockable-durations",
-    ttl: 1000 * 60 * 10, // 10 mins
-    getFreshValue: async () => {
-      const { lockable_durations } = await queryLockableDurations();
-
-      return lockable_durations
-        .map((durationStr: string) => {
-          return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
-        })
-        .slice()
-        .sort((v1, v2) => {
-          return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
-        });
-    },
-  });
 }

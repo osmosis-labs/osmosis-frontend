@@ -17,10 +17,10 @@ import {
   getAsset,
   mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
+import { getLockableDurations } from "~/server/queries/complex/osmosis";
 import { getPools } from "~/server/queries/complex/pools";
 import {
   getConcentratedRangePoolApr,
-  getLockableDurations,
   getPoolIncentives,
 } from "~/server/queries/complex/pools/incentives";
 import { getValidatorInfo } from "~/server/queries/complex/staking/validator";

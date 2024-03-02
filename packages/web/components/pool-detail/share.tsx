@@ -25,7 +25,7 @@ import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLockTokenConfig,
@@ -39,28 +39,29 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import type { Pool } from "~/server/queries/complex/pools";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
+
+import { Spinner } from "../loaders";
 
 const E = EventName.PoolDetail;
 
-export const SharePool: FunctionComponent<{ poolId: string }> = observer(
-  ({ poolId }) => {
+export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
+  ({ pool }) => {
     const router = useRouter();
     const {
       chainStore,
       queriesStore,
       accountStore,
       priceStore,
-      queriesExternalStore: {
-        queryPoolFeeMetrics,
-        queryAccountsPoolRewards,
-        queryPoolAprs,
-      },
+      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
       derivedDataStore,
     } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
+    const { isLoading: isWalletLoading } = useWalletSelect();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -78,18 +79,35 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const address = account?.address ?? "";
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
-    const queryPoolApr = queryPoolAprs.getForPool(poolId);
+
+    const { data: userSharePool } = api.edge.pools.getUserSharePool.useQuery(
+      {
+        poolId: pool.id,
+        userOsmoAddress: address,
+      },
+      {
+        enabled: !isWalletLoading && Boolean(address),
+      }
+    );
+    const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
+      poolId: pool.id,
+    });
+    const { data: superfluidPoolIds } =
+      api.edge.pools.getSuperfluidPoolIds.useQuery();
+    const isSuperfluid = superfluidPoolIds?.includes(pool.id) ?? false;
+
+    const { data: poolIncentives, isLoading: isPoolIncentivesLoading } =
+      api.edge.pools.getPoolIncentives.useQuery({
+        poolId: pool.id,
+      });
 
     // initialize pool data stores once root pool store is loaded
-    const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
-      typeof poolId === "string" && Boolean(poolId)
-        ? derivedDataStore.getForPool(poolId as string)
-        : {
-            sharePoolDetail: undefined,
-            superfluidPoolDetail: undefined,
-            poolBonding: undefined,
-          };
-    const pool = sharePoolDetail?.querySharePool;
+    const { superfluidPoolDetail, poolBonding } = pool.id
+      ? derivedDataStore.getForPool(pool.id as string)
+      : {
+          superfluidPoolDetail: undefined,
+          poolBonding: undefined,
+        };
     const { delegateSharesToValidator } = useSuperfluidPool();
 
     // feature flag check
@@ -101,27 +119,21 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     }, [pool?.type, flags.concentratedLiquidity, router]);
 
     // user analytics
-    const { poolName, poolWeight } = useMemo(
+    const { poolName } = useMemo(
       () => ({
-        poolName: pool?.poolAssets
-          .map((poolAsset) => poolAsset.amount.denom)
-          .join(" / "),
-        poolWeight: pool?.weightedPoolInfo?.assets
-          .map((poolAsset) => poolAsset.weightFraction.toString())
+        poolName: pool.reserveCoins
+          .map((poolAsset) => poolAsset.denom)
           .join(" / "),
       }),
-      [pool?.poolAssets, pool?.weightedPoolInfo?.assets]
+      [pool]
     );
     const { logEvent } = useAmplitudeAnalytics({
       onLoadEvent: [
         E.pageViewed,
         {
-          poolId,
+          poolId: pool.id,
           poolName,
-          poolWeight,
-          ...(superfluidPoolDetail && {
-            isSuperfluidPool: superfluidPoolDetail.isSuperfluid,
-          }),
+          isSuperfluidPool: isSuperfluid,
         },
       ],
     });
@@ -164,19 +176,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     // handle user actions
     const baseEventInfo = useMemo(
       () => ({
-        poolId,
+        poolId: pool.id,
         poolName,
-        poolWeight,
-        isSuperfluidPool: superfluidPoolDetail?.isSuperfluid ?? false,
-        isStableswapPool: pool?.type === "stable",
+        isSuperfluidPool: isSuperfluid,
+        isStableswapPool: pool.type === "stable",
       }),
-      [
-        pool?.type,
-        poolId,
-        poolName,
-        poolWeight,
-        superfluidPoolDetail?.isSuperfluid,
-      ]
+      [pool, poolName, isSuperfluid]
     );
     const onAddLiquidity = useCallback(
       (result: Promise<void>, config: ObservableAddLiquidityConfig) => {
@@ -250,10 +255,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     );
     const onUnlockTokens = useCallback(
       (duration: Duration) => {
-        const lockIds = sharePoolDetail?.userLockedAssets.reduce<string[]>(
+        const lockIds = userSharePool!.lockedLocks.reduce<string[]>(
           (foundLockIds, lock) => {
             if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
-              return foundLockIds.concat(...lock.lockIds);
+              return foundLockIds.concat(lock.ID);
             }
             return foundLockIds;
           },
@@ -274,12 +279,11 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
           logEvent([E.unbondAllCompleted, unlockEvent]);
         });
       },
-      [sharePoolDetail?.userLockedAssets, baseEventInfo, logEvent, unlockTokens]
+      [userSharePool, baseEventInfo, logEvent, unlockTokens]
     );
-    // TODO: re-add unpool functionality
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress) => {
-        if (!baseEventInfo.isSuperfluidPool || !poolId) return;
+        if (!baseEventInfo.isSuperfluidPool || !pool.id) return;
 
         const poolInfo = {
           ...baseEventInfo,
@@ -292,13 +296,13 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         logEvent([E.superfluidStakeStarted, poolInfo]);
 
-        delegateSharesToValidator(poolId, validatorAddress, lockLPTokensConfig)
+        delegateSharesToValidator(pool.id, validatorAddress, lockLPTokensConfig)
           .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
           .finally(() => setShowSuperfluidValidatorsModal(false));
       },
       [
+        pool,
         baseEventInfo,
-        poolId,
         queryCosmos.queryValidators,
         isSuperfluidEnabled,
         logEvent,
@@ -311,7 +315,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
     const additionalRewardsByBonding = queryAccountPoolRewards
-      .getUsdRewardsForPool(poolId)
+      .getUsdRewardsForPool(pool.id)
       ?.day.mul(highestAPRDailyPeriodicRate)
       .maxDecimals(3)
       .inequalitySymbol(false);
@@ -319,6 +323,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const setShowModal = useCallback(
       (setter: Function, show: boolean) => () => setter(show),
       []
+    );
+
+    console.log(
+      userSharePool?.totalShares?.maxDecimals(6).hideDenom(true).toString()
     );
 
     return (
@@ -341,7 +349,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         )}
         {lockLPTokensConfig && showLockLPTokenModal && (
           <LockTokensModal
-            poolId={poolId}
+            poolId={pool.id}
             isOpen={showLockLPTokenModal}
             title={t("lockToken.title")}
             onRequestClose={() => setShowLockLPTokenModal(false)}
@@ -349,8 +357,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             onLockToken={onLockToken}
           />
         )}
-        {superfluidPoolDetail?.isSuperfluid &&
-          pool &&
+        {isSuperfluid &&
+          sharePool &&
           lockLPTokensConfig &&
           showSuperfluidValidatorModal && (
             <SuperfluidValidatorModal
@@ -363,7 +371,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 superfluidPoolDetail?.userUpgradeableSharePoolLockIds
                   ? superfluidPoolDetail.userUpgradeableSharePoolLockIds.amount // is delegating amount from existing lockup
                   : new CoinPretty(
-                      pool.shareCurrency, // is delegating amount from new/pending lockup
+                      sharePool.currency, // is delegating amount from new/pending lockup
                       lockLPTokensConfig.amount !== ""
                         ? lockLPTokensConfig.getAmountPrimitive().amount
                         : new Dec(0)
@@ -397,19 +405,17 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
               >
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-3">
-                    {pool && (
-                      <PoolAssetsIcon
-                        assets={pool.poolAssets.map((asset) => ({
-                          coinDenom: asset.amount.denom,
-                          coinImageUrl: asset.amount.currency.coinImageUrl,
-                        }))}
-                        size="sm"
-                      />
-                    )}
+                    <PoolAssetsIcon
+                      assets={pool.reserveCoins.map((asset) => ({
+                        coinDenom: asset.denom,
+                        coinImageUrl: asset.currency.coinImageUrl,
+                      }))}
+                      size="sm"
+                    />
                     <h5>{poolName}</h5>
                   </div>
                   <div className="flex flex-col gap-1">
-                    {superfluidPoolDetail?.isSuperfluid && (
+                    {isSuperfluid && (
                       <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
                         <Image
                           alt=""
@@ -420,7 +426,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         {t("pool.superfluidEnabled")}
                       </span>
                     )}
-                    {pool?.type === "stable" && (
+                    {pool.type === "stable" && (
                       <div className="body2 text-gradient-positive flex items-center gap-1.5">
                         <Image
                           alt=""
@@ -440,7 +446,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     </span>
                     <h4 className="text-osmoverse-100">
                       {queryPoolFeeMetrics
-                        .getPoolFeesMetrics(poolId, priceStore)
+                        .getPoolFeesMetrics(pool.id, priceStore)
                         .volume24h.toString()}
                     </h4>
                   </div>
@@ -449,7 +455,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.liquidity")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {sharePoolDetail?.totalValueLocked.toString()}
+                      {pool.totalFiatValueLocked.toString()}
                     </h4>
                   </div>
                   <div className="space-y-2">
@@ -457,40 +463,41 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.swapFee")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {pool?.swapFee.toString() ?? ""}
+                      {pool.spreadFactor.toString()}
                     </h4>
                   </div>
                 </div>
               </div>
               <div ref={poolBreakdownRef}>
-                <AssetBreakdownChart
-                  assets={
-                    pool?.poolAssets.map((poolAsset) => {
+                {sharePool && (
+                  <AssetBreakdownChart
+                    assets={pool.reserveCoins.map((poolAsset) => {
                       const weights: {
                         weight: IntPretty;
                         weightFraction: RatePretty;
-                      } = pool.weightedPoolInfo?.assets.find(
-                        (asset) =>
-                          asset.denom ===
-                          poolAsset.amount.currency.coinMinimalDenom
-                      ) ?? {
-                        weight: new IntPretty(1), // Assume stable pools have even weight
+                      } = {
+                        weight: new IntPretty(
+                          sharePool.weights.find(
+                            ({ denom }) =>
+                              poolAsset.currency.coinMinimalDenom === denom
+                          )?.weight ?? new Dec(0)
+                        ),
                         weightFraction: new RatePretty(
-                          new Dec(1).quo(new Dec(pool.poolAssets.length))
+                          sharePool.weights.find(
+                            ({ denom }) =>
+                              poolAsset.currency.coinMinimalDenom === denom
+                          )?.weightFraction ?? new Dec(1)
                         ),
                       };
 
                       return {
                         ...weights,
-                        ...poolAsset,
+                        amount: poolAsset,
                       };
-                    }) ?? []
-                  }
-                  totalWeight={
-                    pool?.weightedPoolInfo?.totalWeight ??
-                    new IntPretty(pool?.poolAssets.length ?? 0)
-                  }
-                />
+                    })}
+                    totalWeight={new IntPretty(sharePool.totalWeight)}
+                  />
+                )}
               </div>
             </div>
             <Button
@@ -518,7 +525,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
               </div>
             </Button>
           </div>
-          {sharePoolDetail?.userStats && (
+          {userSharePool && userSharePool.totalValue.toDec().isPositive() && (
             <div className="flex w-full gap-4 1.5lg:flex-col">
               <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
                 <span className="body2 text-osmoverse-300">
@@ -527,19 +534,19 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                   <div className="flex shrink-0 flex-col gap-1">
                     <h4 className="text-osmoverse-100">
-                      {sharePoolDetail.userStats.totalShareValue.toString()}
+                      {userSharePool.totalValue.toString()}
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {
-                        shares: sharePoolDetail.userStats.totalShares
-                          .maxDecimals(6)
+                        shares: userSharePool
+                          .totalShares!.maxDecimals(6)
                           .hideDenom(true)
                           .toString(),
                       })}
                     </h6>
                   </div>
 
-                  <PoolComposition assets={sharePoolDetail.userPoolAssets} />
+                  <PoolComposition assets={userSharePool.totalCoins} />
                 </div>
               </div>
 
@@ -549,11 +556,11 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     prices={[
                       {
                         label: t("pool.bonded"),
-                        price: sharePoolDetail.userStats.bondedValue,
+                        price: userSharePool.lockedValue,
                       },
                       {
                         label: t("pool.available"),
-                        price: sharePoolDetail.userStats.unbondedValue,
+                        price: userSharePool.availableValue,
                       },
                     ]}
                   />
@@ -568,13 +575,13 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.dailyEarnAmount", {
                         amount:
                           queryAccountPoolRewards
-                            .getUsdRewardsForPool(poolId)
+                            .getUsdRewardsForPool(pool.id)
                             ?.day.toString() ?? "$0",
                       })}
                     </h4>
                   </div>
 
-                  {sharePoolDetail?.userAvailableValue.toDec().gt(new Dec(0)) &&
+                  {userSharePool.availableValue.toDec().gt(new Dec(0)) &&
                     bondDurations.some((duration) => duration.bondable) && (
                       <ArrowButton
                         className="text-left"
@@ -633,11 +640,15 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         <h6 className="md:text-h6 md:font-h6">
                           {t("pool.earnSwapFees")}
                         </h6>
-                        <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
-                          queryPoolApr?.swapFees
-                            ? queryPoolApr.swapFees.maxDecimals(2).toString()
-                            : ""
-                        } ${t("pool.APR")}`}</h6>
+                        {isPoolIncentivesLoading ? (
+                          <Spinner />
+                        ) : (
+                          poolIncentives?.aprBreakdown?.swapFee && (
+                            <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee
+                              .maxDecimals(2)
+                              .toString()} ${t("pool.APR")}`}</h6>
+                          )
+                        )}
                       </div>
                     </div>
                     <span className="body2 text-osmoverse-200">
@@ -645,29 +656,31 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     </span>
                   </div>
                   <div className="flex flex-col gap-4 lg:w-full">
-                    <div className="hidden flex-col items-end lg:flex">
-                      <h4 className="text-osmoverse-100">
-                        {sharePoolDetail?.userAvailableValue.toString()}
-                      </h4>
-                      <h6 className="subtitle1 text-osmoverse-300">
-                        {t("pool.sharesAmount", {
-                          shares: formatPretty(
-                            queryOsmosis.queryGammPoolShare
-                              .getAvailableGammShare(address, poolId)
-                              .hideDenom(true),
-                            { maxDecimals: 4 }
-                          ),
-                        })}
-                      </h6>
-                    </div>
+                    {userSharePool && (
+                      <div className="hidden flex-col items-end lg:flex">
+                        <h4 className="text-osmoverse-100">
+                          {userSharePool.availableValue.toString()}
+                        </h4>
+                        {userSharePool.availableShares && (
+                          <h6 className="subtitle1 text-osmoverse-300">
+                            {t("pool.sharesAmount", {
+                              shares: formatPretty(
+                                userSharePool.availableShares.hideDenom(true),
+                                { maxDecimals: 4 }
+                              ),
+                            })}
+                          </h6>
+                        )}
+                      </div>
+                    )}
                     <div className="flex shrink-0 flex-wrap place-content-end gap-4 xs:shrink">
                       <Button
                         className="w-fit shrink-0 xs:w-full"
                         mode="secondary"
-                        disabled={queryOsmosis.queryGammPoolShare
-                          .getAvailableGammShare(address, poolId)
-                          .toDec()
-                          .isZero()}
+                        disabled={
+                          userSharePool?.availableShares?.toDec().isZero() ??
+                          true
+                        }
                         onClick={() => {
                           logEvent([
                             E.removeLiquidityClicked,
@@ -695,19 +708,25 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right lg:hidden">
-                  <h4 className="text-osmoverse-100">
-                    {sharePoolDetail?.userAvailableValue.toString()}
-                  </h4>
-                  <h6 className="subtitle1 text-osmoverse-300">
-                    {t("pool.sharesAmount", {
-                      shares: formatPretty(
-                        queryOsmosis.queryGammPoolShare
-                          .getAvailableGammShare(address, poolId)
-                          .hideDenom(true),
-                        { maxDecimals: 8 }
-                      ),
-                    })}
-                  </h6>
+                  {userSharePool ? (
+                    <>
+                      <h4 className="text-osmoverse-100">
+                        {userSharePool.availableValue.toString()}
+                      </h4>
+                      {userSharePool.availableShares && (
+                        <h6 className="subtitle1 text-osmoverse-300">
+                          {t("pool.sharesAmount", {
+                            shares: formatPretty(
+                              userSharePool.availableShares.hideDenom(true),
+                              { maxDecimals: 8 }
+                            ),
+                          })}
+                        </h6>
+                      )}
+                    </>
+                  ) : (
+                    <Spinner />
+                  )}
                 </div>
               </div>
             </div>
@@ -737,7 +756,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     </div>
                     <span className="body2 text-osmoverse-200">
                       {t("pool.bondLiquidityCaption")}
-                      {superfluidPoolDetail?.isSuperfluid &&
+                      {isSuperfluid &&
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
                   </div>
@@ -798,17 +817,17 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         setShowSuperfluidValidatorsModal(true);
                       }}
                       splashImageSrc={
-                        sharePoolDetail && sharePoolDetail.isIncentivized
-                          ? sharePoolDetail.lockableDurations.length > 0 &&
-                            sharePoolDetail.lockableDurations[0].asDays() ===
+                        sharePool
+                          ? sharePool.lockableDurations.length > 0 &&
+                            sharePool.lockableDurations[0].asDays() ===
                               bondDuration.duration.asDays()
                             ? "/images/small-vial.svg"
-                            : sharePoolDetail.lockableDurations.length > 1 &&
-                              sharePoolDetail.lockableDurations[1].asDays() ===
+                            : sharePool.lockableDurations.length > 1 &&
+                              sharePool.lockableDurations[1].asDays() ===
                                 bondDuration.duration.asDays()
                             ? "/images/medium-vial.svg"
-                            : sharePoolDetail.lockableDurations.length > 2 &&
-                              sharePoolDetail.lockableDurations[2].asDays() ===
+                            : sharePool.lockableDurations.length > 2 &&
+                              sharePool.lockableDurations[2].asDays() ===
                                 bondDuration.duration.asDays()
                             ? "/images/large-vial.svg"
                             : undefined

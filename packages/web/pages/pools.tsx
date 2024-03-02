@@ -365,7 +365,6 @@ export const MyPoolsSection = observer(() => {
                   userValue,
                   reserveCoins,
                   isSuperfluid,
-                  sharePoolInfo,
                 }) => {
                   const poolLiqudity_ = formatPretty(poolLiquidity);
 
@@ -418,9 +417,6 @@ export const MyPoolsSection = observer(() => {
                             poolId: id,
                             poolName: reserveCoins
                               .map((coin) => coin.currency.coinDenom)
-                              .join(" / "),
-                            poolWeight: sharePoolInfo?.weights
-                              .map(({ weight }) => weight.toString())
                               .join(" / "),
                             isSuperfluidPool: isSuperfluid,
                           },

@@ -3,6 +3,7 @@ import { estimateExitSwap } from "@osmosis-labs/math";
 import { Currency } from "@osmosis-labs/types";
 
 import { StablePoolRawResponse, WeightedPoolRawResponse } from "../../osmosis";
+import { getLockableDurations } from "../osmosis";
 import { getPool } from ".";
 
 /** Calculates underlying coins from given GAMM shares (without decimals). */
@@ -44,32 +45,52 @@ export async function getGammShareUnderlyingCoins({
 /** Gets info for a share pool.
  *  @throws if pool is not share pool (stable or weighted). */
 export async function getSharePool(poolId: string) {
-  const pool = await getPool({ poolId });
+  const [pool, lockableDurations] = await Promise.all([
+    getPool({ poolId }),
+    getLockableDurations(),
+  ]);
+
+  console.log(lockableDurations);
+
+  const basePool = {
+    ...pool,
+    // narrow the type
+    type: pool.type as "weighted" | "stable",
+    raw: pool.raw as Omit<
+      WeightedPoolRawResponse | StablePoolRawResponse,
+      "@type"
+    >,
+    currency: makeGammShareCurrency(poolId),
+    lockableDurations,
+  };
 
   if (pool.type === "weighted") {
     const poolRaw = pool.raw as WeightedPoolRawResponse;
     const totalWeight = new Dec(poolRaw.total_weight);
 
     return {
+      ...basePool,
       weights: poolRaw.pool_assets.map(({ token: { denom }, weight }) => ({
         denom,
-        weight: new RatePretty(new Dec(weight).quoTruncate(totalWeight)),
+        weight: new Dec(weight).truncate(),
+        weightFraction: new RatePretty(new Dec(weight).quo(totalWeight)),
       })),
+      totalWeight: totalWeight.truncate(),
     };
   }
 
   if (pool.type === "stable") {
     const poolRaw = pool.raw as StablePoolRawResponse;
-    const shareDenom = poolRaw.total_shares.denom;
-    const totalWeight = new Dec(
-      (pool.raw as StablePoolRawResponse).total_shares.amount
-    );
+    const totalWeight = new Dec(poolRaw.pool_liquidity.length);
 
     return {
-      weights: poolRaw.scaling_factors.map((scalingFactor) => ({
-        denom: shareDenom,
-        weight: new RatePretty(new Dec(scalingFactor).quoTruncate(totalWeight)),
+      ...basePool,
+      weights: poolRaw.pool_liquidity.map(({ denom }) => ({
+        denom,
+        weight: new Int(1),
+        weightFraction: new RatePretty(new Dec(1).quo(totalWeight)),
       })),
+      totalWeight: totalWeight.truncate(),
     };
   }
 

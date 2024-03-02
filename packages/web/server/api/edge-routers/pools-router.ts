@@ -13,6 +13,7 @@ import {
   isIncentivePoolFiltered,
 } from "~/server/queries/complex/pools/incentives";
 import { getCachedPoolMarketMetricsMap } from "~/server/queries/complex/pools/market";
+import { getSharePool } from "~/server/queries/complex/pools/share";
 import { getSuperfluidPoolIds } from "~/server/queries/complex/pools/superfluid";
 import {
   getUserPools,
@@ -49,10 +50,22 @@ export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) => getPool({ poolId })),
+  getSharePool: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId } }) => getSharePool(poolId)),
   getUserPools: publicProcedure
     .input(UserOsmoAddressSchema.required())
     .query(async ({ input: { userOsmoAddress } }) =>
       getUserPools(userOsmoAddress).then((pools) => sort(pools, "userValue"))
+    ),
+  getUserSharePool: publicProcedure
+    .input(
+      z.object({ poolId: z.string() }).merge(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input: { poolId, userOsmoAddress } }) =>
+      getUserSharePools(userOsmoAddress, [poolId]).then(
+        (pools) => pools[0] ?? null
+      )
     ),
   getUserSharePools: publicProcedure
     .input(UserOsmoAddressSchema.required())
@@ -142,5 +155,10 @@ export const poolsRouter = createTRPCRouter({
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
       getCachedPoolMarketMetricsMap().then((map) => map.get(poolId))
+    ),
+  getPoolIncentives: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId } }) =>
+      getCachedPoolIncentivesMap().then((map) => map.get(poolId))
     ),
 });
