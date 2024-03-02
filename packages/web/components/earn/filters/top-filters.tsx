@@ -60,8 +60,7 @@ export const TopFilters = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { data: earnStrategies } =
-    api.edge.earn.getStrategies.useQuery();
+  const { data: earnStrategies } = api.edge.earn.getStrategies.useQuery();
 
   const rewardTypes = useMemo(
     () => [
