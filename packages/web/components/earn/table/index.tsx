@@ -73,7 +73,7 @@ const StrategiesTable = ({
       style={{
         height: `${rowVirtualizer.getTotalSize()}px`,
       }}
-      className="overflow-x-auto overflow-y-hidden"
+      className="no-scrollbar mb-11 overflow-x-auto overflow-y-hidden"
     >
       <table className="mb-12 w-full">
         <thead>
