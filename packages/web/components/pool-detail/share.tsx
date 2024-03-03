@@ -77,6 +77,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const address = account?.address ?? "";
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
+    // queries
     const { data: userSharePool } = api.edge.pools.getUserSharePool.useQuery(
       {
         poolId: pool.id,
@@ -97,6 +98,19 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       api.edge.pools.getPoolIncentives.useQuery({
         poolId: pool.id,
       });
+
+    const apiUtils = api.useUtils();
+    const invalidateQueries = useCallback(() => {
+      apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
+      apiUtils.edge.pools.getSharePool.invalidate({
+        poolId: pool.id,
+      });
+
+      apiUtils.edge.pools.getUserSharePool.invalidate({
+        poolId: pool.id,
+        userOsmoAddress: address,
+      });
+    }, [address, pool.id, apiUtils]);
 
     // initialize pool data stores once root pool store is loaded
     const { superfluidPoolDetail, poolBonding } = pool.id
@@ -205,11 +219,12 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         logEvent([E.addLiquidityStarted, poolInfo]);
 
         result
+          .then(invalidateQueries)
           .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
           .catch(console.error)
           .finally(() => setShowAddLiquidityModal(false));
       },
-      [baseEventInfo, isSuperfluidEnabled, logEvent]
+      [baseEventInfo, isSuperfluidEnabled, logEvent, invalidateQueries]
     );
     const onRemoveLiquidity = useCallback(
       (result: Promise<void>) => {
@@ -221,11 +236,12 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         logEvent([E.removeLiquidityStarted, removeLiqInfo]);
 
         result
+          .then(invalidateQueries)
           .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
           .catch(console.error)
           .finally(() => setShowRemoveLiquidityModal(false));
       },
-      [baseEventInfo, isSuperfluidEnabled, logEvent]
+      [baseEventInfo, isSuperfluidEnabled, logEvent, invalidateQueries]
     );
     const onLockToken = useCallback(
       (duration: Duration, electSuperfluid?: boolean) => {
@@ -243,11 +259,12 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
         } else {
           lockToken(duration)
+            .then(invalidateQueries)
             .then(() => logEvent([E.bondingCompleted, lockInfo]))
             .finally(() => setShowLockLPTokenModal(false));
         }
       },
-      [baseEventInfo, logEvent, lockToken]
+      [baseEventInfo, logEvent, lockToken, invalidateQueries]
     );
     const onUnlockTokens = useCallback(
       (duration: Duration) => {
@@ -271,11 +288,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         };
         logEvent([E.unbondAllStarted, unlockEvent]);
 
-        unlockTokens(lockIds, duration).then(() => {
-          logEvent([E.unbondAllCompleted, unlockEvent]);
-        });
+        unlockTokens(lockIds, duration)
+          .then(invalidateQueries)
+          .then(() => {
+            logEvent([E.unbondAllCompleted, unlockEvent]);
+          });
       },
-      [userSharePool, baseEventInfo, logEvent, unlockTokens]
+      [userSharePool, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress) => {
@@ -319,10 +338,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const setShowModal = useCallback(
       (setter: Function, show: boolean) => () => setter(show),
       []
-    );
-
-    console.log(
-      userSharePool?.totalShares?.maxDecimals(6).hideDenom(true).toString()
     );
 
     return (
