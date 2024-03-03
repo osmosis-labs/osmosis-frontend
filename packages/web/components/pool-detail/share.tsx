@@ -293,15 +293,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
 
     const levelCta = useMemo(() => {
       if (
-        userSharePool &&
-        userSharePool.availableShares &&
-        userSharePool.availableShares.toDec().gt(new Dec(0)) &&
+        userSharePool?.availableShares &&
+        userSharePool.availableShares.toDec().isPositive() &&
         bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
       return 1;
-    }, [userSharePool, bondDurations]);
+    }, [userSharePool?.availableShares, bondDurations]);
     const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
     const additionalRewardsByBonding = queryAccountPoolRewards
