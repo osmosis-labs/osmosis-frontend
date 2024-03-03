@@ -50,8 +50,6 @@ export async function getSharePool(poolId: string) {
     getLockableDurations(),
   ]);
 
-  console.log(lockableDurations);
-
   const basePool = {
     ...pool,
     // narrow the type
