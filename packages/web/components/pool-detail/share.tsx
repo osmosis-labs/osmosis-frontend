@@ -1,8 +1,5 @@
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import {
-  ObservableAddLiquidityConfig,
-  ObservableRemoveLiquidityConfig,
-} from "@osmosis-labs/stores";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
@@ -215,11 +212,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       [baseEventInfo, isSuperfluidEnabled, logEvent]
     );
     const onRemoveLiquidity = useCallback(
-      (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
+      (result: Promise<void>) => {
         const removeLiqInfo = {
           ...baseEventInfo,
           isSuperfluidEnabled,
-          poolSharePercentage: config.percentage,
         };
 
         logEvent([E.removeLiquidityStarted, removeLiqInfo]);
@@ -339,14 +335,20 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             onAddLiquidity={onAddLiquidity}
           />
         )}
-        {pool && showRemoveLiquidityModal && (
-          <RemoveLiquidityModal
-            isOpen={true}
-            poolId={pool.id}
-            onRequestClose={setShowModal(setShowRemoveLiquidityModal, false)}
-            onRemoveLiquidity={onRemoveLiquidity}
-          />
-        )}
+        {pool &&
+          showRemoveLiquidityModal &&
+          userSharePool &&
+          userSharePool.availableShares && (
+            <RemoveLiquidityModal
+              isOpen={true}
+              poolId={pool.id}
+              onRequestClose={setShowModal(setShowRemoveLiquidityModal, false)}
+              onRemoveLiquidity={onRemoveLiquidity}
+              shares={userSharePool.availableShares}
+              shareValue={userSharePool.availableValue}
+              underlyingCoins={userSharePool.underlyingAvailableCoins}
+            />
+          )}
         {lockLPTokensConfig && showLockLPTokenModal && (
           <LockTokensModal
             poolId={pool.id}
