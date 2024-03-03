@@ -21,10 +21,7 @@ import { SuperfluidValidatorModal } from "./superfluid-validator";
 export const AddLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    onAddLiquidity?: (
-      result: Promise<void>,
-      config: ObservableAddLiquidityConfig
-    ) => void;
+    onAddLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
@@ -75,11 +72,8 @@ export const AddLiquidityModal: FunctionComponent<
           props.onRequestClose()
         );
 
-        if (!Boolean(clPool)) {
-          props.onAddLiquidity?.(
-            addLiquidityResult,
-            config as ObservableAddLiquidityConfig
-          );
+        if (!Boolean(clPool) && props.onAddLiquidity) {
+          props.onAddLiquidity(addLiquidityResult);
         }
       },
       children: config.error

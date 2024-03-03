@@ -1,18 +1,10 @@
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
@@ -29,7 +21,6 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
   LockTokensModal,
@@ -47,7 +38,6 @@ const E = EventName.PoolDetail;
 
 export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
   ({ pool }) => {
-    const router = useRouter();
     const {
       chainStore,
       queriesStore,
@@ -68,8 +58,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       useMeasure<HTMLDivElement>();
 
     const { chainId } = chainStore.osmosis;
-
-    const flags = useFeatureFlags();
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -120,14 +108,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           poolBonding: undefined,
         };
     const { delegateSharesToValidator } = useSuperfluidPool();
-
-    // feature flag check
-    useEffect(() => {
-      // redirect if CL pool and CL feature is off
-      if (pool?.type === "concentrated" && !flags.concentratedLiquidity) {
-        router.push("/pools");
-      }
-    }, [pool?.type, flags.concentratedLiquidity, router]);
 
     // user analytics
     const { poolName } = useMemo(
@@ -195,25 +175,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       [pool, poolName, isSuperfluid]
     );
     const onAddLiquidity = useCallback(
-      (result: Promise<void>, config: ObservableAddLiquidityConfig) => {
+      (result: Promise<void>) => {
         const poolInfo = {
           ...baseEventInfo,
-          isSingleAsset: config.isSingleAmountIn,
           isSuperfluidEnabled,
-          providingLiquidity:
-            config.isSingleAmountIn && config.singleAmountInConfig
-              ? {
-                  [config.singleAmountInConfig?.sendCurrency.coinDenom]: Number(
-                    config.singleAmountInConfig.amount
-                  ),
-                }
-              : config.poolAssetConfigs.reduce(
-                  (acc, cur) => ({
-                    ...acc,
-                    [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                  }),
-                  {}
-                ),
         };
 
         logEvent([E.addLiquidityStarted, poolInfo]);
@@ -730,16 +695,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       <h4 className="text-osmoverse-100">
                         {userSharePool.availableValue.toString()}
                       </h4>
-                      {userSharePool.availableShares && (
-                        <h6 className="subtitle1 text-osmoverse-300">
-                          {t("pool.sharesAmount", {
-                            shares: formatPretty(
-                              userSharePool.availableShares.hideDenom(true),
-                              { maxDecimals: 8 }
-                            ),
-                          })}
-                        </h6>
-                      )}
+                      <h6 className="subtitle1 text-osmoverse-300">
+                        {t("pool.sharesAmount", {
+                          shares: formatPretty(
+                            userSharePool.availableShares?.hideDenom(true) ??
+                              new Dec(0),
+                            { maxDecimals: 8 }
+                          ),
+                        })}
+                      </h6>
                     </>
                   ) : (
                     <Spinner />
