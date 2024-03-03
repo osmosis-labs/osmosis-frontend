@@ -26,7 +26,6 @@ import {
   AddLiquidityModal,
   CreatePoolModal,
   LockTokensModal,
-  RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
 import { useStore } from "~/stores";
@@ -69,9 +68,6 @@ const Pools: NextPage = observer(function () {
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
     string | null
   >(null);
-  const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
-    string | null
-  >(null);
   const [lockLpTokenModalPoolId, setLockLpTokenModalPoolId] = useState<
     string | null
   >(null);
@@ -82,10 +78,6 @@ const Pools: NextPage = observer(function () {
   const quickActionProps = {
     quickAddLiquidity: useCallback(
       (poolId: string) => setAddLiquidityModalPoolId(poolId),
-      []
-    ),
-    quickRemoveLiquidity: useCallback(
-      (poolId: string) => setRemoveLiquidityModalPoolId(poolId),
       []
     ),
     quickLockTokens: useCallback(
@@ -234,16 +226,6 @@ const Pools: NextPage = observer(function () {
           poolId={addLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
-        />
-      )}
-      {removeLiquidityModalPoolId && (
-        <RemoveLiquidityModal
-          title={t("removeLiquidity.titleInPool", {
-            poolId: removeLiquidityModalPoolId,
-          })}
-          poolId={removeLiquidityModalPoolId}
-          isOpen={true}
-          onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
         />
       )}
       {lockLpTokenModalPoolId && (
