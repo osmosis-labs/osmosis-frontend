@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { BasePool, RoutablePool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -95,9 +95,7 @@ export const BasePoolDetails: FunctionComponent<{
             <div ref={poolBreakdownRef}>
               <AssetBreakdownChart
                 assets={poolCoins.map((coin) => ({
-                  weight: new IntPretty(
-                    new Dec(1).quo(new Dec(pool.poolAssets.length))
-                  ).maxDecimals(0),
+                  weight: new IntPretty(1),
                   amount: coin,
                 }))}
                 totalWeight={new IntPretty(pool.poolAssets.length)}
