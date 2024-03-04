@@ -127,7 +127,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   }, [setAmount]);
 
   const isMaxBalance = useMemo(
-    () => balance && amount?.toDec().equals(balance.toDec()),
+    () => Boolean(balance && amount?.toDec().equals(balance.toDec())),
     [amount, balance]
   );
 
