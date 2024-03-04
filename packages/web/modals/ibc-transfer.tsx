@@ -150,10 +150,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const { ibcBalances } = assetsStore;
 
-    console.log("availableBalance: ", availableBalance);
-
     const coinDenom = availableBalance?.currency.coinDenom;
-    console.log("coinDenom: ", coinDenom);
 
     // find matching balance from asset list
     const ibcBalance = ibcBalances.find(
@@ -161,8 +158,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     );
 
     const isUnstable = ibcBalance?.isUnstable;
-
-    console.log("isUnstable: ", isUnstable);
 
     const [showIsUnstableWarning, setShowIsUnstableWarning] =
       useState(isUnstable);
