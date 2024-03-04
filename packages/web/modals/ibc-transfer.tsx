@@ -1,6 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
 import { Transfer } from "~/components/complex/transfer";
 import { UnstableAssetWarning } from "~/components/complex/unstable-assets-warning";
@@ -164,7 +164,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const [showIsUnstableWarning, setShowIsUnstableWarning] =
       useState(isUnstable);
 
-    const getTitle = () => {
+    const getTitle = useCallback(() => {
       if (showIsUnstableWarning) {
         return isWithdraw
           ? t("unstableAssetsWarning.titleWithdraw", {
@@ -182,7 +182,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               coinDenom: currency.coinDenom,
             });
       }
-    };
+    }, [showIsUnstableWarning, isWithdraw, t, currency.coinDenom]);
 
     return (
       <ModalBase
