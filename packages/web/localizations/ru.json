@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} общие ресурсы",
-    "title": "Удалить ликвидность",
-    "titleInPool": "Удалить ликвидность из пула # {poolId}"
+    "title": "Удалить ликвидность"
   },
   "requestRejected": "Запрос отклонен",
   "settings": {

@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
-    "title": "حذف نقدینگی",
-    "titleInPool": "حذف نقدینگی از استخر #{poolId}"
+    "title": "حذف نقدینگی"
   },
   "requestRejected": "درخواست رد شد",
   "settings": {

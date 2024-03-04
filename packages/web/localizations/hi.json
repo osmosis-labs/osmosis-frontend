@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",
-    "title": "तरलता दूर करें",
-    "titleInPool": "पूल से तरलता हटाएं # {poolId}"
+    "title": "तरलता दूर करें"
   },
   "requestRejected": "अनुरोध अस्वीकृत",
   "settings": {

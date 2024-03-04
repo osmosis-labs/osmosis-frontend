@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",
-    "title": "Remover Liquidez",
-    "titleInPool": "Remover liquidez de uma piscina #{poolId}"
+    "title": "Remover Liquidez"
   },
   "requestRejected": "Solicitação rejeitada",
   "settings": {

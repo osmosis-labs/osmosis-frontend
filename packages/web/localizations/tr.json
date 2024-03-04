@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
-    "title": "Likiditeyi Kaldır",
-    "titleInPool": "{poolId} havuzundan Likiditeyi Kaldır"
+    "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
   "settings": {

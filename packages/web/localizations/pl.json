@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
-    "title": "Usuń Płynność",
-    "titleInPool": "Usuń płynność z puli {poolId}"
+    "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
   "settings": {

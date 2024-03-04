@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",
-    "title": "લિક્વિડિટી દૂર કરો",
-    "titleInPool": "પૂલ # {poolId} માંથી તરલતા દૂર કરો"
+    "title": "લિક્વિડિટી દૂર કરો"
   },
   "requestRejected": "વિનંતી નકારી",
   "settings": {

@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",
-    "title": "流動性の除去",
-    "titleInPool": "プールから流動性を削除 # {poolId}"
+    "title": "流動性の除去"
   },
   "requestRejected": "リクエストが拒否されました",
   "settings": {

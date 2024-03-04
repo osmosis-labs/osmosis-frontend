@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
-    "title": "Elimina Lichiditate",
-    "titleInPool": "Elimina lichiditate din pool-ul #{poolId}"
+    "title": "Elimina Lichiditate"
   },
   "requestRejected": "Cerere respinsa",
   "settings": {

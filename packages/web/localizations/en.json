@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
-    "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from pool #{poolId}"
+    "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
   "settings": {

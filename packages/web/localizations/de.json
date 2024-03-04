@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",
-    "title": "Liquidität entfernen",
-    "titleInPool": "Liquidität aus Pool entfernen # {poolId}"
+    "title": "Liquidität entfernen"
   },
   "requestRejected": "Anfrage zurückgewiesen",
   "settings": {

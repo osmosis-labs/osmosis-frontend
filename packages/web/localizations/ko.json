@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",
-    "title": "유동성 해제하기",
-    "titleInPool": "{poolId}풀에서 유동성을 제거합니다."
+    "title": "유동성 해제하기"
   },
   "requestRejected": "요청이 거부됨",
   "settings": {

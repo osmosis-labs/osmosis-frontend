@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
-    "title": "移除流動性",
-    "titleInPool": "從流動性池 #{poolId} 移除流動性"
+    "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
   "settings": {

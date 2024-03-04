@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
-    "title": "Retirer de la liquidité",
-    "titleInPool": "Retirer des liquidités du pool {poolId}"
+    "title": "Retirer de la liquidité"
   },
   "requestRejected": "Demande rejetée",
   "settings": {
