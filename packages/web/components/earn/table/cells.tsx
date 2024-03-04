@@ -85,7 +85,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
           {fluctuation}%
         </small>
       )} */}
-      {depositCap ? (
+      {depositCap && (
         <Tooltip
           content={
             <StrategyTooltip
@@ -121,8 +121,6 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
             </p>
           </span>
         </Tooltip>
-      ) : (
-        "N/A"
       )}
     </div>
   );
