@@ -128,7 +128,6 @@ export const Transfer = observer(
     addWithdrawAddrConfig,
   }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
-
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
 
