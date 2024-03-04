@@ -200,7 +200,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
 
   const isOsmosisStrategy = useMemo(
     () =>
-      item.row.original.platform === "Cosmos SDK (Staking Module on Osmosis)",
+      item.row.original.link.includes("app.osmosis.zone"),
     [item]
   );
 
@@ -210,12 +210,8 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   );
 
   const href = useMemo(() => {
-    if (isOsmosisStrategy) {
       return item.row.original.link.replace("https://app.osmosis.zone", "");
-    }
-
-    return item.row.original.link;
-  }, [item, isOsmosisStrategy]);
+  }, [item]);
 
   const isBalanceVisible = useMemo(
     () => item.table.getColumn("balance")?.getIsVisible(),
