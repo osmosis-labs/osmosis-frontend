@@ -58,7 +58,7 @@ export interface RawEarnStrategyBalance {
 }
 
 export interface RawStrategyAPR {
-  apy: number;
+  apr: number;
 }
 
 export interface RawStrategyTVL {
@@ -238,7 +238,7 @@ export function queryEarnUserBalance(
 }
 
 export function queryStrategyAPR(strategyId: string): Promise<RawStrategyAPR> {
-  const url = new URL(`/earn/strategies/${strategyId}/apy`, NUMIA_BASE_URL);
+  const url = new URL(`/earn/strategies/${strategyId}/apr`, NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
 

@@ -74,7 +74,7 @@ export async function getStrategyAPR(strategyId: string) {
     key: `earn-strategy-apr-${strategyId}`,
     getFreshValue: async (): Promise<StrategyAPR> => {
       try {
-        const { apy: apr } = await queryStrategyAPR(strategyId);
+        const { apr } = await queryStrategyAPR(strategyId);
         return {
           apr: new RatePretty(apr),
         };
