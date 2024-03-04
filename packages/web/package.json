@@ -104,6 +104,7 @@
     "highcharts-react-official": "^3.0.0",
     "launchdarkly-node-server-sdk": "^7.0.2",
     "launchdarkly-react-client-sdk": "^3.0.6",
+    "lodash": "^4.17.21",
     "long": "^5.2.3",
     "lottie-react": "^2.4.0",
     "lru-cache": "^10.0.1",

@@ -188,32 +188,14 @@ export function useSwap({
     return routes;
   }, [quote?.split]);
 
-  const estimateFeeTxMutation = useEstimateSwapTxFeesMutation();
-  /** Initiates fee estimation when the maximum amount is selected and no current estimation is in progress. */
-  useEffect(() => {
-    //** Triggers fee estimation with current input details if the maximum amount flag is set and not currently loading. */
-    if (inAmountInput.isMaxBalance && !estimateFeeTxMutation.isLoading) {
-      estimateFeeTxMutation.mutate({
-        routes,
-        tokenIn,
-        input: inAmountInput,
-        chainStore,
-        accountStore: accountStore as unknown as OsmoAccountStore,
-      });
-      //** Logs a message for skipping or canceling the fee estimation if not set to maximum amount or already loading. */
-    } else if (!inAmountInput.isMaxBalance && estimateFeeTxMutation.isLoading) {
-      console.log("Skipping or canceling transaction fee estimation.");
-    }
-    //**  The effect re-runs for changes in specified dependencies, ensuring up-to-date estimations. */
-  }, [
-    accountStore,
-    chainStore,
-    estimateFeeTxMutation,
-    inAmountInput,
-    inAmountInput.isMaxBalance,
-    routes,
-    tokenIn,
-  ]);
+  const estimateFeeTxIfMaxBalanceReachedMutation =
+    useEstimateSwapTxFeesMutation(
+      routes,
+      tokenIn,
+      chainStore,
+      accountStore as unknown as OsmoAccountStore,
+      inAmountInput.isMaxBalance
+    );
 
   /** In amount converted to integer (remove decimals) */
   /** Send trade token in transaction. */
@@ -335,6 +317,8 @@ export function useSwap({
       isQuoteLoading ||
       isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
+    isMaxBalance: inAmountInput.isMaxBalance,
+    estimateFeeTxIfMaxBalanceMutation: estimateFeeTxIfMaxBalanceReachedMutation,
   };
 }
 

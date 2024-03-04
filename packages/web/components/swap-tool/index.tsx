@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -154,9 +154,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
+      // todo: amos conver gas amount to CointPretty.
+      // const gasValue = swapState.estimateFeeTxIfMaxBalanceMutation.data?.gas
+      const gasAmount = new CoinPretty(
+        swapState.inAmountInput.amount.currency,
+        0
+      );
+
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount),
+        tokenAmount: Number(swapState.inAmountInput.amount.sub(gasAmount)),
         toToken: swapState.toAsset?.coinDenom,
         isOnHome: !isInModal,
         isMultiHop: swapState.quote?.split.some(
@@ -818,6 +825,40 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                   </SkeletonLoader>
                 </div>
+                {swapState.isMaxBalance && (
+                  <div className="flex justify-between gap-1">
+                    <span className="caption max-w-[140px]">
+                      Transaction fees minus total balance
+                    </span>
+                    <SkeletonLoader
+                      className={
+                        swapState.isQuoteLoading ? "w-1/4" : "ml-auto w-fit"
+                      }
+                      isLoaded={
+                        !swapState.estimateFeeTxIfMaxBalanceMutation.isLoading
+                      }
+                    >
+                      {swapState.estimateFeeTxIfMaxBalanceMutation.data && (
+                        <div
+                          className={classNames(
+                            "caption flex flex-col gap-0.5 text-right text-osmoverse-200"
+                          )}
+                        >
+                          <span className="whitespace-nowrap">
+                            {swapState.estimateFeeTxIfMaxBalanceMutation.data
+                              ?.gas || ""}
+                          </span>
+                          <span>
+                            {`≈ ${
+                              swapState.estimateFeeTxIfMaxBalanceMutation.data
+                                ?.amount || ""
+                            }`}
+                          </span>
+                        </div>
+                      )}
+                    </SkeletonLoader>
+                  </div>
+                )}
                 {!forceSwapInPoolId && (
                   <SplitRoute
                     {...routesVisDisclosure}
@@ -836,7 +877,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
+                    account?.txTypeInProgress !== "")) ||
+                swapState.estimateFeeTxIfMaxBalanceMutation.isLoading
               }
               onClick={sendSwapTx}
             >
