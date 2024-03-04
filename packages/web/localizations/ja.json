@@ -868,5 +868,11 @@
     "totalValueInvested": "投資総額",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
   },
-  "disclaimer": "免責事項"
+  "disclaimer": "免責事項",
+  "unstableAssetsWarning": {
+    "title": "転送が不安定",
+    "description": "大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
+    "buttonContinue": "とにかく続けます",
+    "buttonCancel": "キャンセル"
+  }
 }

@@ -868,5 +868,11 @@
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
-  "disclaimer": "Haftungsausschluss"
+  "disclaimer": "Haftungsausschluss",
+  "unstableAssetsWarning": {
+    "title": "Übertragungen instabil",
+    "description": "Es kann zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
+    "buttonContinue": "Mache trotzdem weiter",
+    "buttonCancel": "Stornieren"
+  }
 }
