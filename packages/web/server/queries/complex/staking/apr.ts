@@ -2,8 +2,8 @@ import { Dec } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { queryStakingApr } from "~/server/queries/numia/staking-apr";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const averageStakingAprCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -19,7 +19,8 @@ export async function getAverageStakingApr({
 }): Promise<Dec> {
   return await cachified({
     cache: averageStakingAprCache,
-    ttl: 1000 * 60 * 60, // 60 minutes since APR changes once a day at an unkown time
+    ttl: 1000 * 60 * 30, // 30 minutes since APR changes once a day at an unkown time
+    staleWhileRevalidate: 1000 * 60 * 60, // 1 hour
     key: `average-staking-apr-${startDate}-${endDate}`,
     getFreshValue: async () => {
       try {

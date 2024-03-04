@@ -10,15 +10,16 @@ import {
   IPriceStore,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { Asset } from "@osmosis-labs/types";
 import {
-  getLastIbcTrace,
-  getSourceDenomFromAssetList,
-} from "@osmosis-labs/utils";
+  Asset,
+  CosmosCounterparty,
+  IbcTransferMethod,
+} from "@osmosis-labs/types";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { IBCAdditionalData } from "~/config/ibc-overrides";
+import { ShowPreviewAssetsKey } from "~/hooks/use-show-preview-assets";
 import {
   CoinBalance,
   IBCBalance,
@@ -26,8 +27,6 @@ import {
 } from "~/stores/assets/types";
 import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
 import { UserSettings } from "~/stores/user-settings/user-settings-store";
-
-const UnlistedAssetsKey = "show_unlisted_assets";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -53,30 +52,30 @@ export class ObservableAssets {
 
       const urlParams = new URLSearchParams(window.location.search);
       if (
-        urlParams.get(UnlistedAssetsKey) === "true" &&
-        sessionStorage.getItem(UnlistedAssetsKey) !== "true"
+        urlParams.get(ShowPreviewAssetsKey) === "true" &&
+        sessionStorage.getItem(ShowPreviewAssetsKey) !== "true"
       ) {
         displayToast(
           {
-            message: "unlistedAssetsEnabled",
-            caption: "unlistedAssetsEnabledForSession",
+            message: "previewAssetsEnabled",
+            caption: "previewAssetsEnabledForSession",
           },
           ToastType.SUCCESS
         );
-        return sessionStorage.setItem(UnlistedAssetsKey, "true");
+        return sessionStorage.setItem(ShowPreviewAssetsKey, "true");
       }
 
       if (
-        urlParams.get(UnlistedAssetsKey) === "false" &&
-        sessionStorage.getItem(UnlistedAssetsKey) === "true"
+        urlParams.get(ShowPreviewAssetsKey) === "false" &&
+        sessionStorage.getItem(ShowPreviewAssetsKey) === "true"
       ) {
         displayToast(
           {
-            message: "unlistedAssetsDisabled",
+            message: "previewAssetsDisabled",
           },
           ToastType.SUCCESS
         );
-        return sessionStorage.setItem(UnlistedAssetsKey, "false");
+        return sessionStorage.setItem(ShowPreviewAssetsKey, "false");
       }
     });
   }
@@ -126,10 +125,10 @@ export class ObservableAssets {
           throw new Error(`Unknown asset ${currency.coinDenom}`);
         }
 
-        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+        if (sessionStorage.getItem(ShowPreviewAssetsKey) === "true") {
           return true;
         }
-        return !assetListAsset.keywords?.includes("osmosis-unlisted");
+        return !assetListAsset.preview;
       }) // Remove unlisted assets if preview assets is disabled
       .map((currency) => {
         const asset = this.assets.find(
@@ -144,7 +143,7 @@ export class ObservableAssets {
         return {
           balance: bal,
           fiatValue: this.priceStore.calculatePrice(bal),
-          isVerified: Boolean(asset?.keywords?.includes("osmosis-main")),
+          isVerified: asset?.verified ?? false,
         };
       });
   }
@@ -157,49 +156,55 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.assets
-      .filter((asset) => asset.origin_chain_id !== this.chain.chainId) // Filter osmosis native assets
+      .filter((asset) => asset.transferMethods.length > 0) // Filter osmosis native assets
       .filter((asset) => {
+        // Remove preview assets if preview assets is disabled
         if (typeof window === "undefined") return true;
 
-        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+        if (sessionStorage.getItem(ShowPreviewAssetsKey) === "true") {
           return true;
         }
-        return !asset.keywords?.includes("osmosis-unlisted");
-      }) // Remove unlisted assets if preview assets is disabled
+        return !asset.preview;
+      })
       .map((ibcAsset) => {
-        const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
+        const cosmosCounterparty = ibcAsset
+          .counterparty[0] as CosmosCounterparty;
+        const chainInfo = this.chainStore.getChain(
+          // first counterparty should be cosmos counterparty where it is bridged
+          cosmosCounterparty?.chainId ?? ""
+        );
 
-        const minimalDenom = getSourceDenomFromAssetList(ibcAsset);
+        const ibcAssetSourceDenom = ibcAsset.sourceDenom;
         const originCurrency = chainInfo.currencies.find((cur) => {
-          if (typeof minimalDenom === "undefined") return false;
+          if (typeof ibcAssetSourceDenom === "undefined") return false;
 
-          if (minimalDenom.startsWith("cw20:")) {
+          if (ibcAssetSourceDenom.startsWith("cw20:")) {
             /** Note: since we're searching on counterparty config, the coinMinimalDenom
              *  is not the Osmosis IBC denom, it's the source denom
              */
-            return cur.coinMinimalDenom.startsWith(minimalDenom);
+            return cur.coinMinimalDenom.startsWith(ibcAssetSourceDenom);
           }
-          return cur.coinMinimalDenom === minimalDenom;
+          return cur.coinMinimalDenom === ibcAssetSourceDenom;
         });
 
         if (!originCurrency) {
           throw new Error(
-            `Unknown currency ${minimalDenom} for ${ibcAsset.origin_chain_id}`
+            `Unknown currency ${ibcAssetSourceDenom} for ${cosmosCounterparty}`
           );
         }
 
-        const ibcTrace = getLastIbcTrace(ibcAsset.traces);
+        const ibcTransferMethod = ibcAsset.transferMethods.find(
+          ({ type }) => type === "ibc"
+        ) as IbcTransferMethod | undefined;
 
-        if (!ibcTrace) {
+        if (!ibcTransferMethod) {
           throw new Error(
             `Invalid IBC asset config: ${JSON.stringify(ibcAsset)}`
           );
         }
 
-        const sourceChannelId = ibcTrace.chain.channel_id;
-        const destChannelId = ibcTrace.counterparty.channel_id;
-        const isVerified = ibcAsset.keywords?.includes("osmosis-main");
-        const isUnstable = ibcAsset.keywords?.includes("osmosis-unstable");
+        const sourceChannelId = ibcTransferMethod.chain.channelId;
+        const destChannelId = ibcTransferMethod.counterparty.channelId;
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -209,8 +214,10 @@ export class ObservableAssets {
          * to send the source denom for deposits.
          */
         let sourceDenom: string | undefined;
-        if ((ibcTrace.chain.path.match(/transfer/gi)?.length ?? 0) >= 2) {
-          sourceDenom = minimalDenom;
+        if (
+          (ibcTransferMethod.chain.path.match(/transfer/gi)?.length ?? 0) >= 2
+        ) {
+          sourceDenom = ibcAsset.sourceDenom;
         }
 
         const balance = this.queries.queryBalances
@@ -220,7 +227,7 @@ export class ObservableAssets {
             coinGeckoId: originCurrency.coinGeckoId,
             coinImageUrl: originCurrency.coinImageUrl,
             coinDenom: originCurrency.coinDenom,
-            coinMinimalDenom: ibcAsset.base,
+            coinMinimalDenom: ibcAsset.coinMinimalDenom,
             paths: [
               {
                 portId: "transfer",
@@ -249,9 +256,9 @@ export class ObservableAssets {
             : this.priceStore.calculatePrice(balance),
           sourceChannelId: sourceChannelId,
           destChannelId: destChannelId,
-          isVerified: Boolean(isVerified),
+          isVerified: ibcAsset.verified,
           depositingSrcMinDenom: sourceDenom,
-          isUnstable,
+          isUnstable: ibcAsset.unstable,
           ...IBCAdditionalData[
             ibcAsset.symbol as keyof typeof IBCAdditionalData
           ],
@@ -261,10 +268,11 @@ export class ObservableAssets {
           this._verifiedAssets.add(balance.currency.coinDenom);
         }
 
-        if (ibcTrace.type === "ibc-cw20") {
+        if (ibcTransferMethod.counterparty.sourceDenom.startsWith("cw20:")) {
           return {
             ...ibcBalance,
-            ics20ContractAddress: ibcTrace.counterparty.port.split(".")[1],
+            ics20ContractAddress:
+              ibcTransferMethod.counterparty.port.split(".")[1],
           } as IBCCW20ContractBalance;
         } else {
           return ibcBalance;

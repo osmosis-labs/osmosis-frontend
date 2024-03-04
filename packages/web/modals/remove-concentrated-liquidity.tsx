@@ -5,9 +5,9 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
-import { Slider } from "~/components/control";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
@@ -15,9 +15,9 @@ import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remo
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import type {
-  ClPosition,
   ClPositionDetails,
   PositionHistoricalPerformance,
+  UserPosition,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -25,7 +25,7 @@ import { formatPretty } from "~/utils/formatter";
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: ClPosition;
+    position: UserPosition;
     status: ClPositionDetails["status"];
     claimableRewardCoins: PositionHistoricalPerformance["claimableRewardCoins"];
   } & ModalBaseProps
@@ -127,16 +127,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </SkeletonLoader>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
-            className="w-[360px] xs:!w-[280px]"
-            inputClassName="!w-[360px] xs:!w-[280px]"
-            currentValue={Math.round(config.percentage * 100)}
-            onInput={(value) => {
-              config.setPercentage(Number((value / 100).toFixed(2)));
+            variant="secondary"
+            value={[Math.round(config.percentage * 100)]}
+            onValueChange={(value: number[]) => {
+              config.setPercentage(Number((value[0] / 100).toFixed(2)));
             }}
             min={0}
             max={100}
             step={1}
-            useSuperchargedGradient
           />
           <div className="flex w-full gap-2 px-5">
             <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>

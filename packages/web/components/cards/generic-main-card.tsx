@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 
 import { CustomClasses } from "../types";
 
@@ -26,7 +26,11 @@ export const GenericMainCard: React.FC<
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
             <div className="absolute right-0">
-              <Button mode="unstyled" onClick={titleIconAction}>
+              <Button
+                variant="ghost"
+                onClick={titleIconAction}
+                className="px-0"
+              >
                 {titleIcon}
               </Button>
             </div>

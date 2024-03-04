@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import * as fs from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { glob } from "glob";

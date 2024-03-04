@@ -7,10 +7,10 @@ export const useICNSName = ({ address }: { address: string }) => {
     queryKey: ["icns-name", address],
     queryFn: () => queryICNSName({ address }),
     enabled: Boolean(address) && typeof address === "string",
-    select: (response) => {
+    select: ({ data: { names, primary_name } }) => {
       return {
-        names: response.names,
-        primaryName: response.primary_name,
+        names: names,
+        primaryName: primary_name,
       };
     },
   });

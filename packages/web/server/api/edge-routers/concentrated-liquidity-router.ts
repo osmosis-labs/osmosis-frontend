@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   getPositionHistoricalPerformance,
   mapGetPositionDetails,
-  mapGetPositions,
+  mapGetUserPositions,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { queryCLPosition } from "~/server/queries/osmosis/concentratedliquidity";
@@ -21,7 +21,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema.required())
     )
     .query(({ input: { userOsmoAddress, sortDirection, forPoolId } }) =>
-      mapGetPositions({
+      mapGetUserPositions({
         userOsmoAddress,
         forPoolId,
       }).then((positions) => sort(positions, "joinTime", sortDirection))

@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "此資產與此錢包不兼容。",
-  "convertToStake": {
-    "adTitle": "我們發現了更好的盈利策略。",
-    "adSubtitle": "您的某些職位的收入低於您通過質押 OSMO 獲得的收入",
-    "title": "轉換為質押 OSMO",
-    "description": "選定的位置將完全轉換為 OSMO。然後，所有 OSMO 將自動質押到您現有的驗證器集。",
-    "stakedOsmo": "鎖定 OSMO",
-    "APR": "年利率",
-    "currentApr": "當前年利率",
-    "pool": "水池 ＃{poolId}",
-    "position": "位置 # {positionId}",
-    "convertAndStake": "轉換和質押"
-  },
   "clPositions": {
     "inRange": "在範圍內",
     "nearBounds": "接近極限",
@@ -130,18 +118,6 @@
     "applyButton": "申請",
     "storeDisclaimer": "部分內容由與 Osmosis Labs 或其任何附屬公司無關的第三方準備，Osmosis Labs 對此類內容不承擔責任。Osmosis Labs 不對內容中的任何錯誤或延遲，或因依賴任何內容而採取的任何行動承擔責任。信息僅供參考，不構成投資建議。這不是購買或出售特定數字資產或采用特定投資策略的建議。 Osmosis Labs 不對所提供的任何信息的准確性、適當性或有效性，或針對特定資產作出任何陳述。顯示的價格僅用於說明目的。實際加密貨幣價格及相關統計數據可能有所不同。所呈現的數據可能反映在 Osmosis Labs 交易所及選定的其他加密貨幣交易所上交易的資產。",
     "allAppsHeader": "所有應用"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "為您的增壓",
-    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的職位。",
-    "primaryCta": "升級至增壓",
-    "secondaryCta": "30秒學會"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "從您的流動性中賺取更多",
-    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的流動性。",
-    "primaryCta": "升級至增壓",
-    "secondaryCta": "30秒學會"
   },
   "createFirstPositionCta": {
     "title": "創建您的第一個 Supercharged 職位",
@@ -307,12 +283,10 @@
       "onrampMoneySubtitle": "支援OSMO、USDC"
     },
     "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
+      "title": "激勵類型"
     },
     "MAX": "全部",
     "pool": {
-      "mobileTitle": "流動性池",
       "title": "流動性池類型"
     },
     "searchTokens": "搜尋代幣",
@@ -336,9 +310,6 @@
       "weighted": "加權",
       "concentrated": "集中流動性",
       "transmuter": "轉換器",
-      "internal": "內部激勵",
-      "external": "外部激勵",
-      "superfluid": "超流體",
       "noIncentives": "無激勵"
     }
   },
@@ -513,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜尋流動性池",
       "sort": {
         "APRIncentivized": "年利率(APR)",
         "fees": "交易費 (7日)",
@@ -775,7 +745,7 @@
     "step4Title": "創建一個錢包以開始",
     "step4Content": "設置您的第一個錢包並登錄！發送、接收或購買資產。"
   },
-  "swapFailed": "兌換失敗，流動性可能不足，請嘗試調整允許的滑價",
+  "swapFailed": "兌換失敗。流動性可能不夠。嘗試調整允許的滑點。",
   "transactionBroadcasting": "交易正在被廣播",
   "transactionFailed": "交易失敗",
   "transactionSuccessful": "交易成功",
@@ -783,21 +753,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "upgrades": {
-    "title": "可升級",
-    "detected": "我們檢測到下列資產或頭寸的升級。",
-    "positionUpgrade": "職位升級",
-    "superchargedLiquidity": "流動性充沛",
-    "newSuperchargedPool": "這個新池具有更高的收入潛力和最高的估計年利率。",
-    "upgrade": "升級",
-    "pool": "水池",
-    "new": "新的",
-    "current": "當前的",
-    "success": "升級成功！",
-    "clickHereToView": "點擊此處查看",
-    "foundHere": "可以在這裡找到升級",
-    "availableHereCaption": "可以在此處查看可用的升級。您可以隨時選擇升級。"
-  },
   "seo": {
     "404": {
       "title": "404頁面不存在",
@@ -864,9 +819,9 @@
     "osmosisUpdates": "滲透更新！",
     "seeWhatsNew": "看看有什麼新鮮事"
   },
-  "unlistedAssetsEnabled": "啟用非上市資產",
-  "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "previewAssetsEnabled": "啟用預覽資源",
+  "previewAssetsDisabled": "預覽資源已停用",
+  "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "earnPage": {
     "title": "賺",
     "position": "位置",

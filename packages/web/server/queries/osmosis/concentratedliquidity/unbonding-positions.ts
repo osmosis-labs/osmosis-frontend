@@ -2,7 +2,7 @@
 
 import { createNodeQuery } from "~/server/queries/base-utils";
 
-import { LiquidityPosition } from "./positions-by-address";
+import { LiquidityPosition } from "./account-positions";
 
 interface PeriodLock {
   ID: string;

@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Este ativo não é compatível com esta carteira.",
-  "convertToStake": {
-    "adTitle": "Detectamos uma estratégia de ganhos melhor.",
-    "adSubtitle": "Algumas de suas posições estão ganhando menos do que você ganharia apostando no OSMO por um",
-    "title": "Converter para OSMO apostado",
-    "description": "As posições selecionadas serão totalmente convertidas para OSMO. Todos os OSMO serão automaticamente apostados em seu conjunto de validadores existente.",
-    "stakedOsmo": "OSMO apostado",
-    "APR": "ABRIL",
-    "currentApr": "TAEG atual",
-    "pool": "PISCINA #{poolId}",
-    "position": "POSIÇÃO # {positionId}",
-    "convertAndStake": "Converter e apostar"
-  },
   "clPositions": {
     "inRange": "NO ALCANCE",
     "nearBounds": "PERTO DOS LIMITES",
@@ -130,18 +118,6 @@
     "applyButton": "Inscrever-se",
     "storeDisclaimer": "Algum conteúdo foi preparado por terceiros não afiliados à Osmosis Labs ou a qualquer uma de suas afiliadas, e a Osmosis Labs não é responsável por tal conteúdo. A Osmosis Labs não é responsável por quaisquer erros ou atrasos no conteúdo ou por quaisquer ações tomadas com base em qualquer conteúdo. As informações são fornecidas apenas para fins informativos e não constituem conselho de investimento. Esta não é uma recomendação para comprar ou vender um ativo digital específico ou empregar uma estratégia de investimento específica. A Osmosis Labs não faz representações sobre a precisão, adequação ou validade de qualquer informação fornecida ou para um ativo específico. Os preços mostrados são apenas para fins ilustrativos. Os preços reais das criptomoedas e as estatísticas associadas podem variar. Os dados apresentados podem refletir ativos negociados na bolsa da Osmosis Labs e em outras bolsas de criptomoedas selecionadas.",
     "allAppsHeader": "Todos os aplicativos"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Sobrecarregue o seu",
-    "caption": "Posições sobrecarregadas permitem que você ganhe rendimento adicional. Aprenda como funciona em 30 segundos ou atualize sua posição em alguns cliques.",
-    "primaryCta": "Atualize para Supercharged",
-    "secondaryCta": "Aprenda em 30 segundos"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Ganhe mais com sua liquidez",
-    "caption": "Posições sobrecarregadas permitem que você ganhe rendimento adicional. Aprenda como funciona em 30 segundos ou atualize sua liquidez em alguns cliques.",
-    "primaryCta": "Atualize para Supercharged",
-    "secondaryCta": "Aprenda em 30 segundos"
   },
   "createFirstPositionCta": {
     "title": "Crie sua primeira posição Supercharged",
@@ -307,12 +283,10 @@
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentivo",
       "title": "Tipos de incentivo"
     },
     "MAX": "MÁX",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscina"
     },
     "searchTokens": "Procurar",
@@ -336,9 +310,6 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sem incentivos"
     }
   },
@@ -513,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Pesquisar piscinas",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxas (7D)",
@@ -775,7 +745,7 @@
     "step4Title": "Crie uma carteira para começar",
     "step4Content": "Configure sua primeira carteira e faça login! Envie, receba ou compre ativos."
   },
-  "swapFailed": "Troca falhou. Liquidez pode não ser o suficiente. Tente ajustar o spread permitido.",
+  "swapFailed": "Falha na troca. A liquidez pode não ser suficiente. Tente ajustar o deslizamento permitido.",
   "transactionBroadcasting": "Transmitindo Transação",
   "transactionFailed": "Transação falhou",
   "transactionSuccessful": "Transação Bem-Sucedida",
@@ -783,21 +753,6 @@
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
   "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela.",
-  "upgrades": {
-    "title": "Atualizações disponíveis",
-    "detected": "Detectamos atualizações para os ativos ou posições listados abaixo.",
-    "positionUpgrade": "Atualização de posição",
-    "superchargedLiquidity": "Liquidez sobrecarregada",
-    "newSuperchargedPool": "Este novo pool vem com maior potencial de ganhos e uma APR estimada mais alta.",
-    "upgrade": "Atualizar",
-    "pool": "PISCINA",
-    "new": "NOVO",
-    "current": "ATUAL",
-    "success": "Sucesso na atualização!",
-    "clickHereToView": "Clique aqui para ver",
-    "foundHere": "Atualizações podem ser encontradas aqui",
-    "availableHereCaption": "As atualizações disponíveis podem ser visualizadas aqui. Você pode optar por atualizar a qualquer momento."
-  },
   "seo": {
     "404": {
       "title": "404 Página Não Encontrada",
@@ -864,9 +819,9 @@
     "osmosisUpdates": "Atualizações de osmose!",
     "seeWhatsNew": "Veja o que é novo"
   },
-  "unlistedAssetsEnabled": "Recursos não listados ativados",
-  "unlistedAssetsDisabled": "Recursos não listados desativados",
-  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Pré-visualizar recursos ativados",
+  "previewAssetsDisabled": "Visualização de recursos desativada",
+  "previewAssetsEnabledForSession": "Visualize os ativos habilitados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganhar",
     "position": "Posição",

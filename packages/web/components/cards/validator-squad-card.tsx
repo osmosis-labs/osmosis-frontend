@@ -6,9 +6,9 @@ import React from "react";
 import { useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -142,13 +142,9 @@ export const ValidatorSquadCard: React.FC<{
             {validatorBlock}
             <div className="flex items-center">
               <Button
+                variant="outline"
                 disabled={hasInsufficientBalance}
-                mode="bullish-special"
-                size="normal"
-                className="rounded-2xl"
-                onClick={() => {
-                  setShowValidatorModal(true);
-                }}
+                onClick={() => setShowValidatorModal(true)}
               >
                 {t("stake.viewOrEdit")}
               </Button>

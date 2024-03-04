@@ -43,8 +43,8 @@ import {
 import {
   AxelarChainIds_SourceChainMap,
   SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar";
-import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
+} from "~/integrations/bridges/axelar/types";
+import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -832,7 +832,7 @@ export const TransferContent: FunctionComponent<
     (providerId: AvailableBridges, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
-          `${providerId.toLowerCase()}${JSON.stringify(params)}`,
+          `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
           osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)

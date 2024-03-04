@@ -6,9 +6,7 @@
  *  2. We need to determine all the available chain ids for added type safety.
  *
  * Reasons we need to generate asset-list.ts:
- *  1. We need to add the `origin_chain_id` and `origin_chain_name` to the asset list.
- *     This makes it easier to find the source chain for an asset and register it on our observable assets store.
- *  2. We need to determine all the available asset symbols for added type safety.
+ *  1. We need to determine all the available asset symbols for added type safety.
  */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -17,9 +15,8 @@ import type {
   AssetList,
   Chain,
   ChainList,
-  ResponseAssetList,
+  IbcTransferMethod,
 } from "@osmosis-labs/types";
-import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -38,11 +35,16 @@ import {
 } from "~/server/queries/github";
 
 import {
-  downloadAndSaveImage,
   getChainList,
   getImageRelativeFilePath,
   getOsmosisChainId,
+  saveAssetImageToTokensDir,
 } from "./utils";
+
+interface ResponseAssetList {
+  chainName: string;
+  assets: Omit<Asset, "chain_id">[];
+}
 
 const repo = "osmosis-labs/assetlists";
 
@@ -53,7 +55,13 @@ function getFilePath({
   chainId: string;
   fileType: "assetlist" | "chainlist";
 }) {
-  return `/${chainId}/${chainId}.${fileType}.json`;
+  // TEMPORARY
+  // use legacy chain list
+  if (fileType === "chainlist") {
+    return `${chainId}/${chainId}.${fileType}.json`;
+  }
+
+  return `${chainId}/generated/frontend/${fileType}.json`;
 }
 
 async function generateChainListFile({
@@ -154,7 +162,7 @@ async function generateChainListFile({
 function createOrAddToAssetList(
   assetList: AssetList[],
   chain: Chain,
-  asset: ResponseAssetList["assets"][number],
+  asset: Asset,
   environment: "testnet" | "mainnet"
 ): AssetList[] {
   const assetlistIndex = assetList.findIndex(
@@ -168,28 +176,12 @@ function createOrAddToAssetList(
     : chain.chain_id;
   const chainName = chain.chain_name;
 
-  const osmosisPriceInfo = asset.keywords?.find((keyword) =>
-    keyword.includes("osmosis-price")
-  );
-
-  const [_, destCoinBase, poolId] = osmosisPriceInfo?.split(":") ?? [];
-
   const augmentedAsset: Asset = {
     ...asset,
-    display: asset.display,
-    origin_chain_id: chainId,
-    origin_chain_name: chainName,
     relative_image_url: getImageRelativeFilePath(
-      asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+      asset.logoURIs.svg ?? asset.logoURIs.png!,
       asset.symbol
     ),
-    ...(Boolean(destCoinBase) &&
-      Boolean(poolId) && {
-        price_info: {
-          dest_coin_minimal_denom: destCoinBase,
-          pool_id: poolId,
-        },
-      }),
   };
 
   if (assetlistIndex === -1) {
@@ -205,6 +197,7 @@ function createOrAddToAssetList(
   return assetList;
 }
 
+/** Generates asset list TypeScript file. */
 async function generateAssetListFile({
   chains,
   environment,
@@ -227,12 +220,8 @@ async function generateAssetListFile({
   const osmosisChainId = getOsmosisChainId(environment);
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
-    const traces = asset.traces.filter((trace) =>
-      ["ibc", "ibc-cw20"].includes(trace.type)
-    );
-
     /** If there are no traces, assume it's an Osmosis asset */
-    if (traces.length === 0) {
+    if (asset.transferMethods.length === 0) {
       const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
 
       if (!chain) {
@@ -242,21 +231,30 @@ async function generateAssetListFile({
       return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
-    for (const trace of traces) {
-      const chainName = trace.counterparty.chain_name;
-      const chain = chains.find((chain) => chain.chain_name === chainName);
+    /** Otherwise, assume IBC asset 1 hop counterparty. */
+    const cosmosCounterparty = [...asset.transferMethods]
+      .reverse()
+      .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
 
-      if (!chain) {
-        console.warn(
-          `Failed to find chain ${chainName}. ${asset.symbol} for that chain will be skipped.`
-        );
-        continue;
-      }
-
-      createOrAddToAssetList(acc, chain, asset, environment);
+    if (!cosmosCounterparty) {
+      throw new Error(
+        "Failed to find cosmos counterparty for IBC asset: " + asset.symbol
+      );
     }
 
-    return acc;
+    const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
+
+    const chain = chains.find(
+      (chain) => chain.chain_name === counterpartyChainName
+    );
+
+    if (!chain) {
+      throw new Error(
+        `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
+      );
+    }
+
+    return createOrAddToAssetList(acc, chain, asset, environment);
   }, [] as AssetList[]);
 
   let content: string = "";
@@ -278,9 +276,9 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
     .map(
       (symbol) =>
-        `"${symbol}" /** source denom: ${getSourceDenomFromAssetList(
-          assetList.assets.find((asset) => asset.symbol === symbol)!
-        )} */`
+        `"${symbol}" /** source denom: ${
+          assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
+        } */`
     )
     .join(" | ")};
   `;
@@ -336,14 +334,14 @@ async function generateAssetImages({
 }: {
   assetList: ResponseAssetList;
 }) {
-  console.time("Successfully downloaded images.");
+  console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
-    await downloadAndSaveImage(
-      asset?.logo_URIs.svg ?? asset?.logo_URIs.png ?? "",
+    await saveAssetImageToTokensDir(
+      asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
       asset
     );
   }
-  console.timeEnd("Successfully downloaded images.");
+  console.timeEnd("Successfully downloaded images");
 }
 
 async function getLatestCommitHash() {

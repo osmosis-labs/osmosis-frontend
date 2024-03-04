@@ -10,6 +10,7 @@ export function getSuperfluidPoolIds() {
     cache: superfluidCache,
     key: "superfluid-pool-ids",
     ttl: 1000 * 60 * 5, // 5 mins
+    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       const { assets: superfluidAssets } = await queryAllSuperfluidAssets();
 

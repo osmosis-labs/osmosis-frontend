@@ -54,18 +54,6 @@
     }
   },
   "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
-  "convertToStake": {
-    "adTitle": "私たちはより良い収益戦略を発見しました。",
-    "adSubtitle": "一部のポジションは{apr} % APR の OSMO をステーキングする場合よりも収益が低くなります。アップグレードするポジションを表示して選択します。",
-    "title": "ステークOSMOに変換",
-    "description": "選択したポジションは完全に OSMO に変換されます。すべての OSMO は、既存のバリデーター セットに自動的にステークされます。",
-    "stakedOsmo": "ステークされたOSMO",
-    "APR": "4月",
-    "currentApr": "現在の年利",
-    "pool": "プール # {poolId}",
-    "position": "POSITION # {positionId}",
-    "convertAndStake": "変換してステークする"
-  },
   "clPositions": {
     "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
@@ -130,18 +118,6 @@
     "applyButton": "適用する",
     "storeDisclaimer": "特定のコンテンツは、Osmosis Labs またはその関連会社と提携していない第三者によって作成されており、Osmosis Labs はそのようなコンテンツについて責任を負いません。 Osmosis Labs は、コンテンツのエラーや遅延、またはコンテンツに依存して行われた行為に対して責任を負いません。情報は情報提供のみを目的として提供されており、投資アドバイスではありません。これは、特定のデジタル資産を売買したり、特定の投資戦略を採用したりすることを推奨するものではありません。 Osmosis Labs は、提供された情報または特定の資産の正確性、適合性、有効性についていかなる表明も行いません。表示されている価格は例示のみを目的としています。実際の暗号通貨の価格および関連する統計は異なる場合があります。提示されたデータは、Osmosis Labs の取引所および一部の他の暗号通貨取引所で取引された資産を反映している可能性があります。",
     "allAppsHeader": "すべてのアプリ"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "{pair}を強化します",
-    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけでポジションをアップグレードできます。",
-    "primaryCta": "スーパーチャージャーにアップグレード",
-    "secondaryCta": "30秒で学べる"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "流動性からより多くの収益を得る",
-    "caption": "スーパーチャージされたポジションにより、追加の収益を得ることができます。 30 秒でその仕組みを学び、数回クリックするだけで流動性をアップグレードできます。",
-    "primaryCta": "スーパーチャージャーにアップグレード",
-    "secondaryCta": "30秒で学べる"
   },
   "createFirstPositionCta": {
     "title": "最初のスーパーチャージポジションを作成する",
@@ -307,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
     "incentive": {
-      "mobileTitle": "インセンティブ",
       "title": "インセンティブの種類"
     },
     "MAX": "マックス",
     "pool": {
-      "mobileTitle": "プール",
       "title": "プールの種類"
     },
     "searchTokens": "検索",
@@ -336,9 +310,6 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
-      "internal": "社内インセンティブ",
-      "external": "外部からのインセンティブ",
-      "superfluid": "超流動体",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -513,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "検索プール",
       "sort": {
         "APRIncentivized": "4月",
         "fees": "料金（7D）",
@@ -783,21 +753,6 @@
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
   "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
-  "upgrades": {
-    "title": "アップグレードが可能",
-    "detected": "以下にリストされている資産またはポジションのアップグレードが検出されました。",
-    "positionUpgrade": "ポジションのアップグレード",
-    "superchargedLiquidity": "流動性の高まり",
-    "newSuperchargedPool": "この新しいプールには、より高い収益の可能性があり、推定年利も最も高くなります。",
-    "upgrade": "アップグレード",
-    "pool": "プール",
-    "new": "新しい",
-    "current": "現在",
-    "success": "アップグレード成功！",
-    "clickHereToView": "ここをクリックしてご覧ください",
-    "foundHere": "アップグレードはここで見つけることができます",
-    "availableHereCaption": "利用可能なアップグレードはここで確認できます。いつでもアップグレードを選択できます。"
-  },
   "seo": {
     "404": {
       "title": "404 - ページが見つかりません",
@@ -864,9 +819,9 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "unlistedAssetsEnabled": "非公開アセットの有効化",
-  "unlistedAssetsDisabled": "非公開アセットの無効化",
-  "unlistedAssetsEnabledForSession": "このセッションでは非リストのアセットが有効になりました。無効にするには、新しいタブを開くか、「show_unlisted_assets=false」を追加します。",
+  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
+  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "position": "位置",

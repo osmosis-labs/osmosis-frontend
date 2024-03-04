@@ -2,9 +2,11 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
 import timeout, { AsyncTimeoutError } from "~/utils/async";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -13,9 +15,7 @@ import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
-const poolsCache = new LRUCache<string, CacheEntry>({
-  max: 20,
-});
+const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
@@ -89,15 +89,21 @@ async function makePoolFromSidecarPool({
   totalFiatValueLocked: PricePretty | null;
 }): Promise<Pool | undefined> {
   // contains unlisted or invalid assets
-  if (!reserveCoins || !totalFiatValueLocked) return;
+  // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
+  // to ease integrations.
+  if ((!reserveCoins || !totalFiatValueLocked) && !IS_TESTNET) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
     type: getPoolTypeFromChainPool(sidecarPool.chain_model),
     raw: makePoolRawResponseFromChainPool(sidecarPool.chain_model),
     spreadFactor: new RatePretty(sidecarPool.spread_factor),
-    reserveCoins,
-    totalFiatValueLocked,
+
+    // We expect the else case to occur only in testnet
+    reserveCoins: reserveCoins ? reserveCoins : [],
+    totalFiatValueLocked: totalFiatValueLocked
+      ? totalFiatValueLocked
+      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
   };
 }
 
@@ -127,7 +133,7 @@ export function getPoolTypeFromChainPool(
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
-/** @throws if an asset is unlisted */
+/** @throws if an asset is not in asset list */
 export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {

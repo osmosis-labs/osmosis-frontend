@@ -1,32 +1,40 @@
+import { StatusResponse } from "@0xsquid/sdk";
 import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
-import { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
+import { apiClient, ApiClientError } from "@osmosis-labs/utils";
 
-import { IS_TESTNET } from "~/config";
 import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
-import { SquidBridgeProvider } from "~/integrations/bridges/squid/squid-bridge-provider";
-import {
+import type {
+  BridgeProviderContext,
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
+import { ErrorTypes } from "~/utils/error-types";
 import { poll } from "~/utils/promise";
+
+// TODO: move to types file
+const providerName = "Squid" as const;
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusSource implements ITxStatusSource {
-  readonly keyPrefix = SquidBridgeProvider.providerName.toLowerCase();
+  readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: ITxStatusReceiver;
+  readonly apiURL:
+    | "https://api.0xsquid.com"
+    | "https://testnet.api.squidrouter.com";
+  readonly squidScanBaseUrl:
+    | "https://axelarscan.io"
+    | "https://testnet.axelarscan.io";
 
-  private squidProvider: SquidBridgeProvider;
-
-  constructor() {
-    this.squidProvider = new SquidBridgeProvider(
-      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-      {
-        env: IS_TESTNET ? "testnet" : "mainnet",
-        cache: new LRUCache<string, CacheEntry>({ max: 10 }),
-      }
-    );
+  constructor(env: BridgeProviderContext["env"]) {
+    this.apiURL =
+      env === "mainnet"
+        ? "https://api.0xsquid.com"
+        : "https://testnet.api.squidrouter.com";
+    this.squidScanBaseUrl =
+      env === "mainnet"
+        ? "https://axelarscan.io"
+        : "https://testnet.axelarscan.io";
   }
 
   /** Request to start polling a new transaction. */
@@ -38,23 +46,73 @@ export class SquidTransferStatusSource implements ITxStatusSource {
     poll({
       fn: async () => {
         try {
-          return this.squidProvider.getTransferStatus({
-            sendTxHash,
-            fromChainId,
-            toChainId,
-          });
-        } catch (e) {
-          if (e instanceof BridgeTransferStatusError) {
-            throw new Error(e.errors.map((err) => err.message).join(", "));
+          const url = new URL(`${this.apiURL}/v1/status`);
+          url.searchParams.append("transactionId", sendTxHash);
+          if (fromChainId) {
+            url.searchParams.append("fromChainId", fromChainId.toString());
           }
+          if (toChainId) {
+            url.searchParams.append("toChainId", toChainId.toString());
+          }
+
+          const data = await apiClient<StatusResponse>(url.toString());
+
+          if (!data || !data.id || !data.squidTransactionStatus) {
+            return;
+          }
+
+          const squidTransactionStatus = data.squidTransactionStatus as
+            | "success"
+            | "needs_gas"
+            | "ongoing"
+            | "partial_success"
+            | "not_found";
+
+          if (
+            squidTransactionStatus === "not_found" ||
+            squidTransactionStatus === "ongoing" ||
+            squidTransactionStatus === "partial_success"
+          ) {
+            return;
+          }
+
+          return {
+            id: sendTxHash,
+            status: squidTransactionStatus === "success" ? "success" : "failed",
+            reason:
+              squidTransactionStatus === "needs_gas"
+                ? "insufficientFee"
+                : undefined,
+          } as BridgeTransferStatus;
+        } catch (e) {
+          const error = e as ApiClientError<{
+            errors: { errorType?: string; message?: string }[];
+          }>;
+
+          throw new BridgeTransferStatusError(
+            error.data?.errors?.map(
+              ({ errorType, message }) =>
+                ({
+                  errorType: errorType ?? ErrorTypes.UnexpectedError,
+                  message: message ?? "",
+                } ?? [
+                  {
+                    errorType: ErrorTypes.UnexpectedError,
+                    message: "Failed to fetch transfer status",
+                  },
+                ])
+            )
+          );
         }
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .then((s) => this.receiveConclusiveStatus(snapshotKey, s))
-      .catch((e) => console.error(`Polling Squid has failed`, e));
+      .catch((e) => console.error(`Polling Squid has failed`, e))
+      .then((s) => {
+        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+      });
   }
 
   receiveConclusiveStatus(
@@ -75,6 +133,6 @@ export class SquidTransferStatusSource implements ITxStatusSource {
     const { sendTxHash } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
-    return `${this.squidProvider.squidScanBaseUrl}/gmp/${sendTxHash}`;
+    return `${this.squidScanBaseUrl}/gmp/${sendTxHash}`;
   }
 }

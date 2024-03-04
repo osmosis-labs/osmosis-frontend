@@ -39,11 +39,8 @@ export const PreTransferModal: FunctionComponent<
   } = props;
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
-
   const tokenValue = useCoinFiatValue(selectedToken.balance);
-
   const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";
-
   return (
     <ModalBase
       {...props}

@@ -14,7 +14,7 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
-import { useShowUnlistedAssets } from "~/hooks/use-show-unlisted-assets";
+import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
@@ -333,7 +333,7 @@ export function useSwapAssets({
     [debouncedSearchInput]
   );
 
-  const { showUnlistedAssets } = useShowUnlistedAssets();
+  const { showPreviewAssets } = useShowPreviewAssets();
 
   const canLoadAssets =
     !isLoadingWallet &&
@@ -351,7 +351,7 @@ export function useSwapAssets({
     {
       search: queryInput,
       userOsmoAddress: account?.address,
-      includeUnlisted: showUnlistedAssets,
+      includePreview: showPreviewAssets,
       limit: 50, // items per page
     },
     {

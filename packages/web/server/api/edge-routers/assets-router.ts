@@ -61,7 +61,7 @@ export const assetsRouter = createTRPCRouter({
           limit,
           cursor,
           onlyVerified,
-          includeUnlisted,
+          includePreview,
         },
       }) =>
         maybeCachePaginatedItems({
@@ -71,7 +71,7 @@ export const assetsRouter = createTRPCRouter({
               userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
-              includeUnlisted,
+              includePreview,
             }),
           cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
           cursor,
@@ -151,7 +151,7 @@ export const assetsRouter = createTRPCRouter({
           onlyPositiveBalances,
           cursor,
           limit,
-          includeUnlisted,
+          includePreview,
         },
       }) =>
         maybeCachePaginatedItems({
@@ -162,13 +162,13 @@ export const assetsRouter = createTRPCRouter({
             assets = await mapGetMarketAssets({
               search,
               onlyVerified,
-              includeUnlisted,
+              includePreview,
             });
 
             assets = await mapGetUserAssetCoins({
               assets,
               userOsmoAddress,
-              includeUnlisted,
+              includePreview,
               sortFiatValueDirection: isDefaultSort
                 ? "desc"
                 : !search && sortInput && sortInput.keyPath === "usdValue"
@@ -236,7 +236,7 @@ export const assetsRouter = createTRPCRouter({
             preferredDenoms,
             sort: sortInput,
             onlyPositiveBalances,
-            includeUnlisted,
+            includePreview,
           }),
           cursor,
           limit,
@@ -273,7 +273,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      })
+      }).catch(() => [])
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
@@ -300,6 +300,6 @@ export const assetsRouter = createTRPCRouter({
           quoteCoinMinimalDenom,
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
-        })
+        }).catch(() => ({ prices: [], min: 0, max: 0 }))
     ),
 });
