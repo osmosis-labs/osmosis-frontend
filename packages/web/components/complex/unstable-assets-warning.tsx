@@ -6,17 +6,18 @@ import { useTranslation } from "~/hooks";
 interface UnstableAssetWarningProps {
   onContinue: () => void;
   onCancel: () => void;
+  prettyChainName: string;
 }
 
 export const UnstableAssetWarning: FunctionComponent<
   UnstableAssetWarningProps
-> = ({ onCancel, onContinue }) => {
+> = ({ onCancel, onContinue, prettyChainName }) => {
   const { t } = useTranslation();
 
   return (
     <div className="flex h-full w-full flex-col">
       <p className="my-8 text-center text-base text-osmoverse-200">
-        {t("unstableAssetsWarning.description")}
+        {t("unstableAssetsWarning.description", { prettyChainName })}
       </p>
       <div className="flex w-full flex-col gap-2">
         <Button variant="destructive" onClick={onContinue}>
