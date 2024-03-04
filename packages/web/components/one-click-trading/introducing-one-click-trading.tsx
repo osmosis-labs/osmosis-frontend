@@ -1,17 +1,21 @@
 import Image from "next/image";
 
-import { Button, buttonCVA } from "~/components/buttons";
 import { Pill } from "~/components/indicators/pill";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 interface IntroducingOneClickProps {
   onStartTrading: () => void;
   onClickEditParams?: () => void;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 export const IntroducingOneClick = ({
   onClickEditParams,
   onStartTrading,
+  isLoading,
+  isDisabled,
 }: IntroducingOneClickProps) => {
   const { t } = useTranslation();
 
@@ -26,8 +30,9 @@ export const IntroducingOneClick = ({
       <h2 className="text-body2 font-body2 text-osmoverse-200">
         {t("oneClickTrading.introduction.introducingSubtitle")}{" "}
         <a
-          className={buttonCVA({
-            mode: "text",
+          className={buttonVariants({
+            variant: "link",
+            size: "sm",
             className: "!inline w-auto px-0 text-body2 font-body2",
           })}
           // TODO: Add link
@@ -41,12 +46,24 @@ export const IntroducingOneClick = ({
         src="/images/1ct-intro-graphics.svg"
         alt="1ct intro"
       />
-      <Button className="w-fit px-10" onClick={onStartTrading}>
+      <Button
+        className="w-fit px-10"
+        onClick={onStartTrading}
+        isLoading={isLoading}
+        disabled={isDisabled}
+        loadingText={t("oneClickTrading.introduction.startTradingButton")}
+      >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
       <p className="text-caption text-osmoverse-300">
         {t("oneClickTrading.introduction.activeHourLimit")} –{" "}
-        <Button mode="text" className="!inline" onClick={onClickEditParams}>
+        <Button
+          variant="link"
+          className="!inline px-0 text-caption"
+          size="sm"
+          onClick={onClickEditParams}
+          disabled={isLoading || isDisabled}
+        >
           {t("oneClickTrading.introduction.changeButton")}
         </Button>
       </p>

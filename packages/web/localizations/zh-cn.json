@@ -437,6 +437,13 @@
     "clearAllHistory": "全部清除"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "一键交易活跃",
+      "oneClickTradingExpired": "一键交易已过期",
+      "oneClickTradingDisabled": "一键交易已禁用",
+      "networkFeeTooHigh": "网络费太高",
+      "enableOneClickTrading": "启用一键交易"
+    },
     "introduction": {
       "newFeature": "新功能",
       "introducingTitle": "一键交易简介",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "消费限额",
       "networkFeeLimitTitle": "网络费用限额",
       "sessionPeriodTitle": "会议期间",
+      "resetPeriodTitle": "重置期",
       "startButton": "开始一键交易",
       "spendLimitScreen": {
         "spendLimitDescription": "设置您在一键交易会话期间可以花费的最大金额。",
@@ -479,11 +487,28 @@
         "title": "会议期间",
         "description": "设置允许在此设备上进行一键交易的持续时间。",
         "periods": {
+          "10min": "10分钟",
+          "30min": "30分钟",
+          "1hour": "1小时",
+          "3hours": "3小时",
+          "12hours": "12小时"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "重置期",
+        "description": "设置重置支出限额配额的持续时间。",
+        "periods": {
           "day": "天",
           "week": "星期",
           "month": "月",
           "year": "年"
         }
+      },
+      "discardChanges": {
+        "title": "放弃更改？",
+        "message": "您希望保留现有的一键交易设置吗？",
+        "cancelButton": "取消",
+        "discardButton": "丢弃"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "重新连接",
     "connectingWallet": "连接钱包中",
     "approveWalletConnect": "在您的移动设备上批准 {walletName} 连接请求。",
+    "initializingOneClickTradingSession": "初始化一键交易",
+    "approveOneClickTradingSession": "在您的钱包上批准交易。",
+    "errorInitializingOneClickTradingSession": "初始化会话时出错",
+    "continue": "继续",
+    "retry": "重试",
     "openExtension": "打开 {walletName} 浏览器扩展程序以连接您的钱包。",
     "initializingWallet": "初始化钱包客户端",
     "clickToRefresh": "点击刷新。",
@@ -936,5 +966,14 @@
     "totalValueInvested": "投资总额",
     "lookBelow": "请参阅下文并找到最适合您的策略"
   },
-  "disclaimer": "免责声明"
+  "disclaimer": "免责声明",
+  "remaining": "其余的",
+  "timeUnits": {
+    "second": "第二",
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "hour": "小时",
+    "hours": "小时"
+  }
 }

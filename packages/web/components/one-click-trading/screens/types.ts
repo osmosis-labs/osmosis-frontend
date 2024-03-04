@@ -1,5 +1,9 @@
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dispatch, SetStateAction } from "react";
+
 export interface OneClickTradingBaseScreenProps {
-  goBackButton: React.ReactNode;
-  transaction1CTParams: any; // TODO: Define type for 1CT
-  setTransaction1CTParams: (params: any) => void; // TODO: Define type for 1CT
+  transaction1CTParams: OneClickTradingTransactionParams;
+  setTransaction1CTParams: Dispatch<
+    SetStateAction<OneClickTradingTransactionParams | undefined>
+  >;
 }

@@ -55,6 +55,7 @@ import {
   ApiClientError,
   DefaultGasPriceStep,
   isNil,
+  unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
@@ -67,6 +68,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import dayjs from "dayjs";
 import Long from "long";
 import { LRUCache } from "lru-cache";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
@@ -210,7 +212,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.getUseOneClickTrading();
+      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
@@ -243,8 +245,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
       {
         duration: 31556926000, // 1 year
-        callback() {
+        callback: () => {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+          this.setOneClickTradingInfo(undefined);
         },
       }
     );
@@ -358,6 +361,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
          * Set it to true by default, allowing any errors to be confirmed through a real wallet connection.
          */
         (async () => true);
+
+      const originalDisconnect = walletWithAccountSet.disconnect;
+      walletWithAccountSet.disconnect = async (...args) => {
+        const osmosisChain = this.chains[0];
+        // Remove the one click trading info if the wallet is disconnected.
+        if (
+          chainNameOrId === osmosisChain.chain_id ||
+          chainNameOrId === osmosisChain.chain_name
+        ) {
+          this.setOneClickTradingInfo(undefined);
+        }
+        await originalDisconnect(...args);
+      };
 
       return walletWithAccountSet;
     }
@@ -728,9 +744,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
     if (
+      oneClickTradingInfo &&
       isOneClickTradingEnabled &&
       messages.every(({ typeUrl }) =>
         oneClickTradingInfo?.allowedMessages.includes(typeUrl)
+      ) &&
+      /**
+       * Should not surpass network fee limit.
+       */
+      fee.amount.length === 1 &&
+      fee.amount[0].denom === "uosmo" &&
+      new Dec(fee.amount[0].amount).lte(
+        new Dec(oneClickTradingInfo.networkFeeLimit.amount)
       )
     ) {
       return this.signOneClick(
@@ -1300,27 +1325,50 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
   }
 
-  @action
   async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
-    this.hasUsedOneClickTrading = true;
+    const nextValue = data ?? null;
+
+    /**
+     * For some reason decorating this method with @action doesn't work when called
+     * from walletAccountSet.disconnect. So, we use runInAction instead.
+     */
+    runInAction(() => {
+      this.oneClickTradingInfo = nextValue;
+      this.hasUsedOneClickTrading = true;
+    });
     await this._kvStore.set<boolean>(
       HasUsedOneClickTradingLocalStorageKey,
       true
     );
-
-    this.oneClickTradingInfo = data ?? null;
-    return this._kvStore.set(OneClickTradingLocalStorageKey, data);
+    return this._kvStore.set(OneClickTradingLocalStorageKey, nextValue);
   }
 
-  async isOneCLickTradingEnabled() {
+  async isOneCLickTradingEnabled(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return false;
+
     return (
-      !isNil(await this.getOneClickTradingInfo()) &&
-      Boolean(await this.getUseOneClickTrading())
+      !(await this.isOneClickTradingExpired()) &&
+      Boolean(await this.getShouldUseOneClickTrading())
     );
   }
 
+  async isOneClickTradingExpired(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return false;
+
+    return dayjs
+      .unix(unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end))
+      .isBefore(dayjs());
+  }
+
+  /**
+   * Sets the preference for using one-click trading.
+   */
   @action
-  async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+  async setShouldUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
     this.useOneClickTrading = nextValue;
     await this._kvStore.set<boolean>(
       UseOneClickTradingLocalStorageKey,
@@ -1328,7 +1376,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
   }
 
-  async getUseOneClickTrading() {
+  /**
+   * Retrieves the user's preference for using one-click trading.
+   * This preference is used to determine if one-click trading should be enabled or not.
+   */
+  async getShouldUseOneClickTrading() {
     return Boolean(
       await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
     );

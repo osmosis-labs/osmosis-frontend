@@ -437,6 +437,13 @@
     "clearAllHistory": "Curata tot"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
+      "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
+      "oneClickTradingDisabled": "1-Click Trading este dezactivat",
+      "networkFeeTooHigh": "Taxa de rețea prea mare",
+      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic"
+    },
     "introduction": {
       "newFeature": "Optiune noua",
       "introducingTitle": "Vă prezentăm tranzacționarea cu 1 clic",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Limita de cheltuieli",
       "networkFeeLimitTitle": "Limită taxă de rețea",
       "sessionPeriodTitle": "Perioada de sesiune",
+      "resetPeriodTitle": "Perioada de resetare",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Setați suma maximă pe care o puteți cheltui într-o perioadă de sesiune de tranzacționare cu 1 clic.",
@@ -479,11 +487,28 @@
         "title": "Perioada de sesiune",
         "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
         "periods": {
+          "10min": "10 minute",
+          "30min": "30 minute",
+          "1hour": "1 oră",
+          "3hours": "3 ore",
+          "12hours": "12 ore"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Perioada de resetare",
+        "description": "Setați o durată pentru a reseta cota limită de cheltuieli.",
+        "periods": {
           "day": "Zi",
           "week": "Săptămână",
           "month": "Lună",
           "year": "An"
         }
+      },
+      "discardChanges": {
+        "title": "Renunțați la modificări?",
+        "message": "Doriți să vă păstrați setările existente de tranzacționare cu 1 clic?",
+        "cancelButton": "Anulare",
+        "discardButton": "Aruncă"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Reconectați",
     "connectingWallet": "Se conectează la portofel",
     "approveWalletConnect": "Aprobați cererea de conexiune {walletName} pe telefonul dvs. mobil.",
+    "initializingOneClickTradingSession": "Inițializarea tranzacționării cu un singur clic",
+    "approveOneClickTradingSession": "Aprobați tranzacția pe portofelul dvs.",
+    "errorInitializingOneClickTradingSession": "Eroare la inițializarea sesiunii",
+    "continue": "Continua",
+    "retry": "Reîncercați",
     "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
     "initializingWallet": "Se inițializează clientul portofelului",
     "clickToRefresh": "Faceți clic pentru a reîmprospăta.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Valoarea totală investită",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "remaining": "rămas",
+  "timeUnits": {
+    "second": "al doilea",
+    "seconds": "secunde",
+    "minute": "minut",
+    "minutes": "minute",
+    "hour": "ora",
+    "hours": "ore"
+  }
 }

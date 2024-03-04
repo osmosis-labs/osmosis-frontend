@@ -1,19 +1,21 @@
-import { DefaultGasPriceStep, isNil } from "@osmosis-labs/utils";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { trimZerosFromEnd } from "@osmosis-labs/stores";
+import { DefaultGasPriceStep } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
-import { IS_TESTNET } from "~/config";
+import { ScreenGoBackButton } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { arrayOfLength } from "~/utils/array";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 interface PriceStep {
   id: string;
-  key: keyof RouterOutputs["edge"]["assets"]["getFeeTokenGasPriceStep"];
+  key: keyof RouterOutputs["edge"]["oneClickTrading"]["getNetworkFeeLimitStep"];
   displayTranslationKey: string;
   recommended?: boolean;
 }
@@ -42,26 +44,40 @@ const PriceSteps: PriceStep[] = [
 interface NetworkFeeLimitScreenProps extends OneClickTradingBaseScreenProps {}
 
 export const NetworkFeeLimitScreen = ({
-  goBackButton,
+  transaction1CTParams,
+  setTransaction1CTParams,
 }: NetworkFeeLimitScreenProps) => {
   const { t } = useTranslation();
 
-  const [networkFeeLimit, setNetworkFeeLimit] = useState<string | undefined>();
+  const [networkFeeLimit, setNetworkFeeLimit] = useState<string>(
+    trimZerosFromEnd(transaction1CTParams.networkFeeLimit.toDec().toString())
+  );
+
+  const stepAsset = transaction1CTParams.networkFeeLimit.currency;
 
   const { data: steps, isLoading } =
-    api.edge.assets.getFeeTokenGasPriceStep.useQuery({
-      chainId: IS_TESTNET ? "osmo-test-5" : "osmosis-1",
-    });
-
-  useEffect(() => {
-    if (steps && isNil(networkFeeLimit)) {
-      setNetworkFeeLimit(steps.average.toString());
-    }
-  }, [networkFeeLimit, steps]);
+    api.edge.oneClickTrading.getNetworkFeeLimitStep.useQuery();
 
   return (
     <>
-      {goBackButton}
+      <ScreenGoBackButton
+        onClick={() => {
+          setTransaction1CTParams((prev) => {
+            if (!prev) throw new Error("transaction1CTParams is undefined");
+
+            return {
+              ...prev,
+              networkFeeLimit: new CoinPretty(
+                stepAsset,
+                new Dec(networkFeeLimit).mul(
+                  DecUtils.getTenExponentN(stepAsset.coinDecimals)
+                )
+              ),
+            };
+          });
+        }}
+        className="absolute top-7 left-7"
+      />
       <div className="flex flex-col items-center gap-6 px-16 ">
         <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
           {t("oneClickTrading.settings.networkFeeLimitScreen.title")}
@@ -83,7 +99,11 @@ export const NetworkFeeLimitScreen = ({
           ) : (
             <>
               {(PriceSteps ?? DefaultGasPriceStep).map((step) => {
-                const value = (steps ?? DefaultGasPriceStep)[step.key];
+                const rawValue = (steps ?? DefaultGasPriceStep)[step.key];
+                const value =
+                  rawValue instanceof CoinPretty
+                    ? trimZerosFromEnd(rawValue.toDec().toString())
+                    : rawValue;
                 return (
                   <Button
                     key={step.id}
@@ -125,7 +145,7 @@ export const NetworkFeeLimitScreen = ({
             }}
             trailingSymbol={
               <span className="ml-2 text-body1 font-body1 text-osmoverse-300">
-                OSMO
+                {stepAsset?.coinDenom}
               </span>
             }
           />

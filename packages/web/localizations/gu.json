@@ -437,6 +437,13 @@
     "clearAllHistory": "બધું સાફ કરો"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
+      "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
+      "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
+      "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
+      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો"
+    },
     "introduction": {
       "newFeature": "નવી સુવિધા",
       "introducingTitle": "1-ક્લિક ટ્રેડિંગનો પરિચય",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "ખર્ચ મર્યાદા",
       "networkFeeLimitTitle": "નેટવર્ક ફી મર્યાદા",
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
+      "resetPeriodTitle": "સમયગાળો રીસેટ કરો",
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "spendLimitScreen": {
         "spendLimitDescription": "1-ક્લિક ટ્રેડિંગ સત્ર સમયગાળામાં તમે ખર્ચ કરી શકો તે મહત્તમ રકમ સેટ કરો.",
@@ -479,11 +487,28 @@
         "title": "સત્રનો સમયગાળો",
         "description": "આ ઉપકરણ પર 1-ક્લિક ટ્રેડિંગને મંજૂરી આપવા માટે સમયગાળો સેટ કરો.",
         "periods": {
+          "10min": "10 મિનીટ",
+          "30min": "30 મિનિટ",
+          "1hour": "1 કલાક",
+          "3hours": "3 કલાક",
+          "12hours": "12 કલાક"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "સમયગાળો રીસેટ કરો",
+        "description": "ખર્ચ મર્યાદા ક્વોટા રીસેટ કરવા માટે સમયગાળો સેટ કરો.",
+        "periods": {
           "day": "દિવસ",
-          "week": "સપ્તાહ",
+          "week": "અઠવાડિયું",
           "month": "માસ",
           "year": "વર્ષ"
         }
+      },
+      "discardChanges": {
+        "title": "ફેરફારોને અવગણો?",
+        "message": "શું તમે તમારી હાલની 1-ક્લિક ટ્રેડિંગ સેટિંગ્સ રાખવા માંગો છો?",
+        "cancelButton": "રદ કરો",
+        "discardButton": "કાઢી નાખો"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "ફરીથી કનેક્ટ કરો",
     "connectingWallet": "વૉલેટ કનેક્ટ કરી રહ્યું છે",
     "approveWalletConnect": "તમારા મોબાઇલ પર {walletName} કનેક્શન વિનંતીને મંજૂર કરો.",
+    "initializingOneClickTradingSession": "વન ક્લિક ટ્રેડિંગ શરૂ કરી રહ્યા છીએ",
+    "approveOneClickTradingSession": "તમારા વૉલેટ પર ટ્રાન્ઝેક્શન મંજૂર કરો.",
+    "errorInitializingOneClickTradingSession": "સત્ર શરૂ કરવામાં ભૂલ",
+    "continue": "ચાલુ રાખો",
+    "retry": "ફરી પ્રયાસ કરો",
     "openExtension": "તમારા વૉલેટને કનેક્ટ કરવા માટે {walletName} બ્રાઉઝર એક્સ્ટેંશન ખોલો.",
     "initializingWallet": "વૉલેટ ક્લાયંટ શરૂ કરી રહ્યાં છીએ",
     "clickToRefresh": "તાજું કરવા માટે ક્લિક કરો.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "રોકાણ કરેલ કુલ મૂલ્ય",
     "lookBelow": "નીચે જુઓ અને તમારા માટે શ્રેષ્ઠ વ્યૂહરચના શોધો"
   },
-  "disclaimer": "અસ્વીકરણ"
+  "disclaimer": "અસ્વીકરણ",
+  "remaining": "બાકી",
+  "timeUnits": {
+    "second": "બીજું",
+    "seconds": "સેકન્ડ",
+    "minute": "મિનિટ",
+    "minutes": "મિનિટ",
+    "hour": "કલાક",
+    "hours": "કલાક"
+  }
 }

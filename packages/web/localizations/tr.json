@@ -437,6 +437,13 @@
     "clearAllHistory": "Hepsini temizle"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Tıkla Ticaret aktif",
+      "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
+      "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
+      "networkFeeTooHigh": "Ağ ücreti çok yüksek",
+      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir"
+    },
     "introduction": {
       "newFeature": "Yeni özellik",
       "introducingTitle": "Tek Tıklamayla Ticarete Giriş",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Harcama Limiti",
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
+      "resetPeriodTitle": "Dönemi sıfırla",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "spendLimitScreen": {
         "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
@@ -479,11 +487,28 @@
         "title": "Oturum dönemi",
         "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
         "periods": {
+          "10min": "10 dakika",
+          "30min": "30 dakika",
+          "1hour": "1 saat",
+          "3hours": "3 saat",
+          "12hours": "12 saat"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Dönemi sıfırla",
+        "description": "Harcama sınırı kotasını sıfırlamak için bir süre ayarlayın.",
+        "periods": {
           "day": "Gün",
           "week": "Hafta",
           "month": "Ay",
           "year": "Yıl"
         }
+      },
+      "discardChanges": {
+        "title": "Değişiklikleri gözardı et?",
+        "message": "Mevcut Tek Tıklamayla Ticaret ayarlarınızı korumak istiyor musunuz?",
+        "cancelButton": "İptal etmek",
+        "discardButton": "At"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Tekrar Bağlan",
     "connectingWallet": "Cüzdan Bağlanıyor",
     "approveWalletConnect": "Mobil cihazınızda {walletName} bağlantı isteğini onaylayın.",
+    "initializingOneClickTradingSession": "Tek Tıklamayla Ticareti Başlatma",
+    "approveOneClickTradingSession": "Cüzdanınızdaki İşlemi onaylayın.",
+    "errorInitializingOneClickTradingSession": "Oturum başlatılırken hata oluştu",
+    "continue": "Devam etmek",
+    "retry": "Yeniden dene",
     "openExtension": "{walletName} tarayıcı eklentisini açarak cüzdanınızı bağlayın.",
     "initializingWallet": "Cüzdan İstemcisi Başlatılıyor",
     "clickToRefresh": "Yenilemek için tıklayın.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Yatırılan Toplam Değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "remaining": "geriye kalan",
+  "timeUnits": {
+    "second": "ikinci",
+    "seconds": "saniye",
+    "minute": "dakika",
+    "minutes": "dakika",
+    "hour": "saat",
+    "hours": "saat"
+  }
 }

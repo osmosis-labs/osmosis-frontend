@@ -437,6 +437,13 @@
     "clearAllHistory": "Clear all"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click Trading active",
+      "oneClickTradingExpired": "1-Click Trading expired",
+      "oneClickTradingDisabled": "1-Click Trading disabled",
+      "networkFeeTooHigh": "Network fee too high",
+      "enableOneClickTrading": "Enable 1-Click Trading"
+    },
     "introduction": {
       "newFeature": "New Feature",
       "introducingTitle": "Introducing 1-Click Trading",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Spend Limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
+      "resetPeriodTitle": "Reset period",
       "startButton": "Start 1-Click Trading",
       "spendLimitScreen": {
         "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
@@ -479,11 +487,28 @@
         "title": "Session period",
         "description": "Set a duration to allow 1-Click Trading on this device.",
         "periods": {
+          "10min": "10 minutes",
+          "30min": "30 minutes",
+          "1hour": "1 hour",
+          "3hours": "3 hours",
+          "12hours": "12 hours"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Reset period",
+        "description": "Set a duration to reset the spend limit quota.",
+        "periods": {
           "day": "Day",
           "week": "Week",
           "month": "Month",
           "year": "Year"
         }
+      },
+      "discardChanges": {
+        "title": "Discard Changes?",
+        "message": "Do you wish to keep your existing 1-Click Trading settings?",
+        "cancelButton": "Cancel",
+        "discardButton": "Discard"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Reconnect",
     "connectingWallet": "Connecting Wallet",
     "approveWalletConnect": "Approve {walletName} connection request on your mobile.",
+    "initializingOneClickTradingSession": "Initializing One Click Trading",
+    "approveOneClickTradingSession": "Approve Transaction on your wallet.",
+    "errorInitializingOneClickTradingSession": "Error initializing Session",
+    "continue": "Continue",
+    "retry": "Retry",
     "openExtension": "Open the {walletName} browser extension to connect your wallet.",
     "initializingWallet": "Initializing Wallet Client",
     "clickToRefresh": "Click to refresh.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Total Value Invested",
     "lookBelow": "Look below and find best strategies for you"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "remaining": "remaining",
+  "timeUnits": {
+    "second": "second",
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours"
+  }
 }

@@ -1,13 +1,7 @@
 import { PricePretty } from "@keplr-wallet/unit";
-import { DefaultGasPriceStep } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { RecommendedSwapDenoms } from "~/config/feature-flag";
-import {
-  ChainList,
-  MainnetChainIds,
-  TestnetChainIds,
-} from "~/config/generated/chain-list";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
@@ -30,7 +24,6 @@ import {
   TimeFrame,
 } from "~/server/queries/imperator";
 import { TimeDuration } from "~/server/queries/imperator";
-import { queryOsmosisGasPrice } from "~/server/queries/osmosis/txfees";
 import { compareDec, compareMemberDefinition } from "~/utils/compare";
 import { createSortSchema, sort } from "~/utils/sort";
 
@@ -57,43 +50,6 @@ export const assetsRouter = createTRPCRouter({
         asset,
         userOsmoAddress,
       });
-    }),
-  getFeeTokenGasPriceStep: publicProcedure
-    .input(
-      z.object({
-        chainId: z.custom<MainnetChainIds | TestnetChainIds>(
-          (val) => typeof val === "string"
-        ),
-      })
-    )
-    .query(async ({ input: { chainId } }) => {
-      const osmosisChainId = ChainList[0].chain_id;
-
-      if (chainId === osmosisChainId) {
-        const result = await queryOsmosisGasPrice();
-        const osmosisGasPrice = Number(result.base_fee);
-
-        return {
-          low: osmosisGasPrice,
-          average: osmosisGasPrice * 1.5,
-          high: osmosisGasPrice * 2.5,
-        };
-      }
-
-      const counterpartyChain = ChainList.find(
-        ({ chain_id }) => chain_id === chainId
-      );
-
-      if (!counterpartyChain)
-        throw new Error(`Chain (${chainId}) not found in chain list`);
-
-      const feeCurrency = counterpartyChain.fees.fee_tokens[0];
-
-      return {
-        low: feeCurrency?.low_gas_price ?? DefaultGasPriceStep.low,
-        average: feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average,
-        high: feeCurrency?.high_gas_price ?? DefaultGasPriceStep.high,
-      };
     }),
   getAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)

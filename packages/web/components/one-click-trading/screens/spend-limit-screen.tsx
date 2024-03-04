@@ -6,7 +6,11 @@ import { MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
-import { Screen, ScreenManager } from "~/components/screen-manager";
+import {
+  Screen,
+  ScreenGoBackButton,
+  ScreenManager,
+} from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
@@ -36,13 +40,18 @@ const shareOfBalanceOptions: ShareOfBalanceOption[] = [
 type SpendLimitViews = "fixed-amount" | "share-of-balance";
 interface SpendLimitScreenProps extends OneClickTradingBaseScreenProps {}
 
-export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
+export const SpendLimitScreen = ({
+  transaction1CTParams,
+  setTransaction1CTParams,
+}: SpendLimitScreenProps) => {
   const { t } = useTranslation();
   const { accountStore, chainStore } = useStore();
   const [selectedView, setSelectedView] =
     useState<SpendLimitViews>("fixed-amount");
 
-  const [fixedAmountValue, setFixedAmountValue] = useState("");
+  const [fixedAmountValue, setFixedAmountValue] = useState(
+    transaction1CTParams?.spendLimit.toDec().truncate().toString()
+  );
   const [previousShareOfBalanceValue, setPreviousShareOfBalanceValue] =
     useState("25");
   const [shareOfBalance, setShareOfBalance] =
@@ -91,7 +100,36 @@ export const SpendLimitScreen = ({ goBackButton }: SpendLimitScreenProps) => {
 
   return (
     <>
-      {goBackButton}
+      <ScreenGoBackButton
+        onClick={() => {
+          setTransaction1CTParams((previousParams) => {
+            if (!previousParams) throw new Error("1CT Params must be set");
+
+            if (selectedView === "fixed-amount") {
+              return {
+                ...previousParams,
+                spendLimit: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  new Dec(fixedAmountValue)
+                ),
+              };
+            }
+
+            return {
+              ...previousParams,
+              spendLimit: new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                new Dec(!shareOfBalance?.value ? 0 : shareOfBalance.value)
+                  .quo(new Dec(100))
+                  .mul(
+                    userAssetsBreakdown?.aggregatedValue.toDec() ?? new Dec(0)
+                  )
+              ),
+            };
+          });
+        }}
+        className="absolute top-7 left-7"
+      />
       <div className="flex flex-col items-center gap-6 px-16 ">
         <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
           {t("oneClickTrading.settings.spendLimitTitle")}

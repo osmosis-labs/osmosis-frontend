@@ -437,6 +437,13 @@
     "clearAllHistory": "Limpiar todo"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Comercio con 1 clic activo",
+      "oneClickTradingExpired": "El comercio con 1 clic expiró",
+      "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
+      "networkFeeTooHigh": "Tarifa de red demasiado alta",
+      "enableOneClickTrading": "Habilite el comercio con 1 clic"
+    },
     "introduction": {
       "newFeature": "Nueva caracteristica",
       "introducingTitle": "Presentamos el comercio con 1 clic",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Límite de gasto",
       "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
+      "resetPeriodTitle": "Periodo de reinicio",
       "startButton": "Comience a operar con 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Establezca la cantidad máxima que puede gastar dentro de un período de sesión de negociación con 1 clic.",
@@ -479,11 +487,28 @@
         "title": "Período de sesión",
         "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
         "periods": {
+          "10min": "10 minutos",
+          "30min": "30 minutos",
+          "1hour": "1 hora",
+          "3hours": "3 horas",
+          "12hours": "12 horas"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Periodo de reinicio",
+        "description": "Establezca una duración para restablecer la cuota de límite de gasto.",
+        "periods": {
           "day": "Día",
           "week": "Semana",
           "month": "Mes",
           "year": "Año"
         }
+      },
+      "discardChanges": {
+        "title": "¿Descartar los cambios?",
+        "message": "¿Desea mantener su configuración actual de Trading con 1 clic?",
+        "cancelButton": "Cancelar",
+        "discardButton": "Desechar"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando Billetera",
     "approveWalletConnect": "Aprobar la solicitud de conexión {walletName} en su dispositivo móvil.",
+    "initializingOneClickTradingSession": "Inicializando el comercio con un clic",
+    "approveOneClickTradingSession": "Apruebe la transacción en su billetera.",
+    "errorInitializingOneClickTradingSession": "Error al inicializar la sesión",
+    "continue": "Continuar",
+    "retry": "Rever",
     "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",
     "initializingWallet": "Inicializando Cliente de Billetera",
     "clickToRefresh": "Haga clic para actualizar.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Valor total invertido",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "remaining": "restante",
+  "timeUnits": {
+    "second": "segundo",
+    "seconds": "segundos",
+    "minute": "minuto",
+    "minutes": "minutos",
+    "hour": "hora",
+    "hours": "horas"
+  }
 }

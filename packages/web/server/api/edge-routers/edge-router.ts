@@ -1,5 +1,5 @@
-import { authenticatorsRouter } from "~/server/api/edge-routers/authenticators-router";
 import { concentratedLiquidityRouter } from "~/server/api/edge-routers/concentrated-liquidity-router";
+import { oneClickTradingRouter } from "~/server/api/edge-routers/one-click-trading-router";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { assetsRouter } from "./assets-router";
@@ -14,5 +14,5 @@ export const edgeRouter = createTRPCRouter({
   staking: stakingRouter,
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
-  authenticators: authenticatorsRouter,
+  oneClickTrading: oneClickTradingRouter,
 });

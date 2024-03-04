@@ -437,6 +437,13 @@
     "clearAllHistory": "Wyczyść wszystko"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Aktywny handel jednym kliknięciem",
+      "oneClickTradingExpired": "Transakcja 1-Click wygasła",
+      "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
+      "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
+      "enableOneClickTrading": "Włącz handel jednym kliknięciem"
+    },
     "introduction": {
       "newFeature": "Nowa cecha",
       "introducingTitle": "Przedstawiamy handel jednym kliknięciem",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Limit wydatków",
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
+      "resetPeriodTitle": "Zresetuj okres",
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "spendLimitScreen": {
         "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
@@ -479,11 +487,28 @@
         "title": "Okres sesji",
         "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
         "periods": {
+          "10min": "10 minut",
+          "30min": "30 minut",
+          "1hour": "1 godzina",
+          "3hours": "3 godziny",
+          "12hours": "12 godzin"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Zresetuj okres",
+        "description": "Ustaw czas resetowania limitu wydatków.",
+        "periods": {
           "day": "Dzień",
           "week": "Tydzień",
           "month": "Miesiąc",
           "year": "Rok"
         }
+      },
+      "discardChanges": {
+        "title": "Odrzucać zmiany?",
+        "message": "Czy chcesz zachować swoje dotychczasowe ustawienia handlu jednym kliknięciem?",
+        "cancelButton": "Anulować",
+        "discardButton": "Wyrzucać"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Połącz ponownie",
     "connectingWallet": "Łączenie z portfelem",
     "approveWalletConnect": "Zatwierdź żądanie połączenia {walletName} na swoim urządzeniu mobilnym.",
+    "initializingOneClickTradingSession": "Inicjowanie handlu jednym kliknięciem",
+    "approveOneClickTradingSession": "Zatwierdź transakcję w swoim portfelu.",
+    "errorInitializingOneClickTradingSession": "Błąd podczas inicjowania sesji",
+    "continue": "Kontynuować",
+    "retry": "Spróbować ponownie",
     "openExtension": "Otwórz rozszerzenie przeglądarkowe {walletName}, aby połączyć swój portfel.",
     "initializingWallet": "Inicjowanie klienta portfela",
     "clickToRefresh": "Kliknij, aby odświeżyć.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Całkowita zainwestowana wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
-  "disclaimer": "Zastrzeżenie"
+  "disclaimer": "Zastrzeżenie",
+  "remaining": "pozostały",
+  "timeUnits": {
+    "second": "drugi",
+    "seconds": "sekundy",
+    "minute": "minuta",
+    "minutes": "minuty",
+    "hour": "godzina",
+    "hours": "godziny"
+  }
 }

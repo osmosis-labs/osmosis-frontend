@@ -111,6 +111,13 @@ export async function queryCoingeckoCoin(
     developerData: true,
   }
 ) {
+  if (!authHeaders) {
+    console.error(
+      "queryCoingeckoCoin: Authorization headers are undefined. Coingecko API key is missing."
+    );
+    return;
+  }
+
   const url = new URL(`/api/v3/coins/${id}`, DETAILS_API_URL);
 
   url.searchParams.append("locale", lang);

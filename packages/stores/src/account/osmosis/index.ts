@@ -2125,21 +2125,77 @@ export class OsmosisAccountImpl {
     );
   }
 
-  async sendAddAuthenticatorMsg(
-    authenticator: { type: string; data: any },
+  async sendAddOrRemoveAuthenticatorsMsg({
+    addAuthenticators,
+    removeAuthenticators,
+    memo = "",
+    onFulfill,
+  }: {
+    addAuthenticators: { type: string; data: Uint8Array }[];
+    removeAuthenticators: bigint[];
+    memo?: string;
+    onFulfill?: (tx: DeliverTxResponse) => void;
+  }) {
+    const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
+      this.msgOpts.addAuthenticator.messageComposer({
+        type: authenticator.type,
+        data: authenticator.data,
+        sender: this.address,
+      })
+    );
+    const removeAuthenticatorMsgs = removeAuthenticators.map((id) =>
+      this.msgOpts.removeAuthenticator.messageComposer({
+        id,
+        sender: this.address,
+      })
+    );
+    const msgs = [...removeAuthenticatorMsgs, ...addAuthenticatorMsgs];
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "addOrRemoveAuthenticators",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+  async sendAddAuthenticatorsMsg(
+    authenticators: { type: string; data: any }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const addAuthenticatorMsg = this.msgOpts.addAuthenticator.messageComposer({
-      type: authenticator.type,
-      data: authenticator.data,
-      sender: this.address,
-    });
+    const addAuthenticatorMsgs = authenticators.map((authenticator) =>
+      this.msgOpts.addAuthenticator.messageComposer({
+        type: authenticator.type,
+        data: authenticator.data,
+        sender: this.address,
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
       "addAuthenticator",
-      [addAuthenticatorMsg],
+      addAuthenticatorMsgs,
       memo,
       undefined,
       undefined,
@@ -2166,7 +2222,7 @@ export class OsmosisAccountImpl {
   }
 
   async sendRemoveAuthenticatorMsg(
-    id: any,
+    id: bigint,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {

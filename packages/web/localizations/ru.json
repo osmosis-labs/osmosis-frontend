@@ -437,6 +437,13 @@
     "clearAllHistory": "Очистить все"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Торговля в 1 клик активна",
+      "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
+      "oneClickTradingDisabled": "Торговля в 1 клик отключена",
+      "networkFeeTooHigh": "Плата за сеть слишком высока",
+      "enableOneClickTrading": "Включить торговлю в 1 клик"
+    },
     "introduction": {
       "newFeature": "Новая особенность",
       "introducingTitle": "Представляем торговлю в 1 клик",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Лимит расходов",
       "networkFeeLimitTitle": "Лимит сетевой комиссии",
       "sessionPeriodTitle": "Период сессии",
+      "resetPeriodTitle": "Период сброса",
       "startButton": "Начать торговлю в 1 клик",
       "spendLimitScreen": {
         "spendLimitDescription": "Установите максимальную сумму, которую вы можете потратить в течение периода торговой сессии в 1 клик.",
@@ -479,11 +487,28 @@
         "title": "Период сессии",
         "description": "Установите продолжительность, чтобы разрешить торговлю в один клик на этом устройстве.",
         "periods": {
+          "10min": "10 минут",
+          "30min": "30 минут",
+          "1hour": "1 час",
+          "3hours": "3 часа",
+          "12hours": "12 часов"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Период сброса",
+        "description": "Установите продолжительность сброса квоты лимита расходов.",
+        "periods": {
           "day": "День",
           "week": "Неделя",
           "month": "Месяц",
           "year": "Год"
         }
+      },
+      "discardChanges": {
+        "title": "Отменить изменения?",
+        "message": "Хотите ли вы сохранить существующие настройки торговли в 1 клик?",
+        "cancelButton": "Отмена",
+        "discardButton": "Отказаться"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Восстановить соединение",
     "connectingWallet": "Подключение кошелька",
     "approveWalletConnect": "Одобрите запрос на подключение {walletName} на своем мобильном телефоне.",
+    "initializingOneClickTradingSession": "Инициализация торговли в один клик",
+    "approveOneClickTradingSession": "Подтвердите транзакцию на вашем кошельке.",
+    "errorInitializingOneClickTradingSession": "Ошибка инициализации сеанса",
+    "continue": "Продолжать",
+    "retry": "Повторить попытку",
     "openExtension": "Откройте расширение браузера {walletName} , чтобы подключить свой кошелек.",
     "initializingWallet": "Инициализация клиента кошелька",
     "clickToRefresh": "Нажмите, чтобы обновить.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Общая вложенная стоимость",
     "lookBelow": "Посмотрите ниже и найдите лучшие стратегии для вас"
   },
-  "disclaimer": "Отказ от ответственности"
+  "disclaimer": "Отказ от ответственности",
+  "remaining": "оставшийся",
+  "timeUnits": {
+    "second": "второй",
+    "seconds": "секунды",
+    "minute": "минута",
+    "minutes": "минуты",
+    "hour": "час",
+    "hours": "часы"
+  }
 }

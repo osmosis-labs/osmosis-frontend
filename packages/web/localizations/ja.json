@@ -437,6 +437,13 @@
     "clearAllHistory": "すべてクリア"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click取引が有効です",
+      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
+      "oneClickTradingDisabled": "1-Click 取引が無効になっています",
+      "networkFeeTooHigh": "ネットワーク料金が高すぎる",
+      "enableOneClickTrading": "1-Click取引を有効にする"
+    },
     "introduction": {
       "newFeature": "新機能",
       "introducingTitle": "1-Click取引の導入",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
+      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "spendLimitScreen": {
         "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
@@ -479,11 +487,28 @@
         "title": "会期",
         "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
         "periods": {
+          "10min": "10分",
+          "30min": "30分",
+          "1hour": "1時間",
+          "3hours": "3時間",
+          "12hours": "12時間"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "リセット期間",
+        "description": "支出制限割り当てをリセットする期間を設定します。",
+        "periods": {
           "day": "日",
           "week": "週",
           "month": "月",
           "year": "年"
         }
+      },
+      "discardChanges": {
+        "title": "変更を破棄？",
+        "message": "既存の 1-Click 取引設定を維持しますか?",
+        "cancelButton": "キャンセル",
+        "discardButton": "破棄"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "再接続",
     "connectingWallet": "ウォレットを接続する",
     "approveWalletConnect": "モバイルで{walletName}接続リクエストを承認します。",
+    "initializingOneClickTradingSession": "ワンクリック取引の初期化",
+    "approveOneClickTradingSession": "ウォレットでトランザクションを承認します。",
+    "errorInitializingOneClickTradingSession": "セッションの初期化中にエラーが発生しました",
+    "continue": "続く",
+    "retry": "リトライ",
     "openExtension": "{walletName}ブラウザ拡張機能を開いてウォレットに接続します。",
     "initializingWallet": "ウォレットクライアントを初期化しています",
     "clickToRefresh": "クリックして更新します。",
@@ -936,5 +966,14 @@
     "totalValueInvested": "投資総額",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
   },
-  "disclaimer": "免責事項"
+  "disclaimer": "免責事項",
+  "remaining": "残り",
+  "timeUnits": {
+    "second": "2番",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間"
+  }
 }

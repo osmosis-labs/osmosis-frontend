@@ -437,6 +437,13 @@
     "clearAllHistory": "Tout effacer"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Trading en 1 clic actif",
+      "oneClickTradingExpired": "Le trading en 1 clic a expiré",
+      "oneClickTradingDisabled": "Trading en 1 clic désactivé",
+      "networkFeeTooHigh": "Frais de réseau trop élevés",
+      "enableOneClickTrading": "Activer le trading en 1 clic"
+    },
     "introduction": {
       "newFeature": "Nouvelle fonctionnalité",
       "introducingTitle": "Présentation du trading en 1 clic",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "Limite de dépenses",
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
+      "resetPeriodTitle": "Période de réinitialisation",
       "startButton": "Commencez le trading en 1 clic",
       "spendLimitScreen": {
         "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
@@ -479,11 +487,28 @@
         "title": "Période de séance",
         "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
         "periods": {
+          "10min": "10 minutes",
+          "30min": "30 minutes",
+          "1hour": "1 heure",
+          "3hours": "3 heures",
+          "12hours": "12 heures"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Période de réinitialisation",
+        "description": "Définissez une durée pour réinitialiser le quota de limite de dépenses.",
+        "periods": {
           "day": "Jour",
           "week": "Semaine",
           "month": "Mois",
           "year": "Année"
         }
+      },
+      "discardChanges": {
+        "title": "Annuler les modifications?",
+        "message": "Souhaitez-vous conserver vos paramètres de trading en 1-Click existants ?",
+        "cancelButton": "Annuler",
+        "discardButton": "Jeter"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "Reconnecter",
     "connectingWallet": "Connexion du Portefeuille",
     "approveWalletConnect": "Approuver la demande de connexion {walletName} sur votre mobile.",
+    "initializingOneClickTradingSession": "Initialisation du trading en un clic",
+    "approveOneClickTradingSession": "Approuvez la transaction sur votre portefeuille.",
+    "errorInitializingOneClickTradingSession": "Erreur lors de l'initialisation de la session",
+    "continue": "Continuer",
+    "retry": "Recommencez",
     "openExtension": "Ouvrez l'extension de navigateur {walletName} pour connecter votre portefeuille.",
     "initializingWallet": "Initialisation du Client de Portefeuille",
     "clickToRefresh": "Cliquez pour rafraîchir.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "Valeur totale investie",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
-  "disclaimer": "Clause de non-responsabilité"
+  "disclaimer": "Clause de non-responsabilité",
+  "remaining": "restant",
+  "timeUnits": {
+    "second": "deuxième",
+    "seconds": "secondes",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "heure",
+    "hours": "heures"
+  }
 }

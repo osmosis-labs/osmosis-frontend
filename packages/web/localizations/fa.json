@@ -437,6 +437,13 @@
     "clearAllHistory": "همه را پاک کن"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
+      "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
+      "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
+      "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید"
+    },
     "introduction": {
       "newFeature": "خصوصیت جدید",
       "introducingTitle": "معرفی تجارت 1 کلیک",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "محدودیت هزینه",
       "networkFeeLimitTitle": "محدودیت هزینه شبکه",
       "sessionPeriodTitle": "دوره جلسه",
+      "resetPeriodTitle": "بازنشانی دوره",
       "startButton": "شروع تجارت با 1 کلیک",
       "spendLimitScreen": {
         "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
@@ -479,11 +487,28 @@
         "title": "دوره جلسه",
         "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
         "periods": {
+          "10min": "10 دقیقه",
+          "30min": "30 دقیقه",
+          "1hour": "1 ساعت",
+          "3hours": "3 ساعت",
+          "12hours": "12 ساعت"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "بازنشانی دوره",
+        "description": "مدت زمانی را برای بازنشانی سهمیه محدودیت هزینه تنظیم کنید.",
+        "periods": {
           "day": "روز",
           "week": "هفته",
           "month": "ماه",
           "year": "سال"
         }
+      },
+      "discardChanges": {
+        "title": "لغو تغییرات؟",
+        "message": "آیا مایلید تنظیمات تجارت 1-کلیک موجود خود را حفظ کنید؟",
+        "cancelButton": "لغو کنید",
+        "discardButton": "دور انداختن"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "دوباره وصل شوید",
     "connectingWallet": "اتصال کیف پول",
     "approveWalletConnect": "تایید",
+    "initializingOneClickTradingSession": "شروع معاملات با یک کلیک",
+    "approveOneClickTradingSession": "تراکنش را در کیف پول خود تأیید کنید.",
+    "errorInitializingOneClickTradingSession": "خطا در مقداردهی اولیه Session",
+    "continue": "ادامه هید",
+    "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
     "initializingWallet": "راه اندازی سرویس گیرنده کیف پول",
     "clickToRefresh": "برای بازخوانی کلیک کنید.",
@@ -936,5 +966,14 @@
     "totalValueInvested": "کل ارزش سرمایه گذاری شده",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
   },
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "remaining": "باقی مانده است",
+  "timeUnits": {
+    "second": "دومین",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقایق",
+    "hour": "ساعت",
+    "hours": "ساعت ها"
+  }
 }

@@ -437,6 +437,13 @@
     "clearAllHistory": "全部清除"
   },
   "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "一鍵交易活躍",
+      "oneClickTradingExpired": "一鍵交易已過期",
+      "oneClickTradingDisabled": "一鍵交易已停用",
+      "networkFeeTooHigh": "網路費太高",
+      "enableOneClickTrading": "啟用一鍵交易"
+    },
     "introduction": {
       "newFeature": "新功能",
       "introducingTitle": "一鍵交易簡介",
@@ -458,6 +465,7 @@
       "spendLimitTitle": "消費限額",
       "networkFeeLimitTitle": "網路費用限額",
       "sessionPeriodTitle": "會議期間",
+      "resetPeriodTitle": "重置期",
       "startButton": "開始一鍵交易",
       "spendLimitScreen": {
         "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
@@ -479,11 +487,28 @@
         "title": "會議期間",
         "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
         "periods": {
+          "10min": "10分鐘",
+          "30min": "30分鐘",
+          "1hour": "1小時",
+          "3hours": "3小時",
+          "12hours": "12小時"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "重置期",
+        "description": "設定重置支出限額配額的持續時間。",
+        "periods": {
           "day": "天",
           "week": "星期",
           "month": "月",
           "year": "年"
         }
+      },
+      "discardChanges": {
+        "title": "放棄更改？",
+        "message": "您希望保留現有的一鍵交易設定嗎？",
+        "cancelButton": "取消",
+        "discardButton": "丟棄"
       }
     },
     "welcomeBack": {
@@ -788,6 +813,11 @@
     "reconnect": "重新連接",
     "connectingWallet": "連接錢包中",
     "approveWalletConnect": "在您的手機上批准 {walletName} 的連接請求。",
+    "initializingOneClickTradingSession": "初始化一鍵交易",
+    "approveOneClickTradingSession": "在您的錢包上批准交易。",
+    "errorInitializingOneClickTradingSession": "初始化會話時出錯",
+    "continue": "繼續",
+    "retry": "重試",
     "openExtension": "打開 {walletName} 瀏覽器擴展程序來連接您的錢包。",
     "initializingWallet": "初始化錢包客戶端",
     "clickToRefresh": "點擊刷新。",
@@ -936,5 +966,14 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明"
+  "disclaimer": "免責聲明",
+  "remaining": "其餘的",
+  "timeUnits": {
+    "second": "第二",
+    "seconds": "秒",
+    "minute": "分分鐘",
+    "minutes": "分分鐘",
+    "hour": "小時",
+    "hours": "小時"
+  }
 }

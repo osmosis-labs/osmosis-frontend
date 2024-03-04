@@ -44,6 +44,7 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
+import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
@@ -303,7 +304,12 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      <OneClickFloatingBanner />
+      {flags.oneClickTrading && (
+        <>
+          <OneClickTradingIntroModal />
+          <OneClickFloatingBanner />
+        </>
+      )}
     </MainLayout>
   );
 });

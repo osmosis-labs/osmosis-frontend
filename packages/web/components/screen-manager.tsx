@@ -132,16 +132,23 @@ export const Screen = ({ children, screenName }: ScreenProps) => {
 
 interface ScreenGoBackButtonProps {
   className?: string;
+  onClick?: () => void;
 }
 
-export const ScreenGoBackButton = ({ className }: ScreenGoBackButtonProps) => {
+export const ScreenGoBackButton = ({
+  className,
+  onClick: onClickProp,
+}: ScreenGoBackButtonProps) => {
   const { goBack, canGoBack } = useScreenManager();
 
   if (!canGoBack) return null;
 
   return (
     <IconButton
-      onClick={goBack}
+      onClick={() => {
+        onClickProp?.();
+        goBack();
+      }}
       className={classNames(
         "w-fit text-osmoverse-400 hover:text-osmoverse-100",
         className
