@@ -870,7 +870,9 @@
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {
-    "description": "You may experience significant delays or transaction failure. Proceed at your own risk.",
+    "titleDeposit": "{coinDenom} deposits unstable",
+    "titleWithdraw": "{coinDenom} withdrawals unstable",
+    "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
     "buttonContinue": "Continue Anyway",
     "buttonCancel": "Cancel"
   }

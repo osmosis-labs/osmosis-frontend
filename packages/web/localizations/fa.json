@@ -870,7 +870,9 @@
   },
   "disclaimer": "سلب مسئولیت",
   "unstableAssetsWarning": {
-    "description": "ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شوید. با مسئولیت خود ادامه دهید.",
+    "titleDeposit": "{coinDenom} سپرده های ناپایدار",
+    "titleWithdraw": "{coinDenom} برداشت‌های ناپایدار",
+    "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
     "buttonContinue": "ادامه دادن به هر طریق",
     "buttonCancel": "لغو کنید"
   }

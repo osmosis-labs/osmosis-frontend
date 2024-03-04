@@ -870,7 +870,9 @@
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {
-    "description": "Este posibil să întâmpinați întârzieri semnificative sau eșec în tranzacție. Procedați pe propriul risc.",
+    "titleDeposit": "{coinDenom} depozite instabile",
+    "titleWithdraw": "{coinDenom} retrageri instabile",
+    "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
   }

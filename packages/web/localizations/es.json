@@ -870,7 +870,9 @@
   },
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {
-    "description": "Es posible que experimente retrasos importantes o errores en la transacción. Proceda bajo su propio riesgo.",
+    "titleDeposit": "{coinDenom} depósitos inestables",
+    "titleWithdraw": "{coinDenom} retiros inestables",
+    "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
   }

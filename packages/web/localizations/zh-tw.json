@@ -870,7 +870,9 @@
   },
   "disclaimer": "免責聲明",
   "unstableAssetsWarning": {
-    "description": "您可能會遇到嚴重的延遲或交易失敗。繼續需要您自擔風險。",
+    "titleDeposit": "{coinDenom}存款不穩定",
+    "titleWithdraw": "{coinDenom}提款不穩定",
+    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
     "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
   }

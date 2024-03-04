@@ -870,7 +870,9 @@
   },
   "disclaimer": "Clause de non-responsabilité",
   "unstableAssetsWarning": {
-    "description": "Vous pourriez rencontrer des retards importants ou un échec de transaction. Procédez à vos propres risques.",
+    "titleDeposit": "{coinDenom} dépôts instables",
+    "titleWithdraw": "{coinDenom} retraits instables",
+    "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
     "buttonContinue": "Continuer quand même",
     "buttonCancel": "Annuler"
   }
