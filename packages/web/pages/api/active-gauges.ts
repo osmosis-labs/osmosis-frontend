@@ -19,6 +19,13 @@ export default async function activeGauges(
 
   res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate"); // 15 minute cache
   res.status(200).json({
-    data: gauges,
+    data: gauges.map((gauge) => ({
+      ...gauge,
+      start_time: gauge.start_time.toISOString(),
+      distribute_to: {
+        ...gauge.distribute_to,
+        duration: gauge.distribute_to.duration.asSeconds() + "s",
+      },
+    })),
   });
 }

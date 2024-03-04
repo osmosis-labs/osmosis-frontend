@@ -2,7 +2,7 @@ import { createNodeQuery } from "../../base-utils";
 import { SyntheticLock } from "../lockup";
 import { SuperfluidDelegationRecord } from "./types";
 
-export type SuperfluidDelegations = {
+export type SuperfluidUndelegations = {
   superfluid_delegation_records: SuperfluidDelegationRecord[];
   total_undelegated_coins: [
     {
@@ -19,7 +19,7 @@ export type SuperfluidDelegations = {
 };
 
 export const querySuperfluidUnelegations = createNodeQuery<
-  SuperfluidDelegations,
+  SuperfluidUndelegations,
   {
     bech32Address: string;
   }
