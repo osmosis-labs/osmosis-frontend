@@ -87,7 +87,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         poolId: pool.id,
       });
 
-    const { data: bondDurations_ } =
+    const { data: bondDurations_, isLoading: isLoadingBondDurations } =
       api.edge.pools.getSharePoolBondDurations.useQuery(
         {
           poolId: pool.id,
@@ -746,7 +746,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     <div className="flex flex-wrap items-baseline gap-4 md:flex-col md:gap-3">
                       <LevelBadge level={2} disabled={level2Disabled} />
                       <h6>
-                        {level2Disabled
+                        {level2Disabled && !isLoadingBondDurations
                           ? t("pool.bondLiquidityUnavailable")
                           : t("pool.bondLiquidity")}
                       </h6>
@@ -757,7 +757,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
                   </div>
-                  {level2Disabled ? (
+                  {isLoadingBondDurations ? (
+                    <Spinner />
+                  ) : level2Disabled ? (
                     <h6 className="text-osmoverse-100">
                       {t("pool.checkBackForBondingRewards")}
                     </h6>
