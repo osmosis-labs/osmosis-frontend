@@ -16,8 +16,8 @@ import { useEffect } from "react";
 
 import {
   OsmoAccountStore,
-  useEstimateTxFeeMutation,
-} from "~/hooks/use-estimate-tx-mutation";
+  useEstimateSwapTxFeesMutation,
+} from "~/hooks/use-estimate-swap-tx-mutation";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
@@ -188,7 +188,7 @@ export function useSwap({
     return routes;
   }, [quote?.split]);
 
-  const estimateFeeTxMutation = useEstimateTxFeeMutation();
+  const estimateFeeTxMutation = useEstimateSwapTxFeesMutation();
   /** Initiates fee estimation when the maximum amount is selected and no current estimation is in progress. */
   useEffect(() => {
     //** Triggers fee estimation with current input details if the maximum amount flag is set and not currently loading. */

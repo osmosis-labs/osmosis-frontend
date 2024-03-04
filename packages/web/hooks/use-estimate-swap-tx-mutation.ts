@@ -101,7 +101,7 @@ export function createEstimateTx({
  *
  * @returns {MutationResult} A mutation object from react-query that allows triggering the fee estimation process.
  */
-export function useEstimateTxFeeMutation() {
+export function useEstimateSwapTxFeesMutation() {
   // Initialize the mutation for estimating transaction fees
   return useMutation(
     (data: Parameters<typeof createEstimateTx>[0]) => createEstimateTx(data),
