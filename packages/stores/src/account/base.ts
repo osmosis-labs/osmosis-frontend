@@ -49,6 +49,7 @@ import {
   osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/authenticator/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -562,15 +563,33 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
+      const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      const canBeSignedWithOneClickTrading =
+        await this.canBeSignedWithOneClickTrading({ messages: msgs });
+      const oneClickExtensionOptions = [
+        {
+          typeUrl: "/osmosis.authenticator.TxExtension",
+          value: TxExtension.encode({
+            selectedAuthenticators: [
+              Number(oneClickTradingInfo?.authenticatorId),
+            ],
+          }).finish(),
+        },
+      ];
+
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
-        usedFee = await this.estimateFee(
+        usedFee = await this.estimateFee({
           wallet,
-          msgs,
-          fee ?? { amount: [] },
+          messages: msgs,
+          fee: fee ?? { amount: [] },
+          nonCriticalExtensionOptions:
+            canBeSignedWithOneClickTrading && oneClickTradingInfo
+              ? oneClickExtensionOptions
+              : undefined,
           memo,
-          wallet.walletInfo?.signOptions
-        );
+          signOptions: wallet.walletInfo?.signOptions,
+        });
       } else {
         usedFee = fee;
       }
@@ -741,14 +760,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const canBeSignedWithOneClickTrading =
+      await this.canBeSignedWithOneClickTrading({ messages });
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
     if (
       oneClickTradingInfo &&
-      isOneClickTradingEnabled &&
-      messages.every(({ typeUrl }) =>
-        oneClickTradingInfo?.allowedMessages.includes(typeUrl)
-      ) &&
+      canBeSignedWithOneClickTrading &&
       /**
        * Should not surpass network fee limit.
        */
@@ -768,6 +786,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
     }
 
+    /**
+     * If the message is an authenticator message, force the direct signing.
+     * This is because the authenticator message should be signed with proto for now.
+     */
     const isAuthenticatorMsg = messages.some(
       (message) =>
         message.typeUrl === osmosis.authenticator.MsgAddAuthenticator.typeUrl ||
@@ -823,30 +845,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
-    console.log(
-      messages.map((msg) => ({
-        ...msg,
-        selectedAuthenticators: [Number(oneClickTradingInfo.authenticatorId)],
-      }))
-    );
-    const txBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: {
-        messages: messages.map((msg) => ({
-          ...msg,
-          selectedAuthenticators: [Number(oneClickTradingInfo.authenticatorId)],
-        })),
-        memo: memo,
-      },
-    };
 
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      txBodyEncodeObject
-    ) as Uint8Array;
-
-    console.log(
-      wallet?.signingStargateOptions?.registry?.decodeTxBody(txBodyBytes)
-    );
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
+      messages,
+      memo,
+      nonCriticalExtensionOptions: [
+        {
+          typeUrl: "/osmosis.authenticator.TxExtension",
+          value: TxExtension.encode({
+            selectedAuthenticators: [
+              Number(oneClickTradingInfo.authenticatorId),
+            ],
+          }).finish(),
+        },
+      ],
+    }) as Uint8Array;
 
     const privateKey = new PrivKeySecp256k1(
       fromBase64(oneClickTradingInfo.privateKey)
@@ -1159,13 +1172,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * If the chain does not support transaction simulation, the function may
    * fall back to using the provided fee parameter.
    */
-  public async estimateFee(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: Optional<TxFee, "gas">,
-    memo: string,
-    signOptions: SignOptions = {}
-  ): Promise<TxFee> {
+  public async estimateFee({
+    wallet,
+    messages,
+    fee,
+    memo,
+    nonCriticalExtensionOptions,
+    signOptions = {},
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    fee: Optional<TxFee, "gas">;
+    nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
+    memo: string;
+    signOptions?: SignOptions;
+  }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
 
@@ -1174,6 +1195,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         TxBody.fromPartial({
           messages: encodedMessages,
           memo: memo,
+          nonCriticalExtensionOptions,
         })
       ).finish(),
       authInfoBytes: AuthInfo.encode({
@@ -1332,6 +1354,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       },
     });
+  }
+
+  /**
+   * Determines if a transaction can be signed using one-click trading based on various conditions.
+   *
+   * @param messages - The messages included in the transaction.
+   * @returns A boolean indicating whether the transaction should be signed using one-click trading.
+   */
+  async canBeSignedWithOneClickTrading({
+    messages,
+  }: {
+    messages: readonly EncodeObject[];
+  }): Promise<boolean> {
+    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
+      return false;
+    }
+
+    const isAllowedMessageType = messages.every(({ typeUrl }) =>
+      oneClickTradingInfo.allowedMessages.includes(typeUrl)
+    );
+
+    return isAllowedMessageType;
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
