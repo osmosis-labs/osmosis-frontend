@@ -1,5 +1,4 @@
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
-import { BondDuration } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
@@ -15,6 +14,7 @@ import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
+import type { BondDuration } from "~/server/queries/complex/pools/bonding";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -376,9 +376,7 @@ const IncentiveBreakdownRow: FunctionComponent<
   const { t } = useTranslation();
 
   let label;
-  if (type === "swapFees") {
-    label = t("pools.aprBreakdown.swapFees");
-  } else if (type === "osmosis") {
+  if (type === "osmosis") {
     label = "Osmosis";
   } else if (type === "boost") {
     label = t("pools.aprBreakdown.boost");
