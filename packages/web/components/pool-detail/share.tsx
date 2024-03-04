@@ -146,7 +146,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
       useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
-    const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
+    const bondDurations = useMemo(
+      () => (pool ? poolBonding?.bondDurations ?? [] : []),
+      [pool, poolBonding?.bondDurations]
+    );
 
     const highestAPRBondableDuration = poolBonding?.highestBondDuration;
 
