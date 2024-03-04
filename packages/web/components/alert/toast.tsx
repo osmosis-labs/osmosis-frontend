@@ -6,10 +6,6 @@ import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { t } from "~/hooks";
 
-export function dismissAllToasts() {
-  toast.dismiss();
-}
-
 export function displayToast(
   alert: Alert,
   type: ToastType,
