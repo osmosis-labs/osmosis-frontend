@@ -111,7 +111,7 @@ const useGetEarnStrategies = (
         return {
           ...strat,
           tvl: tvlQuery?.data,
-          apr: annualPercentagesQuery?.data,
+          annualPercentages: annualPercentagesQuery?.data,
           daily: getDailyApr(annualPercentagesQuery?.data?.apr),
           isLoadingTVL: tvlQuery?.isLoading,
           isLoadingAPR: annualPercentagesQuery?.isLoading,
