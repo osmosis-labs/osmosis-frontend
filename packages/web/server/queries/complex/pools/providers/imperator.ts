@@ -16,7 +16,7 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { LARGE_LRU_OPTIONS } from "~/config/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 
 import { queryBalances } from "../../../cosmos";
 import {
@@ -35,34 +35,18 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
+const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Get pools from imperator that are listed in asset list. */
-export async function getPoolsFromImperator({
-  poolIds,
-}: {
-  poolIds?: string[];
-} = {}): Promise<Pool[]> {
-  let pools = await fetchPoolsFromImperator();
-
-  if (poolIds) {
-    pools = pools.filter((pool) => poolIds.includes(pool.pool_id.toString()));
-  }
-
-  return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
-    (pool): pool is Pool => !!pool
-  );
-}
-
-function fetchPoolsFromImperator() {
+export async function getPoolsFromImperator(): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: "imperator-pools",
     ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 5_000, // 5 seconds
+    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const numPools = await queryNumPools();
-      let { pools } = await queryFilteredPools(
+      const { pools } = await queryFilteredPools(
         {
           min_liquidity: 0,
           order_by: "desc",
@@ -70,7 +54,9 @@ function fetchPoolsFromImperator() {
         },
         { offset: 0, limit: Number(numPools.num_pools) }
       );
-      return pools;
+      return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
+        (pool): pool is Pool => !!pool
+      );
     },
   });
 }
@@ -421,187 +407,170 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
 export async function makePoolFromImperatorPool(
   filteredPool: FilteredPoolsResponse["pools"][number]
 ): Promise<Pool | undefined> {
-  return cachified({
-    cache: poolsCache,
-    key: "pools-" + filteredPool.pool_id.toString(),
-    ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 5_000, // 5 seconds
-    getFreshValue: async (): Promise<Pool | undefined> => {
-      // deny pools containing tokens with gamm denoms
-      if (
-        Array.isArray(filteredPool.pool_tokens) &&
-        filteredPool.pool_tokens.some(
-          (token) => "denom" in token && token.denom.includes("gamm")
-        )
-      ) {
-        return;
-      }
+  // deny pools containing tokens with gamm denoms
+  if (
+    Array.isArray(filteredPool.pool_tokens) &&
+    filteredPool.pool_tokens.some(
+      (token) => "denom" in token && token.denom.includes("gamm")
+    )
+  ) {
+    return;
+  }
 
-      /** Metrics common to all pools. */
-      const basePool: {
-        spreadFactor: RatePretty;
-        totalFiatValueLocked: PricePretty;
-      } = {
-        spreadFactor: new RatePretty(
-          new Dec(filteredPool.swap_fees.toString()).mul(
-            DecUtils.getTenExponentN(-2)
-          )
-        ),
-        totalFiatValueLocked: new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          filteredPool.liquidity
-        ),
-      };
+  /** Metrics common to all pools. */
+  const basePool: {
+    spreadFactor: RatePretty;
+    totalFiatValueLocked: PricePretty;
+  } = {
+    spreadFactor: new RatePretty(
+      new Dec(filteredPool.swap_fees.toString()).mul(
+        DecUtils.getTenExponentN(-2)
+      )
+    ),
+    totalFiatValueLocked: new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      filteredPool.liquidity
+    ),
+  };
 
-      if (
-        filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
-        !Array.isArray(filteredPool.pool_tokens)
-      ) {
-        if (
-          !filteredPool.pool_tokens.asset0 ||
-          !filteredPool.pool_tokens.asset1
-        )
-          return;
+  if (
+    filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
+    !Array.isArray(filteredPool.pool_tokens)
+  ) {
+    if (!filteredPool.pool_tokens.asset0 || !filteredPool.pool_tokens.asset1)
+      return;
 
-        const token0 = filteredPool.pool_tokens.asset0.denom;
-        const token1 = filteredPool.pool_tokens.asset1.denom;
+    const token0 = filteredPool.pool_tokens.asset0.denom;
+    const token1 = filteredPool.pool_tokens.asset1.denom;
 
-        const token0Asset = await getAsset({ anyDenom: token0 }).catch(
-          () => null
-        );
-        const token1Asset = await getAsset({ anyDenom: token1 }).catch(
-          () => null
-        );
+    const token0Asset = await getAsset({ anyDenom: token0 }).catch(() => null);
+    const token1Asset = await getAsset({ anyDenom: token1 }).catch(() => null);
 
-        if (!token0Asset || !token1Asset) return;
+    if (!token0Asset || !token1Asset) return;
 
-        return {
-          id: filteredPool.pool_id.toString(),
-          type: "concentrated",
-          raw: {
-            address: filteredPool.address,
-            id: filteredPool.pool_id.toString(),
-            current_tick_liquidity: filteredPool.current_tick_liquidity,
-            token0,
-            token1,
-            current_sqrt_price: filteredPool.current_sqrt_price,
-            current_tick: filteredPool.current_tick,
-            tick_spacing: filteredPool.tick_spacing,
-            exponent_at_price_one: filteredPool.exponent_at_price_one,
-            spread_factor: filteredPool.spread_factor,
-          } as ConcentratedPoolRawResponse,
-          reserveCoins: [
-            new CoinPretty(token0Asset, filteredPool.pool_tokens.asset0.amount),
-            new CoinPretty(token1Asset, filteredPool.pool_tokens.asset0.amount),
-          ],
-          ...basePool,
-          spreadFactor: new RatePretty(filteredPool.spread_factor),
-        };
-      }
-
-      if (
-        filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
-        Array.isArray(filteredPool.pool_tokens)
-      ) {
-        const reserveCoins = await getReservesFromPoolTokens(
-          filteredPool.pool_tokens
-        );
-
-        if (!reserveCoins) return;
-
-        return {
-          id: filteredPool.pool_id.toString(),
-          type: TransmuterPoolCodeIds.includes(filteredPool.code_id)
-            ? "cosmwasm-transmuter"
-            : "cosmwasm",
-          raw: {
-            contract_address: filteredPool.contract_address,
-            pool_id: filteredPool.pool_id.toString(),
-            code_id: filteredPool.code_id,
-            instantiate_msg: filteredPool.instantiate_msg,
-          },
-          reserveCoins: reserveCoins,
-          ...basePool,
-        };
-      }
-
-      const sharePoolRawBase = {
+    return {
+      id: filteredPool.pool_id.toString(),
+      type: "concentrated",
+      raw: {
+        address: filteredPool.address,
         id: filteredPool.pool_id.toString(),
-        pool_params: {
-          exit_fee: new Dec(filteredPool.exit_fees.toString())
-            .mul(DecUtils.getTenExponentN(-2))
-            .toString(),
-          swap_fee: new Dec(filteredPool.swap_fees.toString())
-            .mul(DecUtils.getTenExponentN(-2))
-            .toString(),
-          smooth_weight_change_params: null,
-        },
-        total_shares: filteredPool.total_shares,
-      };
+        current_tick_liquidity: filteredPool.current_tick_liquidity,
+        token0,
+        token1,
+        current_sqrt_price: filteredPool.current_sqrt_price,
+        current_tick: filteredPool.current_tick,
+        tick_spacing: filteredPool.tick_spacing,
+        exponent_at_price_one: filteredPool.exponent_at_price_one,
+        spread_factor: filteredPool.spread_factor,
+      } as ConcentratedPoolRawResponse,
+      reserveCoins: [
+        new CoinPretty(token0Asset, filteredPool.pool_tokens.asset0.amount),
+        new CoinPretty(token1Asset, filteredPool.pool_tokens.asset0.amount),
+      ],
+      ...basePool,
+      spreadFactor: new RatePretty(filteredPool.spread_factor),
+    };
+  }
 
-      if (
-        filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
-        Array.isArray(filteredPool.pool_tokens)
-      ) {
-        const reserveCoins = await getReservesFromPoolTokens(
-          filteredPool.pool_tokens
-        );
+  if (
+    filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
+    const reserveCoins = await getReservesFromPoolTokens(
+      filteredPool.pool_tokens
+    );
 
-        if (!reserveCoins) return;
+    if (!reserveCoins) return;
 
-        return {
-          id: filteredPool.pool_id.toString(),
-          type: "weighted",
-          raw: {
-            pool_assets: filteredPool.pool_tokens.map((token) => ({
-              token: {
-                denom: token.denom,
-                amount: floatNumberToStringInt(token.amount, token.exponent),
-              },
-              weight: token.weight_or_scaling.toString(),
-            })),
-            total_weight: filteredPool.total_weight_or_scaling.toString(),
-            ...sharePoolRawBase,
-          },
-          reserveCoins,
-          ...basePool,
-        };
-      }
+    return {
+      id: filteredPool.pool_id.toString(),
+      type: TransmuterPoolCodeIds.includes(filteredPool.code_id)
+        ? "cosmwasm-transmuter"
+        : "cosmwasm",
+      raw: {
+        contract_address: filteredPool.contract_address,
+        pool_id: filteredPool.pool_id.toString(),
+        code_id: filteredPool.code_id,
+        instantiate_msg: filteredPool.instantiate_msg,
+      },
+      reserveCoins: reserveCoins,
+      ...basePool,
+    };
+  }
 
-      if (
-        filteredPool.type ===
-          "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
-        Array.isArray(filteredPool.pool_tokens)
-      ) {
-        const reserveCoins = await getReservesFromPoolTokens(
-          filteredPool.pool_tokens
-        );
-
-        if (!reserveCoins) return;
-
-        return {
-          id: filteredPool.pool_id.toString(),
-          type: "stable",
-          raw: {
-            pool_liquidity: filteredPool.pool_tokens.map((token) => ({
-              denom: token.denom,
-              amount: floatNumberToStringInt(token.amount, token.exponent),
-            })),
-            scaling_factors: filteredPool.pool_tokens.map((token) =>
-              token.weight_or_scaling.toString()
-            ),
-            scaling_factor_controller:
-              filteredPool.scaling_factor_controller ?? "",
-            ...sharePoolRawBase,
-          },
-          reserveCoins,
-          ...basePool,
-        };
-      }
-
-      throw new Error("Filtered pool not properly serialized as a valid pool.");
+  const sharePoolRawBase = {
+    id: filteredPool.pool_id.toString(),
+    pool_params: {
+      exit_fee: new Dec(filteredPool.exit_fees.toString())
+        .mul(DecUtils.getTenExponentN(-2))
+        .toString(),
+      swap_fee: new Dec(filteredPool.swap_fees.toString())
+        .mul(DecUtils.getTenExponentN(-2))
+        .toString(),
+      smooth_weight_change_params: null,
     },
-  });
+    total_shares: filteredPool.total_shares,
+  };
+
+  if (
+    filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
+    const reserveCoins = await getReservesFromPoolTokens(
+      filteredPool.pool_tokens
+    );
+
+    if (!reserveCoins) return;
+
+    return {
+      id: filteredPool.pool_id.toString(),
+      type: "weighted",
+      raw: {
+        pool_assets: filteredPool.pool_tokens.map((token) => ({
+          token: {
+            denom: token.denom,
+            amount: floatNumberToStringInt(token.amount, token.exponent),
+          },
+          weight: token.weight_or_scaling.toString(),
+        })),
+        total_weight: filteredPool.total_weight_or_scaling.toString(),
+        ...sharePoolRawBase,
+      },
+      reserveCoins,
+      ...basePool,
+    };
+  }
+
+  if (
+    filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
+    const reserveCoins = await getReservesFromPoolTokens(
+      filteredPool.pool_tokens
+    );
+
+    if (!reserveCoins) return;
+
+    return {
+      id: filteredPool.pool_id.toString(),
+      type: "stable",
+      raw: {
+        pool_liquidity: filteredPool.pool_tokens.map((token) => ({
+          denom: token.denom,
+          amount: floatNumberToStringInt(token.amount, token.exponent),
+        })),
+        scaling_factors: filteredPool.pool_tokens.map((token) =>
+          token.weight_or_scaling.toString()
+        ),
+        scaling_factor_controller: filteredPool.scaling_factor_controller ?? "",
+        ...sharePoolRawBase,
+      },
+      reserveCoins,
+      ...basePool,
+    };
+  }
+
+  throw new Error("Filtered pool not properly serialized as a valid pool.");
 }
 
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
