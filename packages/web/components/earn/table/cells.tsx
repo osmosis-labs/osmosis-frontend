@@ -199,8 +199,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
 
   const isOsmosisStrategy = useMemo(
-    () =>
-      item.row.original.link.includes("app.osmosis.zone"),
+    () => item.row.original.link.includes("app.osmosis.zone"),
     [item]
   );
 
@@ -210,7 +209,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   );
 
   const href = useMemo(() => {
-      return item.row.original.link.replace("https://app.osmosis.zone", "");
+    return item.row.original.link.replace("https://app.osmosis.zone", "");
   }, [item]);
 
   const isBalanceVisible = useMemo(
