@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "incentive": {
-      "mobileTitle": "جایزه",
-      "title": "نوع جوایز"
+      "title": "انواع مشوق"
     },
     "MAX": "حداکثر",
     "pool": {
-      "mobileTitle": "استخر",
       "title": "استخرها"
     },
     "searchTokens": "جستجو",
@@ -312,9 +310,6 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
-      "internal": "مشوق های داخلی",
-      "external": "مشوق های خارجی",
-      "superfluid": "ابر سیال",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "جستجوی استخرها",
       "sort": {
         "APRIncentivized": "نرخ بازدهی",
         "fees": "کارمزد (7 روز)",

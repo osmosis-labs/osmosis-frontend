@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Стимул",
       "title": "Типы стимулов"
     },
     "MAX": "МАКС",
     "pool": {
-      "mobileTitle": "Бассейн",
       "title": "Типы бассейнов"
     },
     "searchTokens": "Поиск",
@@ -312,9 +310,6 @@
       "weighted": "Взвешенный",
       "concentrated": "Заряженный",
       "transmuter": "Трансмутатор",
-      "internal": "Внутренние стимулы",
-      "external": "Внешние стимулы",
-      "superfluid": "сверхтекучий",
       "noIncentives": "Никаких стимулов"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Поиск пулов",
       "sort": {
         "APRIncentivized": "АПРЕЛЬ",
         "fees": "Сборы (7D)",

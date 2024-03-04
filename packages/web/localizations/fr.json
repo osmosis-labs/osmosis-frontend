@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incitation",
       "title": "Types d'incitations"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Piscine",
       "title": "Types de piscines"
     },
     "searchTokens": "Chercher",
@@ -312,9 +310,6 @@
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
       "transmuter": "Transmutateur",
-      "internal": "Incitations internes",
-      "external": "Incitations externes",
-      "superfluid": "Superfluid",
       "noIncentives": "Pas d'incitations"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Rechercher dans les bassins",
       "sort": {
         "APRIncentivized": "TAP",
         "fees": "Frais (7J)",

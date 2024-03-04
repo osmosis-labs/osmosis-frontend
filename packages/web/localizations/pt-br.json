@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentivo",
       "title": "Tipos de incentivo"
     },
     "MAX": "MÁX",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscina"
     },
     "searchTokens": "Procurar",
@@ -312,9 +310,6 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sem incentivos"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Pesquisar piscinas",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxas (7D)",

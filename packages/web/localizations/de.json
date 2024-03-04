@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Anreiz",
       "title": "Anreizarten"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Schwimmbad",
       "title": "Pooltypen"
     },
     "searchTokens": "Suchen",
@@ -312,9 +310,6 @@
       "weighted": "Gewichtet",
       "concentrated": "Aufgeladen",
       "transmuter": "Transmuter",
-      "internal": "Interne Anreize",
-      "external": "Externe Anreize",
-      "superfluid": "Superflüssig",
       "noIncentives": "Keine Anreize"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Suchpools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Gebühren (7D)",

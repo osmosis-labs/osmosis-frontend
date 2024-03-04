@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Supports OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentive",
       "title": "Incentive types"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Pool",
       "title": "Pool types"
     },
     "searchTokens": "Search",
@@ -312,9 +310,6 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
-      "internal": "Internal incentives",
-      "external": "External incentives",
-      "superfluid": "Superfluid",
       "noIncentives": "No incentives"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Search pools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",

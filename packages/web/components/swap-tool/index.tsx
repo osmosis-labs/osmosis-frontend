@@ -186,6 +186,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               quoteTimeMilliseconds: swapState.quote?.timeMs,
               router: swapState.quote?.name,
               page,
+              valueUsd: Number(
+                swapState.quote?.amountFiatValue?.toString() ?? "0"
+              ),
             },
           ]);
         })

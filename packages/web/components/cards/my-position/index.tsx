@@ -10,7 +10,7 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import type { ClPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -18,7 +18,7 @@ import { api } from "~/utils/trpc";
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
-  position: ClPosition;
+  position: UserPosition;
 }> = observer((props) => {
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;

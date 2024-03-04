@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler"
     },
     "incentive": {
-      "mobileTitle": "Teşvik",
       "title": "Teşvik türleri"
     },
     "MAX": "MAKS",
     "pool": {
-      "mobileTitle": "Havuz",
       "title": "Havuz türleri"
     },
     "searchTokens": "Arama",
@@ -312,9 +310,6 @@
       "weighted": "Ağırlıklı",
       "concentrated": "Konsantre likidite",
       "transmuter": "Dönüştürücü",
-      "internal": "Dahili teşvikler",
-      "external": "Harici teşvikler",
-      "superfluid": "Superfluid",
       "noIncentives": "Teşvik yok"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Havuzlarda ara",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Ücretler (7G)",
