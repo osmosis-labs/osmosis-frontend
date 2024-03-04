@@ -301,7 +301,7 @@ export async function mapGetUserPositionDetails({
         lowerTick: lowerTick.toString(),
         upperTick: upperTick.toString(),
         poolId: position.pool_id,
-      });
+      }).catch(() => undefined);
 
       const [priceRange, rangeApr] = await Promise.all([
         priceRangePromise,
