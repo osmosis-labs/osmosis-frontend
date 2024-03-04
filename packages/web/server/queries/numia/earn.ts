@@ -67,8 +67,9 @@ export interface RawStrategyTVL {
   assets: { coinMinimalDenom: string; tvl: string; maxTvl?: string }[];
 }
 
-export interface StrategyAPR {
+export interface StrategyAnnualPercentages {
   apr: RatePretty;
+  apy: RatePretty;
 }
 
 export interface StrategyTVL {
@@ -219,7 +220,7 @@ export interface EarnStrategy extends StrategyCMSData {
   holdsTokens: boolean;
   daily?: RatePretty;
   tvl?: StrategyTVL;
-  apr?: StrategyAPR;
+  annualPercentages?: StrategyAnnualPercentages;
   isLoadingTVL?: boolean;
   isLoadingAPR?: boolean;
   isErrorTVL?: boolean;

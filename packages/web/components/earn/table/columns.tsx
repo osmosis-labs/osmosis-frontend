@@ -5,7 +5,7 @@ import { PropsWithChildren } from "react";
 
 import {
   ActionsCell,
-  APRCell,
+  APYCell,
   LockCell,
   RiskCell,
   StrategyNameCell,
@@ -125,21 +125,15 @@ export const tableColumns = [
     cell: TVLCell,
     sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("apr.apr", {
-    header: () => <ColumnCellHeader tKey={"pool.APR"} />,
-    cell: APRCell,
+  columnHelper.accessor("annualPercentages.apy", {
+    header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
+    cell: APYCell,
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("daily", {
     header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
-    cell: (item) => {
-      return (
-        <ColumnCellCell>
-          {item.getValue() ? formatPretty(item.getValue()!) : "N/A"}
-        </ColumnCellCell>
-      );
-    },
-    enableSorting: true,
+    // use the same logic as the APY cell
+    cell: APYCell,
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("rewardAssets", {

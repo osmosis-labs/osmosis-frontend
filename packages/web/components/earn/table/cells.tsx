@@ -128,12 +128,13 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   );
 };
 
-export const APRCell = (item: CellContext<EarnStrategy, RatePretty>) => {
+export const APYCell = (item: CellContext<EarnStrategy, RatePretty>) => {
   const isLoadingAPR = item.row.original.isLoadingAPR;
 
-  if (isLoadingAPR) {
+  if (isLoadingAPR || !item.getValue()) {
     return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
+
   return (
     <ColumnCellCell>
       {item.getValue() ? formatPretty(item.getValue()) : "N/A"}

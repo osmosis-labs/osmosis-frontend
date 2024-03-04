@@ -12,7 +12,7 @@ import {
   queryStrategyTVL,
   RawStrategyCMSData,
   RawStrategyTVL,
-  StrategyAPR,
+  StrategyAnnualPercentages,
   StrategyCMSData,
   StrategyTVL,
 } from "~/server/queries/numia/earn";
@@ -67,16 +67,17 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAPR(strategyId: string) {
+export async function getStrategyAnnualPercentages(strategyId: string) {
   return await cachified({
     cache: earnStrategyAPRCache,
     ttl: 1000 * 20,
     key: `earn-strategy-apr-${strategyId}`,
-    getFreshValue: async (): Promise<StrategyAPR> => {
+    getFreshValue: async (): Promise<StrategyAnnualPercentages> => {
       try {
         const { apr } = await queryStrategyAPR(strategyId);
         return {
           apr: new RatePretty(apr),
+          apy: new RatePretty(calculateAPY(apr)),
         };
       } catch (error) {
         throw new Error("Error while fetching strategy APR");
@@ -217,4 +218,10 @@ export function processTVL(rawTvl: RawStrategyTVL): StrategyTVL {
       maxTvl: maxTvl ? convertToPricePretty(maxTvl) : undefined,
     })),
   };
+}
+
+export function calculateAPY(apr: number): number {
+  const dailyInterest = apr / 365;
+  const apy = (1 + dailyInterest) ** 365 - 1;
+  return apy;
 }

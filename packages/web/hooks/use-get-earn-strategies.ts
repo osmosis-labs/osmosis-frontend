@@ -66,9 +66,9 @@ const useGetEarnStrategies = (
     )
   );
 
-  const aprQueries = api.useQueries((q) =>
+  const annualPercentagesQueries = api.useQueries((q) =>
     (_strategies ?? []).map((strat) =>
-      q.edge.earn.getStrategyAPR(
+      q.edge.earn.getStrategyAnnualPercentages(
         {
           strategyId: strat.id,
         },
@@ -104,21 +104,22 @@ const useGetEarnStrategies = (
         const tvlQuery = tvlQueries.find(
           (tvlQuery) => tvlQuery.data?.strategyId === strat.id
         );
-        const aprQuery = aprQueries.find(
-          (aprQuery) => aprQuery.data?.strategyId === strat.id
+        const annualPercentagesQuery = annualPercentagesQueries.find(
+          (annualPercentagesQuery) =>
+            annualPercentagesQuery.data?.strategyId === strat.id
         );
         return {
           ...strat,
           tvl: tvlQuery?.data,
-          apr: aprQuery?.data,
-          daily: getDailyApr(aprQuery?.data?.apr),
+          apr: annualPercentagesQuery?.data,
+          daily: getDailyApr(annualPercentagesQuery?.data?.apr),
           isLoadingTVL: tvlQuery?.isLoading,
-          isLoadingAPR: aprQuery?.isLoading,
+          isLoadingAPR: annualPercentagesQuery?.isLoading,
           isErrorTVL: tvlQuery?.isError,
-          isErrorAPR: aprQuery?.isError,
+          isErrorAPR: annualPercentagesQuery?.isError,
         };
       }),
-    [_strategies, aprQueries, tvlQueries]
+    [_strategies, annualPercentagesQueries, tvlQueries]
   );
 
   const areBalancesLoading = useMemo(
