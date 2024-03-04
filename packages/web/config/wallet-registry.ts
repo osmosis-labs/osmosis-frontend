@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { DownloadInfo } from "@cosmos-kit/core";
 import {
   RegistryWallet,
   WalletConnectionInProgressError,
@@ -36,6 +37,12 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://trustwallet.com/staking",
     governanceUrl: "https://governance.trustwallet.com/",
     features: [],
+    downloads: [
+      {
+        icon: "/wallets/trust.png",
+        link: "https://trustwallet.com/download",
+      },
+    ] as DownloadInfo[],
     mode: "extension", // Add mode property with correct value
   },
   {
