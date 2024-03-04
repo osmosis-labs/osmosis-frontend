@@ -126,6 +126,16 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setFraction(null);
   }, [setAmount]);
 
+  const isMaxBalance = useMemo(
+    () => balance && amount?.toDec().equals(balance.toDec()),
+    [amount, balance]
+  );
+
+  const isZeroBalance = useMemo(
+    () => !balance || balance.toDec().isZero(),
+    [balance]
+  );
+
   return {
     inputAmount: inputAmountWithFraction,
     debouncedInAmount,
@@ -150,9 +160,8 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
       [fraction]
     ),
     reset,
-    get isMax() {
-      return balance && amount?.toDec().equals(balance.toDec());
-    },
+    isMaxBalance,
+    isZeroBalance,
   };
 }
 
