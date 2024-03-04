@@ -23,7 +23,7 @@ const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-const earnStrategyAPRCache = new LRUCache<string, CacheEntry>(
+const earnStrategyAnnualPercentagesCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
@@ -69,9 +69,9 @@ export async function getStrategyBalance(
 
 export async function getStrategyAnnualPercentages(strategyId: string) {
   return await cachified({
-    cache: earnStrategyAPRCache,
+    cache: earnStrategyAnnualPercentagesCache,
     ttl: 1000 * 20,
-    key: `earn-strategy-apr-${strategyId}`,
+    key: `earn-strategy-annualPercentages-${strategyId}`,
     getFreshValue: async (): Promise<StrategyAnnualPercentages> => {
       try {
         const { apr } = await queryStrategyAPR(strategyId);
