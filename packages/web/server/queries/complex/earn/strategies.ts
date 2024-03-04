@@ -175,7 +175,7 @@ export async function getStrategies() {
  * @returns The daily income in percentage
  */
 export function getDailyApr(apr?: RatePretty) {
-  if (!apr) return new RatePretty(0);
+  if (!apr) return undefined;
 
   const currentYear = dayjs().year();
   const januaryFirst = dayjs(`${currentYear}-01-01`);
