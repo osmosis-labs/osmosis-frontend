@@ -20,12 +20,9 @@ export type Join<T extends string[], D extends string> = T extends []
 
 export type StringWithAutocomplete<T> = T | (string & Record<never, never>);
 
-export type ExactTranslationPath = Join<
-  PathsToStringProps<LanguageTranslations>,
-  "."
+export type TranslationPath = StringWithAutocomplete<
+  Join<PathsToStringProps<LanguageTranslations>, ".">
 >;
-
-export type TranslationPath = StringWithAutocomplete<ExactTranslationPath>;
 
 export type Translations = { [key: string]: LanguageTranslations };
 

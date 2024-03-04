@@ -4,23 +4,21 @@ import classNames from "classnames";
 import { Button } from "~/components/buttons";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import { ScreenGoBackButton } from "~/components/screen-manager";
-import { ExactTranslationPath, MultiLanguageT, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
-export function getSessionPeriodTranslationKey({
-  id,
-  t,
-}: {
-  id: OneClickTradingHumanizedSessionPeriod;
-  t: MultiLanguageT;
-}): string {
-  const translationKey: ExactTranslationPath = `oneClickTrading.settings.sessionPeriodScreen.periods.${id}`;
-  const translation = t(translationKey);
-
-  if (translation === translationKey) {
-    throw new Error(`Translation for ${id} is not found`);
-  }
-
-  return translation;
+export function getSessionPeriodTranslationKey(
+  input: OneClickTradingHumanizedSessionPeriod
+) {
+  const timeMappings = {
+    "10min": "oneClickTrading.settings.sessionPeriodScreen.periods.10min",
+    "30min": "oneClickTrading.settings.sessionPeriodScreen.periods.30min",
+    "1hour": "oneClickTrading.settings.sessionPeriodScreen.periods.1hour",
+    "3hours": "oneClickTrading.settings.sessionPeriodScreen.periods.3hours",
+    "12hours": "oneClickTrading.settings.sessionPeriodScreen.periods.12hours",
+  };
+  const mapped = timeMappings[input];
+  if (!mapped) throw new Error(`No mapping for ${input}`);
+  return mapped;
 }
 
 const SessionPeriods: OneClickTradingHumanizedSessionPeriod[] = [
@@ -74,7 +72,7 @@ export const SessionPeriodScreen = ({
                 });
               }}
             >
-              {getSessionPeriodTranslationKey({ id, t })}
+              {t(getSessionPeriodTranslationKey(id))}
             </Button>
           ))}
         </div>

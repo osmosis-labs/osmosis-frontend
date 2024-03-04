@@ -12,7 +12,7 @@ import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
-  getResetPeriodTranslation,
+  getResetPeriodTranslationKey,
   ResetPeriodScreen,
 } from "~/components/one-click-trading/screens/reset-period-screen";
 import {
@@ -271,10 +271,11 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p className="capitalize">
-                          {getSessionPeriodTranslationKey({
-                            id: transaction1CTParams.sessionPeriod.end,
-                            t,
-                          })}
+                          {t(
+                            getSessionPeriodTranslationKey(
+                              transaction1CTParams.sessionPeriod.end
+                            )
+                          )}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -303,10 +304,11 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p>
-                          {getResetPeriodTranslation({
-                            id: transaction1CTParams.resetPeriod,
-                            t,
-                          })}
+                          {t(
+                            getResetPeriodTranslationKey(
+                              transaction1CTParams.resetPeriod
+                            )
+                          )}
                         </p>
                         <Icon
                           id="chevron-right"

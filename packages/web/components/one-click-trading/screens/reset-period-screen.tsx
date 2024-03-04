@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Button } from "~/components/buttons";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import { ScreenGoBackButton } from "~/components/screen-manager";
-import { ExactTranslationPath, MultiLanguageT, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const ResetPeriods = [
   "day",
@@ -13,21 +13,21 @@ const ResetPeriods = [
   "year",
 ] as OneClickTradingResetPeriods[];
 
-export function getResetPeriodTranslation({
-  id,
-  t,
-}: {
-  id: OneClickTradingResetPeriods;
-  t: MultiLanguageT;
-}): string {
-  const translationKey: ExactTranslationPath = `oneClickTrading.settings.resetPeriodScreen.periods.${id}`;
-  const translation = t(translationKey);
-
-  if (translation === translationKey) {
-    throw new Error(`Translation for ${id} is not found`);
+export function getResetPeriodTranslationKey(
+  id: OneClickTradingResetPeriods
+): string {
+  switch (id) {
+    case "day":
+      return "oneClickTrading.settings.resetPeriodScreen.periods.day";
+    case "week":
+      return "oneClickTrading.settings.resetPeriodScreen.periods.week";
+    case "month":
+      return "oneClickTrading.settings.resetPeriodScreen.periods.month";
+    case "year":
+      return "oneClickTrading.settings.resetPeriodScreen.periods.year";
+    default:
+      return "oneClickTrading.settings.resetPeriodScreen.periods.unknown";
   }
-
-  return translation;
 }
 
 interface ResetPeriodScreenProps extends OneClickTradingBaseScreenProps {}
@@ -70,7 +70,7 @@ export const ResetPeriodScreen = ({
                 });
               }}
             >
-              {getResetPeriodTranslation({ id, t })}
+              {t(getResetPeriodTranslationKey(id))}
             </Button>
           ))}
         </div>
