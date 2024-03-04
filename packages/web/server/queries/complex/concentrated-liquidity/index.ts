@@ -302,7 +302,7 @@ export async function mapGetPositionDetails({
           }).catch(() => undefined),
         4_000, // 4 seconds
         "getConcentratedRangePoolApr"
-      )();
+      )().catch(() => undefined);
 
       const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
