@@ -14,6 +14,7 @@ import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
+// import { UnstableAssetWarning } from "~/components/complex/unstable-assets-warning";
 import { MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
@@ -127,32 +128,10 @@ export const Transfer = observer(
     classes,
     addWithdrawAddrConfig,
   }: TransferProps<BridgeProviderOption>) => {
-    const { queriesExternalStore, assetsStore } = useStore();
-    const { ibcBalances } = assetsStore;
-
-    console.log("availableBalanceL ", availableBalance);
-
-    const coinDenom = availableBalance?.currency.coinDenom;
-    console.log("coinDenom: ", coinDenom);
-
-    // find matching balance from asset list
-    const ibcBalance = ibcBalances.find(
-      ({ balance }) => balance.currency.coinDenom === coinDenom
-    );
-
-    const isUnstable = ibcBalance?.isUnstable;
-
-    console.log("isUnstable: ", isUnstable);
+    const { queriesExternalStore } = useStore();
 
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
-
-    console.log("from, to]: ", [from, to]);
-
-    console.log(
-      "toggleUseWrappedConfig.nativeDenom: ",
-      toggleUseWrappedConfig?.nativeDenom
-    );
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [isAddingWithdrawAddr, setIsAddingWithdrawAddr] = useState(false);
@@ -256,6 +235,13 @@ export const Transfer = observer(
           "pt-8": !toggleUseWrappedConfig,
         })}
       >
+        {/* {showUnstableWarning && (
+          <UnstableAssetWarning
+            isOpen={showUnstableWarning}
+            onContinue={() => {}}
+            onRequestClose={() => {}}
+          />
+        )} */}
         {toggleUseWrappedConfig && (
           <div className="mx-auto w-fit">
             <MenuToggle
