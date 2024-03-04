@@ -26,7 +26,7 @@ export function getResetPeriodTranslationKey(
     case "year":
       return "oneClickTrading.settings.resetPeriodScreen.periods.year";
     default:
-      return "oneClickTrading.settings.resetPeriodScreen.periods.unknown";
+      throw new Error(`No mapping for ${id}`);
   }
 }
 
