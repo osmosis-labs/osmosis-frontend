@@ -33,6 +33,7 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { Spinner } from "../loaders";
+import SkeletonLoader from "../loaders/skeleton-loader";
 
 const E = EventName.PoolDetail;
 
@@ -42,8 +43,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       chainStore,
       queriesStore,
       accountStore,
-      priceStore,
-      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
+      queriesExternalStore: { queryAccountsPoolRewards },
       derivedDataStore,
     } = useStore();
     const { t } = useTranslation();
@@ -60,7 +60,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { chainId } = chainStore.osmosis;
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
-    const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const address = account?.address ?? "";
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
@@ -93,6 +92,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       api.edge.pools.getPoolIncentives.useQuery({
         poolId: pool.id,
       });
+    const { data: poolMarketMetrics, isLoading: isPoolMarketMetricsLoading } =
+      api.edge.pools.getPoolMarketMetrics.useQuery({ poolId: pool.id });
 
     const { data: bondDurations_, isLoading: isLoadingBondDurations } =
       api.edge.pools.getSharePoolBondDurations.useQuery(
@@ -169,11 +170,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       config: lockLPTokensConfig,
       lockToken,
       unlockTokens,
-    } = useLockTokenConfig(
-      pool
-        ? queryOsmosis.queryGammPoolShare.makeShareCurrency(pool.id)
-        : undefined
-    );
+    } = useLockTokenConfig(sharePool?.currency);
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
       useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
@@ -461,11 +458,18 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     <span className="body2 gap-2 text-osmoverse-400">
                       {t("pool.24hrTradingVolume")}
                     </span>
-                    <h4 className="text-osmoverse-100">
-                      {queryPoolFeeMetrics
-                        .getPoolFeesMetrics(pool.id, priceStore)
-                        .volume24h.toString()}
-                    </h4>
+                    <SkeletonLoader
+                      className={classNames(
+                        isPoolMarketMetricsLoading ? "h-full w-32" : null
+                      )}
+                      isLoaded={!isPoolMarketMetricsLoading}
+                    >
+                      {poolMarketMetrics?.volume24hUsd && (
+                        <h4 className="text-osmoverse-100">
+                          {poolMarketMetrics.volume24hUsd.toString()}
+                        </h4>
+                      )}
+                    </SkeletonLoader>
                   </div>
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
