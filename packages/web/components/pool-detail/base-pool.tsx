@@ -1,4 +1,4 @@
-import { Dec, IntPretty } from "@keplr-wallet/unit";
+import { IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -86,9 +86,7 @@ export const BasePoolDetails: FunctionComponent<{
             <div ref={poolBreakdownRef}>
               <AssetBreakdownChart
                 assets={pool.reserveCoins.map((coin) => ({
-                  weight: new IntPretty(
-                    new Dec(1).quo(new Dec(pool.reserveCoins.length))
-                  ).maxDecimals(0),
+                  weight: new IntPretty(1),
                   amount: coin,
                 }))}
                 totalWeight={new IntPretty(pool.reserveCoins.length)}
