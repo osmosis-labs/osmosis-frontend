@@ -68,7 +68,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
     return { depositCapOccupied, depositCap };
   }, [item.row.original.tvl, tvlUsd]);
 
-  if (isLoadingTVL || !tvlUsd) {
+  if (isLoadingTVL) {
     return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
 
@@ -129,7 +129,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
 export const APYCell = (item: CellContext<EarnStrategy, RatePretty>) => {
   const isLoadingAPR = item.row.original.isLoadingAPR;
 
-  if (isLoadingAPR || !item.getValue()) {
+  if (isLoadingAPR) {
     return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
 
