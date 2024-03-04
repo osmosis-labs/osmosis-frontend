@@ -2,6 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 
+import { querySyntheticLockupsByLockId } from "../../osmosis/lockup";
 import {
   querySuperfluidDelegations,
   querySuperfluidUnelegations,
@@ -37,7 +38,11 @@ export type BondDuration = {
   /** User locked shares. */
   userShares: CoinPretty;
   userLockedShareValue: PricePretty;
-  userLockedLockIds: string[];
+  userLocks: {
+    lockId: string;
+    /** AKA is superfluid lock */
+    isSynthetic: boolean;
+  }[];
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
@@ -197,6 +202,7 @@ export async function getSharePoolBondDurations(
 
       // get superfluid info for this duration
       let superfluid: BondDuration["superfluid"] | undefined = undefined;
+      const userSyntheticLockIds: string[] = [];
       if (isSuperfluidDuration) {
         const superfluidApr =
           poolIncentives?.aprBreakdown?.superfluid ?? new RatePretty(0);
@@ -217,6 +223,14 @@ export async function getSharePoolBondDurations(
           userUndelegations?.superfluid_delegation_records.find(
             ({ delegation_amount }) => delegation_amount.denom.endsWith(poolId)
           );
+
+        // record locks that are synthetic (superfluid)
+        userUndelegations?.synthetic_locks.forEach((lock) => {
+          const poolIdFromDenom = lock.synth_denom.split("/")[2];
+          if (poolIdFromDenom === poolId) {
+            userSyntheticLockIds.push(lock.underlying_lock_id);
+          }
+        });
 
         if (userPoolDelegation || userPoolUndelegation) {
           const validatorAddress =
@@ -255,12 +269,32 @@ export async function getSharePoolBondDurations(
         }
       }
 
+      // for locks we don't know are synthetic, query to find out
+      for (const lockId of userLockedLockIds) {
+        const isSynthetic = userSyntheticLockIds.includes(lockId);
+        if (isSynthetic) continue;
+
+        const syntheticLock = await querySyntheticLockupsByLockId({ lockId });
+
+        if (
+          syntheticLock &&
+          syntheticLock.synthetic_locks.length &&
+          syntheticLock.synthetic_locks[0].underlying_lock_id === lockId &&
+          syntheticLock.synthetic_locks[0].synth_denom.split("/")[2] === poolId
+        ) {
+          userSyntheticLockIds.push(lockId);
+        }
+      }
+
       return {
         duration: dayjs.duration(durationMs),
         bondable: isSuperfluid ? isLongestDuration : Boolean(durationGauges),
         userShares,
         userLockedShareValue,
-        userLockedLockIds,
+        userLocks: userLockedLockIds.map((lockId) => ({
+          lockId,
+          isSynthetic: userSyntheticLockIds.includes(lockId),
+        })),
         userUnlockingShares,
         aggregateApr,
         swapFeeApr,

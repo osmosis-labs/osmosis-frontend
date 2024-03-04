@@ -1,5 +1,6 @@
 import { createNodeQuery } from "../../base-utils";
-import { SuperfluidDelegationRecord, SyntheticLock } from "./types";
+import { SyntheticLock } from "../lockup";
+import { SuperfluidDelegationRecord } from "./types";
 
 export type SuperfluidDelegations = {
   superfluid_delegation_records: SuperfluidDelegationRecord[];

@@ -73,6 +73,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       },
       {
         enabled: !isWalletLoading && Boolean(address),
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
       }
     );
     const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
@@ -95,22 +102,34 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         },
         {
           enabled: !isWalletLoading,
+
+          // expensive query
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
         }
       );
     const bondDurations = useMemo(() => bondDurations_ ?? [], [bondDurations_]);
 
     const apiUtils = api.useUtils();
-    const invalidateQueries = useCallback(() => {
-      apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
-      apiUtils.edge.pools.getSharePool.invalidate({
-        poolId: pool.id,
-      });
+    const invalidateQueries: <T>(value: T) => T = useCallback(
+      (value) => {
+        apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
+        apiUtils.edge.pools.getSharePool.invalidate({
+          poolId: pool.id,
+        });
 
-      apiUtils.edge.pools.getUserSharePool.invalidate({
-        poolId: pool.id,
-        userOsmoAddress: address,
-      });
-    }, [address, pool.id, apiUtils]);
+        apiUtils.edge.pools.getUserSharePool.invalidate({
+          poolId: pool.id,
+          userOsmoAddress: address,
+        });
+
+        return value;
+      },
+      [address, pool.id, apiUtils]
+    );
 
     // initialize pool data stores once root pool store is loaded
     const { superfluidPoolDetail, poolBonding } = pool.id
@@ -248,9 +267,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           (bondDuration) =>
             bondDuration.duration.asMilliseconds() === duration.asMilliseconds()
         );
-        const lockIds = unlockBondDuration?.userLockedLockIds;
-        if (!lockIds) {
-          console.warn("No lock ids found");
+        const locks = unlockBondDuration?.userLocks;
+        if (!locks) {
+          console.warn("No locks found");
           return;
         }
 
@@ -260,7 +279,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         };
         logEvent([E.unbondAllStarted, unlockEvent]);
 
-        unlockTokens(lockIds, duration)
+        unlockTokens(locks)
           .then(invalidateQueries)
           .then(() => {
             logEvent([E.unbondAllCompleted, unlockEvent]);
