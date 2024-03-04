@@ -43,6 +43,8 @@ export async function getGammShareUnderlyingCoins({
 }
 
 /** Gets info for a share pool.
+ *  A share pool is a pool that issues liquidity ownership a share token (gamm/pool/{poolId}) and is either stable or weighted.
+ *  It is considered a legacy type of pool.
  *  @throws if pool is not share pool (stable or weighted). */
 export async function getSharePool(poolId: string) {
   const [pool, lockableDurations] = await Promise.all([
@@ -106,7 +108,7 @@ export function makeShareCoin(rawShares: {
   );
 }
 
-function makeGammShareCurrency(poolId: string): Currency {
+export function makeGammShareCurrency(poolId: string): Currency {
   return {
     coinMinimalDenom: `gamm/pool/${poolId}`,
     coinDenom: `GAMM/${poolId}`,

@@ -21,7 +21,7 @@ export async function getUserLocks(bech32Address: string): Promise<UserLock[]> {
 
   return userLocks.map((lock) => ({
     ID: lock.ID,
-    duration: dayjs.duration(parseInt(lock.duration.slice(0, -1))),
+    duration: dayjs.duration(parseInt(lock.duration.slice(0, -1)) * 1_000),
     endTime: new Date(lock.end_time),
     isCurrentlyUnlocking: new Date(lock.end_time).getFullYear() !== 0,
     coins: lock.coins,

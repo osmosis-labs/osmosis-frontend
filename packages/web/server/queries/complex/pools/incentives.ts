@@ -11,7 +11,10 @@ import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
-import { queryLockableDurations } from "../../osmosis";
+import { Gauge, queryGauges, queryLockableDurations } from "../../osmosis";
+import { Epochs } from "../../osmosis/epochs";
+import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
+import { getEpochs } from "../osmosis";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -175,13 +178,11 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
   return new RatePretty(new Dec(value).quo(new Dec(100)));
 }
 
-const lockableDurationsCache = new LRUCache<string, CacheEntry>(
-  DEFAULT_LRU_OPTIONS
-);
+const incentivesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export function getLockableDurations() {
   return cachified({
-    cache: lockableDurationsCache,
+    cache: incentivesCache,
     key: "lockable-durations",
     ttl: 1000 * 60 * 10, // 10 mins
     staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
@@ -197,4 +198,88 @@ export function getLockableDurations() {
         });
     },
   });
+}
+
+/** Gets internally incentivized pools with gauges that distribute minted staking tokens. */
+export function getIncentivizedPools() {
+  return cachified({
+    cache: incentivesCache,
+    key: "incentivized-pools",
+    ttl: 1000 * 60 * 10, // 10 mins
+    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
+    getFreshValue: async () => {
+      const { incentivized_pools } = await queryIncentivizedPools();
+
+      return incentivized_pools.map((pool) => ({
+        pool_id: pool.pool_id,
+        lockable_duration: dayjs.duration(
+          parseInt(pool.lockable_duration.replace("s", "")) * 1000
+        ),
+        gauge_id: pool.gauge_id,
+      }));
+    },
+  });
+}
+
+/** Gets gauges and filters those that are active. */
+export function getActiveGauges() {
+  return cachified({
+    cache: incentivesCache,
+    key: "active-external-gauges",
+    ttl: 1000 * 60 * 10, // 10 mins
+    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
+    getFreshValue: async () => {
+      const { data } = await queryGauges();
+      const epochs = await getEpochs();
+
+      return data
+        .filter((gauge) => {
+          !gauge.is_perpetual &&
+            gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
+            !gauge.coins.some((coin) =>
+              coin.denom.match(/gamm\/pool\/[0-9]+/m)
+            ) && // no gamm share rewards
+            gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
+            checkForStaleness(
+              gauge,
+              parseInt(data[data.length - 1].id),
+              epochs
+            );
+        })
+        .map((gauge) => ({
+          ...gauge,
+          start_time: new Date(gauge.start_time),
+          distribute_to: {
+            ...gauge.distribute_to,
+            duration: dayjs.duration(
+              parseInt(gauge.distribute_to.duration.replace("s", "")) * 1000
+            ),
+          },
+        }));
+    },
+  });
+}
+
+const DURATION_1_DAY = 86400000;
+const MAX_NEW_GAUGES_PER_DAY = 100;
+
+function checkForStaleness(
+  gauge: Gauge,
+  lastGaugeId: number,
+  epochs: Epochs["epochs"]
+) {
+  let parsedGaugeStartTime = Date.parse(gauge.start_time);
+
+  const NOW = Date.now();
+  const CURRENT_EPOCH_START_TIME = Date.parse(
+    epochs[0].current_epoch_start_time
+  );
+
+  return (
+    gauge.distributed_coins.length > 0 ||
+    (parsedGaugeStartTime > NOW - DURATION_1_DAY &&
+      parsedGaugeStartTime < CURRENT_EPOCH_START_TIME + DURATION_1_DAY) ||
+    (parsedGaugeStartTime < NOW &&
+      parseInt(gauge.id) > lastGaugeId - MAX_NEW_GAUGES_PER_DAY)
+  );
 }

@@ -7,6 +7,7 @@ import {
   getPools,
   PoolFilterSchema,
 } from "~/server/queries/complex/pools";
+import { getSharePoolBondDurations } from "~/server/queries/complex/pools/bonding";
 import {
   getCachedPoolIncentivesMap,
   IncentivePoolFilterSchema,
@@ -73,6 +74,17 @@ export const poolsRouter = createTRPCRouter({
       getUserSharePools(userOsmoAddress).then((pools) =>
         sort(pools, "totalValue")
       )
+    ),
+  getSharePoolBondDurations: publicProcedure
+    .input(
+      z
+        .object({
+          poolId: z.string(),
+        })
+        .merge(UserOsmoAddressSchema)
+    )
+    .query(async ({ input: { poolId, userOsmoAddress } }) =>
+      getSharePoolBondDurations(poolId, userOsmoAddress)
     ),
   getMarketIncentivePools: publicProcedure
     .input(

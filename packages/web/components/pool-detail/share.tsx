@@ -87,6 +87,18 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         poolId: pool.id,
       });
 
+    const { data: bondDurations_ } =
+      api.edge.pools.getSharePoolBondDurations.useQuery(
+        {
+          poolId: pool.id,
+          userOsmoAddress: Boolean(address) ? address : undefined,
+        },
+        {
+          enabled: !isWalletLoading,
+        }
+      );
+    const bondDurations = useMemo(() => bondDurations_ ?? [], [bondDurations_]);
+
     const apiUtils = api.useUtils();
     const invalidateQueries = useCallback(() => {
       apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
@@ -146,10 +158,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
       useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
-    const bondDurations = useMemo(
-      () => (pool ? poolBonding?.bondDurations ?? [] : []),
-      [pool, poolBonding?.bondDurations]
-    );
 
     const highestAPRBondableDuration = poolBonding?.highestBondDuration;
 
@@ -236,15 +244,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     );
     const onUnlockTokens = useCallback(
       (duration: Duration) => {
-        const lockIds = userSharePool!.lockedLocks.reduce<string[]>(
-          (foundLockIds, lock) => {
-            if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
-              return foundLockIds.concat(lock.ID);
-            }
-            return foundLockIds;
-          },
-          []
+        const unlockBondDuration = bondDurations.find(
+          (bondDuration) =>
+            bondDuration.duration.asMilliseconds() === duration.asMilliseconds()
         );
+        const lockIds = unlockBondDuration?.userLockedLockIds;
         if (!lockIds) {
           console.warn("No lock ids found");
           return;
@@ -262,7 +266,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             logEvent([E.unbondAllCompleted, unlockEvent]);
           });
       },
-      [userSharePool, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
+      [bondDurations, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress) => {
