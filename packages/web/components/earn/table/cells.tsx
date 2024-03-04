@@ -199,7 +199,8 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
 
   const isOsmosisStrategy = useMemo(
-    () => item.row.original.platform === "osmosis",
+    () =>
+      item.row.original.platform === "Cosmos SDK (Staking Module on Osmosis)",
     [item]
   );
 
