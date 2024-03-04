@@ -68,7 +68,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
     return { depositCapOccupied, depositCap };
   }, [item.row.original.tvl, tvlUsd]);
 
-  if (isLoadingTVL) {
+  if (isLoadingTVL || !tvlUsd) {
     return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
   }
 
@@ -121,7 +121,9 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
             </p>
           </span>
         </Tooltip>
-      ) : "N/A"}
+      ) : (
+        "N/A"
+      )}
     </div>
   );
 };
