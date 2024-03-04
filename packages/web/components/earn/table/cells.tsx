@@ -145,7 +145,7 @@ export const APYCell = (item: CellContext<EarnStrategy, RatePretty>) => {
 export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   const { t } = useTranslation();
   const lockingDuration = dayjs.duration(item.getValue()).asDays();
-  const hasLockingDuration = item.row.original.hasLockingDuration
+  const hasLockingDuration = item.row.original.hasLockingDuration;
 
   return (
     <div className="flex flex-col">
