@@ -870,7 +870,6 @@
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {
-    "title": "Transferências instáveis",
     "description": "Você pode enfrentar atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
     "buttonContinue": "Continue de qualquer maneira",
     "buttonCancel": "Cancelar"

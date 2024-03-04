@@ -870,7 +870,6 @@
   },
   "disclaimer": "अस्वीकरण",
   "unstableAssetsWarning": {
-    "title": "स्थानांतरण अस्थिर",
     "description": "आपको महत्वपूर्ण देरी या लेनदेन विफलता का अनुभव हो सकता है। अपने जोख़िम पर आगे बढ़ें।",
     "buttonContinue": "फिर भी जारी रखें",
     "buttonCancel": "रद्द करना"
