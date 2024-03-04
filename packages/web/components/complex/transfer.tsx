@@ -127,9 +127,32 @@ export const Transfer = observer(
     classes,
     addWithdrawAddrConfig,
   }: TransferProps<BridgeProviderOption>) => {
-    const { queriesExternalStore } = useStore();
+    const { queriesExternalStore, assetsStore } = useStore();
+    const { ibcBalances } = assetsStore;
+
+    console.log("availableBalanceL ", availableBalance);
+
+    const coinDenom = availableBalance?.currency.coinDenom;
+    console.log("coinDenom: ", coinDenom);
+
+    // find matching balance from asset list
+    const ibcBalance = ibcBalances.find(
+      ({ balance }) => balance.currency.coinDenom === coinDenom
+    );
+
+    const isUnstable = ibcBalance?.isUnstable;
+
+    console.log("isUnstable: ", isUnstable);
+
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
+
+    console.log("from, to]: ", [from, to]);
+
+    console.log(
+      "toggleUseWrappedConfig.nativeDenom: ",
+      toggleUseWrappedConfig?.nativeDenom
+    );
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [isAddingWithdrawAddr, setIsAddingWithdrawAddr] = useState(false);
@@ -262,13 +285,14 @@ export const Transfer = observer(
         )}
 
         <div className="body1 relative flex w-full flex-col gap-12 text-osmoverse-400 transition-opacity duration-300">
+          testesttest
           <BridgeFromToNetwork
             transferPath={[from, to]}
             bridgeProviders={bridgeProviders}
             onSelectBridgeProvider={onSelectBridgeProvider}
             selectedBridgeProvidersId={selectedBridgeProvidersId}
           />
-
+          testesttest
           <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
             {/* From Address */}
             <div
