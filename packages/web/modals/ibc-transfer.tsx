@@ -158,28 +158,43 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     );
 
     const isUnstable = ibcBalance?.isUnstable;
+    const prettyChainName =
+      ibcBalance?.chainInfo.prettyChainName || currency.coinDenom;
 
     const [showIsUnstableWarning, setShowIsUnstableWarning] =
       useState(isUnstable);
+
+    const getTitle = () => {
+      if (showIsUnstableWarning) {
+        return isWithdraw
+          ? t("unstableAssetsWarning.titleWithdraw", {
+              coinDenom: currency.coinDenom,
+            })
+          : t("unstableAssetsWarning.titleDeposit", {
+              coinDenom: currency.coinDenom,
+            });
+      } else {
+        return isWithdraw
+          ? t("assets.ibcTransfer.titleWithdraw", {
+              coinDenom: currency.coinDenom,
+            })
+          : t("assets.ibcTransfer.titleDeposit", {
+              coinDenom: currency.coinDenom,
+            });
+      }
+    };
 
     return (
       <ModalBase
         {...props}
         isOpen={props.isOpen && showModalBase}
-        title={
-          isWithdraw
-            ? t("assets.ibcTransfer.titleWithdraw", {
-                coinDenom: currency.coinDenom,
-              })
-            : t("assets.ibcTransfer.titleDeposit", {
-                coinDenom: currency.coinDenom,
-              })
-        }
+        title={getTitle()}
       >
         {showIsUnstableWarning ? (
           <UnstableAssetWarning
             onContinue={() => setShowIsUnstableWarning(false)}
             onCancel={props.onRequestClose}
+            prettyChainName={prettyChainName}
           />
         ) : (
           <>
