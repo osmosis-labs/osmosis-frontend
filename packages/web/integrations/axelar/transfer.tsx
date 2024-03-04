@@ -437,8 +437,8 @@ const AxelarTransfer: FunctionComponent<
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );
@@ -473,8 +473,8 @@ const AxelarTransfer: FunctionComponent<
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );

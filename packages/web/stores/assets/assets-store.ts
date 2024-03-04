@@ -58,8 +58,8 @@ export class ObservableAssets {
       ) {
         displayToast(
           {
-            message: "unlistedAssetsEnabled",
-            caption: "unlistedAssetsEnabledForSession",
+            titleTranslationKey: "unlistedAssetsEnabled",
+            captionTranslationKey: "unlistedAssetsEnabledForSession",
           },
           ToastType.SUCCESS
         );
@@ -72,7 +72,7 @@ export class ObservableAssets {
       ) {
         displayToast(
           {
-            message: "unlistedAssetsDisabled",
+            titleTranslationKey: "unlistedAssetsDisabled",
           },
           ToastType.SUCCESS
         );

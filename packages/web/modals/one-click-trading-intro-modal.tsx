@@ -42,7 +42,7 @@ const OneClickTradingIntroModal = observer(() => {
     const toastId = "one-click-trading-expired";
     displayToast(
       {
-        message: t("oneClickTrading.toast.oneClickTradingExpired"),
+        titleTranslationKey: t("oneClickTrading.toast.oneClickTradingExpired"),
         captionElement: (
           <Button
             mode="text"

@@ -593,7 +593,9 @@ const ProfileOneClickTradingSettings = ({
         if (!sessionAuthenticator) {
           displayToast(
             {
-              message: t("oneClickTrading.profile.failedToGetSession"),
+              titleTranslationKey: t(
+                "oneClickTrading.profile.failedToGetSession"
+              ),
             },
             ToastType.ERROR
           );

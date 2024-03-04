@@ -68,7 +68,9 @@ export const PreTransferModal: FunctionComponent<
             </span>
           )}
         </div>
-        {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
+        {isUnstable && (
+          <Info titleTranslationKey={UNSTABLE_MSG} isMobile={isMobile} />
+        )}
         <div className="flex place-content-between gap-3 py-2">
           {externalWithdrawUrl ? (
             <a

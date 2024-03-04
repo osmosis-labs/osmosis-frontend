@@ -342,10 +342,13 @@ export const useCreateOneClickTradingSession = ({
       toast.dismiss(); // Dismiss all toasts
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingActive"),
-          caption: `${humanizedTime.value} ${t(
-            humanizedTime.unitTranslationKey
-          )} ${t("remaining")}`,
+          titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",
+          captionElement: (
+            <p className="text-sm text-osmoverse-300 md:text-xs">
+              {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
+              {t("remaining")}
+            </p>
+          ),
         },
         ToastType.ONE_CLICK_TRADING
       );

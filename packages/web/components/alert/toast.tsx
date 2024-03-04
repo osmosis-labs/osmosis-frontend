@@ -55,8 +55,8 @@ export function displayToast(
 }
 
 const LoadingToast: FunctionComponent<Alert> = ({
-  message,
-  caption,
+  titleTranslationKey,
+  captionTranslationKey,
   captionElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
@@ -69,11 +69,13 @@ const LoadingToast: FunctionComponent<Alert> = ({
       />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}
-      {caption && (
+      {captionTranslationKey && (
         <p className="text-sm md:text-xs">
-          {typeof caption === "string" ? t(caption) : t(...caption)}
+          {typeof captionTranslationKey === "string"
+            ? t(captionTranslationKey)
+            : t(...captionTranslationKey)}
         </p>
       )}
     </div>
@@ -81,8 +83,8 @@ const LoadingToast: FunctionComponent<Alert> = ({
 );
 
 const ErrorToast: FunctionComponent<Alert> = ({
-  message,
-  caption,
+  titleTranslationKey,
+  captionTranslationKey,
   captionElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
@@ -90,11 +92,13 @@ const ErrorToast: FunctionComponent<Alert> = ({
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}
-      {caption && (
+      {captionTranslationKey && (
         <p className="text-sm md:text-xs">
-          {typeof caption === "string" ? t(caption) : t(...caption)}
+          {typeof captionTranslationKey === "string"
+            ? t(captionTranslationKey)
+            : t(...captionTranslationKey)}
         </p>
       )}
     </div>
@@ -102,10 +106,10 @@ const ErrorToast: FunctionComponent<Alert> = ({
 );
 
 const SuccessToast: FunctionComponent<Alert> = ({
-  message,
+  titleTranslationKey,
   learnMoreUrl,
   learnMoreUrlCaption,
-  caption,
+  captionTranslationKey,
   captionElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
@@ -113,11 +117,13 @@ const SuccessToast: FunctionComponent<Alert> = ({
       <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}
-      {caption && (
+      {captionTranslationKey && (
         <p className="text-sm md:text-xs">
-          {typeof caption === "string" ? t(caption) : t(...caption)}
+          {typeof captionTranslationKey === "string"
+            ? t(captionTranslationKey)
+            : t(...captionTranslationKey)}
         </p>
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
@@ -137,8 +143,8 @@ const SuccessToast: FunctionComponent<Alert> = ({
 );
 
 const OneClickTradingToast: FunctionComponent<Alert> = ({
-  message,
-  caption,
+  titleTranslationKey,
+  captionTranslationKey,
   captionElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
@@ -151,11 +157,13 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
       />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}
-      {caption && (
+      {captionTranslationKey && (
         <p className="text-sm text-osmoverse-300 md:text-xs">
-          {typeof caption === "string" ? t(caption) : t(...caption)}
+          {typeof captionTranslationKey === "string"
+            ? t(captionTranslationKey)
+            : t(...captionTranslationKey)}
         </p>
       )}
     </div>

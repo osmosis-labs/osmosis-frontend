@@ -13,13 +13,14 @@ export function useTxEventToasts(
     (status: GeneralTxEvent, txHash?: string) =>
       _displayToast(
         {
-          message:
+          titleTranslationKey:
             status === "pending"
               ? "transactionBroadcasting"
               : status === "confirmed"
               ? "transactionSuccessful"
               : "transactionFailed",
-          caption: status === "pending" ? "waitingForTransaction" : undefined,
+          captionTranslationKey:
+            status === "pending" ? "waitingForTransaction" : undefined,
           learnMoreUrl:
             (status === "confirmed" || status === "failed") && txHash
               ? client?.makeExplorerUrl?.(txHash)

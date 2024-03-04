@@ -174,14 +174,16 @@ export const NavBar: FunctionComponent<
     const onClick1CT = () => {
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingActive"),
-          caption: "59 minutes remaining",
+          titleTranslationKey: t("oneClickTrading.toast.oneClickTradingActive"),
+          captionTranslationKey: "59 minutes remaining",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingExpired"),
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingExpired"
+          ),
           captionElement: (
             <Button mode="text" className="caption">
               Enable 1-Click Trading
@@ -192,14 +194,16 @@ export const NavBar: FunctionComponent<
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingDisabled"),
-          caption: "Session ended on this device",
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingDisabled"
+          ),
+          captionTranslationKey: "Session ended on this device",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.networkFeeTooHigh"),
+          titleTranslationKey: t("oneClickTrading.toast.networkFeeTooHigh"),
           captionElement: (
             <Button mode="text" className="caption">
               Increase network fee limit

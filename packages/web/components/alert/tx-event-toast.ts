@@ -24,8 +24,8 @@ export function toastOnBroadcastFailed(
 
     displayToast(
       {
-        message: "transactionFailed",
-        caption:
+        titleTranslationKey: "transactionFailed",
+        captionTranslationKey:
           prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
       ToastType.ERROR
@@ -37,8 +37,8 @@ export function toastOnBroadcast() {
   return () => {
     displayToast(
       {
-        message: "transactionBroadcasting",
-        caption: "waitingForTransaction",
+        titleTranslationKey: "transactionBroadcasting",
+        captionTranslationKey: "waitingForTransaction",
       },
       ToastType.LOADING
     );
@@ -53,15 +53,15 @@ export function toastOnFulfill(
     if (tx.code) {
       displayToast(
         {
-          message: "transactionFailed",
-          caption: getErrorMessage(tx, chainInfo.currencies),
+          titleTranslationKey: "transactionFailed",
+          captionTranslationKey: getErrorMessage(tx, chainInfo.currencies),
         },
         ToastType.ERROR
       );
     } else {
       displayToast(
         {
-          message: "transactionSuccessful",
+          titleTranslationKey: "transactionSuccessful",
           learnMoreUrl: chainInfo.raw.explorerUrlToTx.replace(
             "{txHash}",
             tx.transactionHash.toUpperCase()
