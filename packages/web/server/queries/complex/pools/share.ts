@@ -3,7 +3,7 @@ import { estimateExitSwap } from "@osmosis-labs/math";
 import { Currency } from "@osmosis-labs/types";
 
 import { StablePoolRawResponse, WeightedPoolRawResponse } from "../../osmosis";
-import { getLockableDurations } from "../osmosis";
+import { getLockableDurations } from "../pools/incentives";
 import { getPool } from ".";
 
 /** Calculates underlying coins from given GAMM shares (without decimals). */

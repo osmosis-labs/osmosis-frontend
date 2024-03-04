@@ -11,6 +11,7 @@ import { queryPriceRangeApr } from "~/server/queries/imperator";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryPoolAprs } from "../../numia/pool-aprs";
+import { queryLockableDurations } from "../../osmosis";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -172,4 +173,28 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
   }
 
   return new RatePretty(new Dec(value).quo(new Dec(100)));
+}
+
+const lockableDurationsCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+export function getLockableDurations() {
+  return cachified({
+    cache: lockableDurationsCache,
+    key: "lockable-durations",
+    ttl: 1000 * 60 * 10, // 10 mins
+    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
+    getFreshValue: async () => {
+      const { lockable_durations } = await queryLockableDurations();
+
+      return lockable_durations
+        .map((durationStr: string) => {
+          return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
+        })
+        .sort((v1, v2) => {
+          return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
+        });
+    },
+  });
 }
