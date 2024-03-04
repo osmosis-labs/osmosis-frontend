@@ -63,7 +63,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { data: superfluidPoolIds } =
       api.edge.pools.getSuperfluidPoolIds.useQuery();
 
-    const { data: userPositions } =
+    const { data: userPositions, isFetched: isUserPositionsFetched } =
       api.edge.concentratedLiquidity.getUserPositions.useQuery(
         {
           userOsmoAddress: account?.address ?? "",
@@ -344,7 +344,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </Button>
               </div>
             </div>
-            {!userHasPositionInPool && (
+            {!userHasPositionInPool && isUserPositionsFetched && (
               <>
                 <SuperchargePool
                   title={t("createFirstPositionCta.title")}
