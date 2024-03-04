@@ -525,8 +525,7 @@
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
     },
     "profile": {
-      "sessionExpired": "Sitzung abgelaufen",
-      "failedToGetSession": "Der Sitzungsauthentifikator konnte nicht abgerufen werden. Bitte versuche es erneut."
+      "sessionExpired": "Sitzung abgelaufen"
     }
   },
   "pool": {

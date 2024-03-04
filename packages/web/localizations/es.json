@@ -525,8 +525,7 @@
       "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
     },
     "profile": {
-      "sessionExpired": "Sesión expirada",
-      "failedToGetSession": "No se pudo obtener el autenticador de sesión. Inténtalo de nuevo."
+      "sessionExpired": "Sesión expirada"
     }
   },
   "pool": {

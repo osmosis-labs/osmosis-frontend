@@ -525,8 +525,7 @@
       "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     },
     "profile": {
-      "sessionExpired": "Sesiunea a expirat",
-      "failedToGetSession": "Nu s-a putut obține autentificatorul de sesiune. Vă rugăm să încercați din nou."
+      "sessionExpired": "Sesiunea a expirat"
     }
   },
   "pool": {

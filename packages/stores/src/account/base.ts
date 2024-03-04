@@ -814,13 +814,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
+
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (isNil(oneClickTradingInfo)) {
+      throw new Error("One click trading info is not available");
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+    );
+    console.log(
+      messages.map((msg) => ({
+        ...msg,
+        selectedAuthenticators: [Number(oneClickTradingInfo.authenticatorId)],
+      }))
     );
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
-        messages: messages,
+        messages: messages.map((msg) => ({
+          ...msg,
+          selectedAuthenticators: [Number(oneClickTradingInfo.authenticatorId)],
+        })),
         memo: memo,
       },
     };
@@ -829,10 +844,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyEncodeObject
     ) as Uint8Array;
 
-    const oneClickTradingInfo = await this.getOneClickTradingInfo();
-    if (isNil(oneClickTradingInfo)) {
-      throw new Error("One click trading info is not available");
-    }
+    console.log(
+      wallet?.signingStargateOptions?.registry?.decodeTxBody(txBodyBytes)
+    );
+
     const privateKey = new PrivKeySecp256k1(
       fromBase64(oneClickTradingInfo.privateKey)
     );

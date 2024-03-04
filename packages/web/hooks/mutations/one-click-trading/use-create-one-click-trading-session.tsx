@@ -258,7 +258,7 @@ export const useCreateOneClickTradingSession = ({
 
       /**
        * If the user has 15 authenticators, remove the oldest AllOfAuthenticator
-       * which is are previous OneClickTrading session
+       * which is the previous OneClickTrading session
        */
       const authenticatorToRemoveId =
         authenticators.length === 15
@@ -267,7 +267,7 @@ export const useCreateOneClickTradingSession = ({
                 isAuthenticatorOneClickTradingSession({ authenticator })
               )
               /**
-               * Find the oldest AllOfAuthenticator by comparing the id.
+               * Find the oldest One Click Trading Session by comparing the id.
                * The smallest id is the oldest authenticator.
                */
               .reduce((min, authenticator) => {
@@ -312,8 +312,31 @@ export const useCreateOneClickTradingSession = ({
           });
       });
 
+      const publicKey = toBase64(key.getPubKey().toBytes());
+
+      /**
+       * TODO: Get the authenticator id from the tx result.
+       */
+      let authenticatorId: string;
+      try {
+        const authenticator =
+          await apiUtils.edge.oneClickTrading.getSessionAuthenticator.fetch({
+            userOsmoAddress: walletRepo.current.address!,
+            publicKey,
+          });
+        if (isNil(authenticator?.id)) {
+          throw new Error("Authenticator id is not found");
+        }
+        authenticatorId = authenticator.id;
+      } catch (error) {
+        throw new CreateOneClickSessionError(
+          "Failed to fetch account public key and authenticators."
+        );
+      }
+
       accountStore.setOneClickTradingInfo({
-        publicKey: toBase64(key.getPubKey().toBytes()),
+        authenticatorId,
+        publicKey,
         privateKey: toBase64(key.toBytes()),
         allowedMessages,
         resetPeriod,

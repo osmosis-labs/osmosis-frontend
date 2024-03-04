@@ -90,6 +90,7 @@ export interface TxEvents {
 }
 
 export interface OneClickTradingInfo {
+  readonly authenticatorId: string;
   readonly publicKey: string;
   readonly privateKey: string;
   readonly userOsmoAddress: string;

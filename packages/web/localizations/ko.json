@@ -525,8 +525,7 @@
       "description": "선택한 지갑에서 거래를 승인하면 1-클릭 거래 세션이 시작됩니다."
     },
     "profile": {
-      "sessionExpired": "세션이 만료되었습니다.",
-      "failedToGetSession": "세션 인증자를 가져오지 못했습니다. 다시 시도해 주세요."
+      "sessionExpired": "세션이 만료되었습니다."
     }
   },
   "pool": {

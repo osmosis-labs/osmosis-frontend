@@ -525,8 +525,7 @@
       "description": "当您在所选钱包中批准交易时，您的一键交易会话将开始。"
     },
     "profile": {
-      "sessionExpired": "会话已过期",
-      "failedToGetSession": "无法获取会话验证器。请再试一次。"
+      "sessionExpired": "会话已过期"
     }
   },
   "pool": {

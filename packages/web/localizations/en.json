@@ -525,8 +525,7 @@
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     },
     "profile": {
-      "sessionExpired": "Session expired",
-      "failedToGetSession": "Failed to get session authenticator. Please try again."
+      "sessionExpired": "Session expired"
     }
   },
   "pool": {
