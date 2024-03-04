@@ -150,18 +150,14 @@ export function getConcentratedRangePoolApr({
     key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
     ttl: 30 * 1000, // 30 seconds
     getFreshValue: async () => {
-      try {
-        const { APR } = await queryPriceRangeApr({
-          lowerTickIndex: lowerTick,
-          upperTickIndex: upperTick,
-          poolId: poolId,
-        });
-        const apr = APR / 100;
-        if (isNaN(apr)) return;
-        return new RatePretty(apr);
-      } catch (e) {
-        console.error(e);
-      }
+      const { APR } = await queryPriceRangeApr({
+        lowerTickIndex: lowerTick,
+        upperTickIndex: upperTick,
+        poolId: poolId,
+      });
+      const apr = APR / 100;
+      if (isNaN(apr)) return;
+      return new RatePretty(apr);
     },
   });
 }
