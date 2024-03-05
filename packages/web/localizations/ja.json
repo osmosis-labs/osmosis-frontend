@@ -648,20 +648,6 @@
         "buttonKeep": "既存のバリデータを維持する",
         "buttonSelect": "新しいバリデータの選択"
       }
-    },
-    "introModal": {
-      "callout": "新機能",
-      "title": "Osmosis へのステーキング",
-      "description": {
-        "1": "ステーキングは、資産を使って稼ぐ最も簡単な方法の 1 つです。これで、OSMO を Osmosis に賭けることができます。",
-        "2": "まで稼ぐ",
-        "3": "ステーキング報酬で毎年獲得！",
-        "4": "そしてそれを機能させます",
-        "5": "利用可能な{displayBalance}機能させて、",
-        "button": "OSMOを購入する"
-      },
-      "asterisk": "* ステーキング報酬の価値は価格と APR の変動の影響を受けます。",
-      "button": "ステーキングを開始する"
     }
   },
   "superfluidValidator": {

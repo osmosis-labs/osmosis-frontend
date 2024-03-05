@@ -648,20 +648,6 @@
         "buttonKeep": "Behalten Sie vorhandene Validatoren bei",
         "buttonSelect": "Wählen Sie „Neue Validatoren“."
       }
-    },
-    "introModal": {
-      "callout": "Neue Funktion",
-      "title": "Setzen Sie auf Osmose",
-      "description": {
-        "1": "Das Abstecken ist eine der einfachsten Möglichkeiten, mit Ihrem Vermögen Geld zu verdienen. Jetzt können Sie Ihr OSMO direkt auf Osmosis setzen.",
-        "2": "Verdienen bis zu",
-        "3": "jährliche Einsatzprämien!",
-        "4": "und es in die Tat umsetzen",
-        "5": "Setzen Sie Ihr verfügbares {displayBalance} ein und",
-        "button": "Kaufen Sie etwas OSMO"
-      },
-      "asterisk": "* Der Wert der Einsatzprämie unterliegt der Preis- und effektiven Jahreszinsvolatilität.",
-      "button": "Beginnen Sie mit dem Abstecken"
     }
   },
   "superfluidValidator": {
