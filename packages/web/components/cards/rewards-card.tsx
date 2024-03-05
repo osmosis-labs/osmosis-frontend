@@ -2,8 +2,8 @@ import classNames from "classnames";
 import React, { useState } from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
-import { Button } from "~/components/buttons";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 
 export const RewardsCard: React.FC<{
   title: string;
@@ -39,7 +39,7 @@ export const RewardsCard: React.FC<{
   return (
     <Button
       disabled={disabled}
-      mode="unstyled"
+      variant="ghost"
       className="relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0 disabled:opacity-50"
       onClick={onClick}
     >
