@@ -1,8 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import {
-  AllOfAuthenticator,
-  OneClickTradingTransactionParams,
-} from "@osmosis-labs/types";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { OsmosisAverageGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -12,7 +9,10 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getFeeTokenGasPriceStep } from "~/server/queries/complex/assets/gas";
-import { getAuthenticators } from "~/server/queries/complex/authenticators";
+import {
+  getAuthenticators,
+  getSessionAuthenticator,
+} from "~/server/queries/complex/authenticators";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
 
 export const oneClickTradingRouter = createTRPCRouter({
@@ -47,45 +47,19 @@ export const oneClickTradingRouter = createTRPCRouter({
   getSessionAuthenticator: publicProcedure
     .input(z.object({ userOsmoAddress: z.string(), publicKey: z.string() }))
     .query(async ({ input }) => {
-      const authenticators = await getAuthenticators({
+      const sessionAuthenticator = await getSessionAuthenticator({
         userOsmoAddress: input.userOsmoAddress,
+        publicKey: input.publicKey,
       });
 
-      const subAuthenticators = authenticators
-        .filter(
-          (authenticator): authenticator is AllOfAuthenticator =>
-            authenticator.type === "AllOfAuthenticator"
-        )
-        .flatMap((authenticator) =>
-          authenticator.subAuthenticators.map((sub) => ({
-            ...sub,
-            authenticatorId: authenticator.id,
-          }))
-        );
-
-      if (subAuthenticators.length === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Session not found: authenticators array is empty",
-        });
-      }
-
-      const authenticatorId = subAuthenticators.find(
-        (authenticator) =>
-          authenticator.type === "SignatureVerificationAuthenticator" &&
-          authenticator.publicKey === input.publicKey
-      )?.authenticatorId;
-
-      if (!authenticatorId) {
+      if (!sessionAuthenticator) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Session not found",
         });
       }
 
-      return authenticators.find(
-        (authenticator) => authenticator.id === authenticatorId
-      );
+      return sessionAuthenticator;
     }),
   getAccountPubKeyAndAuthenticators: publicProcedure
     .input(z.object({ userOsmoAddress: z.string() }))

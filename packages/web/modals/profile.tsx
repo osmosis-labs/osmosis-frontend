@@ -1,7 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -20,7 +18,6 @@ import {
 } from "react";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
-import { displayToast, ToastType } from "~/components/alert";
 import {
   CopyIcon,
   ExternalLinkIcon,
@@ -38,22 +35,15 @@ import {
   DrawerPanel,
 } from "~/components/drawers";
 import Spinner from "~/components/loaders/spinner";
-import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
+import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
+import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
 import { EventName } from "~/config";
-import {
-  useFeatureFlags,
-  useOneClickTradingParams,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
-import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
-import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
-import { humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
 import { formatICNSName, getShortAddress } from "~/utils/string";
 import { api } from "~/utils/trpc";
@@ -496,182 +486,6 @@ export const ProfileModal: FunctionComponent<
     </>
   );
 });
-
-const ProfileOneClickTradingSettings = ({
-  onGoBack,
-}: {
-  onGoBack: () => void;
-}) => {
-  const { accountStore, chainStore } = useStore();
-  const { oneClickTradingInfo, isOneClickTradingEnabled } =
-    useOneClickTradingSession();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { t } = useTranslation();
-
-  const shouldFetchSessionAuthenticator =
-    !!account?.address && !!oneClickTradingInfo;
-  const {
-    data: sessionAuthenticator,
-    isLoading: isLoadingSessionAuthenticator,
-    refetch: refetchSessionAuthenticator,
-  } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
-    {
-      userOsmoAddress: account?.address ?? "",
-      publicKey: oneClickTradingInfo?.publicKey ?? "",
-    },
-    {
-      enabled: shouldFetchSessionAuthenticator,
-      cacheTime: 5 * 60 * 1000, // 5 minutes
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    }
-  );
-  const create1CTSession = useCreateOneClickTradingSession({
-    queryOptions: {
-      onSuccess: () => {
-        onGoBack();
-      },
-    },
-  });
-  const removeAuthenticator = useAddOrRemoveAuthenticators();
-
-  const {
-    transaction1CTParams,
-    setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
-    spendLimitTokenDecimals,
-    reset: reset1CTParams,
-  } = useOneClickTradingParams({
-    oneClickTradingInfo,
-    defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
-  });
-
-  return (
-    <OneClickTradingSettings
-      transaction1CTParams={transaction1CTParams}
-      setTransaction1CTParams={setTransaction1CTParams}
-      isLoading={
-        isLoading1CTParams ||
-        (shouldFetchSessionAuthenticator
-          ? isLoadingSessionAuthenticator
-          : false)
-      }
-      isSendingTx={create1CTSession.isLoading}
-      onStartTrading={() => {
-        create1CTSession.mutate(
-          {
-            spendLimitTokenDecimals,
-            transaction1CTParams,
-            walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
-            /**
-             * If the user has an existing session, remove it and add the new one.
-             */
-            additionalAuthenticatorsToRemove: sessionAuthenticator
-              ? [BigInt(sessionAuthenticator.id)]
-              : undefined,
-          },
-          {
-            onSuccess: () => {
-              onGoBack();
-            },
-          }
-        );
-      }}
-      onGoBack={() => {
-        reset1CTParams();
-        onGoBack();
-      }}
-      hasExistingSession={isOneClickTradingEnabled}
-      onEndSession={() => {
-        const rollback = () => {
-          if (!transaction1CTParams) return;
-          setTransaction1CTParams({
-            ...transaction1CTParams,
-            isOneClickEnabled: true,
-          });
-        };
-
-        if (!sessionAuthenticator) {
-          displayToast(
-            {
-              titleTranslationKey: t(
-                "oneClickTrading.profile.failedToGetSession"
-              ),
-            },
-            ToastType.ERROR
-          );
-          refetchSessionAuthenticator();
-          return rollback();
-        }
-
-        removeAuthenticator.mutate(
-          {
-            addAuthenticators: [],
-            removeAuthenticators: [BigInt(sessionAuthenticator?.id)],
-          },
-          {
-            onSuccess: () => {
-              accountStore.setOneClickTradingInfo(undefined);
-              onGoBack();
-            },
-            onError: () => {
-              rollback();
-            },
-          }
-        );
-      }}
-      isEndingSession={removeAuthenticator.isLoading}
-    />
-  );
-};
-
-const OneClickTradingRemainingTime = () => {
-  const { oneClickTradingInfo, isOneClickTradingExpired } =
-    useOneClickTradingSession();
-  const { t } = useTranslation();
-
-  const [humanizedTime, setHumanizedTime] =
-    useState<ReturnType<typeof humanizeTime>>();
-
-  useEffect(() => {
-    if (!oneClickTradingInfo) return setHumanizedTime(undefined);
-
-    const updateTime = () => {
-      setHumanizedTime(
-        humanizeTime(
-          dayjs.unix(
-            unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
-          )
-        )
-      );
-    };
-
-    updateTime();
-
-    const intervalId = setInterval(
-      () => {
-        updateTime();
-      },
-      1_000 // Update every 3 seconds
-    );
-
-    return () => clearInterval(intervalId);
-  }, [oneClickTradingInfo]);
-
-  if (isOneClickTradingExpired)
-    return (
-      <p className="body1 text-rust-200">
-        {t("oneClickTrading.profile.sessionExpired")}
-      </p>
-    );
-  if (!humanizedTime) return null;
-
-  return (
-    <p className="body1 text-wosmongton-200">
-      {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
-      {t("remaining")}
-    </p>
-  );
-};
 
 const ActionButton = forwardRef<
   any,

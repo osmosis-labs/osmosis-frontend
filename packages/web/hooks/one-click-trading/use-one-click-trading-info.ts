@@ -13,16 +13,6 @@ import { useStore } from "~/stores";
  * This hook encapsulates the logic for fetching one-click trading session information,
  * determining if the session is enabled and if it has expired. It also provides utility
  * functions to calculate the remaining time for the session and the total session time.
- *
- * @param {Object} params - The parameters object.
- * @param {Function} params.onExpire - Optional callback function that gets called when the trading session expires.
- *                                      It receives an object with `oneClickTradingInfo` as a parameter.
- * @returns {Object} An object containing:
- *                    - `oneClickTradingInfo`: Information about the one-click trading session.
- *                    - `isOneClickTradingEnabled`: A boolean indicating if one-click trading is enabled.
- *                    - `isOneClickTradingExpired`: A boolean indicating if the one-click trading session has expired.
- *                    - `getTimeRemaining`: A function that returns the remaining time for the session in seconds.
- *                    - `getTotalSessionTime`: A function that returns the total session time in seconds.
  */
 export const useOneClickTradingSession = ({
   onExpire,
