@@ -449,8 +449,8 @@ export class ObservableTransferUIConfig {
       // unknown
       displayToast(
         {
-          message: "errors.generic",
-          caption: "unknownError",
+          titleTranslationKey: "errors.generic",
+          captionTranslationKey: "unknownError",
         },
         ToastType.ERROR
       );

@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "دوره جلسه",
       "resetPeriodTitle": "بازنشانی دوره",
       "startButton": "شروع تجارت با 1 کلیک",
+      "editSessionButton": "ذخیره تغییرات",
+      "endingSession": "پایان جلسه",
       "spendLimitScreen": {
         "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
         "fixedAmount": "مقدار ثابت",
@@ -521,6 +523,10 @@
       "altText": "گرافیک معاملاتی با یک کلیک",
       "header": "برای ادامه یک کیف پول وصل کنید",
       "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
+    },
+    "profile": {
+      "sessionExpired": "جلسه تمام شده",
+      "failedToGetSession": "تأییدکننده جلسه دریافت نشد. لطفا دوباره تلاش کنید."
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "موجودی",
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
-    "wallet": "کیف پول"
+    "wallet": "کیف پول",
+    "oneClickTrading": "1- روی تجارت کلیک کنید"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",

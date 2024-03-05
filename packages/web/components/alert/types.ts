@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 import { MultiLanguageT } from "~/hooks";
 
 export interface Alert {
-  message: string;
-  caption?: Parameters<MultiLanguageT> | string;
+  titleTranslationKey: string;
+  captionTranslationKey?: Parameters<MultiLanguageT> | string;
   captionElement?: ReactNode;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;

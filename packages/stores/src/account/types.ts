@@ -1,6 +1,8 @@
 import { AminoMsg, StdFee } from "@cosmjs/amino";
 import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
 import {
+  Currency,
+  OneClickTradingHumanizedSessionPeriod,
   OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
@@ -90,10 +92,14 @@ export interface TxEvents {
 export interface OneClickTradingInfo {
   readonly publicKey: string;
   readonly privateKey: string;
-  readonly allowed: string;
+  readonly userOsmoAddress: string;
 
-  networkFeeLimit: {
-    denom: string;
+  networkFeeLimit: Currency & {
+    amount: string;
+  };
+
+  spendLimit: {
+    decimals: number;
     amount: string;
   };
 
@@ -102,6 +108,7 @@ export interface OneClickTradingInfo {
 
   // Time limit for the session to be considered valid.
   readonly sessionPeriod: OneClickTradingTimeLimit;
+  readonly humanizedSessionPeriod: OneClickTradingHumanizedSessionPeriod;
   readonly sessionStartedAtUnix: number;
   readonly allowedMessages: string[];
   readonly hasSeenExpiryToast: boolean;

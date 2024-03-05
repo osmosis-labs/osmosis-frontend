@@ -52,7 +52,7 @@ import { useWindowSize } from "~/hooks";
 import {
   CreateOneClickSessionError,
   useCreateOneClickTradingSession,
-} from "~/hooks/one-click-trading/use-create-one-click-trading-session";
+} from "~/hooks/mutations/one-click-trading";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -151,8 +151,8 @@ export const WalletSelectModal: FunctionComponent<
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const hasInstalledWallets = useHasWalletsInstalled();
-  const create1CTSessionMutation = useCreateOneClickTradingSession({
-    addAuthenticatorsQueryOptions: {
+  const create1CTSession = useCreateOneClickTradingSession({
+    queryOptions: {
       onSuccess: () => {
         onRequestClose();
       },
@@ -245,7 +245,7 @@ export const WalletSelectModal: FunctionComponent<
     transaction1CTParams: OneClickTradingTransactionParams | undefined;
   }) => {
     setIsInitializingOneClickTrading(true);
-    return create1CTSessionMutation.onCreate1CTSession({
+    return create1CTSession.mutate({
       walletRepo,
       transaction1CTParams,
       spendLimitTokenDecimals: spendLimitTokenDecimals,
@@ -910,7 +910,7 @@ const RightModalContent: FunctionComponent<
                 classes={{
                   root: "pt-1.5",
                 }}
-                onClose={() => {
+                onGoBack={() => {
                   setShow1CTEditParams(false);
                 }}
                 setTransaction1CTParams={setTransaction1CTParams}

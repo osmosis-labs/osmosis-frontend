@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "सत्र अवधि",
       "resetPeriodTitle": "रीसेट अवधि",
       "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
+      "editSessionButton": "परिवर्तनों को सुरक्षित करें",
+      "endingSession": "समापन सत्र",
       "spendLimitScreen": {
         "spendLimitDescription": "वह अधिकतम राशि निर्धारित करें जिसे आप 1-क्लिक ट्रेडिंग सत्र अवधि के भीतर खर्च कर सकते हैं।",
         "fixedAmount": "निश्चित राशि",
@@ -521,6 +523,10 @@
       "altText": "एक क्लिक ट्रेडिंग ग्राफ़िक",
       "header": "जारी रखने के लिए वॉलेट कनेक्ट करें",
       "description": "आपका 1-क्लिक ट्रेडिंग सत्र तब शुरू होगा जब आप अपने चुने हुए वॉलेट में लेनदेन को मंजूरी देंगे।"
+    },
+    "profile": {
+      "sessionExpired": "सत्र समाप्त हुआ",
+      "failedToGetSession": "सत्र प्रमाणक प्राप्त करने में विफल. कृपया पुन: प्रयास करें।"
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "संतुलन",
     "modalTitle": "प्रोफ़ाइल",
     "viewAllAssets": "सभी संपत्तियां देखें",
-    "wallet": "बटुआ"
+    "wallet": "बटुआ",
+    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",

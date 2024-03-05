@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "會議期間",
       "resetPeriodTitle": "重置期",
       "startButton": "開始一鍵交易",
+      "editSessionButton": "儲存變更",
+      "endingSession": "結束會議",
       "spendLimitScreen": {
         "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
         "fixedAmount": "固定值",
@@ -521,6 +523,10 @@
       "altText": "一鍵交易圖形",
       "header": "連接錢包以繼續",
       "description": "當您在所選錢包中批准交易時，您的一鍵交易會話將開始。"
+    },
+    "profile": {
+      "sessionExpired": "會話已過期",
+      "failedToGetSession": "無法取得會話驗證器。請再試一次。"
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "结余",
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有資產",
-    "wallet": "钱包"
+    "wallet": "钱包",
+    "oneClickTrading": "一鍵交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",

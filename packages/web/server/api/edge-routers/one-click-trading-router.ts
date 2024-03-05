@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { OsmosisAverageGasLimit } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -8,11 +9,14 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getFeeTokenGasPriceStep } from "~/server/queries/complex/assets/gas";
-import { getAuthenticators } from "~/server/queries/complex/authenticators";
+import {
+  getAuthenticators,
+  getSessionAuthenticator,
+} from "~/server/queries/complex/authenticators";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
 
 export const oneClickTradingRouter = createTRPCRouter({
-  getDefaultParameters: publicProcedure.query(
+  getParameters: publicProcedure.query(
     async (): Promise<
       Pick<
         OneClickTradingTransactionParams,
@@ -40,6 +44,23 @@ export const oneClickTradingRouter = createTRPCRouter({
   getNetworkFeeLimitStep: publicProcedure.query(async () =>
     getNetworkFeeLimitStep()
   ),
+  getSessionAuthenticator: publicProcedure
+    .input(z.object({ userOsmoAddress: z.string(), publicKey: z.string() }))
+    .query(async ({ input }) => {
+      const sessionAuthenticator = await getSessionAuthenticator({
+        userOsmoAddress: input.userOsmoAddress,
+        publicKey: input.publicKey,
+      });
+
+      if (!sessionAuthenticator) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Session not found",
+        });
+      }
+
+      return sessionAuthenticator;
+    }),
   getAccountPubKeyAndAuthenticators: publicProcedure
     .input(z.object({ userOsmoAddress: z.string() }))
     .query(async ({ input }) => {

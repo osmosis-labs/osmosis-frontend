@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "Période de séance",
       "resetPeriodTitle": "Période de réinitialisation",
       "startButton": "Commencez le trading en 1 clic",
+      "editSessionButton": "Sauvegarder les modifications",
+      "endingSession": "Fin de la séance",
       "spendLimitScreen": {
         "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
         "fixedAmount": "Montant fixé",
@@ -521,6 +523,10 @@
       "altText": "Graphique de trading en un clic",
       "header": "Connectez un portefeuille pour continuer",
       "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
+    },
+    "profile": {
+      "sessionExpired": "La session a expiré",
+      "failedToGetSession": "Échec de l'obtention de l'authentificateur de session. Veuillez réessayer."
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "Solde",
     "modalTitle": "Le profil",
     "viewAllAssets": "Voir tous les actifs",
-    "wallet": "Portefeuille"
+    "wallet": "Portefeuille",
+    "oneClickTrading": "Trading en 1 clic"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",

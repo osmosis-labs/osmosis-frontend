@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "Sitzungszeitraum",
       "resetPeriodTitle": "Reset-Zeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
+      "editSessionButton": "Änderungen speichern",
+      "endingSession": "Sitzung beenden",
       "spendLimitScreen": {
         "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
         "fixedAmount": "Fester Betrag",
@@ -521,6 +523,10 @@
       "altText": "One-Click-Handelsgrafik",
       "header": "Schließen Sie eine Wallet an, um fortzufahren",
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
+    },
+    "profile": {
+      "sessionExpired": "Sitzung abgelaufen",
+      "failedToGetSession": "Der Sitzungsauthentifikator konnte nicht abgerufen werden. Bitte versuche es erneut."
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
-    "wallet": "Geldbörse"
+    "wallet": "Geldbörse",
+    "oneClickTrading": "1-Klick-Handel"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",

@@ -467,6 +467,8 @@
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
       "resetPeriodTitle": "સમયગાળો રીસેટ કરો",
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
+      "editSessionButton": "ફેરફારો સંગ્રહ",
+      "endingSession": "સત્ર સમાપ્ત",
       "spendLimitScreen": {
         "spendLimitDescription": "1-ક્લિક ટ્રેડિંગ સત્ર સમયગાળામાં તમે ખર્ચ કરી શકો તે મહત્તમ રકમ સેટ કરો.",
         "fixedAmount": "નિશ્ચિત રકમ",
@@ -521,6 +523,10 @@
       "altText": "એક ક્લિક ટ્રેડિંગ ગ્રાફિક",
       "header": "ચાલુ રાખવા માટે વૉલેટ કનેક્ટ કરો",
       "description": "જ્યારે તમે તમારા પસંદ કરેલા વૉલેટમાં ટ્રાન્ઝેક્શન મંજૂર કરશો ત્યારે તમારું 1-ક્લિક ટ્રેડિંગ સત્ર શરૂ થશે."
+    },
+    "profile": {
+      "sessionExpired": "સત્ર સમાપ્ત થઈ",
+      "failedToGetSession": "સત્ર પ્રમાણીકરણ મેળવવામાં નિષ્ફળ. મહેરબાની કરીને ફરીથી પ્રયતન કરો."
     }
   },
   "pool": {
@@ -639,7 +645,8 @@
     "balance": "સંતુલન",
     "modalTitle": "પ્રોફાઇલ",
     "viewAllAssets": "બધી સંપત્તિઓ જુઓ",
-    "wallet": "વૉલેટ"
+    "wallet": "વૉલેટ",
+    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",

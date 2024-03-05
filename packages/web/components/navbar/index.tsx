@@ -1,6 +1,5 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
-import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -27,7 +26,7 @@ import { CustomClasses, MainLayoutMenu } from "~/components/types";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
-import { useOneClickTradingInfo } from "~/hooks/one-click-trading/use-one-click-trading-info";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-info";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -175,14 +174,16 @@ export const NavBar: FunctionComponent<
     const onClick1CT = () => {
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingActive"),
-          caption: "59 minutes remaining",
+          titleTranslationKey: t("oneClickTrading.toast.oneClickTradingActive"),
+          captionTranslationKey: "59 minutes remaining",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingExpired"),
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingExpired"
+          ),
           captionElement: (
             <Button mode="text" className="caption">
               Enable 1-Click Trading
@@ -193,14 +194,16 @@ export const NavBar: FunctionComponent<
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.oneClickTradingDisabled"),
-          caption: "Session ended on this device",
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingDisabled"
+          ),
+          captionTranslationKey: "Session ended on this device",
         },
         ToastType.ONE_CLICK_TRADING
       );
       displayToast(
         {
-          message: t("oneClickTrading.toast.networkFeeTooHigh"),
+          titleTranslationKey: t("oneClickTrading.toast.networkFeeTooHigh"),
           captionElement: (
             <Button mode="text" className="caption">
               Increase network fee limit
@@ -421,7 +424,7 @@ const WalletInfo: FunctionComponent<
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
-  const { isOneClickTradingEnabled } = useOneClickTradingInfo();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const flags = useFeatureFlags();
 
   const { t } = useTranslation();
@@ -526,19 +529,15 @@ const WalletInfo: FunctionComponent<
 });
 
 const OneClickTradingRadialProgress = observer(() => {
-  const { oneClickTradingInfo } = useOneClickTradingInfo();
+  const { oneClickTradingInfo, getTimeRemaining, getTotalSessionTime } =
+    useOneClickTradingSession();
   const [percentage, setPercentage] = useState(100);
 
   useEffect(() => {
     if (!oneClickTradingInfo) return;
     const updatePercentage = () => {
-      const sessionEndDate = dayjs.unix(
-        unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
-      );
-
-      const totalSessionTime =
-        sessionEndDate.unix() - oneClickTradingInfo.sessionStartedAtUnix;
-      const timeRemaining = sessionEndDate.unix() - dayjs().unix();
+      const totalSessionTime = getTotalSessionTime();
+      const timeRemaining = getTimeRemaining();
 
       const percentage = Math.max((timeRemaining / totalSessionTime) * 100, 0);
 
@@ -555,7 +554,7 @@ const OneClickTradingRadialProgress = observer(() => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [oneClickTradingInfo]);
+  }, [getTimeRemaining, getTotalSessionTime, oneClickTradingInfo]);
 
   return (
     <>
