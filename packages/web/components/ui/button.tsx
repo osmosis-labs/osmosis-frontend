@@ -60,8 +60,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={classNames(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={props.disabled || isLoading}
         {...props}
+        disabled={isLoading || props.disabled}
       >
         {isLoading ? (
           <div className="flex items-center gap-2">

@@ -36,7 +36,7 @@ const OneClickFloatingBannerContent = () => {
     OneClickFloatingBannerDoNotShowKey,
     false
   );
-  const [, setIs1CTIntroModalOpen] = useGlobalIs1CTIntroModalScreen();
+  const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
 
   return (
     <Transition
@@ -112,7 +112,7 @@ const OneClickFloatingBannerContent = () => {
                   "text-subtitle1 font-subtitle1",
                   "sm:text-left sm:text-caption sm:font-caption"
                 )}
-                onClick={() => setIs1CTIntroModalOpen(true)}
+                onClick={() => setIs1CTIntroModalScreen("intro")}
               >
                 {t("oneClickTrading.floatingBanner.tradeFasterButton")}
               </ArrowButton>
