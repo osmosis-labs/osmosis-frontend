@@ -32,7 +32,7 @@ export const OneClickTradingRemainingTime = () => {
       () => {
         updateTime();
       },
-      1_000 // Update every 3 seconds
+      1_000 // Update every second
     );
 
     return () => clearInterval(intervalId);
