@@ -1358,9 +1358,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   /**
    * Determines if a transaction can be signed using one-click trading based on various conditions.
-   *
-   * @param messages - The messages included in the transaction.
-   * @returns A boolean indicating whether the transaction should be signed using one-click trading.
    */
   async canBeSignedWithOneClickTrading({
     messages,
