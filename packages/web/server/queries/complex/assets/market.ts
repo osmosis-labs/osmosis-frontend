@@ -4,9 +4,9 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
-import { EdgeDataLoader } from "../../base-utils";
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
   queryAllTokenData,

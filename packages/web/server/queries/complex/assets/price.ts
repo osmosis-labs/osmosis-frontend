@@ -12,9 +12,9 @@ import {
   querySimplePrice,
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS, RemoteCache } from "~/utils/cache";
 
-import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
