@@ -1,4 +1,10 @@
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
@@ -65,22 +71,23 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
     // queries
-    const { data: userSharePool } = api.edge.pools.getUserSharePool.useQuery(
-      {
-        poolId: pool.id,
-        userOsmoAddress: address,
-      },
-      {
-        enabled: !isWalletLoading && Boolean(address),
-
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+    const { data: userSharePool, isLoading: isUserSharePoolLoading } =
+      api.edge.pools.getUserSharePool.useQuery(
+        {
+          poolId: pool.id,
+          userOsmoAddress: address,
         },
-      }
-    );
+        {
+          enabled: !isWalletLoading && Boolean(address),
+
+          // expensive query
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
+        }
+      );
     const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
       poolId: pool.id,
     });
@@ -118,18 +125,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const invalidateQueries: <T>(value: T) => T = useCallback(
       (value) => {
         apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
-        apiUtils.edge.pools.getSharePool.invalidate({
-          poolId: pool.id,
-        });
+        apiUtils.edge.pools.getSharePool.invalidate();
 
-        apiUtils.edge.pools.getUserSharePool.invalidate({
-          poolId: pool.id,
-          userOsmoAddress: address,
-        });
+        apiUtils.edge.pools.getUserSharePool.invalidate();
 
         return value;
       },
-      [address, pool.id, apiUtils]
+      [pool.id, apiUtils]
     );
 
     // initialize pool data stores once root pool store is loaded
@@ -300,6 +302,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         logEvent([E.superfluidStakeStarted, poolInfo]);
 
         delegateSharesToValidator(pool.id, validatorAddress, lockLPTokensConfig)
+          .then(invalidateQueries)
           .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
           .finally(() => setShowSuperfluidValidatorsModal(false));
       },
@@ -310,6 +313,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         isSuperfluidEnabled,
         logEvent,
         delegateSharesToValidator,
+        invalidateQueries,
         lockLPTokensConfig,
       ]
     );
@@ -602,7 +606,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     </h4>
                   </div>
 
-                  {userSharePool.availableValue.toDec().gt(new Dec(0)) &&
+                  {userSharePool.availableValue.toDec().isPositive() &&
                     bondDurations.some((duration) => duration.bondable) && (
                       <ArrowButton
                         className="text-left"
@@ -729,7 +733,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right lg:hidden">
-                  {userSharePool ? (
+                  {isUserSharePoolLoading && Boolean(account) ? (
+                    <Spinner />
+                  ) : userSharePool ? (
                     <>
                       <h4 className="text-osmoverse-100">
                         {userSharePool.availableValue.toString()}
@@ -745,7 +751,19 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       </h6>
                     </>
                   ) : (
-                    <Spinner />
+                    <>
+                      <h4 className="text-osmoverse-100">
+                        {new PricePretty(
+                          pool.totalFiatValueLocked.fiatCurrency,
+                          0
+                        ).toString()}
+                      </h4>
+                      <h6 className="subtitle1 text-osmoverse-300">
+                        {t("pool.sharesAmount", {
+                          shares: formatPretty(new Dec(0), { maxDecimals: 8 }),
+                        })}
+                      </h6>
+                    </>
                   )}
                 </div>
               </div>

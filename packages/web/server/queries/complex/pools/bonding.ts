@@ -62,27 +62,48 @@ export async function getSharePoolBondDurations(
   poolId: string,
   bech32Address?: string
 ): Promise<BondDuration[]> {
-  // const sharePool = await getSharePool(poolId);
-  const activeGauges = await getActiveGauges();
-  const poolGauges = activeGauges.filter(
-    (gauge) =>
-      gauge.distribute_to.lock_query_type === "ByDuration" &&
-      gauge.distribute_to.denom.endsWith(poolId)
+  const activeGaugesPromise = getActiveGauges().then((activeGauges) =>
+    activeGauges.filter(
+      (gauge) =>
+        gauge.distribute_to.lock_query_type === "ByDuration" &&
+        gauge.distribute_to.denom.endsWith(poolId)
+    )
   );
-  const poolIncentives = (await getCachedPoolIncentivesMap()).get(poolId);
-  const superfluidPoolIds = await getSuperfluidPoolIds();
-  const isSuperfluid = superfluidPoolIds.includes(poolId);
-  const lockableDurations = await getLockableDurations();
-  const incentivizedPools = await getIncentivizedPools();
-  const internalIncentives = incentivizedPools.find(
-    (p) => p.pool_id === poolId
+  const poolIncentivesPromise = getCachedPoolIncentivesMap().then((map) =>
+    map.get(poolId)
   );
-  const longestDuration = lockableDurations[lockableDurations.length - 1];
-  const userPoolLocks = bech32Address
-    ? (await getUserLocks(bech32Address)).filter((userLock) =>
-        userLock.coins.some((coin) => coin.denom.endsWith(poolId))
+  const isSuperfluidPromise = getSuperfluidPoolIds().then((ids) =>
+    ids.includes(poolId)
+  );
+  const longestDurationPromise = getLockableDurations().then(
+    (durations) => durations[durations.length - 1]
+  );
+  const internalIncentivesPromise = getIncentivizedPools().then(
+    (incentivizedPools) => incentivizedPools.find((p) => p.pool_id === poolId)
+  );
+  const userPoolLocksPromise = bech32Address
+    ? getUserLocks(bech32Address).then((locks) =>
+        locks.filter((userLock) =>
+          userLock.coins.some((coin) => coin.denom.endsWith(poolId))
+        )
       )
-    : [];
+    : Promise.resolve([]);
+
+  const [
+    poolGauges,
+    poolIncentives,
+    isSuperfluid,
+    longestDuration,
+    internalIncentives,
+    userPoolLocks,
+  ] = await Promise.all([
+    activeGaugesPromise,
+    poolIncentivesPromise,
+    isSuperfluidPromise,
+    longestDurationPromise,
+    internalIncentivesPromise,
+    userPoolLocksPromise,
+  ]);
 
   /** Set of all available durations. */
   const durationsMsSet = new Set<number>();
@@ -270,21 +291,22 @@ export async function getSharePoolBondDurations(
       }
 
       // for locks we don't know are synthetic, query to find out
-      for (const lockId of userLockedLockIds) {
-        const isSynthetic = userSyntheticLockIds.includes(lockId);
-        if (isSynthetic) continue;
-
-        const syntheticLock = await querySyntheticLockupsByLockId({ lockId });
-
+      const queryableLockIds = userLockedLockIds.filter(
+        (lockId) => !userSyntheticLockIds.includes(lockId)
+      );
+      const syntheticLocks = await Promise.all(
+        queryableLockIds.map((lockId) =>
+          querySyntheticLockupsByLockId({ lockId })
+        )
+      );
+      syntheticLocks.forEach(({ synthetic_locks }) => {
         if (
-          syntheticLock &&
-          syntheticLock.synthetic_locks.length &&
-          syntheticLock.synthetic_locks[0].underlying_lock_id === lockId &&
-          syntheticLock.synthetic_locks[0].synth_denom.split("/")[2] === poolId
+          synthetic_locks.length &&
+          synthetic_locks[0].synth_denom.split("/")[2] === poolId
         ) {
-          userSyntheticLockIds.push(lockId);
+          userSyntheticLockIds.push(synthetic_locks[0].underlying_lock_id);
         }
-      }
+      });
 
       return {
         duration: dayjs.duration(durationMs),
