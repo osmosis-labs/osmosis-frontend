@@ -98,6 +98,8 @@ export class ObservableQueryPools
       if (this.poolIdBlacklist.includes(id)) return undefined;
       if (!this.response && !this._pools.get(id)) return undefined;
 
+      if (this.response && !this._pools.get(id)) this.fetchRemainingPools();
+
       return this._pools.get(id);
     }
   );
