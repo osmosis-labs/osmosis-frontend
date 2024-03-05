@@ -239,5 +239,11 @@ export const EventName = {
     viewMoreClicked: "Token Info: View more clicked",
     socialPostClicked: "Token Info: Social post clicked",
   },
+  EarnPage: {
+    pageViewed: "Earn Page: Page viewed",
+    rewardsClaimStarted: "Earn Page: Rewards claim started",
+    joinStrategyClicked: "Earn Page: Join strategy clicked",
+    joinStrategyCompleted: "Earn Page: Join strategy completed",
+  },
   QueryError: "Query error",
 };

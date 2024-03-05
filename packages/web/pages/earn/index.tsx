@@ -22,7 +22,9 @@ import {
   Tabs,
 } from "~/components/earn/tabs";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { EventName } from "~/config";
 import {
+  useAmplitudeAnalytics,
   useFeatureFlags,
   useNavBar,
   useTranslation,
@@ -62,6 +64,8 @@ function Earn() {
     unclaimedRewards,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   const defaultFilters: Filters = useMemo(
     () => ({
       tokenHolder: "all",
@@ -79,7 +83,8 @@ function Earn() {
     if (!earnPage && _isInitialized) {
       router.push("/");
     }
-  }, [earnPage, router, _isInitialized]);
+    logEvent([EventName.EarnPage.pageViewed]);
+  }, [earnPage, router, _isInitialized, logEvent]);
 
   return (
     <div className="relative mx-auto flex max-w-[1508px] flex-col gap-10 py-10 pl-8 pr-9">

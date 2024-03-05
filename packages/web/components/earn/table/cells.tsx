@@ -11,7 +11,8 @@ import { ColumnCellCell } from "~/components/earn/table/columns";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { type EarnStrategy } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
@@ -217,6 +218,8 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
     [item.table]
   );
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
     <div className="flex items-center justify-center">
       <Button asChild>
@@ -227,6 +230,12 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
             "group/button inline-flex max-h-10 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700",
             { "w-24": !isBalanceVisible, "w-32": isBalanceVisible }
           )}
+          onClick={() => {
+            // This means that we are not in the "My Stragegies" tab
+            if (!isBalanceVisible) {
+              logEvent([EventName.EarnPage.joinStrategyClicked]);
+            }
+          }}
         >
           <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
             {isBalanceVisible ? t("earnPage.manage") : t("earnPage.join")}

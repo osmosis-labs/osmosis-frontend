@@ -4,7 +4,8 @@ import { PricePretty } from "@keplr-wallet/unit";
 import { useCallback } from "react";
 
 import { Button } from "~/components/buttons";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -43,7 +44,10 @@ export const EarnRewards = ({
       };
     });
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   const claimAllRewards = useCallback(async () => {
+    logEvent([EventName.EarnPage.rewardsClaimStarted]);
     const messages: EncodeObject[] = [];
 
     if (!account) return;
@@ -116,6 +120,7 @@ export const EarnRewards = ({
     accountStore,
     apiUtils.edge.earn.getStrategyBalance,
     filteredUnclaimedRewards,
+    logEvent,
     unclaimedRewards,
   ]);
 
