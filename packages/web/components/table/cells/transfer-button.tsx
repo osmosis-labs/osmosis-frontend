@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
@@ -73,30 +72,28 @@ const TransferButton: FunctionComponent<{
 }> = ({ externalUrl, disabled, label, action }) => {
   return externalUrl ? (
     <a
-      className={classNames(
-        "subtitle1 flex shrink-0 items-center gap-1 pt-2 text-wosmongton-200 lg:pt-0",
-        { "opacity-30": disabled }
-      )}
       rel="noreferrer"
       href={externalUrl}
       target="_blank"
-      style={
-        disabled ? { pointerEvents: "none", cursor: "default" } : undefined
-      }
       onClick={(event) => {
         event.stopPropagation();
         action();
       }}
     >
-      {label}
-      <div className="w-fit shrink-0">
+      <Button
+        variant="ghost"
+        className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+        disabled={disabled}
+      >
+        <span>{label}</span>
+
         <Image
           alt="external transfer link"
           src="/icons/external-link.svg"
           height={13}
           width={13}
         />
-      </div>
+      </Button>
     </a>
   ) : (
     <Button
