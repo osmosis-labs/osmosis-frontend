@@ -23,7 +23,7 @@ export async function getUserLocks(bech32Address: string): Promise<UserLock[]> {
     ID: lock.ID,
     duration: dayjs.duration(parseInt(lock.duration.slice(0, -1)) * 1_000),
     endTime: new Date(lock.end_time),
-    isCurrentlyUnlocking: new Date(lock.end_time).getFullYear() !== 0,
+    isCurrentlyUnlocking: lock.end_time !== "0001-01-01T00:00:00Z",
     coins: lock.coins,
   }));
 }
