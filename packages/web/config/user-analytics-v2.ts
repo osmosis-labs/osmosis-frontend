@@ -41,6 +41,7 @@ export type EventProperties = {
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
   strategy: string;
+  strategyId: string;
   liquidityUSD: number;
   positionId: string;
   rewardAmountUSD: number;

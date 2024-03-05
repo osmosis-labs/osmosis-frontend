@@ -233,7 +233,10 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
           onClick={() => {
             // This means that we are not in the "My Stragegies" tab
             if (!isBalanceVisible) {
-              logEvent([EventName.EarnPage.joinStrategyClicked]);
+              logEvent([
+                EventName.EarnPage.joinStrategyClicked,
+                { strategyId: item.row.original.id },
+              ]);
             }
           }}
         >
