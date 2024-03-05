@@ -122,6 +122,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       );
     const bondDurations = useMemo(() => bondDurations_ ?? [], [bondDurations_]);
 
+    console.log(bondDurations);
+
     const apiUtils = api.useUtils();
     const invalidateQueries: <T>(value: T) => T = useCallback(
       (value) => {
