@@ -128,6 +128,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         apiUtils.edge.pools.getSharePool.invalidate();
 
         apiUtils.edge.pools.getUserSharePool.invalidate();
+        apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
 
         return value;
       },
