@@ -636,9 +636,8 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         )}
         {isOsmosis && account?.isWalletConnected ? (
           <Button
-            mode={"unstyled"}
             onClick={onOpenFiatOnrampSelection}
-            className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+            className="group flex items-center gap-2.5 border-osmoverse-500 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
           >
             <CreditCardIcon
               isAnimated
