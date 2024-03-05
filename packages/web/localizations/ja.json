@@ -751,7 +751,6 @@
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
-  "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
   "seo": {
     "404": {
       "title": "404 - ページが見つかりません",

@@ -751,7 +751,6 @@
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
   "waitingForTransaction": "Warten darauf, dass die Transaktion in den Block aufgenommen wird",
-  "highPoolInflationWarning": "Hohe effektive Jahreszinsen können aus inflationären Belohnungen resultieren. Mit Vorsicht fortfahren.",
   "seo": {
     "404": {
       "title": "404 Seite nicht gefunden",
