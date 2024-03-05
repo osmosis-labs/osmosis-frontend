@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { api } from "~/utils/trpc";
 
-function getParametersFromOneClickTradingInfo({
+export function getParametersFromOneClickTradingInfo({
   oneClickTradingInfo,
   defaultIsOneClickEnabled,
 }: {

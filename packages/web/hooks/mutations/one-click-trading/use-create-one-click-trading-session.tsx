@@ -23,8 +23,10 @@ import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import { compare1CTTransactionParams } from "~/components/one-click-trading/one-click-trading-settings";
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
+import { getParametersFromOneClickTradingInfo } from "~/hooks/one-click-trading";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
 import { api } from "~/utils/trpc";
@@ -186,6 +188,35 @@ export const useCreateOneClickTradingSession = ({
         throw new CreateOneClickSessionError(
           "Spend limit token decimals are not defined."
         );
+      }
+
+      const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+
+      /**
+       * If the only change is to the network fee limit, and because
+       * this fee limit is a local setting, just update it locally
+       * instead of sending a new transaction.
+       */
+      if (oneClickTradingInfo) {
+        const session1CTParams = getParametersFromOneClickTradingInfo({
+          defaultIsOneClickEnabled: true,
+          oneClickTradingInfo,
+        });
+
+        const changes = compare1CTTransactionParams({
+          prevParams: session1CTParams,
+          nextParams: transaction1CTParams,
+        });
+
+        if (changes.length === 1 && changes.includes("networkFeeLimit")) {
+          return accountStore.setOneClickTradingInfo({
+            ...oneClickTradingInfo,
+            networkFeeLimit: {
+              ...transaction1CTParams.networkFeeLimit.currency,
+              amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
+            },
+          });
+        }
       }
 
       let accountPubKey: string,

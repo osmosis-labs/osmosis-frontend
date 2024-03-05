@@ -56,6 +56,43 @@ interface OneClickTradingSettingsProps {
   hasExistingSession?: boolean;
 }
 
+/**
+ * Compares the changes between two sets of OneClickTradingTransactionParams.
+ * Useful for determining which parameters have changed and need to be updated.
+ */
+export function compare1CTTransactionParams({
+  prevParams,
+  nextParams,
+}: {
+  prevParams: OneClickTradingTransactionParams;
+  nextParams: OneClickTradingTransactionParams;
+}): Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"> {
+  let changes = new Set<
+    "spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"
+  >();
+
+  if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
+    changes.add("spendLimit");
+  }
+
+  if (
+    prevParams?.networkFeeLimit.toString() !==
+    nextParams?.networkFeeLimit.toString()
+  ) {
+    changes.add("networkFeeLimit");
+  }
+
+  if (prevParams?.resetPeriod !== nextParams?.resetPeriod) {
+    changes.add("resetPeriod");
+  }
+
+  if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
+    changes.add("sessionPeriod");
+  }
+
+  return Array.from(changes);
+}
+
 const OneClickTradingSettings = ({
   classes,
   onGoBack,
@@ -70,16 +107,16 @@ const OneClickTradingSettings = ({
   onEndSession,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
-  const [hasChanged, setHasChanged] = useState<
+  const [changes, setChanges] = useState<
     Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
   useEffect(() => {
-    if (!transaction1CTParams) return;
+    if (!transaction1CTParams || initialTransaction1CTParams) return;
     setInitialTransaction1CTParams(transaction1CTParams);
-  }, [transaction1CTParams]);
+  }, [initialTransaction1CTParams, transaction1CTParams]);
 
   const {
     isOpen: isDiscardDialogOpen,
@@ -97,31 +134,12 @@ const OneClickTradingSettings = ({
   ) => {
     setTransaction1CTParamsProp((prevParams) => {
       const nextParams = runIfFn(newParamsOrFn, prevParams);
-      setHasChanged((prev) => {
-        if (
-          prevParams?.spendLimit.toString() !==
-          nextParams?.spendLimit.toString()
-        ) {
-          return [...prev, "spendLimit"];
-        }
-
-        if (
-          prevParams?.networkFeeLimit.toString() !==
-          nextParams?.networkFeeLimit.toString()
-        ) {
-          return [...prev, "networkFeeLimit"];
-        }
-
-        if (prevParams?.resetPeriod !== nextParams?.resetPeriod) {
-          return [...prev, "resetPeriod"];
-        }
-
-        if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
-          return [...prev, "sessionPeriod"];
-        }
-
-        return [...prev];
-      });
+      setChanges(
+        compare1CTTransactionParams({
+          prevParams: initialTransaction1CTParams!,
+          nextParams: nextParams!,
+        })
+      );
 
       return nextParams;
     });
@@ -234,8 +252,7 @@ const OneClickTradingSettings = ({
                         size="sm"
                         className={classNames(
                           "flex items-center gap-2 px-0 text-wosmongton-200",
-                          hasChanged.includes("spendLimit") &&
-                            "text-bullish-400"
+                          changes.includes("spendLimit") && "text-bullish-400"
                         )}
                         onClick={() =>
                           setCurrentScreen(SettingsScreens.SpendLimit)
@@ -264,7 +281,7 @@ const OneClickTradingSettings = ({
                         size="sm"
                         className={classNames(
                           "flex items-center gap-2 px-0 text-wosmongton-200",
-                          hasChanged.includes("networkFeeLimit") &&
+                          changes.includes("networkFeeLimit") &&
                             "text-bullish-400"
                         )}
                         onClick={() =>
@@ -297,7 +314,7 @@ const OneClickTradingSettings = ({
                         size="sm"
                         className={classNames(
                           "flex items-center gap-2 px-0 text-wosmongton-200",
-                          hasChanged.includes("sessionPeriod") &&
+                          changes.includes("sessionPeriod") &&
                             "text-bullish-400"
                         )}
                         onClick={() =>
@@ -332,8 +349,7 @@ const OneClickTradingSettings = ({
                         size="sm"
                         className={classNames(
                           "flex items-center gap-2 px-0 text-wosmongton-200",
-                          hasChanged.includes("resetPeriod") &&
-                            "text-bullish-400"
+                          changes.includes("resetPeriod") && "text-bullish-400"
                         )}
                         onClick={() =>
                           setCurrentScreen(SettingsScreens.ResetPeriod)
@@ -362,7 +378,7 @@ const OneClickTradingSettings = ({
                 </div>
 
                 {hasExistingSession &&
-                  hasChanged.length > 0 &&
+                  changes.length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
