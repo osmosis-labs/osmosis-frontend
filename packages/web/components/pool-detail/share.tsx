@@ -106,7 +106,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       api.edge.pools.getSharePoolBondDurations.useQuery(
         {
           poolId: pool.id,
-          userOsmoAddress: Boolean(address) ? address : undefined,
+          userOsmoAddress: "osmo1309wx2zv74yqhr2a760ezdl6e0gz28xzlzu7up",
+          // userOsmoAddress: Boolean(address) ? address : undefined,
         },
         {
           enabled: !isWalletLoading,

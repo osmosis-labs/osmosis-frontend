@@ -115,3 +115,8 @@ export function makeGammShareCurrency(poolId: string): Currency {
     coinDecimals: 18,
   };
 }
+
+/** Extracts pool ID from a share denom. */
+export function getShareDenomPoolId(shareDenom: string) {
+  return shareDenom.split("/")[2];
+}

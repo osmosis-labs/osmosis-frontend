@@ -17,7 +17,11 @@ import {
   getIncentivizedPools,
   getLockableDurations,
 } from "./incentives";
-import { getGammShareUnderlyingCoins, makeGammShareCurrency } from "./share";
+import {
+  getGammShareUnderlyingCoins,
+  getShareDenomPoolId,
+  makeGammShareCurrency,
+} from "./share";
 import { getSuperfluidPoolIds } from "./superfluid";
 
 export type UserDurationSuperfluidDelegation = {
@@ -66,7 +70,7 @@ export async function getSharePoolBondDurations(
     activeGauges.filter(
       (gauge) =>
         gauge.distribute_to.lock_query_type === "ByDuration" &&
-        gauge.distribute_to.denom.endsWith(poolId)
+        getShareDenomPoolId(gauge.distribute_to.denom) === poolId
     )
   );
   const poolIncentivesPromise = getCachedPoolIncentivesMap().then((map) =>
@@ -84,7 +88,9 @@ export async function getSharePoolBondDurations(
   const userPoolLocksPromise = bech32Address
     ? getUserLocks(bech32Address).then((locks) =>
         locks.filter((userLock) =>
-          userLock.coins.some((coin) => coin.denom.endsWith(poolId))
+          userLock.coins.some(
+            (coin) => getShareDenomPoolId(coin.denom) === poolId
+          )
         )
       )
     : Promise.resolve([]);
@@ -126,204 +132,210 @@ export async function getSharePoolBondDurations(
   // superfluid incentives
   if (isSuperfluid) durationsMsSet.add(longestDuration.asMilliseconds());
 
-  const eventualBondDurations = Array.from(durationsMsSet)
-    .sort((a, b) => a - b)
-    .map(async (durationMs) => {
-      const isLongestDuration = durationMs === longestDuration.asMilliseconds();
-      const isSuperfluidDuration = isSuperfluid && isLongestDuration;
-      const durationGauges = poolGauges.filter(
-        (gauge) => gauge.distribute_to.duration.asMilliseconds() === durationMs
-      );
-      const userDurationLocks = userPoolLocks.filter(
-        (userLock) => userLock.duration.asMilliseconds() === durationMs
-      );
+  return await Promise.all(
+    Array.from(durationsMsSet)
+      .sort((a, b) => a - b)
+      .map(async (durationMs) => {
+        const isLongestDuration =
+          durationMs === longestDuration.asMilliseconds();
+        const isSuperfluidDuration = isSuperfluid && isLongestDuration;
+        const durationGauges = poolGauges.filter(
+          (gauge) =>
+            gauge.distribute_to.duration.asMilliseconds() === durationMs
+        );
+        const userDurationLocks = userPoolLocks.filter(
+          (userLock) => userLock.duration.asMilliseconds() === durationMs
+        );
 
-      // get user locked shares
-      let userShares: CoinPretty = new CoinPretty(
-        makeGammShareCurrency(poolId),
-        0
-      );
-      const userLockedLockIds: string[] = [];
-      const userLockedLocks = userDurationLocks.filter(
-        (userLock) => !userLock.isCurrentlyUnlocking
-      );
-      if (userLockedLocks.length) {
-        userLockedLocks.forEach((userDurationLock) => {
-          if (userDurationLock.isCurrentlyUnlocking) return;
-          userDurationLock.coins.forEach((coin) => {
-            if (coin.denom.endsWith(poolId)) {
-              userShares = userShares.add(
-                new CoinPretty(userShares.currency, coin.amount)
-              );
+        // get user locked shares
+        let userShares: CoinPretty = new CoinPretty(
+          makeGammShareCurrency(poolId),
+          0
+        );
+        const userLockedLockIds: string[] = [];
+        const userLockedLocks = userDurationLocks.filter(
+          (userLock) => !userLock.isCurrentlyUnlocking
+        );
+        if (userLockedLocks.length) {
+          userLockedLocks.forEach((userDurationLock) => {
+            if (userDurationLock.isCurrentlyUnlocking) return;
+            userDurationLock.coins.forEach((coin) => {
+              if (getShareDenomPoolId(coin.denom) === poolId) {
+                userShares = userShares.add(
+                  new CoinPretty(userShares.currency, coin.amount)
+                );
+              }
+            });
+            userLockedLockIds.push(userDurationLock.ID);
+          });
+        }
+        let userLockedShareValue = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+        if (userShares.toDec().isPositive()) {
+          const underlyingCoins = await getGammShareUnderlyingCoins(
+            userShares.toCoin()
+          ).catch(() => []);
+          const userSharesValue = await calcSumCoinsValue(underlyingCoins);
+          if (userSharesValue) {
+            userLockedShareValue = new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              userSharesValue
+            );
+          }
+        }
+
+        // get user unlocking shares
+        let userUnlockingShares:
+          | { shares: CoinPretty; endTime?: Date }
+          | undefined = undefined;
+        const userUnlockingLocks = userDurationLocks
+          .filter((userLock) => userLock.isCurrentlyUnlocking)
+          .sort((a, b) => (a.endTime > b.endTime ? 1 : -1));
+
+        if (userUnlockingLocks.length) {
+          // get most recent lock to unlock
+          const mostRecentUnlock = userUnlockingLocks[0];
+          userUnlockingShares = {
+            shares: new CoinPretty(
+              makeGammShareCurrency(poolId),
+              // should just contain shares, but still find them
+              mostRecentUnlock.coins.find(
+                (coin) => getShareDenomPoolId(coin.denom) === poolId
+              )?.amount ?? "0"
+            ),
+            endTime: mostRecentUnlock.endTime,
+          };
+        }
+
+        // get incentives APRs
+        const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
+        if (isLongestDuration) {
+          // internal mint incentives
+          if (poolIncentives?.aprBreakdown?.osmosis) {
+            incentivesBreakdown.push({
+              apr: poolIncentives?.aprBreakdown?.osmosis,
+              type: "osmosis",
+            });
+          }
+          // external incentives
+          if (poolIncentives?.aprBreakdown?.boost) {
+            incentivesBreakdown.push({
+              apr: poolIncentives?.aprBreakdown?.boost,
+              type: "boost",
+            });
+          }
+        }
+        let aggregateApr = incentivesBreakdown.reduce(
+          (sum, { apr }) => sum.add(apr),
+          new RatePretty(0)
+        );
+        const swapFeeApr =
+          poolIncentives?.aprBreakdown?.swapFee ?? new RatePretty(0);
+        aggregateApr = aggregateApr.add(swapFeeApr);
+
+        // get superfluid info for this duration
+        let superfluid: BondDuration["superfluid"] | undefined = undefined;
+        const userSyntheticLockIds: string[] = [];
+        if (isSuperfluidDuration) {
+          const superfluidApr =
+            poolIncentives?.aprBreakdown?.superfluid ?? new RatePretty(0);
+          aggregateApr = aggregateApr.add(superfluidApr);
+
+          const userDelegations = bech32Address
+            ? await querySuperfluidDelegations({ bech32Address })
+            : undefined;
+          const userPoolDelegation =
+            userDelegations?.superfluid_delegation_records.find(
+              ({ delegation_amount }) =>
+                getShareDenomPoolId(delegation_amount.denom) === poolId
+            );
+          const userUndelegations =
+            bech32Address && !userPoolDelegation
+              ? await querySuperfluidUnelegations({ bech32Address })
+              : undefined;
+          const userPoolUndelegation =
+            userUndelegations?.superfluid_delegation_records.find(
+              ({ delegation_amount }) =>
+                getShareDenomPoolId(delegation_amount.denom) === poolId
+            );
+
+          // record locks that are synthetic (superfluid)
+          userUndelegations?.synthetic_locks.forEach((lock) => {
+            const poolIdFromDenom = lock.synth_denom.split("/")[2];
+            if (poolIdFromDenom === poolId) {
+              userSyntheticLockIds.push(lock.underlying_lock_id);
             }
           });
-          userLockedLockIds.push(userDurationLock.ID);
-        });
-      }
-      let userLockedShareValue = new PricePretty(DEFAULT_VS_CURRENCY, 0);
-      if (userShares.toDec().isPositive()) {
-        const underlyingCoins = await getGammShareUnderlyingCoins(
-          userShares.toCoin()
-        ).catch(() => []);
-        const userSharesValue = await calcSumCoinsValue(underlyingCoins);
-        if (userSharesValue) {
-          userLockedShareValue = new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            userSharesValue
-          );
+
+          if (userPoolDelegation || userPoolUndelegation) {
+            const validatorAddress =
+              userPoolDelegation?.validator_address ??
+              userPoolUndelegation?.validator_address;
+            const validatorInfo = validatorAddress
+              ? await getValidatorInfo({
+                  validatorBech32Address: validatorAddress,
+                })
+              : undefined;
+
+            superfluid = {
+              duration: longestDuration,
+              apr: superfluidApr,
+              delegated: userPoolDelegation
+                ? new CoinPretty(
+                    makeGammShareCurrency(poolId),
+                    userPoolDelegation.delegation_amount.amount
+                  )
+                : undefined,
+              undelegating: userPoolUndelegation
+                ? new CoinPretty(
+                    makeGammShareCurrency(poolId),
+                    userPoolUndelegation.delegation_amount.amount
+                  )
+                : undefined,
+              commission: validatorInfo?.validatorCommission,
+              validatorLogoUrl: validatorInfo?.validatorImgSrc,
+              validatorMoniker: validatorInfo?.validatorName,
+            };
+          } else {
+            superfluid = {
+              duration: longestDuration,
+              apr: superfluidApr,
+            };
+          }
         }
-      }
 
-      // get user unlocking shares
-      let userUnlockingShares:
-        | { shares: CoinPretty; endTime?: Date }
-        | undefined = undefined;
-      const userUnlockingLocks = userDurationLocks
-        .filter((userLock) => userLock.isCurrentlyUnlocking)
-        .sort((a, b) => (a.endTime > b.endTime ? 1 : -1));
-      if (userUnlockingLocks.length) {
-        // get most recent lock to unlock
-        const mostRecentUnlock = userUnlockingLocks[0];
-        userUnlockingShares = {
-          shares: new CoinPretty(
-            makeGammShareCurrency(poolId),
-            // should just contain shares, but still find them
-            mostRecentUnlock.coins.find((coin) => coin.denom.endsWith(poolId))
-              ?.amount ?? "0"
-          ),
-          endTime: mostRecentUnlock.endTime,
-        };
-      }
-
-      // get incentives APRs
-      const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
-      if (isLongestDuration) {
-        // internal mint incentives
-        if (poolIncentives?.aprBreakdown?.osmosis) {
-          incentivesBreakdown.push({
-            apr: poolIncentives?.aprBreakdown?.osmosis,
-            type: "osmosis",
-          });
-        }
-        // external incentives
-        if (poolIncentives?.aprBreakdown?.boost) {
-          incentivesBreakdown.push({
-            apr: poolIncentives?.aprBreakdown?.boost,
-            type: "boost",
-          });
-        }
-      }
-      let aggregateApr = incentivesBreakdown.reduce(
-        (sum, { apr }) => sum.add(apr),
-        new RatePretty(0)
-      );
-      const swapFeeApr =
-        poolIncentives?.aprBreakdown?.swapFee ?? new RatePretty(0);
-      aggregateApr = aggregateApr.add(swapFeeApr);
-
-      // get superfluid info for this duration
-      let superfluid: BondDuration["superfluid"] | undefined = undefined;
-      const userSyntheticLockIds: string[] = [];
-      if (isSuperfluidDuration) {
-        const superfluidApr =
-          poolIncentives?.aprBreakdown?.superfluid ?? new RatePretty(0);
-        aggregateApr = aggregateApr.add(superfluidApr);
-
-        const userDelegations = bech32Address
-          ? await querySuperfluidDelegations({ bech32Address })
-          : undefined;
-        const userPoolDelegation =
-          userDelegations?.superfluid_delegation_records.find(
-            ({ delegation_amount }) => delegation_amount.denom.endsWith(poolId)
-          );
-        const userUndelegations =
-          bech32Address && !userPoolDelegation
-            ? await querySuperfluidUnelegations({ bech32Address })
-            : undefined;
-        const userPoolUndelegation =
-          userUndelegations?.superfluid_delegation_records.find(
-            ({ delegation_amount }) => delegation_amount.denom.endsWith(poolId)
-          );
-
-        // record locks that are synthetic (superfluid)
-        userUndelegations?.synthetic_locks.forEach((lock) => {
-          const poolIdFromDenom = lock.synth_denom.split("/")[2];
-          if (poolIdFromDenom === poolId) {
-            userSyntheticLockIds.push(lock.underlying_lock_id);
+        // for locks we don't know are synthetic, query to find out
+        const queryableLockIds = userLockedLockIds.filter(
+          (lockId) => !userSyntheticLockIds.includes(lockId)
+        );
+        const syntheticLocks = await Promise.all(
+          queryableLockIds.map((lockId) =>
+            querySyntheticLockupsByLockId({ lockId })
+          )
+        );
+        syntheticLocks.forEach(({ synthetic_locks }) => {
+          if (
+            synthetic_locks.length &&
+            synthetic_locks[0].synth_denom.split("/")[2] === poolId
+          ) {
+            userSyntheticLockIds.push(synthetic_locks[0].underlying_lock_id);
           }
         });
 
-        if (userPoolDelegation || userPoolUndelegation) {
-          const validatorAddress =
-            userPoolDelegation?.validator_address ??
-            userPoolUndelegation?.validator_address;
-          const validatorInfo = validatorAddress
-            ? await getValidatorInfo({
-                validatorBech32Address: validatorAddress,
-              })
-            : undefined;
-
-          superfluid = {
-            duration: longestDuration,
-            apr: superfluidApr,
-            delegated: userPoolDelegation
-              ? new CoinPretty(
-                  makeGammShareCurrency(poolId),
-                  userPoolDelegation.delegation_amount.amount
-                )
-              : undefined,
-            undelegating: userPoolUndelegation
-              ? new CoinPretty(
-                  makeGammShareCurrency(poolId),
-                  userPoolUndelegation.delegation_amount.amount
-                )
-              : undefined,
-            commission: validatorInfo?.validatorCommission,
-            validatorLogoUrl: validatorInfo?.validatorImgSrc,
-            validatorMoniker: validatorInfo?.validatorName,
-          };
-        } else {
-          superfluid = {
-            duration: longestDuration,
-            apr: superfluidApr,
-          };
-        }
-      }
-
-      // for locks we don't know are synthetic, query to find out
-      const queryableLockIds = userLockedLockIds.filter(
-        (lockId) => !userSyntheticLockIds.includes(lockId)
-      );
-      const syntheticLocks = await Promise.all(
-        queryableLockIds.map((lockId) =>
-          querySyntheticLockupsByLockId({ lockId })
-        )
-      );
-      syntheticLocks.forEach(({ synthetic_locks }) => {
-        if (
-          synthetic_locks.length &&
-          synthetic_locks[0].synth_denom.split("/")[2] === poolId
-        ) {
-          userSyntheticLockIds.push(synthetic_locks[0].underlying_lock_id);
-        }
-      });
-
-      return {
-        duration: dayjs.duration(durationMs),
-        bondable: isSuperfluid ? isLongestDuration : Boolean(durationGauges),
-        userShares,
-        userLockedShareValue,
-        userLocks: userLockedLockIds.map((lockId) => ({
-          lockId,
-          isSynthetic: userSyntheticLockIds.includes(lockId),
-        })),
-        userUnlockingShares,
-        aggregateApr,
-        swapFeeApr,
-        incentivesBreakdown,
-        superfluid,
-      };
-    });
-
-  return await Promise.all(eventualBondDurations);
+        return {
+          duration: dayjs.duration(durationMs),
+          bondable: isSuperfluid ? isLongestDuration : Boolean(durationGauges),
+          userShares,
+          userLockedShareValue,
+          userLocks: userLockedLockIds.map((lockId) => ({
+            lockId,
+            isSynthetic: userSyntheticLockIds.includes(lockId),
+          })),
+          userUnlockingShares,
+          aggregateApr,
+          swapFeeApr,
+          incentivesBreakdown,
+          superfluid,
+        };
+      })
+  );
 }
