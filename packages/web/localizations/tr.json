@@ -648,20 +648,6 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Koru",
         "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
-    },
-    "introModal": {
-      "callout": "Yeni özellik",
-      "title": "Osmoz üzerinde stake etme",
-      "description": {
-        "1": "Staking, varlıklarınızla kazanmanın en kolay yollarından biridir. Artık OSMO'nuzu doğrudan Osmosis'e yatırabilirsiniz.",
-        "2": "kadar kazanmak",
-        "3": "yıllık stake ödüllerinde!",
-        "4": "ve onu işe koy",
-        "5": "Kullanılabilir {displayBalance} çalıştırın ve",
-        "button": "Biraz OSMO satın alın"
-      },
-      "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır.",
-      "button": "Staking'i başlat"
     }
   },
   "superfluidValidator": {
