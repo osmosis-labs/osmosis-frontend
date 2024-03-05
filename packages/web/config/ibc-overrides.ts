@@ -9,6 +9,8 @@ import type {
   TestnetAssetSymbols,
 } from "./generated/asset-lists";
 
+export const UNSTABLE_MSG = "Transfers are disabled due to instability";
+
 type AdditionalDataValue = {
   /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
   depositUrlOverride?: string;
@@ -557,6 +559,15 @@ const MainnetIBCAdditionalData: Partial<
   "solana.USDC.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
+  BERLIN: {
+    depositUrlOverride: "https://app.evmos.org/assets",
+  },
+  BMOS: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=phoenix-1&chainTo=osmosis-1&token0=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq&token1=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942",
+    withdrawUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942&token1=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
   },
 };
 

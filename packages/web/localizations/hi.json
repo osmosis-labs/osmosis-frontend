@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है"
     },
     "incentive": {
-      "mobileTitle": "प्रोत्साहन",
-      "title": "प्रोत्साहन प्रकार"
+      "title": "प्रोत्साहन के प्रकार"
     },
     "MAX": "अधिकतम",
     "pool": {
-      "mobileTitle": "पूल",
       "title": "पूल के प्रकार"
     },
     "searchTokens": "खोज",
@@ -312,9 +310,6 @@
       "weighted": "भारित",
       "concentrated": "सुपरचार्ज",
       "transmuter": "ट्रांसमीटर",
-      "internal": "आंतरिक प्रोत्साहन",
-      "external": "बाहरी प्रोत्साहन",
-      "superfluid": "अतितरल",
       "noIncentives": "कोई प्रोत्साहन नहीं"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "पूल खोजें",
       "sort": {
         "APRIncentivized": "एपीआर",
         "fees": "फीस (7डी)",
@@ -825,9 +819,9 @@
     "osmosisUpdates": "ऑस्मोसिस अपडेट!",
     "seeWhatsNew": "देखें, क्या नया है"
   },
-  "unlistedAssetsEnabled": "असूचीबद्ध परिसंपत्तियाँ सक्षम की गईं",
-  "unlistedAssetsDisabled": "असूचीबद्ध संपत्तियां अक्षम की गईं",
-  "unlistedAssetsEnabledForSession": "इस सत्र के लिए असूचीबद्ध संपत्तियाँ सक्षम की गईं। अक्षम करने के लिए एक नया टैब खोलें, या `show_unlisted_assets=false` जोड़ें।",
+  "previewAssetsEnabled": "संपत्तियों का पूर्वावलोकन सक्षम किया गया",
+  "previewAssetsDisabled": "संपत्तियों का पूर्वावलोकन अक्षम किया गया",
+  "previewAssetsEnabledForSession": "इस सत्र के लिए संपत्तियों का पूर्वावलोकन सक्षम किया गया। अक्षम करने के लिए एक नया टैब खोलें, या `show_preview_assets=false` जोड़ें।",
   "earnPage": {
     "title": "कमाना",
     "position": "पद",
@@ -874,11 +868,5 @@
     "totalValueInvested": "निवेशित कुल मूल्य",
     "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें"
   },
-  "disclaimer": "अस्वीकरण",
-  "unstableAssetsWarning": {
-    "title": "स्थानांतरण अस्थिर",
-    "description": "आपको महत्वपूर्ण देरी या लेनदेन विफलता का अनुभव हो सकता है। अपने जोख़िम पर आगे बढ़ें।",
-    "buttonContinue": "फिर भी जारी रखें",
-    "buttonCancel": "रद्द करना"
-  }
+  "disclaimer": "अस्वीकरण"
 }

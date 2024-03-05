@@ -27,14 +27,15 @@ import { getValidatorInfo } from "~/server/queries/complex/staking/validator";
 import { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import {
   LiquidityPosition,
+  queryAccountPositions,
   queryCLPosition,
-  queryCLPositions,
   queryCLUnbondingPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
 import {
   queryDelegatedClPositions,
   queryUndelegatingClPositions,
 } from "~/server/queries/osmosis/superfluid";
+import timeout from "~/utils/async";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
 
@@ -48,7 +49,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
 }: {
   userOsmoAddress: string;
 }): Promise<CoinPretty[]> {
-  const clPositions = await queryCLPositions({
+  const clPositions = await queryAccountPositions({
     bech32Address: userOsmoAddress,
   });
 
@@ -218,7 +219,7 @@ export async function mapGetPositionDetails({
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
   const lockableDurationsPromise = getLockableDurations();
@@ -277,7 +278,7 @@ export async function mapGetPositionDetails({
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
-      const priceRangePromise = Promise.all([
+      const priceRange = await Promise.all([
         getClTickPrice({
           tick: lowerTick,
           baseCoin,
@@ -289,16 +290,19 @@ export async function mapGetPositionDetails({
           quoteCoin,
         }),
       ]);
-      const rangeAprPromise = getConcentratedRangePoolApr({
-        lowerTick: lowerTick.toString(),
-        upperTick: upperTick.toString(),
-        poolId: position.pool_id,
-      });
 
-      const [priceRange, rangeApr] = await Promise.all([
-        priceRangePromise,
-        rangeAprPromise,
-      ]);
+      // the APR range query involves a lot of calculation and can timeout the gateway
+      // instead, let's timeout the query and return undefined if it takes too long
+      const rangeApr = await timeout(
+        () =>
+          getConcentratedRangePoolApr({
+            lowerTick: lowerTick.toString(),
+            upperTick: upperTick.toString(),
+            poolId: position.pool_id,
+          }).catch(() => undefined),
+        4_000, // 4 seconds
+        "getConcentratedRangePoolApr"
+      )().catch(() => undefined);
 
       const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
@@ -458,9 +462,11 @@ export async function mapGetPositionDetails({
   );
 }
 
-export type ClPosition = Awaited<ReturnType<typeof mapGetPositions>>[number];
+export type UserPosition = Awaited<
+  ReturnType<typeof mapGetUserPositions>
+>[number];
 
-export async function mapGetPositions({
+export async function mapGetUserPositions({
   positions: initialPositions,
   userOsmoAddress,
   forPoolId,
@@ -471,7 +477,7 @@ export async function mapGetPositions({
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryCLPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
 
@@ -486,7 +492,7 @@ export async function mapGetPositions({
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
 
-  const eventualPositions = await Promise.all(
+  const userPositions = await Promise.all(
     positions
       .filter((position) => {
         if (Boolean(forPoolId) && position.position.pool_id !== forPoolId) {
@@ -532,6 +538,7 @@ export async function mapGetPositions({
         return {
           id: position.position_id,
           poolId: position.pool_id,
+          position: position_,
           currentCoins: [baseCoin, quoteCoin],
           currentValue,
           isFullRange,
@@ -542,7 +549,7 @@ export async function mapGetPositions({
       })
   );
 
-  return eventualPositions.filter((p): p is NonNullable<typeof p> => !!p);
+  return userPositions.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 export type PositionHistoricalPerformance = Awaited<

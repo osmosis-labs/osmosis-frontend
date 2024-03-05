@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "支持OSMO、USDC"
     },
     "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
+      "title": "激励类型"
     },
     "MAX": "最大",
     "pool": {
-      "mobileTitle": "游泳池",
       "title": "游泳池類型"
     },
     "searchTokens": "搜索",
@@ -312,9 +310,6 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
-      "internal": "内部激励",
-      "external": "外部激励",
-      "superfluid": "超流体",
       "noIncentives": "无激励"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜索资金池",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
@@ -825,9 +819,9 @@
     "osmosisUpdates": "渗透更新！",
     "seeWhatsNew": "看看有什么新鲜事"
   },
-  "unlistedAssetsEnabled": "启用非上市资产",
-  "unlistedAssetsDisabled": "非上市资产已禁用",
-  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
+  "previewAssetsEnabled": "启用预览资产",
+  "previewAssetsDisabled": "预览资源已禁用",
+  "previewAssetsEnabledForSession": "预览为此会话启用的资产。要禁用打开新选项卡，或附加“show_preview_assets=false”。",
   "earnPage": {
     "title": "赚",
     "position": "位置",
@@ -874,11 +868,5 @@
     "totalValueInvested": "投资总额",
     "lookBelow": "请参阅下文并找到最适合您的策略"
   },
-  "disclaimer": "免责声明",
-  "unstableAssetsWarning": {
-    "title": "传输不稳定",
-    "description": "您可能会遇到严重的延迟或交易失败。继续需要您自担风险。",
-    "buttonContinue": "无论如何继续",
-    "buttonCancel": "取消"
-  }
+  "disclaimer": "免责声明"
 }

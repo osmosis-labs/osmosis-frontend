@@ -1,5 +1,4 @@
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { BasePool, RoutablePool } from "@osmosis-labs/pools";
+import { IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -7,29 +6,21 @@ import { useState } from "react";
 import { useMeasure } from "react-use";
 
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import type { Pool } from "~/server/queries/complex/pools";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
 import { AssetBreakdownChart } from "../chart";
 
 export const BasePoolDetails: FunctionComponent<{
-  pool: BasePool & RoutablePool;
+  pool: Pool;
 }> = observer(({ pool }) => {
-  const { chainStore, priceStore } = useStore();
   const { t } = useTranslation();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
-  const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
-  const poolCurrencies = pool.poolAssetDenoms.map((denom) => {
-    return osmosisChain.forceFindCurrency(denom);
-  });
-  const poolCoins = poolCurrencies.map((currency, index) => {
-    return new CoinPretty(currency, pool.poolAssets[index].amount);
-  });
-  const poolName = poolCurrencies.map((asset) => asset.coinDenom).join(" / ");
-  const poolValue = priceStore.calculateTotalPrice(poolCoins);
+  const poolName = pool.reserveCoins.map((asset) => asset.denom).join(" / ");
+  const poolValue = pool.totalFiatValueLocked;
 
   const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
     useMeasure<HTMLDivElement>();
@@ -64,7 +55,7 @@ export const BasePoolDetails: FunctionComponent<{
               <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-3">
                   <PoolAssetsIcon
-                    assets={poolCurrencies.map((currency) => ({
+                    assets={pool.reserveCoins.map(({ currency }) => ({
                       coinDenom: currency.coinDenom,
                       coinImageUrl: currency.coinImageUrl,
                     }))}
@@ -87,20 +78,18 @@ export const BasePoolDetails: FunctionComponent<{
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {new RatePretty(pool.swapFee).maxDecimals(2).toString()}
+                    {pool.spreadFactor.maxDecimals(2).toString()}
                   </h4>
                 </div>
               </div>
             </div>
             <div ref={poolBreakdownRef}>
               <AssetBreakdownChart
-                assets={poolCoins.map((coin) => ({
-                  weight: new IntPretty(
-                    new Dec(1).quo(new Dec(pool.poolAssets.length))
-                  ).maxDecimals(0),
+                assets={pool.reserveCoins.map((coin) => ({
+                  weight: new IntPretty(1),
                   amount: coin,
                 }))}
-                totalWeight={new IntPretty(pool.poolAssets.length)}
+                totalWeight={new IntPretty(pool.reserveCoins.length)}
               />
             </div>
           </div>

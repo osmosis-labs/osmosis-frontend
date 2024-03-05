@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Anreiz",
       "title": "Anreizarten"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Schwimmbad",
       "title": "Pooltypen"
     },
     "searchTokens": "Suchen",
@@ -312,9 +310,6 @@
       "weighted": "Gewichtet",
       "concentrated": "Aufgeladen",
       "transmuter": "Transmuter",
-      "internal": "Interne Anreize",
-      "external": "Externe Anreize",
-      "superfluid": "Superflüssig",
       "noIncentives": "Keine Anreize"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Suchpools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Gebühren (7D)",
@@ -825,9 +819,9 @@
     "osmosisUpdates": "Osmose-Updates!",
     "seeWhatsNew": "Schau was neu ist"
   },
-  "unlistedAssetsEnabled": "Nicht gelistete Assets aktiviert",
-  "unlistedAssetsDisabled": "Nicht gelistete Assets deaktiviert",
-  "unlistedAssetsEnabledForSession": "Für diese Sitzung sind nicht gelistete Assets aktiviert. Zum Deaktivieren öffnen Sie einen neuen Tab oder hängen „show_unlisted_assets=false“ an.",
+  "previewAssetsEnabled": "Vorschau der Assets aktiviert",
+  "previewAssetsDisabled": "Vorschau der Assets deaktiviert",
+  "previewAssetsEnabledForSession": "Vorschau-Assets für diese Sitzung aktiviert. Zum Deaktivieren öffnen Sie einen neuen Tab oder hängen „show_preview_assets=false“ an.",
   "earnPage": {
     "title": "Verdienen",
     "position": "Position",
@@ -874,11 +868,5 @@
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
-  "disclaimer": "Haftungsausschluss",
-  "unstableAssetsWarning": {
-    "title": "Übertragungen instabil",
-    "description": "Es kann zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
-    "buttonContinue": "Mache trotzdem weiter",
-    "buttonCancel": "Stornieren"
-  }
+  "disclaimer": "Haftungsausschluss"
 }
