@@ -19,11 +19,12 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
-import { ArrowButton, Button } from "~/components/buttons";
+import { ArrowButton } from "~/components/buttons";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import { Disableable } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -494,7 +495,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
               </div>
             </div>
             <Button
-              mode="text"
+              variant="ghost"
               className="subtitle2 mx-auto gap-1"
               onClick={() => {
                 logEvent([E.showHidePoolDetails]);
@@ -663,7 +664,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     <div className="flex shrink-0 flex-wrap place-content-end gap-4 xs:shrink">
                       <Button
                         className="w-fit shrink-0 xs:w-full"
-                        mode="secondary"
+                        variant="outline"
                         disabled={queryOsmosis.queryGammPoolShare
                           .getAvailableGammShare(address, poolId)
                           .toDec()
@@ -679,8 +680,11 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         {t("removeLiquidity.title")}
                       </Button>
                       <Button
-                        mode={levelCta === 1 ? "special-1" : "primary"}
-                        className="w-fit shrink-0 xs:w-full"
+                        className={classNames(
+                          "w-fit shrink-0 xs:w-full",
+                          levelCta === 1 &&
+                            "bg-gradient-positive text-osmoverse-1000"
+                        )}
                         onClick={() => {
                           logEvent([
                             E.addLiquidityClicked,
