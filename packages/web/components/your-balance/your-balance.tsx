@@ -560,7 +560,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         {!isNativeAsset ? (
           <>
             {ibcBalance?.depositUrlOverride ? (
-              <Link href={ibcBalance.depositUrlOverride} target="_blank">
+              <Link
+                href={ibcBalance.depositUrlOverride}
+                target="_blank"
+                className="w-full"
+              >
                 <Button
                   className="w-full whitespace-nowrap"
                   disabled={!isDepositSupported}
