@@ -868,5 +868,12 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明"
+  "disclaimer": "免責聲明",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不穩定",
+    "titleWithdraw": "{coinDenom}提款不穩定",
+    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
+    "buttonContinue": "無論如何繼續",
+    "buttonCancel": "取消"
+  }
 }

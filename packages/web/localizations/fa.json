@@ -868,5 +868,12 @@
     "totalValueInvested": "کل ارزش سرمایه گذاری شده",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
   },
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} سپرده های ناپایدار",
+    "titleWithdraw": "{coinDenom} برداشت‌های ناپایدار",
+    "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
+    "buttonContinue": "ادامه دادن به هر طریق",
+    "buttonCancel": "لغو کنید"
+  }
 }

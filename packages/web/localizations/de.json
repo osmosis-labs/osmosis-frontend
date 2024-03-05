@@ -868,5 +868,12 @@
     "totalValueInvested": "Gesamtinvestitionswert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
   },
-  "disclaimer": "Haftungsausschluss"
+  "disclaimer": "Haftungsausschluss",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} Einlagen instabil",
+    "titleWithdraw": "{coinDenom} Abhebungen instabil",
+    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
+    "buttonContinue": "Mache trotzdem weiter",
+    "buttonCancel": "Stornieren"
+  }
 }

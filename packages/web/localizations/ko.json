@@ -868,5 +868,12 @@
     "totalValueInvested": "총 투자 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} 예금이 불안정함",
+    "titleWithdraw": "{coinDenom} 출금이 불안정함",
+    "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
+    "buttonContinue": "계속 진행",
+    "buttonCancel": "취소"
+  }
 }

@@ -868,5 +868,12 @@
     "totalValueInvested": "Total Value Invested",
     "lookBelow": "Look below and find best strategies for you"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} deposits unstable",
+    "titleWithdraw": "{coinDenom} withdrawals unstable",
+    "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
+    "buttonContinue": "Continue Anyway",
+    "buttonCancel": "Cancel"
+  }
 }

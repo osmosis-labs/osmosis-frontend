@@ -868,5 +868,12 @@
     "totalValueInvested": "निवेशित कुल मूल्य",
     "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें"
   },
-  "disclaimer": "अस्वीकरण"
+  "disclaimer": "अस्वीकरण",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} जमा अस्थिर है",
+    "titleWithdraw": "{coinDenom} निकासी अस्थिर",
+    "description": "अनिश्चित तकनीकी समस्याओं के कारण, ऑस्मोसिस और {prettyChainName} बीच स्थानांतरण में महत्वपूर्ण देरी या लेनदेन विफलता का अनुभव हो सकता है। अपने जोख़िम पर आगे बढ़ें।",
+    "buttonContinue": "फिर भी जारी रखें",
+    "buttonCancel": "रद्द करना"
+  }
 }

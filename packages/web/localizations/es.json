@@ -868,5 +868,12 @@
     "totalValueInvested": "Valor total invertido",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
-  "disclaimer": "Descargo de responsabilidad"
+  "disclaimer": "Descargo de responsabilidad",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos inestables",
+    "titleWithdraw": "{coinDenom} retiros inestables",
+    "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
+    "buttonContinue": "De todas maneras, continúe",
+    "buttonCancel": "Cancelar"
+  }
 }
