@@ -4,11 +4,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 
-import { Button } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";

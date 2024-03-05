@@ -6,7 +6,6 @@ import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SortMenu } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
@@ -20,6 +19,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { ShowMoreButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";

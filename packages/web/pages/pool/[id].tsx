@@ -59,12 +59,6 @@ const Pool: FunctionComponent<Props> = ({
       router.push("/pools");
     }
   }, [isValidPoolId, isError, router]);
-  useEffect(() => {
-    // CL pools not supported on mobile
-    if (pool && pool.type === "concentrated" && isMobile) {
-      router.push(`/pools`);
-    }
-  }, [pool, isMobile, router]);
 
   return (
     <>

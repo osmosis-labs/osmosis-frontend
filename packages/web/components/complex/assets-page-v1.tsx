@@ -10,11 +10,11 @@ import {
   useState,
 } from "react";
 
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import { Metric } from "~/components/types";
+import { ShowMoreButton } from "~/components/ui/button";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";

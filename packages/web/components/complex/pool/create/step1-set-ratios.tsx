@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Button } from "~/components/buttons";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { TokenSelect } from "~/components/control";
 import { InputBox } from "~/components/input";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
@@ -47,13 +47,11 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 <div className="md:subtitle1 flex items-center gap-2.5 text-h6 font-h6 md:gap-1">
                   {config.poolType === "weighted" && (
                     <Button
-                      mode="amount"
-                      className={classNames(
-                        "!h-auto !text-subtitle1 md:p-1 md:py-0",
-                        {
-                          hidden: config.assets.length < 2,
-                        }
-                      )}
+                      size="sm"
+                      variant="outline"
+                      className={classNames({
+                        hidden: config.assets.length < 2,
+                      })}
                       onClick={() => config.setBalancedPercentages()}
                     >
                       {config.balancedPercentage.maxDecimals(0).toString()}
