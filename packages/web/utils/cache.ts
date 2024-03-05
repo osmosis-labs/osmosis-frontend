@@ -138,8 +138,6 @@ export class RemoteCache implements CachifiedCache {
       );
       return e;
     });
-
-    console.log("set", this.keyPrefix + key);
   }
 
   async delete(key: string) {
