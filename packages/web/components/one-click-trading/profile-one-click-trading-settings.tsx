@@ -34,8 +34,8 @@ export const ProfileOneClickTradingSettings = ({
     },
     {
       enabled: shouldFetchSessionAuthenticator,
-      cacheTime: 5 * 60 * 1000, // 5 minutes
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 1 * 60 * 1000, // 1 minutes
+      staleTime: 1 * 60 * 1000, // 1 minutes
     }
   );
   const create1CTSession = useCreateOneClickTradingSession({
