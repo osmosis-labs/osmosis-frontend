@@ -35,6 +35,7 @@ import {
   queryAccountDelegatedPositions,
   queryAccountUndelegatingPositions,
 } from "~/server/queries/osmosis/superfluid";
+import timeout from "~/utils/async";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { aggregateCoinsByDenom } from "~/utils/coin";
 
@@ -285,7 +286,7 @@ export async function mapGetUserPositionDetails({
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
-      const priceRangePromise = Promise.all([
+      const priceRange = await Promise.all([
         getTickPrice({
           tick: lowerTick,
           baseCoin,
@@ -297,16 +298,19 @@ export async function mapGetUserPositionDetails({
           quoteCoin,
         }),
       ]);
-      const rangeAprPromise = getConcentratedRangePoolApr({
-        lowerTick: lowerTick.toString(),
-        upperTick: upperTick.toString(),
-        poolId: position.pool_id,
-      }).catch(() => undefined);
 
-      const [priceRange, rangeApr] = await Promise.all([
-        priceRangePromise,
-        rangeAprPromise,
-      ]);
+      // the APR range query involves a lot of calculation and can timeout the gateway
+      // instead, let's timeout the query and return undefined if it takes too long
+      const rangeApr = await timeout(
+        () =>
+          getConcentratedRangePoolApr({
+            lowerTick: lowerTick.toString(),
+            upperTick: upperTick.toString(),
+            poolId: position.pool_id,
+          }).catch(() => undefined),
+        4_000, // 4 seconds
+        "getConcentratedRangePoolApr"
+      )().catch(() => undefined);
 
       const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
