@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel"
+      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
+      "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
+      "continueWithWallet": "Fahren Sie mit der Brieftasche fort"
     },
     "introduction": {
       "newFeature": "Neue Funktion",

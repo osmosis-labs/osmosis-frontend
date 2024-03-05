@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "networkFeeTooHigh": "網路費太高",
-      "enableOneClickTrading": "啟用一鍵交易"
+      "enableOneClickTrading": "啟用一鍵交易",
+      "increaseFeeLimit": "提高網路費用限額",
+      "continueWithWallet": "繼續使用錢包"
     },
     "introduction": {
       "newFeature": "新功能",

@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "enableOneClickTrading": "1-Click取引を有効にする"
+      "enableOneClickTrading": "1-Click取引を有効にする",
+      "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
+      "continueWithWallet": "ウォレットを続ける"
     },
     "introduction": {
       "newFeature": "新機能",

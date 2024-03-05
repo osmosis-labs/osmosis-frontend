@@ -184,6 +184,7 @@ export class RootStore {
           },
         },
         preTxEvents: {
+          ...txEvents,
           onBroadcastFailed: (string, e) => {
             txEvents?.onBroadcastFailed?.(string, e);
             return toastOnBroadcastFailed((chainId) =>

@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "Le trading en 1 clic a expiré",
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
-      "enableOneClickTrading": "Activer le trading en 1 clic"
+      "enableOneClickTrading": "Activer le trading en 1 clic",
+      "increaseFeeLimit": "Augmenter la limite des frais de réseau",
+      "continueWithWallet": "Continuer avec le portefeuille"
     },
     "introduction": {
       "newFeature": "Nouvelle fonctionnalité",

@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "networkFeeTooHigh": "Network fee too high",
-      "enableOneClickTrading": "Enable 1-Click Trading"
+      "enableOneClickTrading": "Enable 1-Click Trading",
+      "increaseFeeLimit": "Increase network fee limit",
+      "continueWithWallet": "Continue with wallet"
     },
     "introduction": {
       "newFeature": "New Feature",

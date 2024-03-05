@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "Transakcja 1-Click wygasła",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "enableOneClickTrading": "Włącz handel jednym kliknięciem"
+      "enableOneClickTrading": "Włącz handel jednym kliknięciem",
+      "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
+      "continueWithWallet": "Kontynuuj z portfelem"
     },
     "introduction": {
       "newFeature": "Nowa cecha",

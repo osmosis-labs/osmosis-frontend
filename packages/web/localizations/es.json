@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "El comercio con 1 clic expiró",
       "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
-      "enableOneClickTrading": "Habilite el comercio con 1 clic"
+      "enableOneClickTrading": "Habilite el comercio con 1 clic",
+      "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
+      "continueWithWallet": "Continuar con la billetera"
     },
     "introduction": {
       "newFeature": "Nueva caracteristica",

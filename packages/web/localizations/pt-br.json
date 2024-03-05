@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "networkFeeTooHigh": "Taxa de rede muito alta",
-      "enableOneClickTrading": "Habilite a negociação em 1 clique"
+      "enableOneClickTrading": "Habilite a negociação em 1 clique",
+      "increaseFeeLimit": "Aumentar o limite de taxa de rede",
+      "continueWithWallet": "Continuar com carteira"
     },
     "introduction": {
       "newFeature": "Novo recurso",

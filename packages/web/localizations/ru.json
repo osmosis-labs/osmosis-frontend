@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
-      "enableOneClickTrading": "Включить торговлю в 1 клик"
+      "enableOneClickTrading": "Включить торговлю в 1 клик",
+      "increaseFeeLimit": "Увеличить лимит комиссии сети",
+      "continueWithWallet": "Продолжить с кошельком"
     },
     "introduction": {
       "newFeature": "Новая особенность",

@@ -55,9 +55,7 @@ export const useOneClickTradingParams = ({
     data: defaultTransaction1CTParams,
     isLoading,
     isError,
-  } = api.edge.oneClickTrading.getParameters.useQuery(undefined, {
-    enabled: !oneClickTradingInfo,
-  });
+  } = api.edge.oneClickTrading.getParameters.useQuery();
 
   const [transaction1CTParams, setTransaction1CTParams] = useState<
     OneClickTradingTransactionParams | undefined
@@ -104,14 +102,14 @@ export const useOneClickTradingParams = ({
       : defaultTransaction1CTParams;
     if (!paramsToSet && !initialTransaction1CTParams) return;
 
-    setTransaction1CTParams(
-      paramsToSet
-        ? {
-            isOneClickEnabled: defaultIsOneClickEnabled,
-            ...paramsToSet,
-          }
-        : initialTransaction1CTParams
-    );
+    const nextTransaction1CTParams = paramsToSet
+      ? {
+          isOneClickEnabled: defaultIsOneClickEnabled,
+          ...paramsToSet,
+        }
+      : initialTransaction1CTParams;
+    setTransaction1CTParams(nextTransaction1CTParams);
+    setInitialTransaction1CTParams(nextTransaction1CTParams);
   }, [
     defaultIsOneClickEnabled,
     defaultTransaction1CTParams,

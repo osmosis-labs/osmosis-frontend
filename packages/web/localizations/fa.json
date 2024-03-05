@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "enableOneClickTrading": "معاملات 1-Click را فعال کنید"
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
+      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
+      "continueWithWallet": "با کیف پول ادامه دهید"
     },
     "introduction": {
       "newFeature": "خصوصیت جدید",

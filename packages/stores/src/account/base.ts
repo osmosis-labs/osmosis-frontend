@@ -83,19 +83,20 @@ import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
-  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
   TxEvents,
 } from "./types";
 import {
+  AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
   makeSignDocAmino,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
@@ -710,10 +711,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill(tx);
       }
     } catch (e) {
-      const error = e as Error;
+      const error = e as Error | AccountStoreNoBroadcastErrorEvent;
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
+
+      if (error instanceof AccountStoreNoBroadcastErrorEvent) {
+        throw e;
+      }
 
       if (this.options.preTxEvents?.onBroadcastFailed) {
         this.options.preTxEvents.onBroadcastFailed(chainNameOrId, error);
@@ -764,17 +769,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       await this.canBeSignedWithOneClickTrading({ messages });
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
-    if (
+    const isWithinNetworkFeeLimit =
       oneClickTradingInfo &&
-      canBeSignedWithOneClickTrading &&
-      /**
-       * Should not surpass network fee limit.
-       */
       fee.amount.length === 1 &&
       fee.amount[0].denom === "uosmo" &&
       new Dec(fee.amount[0].amount).lte(
         new Dec(oneClickTradingInfo.networkFeeLimit.amount)
-      )
+      );
+
+    if (
+      canBeSignedWithOneClickTrading &&
+      /**
+       * Should not surpass network fee limit.
+       */
+      isWithinNetworkFeeLimit
     ) {
       return this.signOneClick(
         wallet,
@@ -784,6 +792,26 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo,
         signerData
       );
+    }
+
+    if (
+      canBeSignedWithOneClickTrading &&
+      !isWithinNetworkFeeLimit &&
+      this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit
+    ) {
+      const confirmationState = await new Promise<"continue" | "finish">(
+        (resolve) => {
+          const fn = this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit;
+          if (!fn) return resolve("continue");
+          fn({
+            continueTx: () => resolve("continue"),
+            finish: () => resolve("finish"),
+          });
+        }
+      );
+      if (confirmationState === "finish") {
+        throw new AccountStoreNoBroadcastErrorEvent("User cancelled");
+      }
     }
 
     /**

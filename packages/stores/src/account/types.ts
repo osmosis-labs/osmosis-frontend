@@ -87,6 +87,12 @@ export interface TxEvents {
   onBroadcastFailed?: (string: string, e?: Error) => void;
   onBroadcasted?: (string: string, txHash: Uint8Array) => void;
   onFulfill?: (string: string, tx: any) => void;
+  onExceeds1CTNetworkFeeLimit?: (params: {
+    // Continue with a wallet like Keplr.
+    continueTx: () => void;
+    // User will update his params so we cancel the transaction
+    finish: () => void;
+  }) => void;
 }
 
 export interface OneClickTradingInfo {
@@ -131,14 +137,3 @@ export interface StdSignDoc {
   readonly memo: string;
   readonly timeout_height?: string;
 }
-
-// The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
-// timeout and mempool eviction.
-const defaultTimeoutHeightOffset = 30;
-
-export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
-  process.env.TIMEOUT_HEIGHT_OFFSET
-    ? process.env.TIMEOUT_HEIGHT_OFFSET
-    : defaultTimeoutHeightOffset
-);

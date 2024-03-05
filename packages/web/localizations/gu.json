@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
-      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો"
+      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
+      "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
+      "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો"
     },
     "introduction": {
       "newFeature": "નવી સુવિધા",

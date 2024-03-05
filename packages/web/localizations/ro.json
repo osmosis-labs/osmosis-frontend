@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
-      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic"
+      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
+      "increaseFeeLimit": "Creșteți limita taxei de rețea",
+      "continueWithWallet": "Continuați cu portofelul"
     },
     "introduction": {
       "newFeature": "Optiune noua",

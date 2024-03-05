@@ -191,13 +191,15 @@ export const useCreateOneClickTradingSession = ({
       }
 
       const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+      const isOneClickTradingEnabled =
+        await accountStore.isOneCLickTradingEnabled();
 
       /**
        * If the only change is to the network fee limit, and because
        * this fee limit is a local setting, just update it locally
        * instead of sending a new transaction.
        */
-      if (oneClickTradingInfo) {
+      if (oneClickTradingInfo && isOneClickTradingEnabled) {
         const session1CTParams = getParametersFromOneClickTradingInfo({
           defaultIsOneClickEnabled: true,
           oneClickTradingInfo,

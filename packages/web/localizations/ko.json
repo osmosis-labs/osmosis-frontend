@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "enableOneClickTrading": "1-클릭 거래 활성화"
+      "enableOneClickTrading": "1-클릭 거래 활성화",
+      "increaseFeeLimit": "네트워크 수수료 한도 인상",
+      "continueWithWallet": "지갑으로 계속하기"
     },
     "introduction": {
       "newFeature": "새로운 기능",

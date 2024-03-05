@@ -442,7 +442,9 @@
       "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
-      "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें"
+      "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
+      "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
+      "continueWithWallet": "बटुए के साथ जारी रखें"
     },
     "introduction": {
       "newFeature": "नयी विशेषता",
