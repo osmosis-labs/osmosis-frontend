@@ -324,7 +324,7 @@ export const useCreateOneClickTradingSession = ({
             userOsmoAddress: walletRepo.current.address!,
             publicKey,
           });
-        if (isNil(authenticator?.id)) {
+        if (!authenticator || isNil(authenticator?.id)) {
           throw new Error("Authenticator id is not found");
         }
         authenticatorId = authenticator.id;
