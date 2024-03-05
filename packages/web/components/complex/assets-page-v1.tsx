@@ -82,7 +82,6 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         tokens: ibcBalances.map(({ balance }) => balance),
         externalDepositUrl: ibcBalance.depositUrlOverride,
         externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
-        isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
           transferConfig?.transferAsset(
