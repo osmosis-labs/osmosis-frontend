@@ -158,7 +158,6 @@ export async function getSharePoolBondDurations(
         );
         if (userLockedLocks.length) {
           userLockedLocks.forEach((userDurationLock) => {
-            if (userDurationLock.isCurrentlyUnlocking) return;
             userDurationLock.coins.forEach((coin) => {
               if (getShareDenomPoolId(coin.denom) === poolId) {
                 userShares = userShares.add(
