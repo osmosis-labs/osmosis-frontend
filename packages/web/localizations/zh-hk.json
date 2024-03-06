@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
-    "title": "移除流動性",
-    "titleInPool": "從流動性池 #{poolId} 移除流動性"
+    "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
   "settings": {
@@ -738,7 +737,6 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
   "seo": {
     "404": {
       "title": "404頁面不存在",

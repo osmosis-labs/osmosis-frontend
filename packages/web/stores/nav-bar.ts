@@ -1,9 +1,3 @@
-import {
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
-import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { ReactNode } from "react";
 
@@ -19,13 +13,7 @@ export class NavBarStore {
   @observable
   protected _callToActionButtons: CallToAction[] = [];
 
-  constructor(
-    protected readonly chainId: string,
-    protected readonly accountStore: Pick<AccountStore, "getWallet">,
-    protected readonly queriesStore: IQueriesStore<
-      CosmosQueries & CosmwasmQueries & OsmosisQueries
-    >
-  ) {
+  constructor(protected readonly chainId: string) {
     makeObservable(this);
   }
 

@@ -363,7 +363,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     [
                       {
                         lockId: superfluidData.delegationLockId,
-                        isSyntheticLock: true,
+                        isSynthetic: true,
                       },
                     ]
                   )

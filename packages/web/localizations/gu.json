@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",
-    "title": "લિક્વિડિટી દૂર કરો",
-    "titleInPool": "પૂલ # {poolId} માંથી તરલતા દૂર કરો"
+    "title": "લિક્વિડિટી દૂર કરો"
   },
   "requestRejected": "વિનંતી નકારી",
   "settings": {
@@ -738,7 +737,6 @@
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
   "waitingForTransaction": "ટ્રાન્ઝેક્શનને બ્લોકમાં સામેલ કરવાની રાહ જોઈ રહ્યાં છીએ",
-  "highPoolInflationWarning": "ઉચ્ચ APR ફુગાવાના પુરસ્કારોથી પરિણમી શકે છે. સાવધાની સાથે આગળ વધો.",
   "seo": {
     "404": {
       "title": "404 - પૃષ્ઠ મળ્યું નથી",

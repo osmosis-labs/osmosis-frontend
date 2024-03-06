@@ -1644,13 +1644,13 @@ export class OsmosisAccountImpl {
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
       lockId: string;
-      isSyntheticLock: boolean;
+      isSynthetic: boolean;
     }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msgs = locks.reduce((msgs, lock) => {
-      if (!lock.isSyntheticLock) {
+      if (!lock.isSynthetic) {
         // normal unlock
         msgs.push(
           this.msgOpts.beginUnlocking.messageComposer({

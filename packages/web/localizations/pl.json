@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
-    "title": "Usuń Płynność",
-    "titleInPool": "Usuń płynność z puli {poolId}"
+    "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
   "settings": {
@@ -738,7 +737,6 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
   "seo": {
     "404": {
       "title": "404 — Nie znaleziono strony",

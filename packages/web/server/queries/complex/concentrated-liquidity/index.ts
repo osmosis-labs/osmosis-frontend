@@ -348,7 +348,8 @@ export async function mapGetUserPositionDetails({
             lockId: rawDelegatedSuperfluidPosition.lock_id,
             equivalentStakedAmount: new CoinPretty(
               stakeCurrency,
-              rawDelegatedSuperfluidPosition.equivalent_staked_amount.amount
+              rawDelegatedSuperfluidPosition.equivalent_staked_amount?.amount ??
+                0
             ),
           }
         : undefined;
@@ -361,7 +362,8 @@ export async function mapGetUserPositionDetails({
             lockId: rawUndelegatingSuperfluidPosition.lock_id,
             equivalentStakedAmount: new CoinPretty(
               stakeCurrency,
-              rawUndelegatingSuperfluidPosition.equivalent_staked_amount.amount
+              rawUndelegatingSuperfluidPosition.equivalent_staked_amount
+                ?.amount ?? 0
             ),
             endTime: new Date(
               rawUndelegatingSuperfluidPosition.synthetic_lock.end_time

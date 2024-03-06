@@ -85,7 +85,7 @@ const Pool: FunctionComponent<Props> = ({
       ) : pool.type === "concentrated" && !isMobile ? (
         <ConcentratedLiquidityPool poolId={pool.id} />
       ) : pool.type === "weighted" || pool.type === "stable" ? (
-        <SharePool poolId={pool.id} />
+        <SharePool pool={pool} />
       ) : (
         <BasePoolDetails pool={pool} />
       )}
