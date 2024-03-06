@@ -13,7 +13,7 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 import { EdgeDataLoader } from "~/utils/batching";
-import { DEFAULT_LRU_OPTIONS, RemoteCache } from "~/utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import {
   queryTokenHistoricalChart,
@@ -25,7 +25,7 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new RemoteCache();
+const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Cached CoinGecko ID for needs of price function. */
