@@ -25,24 +25,13 @@ export const EarnRewards = ({
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const apiUtils = api.useUtils();
 
-  const filteredUnclaimedRewards = unclaimedRewards
-    .filter(
-      (unclaimedReward) =>
-        /**
-         * Currently, claiming rewards is unsupported for stride
-         */
-        unclaimedReward.platform !== "stride"
-    )
-    // This whole code is a temporary workaround as there is no platform id which is standardized
-    .map(({ id, platform }) => {
-      return {
-        id,
-        platform:
-          platform === "Cosmos SDK (Staking Module on Osmosis)"
-            ? "osmosis"
-            : platform,
-      };
-    });
+  const filteredUnclaimedRewards = unclaimedRewards.filter(
+    (unclaimedReward) =>
+      /**
+       * Currently, claiming rewards is unsupported for stride
+       */
+      unclaimedReward.platform !== "stride"
+  );
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -54,7 +43,7 @@ export const EarnRewards = ({
 
     filteredUnclaimedRewards.forEach(({ id, platform }) => {
       switch (platform) {
-        case "osmosis":
+        case "Cosmos SDK":
           messages.push(
             account?.osmosis.msgOpts.withdrawDelegationRewards.messageComposer({
               delegator: account.address ?? "",
