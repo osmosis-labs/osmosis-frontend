@@ -1,7 +1,8 @@
 import { AllOfAuthenticator } from "@osmosis-labs/types";
-import { parseAuthenticator } from "@osmosis-labs/utils";
+import { isNil, parseAuthenticator } from "@osmosis-labs/utils";
 
 import { queryAuthenticators } from "~/server/queries/osmosis/authenticators";
+import { isNumeric } from "~/utils/assertion";
 
 export async function getAuthenticators({
   userOsmoAddress,
@@ -20,13 +21,33 @@ export async function getAuthenticators({
 export async function getSessionAuthenticator({
   userOsmoAddress,
   publicKey,
+  authenticatorId: authenticatorIdParam,
+  getAuthenticatorsFn = getAuthenticators,
 }: {
   userOsmoAddress: string;
-  publicKey: string;
+  publicKey?: string;
+  authenticatorId?: string;
+
+  /** Allow overriding getAuthenticators for tests */
+  getAuthenticatorsFn?: typeof getAuthenticators;
 }) {
-  const authenticators = await getAuthenticators({
+  if (
+    (isNil(authenticatorIdParam) || !isNumeric(authenticatorIdParam)) &&
+    isNil(publicKey)
+  ) {
+    console.info("Session not found: authenticatorId and publicKey are empty");
+    return;
+  }
+
+  const authenticators = await getAuthenticatorsFn({
     userOsmoAddress: userOsmoAddress,
   });
+
+  if (!isNil(authenticatorIdParam) && isNumeric(authenticatorIdParam)) {
+    return authenticators.find(
+      (authenticator) => authenticator.id === authenticatorIdParam
+    );
+  }
 
   const subAuthenticators = authenticators
     .filter(

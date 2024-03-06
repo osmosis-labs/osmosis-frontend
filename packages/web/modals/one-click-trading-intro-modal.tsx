@@ -17,10 +17,10 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
+import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { ModalBase } from "~/modals/base";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
 
 type Screens = "intro" | "settings" | "settings-no-back-button";
 
@@ -30,7 +30,8 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
 
 const OneClickTradingIntroModal = observer(() => {
   const { accountStore } = useStore();
-  const { oneClickTradingInfo } = useOneClickTradingSession();
+  const { oneClickTradingInfo, isOneClickTradingEnabled } =
+    useOneClickTradingSession();
 
   const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
 
@@ -120,7 +121,10 @@ const OneClickTradingIntroModal = observer(() => {
           )}
         >
           {!!currentScreen && (
-            <IntroModal1CTScreens oneClickTradingInfo={oneClickTradingInfo} />
+            <IntroModal1CTScreens
+              oneClickTradingInfo={oneClickTradingInfo}
+              isOneClickTradingEnabled={isOneClickTradingEnabled}
+            />
           )}
         </div>
       </ScreenManager>
@@ -131,35 +135,16 @@ const OneClickTradingIntroModal = observer(() => {
 const IntroModal1CTScreens = observer(
   ({
     oneClickTradingInfo,
+    isOneClickTradingEnabled,
   }: {
+    isOneClickTradingEnabled: boolean | undefined;
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) => {
     const removeAuthenticator = useAddOrRemoveAuthenticators();
-    const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const { accountStore, chainStore } = useStore();
-
     const { t } = useTranslation();
 
     const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
-
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
-    const shouldFetchSessionAuthenticator =
-      !!account?.address && !!oneClickTradingInfo;
-    const {
-      data: sessionAuthenticator,
-      isLoading: isLoadingSessionAuthenticator,
-      refetch: refetchSessionAuthenticator,
-    } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-        publicKey: oneClickTradingInfo?.publicKey ?? "",
-      },
-      {
-        enabled: shouldFetchSessionAuthenticator,
-        cacheTime: 15_000, // 15 seconds
-        staleTime: 15_000, // 15 seconds
-      }
-    );
 
     const create1CTSession = useCreateOneClickTradingSession({
       queryOptions: {
@@ -168,6 +153,7 @@ const IntroModal1CTScreens = observer(
         },
       },
     });
+    const removeSession = useRemoveOneClickTradingSession();
 
     const {
       transaction1CTParams,
@@ -190,12 +176,7 @@ const IntroModal1CTScreens = observer(
             onGoBack={() => {
               setCurrentScreen("intro");
             }}
-            isLoading={
-              isLoading1CTParams ||
-              (shouldFetchSessionAuthenticator
-                ? isLoadingSessionAuthenticator
-                : false)
-            }
+            isLoading={isLoading1CTParams}
             hideBackButton={currentScreen === "settings-no-back-button"}
             setTransaction1CTParams={setTransaction1CTParams}
             transaction1CTParams={transaction1CTParams!}
@@ -220,7 +201,7 @@ const IntroModal1CTScreens = observer(
                 });
               };
 
-              if (!sessionAuthenticator) {
+              if (!oneClickTradingInfo) {
                 displayToast(
                   {
                     titleTranslationKey: t(
@@ -229,28 +210,17 @@ const IntroModal1CTScreens = observer(
                   },
                   ToastType.ERROR
                 );
-                refetchSessionAuthenticator();
-                return rollback();
+                rollback();
+                throw new Error("oneClickTradingInfo is undefined");
               }
 
-              removeAuthenticator.mutate(
+              removeSession.mutate(
                 {
-                  addAuthenticators: [],
-                  removeAuthenticators: [BigInt(sessionAuthenticator?.id)],
+                  authenticatorId: oneClickTradingInfo?.authenticatorId,
                 },
                 {
                   onSuccess: () => {
                     accountStore.setOneClickTradingInfo(undefined);
-                    displayToast(
-                      {
-                        titleTranslationKey: t(
-                          "oneClickTrading.toast.oneClickTradingDisabled"
-                        ),
-                        captionTranslationKey:
-                          "oneClickTrading.toast.sessionEnded",
-                      },
-                      ToastType.ONE_CLICK_TRADING
-                    );
                   },
                   onError: () => {
                     rollback();

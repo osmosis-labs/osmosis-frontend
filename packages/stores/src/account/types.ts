@@ -21,13 +21,14 @@ export type TxEvent = {
 
 export interface DeliverTxResponse {
   readonly height?: number;
-  /** Error code. The transaction suceeded if code is 0. */
+  /** Error code. The transaction succeeded if code is 0. */
   readonly code: number;
   readonly transactionHash: string;
   readonly rawLog?: string;
   readonly data?: readonly MsgData[];
   readonly gasUsed: string;
   readonly gasWanted: string;
+  readonly events?: readonly TxEvent[];
 }
 
 export type RegistryWallet = Omit<Wallet, "logo"> & {

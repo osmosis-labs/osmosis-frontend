@@ -368,8 +368,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       walletWithAccountSet.disconnect = async (...args) => {
         const osmosisChain = this.chains[0];
         // Remove the one click trading info if the wallet is disconnected.
+        const oneClickTradingInfo = await this.getOneClickTradingInfo();
         if (
-          chainNameOrId === osmosisChain.chain_id ||
+          (oneClickTradingInfo && chainNameOrId === osmosisChain.chain_id) ||
           chainNameOrId === osmosisChain.chain_name
         ) {
           this.setOneClickTradingInfo(undefined);
@@ -649,7 +650,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
           data?: string;
-          events?: TxEvent;
+          events?: TxEvent[];
           gas_used?: string;
           gas_wanted?: string;
           log?: string;
@@ -659,7 +660,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             data: string;
             code?: number;
             codespace: string;
-            events: TxEvent;
+            events: TxEvent[];
             gas_used: string;
             gas_wanted: string;
             info: string;

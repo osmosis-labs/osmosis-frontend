@@ -29,7 +29,7 @@ import { useTranslation } from "~/hooks/language";
 import { getParametersFromOneClickTradingInfo } from "~/hooks/one-click-trading";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
-import { api } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 export class CreateOneClickSessionError extends Error {
   constructor(message: string) {
@@ -134,6 +134,53 @@ export function getOneClickTradingSessionAuthenticator({
       Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
     ),
   };
+}
+
+async function getAuthenticatorIdFromTx({
+  events,
+  userOsmoAddress,
+  fallbackGetAuthenticatorId,
+  publicKey,
+}: {
+  events: DeliverTxResponse["events"];
+  userOsmoAddress: string;
+  publicKey: string;
+  fallbackGetAuthenticatorId: (
+    input: RouterInputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+  ) => Promise<
+    RouterOutputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+  >;
+}) {
+  let authenticatorId: string | undefined = events
+    ?.find(
+      ({ type, attributes }) =>
+        type === "message" &&
+        attributes.some(({ key, value }) => key === "authenticator_id" && value)
+    )
+    ?.attributes?.find(({ key }) => key === "authenticator_id")?.value;
+
+  if (!authenticatorId) {
+    try {
+      const authenticator = await fallbackGetAuthenticatorId({
+        userOsmoAddress,
+        publicKey,
+      });
+      if (!authenticator || isNil(authenticator?.id)) {
+        throw new Error("Authenticator id is not found");
+      }
+      authenticatorId = authenticator.id;
+    } catch (error) {
+      throw new CreateOneClickSessionError(
+        "Failed to fetch account public key and authenticators."
+      );
+    }
+  }
+
+  if (!authenticatorId) {
+    throw new CreateOneClickSessionError("Authenticator id is not found");
+  }
+
+  return authenticatorId;
 }
 
 export const useCreateOneClickTradingSession = ({
@@ -326,7 +373,7 @@ export const useCreateOneClickTradingSession = ({
           ]
         : [oneClickTradingAuthenticator];
 
-      await new Promise<DeliverTxResponse>((resolve, reject) => {
+      const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis
           .sendAddOrRemoveAuthenticatorsMsg({
             addAuthenticators: authenticatorsToAdd,
@@ -347,25 +394,13 @@ export const useCreateOneClickTradingSession = ({
 
       const publicKey = toBase64(key.getPubKey().toBytes());
 
-      /**
-       * TODO: Get the authenticator id from the tx result.
-       */
-      let authenticatorId: string;
-      try {
-        const authenticator =
-          await apiUtils.edge.oneClickTrading.getSessionAuthenticator.fetch({
-            userOsmoAddress: walletRepo.current.address!,
-            publicKey,
-          });
-        if (!authenticator || isNil(authenticator?.id)) {
-          throw new Error("Authenticator id is not found");
-        }
-        authenticatorId = authenticator.id;
-      } catch (error) {
-        throw new CreateOneClickSessionError(
-          "Failed to fetch account public key and authenticators."
-        );
-      }
+      const authenticatorId = await getAuthenticatorIdFromTx({
+        events: tx.events,
+        userOsmoAddress: walletRepo.current.address!,
+        fallbackGetAuthenticatorId:
+          apiUtils.edge.oneClickTrading.getSessionAuthenticator.fetch,
+        publicKey,
+      });
 
       accountStore.setOneClickTradingInfo({
         authenticatorId,

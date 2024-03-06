@@ -6,7 +6,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
-import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
+import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -26,7 +26,6 @@ export const ProfileOneClickTradingSettings = ({
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
-    refetch: refetchSessionAuthenticator,
   } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
@@ -46,7 +45,7 @@ export const ProfileOneClickTradingSettings = ({
       },
     },
   });
-  const removeAuthenticator = useAddOrRemoveAuthenticators();
+  const removeSession = useRemoveOneClickTradingSession();
 
   const {
     transaction1CTParams,
@@ -104,7 +103,7 @@ export const ProfileOneClickTradingSettings = ({
           });
         };
 
-        if (!sessionAuthenticator) {
+        if (!oneClickTradingInfo) {
           displayToast(
             {
               titleTranslationKey: t(
@@ -113,26 +112,16 @@ export const ProfileOneClickTradingSettings = ({
             },
             ToastType.ERROR
           );
-          refetchSessionAuthenticator();
-          return rollback();
+          rollback();
+          throw new Error("oneClickTradingInfo is undefined");
         }
 
-        removeAuthenticator.mutate(
+        removeSession.mutate(
           {
-            addAuthenticators: [],
-            removeAuthenticators: [BigInt(sessionAuthenticator?.id)],
+            authenticatorId: oneClickTradingInfo?.authenticatorId,
           },
           {
             onSuccess: () => {
-              accountStore.setOneClickTradingInfo(undefined);
-              displayToast(
-                {
-                  titleTranslationKey:
-                    "oneClickTrading.toast.oneClickTradingDisabled",
-                  captionTranslationKey: "oneClickTrading.toast.sessionEnded",
-                },
-                ToastType.ONE_CLICK_TRADING
-              );
               onGoBack();
             },
             onError: () => {
@@ -141,7 +130,7 @@ export const ProfileOneClickTradingSettings = ({
           }
         );
       }}
-      isEndingSession={removeAuthenticator.isLoading}
+      isEndingSession={removeSession.isLoading}
     />
   );
 };

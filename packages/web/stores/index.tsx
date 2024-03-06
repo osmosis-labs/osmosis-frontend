@@ -80,6 +80,7 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
                 onClose: () => {
                   finish();
                 },
+                autoClose: 10_000,
               }
             );
           },
