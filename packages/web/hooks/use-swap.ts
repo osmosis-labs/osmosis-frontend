@@ -14,10 +14,7 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
-import {
-  OsmoAccountStore,
-  useEstimateSwapTxFeesMutation,
-} from "~/hooks/use-estimate-swap-tx-mutation";
+import { useEstimateSwapTxFeesQuery } from "~/hooks/use-estimate-swap-tx-query";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
@@ -188,14 +185,11 @@ export function useSwap({
     return routes;
   }, [quote?.split]);
 
-  const estimateFeeTxIfMaxBalanceReachedMutation =
-    useEstimateSwapTxFeesMutation(
-      routes,
-      tokenIn,
-      chainStore,
-      accountStore as unknown as OsmoAccountStore,
-      inAmountInput.isMaxBalance
-    );
+  const estimateFeeTxIfMaxBalanceReachedMutation = useEstimateSwapTxFeesQuery(
+    routes,
+    tokenIn,
+    inAmountInput.isMaxBalance
+  );
 
   /** In amount converted to integer (remove decimals) */
   /** Send trade token in transaction. */

@@ -154,16 +154,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
+      // not every token is available as a fee,
       // todo: amos conver gas amount to CointPretty.
       // const gasValue = swapState.estimateFeeTxIfMaxBalanceMutation.data?.gas
-      const gasAmount = new CoinPretty(
+      const estimatedGasAmountOrZero = new CoinPretty(
         swapState.inAmountInput.amount.currency,
-        0
+        swapState.estimateFeeTxIfMaxBalanceMutation || 0
       );
 
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount.sub(gasAmount)),
+        tokenAmount: Number(
+          swapState.inAmountInput.amount.sub(estimatedGasAmountOrZero)
+        ),
         toToken: swapState.toAsset?.coinDenom,
         isOnHome: !isInModal,
         isMultiHop: swapState.quote?.split.some(

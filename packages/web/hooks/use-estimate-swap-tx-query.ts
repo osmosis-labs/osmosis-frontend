@@ -1,19 +1,23 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { SignOptions } from "@cosmos-kit/core";
-import { CosmosAccount } from "@osmosis-labs/keplr-stores";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   AccountStore,
   AccountStoreWallet,
-  ChainStore,
+  CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
   TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { isEqual } from "lodash";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type Optional } from "utility-types";
+
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 // Define a constant for the minimum token output amount, which could be made configurable
 const TOKEN_OUT_MIN_AMOUNT = "20000"; // TODO: Consider making this value configurable
@@ -43,27 +47,31 @@ interface EstimateSwapTxData {
  * @param {OsmoAccountStore} params.accountStore - Manages interactions with blockchain accounts.
  * @returns {Promise} A msg object for the teransaction we want to simulate.
  */
-export function createEstimateSwapTxMessage(
+export function createEstimateSwapTxMessage({
+  routes,
+  tokenIn,
+  osmosisChainId,
+  accountStore,
+  run,
+}: {
   routes: {
     pools: {
       id: string;
       tokenOutDenom: string;
     }[];
     tokenInAmount: string;
-  }[],
+  }[];
   tokenIn: {
     currency: Currency;
     amount: string;
-  },
-  chainStore: ChainStore,
-  accountStore: OsmoAccountStore,
-  run: boolean
-): EncodeObject | undefined {
+  };
+  osmosisChainId: string;
+  accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  run: boolean; // <== keep this
+}): EncodeObject | undefined {
   if (!run) return;
   // Validate and extract necessary data from the chainStore and accountStore
-  const chainId = chainStore.osmosis.chainId;
-  if (!chainId) return; // throw new Error("Chain ID is undefined.");
-  const wallet = accountStore.getWallet(chainId);
+  const wallet = accountStore.getWallet(osmosisChainId);
   if (!wallet) return; // throw new Error(`No wallet found for chain ID: ${chainId}`);
   if (routes.length === 0) return; // throw new Error("No routes provided for transaction.");
 
@@ -87,7 +95,7 @@ export function createEstimateSwapTxMessage(
  * TODO: handle potential errors.
  * @returns {Object} React Query mutation object.
  */
-export function useEstimateSwapTxFeesMutation(
+export function useEstimateSwapTxFeesQuery(
   routes: {
     pools: {
       id: string;
@@ -99,23 +107,47 @@ export function useEstimateSwapTxFeesMutation(
     currency: Currency;
     amount: string;
   },
-  chainStore: ChainStore,
-  accountStore: OsmoAccountStore,
   run: boolean
 ) {
-  const timeoutRef = useRef<number>();
+  const { accountStore, chainStore } = useStore();
+  const apiUtils = api.useUtils();
+
   const prevSwapMsg = useRef<EncodeObject | undefined>(); // Initialize the mutation for estimating transaction fees
-  const mutation = useMutation(
-    ({
-      accountStore,
-      wallet,
-      messages,
-      fee,
-      memo,
-      signOptions,
-    }: EstimateSwapTxData) =>
-      accountStore.estimateFee(wallet, messages, fee, memo, signOptions)
-  );
+  const [message, setMessage] = useState<EncodeObject | undefined>();
+  const query = useQuery({
+    queryKey: ["simulate-swap-tx", message?.typeUrl, message?.value],
+    queryFn: async ({ wallet, messages, fee, memo }: EstimateSwapTxData) => {
+      const [{ amount }, osmoAssetWithPrice] = await Promise.all([
+        accountStore.estimateFee(wallet, messages, fee, memo, {
+          ...wallet.walletInfo?.signOptions,
+          preferNoSetFee: true, // this will automatically calculate the amount as well.
+        }),
+        apiUtils.edge.assets.getMarketAsset.fetch({
+          findMinDenomOrSymbol: "OSMO",
+        }),
+      ]);
+      const coin = amount[0];
+      if (!coin || !osmoAssetWithPrice?.currentPrice) return; // TODO: Handle this case
+
+      const usdValue = new Dec(coin.amount).mul(
+        osmoAssetWithPrice.currentPrice.toDec()
+      );
+      const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
+
+      return { gasUsdValueToPay }; // subtract this value from the token following the following formula:
+      // max = (totalInAmountUSDValue - gasUsdValueToPay) / inAmountTokenUSDValue
+      // half = max/2  <-- OK.
+      // where is totalInAmountUSDValue and inAmountTokenUSDValue come from?
+
+      // We alread have the totalInAmountToken which is the number we display in 'available' <-- not seeing that variable when I search vscode.
+      // totalInAmountToken = swapState.inAmountInput?.balance in swap-tool
+      // we have to compute the price of that with maybe `useCoinFiatValue`
+      // inAmountTokenUSDValue is useCoinPrice(inAmountCurrency)
+    },
+    staleTime: 3_000, // 3 seconds
+    cacheTime: 3_000, // 3 seconds
+    enabled: !!message,
+  });
 
   useEffect(() => {
     if (!run) return;
@@ -141,33 +173,11 @@ export function useEstimateSwapTxFeesMutation(
           });
 
     // avoid repetition by checking equality between the current message and the previous one
-    if (
-      !isEqual(msg, prevSwapMsg.current) ||
-      (timeoutRef.current && Date.now() > timeoutRef.current)
-    ) {
+    if (!isEqual(msg, prevSwapMsg.current)) {
+      setMessage(msg);
       prevSwapMsg.current = msg;
-      mutation
-        .mutateAsync({
-          accountStore,
-          wallet,
-          fee: { amount: [] },
-          memo: "estimate-fee",
-          signOptions: wallet.walletInfo?.signOptions,
-          messages: [msg],
-        })
-        .then((value) => {
-          timeoutRef.current = Date.now() + TTL;
-          return value;
-        });
     }
-  }, [
-    accountStore,
-    chainStore.osmosis.chainId,
-    mutation,
-    routes,
-    run,
-    tokenIn,
-  ]);
+  }, [accountStore, chainStore.osmosis.chainId, routes, run, tokenIn]);
 
-  return mutation;
+  return query;
 }
