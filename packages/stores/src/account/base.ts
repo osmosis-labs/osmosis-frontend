@@ -566,7 +566,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
-      const canBeSignedWithOneClickTrading =
+      const shouldBeSignedWithOneClickTrading =
         await this.shouldBeSignedWithOneClickTrading({ messages: msgs });
       const oneClickExtensionOptions = [
         {
@@ -586,7 +586,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages: msgs,
           fee: fee ?? { amount: [] },
           nonCriticalExtensionOptions:
-            canBeSignedWithOneClickTrading && oneClickTradingInfo
+            shouldBeSignedWithOneClickTrading && oneClickTradingInfo
               ? oneClickExtensionOptions
               : undefined,
           memo,
