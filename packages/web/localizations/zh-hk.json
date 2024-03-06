@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
-    "title": "移除流動性",
-    "titleInPool": "從流動性池 #{poolId} 移除流動性"
+    "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
   "settings": {
@@ -648,20 +647,6 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
-    },
-    "introModal": {
-      "callout": "新功能",
-      "title": "在 Osmosis 上質押",
-      "description": {
-        "1": "質押是利用資產賺錢最簡單的方法之一。現在您可以將您的 OSMO 放在 Osmosis 上。",
-        "2": "賺取高達",
-        "3": "每年都有質押獎勵！",
-        "4": "並付諸實踐",
-        "5": "讓您可用的{displayBalance}發揮作用並",
-        "button": "買一些OSMO"
-      },
-      "asterisk": "* 質押獎勵價值受價格和年利率波動影響。",
-      "button": "開始質押"
     }
   },
   "superfluidValidator": {
@@ -752,7 +737,6 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
   "seo": {
     "404": {
       "title": "404頁面不存在",
@@ -868,5 +852,12 @@
     "totalValueInvested": "投資總額",
     "lookBelow": "請參閱下文並找到最適合您的策略"
   },
-  "disclaimer": "免責聲明"
+  "disclaimer": "免責聲明",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不穩定",
+    "titleWithdraw": "{coinDenom}提款不穩定",
+    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
+    "buttonContinue": "無論如何繼續",
+    "buttonCancel": "取消"
+  }
 }

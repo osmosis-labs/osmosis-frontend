@@ -1,2 +1,2 @@
 export * from "./epochs";
-export * from "./osmosis-params";
+export * from "./lockup";

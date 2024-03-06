@@ -1,9 +1,7 @@
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
-import { BondDuration } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
@@ -11,11 +9,10 @@ import { useMeasure } from "react-use";
 import { FallbackImg, Icon } from "~/components/assets";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useStore } from "~/stores";
+import type { BondDuration } from "~/server/queries/complex/pools/bonding";
 import { formatPretty } from "~/utils/formatter";
 
 export const BondCard: FunctionComponent<
@@ -182,130 +179,95 @@ const Drawer: FunctionComponent<{
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
   onGoSuperfluid: () => void;
-}> = observer(
-  ({
-    duration,
-    aggregateApr,
-    swapFeeApr,
-    incentivesBreakdown,
-    superfluid,
-    drawerUp,
-    toggleDetailsVisible,
-  }) => {
-    const {
-      queriesStore,
-      chainStore: {
-        osmosis: { chainId },
-      },
-    } = useStore();
-    const { t } = useTranslation();
+}> = ({
+  duration,
+  aggregateApr,
+  swapFeeApr,
+  incentivesBreakdown,
+  superfluid,
+  drawerUp,
+  toggleDetailsVisible,
+}) => {
+  const { t } = useTranslation();
 
-    const queriesCosmos = queriesStore.get(chainId).cosmos;
-    const inflation = queriesCosmos.queryInflation;
-
-    /**
-     * If pool APR is 50 times bigger than staking APR, warn user
-     * that pool may be subject to inflation
-     */
-    const isAPRTooHigh = aggregateApr
-      .toDec()
-      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(100)));
-
-    return (
+  return (
+    <div
+      className={classNames(
+        "absolute -bottom-[254px] left-1/2 z-40 flex h-[320px] w-full -translate-x-1/2 flex-col transition-all duration-300 ease-inOutBack",
+        {
+          "-translate-y-[220px] rounded-t-[18px] bg-osmoverse-700": drawerUp,
+        }
+      )}
+    >
       <div
         className={classNames(
-          "absolute -bottom-[234px] left-1/2 z-40 flex h-[320px] w-full -translate-x-1/2 flex-col transition-all duration-300 ease-inOutBack",
+          "flex place-content-between items-end py-4 px-7 transition-all md:px-[10px]",
           {
-            "-translate-y-[220px] rounded-t-[18px] bg-osmoverse-700": drawerUp,
+            "border-b border-osmoverse-600": drawerUp,
           }
         )}
       >
-        <div
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1.5">
+            <h5
+              className={classNames(
+                "whitespace-nowrap",
+                superfluid ? "text-superfluid-gradient" : "text-bullish-400"
+              )}
+            >
+              {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
+            </h5>
+          </div>
+        </div>
+        <button
           className={classNames(
-            "flex place-content-between items-end py-4 px-7 transition-all md:px-[10px]",
+            "flex cursor-pointer items-center transition-transform",
             {
-              "border-b border-osmoverse-600": drawerUp,
+              "-translate-y-[8px]": drawerUp,
             }
           )}
+          onClick={toggleDetailsVisible}
         >
-          <div className="flex flex-col">
-            {/* Only display warning when APR is too high */}
-            {isAPRTooHigh ? (
-              <Tooltip content={t("highPoolInflationWarning")}>
-                <span className="subtitle1 flex items-center gap-1.5 text-osmoverse-200">
-                  {t("pool.incentives")}{" "}
-                  <Icon
-                    id="alert-triangle"
-                    className="h-4 w-4 text-osmoverse-400"
-                  />
-                </span>
-              </Tooltip>
-            ) : (
-              <span className="subtitle1 text-osmoverse-200">
-                {t("pool.incentives")}
-              </span>
-            )}
-            <div className="flex items-center gap-1.5">
-              <h5
-                className={classNames(
-                  "whitespace-nowrap",
-                  superfluid ? "text-superfluid-gradient" : "text-bullish-400"
-                )}
-              >
-                {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
-              </h5>
-            </div>
-          </div>
-          <button
-            className={classNames(
-              "flex cursor-pointer items-center transition-transform",
-              {
-                "-translate-y-[28px]": drawerUp,
-              }
-            )}
-            onClick={toggleDetailsVisible}
-          >
-            <span className="caption text-osmoverse-400 xs:hidden">
-              {t("pool.details")}
-            </span>
-            <div
-              className={classNames("flex items-center transition-transform", {
-                "rotate-180": drawerUp,
-              })}
-            >
-              <Icon
-                id="chevron-up"
-                className="mx-[7.5px] my-[7.5px] text-osmoverse-400"
-                height={14}
-                width={14}
-              />
-            </div>
-          </button>
-        </div>
-        <div
-          className={classNames("flex h-full flex-col gap-1.5", {
-            "bg-osmoverse-700": drawerUp,
-          })}
-        >
-          <div className="flex h-[180px] flex-col gap-5 overflow-y-auto py-6 px-8 md:px-[10px]">
-            {superfluid &&
-              superfluid.duration.asMilliseconds() ===
-                duration.asMilliseconds() && (
-                <SuperfluidBreakdownRow {...superfluid} />
-              )}
-            {incentivesBreakdown.map((breakdown, index) => (
-              <IncentiveBreakdownRow key={index} {...breakdown} />
-            ))}
-            <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
-          </div>
-          <span className="caption text-center text-osmoverse-400">
-            {t("pool.rewardDistribution")}
+          <span className="caption text-osmoverse-400 xs:hidden">
+            {t("pool.details")}
           </span>
-        </div>
+          <div
+            className={classNames("flex items-center transition-transform", {
+              "rotate-180": drawerUp,
+            })}
+          >
+            <Icon
+              id="chevron-up"
+              className="mx-[7.5px] my-[7.5px] text-osmoverse-400"
+              height={14}
+              width={14}
+            />
+          </div>
+        </button>
       </div>
-    );
-  }
-);
+      <div
+        className={classNames("flex h-full flex-col gap-1.5", {
+          "bg-osmoverse-700": drawerUp,
+        })}
+      >
+        <div className="flex h-[180px] flex-col gap-5 overflow-y-auto py-6 px-8 md:px-[10px]">
+          {superfluid &&
+            superfluid.duration.asMilliseconds() ===
+              duration.asMilliseconds() && (
+              <SuperfluidBreakdownRow {...superfluid} />
+            )}
+          {incentivesBreakdown.map((breakdown, index) => (
+            <IncentiveBreakdownRow key={index} {...breakdown} />
+          ))}
+          <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
+        </div>
+        <span className="caption text-center text-osmoverse-400">
+          {t("pool.rewardDistribution")}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
   apr,
@@ -376,9 +338,7 @@ const IncentiveBreakdownRow: FunctionComponent<
   const { t } = useTranslation();
 
   let label;
-  if (type === "swapFees") {
-    label = t("pools.aprBreakdown.swapFees");
-  } else if (type === "osmosis") {
+  if (type === "osmosis") {
     label = "Osmosis";
   } else if (type === "boost") {
     label = t("pools.aprBreakdown.boost");

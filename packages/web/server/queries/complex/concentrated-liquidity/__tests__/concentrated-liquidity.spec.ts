@@ -5,14 +5,14 @@
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import cases from "jest-in-case";
 
-import { calcPositionStatus, getClTickPrice, getPriceFromSqrtPrice } from "..";
+import { calcPositionStatus, getPriceFromSqrtPrice, getTickPrice } from "..";
 
 jest.mock("~/server/queries/complex/assets");
 
 cases(
   "getClTickPrice",
   ({ tick, baseAsset, quoteAsset, expected }) => {
-    const result = getClTickPrice({
+    const result = getTickPrice({
       tick,
       baseCoin: baseAsset,
       quoteCoin: quoteAsset,

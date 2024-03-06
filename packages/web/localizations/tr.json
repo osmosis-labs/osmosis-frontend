@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
-    "title": "Likiditeyi Kaldır",
-    "titleInPool": "{poolId} havuzundan Likiditeyi Kaldır"
+    "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
   "settings": {
@@ -648,20 +647,6 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Koru",
         "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
-    },
-    "introModal": {
-      "callout": "Yeni özellik",
-      "title": "Osmoz üzerinde stake etme",
-      "description": {
-        "1": "Staking, varlıklarınızla kazanmanın en kolay yollarından biridir. Artık OSMO'nuzu doğrudan Osmosis'e yatırabilirsiniz.",
-        "2": "kadar kazanmak",
-        "3": "yıllık stake ödüllerinde!",
-        "4": "ve onu işe koy",
-        "5": "Kullanılabilir {displayBalance} çalıştırın ve",
-        "button": "Biraz OSMO satın alın"
-      },
-      "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır.",
-      "button": "Staking'i başlat"
     }
   },
   "superfluidValidator": {
@@ -752,7 +737,6 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
   "seo": {
     "404": {
       "title": "404 Sayfa Bulunamadı",
@@ -868,5 +852,12 @@
     "totalValueInvested": "Yatırılan Toplam Değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
   },
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} yatırma işlemleri kararsız",
+    "titleWithdraw": "{coinDenom} para çekme işlemleri kararsız",
+    "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
+    "buttonContinue": "Her halükarda devam et",
+    "buttonCancel": "İptal etmek"
+  }
 }

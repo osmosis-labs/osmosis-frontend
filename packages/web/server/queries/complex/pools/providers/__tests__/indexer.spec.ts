@@ -3,7 +3,7 @@
  */
 
 import { getAsset } from "../../../assets";
-import { makePoolFromImperatorPool } from "../imperator";
+import { makePoolFromIndexerPool } from "../indexer";
 
 export const mockAsset = {
   coinDenom: "mockCoinDenom",
@@ -19,7 +19,7 @@ jest.mock("../../../assets", () => ({
   getAsset: jest.fn(),
 }));
 
-describe("makePoolFromImperatorPool", () => {
+describe("makePoolFromIndexerPool", () => {
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
@@ -28,7 +28,7 @@ describe("makePoolFromImperatorPool", () => {
   });
 
   it("should return a valid pool object for a weighted pool", async () => {
-    const result = await makePoolFromImperatorPool(weightedPool as any);
+    const result = await makePoolFromIndexerPool(weightedPool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -39,7 +39,7 @@ describe("makePoolFromImperatorPool", () => {
   });
 
   it("should return a valid pool object for a stable pool", async () => {
-    const result = await makePoolFromImperatorPool(stablePool as any);
+    const result = await makePoolFromIndexerPool(stablePool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -51,7 +51,7 @@ describe("makePoolFromImperatorPool", () => {
   });
 
   it("should return a valid pool object for a concentrated liquidity pool", async () => {
-    const result = await makePoolFromImperatorPool(concentratedPool as any);
+    const result = await makePoolFromIndexerPool(concentratedPool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -62,9 +62,7 @@ describe("makePoolFromImperatorPool", () => {
   });
 
   it("should return a valid pool object for a cosmwasm transmuter pool", async () => {
-    const result = await makePoolFromImperatorPool(
-      cosmwasmTransmuterPool as any
-    );
+    const result = await makePoolFromIndexerPool(cosmwasmTransmuterPool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -74,7 +72,7 @@ describe("makePoolFromImperatorPool", () => {
   });
 
   it("should return a valid pool object for a cosmwasm pool", async () => {
-    const result = await makePoolFromImperatorPool(cosmwasmPool as any);
+    const result = await makePoolFromIndexerPool(cosmwasmPool as any);
 
     if (!result) throw new Error("result is undefined");
 

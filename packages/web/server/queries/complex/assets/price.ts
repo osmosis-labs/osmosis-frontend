@@ -11,10 +11,10 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
-import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/utils/cache";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { EdgeDataLoader } from "~/utils/batching";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
-import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -25,12 +25,13 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
+const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Cached CoinGecko ID for needs of price function. */
 async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
   return cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `coingecko-coin-${symbol}`,
     ttl: 1000 * 60 * 60, // 1 hour since the coin api ID won't change often
     staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hours
@@ -69,7 +70,7 @@ async function getCoingeckoPrice({
 }) {
   // Create a loader per given currency.
   const currencyBatchLoader = await cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
     getFreshValue: async () => {
       return new EdgeDataLoader((ids: readonly string[]) =>
@@ -80,7 +81,7 @@ async function getCoingeckoPrice({
 
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
@@ -212,38 +213,43 @@ async function calculatePriceThroughPools({
 }
 
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
+ *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found.
  */
 export async function getAssetPrice({
   asset,
   currency = "usd",
 }: {
-  asset: Partial<{
-    coinDenom: string;
-    coinMinimalDenom: string;
-    sourceDenom: string;
-  }>;
+  asset: { coinDenom?: string } & (
+    | { coinMinimalDenom: string }
+    | { sourceDenom: string }
+  );
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
+  const coinMinimalDenom =
+    "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
+  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
+
+  const assetListAsset = getAssetFromAssetList({
+    sourceDenom,
+    coinMinimalDenom,
+    assetLists: AssetLists,
+  });
+
+  if (!assetListAsset)
+    throw new Error(
+      `Asset ${
+        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
+      } not found in asset list registry.`
+    );
+
   return cachified({
-    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    key: `asset-price-${assetListAsset.coinMinimalDenom}`,
     cache: pricesCache,
-    ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 10, // 10 seconds
+    ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes, to allow plenty of time for pools to be queried in background
     getFreshValue: async () => {
-      const assetListAsset = getAssetFromAssetList({
-        sourceDenom: asset.sourceDenom,
-        coinMinimalDenom: asset.coinMinimalDenom,
-        assetLists: AssetLists,
-      });
-
-      if (!assetListAsset) {
-        throw new Error(
-          `Asset ${asset.sourceDenom} not found on asset list registry.`
-        );
-      }
-
-      if (assetListAsset.priceInfo && assetListAsset) {
+      if (assetListAsset.priceInfo) {
         return await calculatePriceThroughPools({
           asset: assetListAsset.rawAsset,
           currency,

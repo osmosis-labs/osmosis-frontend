@@ -5,12 +5,12 @@ import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { PoolsOverview } from "~/components/overview/pools";
+import { ShowMoreButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useHideDustUserSetting, useTranslation } from "~/hooks";
 import {
@@ -26,7 +26,6 @@ import {
   AddLiquidityModal,
   CreatePoolModal,
   LockTokensModal,
-  RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
 import { useStore } from "~/stores";
@@ -69,9 +68,6 @@ const Pools: NextPage = observer(function () {
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
     string | null
   >(null);
-  const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
-    string | null
-  >(null);
   const [lockLpTokenModalPoolId, setLockLpTokenModalPoolId] = useState<
     string | null
   >(null);
@@ -82,10 +78,6 @@ const Pools: NextPage = observer(function () {
   const quickActionProps = {
     quickAddLiquidity: useCallback(
       (poolId: string) => setAddLiquidityModalPoolId(poolId),
-      []
-    ),
-    quickRemoveLiquidity: useCallback(
-      (poolId: string) => setRemoveLiquidityModalPoolId(poolId),
       []
     ),
     quickLockTokens: useCallback(
@@ -236,16 +228,6 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
-      {removeLiquidityModalPoolId && (
-        <RemoveLiquidityModal
-          title={t("removeLiquidity.titleInPool", {
-            poolId: removeLiquidityModalPoolId,
-          })}
-          poolId={removeLiquidityModalPoolId}
-          isOpen={true}
-          onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
-        />
-      )}
       {lockLpTokenModalPoolId && (
         <LockTokensModal
           title={t("lockToken.titleInPool", { poolId: lockLpTokenModalPoolId })}
@@ -365,7 +347,6 @@ export const MyPoolsSection = observer(() => {
                   userValue,
                   reserveCoins,
                   isSuperfluid,
-                  weightedPoolInfo,
                 }) => {
                   const poolLiqudity_ = formatPretty(poolLiquidity);
 
@@ -418,9 +399,6 @@ export const MyPoolsSection = observer(() => {
                             poolId: id,
                             poolName: reserveCoins
                               .map((coin) => coin.currency.coinDenom)
-                              .join(" / "),
-                            poolWeight: weightedPoolInfo?.weights
-                              .map(({ weight }) => weight.toString())
                               .join(" / "),
                             isSuperfluidPool: isSuperfluid,
                           },
