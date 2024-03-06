@@ -39,12 +39,11 @@ export async function getAssetPrice({
 
   const foundAsset = AssetLists.map((assets) => assets.assets)
     .flat()
-    .find((asset) => {
-      return (
+    .find(
+      (asset) =>
         (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
         (sourceDenom && asset.sourceDenom === sourceDenom)
-      );
-    });
+    );
 
   if (!foundAsset)
     throw new Error(
