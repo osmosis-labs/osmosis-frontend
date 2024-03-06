@@ -3,6 +3,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
 import { FunctionComponent } from "react";
+import {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ElementType,
+  forwardRef,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
@@ -58,6 +64,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
+// TODO - ideally remove this button, rarely used, will need design review
 const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
   isOn,
   onToggle,
@@ -86,4 +93,38 @@ const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
 };
 ShowMoreButton.displayName = "ShowMoreButton";
 
-export { Button, buttonVariants, ShowMoreButton };
+// TODO - test refactoring to be a button variant
+const ArrowButton = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ButtonHTMLAttributes<HTMLButtonElement> &
+    AnchorHTMLAttributes<HTMLAnchorElement> & {
+      isLink?: boolean;
+      classes?: Partial<Record<"arrowRight", string>>;
+    }
+>((props, ref) => {
+  const { isLink, classes, ...rest } = props;
+  const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
+
+  return (
+    <Component
+      {...rest}
+      ref={ref as any}
+      className={classNames(
+        "flex items-center gap-1 text-wosmongton-200 transition-all hover:gap-2",
+        props.className
+      )}
+    >
+      {props.children}
+      <Icon
+        id="arrow-right"
+        className={classNames(classes?.arrowRight)}
+        height={24}
+        width={24}
+      />
+    </Component>
+  );
+});
+
+ArrowButton.displayName = "ArrowButton";
+
+export { ArrowButton, Button, buttonVariants, ShowMoreButton };

@@ -15,7 +15,6 @@ import React, {
 } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import { ArrowButton, Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import {
   ChartUnavailable,
@@ -23,6 +22,7 @@ import {
 } from "~/components/chart/token-pair-historical";
 import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
+import { ArrowButton, Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -417,7 +417,8 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
 ) => {
   return (
     <Button
-      mode="unstyled"
+      // TODO - double check this
+      // mode="unstyled"
       size="sm"
       className="text-white w-fit whitespace-nowrap rounded-lg border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400 md:ml-auto"
       onClick={props.onClick}

@@ -47,12 +47,14 @@ export const MainLayout: FunctionComponent<{
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
+        testtesttest
         <div className="flex flex-1 flex-col justify-end gap-5">
           <div className="px-2">
             <NavbarOsmosisUpdates />
           </div>
           <NavbarOsmoPrice />
         </div>
+        testtesttest 2
       </article>
       <NavBar
         className="ml-sidebar md:ml-0"

@@ -3,9 +3,9 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import Spinner from "~/components/loaders/spinner";
+import { ArrowButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
@@ -34,13 +34,13 @@ const NavbarOsmosisUpdates = () => {
 
   if (!featureFlags.osmosisUpdatesPopUp) return null;
 
-  if (
-    hasNoUpdates ||
-    (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl) ||
-    isLoading
-  ) {
-    return null;
-  }
+  // if (
+  //   hasNoUpdates ||
+  //   (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl) ||
+  //   isLoading
+  // ) {
+  //   return null;
+  // }
 
   return (
     <>
