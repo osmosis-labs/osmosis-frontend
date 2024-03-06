@@ -1,8 +1,11 @@
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { TxEvent } from "@osmosis-labs/stores";
 import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import { parseAuthenticator } from "@osmosis-labs/utils";
 
 import {
+  CreateOneClickSessionError,
+  getAuthenticatorIdFromTx,
   getOneClickTradingSessionAuthenticator,
   isAuthenticatorOneClickTradingSession,
 } from "../use-create-one-click-trading-session";
@@ -80,5 +83,87 @@ describe("getOneClickTradingSessionAuthenticator", () => {
     );
     expect(data[1].authenticator_type).toEqual("CosmwasmAuthenticatorV1");
     expect(data[2].authenticator_type).toEqual("AnyOfAuthenticator");
+  });
+});
+
+describe("getAuthenticatorIdFromTx", () => {
+  const mockFallbackGetAuthenticatorId = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("successfully finds authenticator ID from events", async () => {
+    const events: TxEvent[] = [
+      {
+        type: "message",
+        attributes: [{ key: "authenticator_id", value: "123" }],
+      },
+    ];
+    const result = await getAuthenticatorIdFromTx({
+      events,
+      userOsmoAddress: "osmo1example",
+      publicKey: "publicKeyExample",
+      fallbackGetAuthenticatorId: mockFallbackGetAuthenticatorId,
+    });
+    expect(result).toEqual("123");
+    expect(mockFallbackGetAuthenticatorId).not.toHaveBeenCalled();
+  });
+
+  it("successfully retrieves authenticator ID through fallback function", async () => {
+    const events: TxEvent[] = []; // No authenticator_id in events
+    mockFallbackGetAuthenticatorId.mockResolvedValue({ id: "456" });
+
+    const result = await getAuthenticatorIdFromTx({
+      events,
+      userOsmoAddress: "osmo1example",
+      publicKey: "publicKeyExample",
+      fallbackGetAuthenticatorId: mockFallbackGetAuthenticatorId,
+    });
+    expect(result).toEqual("456");
+    expect(mockFallbackGetAuthenticatorId).toHaveBeenCalledWith({
+      userOsmoAddress: "osmo1example",
+      publicKey: "publicKeyExample",
+    });
+  });
+
+  it("throws an error when authenticator ID is not found", async () => {
+    expect.assertions(1);
+    const events: TxEvent[] = [];
+    mockFallbackGetAuthenticatorId.mockResolvedValue({}); // No id returned
+
+    try {
+      await getAuthenticatorIdFromTx({
+        events,
+        userOsmoAddress: "osmo1example",
+        publicKey: "publicKeyExample",
+        fallbackGetAuthenticatorId: mockFallbackGetAuthenticatorId,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(CreateOneClickSessionError);
+    }
+  });
+
+  it("throws a specific error when fallback function fails", async () => {
+    expect.assertions(2); // Make sure the promises are actually called.
+    const events: TxEvent[] = [];
+    mockFallbackGetAuthenticatorId.mockRejectedValue(
+      new Error("Fallback function failed")
+    );
+
+    try {
+      await getAuthenticatorIdFromTx({
+        events,
+        userOsmoAddress: "osmo1example",
+        publicKey: "publicKeyExample",
+        fallbackGetAuthenticatorId: mockFallbackGetAuthenticatorId,
+      });
+    } catch (e) {
+      const error = e as CreateOneClickSessionError;
+      expect(error).toBeInstanceOf(CreateOneClickSessionError);
+      expect(error.message).toContain(
+        "Failed to fetch account public key and authenticators."
+      );
+    }
   });
 });

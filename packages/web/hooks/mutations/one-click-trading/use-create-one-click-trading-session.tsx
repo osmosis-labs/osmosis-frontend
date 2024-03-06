@@ -135,7 +135,7 @@ export function getOneClickTradingSessionAuthenticator({
   };
 }
 
-async function getAuthenticatorIdFromTx({
+export async function getAuthenticatorIdFromTx({
   events,
   userOsmoAddress,
   fallbackGetAuthenticatorId,
