@@ -515,7 +515,16 @@ function useSwapAsset<TAsset extends Asset>(
       findMinDenomOrSymbol: minDenomOrSymbol ?? "",
       userOsmoAddress: account?.address,
     },
-    { enabled: queryEnabled }
+    {
+      enabled: queryEnabled,
+
+      // since asset is often point of attention, don't block on other potentially expensive queries
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
   );
 
   return {

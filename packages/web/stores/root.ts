@@ -259,11 +259,7 @@ export class RootStore {
       assets
     );
 
-    this.navBarStore = new NavBarStore(
-      this.chainStore.osmosis.chainId,
-      this.accountStore,
-      this.queriesStore
-    );
+    this.navBarStore = new NavBarStore(this.chainStore.osmosis.chainId);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);

@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
-    "title": "Retirer de la liquidité",
-    "titleInPool": "Retirer des liquidités du pool {poolId}"
+    "title": "Retirer de la liquidité"
   },
   "requestRejected": "Demande rejetée",
   "settings": {
@@ -738,7 +737,6 @@
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
   "seo": {
     "404": {
       "title": "404 Page non trouvée",

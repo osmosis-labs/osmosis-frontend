@@ -1,4 +1,4 @@
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 
 import {
   calcSumCoinsValue,
@@ -7,7 +7,10 @@ import {
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getCachedPoolIncentivesMap } from "~/server/queries/complex/pools/incentives";
 import { queryBalances } from "~/server/queries/cosmos";
-import { WeightedPoolRawResponse } from "~/server/queries/osmosis";
+import {
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "~/server/queries/osmosis";
 import { queryAccountPositions } from "~/server/queries/osmosis/concentratedliquidity";
 import {
   queryAccountLockedCoins,
@@ -16,78 +19,43 @@ import {
 import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
 
+import { getUserLocks } from "../osmosis/lockup";
 import { getPools } from "./index";
+import { getGammShareUnderlyingCoins, makeShareCoin } from "./share";
 import { getSuperfluidPoolIds } from "./superfluid";
 
+/** Gets info for all user pools of all types (excluding cosmwasm pools). */
 export async function getUserPools(bech32Address: string) {
-  const [
-    userBalances,
-    lockedCoins,
-    unlockingCoins,
-    accountPositions,
-    poolIncentives,
-    superfluidPools,
-  ] = await Promise.all([
-    timeout(
-      () => queryBalances({ bech32Address }),
-      10_000, // 10 seconds
-      "queryBalances"
-    )(),
-    timeout(
-      () =>
-        queryAccountLockedCoins({
-          bech32Address,
-        }),
-      10_000, // 10 seconds
-      "queryAccountLockedCoins"
-    )(),
-    timeout(
-      () =>
-        queryAccountUnlockingCoins({
-          bech32Address,
-        }),
-      10_000, // 10 seconds
-      "queryAccountUnlockingCoins"
-    )(),
-    timeout(
-      () => queryAccountPositions({ bech32Address }),
-      10_000, // 10 seconds
-      "queryCLPositions"
-    )(),
-    timeout(
-      () => getCachedPoolIncentivesMap(),
-      10_000, // 10 seconds
-      "getCachedPoolIncentivesMap"
-    )(),
-    timeout(
-      () => getSuperfluidPoolIds(),
-      10_000, // 10 seconds
-      "getSuperfluidPoolIds"
-    )(),
-  ]);
+  const [accountPositions, poolIncentives, superfluidPoolIds] =
+    await Promise.all([
+      timeout(
+        () => queryAccountPositions({ bech32Address }),
+        10_000, // 10 seconds
+        "queryCLPositions"
+      )(),
+      timeout(
+        () => getCachedPoolIncentivesMap(),
+        10_000, // 10 seconds
+        "getCachedPoolIncentivesMap"
+      )(),
+      timeout(
+        () => getSuperfluidPoolIds(),
+        10_000, // 10 seconds
+        "getSuperfluidPoolIds"
+      )(),
+    ]);
 
-  const gammAssets = [
-    ...userBalances.balances,
-    ...lockedCoins.coins,
-    ...unlockingCoins.coins,
-  ].filter(({ denom }) => denom && denom.startsWith("gamm/pool/"));
-
-  const userPoolIdsSet: Set<string> = new Set(
-    accountPositions.positions
-      .map(({ position: { pool_id } }) => pool_id)
-      .filter((poolId): poolId is string => Boolean(poolId))
+  const { locked: lockedShares, poolIds } = await getUserShareRawCoins(
+    bech32Address
   );
 
-  for (const bal of gammAssets) {
-    // The pool share token is in the form of 'gamm/pool/${poolId}'.
-    if (bal.denom.startsWith("gamm/pool/")) {
-      const poolId = bal.denom.replace("gamm/pool/", "");
-      userPoolIdsSet.add(poolId);
-    }
-  }
+  const userUniquePoolIds = new Set(poolIds);
+  accountPositions.positions
+    .map(({ position: { pool_id } }) => pool_id)
+    .forEach((poolId) => userUniquePoolIds.add(poolId));
 
   const eventualPools = await timeout(
-    () => getPools({ poolIds: Array.from(userPoolIdsSet) }),
+    () => getPools({ poolIds: Array.from(userUniquePoolIds) }),
     10_000, // 10 seconds
     "getPools"
   )();
@@ -124,10 +92,14 @@ export async function getUserPools(bech32Address: string) {
         );
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
-          (pool.raw as WeightedPoolRawResponse).total_shares.amount
+          (
+            pool.raw as WeightedPoolRawResponse | StablePoolRawResponse
+          ).total_shares.amount
         );
         const rawShare = aggregateRawCoinsByDenom(
-          lockedCoins.coins.filter((coin) => coin.denom === `gamm/pool/${id}`)
+          lockedShares
+            .filter((coin) => coin.denom === `gamm/pool/${id}`)
+            .concat()
         )[0];
 
         if (rawShare) {
@@ -149,30 +121,202 @@ export async function getUserPools(bech32Address: string) {
         reserveCoins,
         apr: poolIncentives.get(id)?.aprBreakdown?.total,
         poolLiquidity: totalFiatValueLocked,
-        isSuperfluid: superfluidPools.some(
+        isSuperfluid: superfluidPoolIds.some(
           (superfluidPoolId) => superfluidPoolId === id
         ),
+        /** Note: if it's a share pool it is just locked shares value. */
         userValue,
-        weightedPoolInfo:
-          pool.type === "weighted"
-            ? {
-                weights: (pool.raw as WeightedPoolRawResponse).pool_assets.map(
-                  ({ token: { denom }, weight }) => {
-                    const totalWeight = new Dec(
-                      (pool.raw as WeightedPoolRawResponse).total_weight
-                    );
-
-                    return {
-                      denom,
-                      weight: new RatePretty(
-                        new Dec(weight).quoTruncate(totalWeight)
-                      ),
-                    };
-                  }
-                ),
-              }
-            : undefined,
       };
     })
   );
+}
+
+export async function getUserSharePools(
+  bech32Address: string,
+  poolIds?: string[]
+) {
+  const [userRawCoins, userLocks, specifiedPools] = await Promise.all([
+    getUserShareRawCoins(bech32Address),
+    getUserLocks(bech32Address),
+    poolIds ? getPools({ poolIds: poolIds }) : null,
+  ]);
+
+  const {
+    available: availableRaw,
+    locked: lockedRaw,
+    unlocking: unlockingRaw,
+    total: totalRaw,
+    poolIds: ownedPoolIds,
+  } = userRawCoins;
+
+  const userSharePools =
+    specifiedPools ?? (await getPools({ poolIds: ownedPoolIds }));
+
+  const eventualUserSharePools = userSharePools.map(async (sharePool) => {
+    // get aggregate of raw shares of each variation
+    const available = availableRaw.length
+      ? aggregateRawCoinsByDenom(
+          availableRaw.filter(
+            (coin) => coin.denom === `gamm/pool/${sharePool.id}`
+          )
+        )[0]
+      : null;
+    const locked = lockedRaw.length
+      ? aggregateRawCoinsByDenom(
+          lockedRaw.filter((coin) => coin.denom === `gamm/pool/${sharePool.id}`)
+        )[0]
+      : null;
+    const unlocking = unlockingRaw.length
+      ? aggregateRawCoinsByDenom(
+          unlockingRaw.filter(
+            (coin) => coin.denom === `gamm/pool/${sharePool.id}`
+          )
+        )[0]
+      : null;
+    const total = totalRaw.length
+      ? aggregateRawCoinsByDenom(
+          totalRaw.filter((coin) => coin.denom === `gamm/pool/${sharePool.id}`)
+        )[0]
+      : null;
+
+    const availableShares = available ? makeShareCoin(available) : null;
+    const lockedShares = locked ? makeShareCoin(locked) : null;
+    const unlockingShares = unlocking ? makeShareCoin(unlocking) : null;
+    const totalShares = total ? makeShareCoin(total) : null;
+
+    // underlying assets behind all shares
+    // when catching: likely shares balance is too small for precision
+    const underlyingAvailableCoins = available
+      ? await getGammShareUnderlyingCoins(available).catch(
+          () => [] as CoinPretty[]
+        )
+      : [];
+    const underlyingLockedCoins = locked
+      ? await getGammShareUnderlyingCoins(locked).catch(
+          () => [] as CoinPretty[]
+        )
+      : [];
+    const underlyingUnlockingCoins = unlocking
+      ? await getGammShareUnderlyingCoins(unlocking).catch(
+          () => [] as CoinPretty[]
+        )
+      : [];
+    const totalCoins = total
+      ? await getGammShareUnderlyingCoins(total).catch(() => [] as CoinPretty[])
+      : [];
+
+    // value of all shares
+    const availableValue = await calcSumCoinsValue(
+      underlyingAvailableCoins
+    ).catch(() => new Dec(0));
+    const lockedValue = await calcSumCoinsValue(underlyingLockedCoins)
+      .catch(() => new Dec(0))
+      .catch(() => new Dec(0));
+    const unlockingValue = await calcSumCoinsValue(underlyingUnlockingCoins);
+    const totalValue = await calcSumCoinsValue(totalCoins).catch(
+      () => new Dec(0)
+    );
+
+    // get locks containing this pool's shares
+    const lockedLocks = userLocks.filter(
+      ({ coins, isCurrentlyUnlocking }) =>
+        coins.some((coin) => coin.denom === `gamm/pool/${sharePool.id}`) &&
+        !isCurrentlyUnlocking
+    );
+    const unlockingLocks = userLocks.filter(
+      ({ coins, isCurrentlyUnlocking }) =>
+        coins.some((coin) => coin.denom === `gamm/pool/${sharePool.id}`) &&
+        isCurrentlyUnlocking
+    );
+
+    return {
+      // pool
+      ...sharePool,
+      // narrow the type
+      type: sharePool.type as "weighted" | "stable",
+      raw: sharePool.raw as Omit<
+        WeightedPoolRawResponse | StablePoolRawResponse,
+        "@type"
+      >,
+
+      // user data
+      availableShares,
+      underlyingAvailableCoins,
+      availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue ?? 0),
+
+      lockedShares,
+      underlyingLockedCoins,
+      lockedLocks,
+      lockedValue: new PricePretty(DEFAULT_VS_CURRENCY, lockedValue ?? 0),
+
+      unlockingShares,
+      unlockingLocks,
+      underlyingUnlockingCoins,
+      unlockingValue: new PricePretty(DEFAULT_VS_CURRENCY, unlockingValue ?? 0),
+
+      totalShares,
+      totalCoins,
+      totalValue: new PricePretty(DEFAULT_VS_CURRENCY, totalValue ?? 0),
+    };
+  });
+
+  // needed per pool
+  // - user total coinpretty and value
+  // - user available coinpretty and value
+  // - user locked coinpretty and value
+  // - user unlocking coinpretty and value
+
+  return Promise.all(eventualUserSharePools);
+}
+
+async function getUserShareRawCoins(bech32Address: string) {
+  const [userBalances, lockedCoins, unlockingCoins] = await Promise.all([
+    timeout(
+      () => queryBalances({ bech32Address }),
+      10_000, // 10 seconds
+      "queryBalances"
+    )(),
+    timeout(
+      () =>
+        queryAccountLockedCoins({
+          bech32Address,
+        }),
+      10_000, // 10 seconds
+      "queryAccountLockedCoins"
+    )(),
+    timeout(
+      () =>
+        queryAccountUnlockingCoins({
+          bech32Address,
+        }),
+      10_000, // 10 seconds
+      "queryAccountUnlockingCoins"
+    )(),
+  ]);
+
+  const available = userBalances.balances.filter(
+    ({ denom }) => denom && denom.startsWith("gamm/pool/")
+  );
+  const locked = lockedCoins.coins.filter(
+    ({ denom }) => denom && denom.startsWith("gamm/pool/")
+  );
+  const unlocking = unlockingCoins.coins.filter(
+    ({ denom }) => denom && denom.startsWith("gamm/pool/")
+  );
+
+  const total = [...available, ...locked, ...unlocking];
+  const poolIds = new Set<string>();
+  total.forEach(({ denom }) => {
+    const poolId = denom.replace("gamm/pool/", "");
+    poolIds.add(poolId);
+  });
+
+  return {
+    available,
+    locked,
+    unlocking,
+    /** Unaggregated total of all share balances. */
+    total: [...available, ...locked, ...unlocking],
+    poolIds: Array.from(poolIds),
+  };
 }
