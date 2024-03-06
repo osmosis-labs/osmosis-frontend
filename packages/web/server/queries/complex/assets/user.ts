@@ -225,7 +225,7 @@ export async function getUserCoinsFromBank({
   };
 }
 
-/** Lists all of a user's assets contained within locks.
+/** Lists all of a user's assets contained within locks. Locked or unlocking.
  *  NOTE: only considers locked GAMM shares. */
 export async function getUserShareUnderlyingCoinsFromLocks({
   userOsmoAddress,

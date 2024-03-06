@@ -1,14 +1,8 @@
 import { createNodeQuery } from "../../base-utils";
-
-export type AccountUnlockingCoins = {
-  coins: {
-    denom: string;
-    amount: string;
-  }[];
-};
+import { AccountCoins } from "./types";
 
 export const queryAccountUnlockingCoins = createNodeQuery<
-  AccountUnlockingCoins,
+  AccountCoins,
   {
     bech32Address: string;
   }

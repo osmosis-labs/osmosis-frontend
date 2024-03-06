@@ -93,15 +93,13 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
-  getRecommendedAssets: publicProcedure.query(async () => {
-    const assets = await Promise.all(
+  getRecommendedAssets: publicProcedure.query(() =>
+    Promise.all(
       RecommendedSwapDenoms.map((denom) =>
         getAsset({ anyDenom: denom }).catch(() => null)
       )
-    );
-
-    return assets.filter((a): a is Asset => !!a);
-  }),
+    ).then((assets) => assets.filter((a): a is Asset => !!a))
+  ),
   getMarketAsset: publicProcedure
     .input(
       z

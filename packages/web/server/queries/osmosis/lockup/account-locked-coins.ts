@@ -1,14 +1,11 @@
 import { createNodeQuery } from "../../base-utils";
+import { AccountCoins } from "./types";
 
-export type AccountLockedCoins = {
-  coins: {
-    denom: string;
-    amount: string;
-  }[];
-};
-
+/** Includes locked and unlocking coins.
+ *
+ *  To query for *just unlocking* coins, use `queryAccountUnlockingCoins`. */
 export const queryAccountLockedCoins = createNodeQuery<
-  AccountLockedCoins,
+  AccountCoins,
   {
     bech32Address: string;
   }
