@@ -347,7 +347,7 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,
@@ -493,10 +493,6 @@ function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
   existingAssets: TAsset[] = []
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -508,12 +504,10 @@ function useSwapAsset<TAsset extends Asset>(
   const queryEnabled =
     !isNil(minDenomOrSymbol) &&
     typeof minDenomOrSymbol === "string" &&
-    !isLoadingWallet &&
     !existingAsset;
   const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
       findMinDenomOrSymbol: minDenomOrSymbol ?? "",
-      userOsmoAddress: account?.address,
     },
     {
       enabled: queryEnabled,
