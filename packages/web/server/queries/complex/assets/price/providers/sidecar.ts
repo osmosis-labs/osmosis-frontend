@@ -34,11 +34,7 @@ function getBatchLoader() {
               const price =
                 priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
 
-              if (
-                price === "no routes were provided" ||
-                !price ||
-                new Dec(price).isZero()
-              )
+              if (!price || new Dec(price).isZero())
                 return new Error(
                   `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                 );
