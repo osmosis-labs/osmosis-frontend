@@ -75,7 +75,7 @@ export async function getPoolsFromIndexer({
         },
         { offset: 0, limit: Number(numPools.num_pools) }
       );
-      return (await Promise.all(pools.map(makePoolFromImperatorPool))).filter(
+      return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
         (pool): pool is Pool =>
           !!pool && (poolIds ? poolIds.includes(pool.id) : true)
       );
@@ -358,7 +358,7 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
   };
 }
 
-export async function makePoolFromImperatorPool(
+export async function makePoolFromIndexerPool(
   filteredPool: FilteredPoolsResponse["pools"][number]
 ): Promise<Pool | undefined> {
   // deny pools containing tokens with gamm denoms
