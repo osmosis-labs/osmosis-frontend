@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Enable 1-Click Trading",
       "increaseFeeLimit": "Increase network fee limit",
       "continueWithWallet": "Continue with wallet",
-      "sessionEnded": "Session ended on this device"
+      "sessionEnded": "Session ended on this device",
+      "errorEndingSession": "Error ending session",
+      "pleaseTryAgain": "Unexpected Error. Please try again."
     },
     "introduction": {
       "newFeature": "New Feature",

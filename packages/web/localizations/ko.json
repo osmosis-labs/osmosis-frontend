@@ -445,7 +445,9 @@
       "enableOneClickTrading": "1-클릭 거래 활성화",
       "increaseFeeLimit": "네트워크 수수료 한도 인상",
       "continueWithWallet": "지갑으로 계속하기",
-      "sessionEnded": "이 기기에서 세션이 종료되었습니다."
+      "sessionEnded": "이 기기에서 세션이 종료되었습니다.",
+      "errorEndingSession": "세션을 종료하는 중에 오류가 발생했습니다.",
+      "pleaseTryAgain": "예기치 않은 오류. 다시 시도해 주세요."
     },
     "introduction": {
       "newFeature": "새로운 기능",

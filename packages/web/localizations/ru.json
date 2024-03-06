@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Включить торговлю в 1 клик",
       "increaseFeeLimit": "Увеличить лимит комиссии сети",
       "continueWithWallet": "Продолжить с кошельком",
-      "sessionEnded": "Сеанс завершен на этом устройстве"
+      "sessionEnded": "Сеанс завершен на этом устройстве",
+      "errorEndingSession": "Ошибка завершения сеанса",
+      "pleaseTryAgain": "Неожиданная ошибка. Пожалуйста, попробуйте еще раз."
     },
     "introduction": {
       "newFeature": "Новая особенность",

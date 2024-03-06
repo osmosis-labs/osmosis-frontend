@@ -445,7 +445,9 @@
       "enableOneClickTrading": "1-Click取引を有効にする",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "continueWithWallet": "ウォレットを続ける",
-      "sessionEnded": "このデバイスでセッションが終了しました"
+      "sessionEnded": "このデバイスでセッションが終了しました",
+      "errorEndingSession": "セッション終了時のエラー",
+      "pleaseTryAgain": "予期しないエラー。もう一度試してください。"
     },
     "introduction": {
       "newFeature": "新機能",

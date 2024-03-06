@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Włącz handel jednym kliknięciem",
       "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
       "continueWithWallet": "Kontynuuj z portfelem",
-      "sessionEnded": "Sesja zakończyła się na tym urządzeniu"
+      "sessionEnded": "Sesja zakończyła się na tym urządzeniu",
+      "errorEndingSession": "Błąd podczas kończenia sesji",
+      "pleaseTryAgain": "Niespodziewany błąd. Proszę spróbuj ponownie."
     },
     "introduction": {
       "newFeature": "Nowa cecha",

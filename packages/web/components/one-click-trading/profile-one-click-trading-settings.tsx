@@ -1,10 +1,6 @@
-import { displayToast, ToastType } from "~/components/alert";
+import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
-import {
-  useOneClickTradingParams,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
+import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useStore } from "~/stores";
@@ -19,7 +15,6 @@ export const ProfileOneClickTradingSettings = ({
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
     useOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { t } = useTranslation();
 
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
@@ -104,14 +99,7 @@ export const ProfileOneClickTradingSettings = ({
         };
 
         if (!oneClickTradingInfo) {
-          displayToast(
-            {
-              titleTranslationKey: t(
-                "oneClickTrading.profile.failedToGetSession"
-              ),
-            },
-            ToastType.ERROR
-          );
+          displayErrorRemovingSessionToast();
           rollback();
           throw new Error("oneClickTradingInfo is undefined");
         }
@@ -126,6 +114,7 @@ export const ProfileOneClickTradingSettings = ({
             },
             onError: () => {
               rollback();
+              displayErrorRemovingSessionToast();
             },
           }
         );

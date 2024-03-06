@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
       "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
-      "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet"
+      "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",
+      "errorEndingSession": "Fehler beim Beenden der Sitzung",
+      "pleaseTryAgain": "Unerwarteter Fehler. Bitte versuche es erneut."
     },
     "introduction": {
       "newFeature": "Neue Funktion",

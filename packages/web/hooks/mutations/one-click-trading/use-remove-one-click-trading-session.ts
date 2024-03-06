@@ -1,6 +1,5 @@
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { useStore } from "~/stores";
@@ -48,7 +47,6 @@ export const useRemoveOneClickTradingSession = ({
 
     if (oneClickTradingInfo?.authenticatorId === authenticatorId) {
       accountStore.setOneClickTradingInfo(undefined);
-      toast.dismiss(); // Dismiss all toasts
       displayToast(
         {
           titleTranslationKey: "oneClickTrading.toast.oneClickTradingDisabled",

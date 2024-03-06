@@ -18,7 +18,6 @@ import {
 } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
 import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -430,7 +429,6 @@ export const useCreateOneClickTradingSession = ({
         unixNanoSecondsToSeconds(sessionPeriod.end)
       );
       const humanizedTime = humanizeTime(sessionEndDate);
-      toast.dismiss(); // Dismiss all toasts
       displayToast(
         {
           titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",

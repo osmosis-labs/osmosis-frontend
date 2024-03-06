@@ -445,7 +445,9 @@
       "enableOneClickTrading": "啟用一鍵交易",
       "increaseFeeLimit": "提高網路費用限額",
       "continueWithWallet": "繼續使用錢包",
-      "sessionEnded": "會話在此裝置上結束"
+      "sessionEnded": "會話在此裝置上結束",
+      "errorEndingSession": "結束會話時出錯",
+      "pleaseTryAgain": "意外的錯誤。請再試一次。"
     },
     "introduction": {
       "newFeature": "新功能",

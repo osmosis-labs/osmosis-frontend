@@ -445,7 +445,9 @@
       "enableOneClickTrading": "启用一键交易",
       "increaseFeeLimit": "提高网络费用限额",
       "continueWithWallet": "继续使用钱包",
-      "sessionEnded": "会话在此设备上结束"
+      "sessionEnded": "会话在此设备上结束",
+      "errorEndingSession": "结束会话时出错",
+      "pleaseTryAgain": "意外的错误。请再试一次。"
     },
     "introduction": {
       "newFeature": "新功能",

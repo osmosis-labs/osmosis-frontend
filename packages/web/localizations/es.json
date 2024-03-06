@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Habilite el comercio con 1 clic",
       "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
       "continueWithWallet": "Continuar con la billetera",
-      "sessionEnded": "La sesión finalizó en este dispositivo"
+      "sessionEnded": "La sesión finalizó en este dispositivo",
+      "errorEndingSession": "Error al finalizar la sesión",
+      "pleaseTryAgain": "Error inesperado. Inténtalo de nuevo."
     },
     "introduction": {
       "newFeature": "Nueva caracteristica",

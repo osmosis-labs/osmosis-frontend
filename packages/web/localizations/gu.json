@@ -445,7 +445,9 @@
       "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
       "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
       "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
-      "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું"
+      "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
+      "errorEndingSession": "સત્ર સમાપ્ત કરવામાં ભૂલ",
+      "pleaseTryAgain": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો."
     },
     "introduction": {
       "newFeature": "નવી સુવિધા",

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { createGlobalState, useMount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
+import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { Button } from "~/components/buttons";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
@@ -142,7 +143,6 @@ const IntroModal1CTScreens = observer(
   }) => {
     const removeAuthenticator = useAddOrRemoveAuthenticators();
     const { accountStore, chainStore } = useStore();
-    const { t } = useTranslation();
 
     const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
 
@@ -202,14 +202,7 @@ const IntroModal1CTScreens = observer(
               };
 
               if (!oneClickTradingInfo) {
-                displayToast(
-                  {
-                    titleTranslationKey: t(
-                      "oneClickTrading.profile.failedToGetSession"
-                    ),
-                  },
-                  ToastType.ERROR
-                );
+                displayErrorRemovingSessionToast();
                 rollback();
                 throw new Error("oneClickTradingInfo is undefined");
               }
@@ -224,6 +217,7 @@ const IntroModal1CTScreens = observer(
                   },
                   onError: () => {
                     rollback();
+                    displayErrorRemovingSessionToast();
                   },
                 }
               );

@@ -15,6 +15,7 @@ import {
 } from "react";
 import { useLocalStorage } from "react-use";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
@@ -170,6 +171,49 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
+    const onClick1CT = () => {
+      displayToast(
+        {
+          titleTranslationKey: t("oneClickTrading.toast.oneClickTradingActive"),
+          captionTranslationKey: "59 minutes remaining",
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingExpired"
+          ),
+          captionElement: (
+            <Button mode="text" className="caption">
+              Enable 1-Click Trading
+            </Button>
+          ),
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          titleTranslationKey: t(
+            "oneClickTrading.toast.oneClickTradingDisabled"
+          ),
+          captionTranslationKey: "Session ended on this device",
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+      displayToast(
+        {
+          titleTranslationKey: t("oneClickTrading.toast.networkFeeTooHigh"),
+          captionElement: (
+            <Button mode="text" className="caption">
+              Increase network fee limit
+            </Button>
+          ),
+        },
+        ToastType.ONE_CLICK_TRADING
+      );
+    };
+
     return (
       <>
         <div
@@ -178,6 +222,7 @@ export const NavBar: FunctionComponent<
             className
           )}
         >
+          <button onClick={onClick1CT}>Open!</button>
           <div className="relative hidden shrink-0 items-center md:flex">
             <Popover>
               {({ close: closeMobileMainMenu }) => {

@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Activer le trading en 1 clic",
       "increaseFeeLimit": "Augmenter la limite des frais de réseau",
       "continueWithWallet": "Continuer avec le portefeuille",
-      "sessionEnded": "Session terminée sur cet appareil"
+      "sessionEnded": "Session terminée sur cet appareil",
+      "errorEndingSession": "Erreur de fin de session",
+      "pleaseTryAgain": "Erreur inattendue. Veuillez réessayer."
     },
     "introduction": {
       "newFeature": "Nouvelle fonctionnalité",

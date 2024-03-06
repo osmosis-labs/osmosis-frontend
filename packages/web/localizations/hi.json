@@ -445,7 +445,9 @@
       "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
       "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
       "continueWithWallet": "बटुए के साथ जारी रखें",
-      "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया"
+      "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया",
+      "errorEndingSession": "सत्र समाप्त करने में त्रुटि",
+      "pleaseTryAgain": "अप्रत्याशित त्रुटि। कृपया पुन: प्रयास करें।"
     },
     "introduction": {
       "newFeature": "नयी विशेषता",

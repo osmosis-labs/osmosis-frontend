@@ -92,6 +92,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               backgroundColor: "#2d2755",
             }}
             transition={Bounce}
+            newestOnTop
           />
           <MainLayoutWrapper>
             <ErrorBoundary fallback={ErrorFallback}>

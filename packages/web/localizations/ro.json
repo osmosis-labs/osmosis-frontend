@@ -445,7 +445,9 @@
       "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
       "increaseFeeLimit": "Creșteți limita taxei de rețea",
       "continueWithWallet": "Continuați cu portofelul",
-      "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv"
+      "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv",
+      "errorEndingSession": "Eroare la încheierea sesiunii",
+      "pleaseTryAgain": "Eroare neașteptată. Vă rugăm să încercați din nou."
     },
     "introduction": {
       "newFeature": "Optiune noua",
