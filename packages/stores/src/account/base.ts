@@ -567,7 +567,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const canBeSignedWithOneClickTrading =
-        await this.canBeSignedWithOneClickTrading({ messages: msgs });
+        await this.shouldBeSignedWithOneClickTrading({ messages: msgs });
       const oneClickExtensionOptions = [
         {
           typeUrl: "/osmosis.authenticator.TxExtension",
@@ -766,8 +766,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const canBeSignedWithOneClickTrading =
-      await this.canBeSignedWithOneClickTrading({ messages });
+    const shouldBeSignedWithOneClickTrading =
+      await this.shouldBeSignedWithOneClickTrading({ messages });
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     const isWithinNetworkFeeLimit =
@@ -779,7 +779,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
 
     if (
-      canBeSignedWithOneClickTrading &&
+      shouldBeSignedWithOneClickTrading &&
       /**
        * Should not surpass network fee limit.
        */
@@ -796,7 +796,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (
-      canBeSignedWithOneClickTrading &&
+      shouldBeSignedWithOneClickTrading &&
       !isWithinNetworkFeeLimit &&
       this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit
     ) {
@@ -1386,9 +1386,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   /**
-   * Determines if a transaction can be signed using one-click trading based on various conditions.
+   * Determines if a transaction should be signed using one-click trading based on various conditions.
    */
-  async canBeSignedWithOneClickTrading({
+  async shouldBeSignedWithOneClickTrading({
     messages,
   }: {
     messages: readonly EncodeObject[];
