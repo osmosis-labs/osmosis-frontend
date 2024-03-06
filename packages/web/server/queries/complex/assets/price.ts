@@ -213,51 +213,43 @@ async function calculatePriceThroughPools({
 }
 
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
+ *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found.
  */
 export async function getAssetPrice({
   asset,
   currency = "usd",
 }: {
-  asset: Partial<{
-    coinDenom: string;
-    coinMinimalDenom: string;
-    sourceDenom: string;
-  }>;
+  asset: { coinDenom?: string } & (
+    | { coinMinimalDenom: string }
+    | { sourceDenom: string }
+  );
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
-  const cacheKey = getAssetFromAssetList({
-    sourceDenom: asset.sourceDenom,
-    coinMinimalDenom: asset.coinMinimalDenom,
-    assetLists: AssetLists,
-  })?.coinMinimalDenom;
+  const coinMinimalDenom =
+    "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
+  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
 
-  if (!cacheKey)
+  const assetListAsset = getAssetFromAssetList({
+    sourceDenom,
+    coinMinimalDenom,
+    assetLists: AssetLists,
+  });
+
+  if (!assetListAsset)
     throw new Error(
       `Asset ${
-        asset.coinDenom ?? asset.coinMinimalDenom ?? asset.sourceDenom
+        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
       } not found in asset list registry.`
     );
 
   return cachified({
-    key: `asset-price-${cacheKey}`,
+    key: `asset-price-${assetListAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
     staleWhileRevalidate: 1000 * 60, // 1 minute
     getFreshValue: async () => {
-      const assetListAsset = getAssetFromAssetList({
-        sourceDenom: asset.sourceDenom,
-        coinMinimalDenom: asset.coinMinimalDenom,
-        assetLists: AssetLists,
-      });
-
-      if (!assetListAsset) {
-        throw new Error(
-          `Asset ${asset.sourceDenom} not found on asset list registry.`
-        );
-      }
-
-      if (assetListAsset.priceInfo && assetListAsset) {
+      if (assetListAsset.priceInfo) {
         return await calculatePriceThroughPools({
           asset: assetListAsset.rawAsset,
           currency,
