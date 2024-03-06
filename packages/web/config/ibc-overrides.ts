@@ -540,7 +540,7 @@ const MainnetIBCAdditionalData: Partial<
   },
   DYM: {
     depositUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=dymension_1100-1&chainTo=osmosis-1&token0=adym&token1=ibc%2F9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
+      "https://portal.dymension.xyz/ibc",
   },
   "injective.GLTO": {
     depositUrlOverride:
