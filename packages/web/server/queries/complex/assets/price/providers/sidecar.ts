@@ -10,7 +10,7 @@ import {
 import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
-import { getCoingeckoPrice, searchCoinGeckoCoinId } from "./coingecko";
+import { getPriceFromCoinGecko } from "./coingecko";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -40,38 +40,17 @@ const batchLoader = new EdgeDataLoader(
     maxBatchSize: 30,
   }
 );
-export async function getSidecarPriceBatched({
-  symbol,
-  coinMinimalDenom,
-  coingeckoId,
-}: {
-  symbol: string;
-  coinMinimalDenom: string;
-  coingeckoId?: string;
-}) {
+export async function getSidecarPriceBatched(asset: Asset) {
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
     cache: sidecarCache,
-    key: `coingecko-price-${coinMinimalDenom}`,
+    key: `coingecko-price-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
       batchLoader
-        .load(coinMinimalDenom)
+        .load(asset.coinMinimalDenom)
         .then((price) => new Dec(price))
-        .catch(async () => {
-          // fallback to coingekco if no result on sidecar
-          let coinGeckoId = coingeckoId;
-
-          if (!coinGeckoId) {
-            coinGeckoId = await searchCoinGeckoCoinId({ symbol });
-          }
-
-          if (!coinGeckoId) {
-            throw new Error(`Asset ${symbol} has no identifier for pricing.`);
-          }
-
-          return await getCoingeckoPrice({ coinGeckoId, currency: "usd" });
-        }),
+        .catch(() => getPriceFromCoinGecko(asset)),
   });
 }

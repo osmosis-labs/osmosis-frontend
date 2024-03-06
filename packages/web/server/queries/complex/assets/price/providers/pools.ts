@@ -7,9 +7,9 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { CoingeckoVsCurrencies } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 
-import { getCoingeckoPrice, searchCoinGeckoCoinId } from "./coingecko";
+import { getCoingeckoPrice, getPriceFromCoinGecko } from "./coingecko";
 
-/** Calculates prices by querying pools and finding spot prices through routes in those pools.
+/** Calculates prices by querying pools and finding spot prices through routes in those pools. Falls back to CoinGecko if price not found.
  *  @throws if there's no price info for that asset, or there's an issue calculating the price. */
 export async function getPriceFromPools(
   asset: Asset,
@@ -22,22 +22,7 @@ export async function getPriceFromPools(
     });
   }
 
-  let coinGeckoId = asset.coingeckoId;
-
-  // Try to search CoinGecko for it's ID if it wasn't in asset list
-  // This is especially applicable in the bridge providers for calculating quotes
-  if (!coinGeckoId) {
-    coinGeckoId = await searchCoinGeckoCoinId(asset);
-  }
-
-  if (!coinGeckoId) {
-    throw new Error(`Asset ${asset.symbol} has no identifier for pricing.`);
-  }
-
-  return await getCoingeckoPrice({
-    coinGeckoId,
-    currency,
-  });
+  return await getPriceFromCoinGecko(asset, currency);
 }
 
 /**

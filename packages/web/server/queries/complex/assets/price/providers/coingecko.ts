@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { Asset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -11,6 +12,25 @@ import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/** Gets asset price from CoinGecko. Tries to search for CoinGecko ID if not provided.
+ *  @throws If no CoinGecko ID is configured or can be found from searching with symbol. */
+export async function getPriceFromCoinGecko(
+  asset: Asset,
+  currency: CoingeckoVsCurrencies = "usd"
+) {
+  let coinGeckoId = asset.coingeckoId;
+
+  if (!coinGeckoId) {
+    coinGeckoId = await searchCoinGeckoCoinId({ symbol: asset.symbol });
+  }
+
+  if (!coinGeckoId) {
+    throw new Error(`No CoinGecko ID found for ${asset.symbol}`);
+  }
+
+  return getCoingeckoPrice({ coinGeckoId, currency });
+}
 
 /** Used with `DataLoader` to make batched calls to CoinGecko.
  *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
