@@ -226,8 +226,21 @@ export async function getAssetPrice({
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
+  const cacheKey = getAssetFromAssetList({
+    sourceDenom: asset.sourceDenom,
+    coinMinimalDenom: asset.coinMinimalDenom,
+    assetLists: AssetLists,
+  })?.coinMinimalDenom;
+
+  if (!cacheKey)
+    throw new Error(
+      `Asset ${
+        asset.coinDenom ?? asset.coinMinimalDenom ?? asset.sourceDenom
+      } not found in asset list registry.`
+    );
+
   return cachified({
-    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    key: `asset-price-${cacheKey}`,
     cache: pricesCache,
     ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
     staleWhileRevalidate: 1000 * 60, // 1 minute
