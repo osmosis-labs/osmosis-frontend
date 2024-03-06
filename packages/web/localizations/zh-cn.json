@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "网络费太高",
       "enableOneClickTrading": "启用一键交易",
       "increaseFeeLimit": "提高网络费用限额",
-      "continueWithWallet": "继续使用钱包"
+      "continueWithWallet": "继续使用钱包",
+      "sessionEnded": "会话在此设备上结束"
     },
     "introduction": {
       "newFeature": "新功能",

@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
       "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
       "increaseFeeLimit": "افزایش سقف هزینه شبکه",
-      "continueWithWallet": "با کیف پول ادامه دهید"
+      "continueWithWallet": "با کیف پول ادامه دهید",
+      "sessionEnded": "جلسه در این دستگاه به پایان رسید"
     },
     "introduction": {
       "newFeature": "خصوصیت جدید",

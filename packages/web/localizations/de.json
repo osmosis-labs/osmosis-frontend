@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
       "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
-      "continueWithWallet": "Fahren Sie mit der Brieftasche fort"
+      "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
+      "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet"
     },
     "introduction": {
       "newFeature": "Neue Funktion",

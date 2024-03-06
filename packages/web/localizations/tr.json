@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
       "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
       "increaseFeeLimit": "Ağ ücreti sınırını artırın",
-      "continueWithWallet": "Cüzdanla devam et"
+      "continueWithWallet": "Cüzdanla devam et",
+      "sessionEnded": "Bu cihazda oturum sona erdi"
     },
     "introduction": {
       "newFeature": "Yeni özellik",

@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
       "enableOneClickTrading": "1-Click取引を有効にする",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
-      "continueWithWallet": "ウォレットを続ける"
+      "continueWithWallet": "ウォレットを続ける",
+      "sessionEnded": "このデバイスでセッションが終了しました"
     },
     "introduction": {
       "newFeature": "新機能",

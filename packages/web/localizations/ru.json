@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "enableOneClickTrading": "Включить торговлю в 1 клик",
       "increaseFeeLimit": "Увеличить лимит комиссии сети",
-      "continueWithWallet": "Продолжить с кошельком"
+      "continueWithWallet": "Продолжить с кошельком",
+      "sessionEnded": "Сеанс завершен на этом устройстве"
     },
     "introduction": {
       "newFeature": "Новая особенность",

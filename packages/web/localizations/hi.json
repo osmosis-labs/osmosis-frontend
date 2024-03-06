@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
       "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
       "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
-      "continueWithWallet": "बटुए के साथ जारी रखें"
+      "continueWithWallet": "बटुए के साथ जारी रखें",
+      "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया"
     },
     "introduction": {
       "newFeature": "नयी विशेषता",

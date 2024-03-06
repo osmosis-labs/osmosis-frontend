@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 
-import { MultiLanguageT } from "~/hooks";
+import { MultiLanguageT, TranslationPath } from "~/hooks";
 
 export interface Alert {
-  titleTranslationKey: string;
-  captionTranslationKey?: Parameters<MultiLanguageT> | string;
+  titleTranslationKey: TranslationPath;
+  captionTranslationKey?: Parameters<MultiLanguageT> | TranslationPath;
   captionElement?: ReactNode;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;

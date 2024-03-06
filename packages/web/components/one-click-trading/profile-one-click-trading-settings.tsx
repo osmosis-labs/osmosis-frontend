@@ -125,6 +125,14 @@ export const ProfileOneClickTradingSettings = ({
           {
             onSuccess: () => {
               accountStore.setOneClickTradingInfo(undefined);
+              displayToast(
+                {
+                  titleTranslationKey:
+                    "oneClickTrading.toast.oneClickTradingDisabled",
+                  captionTranslationKey: "oneClickTrading.toast.sessionEnded",
+                },
+                ToastType.ONE_CLICK_TRADING
+              );
               onGoBack();
             },
             onError: () => {

@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Network fee too high",
       "enableOneClickTrading": "Enable 1-Click Trading",
       "increaseFeeLimit": "Increase network fee limit",
-      "continueWithWallet": "Continue with wallet"
+      "continueWithWallet": "Continue with wallet",
+      "sessionEnded": "Session ended on this device"
     },
     "introduction": {
       "newFeature": "New Feature",

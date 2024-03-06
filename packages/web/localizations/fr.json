@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Frais de réseau trop élevés",
       "enableOneClickTrading": "Activer le trading en 1 clic",
       "increaseFeeLimit": "Augmenter la limite des frais de réseau",
-      "continueWithWallet": "Continuer avec le portefeuille"
+      "continueWithWallet": "Continuer avec le portefeuille",
+      "sessionEnded": "Session terminée sur cet appareil"
     },
     "introduction": {
       "newFeature": "Nouvelle fonctionnalité",

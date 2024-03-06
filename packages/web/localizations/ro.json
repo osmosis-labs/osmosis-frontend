@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Taxa de rețea prea mare",
       "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
       "increaseFeeLimit": "Creșteți limita taxei de rețea",
-      "continueWithWallet": "Continuați cu portofelul"
+      "continueWithWallet": "Continuați cu portofelul",
+      "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv"
     },
     "introduction": {
       "newFeature": "Optiune noua",

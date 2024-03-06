@@ -178,7 +178,7 @@ const IntroModal1CTScreens = observer(
       isError: isError1CTParams,
     } = useOneClickTradingParams({
       oneClickTradingInfo,
-      defaultIsOneClickEnabled: oneClickTradingInfo ? true : false,
+      defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
     });
 
     return (
@@ -241,6 +241,16 @@ const IntroModal1CTScreens = observer(
                 {
                   onSuccess: () => {
                     accountStore.setOneClickTradingInfo(undefined);
+                    displayToast(
+                      {
+                        titleTranslationKey: t(
+                          "oneClickTrading.toast.oneClickTradingDisabled"
+                        ),
+                        captionTranslationKey:
+                          "oneClickTrading.toast.sessionEnded",
+                      },
+                      ToastType.ONE_CLICK_TRADING
+                    );
                   },
                   onError: () => {
                     rollback();

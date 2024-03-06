@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "Taxa de rede muito alta",
       "enableOneClickTrading": "Habilite a negociação em 1 clique",
       "increaseFeeLimit": "Aumentar o limite de taxa de rede",
-      "continueWithWallet": "Continuar com carteira"
+      "continueWithWallet": "Continuar com carteira",
+      "sessionEnded": "A sessão terminou neste dispositivo"
     },
     "introduction": {
       "newFeature": "Novo recurso",

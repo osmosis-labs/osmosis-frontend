@@ -444,7 +444,8 @@
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
       "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
       "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
-      "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો"
+      "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
+      "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું"
     },
     "introduction": {
       "newFeature": "નવી સુવિધા",
