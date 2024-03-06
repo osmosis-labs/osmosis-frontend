@@ -1,5 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Int, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   AccountStore,
   AccountStoreWallet,
@@ -35,62 +35,13 @@ interface EstimateSwapTxData {
 }
 
 /**
- * createEstimateSwapTxMessage constructs the data necessary for estimating the fees associated with a swap transaction
- *
- * @param {Object} params - An object containing all necessary data for the transaction.
- * @param {Array} params.routes - The swap routes, detailing each pool involved and the token amounts.
- * @param {Object} params.tokenIn - Input currency and amount.
- * @param {ChainStore} params.chainStore - Provides access to chain-specific data, essential for transaction construction.
- * @param {OsmoAccountStore} params.accountStore - Manages interactions with blockchain accounts.
- * @returns {Promise} A msg object for the teransaction we want to simulate.
- */
-export function createEstimateSwapTxMessage({
-  routes,
-  tokenIn,
-  osmosisChainId,
-  accountStore,
-  run,
-}: {
-  routes: {
-    pools: {
-      id: string;
-      tokenOutDenom: string;
-    }[];
-    tokenInAmount: string;
-  }[];
-  tokenIn: {
-    currency: Currency;
-    amount: string;
-  };
-  osmosisChainId: string;
-  accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
-  run: boolean; // <== keep this
-}): EncodeObject | undefined {
-  if (!run) return;
-  // Validate and extract necessary data from the chainStore and accountStore
-  const wallet = accountStore.getWallet(osmosisChainId);
-  if (!wallet) return; // throw new Error(`No wallet found for chain ID: ${chainId}`);
-  if (routes.length === 0) return; // throw new Error("No routes provided for transaction.");
-
-  // Construct the transaction message based on the provided routes
-  return routes.length === 1
-    ? wallet.osmosis.makeSwapExactAmountIn({
-        pools: routes[0].pools,
-        tokenIn,
-        tokenOutMinAmount: TOKEN_OUT_MIN_AMOUNT,
-      })
-    : wallet.osmosis.makeSplitRoutesSwapExactAmountIn({
-        routes,
-        tokenIn,
-        tokenOutMinAmount: TOKEN_OUT_MIN_AMOUNT,
-      });
-}
-
-/**
- * useEstimateSwapTxFeesMutation initializes and manages a mutation for estimating swap transaction fees.
- * It encapsulates the logic for creating transaction data, invoking the fee estimation process.
+ * useEstimateSwapTxFeesQuery initializes and manages a query for estimating swap transaction fees.
+ * It encapsulates the logic for creating transaction data and invoking the fee estimation process.
  * TODO: handle potential errors.
- * @returns {Object} React Query mutation object.
+ * @param routes - The swap routes, each containing an array of pools and the token input amount.
+ * @param tokenIn - The input token, specifying the currency and amount.
+ * @param run - Flag indicating whether to run the query or not.
+ * @returns {Object} React Query query object.
  */
 export function useEstimateSwapTxFeesQuery(
   routes: {
@@ -118,7 +69,7 @@ export function useEstimateSwapTxFeesQuery(
     ["simulate-swap-tx", estimateFeeData?.messages[0]?.typeUrl || ""],
     async () => {
       const { wallet, messages, fee, memo, inToken } = estimateFeeData!;
-      const [{ amount, gas }, InTokenAssetWithPrice] = await Promise.all([
+      const [{ amount, gas }, inTokenAssetWithPrice] = await Promise.all([
         accountStore.estimateFee(wallet, messages, fee, memo, {
           ...wallet.walletInfo?.signOptions,
           preferNoSetFee: true, // this will automatically calculate the amount as well.
@@ -128,16 +79,15 @@ export function useEstimateSwapTxFeesQuery(
         }),
       ]);
 
-      const coin = amount[0];
-      if (!coin || !InTokenAssetWithPrice?.currentPrice) return; // TODO: Handle this case
+      const coinAmount = amount[0]?.amount;
+      if (!coinAmount || !inTokenAssetWithPrice?.currentPrice) return; // TODO: Handle this case
 
-      const coinAmount = new Dec(coin.amount);
-      const denominationFactor = new Dec(
-        `1${"0".repeat(InTokenAssetWithPrice.coinDecimals)}`
-      ); // Assuming 6 decimal places for OSMO
-      const gasInTokenAmount = coinAmount.quo(denominationFactor);
+      debugger;
+      const gasInTokenAmount = new IntPretty(
+        new Int(coinAmount)
+      ).moveDecimalPointLeft(inTokenAssetWithPrice.coinDecimals);
       const priceInUsd =
-        InTokenAssetWithPrice.currentPrice.mul(gasInTokenAmount);
+        inTokenAssetWithPrice.currentPrice.mul(gasInTokenAmount);
 
       const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, priceInUsd);
 
