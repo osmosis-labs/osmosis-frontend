@@ -1,8 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
 import { Transfer } from "~/components/complex/transfer";
+import { UnstableAssetWarning } from "~/components/complex/unstable-assets-warning";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -25,6 +26,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       ibcTransferHistoryStore,
       queriesExternalStore,
       accountStore,
+      assetsStore,
     } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
@@ -134,108 +136,149 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       walletConnected &&
       counterpartyAccount?.walletStatus === WalletStatus.Connected;
 
+    const availableBalance = isWithdraw
+      ? queriesStore
+          .get(osmosisChainId)
+          .queryBalances.getQueryBech32Address(account?.address ?? "")
+          .getBalanceFromCurrency(currency)
+      : queriesStore
+          .get(counterpartyChainId)
+          .queryBalances.getQueryBech32Address(
+            counterpartyAccount?.address ?? ""
+          )
+          .getBalanceFromCurrency(currency.originCurrency!);
+
+    const { ibcBalances } = assetsStore;
+
+    const coinDenom = availableBalance?.currency.coinDenom;
+
+    // find matching balance from asset list
+    const ibcBalance = ibcBalances.find(
+      ({ balance }) => balance.currency.coinDenom === coinDenom
+    );
+
+    const isUnstable = ibcBalance?.isUnstable;
+    const prettyChainName =
+      ibcBalance?.chainInfo.prettyChainName || currency.coinDenom;
+
+    const [showIsUnstableWarning, setShowIsUnstableWarning] =
+      useState(isUnstable);
+
+    const getTitle = useCallback(() => {
+      if (showIsUnstableWarning) {
+        return isWithdraw
+          ? t("unstableAssetsWarning.titleWithdraw", {
+              coinDenom: currency.coinDenom,
+            })
+          : t("unstableAssetsWarning.titleDeposit", {
+              coinDenom: currency.coinDenom,
+            });
+      } else {
+        return isWithdraw
+          ? t("assets.ibcTransfer.titleWithdraw", {
+              coinDenom: currency.coinDenom,
+            })
+          : t("assets.ibcTransfer.titleDeposit", {
+              coinDenom: currency.coinDenom,
+            });
+      }
+    }, [showIsUnstableWarning, isWithdraw, t, currency.coinDenom]);
+
     return (
       <ModalBase
         {...props}
         isOpen={props.isOpen && showModalBase}
-        title={
-          isWithdraw
-            ? t("assets.ibcTransfer.titleWithdraw", {
-                coinDenom: currency.coinDenom,
-              })
-            : t("assets.ibcTransfer.titleDeposit", {
-                coinDenom: currency.coinDenom,
-              })
-        }
+        title={getTitle()}
       >
-        <Transfer
-          isWithdraw={isWithdraw}
-          transferPath={
-            isWithdraw
-              ? [
-                  {
-                    address: account?.address ?? "",
-                    networkName:
-                      chainStore.getChain(osmosisChainId).prettyChainName,
-                    iconUrl: "/tokens/osmo.svg",
-                    source: "account" as const,
-                  },
-                  {
-                    address: counterpartyAccount?.address ?? "",
-                    networkName:
-                      chainStore.getChain(counterpartyChainId).prettyChainName,
-                    iconUrl: currency.coinImageUrl,
-                    source: "counterpartyAccount" as const,
-                  },
-                ]
-              : [
-                  {
-                    address: counterpartyAccount?.address ?? "",
-                    networkName:
-                      chainStore.getChain(counterpartyChainId).prettyChainName,
-                    iconUrl: currency.coinImageUrl,
-                    source: "counterpartyAccount" as const,
-                  },
-                  {
-                    address: account?.address ?? "",
-                    networkName:
-                      chainStore.getChain(osmosisChainId).prettyChainName,
-                    iconUrl: "/tokens/osmo.svg",
-                    source: "account" as const,
-                  },
-                ]
-          }
-          isOsmosisAccountLoaded={walletConnected}
-          availableBalance={
-            isWithdraw
-              ? queriesStore
-                  .get(osmosisChainId)
-                  .queryBalances.getQueryBech32Address(account?.address ?? "")
-                  .getBalanceFromCurrency(currency)
-              : queriesStore
-                  .get(counterpartyChainId)
-                  .queryBalances.getQueryBech32Address(
-                    counterpartyAccount?.address ?? ""
-                  )
-                  .getBalanceFromCurrency(currency.originCurrency!)
-          }
-          editWithdrawAddrConfig={
-            customCounterpartyConfig
-              ? {
-                  customAddress: customCounterpartyConfig.bech32Address,
-                  isValid: customCounterpartyConfig.isValid,
-                  setCustomAddress: customCounterpartyConfig.setBech32Address,
-                  didAckWithdrawRisk,
-                  setDidAckWithdrawRisk,
+        {showIsUnstableWarning ? (
+          <UnstableAssetWarning
+            onContinue={() => setShowIsUnstableWarning(false)}
+            onCancel={props.onRequestClose}
+            prettyChainName={prettyChainName}
+          />
+        ) : (
+          <>
+            <Transfer
+              isWithdraw={isWithdraw}
+              transferPath={
+                isWithdraw
+                  ? [
+                      {
+                        address: account?.address ?? "",
+                        networkName:
+                          chainStore.getChain(osmosisChainId).prettyChainName,
+                        iconUrl: "/tokens/osmo.svg",
+                        source: "account" as const,
+                      },
+                      {
+                        address: counterpartyAccount?.address ?? "",
+                        networkName:
+                          chainStore.getChain(counterpartyChainId)
+                            .prettyChainName,
+                        iconUrl: currency.coinImageUrl,
+                        source: "counterpartyAccount" as const,
+                      },
+                    ]
+                  : [
+                      {
+                        address: counterpartyAccount?.address ?? "",
+                        networkName:
+                          chainStore.getChain(counterpartyChainId)
+                            .prettyChainName,
+                        iconUrl: currency.coinImageUrl,
+                        source: "counterpartyAccount" as const,
+                      },
+                      {
+                        address: account?.address ?? "",
+                        networkName:
+                          chainStore.getChain(osmosisChainId).prettyChainName,
+                        iconUrl: "/tokens/osmo.svg",
+                        source: "account" as const,
+                      },
+                    ]
+              }
+              isOsmosisAccountLoaded={walletConnected}
+              availableBalance={availableBalance}
+              editWithdrawAddrConfig={
+                customCounterpartyConfig
+                  ? {
+                      customAddress: customCounterpartyConfig.bech32Address,
+                      isValid: customCounterpartyConfig.isValid,
+                      setCustomAddress:
+                        customCounterpartyConfig.setBech32Address,
+                      didAckWithdrawRisk,
+                      setDidAckWithdrawRisk,
+                    }
+                  : undefined
+              }
+              disabled={!areWalletsConnected}
+              toggleIsMax={() => amountConfig.toggleIsMax()}
+              currentValue={amountConfig.amount}
+              onInput={(value) => amountConfig.setAmount(value)}
+              waitTime={t("assets.ibcTransfer.waitTime")}
+              selectedWalletDisplay={
+                isWalletSelectLoading
+                  ? undefined
+                  : {
+                      iconUrl: counterpartyAccount?.walletInfo?.logo ?? "",
+                      displayName:
+                        counterpartyAccount?.walletInfo?.prettyName ?? "",
+                    }
+              }
+              onRequestSwitchWallet={async (source) => {
+                if (source === "account") {
+                  await account?.disconnect(true);
+                  onOpenWalletSelect(osmosisChainId);
+                } else if (source === "counterpartyAccount") {
+                  await counterpartyAccount?.disconnect(true);
+                  onOpenWalletSelect(props.counterpartyChainId);
                 }
-              : undefined
-          }
-          disabled={!areWalletsConnected}
-          toggleIsMax={() => amountConfig.toggleIsMax()}
-          currentValue={amountConfig.amount}
-          onInput={(value) => amountConfig.setAmount(value)}
-          waitTime={t("assets.ibcTransfer.waitTime")}
-          selectedWalletDisplay={
-            isWalletSelectLoading
-              ? undefined
-              : {
-                  iconUrl: counterpartyAccount?.walletInfo?.logo ?? "",
-                  displayName:
-                    counterpartyAccount?.walletInfo?.prettyName ?? "",
-                }
-          }
-          onRequestSwitchWallet={async (source) => {
-            if (source === "account") {
-              await account?.disconnect(true);
-              onOpenWalletSelect(osmosisChainId);
-            } else if (source === "counterpartyAccount") {
-              await counterpartyAccount?.disconnect(true);
-              onOpenWalletSelect(props.counterpartyChainId);
-            }
-            resetState();
-          }}
-        />
-        {accountActionButton}
+                resetState();
+              }}
+            />
+            {accountActionButton}
+          </>
+        )}
       </ModalBase>
     );
   });

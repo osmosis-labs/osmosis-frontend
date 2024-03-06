@@ -1,4 +1,3 @@
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -15,16 +14,14 @@ import {
 } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
 
 export const AddLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    onAddLiquidity?: (
-      result: Promise<void>,
-      config: ObservableAddLiquidityConfig
-    ) => void;
+    onAddLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
@@ -34,8 +31,6 @@ export const AddLiquidityModal: FunctionComponent<
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
-
-  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
@@ -51,40 +46,38 @@ export const AddLiquidityModal: FunctionComponent<
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const queryPool = osmosisQueries.queryPools.getPool(poolId);
-  const clPool =
-    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
-      ? queryPool.pool
-      : undefined;
-  const config = clPool ? addConliqConfig : addLiquidityConfig;
+  const { data: pool } = api.edge.pools.getPool.useQuery({ poolId });
+
+  const config =
+    pool?.type === "concentrated" ? addConliqConfig : addLiquidityConfig;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         // New CL position: move to next step if superfluid validator selection is needed
-        if (Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked) {
+        if (
+          pool?.type === "concentrated" &&
+          addConliqConfig.shouldBeSuperfluidStaked
+        ) {
           setShowSuperfluidValidatorModal(true);
           return;
         }
 
-        const addLiquidityPromise = Boolean(clPool)
-          ? addConLiquidity()
-          : addLiquidity();
+        const addLiquidityPromise =
+          pool?.type === "concentrated" ? addConLiquidity() : addLiquidity();
         const addLiquidityResult = addLiquidityPromise.then(() =>
           props.onRequestClose()
         );
 
-        if (!Boolean(clPool)) {
-          props.onAddLiquidity?.(
-            addLiquidityResult,
-            config as ObservableAddLiquidityConfig
-          );
+        if (pool?.type !== "concentrated" && props.onAddLiquidity) {
+          props.onAddLiquidity(addLiquidityResult);
         }
       },
       children: config.error
         ? t(...tError(config.error))
-        : Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked
+        : pool?.type === "concentrated" &&
+          addConliqConfig.shouldBeSuperfluidStaked
         ? t("addConcentratedLiquidity.buttonCreateAndStake")
         : t("addLiquidity.title"),
     },
@@ -92,7 +85,7 @@ export const AddLiquidityModal: FunctionComponent<
   );
 
   // add concentrated liquidity
-  if (Boolean(clPool)) {
+  if (pool?.type === "concentrated") {
     return (
       <>
         {showSuperfluidValidatorModal &&

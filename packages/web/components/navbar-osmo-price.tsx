@@ -5,9 +5,9 @@ import { FunctionComponent } from "react";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -72,11 +72,8 @@ const NavbarOsmoPrice = observer(() => {
       {wallet?.isWalletConnected && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
-            mode="unstyled"
-            className={classNames(
-              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
-              "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
-            )}
+            variant="outline"
+            className="button group relative flex w-full items-center justify-center gap-2 overflow-hidden !rounded-full border-osmoverse-700 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             onClick={() => onOpenFiatOnrampSelection()}
           >
             <CreditCardIcon

@@ -11,10 +11,10 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/imperator";
-import { DEFAULT_LRU_OPTIONS, LARGE_LRU_OPTIONS } from "~/utils/cache";
+import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
+import { EdgeDataLoader } from "~/utils/batching";
+import { DEFAULT_LRU_OPTIONS, RemoteCache } from "~/utils/cache";
 
-import { EdgeDataLoader } from "../../base-utils";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -25,12 +25,13 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
+const pricesCache = new RemoteCache();
+const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Cached CoinGecko ID for needs of price function. */
 async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
   return cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `coingecko-coin-${symbol}`,
     ttl: 1000 * 60 * 60, // 1 hour since the coin api ID won't change often
     staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hours
@@ -69,7 +70,7 @@ async function getCoingeckoPrice({
 }) {
   // Create a loader per given currency.
   const currencyBatchLoader = await cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
     getFreshValue: async () => {
       return new EdgeDataLoader((ids: readonly string[]) =>
@@ -80,7 +81,7 @@ async function getCoingeckoPrice({
 
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
-    cache: pricesCache,
+    cache: coinGeckoCache,
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
@@ -228,8 +229,8 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
     cache: pricesCache,
-    ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 10, // 10 seconds
+    ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+    staleWhileRevalidate: 1000 * 60, // 1 minute
     getFreshValue: async () => {
       const assetListAsset = getAssetFromAssetList({
         sourceDenom: asset.sourceDenom,

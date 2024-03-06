@@ -24,7 +24,6 @@ import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
-// import { Button } from "~/components/buttons";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -186,6 +185,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               quoteTimeMilliseconds: swapState.quote?.timeMs,
               router: swapState.quote?.name,
               page,
+              valueUsd: Number(
+                swapState.quote?.amountFiatValue?.toString() ?? "0"
+              ),
             },
           ]);
         })

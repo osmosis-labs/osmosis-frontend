@@ -289,6 +289,9 @@
       "transakSubtitle": "Acceptă OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
+    "incentive": {
+      "title": "Tipuri de stimulente"
+    },
     "MAX": "MAX",
     "pool": {
       "title": "Tipuri de piscine"
@@ -554,8 +557,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
-    "title": "Elimina Lichiditate",
-    "titleInPool": "Elimina lichiditate din pool-ul #{poolId}"
+    "title": "Elimina Lichiditate"
   },
   "requestRejected": "Cerere respinsa",
   "settings": {
@@ -652,20 +654,6 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
-    },
-    "introModal": {
-      "callout": "Optiune noua",
-      "title": "Miza pe osmoză",
-      "description": {
-        "1": "Miza este una dintre cele mai simple modalități de a câștiga cu activele tale. Acum vă puteți miza OSMO chiar pe Osmosis.",
-        "2": "castiga pana la",
-        "3": "anual în mizați recompense!",
-        "4": "și pune-l la treabă",
-        "5": "Puneți {displayBalance} disponibil și",
-        "button": "Cumpără niște OSMO"
-      },
-      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR.",
-      "button": "Începeți să mizați"
     }
   },
   "superfluidValidator": {
@@ -756,7 +744,6 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
   "seo": {
     "404": {
       "title": "404 Pagina nu a fost găsită",
@@ -872,5 +859,12 @@
     "totalValueInvested": "Valoarea totală investită",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depozite instabile",
+    "titleWithdraw": "{coinDenom} retrageri instabile",
+    "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
+    "buttonContinue": "Continua oricum",
+    "buttonCancel": "Anulare"
+  }
 }

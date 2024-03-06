@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
@@ -117,9 +117,9 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          className="rounded-3xl text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
-          mode="icon-primary"
+          // TODO - ideally we shouldn't use overrides, reconsider this one off design
+          className="!bg-osmoverse-700 hover:!bg-osmoverse-600"
         >
           <div className="flex items-center gap-3">
             {t("pools.createPool.title")}

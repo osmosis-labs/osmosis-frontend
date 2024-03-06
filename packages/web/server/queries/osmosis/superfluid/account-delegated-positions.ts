@@ -6,7 +6,7 @@ export interface AccountDelegatedClPositionsResponse {
   cl_pool_user_position_records: ConcentratedPoolAccountPositionRecord[];
 }
 
-export const queryDelegatedClPositions = createNodeQuery<
+export const queryAccountDelegatedPositions = createNodeQuery<
   AccountDelegatedClPositionsResponse,
   {
     bech32Address: string;

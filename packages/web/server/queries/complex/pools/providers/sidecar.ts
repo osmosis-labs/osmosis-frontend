@@ -57,7 +57,7 @@ export function getPoolsFromSidecar({
           reserve
             ? timeout(
                 () => calcTotalFiatValueLockedFromReserve(reserve),
-                9_000, // 9 seconds
+                15_000, // 15 seconds
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
             : null
