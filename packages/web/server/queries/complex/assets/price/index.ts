@@ -1,6 +1,5 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -9,13 +8,13 @@ import { CoingeckoVsCurrencies } from "~/server/queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { getAsset } from "..";
-import { getPriceFromPools } from "./providers/pools";
+import { getPriceFromSidecar } from "./providers/sidecar";
 
 /** Provides a price given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
   asset: Asset,
-  currency: CoingeckoVsCurrencies
+  currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -25,7 +24,7 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 export async function getAssetPrice({
   asset,
   currency = "usd",
-  priceProvider = getPriceFromPools,
+  priceProvider = getPriceFromSidecar,
 }: {
   asset: { coinDenom?: string } & (
     | { coinMinimalDenom: string }
@@ -38,11 +37,14 @@ export async function getAssetPrice({
     "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
   const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
 
-  const foundAsset = getAssetFromAssetList({
-    sourceDenom,
-    coinMinimalDenom,
-    assetLists: AssetLists,
-  })?.rawAsset;
+  const foundAsset = AssetLists.map((assets) => assets.assets)
+    .flat()
+    .find((asset) => {
+      return (
+        (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
+        (sourceDenom && asset.sourceDenom === sourceDenom)
+      );
+    });
 
   if (!foundAsset)
     throw new Error(
@@ -84,8 +86,6 @@ export async function calcAssetValue({
     asset,
     currency,
   });
-
-  if (!price) throw new Error(anyDenom + " price not available");
 
   const tokenDivision = DecUtils.getTenExponentN(asset.coinDecimals);
 

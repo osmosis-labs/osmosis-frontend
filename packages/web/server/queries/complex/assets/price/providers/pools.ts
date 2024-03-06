@@ -13,7 +13,7 @@ import { getCoingeckoPrice, searchCoinGeckoCoinId } from "./coingecko";
  *  @throws if there's no price info for that asset, or there's an issue calculating the price. */
 export async function getPriceFromPools(
   asset: Asset,
-  currency: CoingeckoVsCurrencies
+  currency: CoingeckoVsCurrencies = "usd"
 ): Promise<Dec> {
   if (asset.price) {
     return await calculatePriceThroughPools({
