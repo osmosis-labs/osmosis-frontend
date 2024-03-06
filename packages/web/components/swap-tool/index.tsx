@@ -157,10 +157,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       // not every token is available as a fee,
       // todo: amos conver gas amount to CointPretty.
       // const gasValue = swapState.estimateFeeTxIfMaxBalanceMutation.data?.gas
+      // @Amosel finis this:
       const estimatedGasAmountOrZero = new CoinPretty(
         swapState.inAmountInput.amount.currency,
-        swapState.estimateFeeTxIfMaxBalanceMutation || 0
+        0
+        // swapState.estimateFeeTxIfMaxBalanceMutation || 0
       );
+      swapState.estimateFeeTxIfMaxBalanceMutation.data?.gasUsdValueToPay;
+      // (totalInAmountUSDValue - gasUsdValueToPay) / inAmountTokenUSDValue
 
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
@@ -831,7 +835,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 {swapState.isMaxBalance && (
                   <div className="flex justify-between gap-1">
                     <span className="caption max-w-[140px]">
-                      Transaction fees minus total balance
+                      {"Gas Fees to be subtracted"}
                     </span>
                     <SkeletonLoader
                       className={
@@ -852,10 +856,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               ?.gas || ""}
                           </span>
                           <span>
-                            {`≈ ${
+                            {`≈ ${formatPretty(
                               swapState.estimateFeeTxIfMaxBalanceMutation.data
-                                ?.amount || ""
-                            }`}
+                                ?.gasUsdValueToPay || "",
+                              {
+                                maxDecimals: 8,
+                              }
+                            )}`}
                           </span>
                         </div>
                       )}

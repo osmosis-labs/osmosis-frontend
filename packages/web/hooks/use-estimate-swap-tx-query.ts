@@ -1,5 +1,4 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { SignOptions } from "@cosmos-kit/core";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   AccountStore,
@@ -11,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { useQuery } from "@tanstack/react-query";
-import { isEqual } from "lodash";
+import isEqual from "lodash-es/isEqual";
 import { useEffect, useRef, useState } from "react";
 import { type Optional } from "utility-types";
 
@@ -21,7 +20,6 @@ import { api } from "~/utils/trpc";
 
 // Define a constant for the minimum token output amount, which could be made configurable
 const TOKEN_OUT_MIN_AMOUNT = "20000"; // TODO: Consider making this value configurable
-const TTL = 50 * 1000;
 
 // Define a type for the Osmosis account store, combining multiple account types
 export type OsmoAccountStore = AccountStore<
@@ -29,12 +27,11 @@ export type OsmoAccountStore = AccountStore<
 >;
 
 interface EstimateSwapTxData {
-  accountStore: OsmoAccountStore;
   wallet: AccountStoreWallet;
   messages: readonly EncodeObject[];
   fee: Optional<TxFee, "gas">;
   memo: string;
-  signOptions?: SignOptions;
+  inToken: string;
 }
 
 /**
@@ -113,28 +110,38 @@ export function useEstimateSwapTxFeesQuery(
   const apiUtils = api.useUtils();
 
   const prevSwapMsg = useRef<EncodeObject | undefined>(); // Initialize the mutation for estimating transaction fees
-  const [message, setMessage] = useState<EncodeObject | undefined>();
-  const query = useQuery({
-    queryKey: ["simulate-swap-tx", message?.typeUrl, message?.value],
-    queryFn: async ({ wallet, messages, fee, memo }: EstimateSwapTxData) => {
-      const [{ amount }, osmoAssetWithPrice] = await Promise.all([
+  const [estimateFeeData, setEstimateFeeData] = useState<
+    EstimateSwapTxData | undefined
+  >();
+
+  const query = useQuery(
+    ["simulate-swap-tx", estimateFeeData?.messages[0]?.typeUrl || ""],
+    async () => {
+      const { wallet, messages, fee, memo, inToken } = estimateFeeData!;
+      const [{ amount, gas }, InTokenAssetWithPrice] = await Promise.all([
         accountStore.estimateFee(wallet, messages, fee, memo, {
           ...wallet.walletInfo?.signOptions,
           preferNoSetFee: true, // this will automatically calculate the amount as well.
         }),
         apiUtils.edge.assets.getMarketAsset.fetch({
-          findMinDenomOrSymbol: "OSMO",
+          findMinDenomOrSymbol: inToken,
         }),
       ]);
+
       const coin = amount[0];
-      if (!coin || !osmoAssetWithPrice?.currentPrice) return; // TODO: Handle this case
+      if (!coin || !InTokenAssetWithPrice?.currentPrice) return; // TODO: Handle this case
 
-      const usdValue = new Dec(coin.amount).mul(
-        osmoAssetWithPrice.currentPrice.toDec()
-      );
-      const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
+      const coinAmount = new Dec(coin.amount);
+      const denominationFactor = new Dec(
+        `1${"0".repeat(InTokenAssetWithPrice.coinDecimals)}`
+      ); // Assuming 6 decimal places for OSMO
+      const gasInTokenAmount = coinAmount.quo(denominationFactor);
+      const priceInUsd =
+        InTokenAssetWithPrice.currentPrice.mul(gasInTokenAmount);
 
-      return { gasUsdValueToPay }; // subtract this value from the token following the following formula:
+      const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, priceInUsd);
+
+      return { gasUsdValueToPay, gasInTokenAmount, gas }; // subtract this value from the token following the following formula:
       // max = (totalInAmountUSDValue - gasUsdValueToPay) / inAmountTokenUSDValue
       // half = max/2  <-- OK.
       // where is totalInAmountUSDValue and inAmountTokenUSDValue come from?
@@ -144,10 +151,12 @@ export function useEstimateSwapTxFeesQuery(
       // we have to compute the price of that with maybe `useCoinFiatValue`
       // inAmountTokenUSDValue is useCoinPrice(inAmountCurrency)
     },
-    staleTime: 3_000, // 3 seconds
-    cacheTime: 3_000, // 3 seconds
-    enabled: !!message,
-  });
+    {
+      staleTime: 3_000, // 3 seconds
+      cacheTime: 3_000, // 3 seconds
+      enabled: !!estimateFeeData?.messages?.[0],
+    }
+  );
 
   useEffect(() => {
     if (!run) return;
@@ -174,7 +183,14 @@ export function useEstimateSwapTxFeesQuery(
 
     // avoid repetition by checking equality between the current message and the previous one
     if (!isEqual(msg, prevSwapMsg.current)) {
-      setMessage(msg);
+      setEstimateFeeData({
+        wallet,
+        fee: { amount: [] },
+        memo: "estimate-fee",
+        messages: [msg],
+        // todo @JoseRFelix should that be tokenIn.currency as unknown as string?
+        inToken: "OSMO",
+      });
       prevSwapMsg.current = msg;
     }
   }, [accountStore, chainStore.osmosis.chainId, routes, run, tokenIn]);
