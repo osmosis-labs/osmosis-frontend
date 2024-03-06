@@ -103,7 +103,7 @@ export class ObservableQueryPools
         !this._pools.get(id) &&
         this._queryParams.limit !== this.queryNumPools.numPools
       )
-        this.fetchRemainingPools();
+        this.fetchRemainingPools({ minLiquidity: 0 });
 
       return this._pools.get(id);
     }
