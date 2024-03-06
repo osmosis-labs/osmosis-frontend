@@ -522,7 +522,7 @@ function useSwapAsset<TAsset extends Asset>(
   );
 
   return {
-    asset: existingAsset ?? asset,
+    asset: existingAsset ?? (asset as TAsset),
     isLoading: isLoading && !existingAsset,
   };
 }
