@@ -13,7 +13,7 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
 import { EdgeDataLoader } from "~/utils/batching";
-import { DEFAULT_LRU_OPTIONS, RemoteCache } from "~/utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import {
   queryTokenHistoricalChart,
@@ -25,7 +25,7 @@ import {
 } from "../../imperator";
 import { getAsset } from ".";
 
-const pricesCache = new RemoteCache();
+const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Cached CoinGecko ID for needs of price function. */
@@ -213,38 +213,43 @@ async function calculatePriceThroughPools({
 }
 
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
+ *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found.
  */
 export async function getAssetPrice({
   asset,
   currency = "usd",
 }: {
-  asset: Partial<{
-    coinDenom: string;
-    coinMinimalDenom: string;
-    sourceDenom: string;
-  }>;
+  asset: { coinDenom?: string } & (
+    | { coinMinimalDenom: string }
+    | { sourceDenom: string }
+  );
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
+  const coinMinimalDenom =
+    "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
+  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
+
+  const assetListAsset = getAssetFromAssetList({
+    sourceDenom,
+    coinMinimalDenom,
+    assetLists: AssetLists,
+  });
+
+  if (!assetListAsset)
+    throw new Error(
+      `Asset ${
+        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
+      } not found in asset list registry.`
+    );
+
   return cachified({
-    key: `asset-price-${asset.coinDenom}-${asset.coinMinimalDenom}-${asset.sourceDenom}-${currency}`,
+    key: `asset-price-${assetListAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
-    staleWhileRevalidate: 1000 * 60, // 1 minute
+    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes, to allow plenty of time for pools to be queried in background
     getFreshValue: async () => {
-      const assetListAsset = getAssetFromAssetList({
-        sourceDenom: asset.sourceDenom,
-        coinMinimalDenom: asset.coinMinimalDenom,
-        assetLists: AssetLists,
-      });
-
-      if (!assetListAsset) {
-        throw new Error(
-          `Asset ${asset.sourceDenom} not found on asset list registry.`
-        );
-      }
-
-      if (assetListAsset.priceInfo && assetListAsset) {
+      if (assetListAsset.priceInfo) {
         return await calculatePriceThroughPools({
           asset: assetListAsset.rawAsset,
           currency,
