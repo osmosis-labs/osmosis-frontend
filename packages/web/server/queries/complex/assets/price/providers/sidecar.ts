@@ -17,31 +17,31 @@ const sidecarCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to querying CoinGecko if not available.
  *  @throws if there's an issue getting the price. */
 export function getPriceFromSidecar(asset: Asset) {
-  return getSidecarPriceBatched(asset);
+  return getPriceBatched(asset);
 }
 
-/** Used with `DataLoader` to make batched calls to CoinGecko.
- *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
-async function batchFetchSqsPrices(coinMinimalDenoms: readonly string[]) {
-  const priceMap = await queryPrices(coinMinimalDenoms as string[]);
-  return coinMinimalDenoms.map((baseCoinMinimalDenom) => {
-    const price = priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
-
-    if (price === "no routes were provided" || !price)
-      return new Error(
-        `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-      );
-    else return price;
-  });
-}
+/** Used with `DataLoader` to make batched calls to SQS.
+ *  This allows us to provide IDs in a batch to SQS, which is more efficient than making individual calls. */
 const batchLoader = new EdgeDataLoader(
-  (ids: readonly string[]) => batchFetchSqsPrices(ids),
+  (coinMinimalDenoms: readonly string[]) =>
+    queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
+      coinMinimalDenoms.map((baseCoinMinimalDenom) => {
+        const price = priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
+
+        if (price === "no routes were provided" || !price)
+          return new Error(
+            `No SQS price result for ${baseCoinMinimalDenom} and USDC`
+          );
+        else return price;
+      })
+    ),
   {
+    // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
     maxBatchSize: 30,
   }
 );
-export async function getSidecarPriceBatched(asset: Asset) {
-  // Cache a result per CoinGecko ID *and* currency ID.
+
+export function getPriceBatched(asset: Asset) {
   return cachified({
     cache: sidecarCache,
     key: `coingecko-price-${asset.coinMinimalDenom}`,
