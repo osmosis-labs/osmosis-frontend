@@ -647,20 +647,6 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
-    },
-    "introModal": {
-      "callout": "新功能",
-      "title": "Osmosis 质押",
-      "description": {
-        "1": "质押是利用资产赚钱的最简单方法之一。现在您可以将您的 OSMO 放在 Osmosis 上。",
-        "2": "赚取高达",
-        "3": "每年都有质押奖励！",
-        "4": "并付诸实践",
-        "5": "让您可用的{displayBalance}发挥作用并",
-        "button": "买一些OSMO"
-      },
-      "asterisk": "* 质押奖励价值受价格和年利率波动影响。",
-      "button": "开始质押"
     }
   },
   "superfluidValidator": {
@@ -866,5 +852,12 @@
     "totalValueInvested": "投资总额",
     "lookBelow": "请参阅下文并找到最适合您的策略"
   },
-  "disclaimer": "免责声明"
+  "disclaimer": "免责声明",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不稳定",
+    "titleWithdraw": "{coinDenom}提款不稳定",
+    "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
+    "buttonContinue": "无论如何继续",
+    "buttonCancel": "取消"
+  }
 }

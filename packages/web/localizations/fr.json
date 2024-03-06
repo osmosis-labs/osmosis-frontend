@@ -647,20 +647,6 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    },
-    "introModal": {
-      "callout": "Nouvelle fonctionnalité",
-      "title": "Miser sur l’osmose",
-      "description": {
-        "1": "Le jalonnement est l’un des moyens les plus simples de gagner de l’argent avec vos actifs. Vous pouvez désormais miser votre OSMO directement sur Osmosis.",
-        "2": "gagner jusqu'à",
-        "3": "chaque année en récompenses de mise !",
-        "4": "et mettez-le au travail",
-        "5": "Mettez votre {displayBalance} à profit et",
-        "button": "Achetez de l'OSMO"
-      },
-      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG.",
-      "button": "Commencer à jalonner"
     }
   },
   "superfluidValidator": {
@@ -866,5 +852,12 @@
     "totalValueInvested": "Valeur totale investie",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
-  "disclaimer": "Clause de non-responsabilité"
+  "disclaimer": "Clause de non-responsabilité",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} dépôts instables",
+    "titleWithdraw": "{coinDenom} retraits instables",
+    "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
+    "buttonContinue": "Continuer quand même",
+    "buttonCancel": "Annuler"
+  }
 }

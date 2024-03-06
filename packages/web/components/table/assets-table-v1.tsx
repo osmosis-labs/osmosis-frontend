@@ -448,23 +448,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               placeholder={t("assets.table.search")}
               size="small"
             />
-            {/* <div className="flex gap-2 lg:gap-1">
-              <label
-                htmlFor="masked-balances"
-                className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
-              >
-                {t("assets.table.hideBalances")}
-              </label>
-              <Switch
-                id="masked-balances"
-                checked={hideBalancesSetting?.state.hideBalances ?? false}
-                onCheckedChange={() => {
-                  setHideBalancesPrivacy(
-                    !hideBalancesSetting!.state.hideBalances
-                  );
-                }}
-              />
-            </div> */}
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <div className="flex shrink-0 flex-wrap gap-2">
                 <label

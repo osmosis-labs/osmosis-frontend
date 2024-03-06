@@ -647,20 +647,6 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
-    },
-    "introModal": {
-      "callout": "Novo recurso",
-      "title": "Apostando na Osmose",
-      "description": {
-        "1": "O staking é uma das maneiras mais fáceis de ganhar com seus ativos. Agora você pode apostar seu OSMO diretamente no Osmosis.",
-        "2": "ganhe até",
-        "3": "anualmente em apostas de recompensas!",
-        "4": "e colocá-lo para funcionar",
-        "5": "Coloque seu {displayBalance} para funcionar e",
-        "button": "Compre um pouco de OSMO"
-      },
-      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG.",
-      "button": "Comece a apostar"
     }
   },
   "superfluidValidator": {
@@ -866,5 +852,12 @@
     "totalValueInvested": "Valor total investido",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
-  "disclaimer": "Isenção de responsabilidade"
+  "disclaimer": "Isenção de responsabilidade",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos instáveis",
+    "titleWithdraw": "{coinDenom} saques instáveis",
+    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
+    "buttonContinue": "Continue de qualquer maneira",
+    "buttonCancel": "Cancelar"
+  }
 }
