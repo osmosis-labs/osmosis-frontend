@@ -20,28 +20,27 @@ export function getPriceFromSidecar(asset: Asset) {
   return getPriceBatched(asset);
 }
 
-/** Used with `DataLoader` to make batched calls to SQS.
- *  This allows us to provide IDs in a batch to SQS, which is more efficient than making individual calls. */
-const batchLoader = new EdgeDataLoader(
-  (coinMinimalDenoms: readonly string[]) =>
-    queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
-      coinMinimalDenoms.map((baseCoinMinimalDenom) => {
-        const price = priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
-
-        if (price === "no routes were provided" || !price)
-          return new Error(
-            `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-          );
-        else return price;
-      })
-    ),
-  {
-    // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
-    maxBatchSize: 30,
-  }
-);
-
 export function getPriceBatched(asset: Asset) {
+  const batchLoader = new EdgeDataLoader(
+    (coinMinimalDenoms: readonly string[]) =>
+      queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
+        coinMinimalDenoms.map((baseCoinMinimalDenom) => {
+          const price =
+            priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
+
+          if (price === "no routes were provided" || !price)
+            return new Error(
+              `No SQS price result for ${baseCoinMinimalDenom} and USDC`
+            );
+          else return price;
+        })
+      ),
+    {
+      // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
+      maxBatchSize: 30,
+    }
+  );
+
   return cachified({
     cache: sidecarCache,
     key: `coingecko-price-${asset.coinMinimalDenom}`,
