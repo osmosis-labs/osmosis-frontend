@@ -34,13 +34,13 @@ const NavbarOsmosisUpdates = () => {
 
   if (!featureFlags.osmosisUpdatesPopUp) return null;
 
-  // if (
-  //   hasNoUpdates ||
-  //   (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl) ||
-  //   isLoading
-  // ) {
-  //   return null;
-  // }
+  if (
+    hasNoUpdates ||
+    (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl) ||
+    isLoading
+  ) {
+    return null;
+  }
 
   return (
     <>
