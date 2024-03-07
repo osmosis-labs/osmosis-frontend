@@ -110,7 +110,7 @@ const ArrowButton = forwardRef<
       {...rest}
       ref={ref as any}
       className={classNames(
-        "flex items-center gap-1 text-wosmongton-200 transition-all hover:gap-2",
+        "flex items-center gap-1 text-center align-middle text-wosmongton-200 transition-all hover:gap-2",
         props.className
       )}
     >
