@@ -71,30 +71,30 @@ const TransferButton: FunctionComponent<{
   action: () => void;
 }> = ({ externalUrl, disabled, label, action }) => {
   return externalUrl ? (
-    <a
-      rel="noreferrer"
-      href={externalUrl}
-      target="_blank"
-      onClick={(event) => {
-        event.stopPropagation();
-        action();
-      }}
+    <Button
+      variant="ghost"
+      className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+      disabled={disabled}
+      asChild
     >
-      <Button
-        variant="ghost"
-        className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
-        disabled={disabled}
+      <a
+        rel="noreferrer"
+        target="_blank"
+        href={externalUrl}
+        onClick={(event) => {
+          event.stopPropagation();
+          action();
+        }}
       >
         <span>{label}</span>
-
         <Image
           alt="external transfer link"
           src="/icons/external-link.svg"
           height={13}
           width={13}
         />
-      </Button>
-    </a>
+      </a>
+    </Button>
   ) : (
     <Button
       variant="ghost"
