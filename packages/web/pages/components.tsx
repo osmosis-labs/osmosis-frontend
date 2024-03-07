@@ -26,7 +26,6 @@ import ClipboardButton from "~/components/buttons/clipboard-button";
 import { CloseButton } from "~/components/buttons/close-button";
 import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
-import LinkIconButton from "~/components/buttons/link-icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,
@@ -43,6 +42,7 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { LinkIconButton } from "~/components/ui/button";
 import { ArrowButton } from "~/components/ui/button";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button as ButtonShadcn } from "~/components/ui/button";
@@ -578,8 +578,6 @@ const CustomButtons = () => {
       <Component title="Link Icon">
         <LinkIconButton
           href=""
-          mode="icon-social"
-          size="md-icon-social"
           target="_blank"
           rel="external"
           aria-label="X"

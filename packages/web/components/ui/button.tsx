@@ -6,8 +6,11 @@ import { FunctionComponent } from "react";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
+  cloneElement,
   ElementType,
   forwardRef,
+  isValidElement,
+  ReactNode,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -16,7 +19,7 @@ import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -34,7 +37,7 @@ const buttonVariants = cva(
         default: "h-14 px-6 py-2 rounded-xl",
         sm: "h-6 rounded-md text-caption py-1 px-1.5",
         // lg: "h-14 rounded-xl px-8", // note - we don't use this size
-        icon: "h-9 w-9",
+        icon: "h-10 w-10 rounded-full",
       },
     },
     defaultVariants: {
@@ -127,4 +130,46 @@ const ArrowButton = forwardRef<
 
 ArrowButton.displayName = "ArrowButton";
 
-export { ArrowButton, Button, buttonVariants, ShowMoreButton };
+/**
+ * Renders an icon within a button.
+ */
+// TODO - migrated this from another component, ideally should be a button variant
+const LinkIconButton = forwardRef<
+  HTMLAnchorElement,
+  {
+    icon?: ReactNode;
+    "aria-label": string;
+  } & CustomClasses &
+    AnchorHTMLAttributes<HTMLAnchorElement>
+>((props, ref) => {
+  const { icon, children, "aria-label": ariaLabel, className, ...rest } = props;
+
+  const element = icon || children;
+  const _children = isValidElement(element)
+    ? cloneElement(element as any, {
+        "aria-hidden": true,
+        focusable: false,
+      })
+    : null;
+
+  return (
+    <a
+      ref={ref}
+      aria-label={ariaLabel}
+      {...rest}
+      className="flex items-center justify-center"
+    >
+      <Button
+        size="icon"
+        variant="ghost"
+        className="bg-osmoverse-850 hover:bg-osmoverse-700"
+      >
+        {_children}
+      </Button>
+    </a>
+  );
+});
+
+LinkIconButton.displayName = "LinkIconButton";
+
+export { ArrowButton, Button, buttonVariants, LinkIconButton, ShowMoreButton };

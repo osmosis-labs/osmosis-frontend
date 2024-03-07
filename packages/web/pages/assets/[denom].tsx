@@ -12,9 +12,7 @@ import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import LinkButton from "~/components/buttons/link-button";
-import LinkIconButton from "~/components/buttons/link-icon-button";
 import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
@@ -24,6 +22,8 @@ import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
+import { LinkIconButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import YourBalance from "~/components/your-balance/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -250,18 +250,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
-
               <YourBalance
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
               />
-
+              ashdjfklhasjkl
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
               />
-
               <TwitterSection tweets={tweets} />
             </div>
 
@@ -403,10 +401,11 @@ const Navigation = observer((props: NavigationProps) => {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2">
         <Button
-          mode="unstyled"
-          className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
+          variant="ghost"
+          // TODO - remove h-[40px] and consider adding md size button
+          className="group flex !h-10 gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
           onClick={toggleFavoriteList}
         >
@@ -421,8 +420,6 @@ const Navigation = observer((props: NavigationProps) => {
         {twitterUrl && (
           <LinkIconButton
             href={twitterUrl}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -432,27 +429,20 @@ const Navigation = observer((props: NavigationProps) => {
         {websiteURL && (
           <LinkIconButton
             href={websiteURL}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaView", { name: "website" })}
-            icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
+            icon={<Icon className="h-6 w-6 text-osmoverse-400" id="web" />}
           />
         )}
         {coingeckoURL && (
           <LinkIconButton
             href={coingeckoURL}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
             icon={
-              <Icon
-                className="h-10.5 w-10.5 text-osmoverse-300"
-                id="coingecko"
-              />
+              <Icon className="h-9 w-9 text-osmoverse-300" id="coingecko" />
             }
           />
         )}
