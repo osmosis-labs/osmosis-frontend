@@ -10,8 +10,6 @@ import {
 import { EdgeDataLoader } from "~/utils/batching";
 import { LARGE_LRU_OPTIONS } from "~/utils/cache";
 
-import { getPriceFromCoinGecko } from "./coingecko";
-
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 /** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to querying CoinGecko if not available.
@@ -28,8 +26,8 @@ function getBatchLoader() {
     ttl: 1000 * 60 * 10, // 10 minutes
     getFreshValue: () =>
       new EdgeDataLoader(
-        (coinMinimalDenoms: readonly string[]) =>
-          queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
+        (coinMinimalDenoms: readonly string[]) => {
+          return queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
             coinMinimalDenoms.map((baseCoinMinimalDenom) => {
               const price =
                 priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
@@ -40,7 +38,8 @@ function getBatchLoader() {
                 );
               else return price;
             })
-          ),
+          );
+        },
         {
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
           maxBatchSize: 100,
@@ -53,14 +52,22 @@ export function getPriceBatched(asset: Asset) {
   return cachified({
     cache: sidecarCache,
     key: `coingecko-price-${asset.coinMinimalDenom}`,
-    ttl: 1000 * 60, // 1 minute
+    ttl: 1000 * 60 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
-      getBatchLoader().then((loader) =>
-        loader
-          .load(asset.coinMinimalDenom)
-          .then((price) => new Dec(price))
-          .catch(() => getPriceFromCoinGecko(asset).catch(() => new Dec(0)))
-      ),
+      queryPrices([asset.coinMinimalDenom]).then((priceMap) => {
+        const price =
+          priceMap[asset.coinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
+        if (!price || new Dec(price).isZero()) return new Dec(0);
+        // return new Error(
+        //   `No SQS price result for ${asset.coinMinimalDenom} and USDC`
+        // );
+        else return new Dec(price);
+      }),
+    // getBatchLoader().then(
+    //   (loader) =>
+    //     loader.load(asset.coinMinimalDenom).then((price) => new Dec(price))
+    //   // .catch(() => getPriceFromCoinGecko(asset))
+    // ),
   });
 }
