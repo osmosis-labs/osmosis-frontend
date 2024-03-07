@@ -17,7 +17,6 @@ import React, {
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
@@ -28,6 +27,7 @@ import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
 import Spinner from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
+import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import {

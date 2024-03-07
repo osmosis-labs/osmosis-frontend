@@ -22,7 +22,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { ChartButton } from "~/components/buttons";
+import { ChartButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";

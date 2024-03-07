@@ -15,13 +15,13 @@ import React, {
 } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import { ChartButton } from "~/components/buttons";
 import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
+import { ChartButton } from "~/components/ui/button";
 import { ArrowButton, Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
