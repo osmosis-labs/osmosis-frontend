@@ -23,7 +23,6 @@ import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { Button, ChartButton } from "~/components/buttons";
 import ClipboardButton from "~/components/buttons/clipboard-button";
-import { CloseButton } from "~/components/buttons/close-button";
 import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
@@ -537,12 +536,6 @@ const CustomButtons = () => {
         >
           Click
         </ClipboardButton>
-      </Component>
-      <Component title="Close">
-        <CloseButton
-          onClick={() => console.log("clicked")}
-          className="bg-osmoverse-600"
-        />
       </Component>
       <Component title="Icon">
         <IconButton

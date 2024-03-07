@@ -275,7 +275,7 @@ export const NavBar: FunctionComponent<
               <div className="group">
                 <a href="https://pro.osmosis.zone">
                   <Button
-                    className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                    className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
                     mode="icon-primary"
                     size="unstyled"
                     style={{ maxWidth: "180px" }}
@@ -626,7 +626,7 @@ const FrontierMigrationModal: FunctionComponent<
           <Button
             size="sm"
             mode="secondary"
-            className="whitespace-nowrap border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
+            className="border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
             onClick={() => {
               props.onOpenSettings();
               props.onRequestClose?.();

@@ -565,16 +565,13 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 target="_blank"
                 className="w-full"
               >
-                <Button
-                  className="w-full whitespace-nowrap"
-                  disabled={!isDepositSupported}
-                >
+                <Button className="w-full" disabled={!isDepositSupported}>
                   {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
               </Link>
             ) : (
               <Button
-                className="w-full whitespace-nowrap"
+                className="w-full"
                 disabled={!tokenChain?.chainId || !isDepositSupported}
                 onClick={() => {
                   if (tokenChain?.chainId) {
@@ -600,7 +597,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 className="w-full"
               >
                 <Button
-                  className="w-full whitespace-nowrap"
+                  className="w-full"
                   variant="outline"
                   disabled={
                     !isWithdrawSupported ||
@@ -613,7 +610,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               </Link>
             ) : (
               <Button
-                className="w-full whitespace-nowrap"
+                className="w-full"
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
