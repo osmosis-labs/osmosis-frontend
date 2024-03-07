@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Motywacja",
-      "title": "Typy motywacji"
+      "title": "Rodzaje zachęt"
     },
     "MAX": "MAKSIMUM",
     "pool": {
-      "mobileTitle": "Basen",
       "title": "Typy basenów"
     },
     "searchTokens": "Szukaj",
@@ -312,9 +310,6 @@
       "weighted": "Ważone",
       "concentrated": "Skoncentrowana płynność",
       "transmuter": "Transmutator",
-      "internal": "Wewnętrzne zachęty",
-      "external": "Zewnętrzne zachęty",
-      "superfluid": "Superfluid",
       "noIncentives": "Brak zachęt"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Wyszukaj pulę",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Prowizje (7D)",
@@ -556,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
-    "title": "Usuń Płynność",
-    "titleInPool": "Usuń płynność z puli {poolId}"
+    "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
   "settings": {
@@ -654,20 +647,6 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
-    },
-    "introModal": {
-      "callout": "Nowa cecha",
-      "title": "Stawianie na osmozę",
-      "description": {
-        "1": "Stakowanie to jeden z najłatwiejszych sposobów zarabiania na swoich aktywach. Teraz możesz postawić swoje OSMO bezpośrednio na Osmozie.",
-        "2": "zarobić do",
-        "3": "co roku w nagrodach za stakowanie!",
-        "4": "i zabierz się do pracy",
-        "5": "Uruchom dostępny {displayBalance}",
-        "button": "Kup trochę OSMO"
-      },
-      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO.",
-      "button": "Zacznij obstawiać"
     }
   },
   "superfluidValidator": {
@@ -758,7 +737,6 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
   "seo": {
     "404": {
       "title": "404 — Nie znaleziono strony",
@@ -825,9 +803,9 @@
     "osmosisUpdates": "Aktualizacje osmozy!",
     "seeWhatsNew": "Zobacz co nowego"
   },
-  "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
-  "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
-  "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Włączono podgląd zasobów",
+  "previewAssetsDisabled": "Podgląd zasobów wyłączony",
+  "previewAssetsEnabledForSession": "Podgląd zasobów włączonych w tej sesji. Aby wyłączyć, otwórz nową kartę lub dodaj `show_preview_assets=false`.",
   "earnPage": {
     "title": "Zarabiać",
     "position": "Pozycja",
@@ -885,8 +863,9 @@
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {
-    "title": "Transfery niestabilne",
-    "description": "Mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
+    "titleDeposit": "{coinDenom} depozyty są niestabilne",
+    "titleWithdraw": "{coinDenom} wypłaty są niestabilne",
+    "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
     "buttonContinue": "Kontynuować mimo to",
     "buttonCancel": "Anulować"
   }

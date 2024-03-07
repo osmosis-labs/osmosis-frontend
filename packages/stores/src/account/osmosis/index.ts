@@ -986,48 +986,21 @@ export class OsmosisAccountImpl {
 
   /**
    * Collects rewards from given positions by ID if rewards are available.
-   * Also collects incentive rewards by default if rewards are available.
    * Constructs a multi msg as necessary.
    *
    * Rejects without sending a tx if no rewards are available.
    *
-   * @param positionIds Position IDs to collect rewards from.
-   * @param alsoCollectIncentiveRewards Whether to also collect incentive rewards.
+   * @param positionIdsWithSpreadRewards Position IDs to collect spread rewards from.
+   * @param positionIdsWithIncentiveRewards Position IDs to collect incentive rewards from.
    * @param memo Memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendCollectAllPositionsRewardsMsgs(
-    positionIds: string[],
-    alsoCollectIncentiveRewards = true,
+    positionIdsWithSpreadRewards: string[],
+    positionIdsWithIncentiveRewards: string[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    // refresh positions
-    const queryPositions =
-      this.queries.queryLiquidityPositionsById.getForPositionIds(positionIds);
-    await Promise.all(queryPositions.map((q) => q.waitFreshResponse()));
-    // only collect rewards from positions that have rewards to save gas
-    type PositionsIdsWithRewards = {
-      positionIdsWithSpreadRewards: string[];
-      positionIdsWithIncentiveRewards: string[];
-    };
-    const { positionIdsWithSpreadRewards, positionIdsWithIncentiveRewards } =
-      queryPositions.reduce<PositionsIdsWithRewards>(
-        (accumulator, position) => {
-          if (position.claimableSpreadRewards.length > 0) {
-            accumulator.positionIdsWithSpreadRewards.push(position.id);
-          }
-          if (position.claimableIncentiveRewards.length > 0) {
-            accumulator.positionIdsWithIncentiveRewards.push(position.id);
-          }
-          return accumulator;
-        },
-        {
-          positionIdsWithSpreadRewards: [],
-          positionIdsWithIncentiveRewards: [],
-        }
-      );
-
     // get msgs info, calculate estimated gas amount based on the number of positions
     const spreadRewardsMsgOpts = this.msgOpts.clCollectPositionsSpreadRewards;
     const incentiveRewardsMsgOpts =
@@ -1047,7 +1020,7 @@ export class OsmosisAccountImpl {
       positionIdsWithSpreadRewards.length === 0 &&
       positionIdsWithIncentiveRewards.length === 0
     ) {
-      return Promise.reject("No rewards to collect");
+      throw new Error("No rewards to collect");
     }
 
     await this.base.signAndBroadcast(
@@ -1062,10 +1035,7 @@ export class OsmosisAccountImpl {
           msgs.push(spreadRewardsMsg);
         }
 
-        if (
-          positionIdsWithIncentiveRewards.length > 0 &&
-          alsoCollectIncentiveRewards
-        ) {
+        if (positionIdsWithIncentiveRewards.length > 0) {
           msgs.push(incentiveRewardsMsg);
         }
 
@@ -1082,11 +1052,13 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          positionIds.forEach((id) => {
-            this.queries.queryLiquidityPositionsById
-              .getForPositionId(id)
-              ?.waitFreshResponse();
-          });
+          positionIdsWithSpreadRewards
+            .concat(positionIdsWithIncentiveRewards)
+            .forEach((id) => {
+              this.queries.queryLiquidityPositionsById
+                .getForPositionId(id)
+                ?.waitFreshResponse();
+            });
         }
         onFulfill?.(tx);
       }
@@ -1672,13 +1644,13 @@ export class OsmosisAccountImpl {
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
       lockId: string;
-      isSyntheticLock: boolean;
+      isSynthetic: boolean;
     }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msgs = locks.reduce((msgs, lock) => {
-      if (!lock.isSyntheticLock) {
+      if (!lock.isSynthetic) {
         // normal unlock
         msgs.push(
           this.msgOpts.beginUnlocking.messageComposer({

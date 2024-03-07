@@ -35,9 +35,11 @@ import {
   useAmplitudeAnalytics,
   useTranslation,
 } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { Tooltip } from "../tooltip";
@@ -347,9 +349,8 @@ const AddConcLiqView: FunctionComponent<
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+  const { derivedDataStore, queriesExternalStore } = useStore();
+  const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);

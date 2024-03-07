@@ -1,14 +1,12 @@
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { useStore } from "~/stores";
 
 export const TransferButtonCell: FunctionComponent<
@@ -24,61 +22,45 @@ export const TransferButtonCell: FunctionComponent<
     withdrawUrlOverride,
     chainId,
     coinDenom,
-    isUnstable,
     onWithdraw,
     onDeposit,
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
 
-    const onOperation = type === "deposit" ? onDeposit : onWithdraw;
-
-    const shouldRender = chainId && coinDenom && onOperation;
-    if (!shouldRender) return null;
-
     const isChainSupported = Boolean(
       accountStore.connectedWalletSupportsChain(chainId ?? "")?.value ?? true
     );
-    const isOperationSupported =
-      type === "deposit"
-        ? isChainSupported || Boolean(depositUrlOverride)
-        : isChainSupported || Boolean(withdrawUrlOverride);
 
+    const isDepositSupported = isChainSupported || Boolean(depositUrlOverride);
+    const isWithdrawSupported =
+      isChainSupported || Boolean(withdrawUrlOverride);
     const notSupportedTooltipText = t("assetNotCompatible");
 
-    const [showUnstableAssetWarning, setShowUnstableAssetWarning] =
-      useState(false);
-    const operationUrlOverride =
-      type === "deposit" ? depositUrlOverride : withdrawUrlOverride;
-
-    const operationLabel = t(`assets.table.${type}Button`);
-
-    const action = () => onOperation(chainId, coinDenom, operationUrlOverride);
-
-    return (
-      <>
+    return type === "withdraw" ? (
+      chainId && coinDenom && onWithdraw ? (
         <Tooltip
-          disabled={isOperationSupported}
+          disabled={isWithdrawSupported}
           content={notSupportedTooltipText}
         >
           <TransferButton
-            disabled={!isOperationSupported}
-            externalUrl={operationUrlOverride}
-            label={operationLabel}
-            action={() =>
-              isUnstable ? setShowUnstableAssetWarning(true) : action()
-            }
+            disabled={!isWithdrawSupported}
+            externalUrl={withdrawUrlOverride}
+            label={t("assets.table.withdrawButton")}
+            action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
           />
         </Tooltip>
-        {isUnstable && (
-          <UnstableAssetWarning
-            isOpen={showUnstableAssetWarning}
-            onRequestClose={() => setShowUnstableAssetWarning(false)}
-            onContinue={action}
-          />
-        )}
-      </>
-    );
+      ) : null
+    ) : chainId && coinDenom && onDeposit ? (
+      <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
+        <TransferButton
+          disabled={!isDepositSupported}
+          externalUrl={depositUrlOverride}
+          label={t("assets.table.depositButton")}
+          action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+        />
+      </Tooltip>
+    ) : null;
   }
 );
 
@@ -87,39 +69,36 @@ const TransferButton: FunctionComponent<{
   disabled?: boolean;
   label: string;
   action: () => void;
-}> = ({ externalUrl, disabled, label, action }) =>
-  externalUrl ? (
+}> = ({ externalUrl, disabled, label, action }) => {
+  return externalUrl ? (
     <a
-      className={classNames(
-        "subtitle1 flex shrink-0 items-center gap-1 pt-2 text-wosmongton-200 lg:pt-0",
-        { "opacity-30": disabled }
-      )}
       rel="noreferrer"
       href={externalUrl}
       target="_blank"
-      style={
-        disabled ? { pointerEvents: "none", cursor: "default" } : undefined
-      }
       onClick={(event) => {
-        event.preventDefault();
         event.stopPropagation();
         action();
       }}
     >
-      {label}
-      <div className="w-fit shrink-0">
+      <Button
+        variant="ghost"
+        className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+        disabled={disabled}
+      >
+        <span>{label}</span>
+
         <Image
           alt="external transfer link"
           src="/icons/external-link.svg"
           height={13}
           width={13}
         />
-      </div>
+      </Button>
     </a>
   ) : (
     <Button
-      mode="text"
-      className="gap-2"
+      variant="ghost"
+      className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -128,8 +107,10 @@ const TransferButton: FunctionComponent<{
       disabled={disabled}
     >
       <span>{label}</span>
+
       <div className="h-fit shrink-0">
         <Icon id="chevron-right" width={8} height={14} />
       </div>
     </Button>
   );
+};

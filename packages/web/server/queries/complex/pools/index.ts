@@ -2,10 +2,10 @@ import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import { getPoolsFromSidecar } from "~/server/queries/complex/pools/providers/sidecar";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
+import { getPoolsFromSidecar } from "./providers/sidecar";
 
 const allPooltypes = [
   "concentrated",
@@ -54,7 +54,7 @@ export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
   return pool;
 }
 
-/** Fetches cached pools from node and returns them as a more useful and simplified TS type.
+/** Fetches pools and returns them as a more useful and simplified TS type.
  *  Pools are filtered by isValidPool, which checks if the pool has at least 2 valid and listed assets.
  *  Preforms no default sorting.
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */

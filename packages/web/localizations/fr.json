@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incitation",
       "title": "Types d'incitations"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Piscine",
       "title": "Types de piscines"
     },
     "searchTokens": "Chercher",
@@ -312,9 +310,6 @@
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
       "transmuter": "Transmutateur",
-      "internal": "Incitations internes",
-      "external": "Incitations externes",
-      "superfluid": "Superfluid",
       "noIncentives": "Pas d'incitations"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Rechercher dans les bassins",
       "sort": {
         "APRIncentivized": "TAP",
         "fees": "Frais (7J)",
@@ -556,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
-    "title": "Retirer de la liquidité",
-    "titleInPool": "Retirer des liquidités du pool {poolId}"
+    "title": "Retirer de la liquidité"
   },
   "requestRejected": "Demande rejetée",
   "settings": {
@@ -654,20 +647,6 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    },
-    "introModal": {
-      "callout": "Nouvelle fonctionnalité",
-      "title": "Miser sur l’osmose",
-      "description": {
-        "1": "Le jalonnement est l’un des moyens les plus simples de gagner de l’argent avec vos actifs. Vous pouvez désormais miser votre OSMO directement sur Osmosis.",
-        "2": "gagner jusqu'à",
-        "3": "chaque année en récompenses de mise !",
-        "4": "et mettez-le au travail",
-        "5": "Mettez votre {displayBalance} à profit et",
-        "button": "Achetez de l'OSMO"
-      },
-      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG.",
-      "button": "Commencer à jalonner"
     }
   },
   "superfluidValidator": {
@@ -758,7 +737,6 @@
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
   "seo": {
     "404": {
       "title": "404 Page non trouvée",
@@ -825,9 +803,9 @@
     "osmosisUpdates": "Mises à jour sur l'osmose !",
     "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
-  "unlistedAssetsEnabled": "Actifs non répertoriés activés",
-  "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "previewAssetsEnabled": "Aperçu des éléments activé",
+  "previewAssetsDisabled": "Aperçu des éléments désactivé",
+  "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
     "position": "Position",
@@ -885,8 +863,9 @@
   },
   "disclaimer": "Clause de non-responsabilité",
   "unstableAssetsWarning": {
-    "title": "Transferts instables",
-    "description": "Vous pourriez rencontrer des retards importants ou un échec de transaction. Procédez à vos propres risques.",
+    "titleDeposit": "{coinDenom} dépôts instables",
+    "titleWithdraw": "{coinDenom} retraits instables",
+    "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
     "buttonContinue": "Continuer quand même",
     "buttonCancel": "Annuler"
   }

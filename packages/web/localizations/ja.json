@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
     "incentive": {
-      "mobileTitle": "インセンティブ",
       "title": "インセンティブの種類"
     },
     "MAX": "マックス",
     "pool": {
-      "mobileTitle": "プール",
       "title": "プールの種類"
     },
     "searchTokens": "検索",
@@ -312,9 +310,6 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
-      "internal": "社内インセンティブ",
-      "external": "外部からのインセンティブ",
-      "superfluid": "超流動体",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "検索プール",
       "sort": {
         "APRIncentivized": "4月",
         "fees": "料金（7D）",
@@ -556,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",
-    "title": "流動性の除去",
-    "titleInPool": "プールから流動性を削除 # {poolId}"
+    "title": "流動性の除去"
   },
   "requestRejected": "リクエストが拒否されました",
   "settings": {
@@ -654,20 +647,6 @@
         "buttonKeep": "既存のバリデータを維持する",
         "buttonSelect": "新しいバリデータの選択"
       }
-    },
-    "introModal": {
-      "callout": "新機能",
-      "title": "Osmosis へのステーキング",
-      "description": {
-        "1": "ステーキングは、資産を使って稼ぐ最も簡単な方法の 1 つです。これで、OSMO を Osmosis に賭けることができます。",
-        "2": "まで稼ぐ",
-        "3": "ステーキング報酬で毎年獲得！",
-        "4": "そしてそれを機能させます",
-        "5": "利用可能な{displayBalance}機能させて、",
-        "button": "OSMOを購入する"
-      },
-      "asterisk": "* ステーキング報酬の価値は価格と APR の変動の影響を受けます。",
-      "button": "ステーキングを開始する"
     }
   },
   "superfluidValidator": {
@@ -758,7 +737,6 @@
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
-  "highPoolInflationWarning": "高い APR は、インフレ報酬によって生じる可能性があります。慎重に作業を進めてください。",
   "seo": {
     "404": {
       "title": "404 - ページが見つかりません",
@@ -825,9 +803,9 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "unlistedAssetsEnabled": "非公開アセットの有効化",
-  "unlistedAssetsDisabled": "非公開アセットの無効化",
-  "unlistedAssetsEnabledForSession": "このセッションでは非リストのアセットが有効になりました。無効にするには、新しいタブを開くか、「show_unlisted_assets=false」を追加します。",
+  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
+  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "position": "位置",
@@ -885,8 +863,9 @@
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {
-    "title": "転送が不安定",
-    "description": "大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
+    "titleDeposit": "{coinDenom}預金は不安定です",
+    "titleWithdraw": "{coinDenom}出金が不安定",
+    "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
     "buttonContinue": "とにかく続けます",
     "buttonCancel": "キャンセル"
   }

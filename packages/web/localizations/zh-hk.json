@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "支援OSMO、USDC"
     },
     "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
+      "title": "激勵類型"
     },
     "MAX": "全部",
     "pool": {
-      "mobileTitle": "流動性池",
       "title": "流動性池類型"
     },
     "searchTokens": "搜尋代幣",
@@ -312,9 +310,6 @@
       "weighted": "加權",
       "concentrated": "流動性集中",
       "transmuter": "轉換器",
-      "internal": "內部激勵",
-      "external": "外部激勵",
-      "superfluid": "超流體",
       "noIncentives": "無激勵"
     }
   },
@@ -489,7 +484,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜尋流動性池",
       "sort": {
         "APRIncentivized": "年利率(APR)",
         "fees": "交易費 (7日)",
@@ -556,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
-    "title": "移除流動性",
-    "titleInPool": "從流動性池 #{poolId} 移除流動性"
+    "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
   "settings": {
@@ -654,20 +647,6 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
-    },
-    "introModal": {
-      "callout": "新功能",
-      "title": "在 Osmosis 上質押",
-      "description": {
-        "1": "質押是利用資產賺錢最簡單的方法之一。現在您可以將您的 OSMO 放在 Osmosis 上。",
-        "2": "賺取高達",
-        "3": "每年都有質押獎勵！",
-        "4": "並付諸實踐",
-        "5": "讓您可用的{displayBalance}發揮作用並",
-        "button": "買一些OSMO"
-      },
-      "asterisk": "* 質押獎勵價值受價格和年利率波動影響。",
-      "button": "開始質押"
     }
   },
   "superfluidValidator": {
@@ -758,7 +737,6 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
   "seo": {
     "404": {
       "title": "404頁面不存在",
@@ -825,9 +803,9 @@
     "osmosisUpdates": "滲透更新！",
     "seeWhatsNew": "看看有什麼新鮮事"
   },
-  "unlistedAssetsEnabled": "啟用非上市資產",
-  "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "previewAssetsEnabled": "啟用預覽資源",
+  "previewAssetsDisabled": "預覽資源已停用",
+  "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "earnPage": {
     "title": "賺",
     "position": "位置",
@@ -885,8 +863,9 @@
   },
   "disclaimer": "免責聲明",
   "unstableAssetsWarning": {
-    "title": "傳輸不穩定",
-    "description": "您可能會遇到嚴重的延遲或交易失敗。繼續需要您自擔風險。",
+    "titleDeposit": "{coinDenom}存款不穩定",
+    "titleWithdraw": "{coinDenom}提款不穩定",
+    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
     "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
   }

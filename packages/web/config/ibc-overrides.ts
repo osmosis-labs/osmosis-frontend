@@ -539,8 +539,7 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
   },
   DYM: {
-    depositUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=dymension_1100-1&chainTo=osmosis-1&token0=adym&token1=ibc%2F9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
+    depositUrlOverride: "https://portal.dymension.xyz/ibc",
   },
   "injective.GLTO": {
     depositUrlOverride:
@@ -557,6 +556,19 @@ const MainnetIBCAdditionalData: Partial<
   "solana.USDC.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
+  BERLIN: {
+    depositUrlOverride: "https://app.evmos.org/assets",
+  },
+  BMOS: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=phoenix-1&chainTo=osmosis-1&token0=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq&token1=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942",
+    withdrawUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942&token1=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
+  },
+  HEART: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=humans_1089-1&chainTo=osmosis-1&token0=aheart&token1=ibc%2F35CECC330D11DD00FACB555D07687631E0BC7D226260CC5F015F6D7980819533",
   },
 };
 

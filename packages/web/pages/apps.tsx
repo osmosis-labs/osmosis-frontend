@@ -3,10 +3,10 @@ import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useWindowSize } from "react-use";
 
-import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
@@ -157,15 +157,12 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         </div>
         <div className="flex w-48 items-center justify-center pl-6">
           <a
-            className={buttonCVA({
-              mode: "secondary",
-            })}
             href="https://tally.so/r/wge9xO"
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleApplyClick}
           >
-            {t("store.applyButton")} &rarr;
+            <Button variant="outline">{t("store.applyButton")} &rarr;</Button>
           </a>
         </div>
       </div>

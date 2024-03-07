@@ -57,7 +57,7 @@ export function getPoolsFromSidecar({
           reserve
             ? timeout(
                 () => calcTotalFiatValueLockedFromReserve(reserve),
-                9_000, // 9 seconds
+                15_000, // 15 seconds
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
             : null
@@ -133,7 +133,7 @@ export function getPoolTypeFromChainPool(
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
-/** @throws if an asset is unlisted */
+/** @throws if an asset is not in asset list */
 export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {

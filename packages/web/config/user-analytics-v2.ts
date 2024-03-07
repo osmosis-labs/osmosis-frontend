@@ -59,6 +59,7 @@ export type EventProperties = {
   type: string;
   router: string;
   errorMessage: string | undefined;
+  valueUsd: number;
 };
 
 export type UserProperties = {

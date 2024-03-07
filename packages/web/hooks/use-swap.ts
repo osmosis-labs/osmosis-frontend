@@ -14,7 +14,7 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
-import { useShowUnlistedAssets } from "~/hooks/use-show-unlisted-assets";
+import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
@@ -333,7 +333,7 @@ export function useSwapAssets({
     [debouncedSearchInput]
   );
 
-  const { showUnlistedAssets } = useShowUnlistedAssets();
+  const { showPreviewAssets } = useShowPreviewAssets();
 
   const canLoadAssets =
     !isLoadingWallet &&
@@ -347,11 +347,11 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,
-      includeUnlisted: showUnlistedAssets,
+      includePreview: showPreviewAssets,
       limit: 50, // items per page
     },
     {
@@ -493,10 +493,6 @@ function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
   existingAssets: TAsset[] = []
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -508,18 +504,25 @@ function useSwapAsset<TAsset extends Asset>(
   const queryEnabled =
     !isNil(minDenomOrSymbol) &&
     typeof minDenomOrSymbol === "string" &&
-    !isLoadingWallet &&
     !existingAsset;
   const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
       findMinDenomOrSymbol: minDenomOrSymbol ?? "",
-      userOsmoAddress: account?.address,
     },
-    { enabled: queryEnabled }
+    {
+      enabled: queryEnabled,
+
+      // since asset is often point of attention, don't block on other potentially expensive queries
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
   );
 
   return {
-    asset: existingAsset ?? asset,
+    asset: existingAsset ?? (asset as TAsset),
     isLoading: isLoading && !existingAsset,
   };
 }

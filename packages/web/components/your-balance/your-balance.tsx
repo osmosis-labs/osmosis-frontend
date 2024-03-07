@@ -14,8 +14,8 @@ import { useCallback } from "react";
 import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
@@ -476,7 +476,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         tokens: ibcBalances.map(({ balance }) => balance),
         externalDepositUrl: ibcBalance.depositUrlOverride,
         externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
-        isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
           transferConfig?.transferAsset(
@@ -570,10 +569,13 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         {!isNativeAsset ? (
           <>
             {ibcBalance?.depositUrlOverride ? (
-              <Link href={ibcBalance.depositUrlOverride} target="_blank">
+              <Link
+                href={ibcBalance.depositUrlOverride}
+                target="_blank"
+                className="w-full"
+              >
                 <Button
-                  size="sm"
-                  className="whitespace-nowrap !px-10 !text-base"
+                  className="w-full whitespace-nowrap"
                   disabled={!isDepositSupported}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
@@ -581,8 +583,7 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               </Link>
             ) : (
               <Button
-                size="sm"
-                className="whitespace-nowrap !px-10 !text-base"
+                className="w-full whitespace-nowrap"
                 disabled={!tokenChain?.chainId || !isDepositSupported}
                 onClick={() => {
                   if (tokenChain?.chainId) {
@@ -607,11 +608,14 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               </Button>
             )}
             {ibcBalance?.withdrawUrlOverride ? (
-              <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
+              <Link
+                href={ibcBalance.withdrawUrlOverride}
+                target="_blank"
+                className="w-full"
+              >
                 <Button
-                  size="sm"
-                  className="whitespace-nowrap !px-10 !text-base"
-                  mode="secondary"
+                  className="w-full whitespace-nowrap"
+                  variant="outline"
                   disabled={
                     !isWithdrawSupported ||
                     !data?.amount?.toDec() ||
@@ -623,15 +627,14 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               </Link>
             ) : (
               <Button
-                size="sm"
-                className="whitespace-nowrap !px-10 !text-base"
+                className="w-full whitespace-nowrap"
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
                   !data?.amount?.toDec() ||
                   data.amount.toDec().isZero()
                 }
-                mode="secondary"
+                variant="outline"
                 onClick={() => {
                   if (tokenChain?.chainId) {
                     if (isUnstable) {
@@ -656,9 +659,8 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         )}
         {isOsmosis && account?.isWalletConnected ? (
           <Button
-            mode={"unstyled"}
             onClick={onOpenFiatOnrampSelection}
-            className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+            className="group flex items-center gap-2.5 border-osmoverse-500 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
           >
             <CreditCardIcon
               isAnimated

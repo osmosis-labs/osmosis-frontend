@@ -5,7 +5,7 @@ import React, { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AssetCell as Cell } from "~/components/table/cells/types";
-import { InfoTooltip, Tooltip } from "~/components/tooltip";
+import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -15,7 +15,6 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
     coinDenom,
     assetName,
     coinImageUrl,
-    isUnstable,
     isFavorite,
     isVerified,
     onToggleFavorite,
@@ -86,9 +85,6 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
                   className="h-5 w-5 text-osmoverse-300"
                 />
               </Tooltip>
-            )}
-            {isUnstable && (
-              <InfoTooltip content={t("unstableAssetsWarning.warning")} />
             )}
           </div>
         ) : (

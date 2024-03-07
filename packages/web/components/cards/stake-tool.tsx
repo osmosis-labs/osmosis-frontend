@@ -2,13 +2,13 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React from "react";
 import { useMemo } from "react";
 
-import { Button } from "~/components/buttons";
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
 import { StakeOrUnstake } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
@@ -98,10 +98,9 @@ export const StakeTool: React.FC<{
         <UnbondingCard />
       )}
       <Button
-        mode="special-1"
+        variant="secondary"
         onClick={onStakeButtonClick}
         disabled={disabled}
-        className="disabled:cursor-not-allowed disabled:opacity-75"
       >
         {buttonText}
       </Button>

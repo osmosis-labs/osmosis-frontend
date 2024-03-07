@@ -15,9 +15,9 @@ import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remo
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import type {
-  ClPosition,
-  ClPositionDetails,
   PositionHistoricalPerformance,
+  UserPosition,
+  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -25,8 +25,8 @@ import { formatPretty } from "~/utils/formatter";
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    position: ClPosition;
-    status: ClPositionDetails["status"];
+    position: UserPosition;
+    status: UserPositionDetails["status"];
     claimableRewardCoins: PositionHistoricalPerformance["claimableRewardCoins"];
   } & ModalBaseProps
 > = observer((props) => {

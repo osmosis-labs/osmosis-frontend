@@ -27,7 +27,6 @@ import { CloseButton } from "~/components/buttons/close-button";
 import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,
@@ -44,6 +43,7 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { ShowMoreButton } from "~/components/ui/button";
 import { Button as ButtonShadcn } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input as InputShadcn } from "~/components/ui/input";

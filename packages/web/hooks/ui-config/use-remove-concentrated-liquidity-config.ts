@@ -5,14 +5,14 @@ import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { ClPosition } from "~/server/queries/complex/concentrated-liquidity";
+import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  position: ClPosition
+  position: UserPosition
 ): {
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;

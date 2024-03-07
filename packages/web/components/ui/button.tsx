@@ -2,6 +2,12 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
+import { FunctionComponent } from "react";
+
+import { Icon } from "~/components/assets";
+import { ToggleProps } from "~/components/control";
+import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -12,7 +18,7 @@ const buttonVariants = cva(
           "bg-wosmongton-700 text-primary-foreground shadow hover:bg-wosmongton-700/90",
         destructive: "bg-rust-700 shadow-sm hover:bg-destructive/90",
         outline:
-          "border-wosmongton-400 border border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -20,7 +26,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-14 px-6 py-2 rounded-xl",
-        sm: "h-6 rounded-md px-3 text-xs",
+        sm: "h-6 rounded-md text-caption py-1 px-1.5",
         // lg: "h-14 rounded-xl px-8", // note - we don't use this size
         icon: "h-9 w-9",
       },
@@ -52,4 +58,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
+  isOn,
+  onToggle,
+  className,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      variant="ghost"
+      className={classNames("button flex flex-col gap-1", className)}
+      onClick={() => onToggle(isOn)}
+    >
+      <span className="body2 md:caption text-wosmongton-200">
+        {isOn ? t("components.show.less") : t("components.show.more")}
+      </span>
+      <div className="m-auto">
+        <Icon
+          id={isOn ? "chevron-up" : "chevron-down"}
+          height={14}
+          width={14}
+          className="text-osmoverse-400"
+        />
+      </div>
+    </Button>
+  );
+};
+ShowMoreButton.displayName = "ShowMoreButton";
+
+export { Button, buttonVariants, ShowMoreButton };

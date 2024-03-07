@@ -55,7 +55,7 @@ describe("Collect Cl Fees Txs", () => {
         account!.osmosis
           .sendCollectAllPositionsRewardsMsgs(
             userPositionIds,
-            undefined,
+            userPositionIds,
             undefined,
             (tx) => {
               if (tx.code) reject(tx.rawLog);
@@ -78,7 +78,7 @@ describe("Collect Cl Fees Txs", () => {
         account!.osmosis
           .sendCollectAllPositionsRewardsMsgs(
             userPositionIds,
-            undefined,
+            userPositionIds,
             undefined,
             (tx) => {
               if (tx.code) reject(tx.rawLog);

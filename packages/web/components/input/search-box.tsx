@@ -81,7 +81,6 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
 
     const _onInput = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
-        console.log(e);
         onInput(e.target.value);
       },
       [onInput]
