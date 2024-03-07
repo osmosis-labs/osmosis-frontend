@@ -43,7 +43,7 @@ function getBatchLoader() {
           ),
         {
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
-          maxBatchSize: 60,
+          maxBatchSize: 100,
         }
       ),
   });
