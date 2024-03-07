@@ -675,6 +675,8 @@
     "buttonError": "继续兑换",
     "expectedOutput": "预期产出",
     "fee": "交易费 ({fee})",
+    "networkFee": "网络费",
+    "totalFee": "总费用",
     "HALF": "对半",
     "MAX": "最大",
     "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
