@@ -47,7 +47,6 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
             </p>
           </div>
         </div>
-        {/* asdfasdfas */}
         <div className="max-w-md">
           <Button
             onClick={() => {
