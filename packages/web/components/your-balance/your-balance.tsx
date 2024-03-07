@@ -42,7 +42,6 @@ import {
   SelectAssetSourceModal,
   TransferAssetSelectModal,
 } from "~/modals";
-import { UnstableAssetWarning } from "~/modals/unstable-asset-warning";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -519,14 +518,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
     [transferConfig]
   );
 
-  const [withdrawOrDeposit, setWithdrawOrDeposit] = useState<
-    "withdraw" | "deposit"
-  >("withdraw");
-  const [showUnstableAssetWarning, setShowUnstableAssetWarning] =
-    useState(false);
-
-  const isUnstable = data?.isUnstable;
-
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
       <div
@@ -590,16 +581,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                     if (!data?.isVerified && !shouldDisplayUnverifiedAssets) {
                       setConfirmUnverifiedTokenDenom(denom);
                     } else {
-                      if (isUnstable) {
-                        setShowUnstableAssetWarning(true);
-                        setWithdrawOrDeposit("deposit");
-                      } else {
-                        onDeposit(
-                          tokenChain.chainId,
-                          denom,
-                          ibcBalance?.depositUrlOverride
-                        );
-                      }
+                      onDeposit(
+                        tokenChain.chainId,
+                        denom,
+                        ibcBalance?.depositUrlOverride
+                      );
                     }
                   }
                 }}
@@ -637,16 +623,11 @@ const BalanceStats = observer((props: YourBalanceProps) => {
                 variant="outline"
                 onClick={() => {
                   if (tokenChain?.chainId) {
-                    if (isUnstable) {
-                      setShowUnstableAssetWarning(true);
-                      setWithdrawOrDeposit("withdraw");
-                    } else {
-                      onWithdraw(
-                        tokenChain.chainId,
-                        denom,
-                        ibcBalance?.withdrawUrlOverride
-                      );
-                    }
+                    onWithdraw(
+                      tokenChain.chainId,
+                      denom,
+                      ibcBalance?.withdrawUrlOverride
+                    );
                   }
                 }}
               >
@@ -709,25 +690,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         ) : (
           <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
         ))}
-      <UnstableAssetWarning
-        isOpen={showUnstableAssetWarning}
-        onRequestClose={() => setShowUnstableAssetWarning(false)}
-        onContinue={() => {
-          if (!tokenChain?.chainId) return;
-
-          withdrawOrDeposit === "withdraw"
-            ? onWithdraw(
-                tokenChain.chainId,
-                denom,
-                ibcBalance?.withdrawUrlOverride
-              )
-            : onDeposit(
-                tokenChain.chainId,
-                denom,
-                ibcBalance?.depositUrlOverride
-              );
-        }}
-      />
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
         onRequestClose={onCloseFiatOnrampSelection}
