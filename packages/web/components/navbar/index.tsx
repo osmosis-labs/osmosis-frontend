@@ -256,12 +256,11 @@ export const NavBar: FunctionComponent<
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (
                   <Button
-                    className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
-                      className ?? ""
-                    }`}
+                    size="md"
+                    className={`w-48 lg:w-fit ${className ?? ""}`}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    size="sm"
+                    // size="sm"
                     {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
@@ -394,7 +393,7 @@ const WalletInfo: FunctionComponent<
     <div className={className}>
       {!walletConnected ? (
         <Button
-          className="!h-[42px] w-40 lg:w-36 md:w-full"
+          size="md"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect(chainId);
