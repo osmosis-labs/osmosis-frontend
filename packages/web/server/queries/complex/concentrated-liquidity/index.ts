@@ -491,16 +491,7 @@ export async function mapGetUserPositions({
         ({ positions }) => positions
       );
 
-  const stakeCurrencyPromise = getAsset({
-    anyDenom: ChainList[0].staking.staking_tokens[0].denom,
-  });
-
-  const [positions, stakeCurrency] = await Promise.all([
-    positionsPromise,
-    stakeCurrencyPromise,
-  ]);
-
-  if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
+  const positions = await positionsPromise;
 
   const userPositions = await Promise.all(
     positions
@@ -524,7 +515,7 @@ export async function mapGetUserPositions({
         }
         const currentValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
+          await calcSumCoinsValue([baseCoin, quoteCoin]).catch(() => 0)
         );
 
         const lowerTick = new Int(position.lower_tick);
