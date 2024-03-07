@@ -1,4 +1,4 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -147,14 +147,20 @@ export function useSwap({
   ]);
 
   const getSwapTxParameters = useCallback(
-    (maxSlippage: Dec) => {
+    ({
+      coinAmount,
+      maxSlippage,
+    }: {
+      coinAmount: CoinPretty | undefined;
+      maxSlippage: Dec;
+    }) => {
       if (!quote) {
         throw new Error(
           "User input should be disabled if no route is found or is being generated"
         );
       }
 
-      if (!inAmountInput.amount) throw new Error("No input");
+      if (!coinAmount) throw new Error("No input");
       if (!account) throw new Error("No account");
       if (!swapAssets.fromAsset) throw new Error("No from asset");
       if (!swapAssets.toAsset) throw new Error("No to asset");
@@ -195,7 +201,7 @@ export function useSwap({
       /** In amount converted to integer (remove decimals) */
       const tokenIn = {
         currency: swapAssets.fromAsset as Currency,
-        amount: inAmountInput.amount.toCoin().amount,
+        amount: coinAmount.toCoin().amount,
       };
 
       /** Out amount with slippage included */
@@ -216,7 +222,7 @@ export function useSwap({
         tokenOutMinAmount,
       };
     },
-    [quote, inAmountInput, account, swapAssets]
+    [quote, account, swapAssets]
   );
 
   const messages = useMemo(() => {
@@ -225,7 +231,10 @@ export function useSwap({
     let txParams: ReturnType<typeof getSwapTxParameters>;
 
     try {
-      txParams = getSwapTxParameters(new Dec(0.95));
+      txParams = getSwapTxParameters({
+        coinAmount: inAmountInput.amount,
+        maxSlippage: new Dec(0.95),
+      });
     } catch {
       return undefined;
     }
@@ -279,7 +288,10 @@ export function useSwap({
         let txParams: ReturnType<typeof getSwapTxParameters>;
 
         try {
-          txParams = getSwapTxParameters(maxSlippage);
+          txParams = getSwapTxParameters({
+            coinAmount: inAmountInput.amount,
+            maxSlippage,
+          });
         } catch (e) {
           const error = e as Error;
           return reject(error.message);
