@@ -98,8 +98,6 @@ export const assetsRouter = createTRPCRouter({
         asset: { coinMinimalDenom },
       });
 
-      if (!price) throw new Error("Price not available " + coinMinimalDenom);
-
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
   getRecommendedAssets: publicProcedure.query(async () => {
