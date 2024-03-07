@@ -260,7 +260,6 @@ export const NavBar: FunctionComponent<
                     className={`w-48 lg:w-fit ${className ?? ""}`}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    // size="sm"
                     {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>

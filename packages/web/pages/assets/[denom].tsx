@@ -402,9 +402,9 @@ const Navigation = observer((props: NavigationProps) => {
 
       <div className="flex items-center justify-center gap-2">
         <Button
+          size="md"
           variant="ghost"
-          // TODO - remove h-[40px] and consider adding md size button
-          className="group flex !h-10 gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
+          className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
           onClick={toggleFavoriteList}
         >
