@@ -254,7 +254,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
               />
-              ashdjfklhasjkl
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
