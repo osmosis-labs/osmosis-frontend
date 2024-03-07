@@ -60,7 +60,7 @@ export function getPriceBatched(asset: Asset) {
         loader
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
-          .catch(() => getPriceFromCoinGecko(asset))
+          .catch(() => getPriceFromCoinGecko(asset).catch(() => new Dec(0)))
       ),
   });
 }
