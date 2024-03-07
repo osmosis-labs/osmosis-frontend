@@ -37,6 +37,15 @@ const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
 export const assetsRouter = createTRPCRouter({
   getAsset: publicProcedure
     .input(
+      z.object({
+        findMinDenomOrSymbol: z.string(),
+      })
+    )
+    .query(async ({ input: { findMinDenomOrSymbol } }) =>
+      getAsset({ anyDenom: findMinDenomOrSymbol })
+    ),
+  getUserAsset: publicProcedure
+    .input(
       z
         .object({
           findMinDenomOrSymbol: z.string(),
@@ -51,7 +60,7 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress,
       });
     }),
-  getAssets: publicProcedure
+  getUserAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(
       async ({
