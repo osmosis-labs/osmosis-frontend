@@ -60,13 +60,8 @@ export const PreTransferModal: FunctionComponent<
         </div>
         <div className="flex place-content-between gap-3 py-2">
           {Boolean(externalWithdrawUrl) ? (
-            <a
-              href={externalDepositUrl}
-              rel="noreferrer"
-              target="_blank"
-              className="w-full"
-            >
-              <Button className="flex w-full gap-2" variant="outline">
+            <Button className="flex w-full gap-2" variant="outline" asChild>
+              <a href={externalDepositUrl} rel="noreferrer" target="_blank">
                 {t("assets.table.preTransfer.withdraw")}
                 <Image
                   alt="external transfer link"
@@ -74,21 +69,21 @@ export const PreTransferModal: FunctionComponent<
                   height={12}
                   width={12}
                 />
-              </Button>
-            </a>
+              </a>
+            </Button>
           ) : (
             <Button className="w-full" variant="outline" onClick={onWithdraw}>
               {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
           {Boolean(externalDepositUrl) && (
-            <a
-              href={externalDepositUrl}
-              rel="noreferrer"
-              target="_blank"
-              className="w-full"
-            >
-              <Button className="flex w-full gap-2">
+            <Button className="flex w-full gap-2" asChild>
+              <a
+                href={externalDepositUrl}
+                rel="noreferrer"
+                target="_blank"
+                className="w-full"
+              >
                 <span>{t("assets.table.preTransfer.deposit")}</span>
                 <Image
                   alt="external transfer link"
@@ -96,8 +91,8 @@ export const PreTransferModal: FunctionComponent<
                   height={12}
                   width={12}
                 />
-              </Button>
-            </a>
+              </a>
+            </Button>
           )}
           {!isEthAsset && !externalDepositUrl && (
             <Button className="w-full" onClick={onDeposit}>
