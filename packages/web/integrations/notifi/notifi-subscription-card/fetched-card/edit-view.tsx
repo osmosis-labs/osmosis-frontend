@@ -372,7 +372,6 @@ export const EditView: FunctionComponent = () => {
             </p>
             <Button
               className="z-[5] w-[20.8125rem]"
-              size={"normal"}
               disabled={loading}
               onClick={() => {
                 setLoading(true);
@@ -387,8 +386,7 @@ export const EditView: FunctionComponent = () => {
             </Button>
             <Button
               className="z-[52] w-[20.8125rem]"
-              size={"normal"}
-              mode={"secondary"}
+              variant="outline"
               disabled={loading}
               onClick={() => {
                 revertChanges();

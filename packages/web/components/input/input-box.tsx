@@ -44,7 +44,6 @@ export const InputBox: FunctionComponent<Props> = ({
   type,
   rightEntry = false,
   labelButtons = [],
-  clearButton = false,
   trailingSymbol,
   inputClassName,
   disabled = false,

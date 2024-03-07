@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   FilterProvider,
@@ -39,11 +39,11 @@ export default function Earn() {
     [t]
   );
 
-  // useEffect(() => {
-  //   if (!earnPage) {
-  //     router.push("/");
-  //   }
-  // }, [earnPage, router]);
+  useEffect(() => {
+    if (!earnPage) {
+      router.push("/");
+    }
+  }, [earnPage, router]);
 
   return (
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
