@@ -134,10 +134,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           currency: "usd",
         });
 
-        if (!inputAssetPriceUSD) {
-          throw new Error(`Failed to get input ${fromAsset.denom} price`);
-        }
-
         const outputAssetPriceUSD = await getAssetPrice({
           asset: {
             coinDenom: toAsset.denom,
@@ -146,10 +142,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           },
           currency: "usd",
         });
-
-        if (!outputAssetPriceUSD) {
-          throw new Error(`Failed to get output ${toAsset.denom} price`);
-        }
 
         let transferFee: BridgeCoin = {
           amount: "0",
@@ -174,12 +166,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               },
               currency: "usd",
             });
-
-            if (!feeAssetPrice) {
-              throw new Error(
-                `Failed to get fee asset ${operation.axelar_transfer.asset} price`
-              );
-            }
 
             const feeAmount = new CoinPretty(
               {

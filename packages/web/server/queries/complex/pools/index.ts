@@ -5,7 +5,7 @@ import { IS_TESTNET } from "~/config/env";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromIndexer } from "./providers/indexer";
+import { getPoolsFromSidecar } from "./providers/sidecar";
 
 const allPooltypes = [
   "concentrated",
@@ -60,7 +60,7 @@ export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
   params?: PoolFilter,
-  poolProvider: PoolProvider = getPoolsFromIndexer
+  poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
   let pools = await poolProvider({ poolIds: params?.poolIds });
 
