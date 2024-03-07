@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { Button } from "~/components/ui/button";
 import { SpriteIconId } from "~/config";
 
 export const ChartButton: FunctionComponent<{
@@ -15,11 +16,10 @@ export const ChartButton: FunctionComponent<{
   const isLabel = Boolean(props.label) && !props.icon;
 
   return (
-    <button
+    <Button
+      size="sm"
       className={classNames(
-        "flex h-6 cursor-pointer items-center justify-center",
-        "rounded-lg bg-osmoverse-800 px-2 text-caption hover:bg-osmoverse-900",
-        "whitespace-nowrap",
+        "flex cursor-pointer items-center justify-center !bg-osmoverse-800 px-2 text-caption  hover:!bg-osmoverse-900",
         {
           "!bg-osmoverse-600": props.selected,
         }
@@ -36,6 +36,6 @@ export const ChartButton: FunctionComponent<{
         />
       )}
       {isLabel && props.label}
-    </button>
+    </Button>
   );
 };

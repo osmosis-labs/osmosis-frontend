@@ -2,13 +2,13 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
-import { FunctionComponent } from "react";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
   cloneElement,
   ElementType,
   forwardRef,
+  FunctionComponent,
   isValidElement,
   ReactNode,
 } from "react";
@@ -16,6 +16,7 @@ import {
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 
 const buttonVariants = cva(
@@ -171,5 +172,43 @@ const LinkIconButton = forwardRef<
 });
 
 LinkIconButton.displayName = "LinkIconButton";
+
+// TODO - migrated this from another component, ideally should be a button variant
+export const ChartButton: FunctionComponent<{
+  alt?: string;
+  icon?: SpriteIconId;
+  label?: string;
+  selected: boolean;
+  onClick: () => void;
+}> = (props) => {
+  const isIcon = Boolean(props.icon) && !props.label;
+  const isLabel = Boolean(props.label) && !props.icon;
+
+  return (
+    <Button
+      size="sm"
+      className={classNames(
+        "flex cursor-pointer items-center justify-center !bg-osmoverse-800 px-2 text-caption  hover:!bg-osmoverse-900",
+        {
+          "!bg-osmoverse-600": props.selected,
+        }
+      )}
+      onClick={props.onClick}
+    >
+      {isIcon && (
+        <Icon
+          id={props.icon!}
+          label={props.alt}
+          width={16}
+          height={16}
+          className="text-osmoverse-300"
+        />
+      )}
+      {isLabel && props.label}
+    </Button>
+  );
+};
+
+ChartButton.displayName = "ChartButton";
 
 export { ArrowButton, Button, buttonVariants, LinkIconButton, ShowMoreButton };
