@@ -185,10 +185,16 @@ export function useSwap({
     return routes;
   }, [quote?.split]);
 
-  const estimateFeeTxIfMaxBalanceReachedMutation = useEstimateSwapTxFeesQuery(
+  const estimateFeeTxIfMaxBalanceMutation = useEstimateSwapTxFeesQuery(
     routes,
     tokenIn,
     inAmountInput.isMaxBalance
+  );
+  const estimatedGasAmountOrZero = useMemo(
+    () =>
+      estimateFeeTxIfMaxBalanceMutation.data?.gasInTokenAmount.toDec() ||
+      new Dec(0),
+    [estimateFeeTxIfMaxBalanceMutation.data?.gasInTokenAmount]
   );
 
   /** In amount converted to integer (remove decimals) */
@@ -214,6 +220,8 @@ export function useSwap({
             )
           )
           .mul(new Dec(1).sub(maxSlippage))
+          // TODO: @Amosel needs testing here
+          .sub(estimatedGasAmountOrZero)
           .truncate()
           .toString();
 
@@ -275,6 +283,7 @@ export function useSwap({
       swapAssets.fromAsset,
       swapAssets.toAsset,
       quote,
+      estimatedGasAmountOrZero,
       routes,
       tokenIn,
       queryClient,
@@ -312,7 +321,8 @@ export function useSwap({
       isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
     isMaxBalance: inAmountInput.isMaxBalance,
-    estimateFeeTxIfMaxBalanceMutation: estimateFeeTxIfMaxBalanceReachedMutation,
+    estimateFeeTxIfMaxBalanceMutation,
+    estimatedGasAmountOrZero,
   };
 }
 

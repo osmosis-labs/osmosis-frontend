@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -24,6 +24,7 @@ import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
+// import { Button } from "~/components/buttons";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -154,22 +155,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
-      // not every token is available as a fee,
-      // todo: amos conver gas amount to CointPretty.
-      // const gasValue = swapState.estimateFeeTxIfMaxBalanceMutation.data?.gas
-      // @Amosel finis this:
-      const estimatedGasAmountOrZero = new CoinPretty(
-        swapState.inAmountInput.amount.currency,
-        0
-        // swapState.estimateFeeTxIfMaxBalanceMutation || 0
-      );
-      swapState.estimateFeeTxIfMaxBalanceMutation.data?.gasUsdValueToPay;
-      // (totalInAmountUSDValue - gasUsdValueToPay) / inAmountTokenUSDValue
-
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
         tokenAmount: Number(
-          swapState.inAmountInput.amount.sub(estimatedGasAmountOrZero)
+          swapState.inAmountInput.amount.sub(swapState.estimatedGasAmountOrZero)
         ),
         toToken: swapState.toAsset?.coinDenom,
         isOnHome: !isInModal,
@@ -835,7 +824,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 {swapState.isMaxBalance && (
                   <div className="flex justify-between gap-1">
                     <span className="caption max-w-[140px]">
-                      {"Gas Fees to be subtracted"}
+                      {"Gas fees minus total balance"}
                     </span>
                     <SkeletonLoader
                       className={

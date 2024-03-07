@@ -90,13 +90,10 @@ export function useEstimateSwapTxFeesQuery(
         inTokenAssetWithPrice.currentPrice.mul(gasInTokenAmount);
 
       const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, priceInUsd);
-
       return { gasUsdValueToPay, gasInTokenAmount, gas }; // subtract this value from the token following the following formula:
       // max = (totalInAmountUSDValue - gasUsdValueToPay) / inAmountTokenUSDValue
-      // half = max/2  <-- OK.
-      // where is totalInAmountUSDValue and inAmountTokenUSDValue come from?
 
-      // We alread have the totalInAmountToken which is the number we display in 'available' <-- not seeing that variable when I search vscode.
+      // We alread have the totalInAmountToken which is the number we display in 'available'
       // totalInAmountToken = swapState.inAmountInput?.balance in swap-tool
       // we have to compute the price of that with maybe `useCoinFiatValue`
       // inAmountTokenUSDValue is useCoinPrice(inAmountCurrency)
