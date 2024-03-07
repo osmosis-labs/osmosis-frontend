@@ -106,7 +106,7 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 }
 
 /** Calculate and sum the value of multiple assets.
- *  Will only include listed assets as part of sum. */
+ *  Will only include listed assets that have prices as part of sum. */
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",
@@ -124,9 +124,7 @@ export async function calcSumAssetsValue({
           const price = await calcAssetValue({
             ...asset,
             currency,
-          });
-
-          if (!price) return undefined;
+          }).catch(() => undefined);
 
           return price;
         })

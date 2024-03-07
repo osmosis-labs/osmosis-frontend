@@ -469,8 +469,7 @@ const SparklineChartCell: AssetInfoCellComponent<{
     [recentPrices]
   );
 
-  if (!recentPriceCloses || recentPriceCloses.length === 0)
-    return <div className="w-20" />;
+  if (recentPriceCloses.length === 0) return <div className="w-20" />;
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
