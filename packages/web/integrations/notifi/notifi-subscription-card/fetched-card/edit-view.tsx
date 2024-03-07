@@ -9,8 +9,8 @@ import classNames from "classnames";
 import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -356,11 +356,7 @@ export const EditView: FunctionComponent = () => {
               "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
             )}
           >
-            <Button
-              mode="primary"
-              disabled={loading}
-              onClick={() => onClickSave()}
-            >
+            <Button disabled={loading} onClick={() => onClickSave()}>
               {t("notifi.saveChanges")}
             </Button>
           </div>
