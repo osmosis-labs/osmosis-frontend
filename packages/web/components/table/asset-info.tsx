@@ -534,16 +534,22 @@ export const AssetActionsCell: AssetInfoCellComponent<{
 }) => (
   <div className="flex items-center gap-2">
     <button
-      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onDeposit(coinMinimalDenom)}
+      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+      onClick={(e) => {
+        e.preventDefault();
+        onDeposit(coinMinimalDenom);
+      }}
     >
-      <Icon className="m-auto" id="deposit" width={16} height={16} />
+      <Icon className="m-auto" id="down-arrow-thin" width={24} height={24} />
     </button>
     <button
-      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onWithdraw(coinMinimalDenom)}
+      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+      onClick={(e) => {
+        e.preventDefault();
+        onWithdraw(coinMinimalDenom);
+      }}
     >
-      <Icon className="m-auto" id="withdraw" width={16} height={16} />
+      <Icon className="m-auto" id="up-arrow-thin" width={24} height={24} />
     </button>
   </div>
 );
