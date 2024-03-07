@@ -33,11 +33,14 @@ function getBatchLoader() {
                 const price =
                   priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
 
-                if (!price || new Dec(price).isZero())
+                // trim to 18 decimals to silence Dec warnings
+                const p = price.replace(/(\.\d{18})\d*/, "$1");
+
+                if (new Dec(p).isZero())
                   return new Error(
                     `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                   );
-                else return price;
+                else return p;
               } catch (e) {
                 return new Error(
                   `No SQS price result for ${baseCoinMinimalDenom} and USDC`
@@ -55,6 +58,9 @@ function getBatchLoader() {
 }
 
 export function getPriceBatched(asset: Asset) {
+  if (asset.decimals === 0)
+    throw new Error("SQS currently does not support 0 decimal tokens");
+
   return cachified({
     cache: sidecarCache,
     key: `coingecko-price-${asset.coinMinimalDenom}`,
