@@ -313,6 +313,9 @@ export function useSwap({
             )
             .catch((reason) => {
               reject(reason);
+            })
+            .finally(() => {
+              inAmountInput.reset();
             });
           return pools.length === 1 ? "exact-in" : "multihop";
         } else if (routes.length > 1) {
@@ -337,6 +340,9 @@ export function useSwap({
             )
             .catch((reason) => {
               reject(reason);
+            })
+            .finally(() => {
+              inAmountInput.reset();
             });
         } else {
           reject("No routes given");
@@ -346,8 +352,10 @@ export function useSwap({
         // But for now we will invalidate query data here.
         if (!account?.address) return;
         useBalances.invalidateQuery({ address: account.address, queryClient });
+
+        inAmountInput.reset();
       }),
-    [account, getSwapTxParameters, networkFee, queryClient]
+    [account, getSwapTxParameters, inAmountInput, networkFee, queryClient]
   );
 
   const positivePrevQuote = usePreviousWhen(
