@@ -7,7 +7,6 @@ import {
   queryPrices,
   QUOTE_COIN_MINIMAL_DENOM,
 } from "~/server/queries/sidecar/prices";
-import { EdgeDataLoader } from "~/utils/batching";
 import { LARGE_LRU_OPTIONS } from "~/utils/cache";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
@@ -19,34 +18,34 @@ export function getPriceFromSidecar(asset: Asset) {
 }
 
 /** Prevent long-running batch loaders as recommended by `DataLoader` docs. */
-function getBatchLoader() {
-  return cachified({
-    cache: sidecarCache,
-    key: "sidecar-batch-loader",
-    ttl: 1000 * 60 * 10, // 10 minutes
-    getFreshValue: () =>
-      new EdgeDataLoader(
-        (coinMinimalDenoms: readonly string[]) => {
-          return queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
-            coinMinimalDenoms.map((baseCoinMinimalDenom) => {
-              const price =
-                priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
+// function getBatchLoader() {
+//   return cachified({
+//     cache: sidecarCache,
+//     key: "sidecar-batch-loader",
+//     ttl: 1000 * 60 * 10, // 10 minutes
+//     getFreshValue: () =>
+//       new EdgeDataLoader(
+//         (coinMinimalDenoms: readonly string[]) => {
+//           return queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
+//             coinMinimalDenoms.map((baseCoinMinimalDenom) => {
+//               const price =
+//                 priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
 
-              if (!price || new Dec(price).isZero())
-                return new Error(
-                  `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-                );
-              else return price;
-            })
-          );
-        },
-        {
-          // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
-          maxBatchSize: 100,
-        }
-      ),
-  });
-}
+//               if (!price || new Dec(price).isZero())
+//                 return new Error(
+//                   `No SQS price result for ${baseCoinMinimalDenom} and USDC`
+//                 );
+//               else return price;
+//             })
+//           );
+//         },
+//         {
+//           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
+//           maxBatchSize: 100,
+//         }
+//       ),
+//   });
+// }
 
 export function getPriceBatched(asset: Asset) {
   return cachified({
