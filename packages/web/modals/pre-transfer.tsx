@@ -1,11 +1,10 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Button, buttonCVA } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { ModalBase, ModalBaseProps } from "~/modals";
@@ -60,60 +59,48 @@ export const PreTransferModal: FunctionComponent<
           )}
         </div>
         <div className="flex place-content-between gap-3 py-2">
-          {externalWithdrawUrl ? (
+          {Boolean(externalWithdrawUrl) ? (
             <a
-              className={classNames(
-                buttonCVA({
-                  className:
-                    "h-10 w-full gap-2 border-wosmongton-200/30 bg-wosmongton-200/30 hover:border-wosmongton-200/40 hover:bg-wosmongton-200/40",
-                  mode: "primary",
-                })
-              )}
               href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
+              className="w-full"
             >
-              {t("assets.table.preTransfer.withdraw")}
-              <Image
-                alt="external transfer link"
-                src="/icons/external-link-white.svg"
-                height={12}
-                width={12}
-              />
+              <Button className="flex w-full gap-2" variant="outline">
+                {t("assets.table.preTransfer.withdraw")}
+                <Image
+                  alt="external transfer link"
+                  src="/icons/external-link-white.svg"
+                  height={12}
+                  width={12}
+                />
+              </Button>
             </a>
           ) : (
-            <Button
-              className="h-10 w-full"
-              mode="secondary"
-              onClick={onWithdraw}
-            >
+            <Button className="w-full" variant="outline" onClick={onWithdraw}>
               {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
           {Boolean(externalDepositUrl) && (
             <a
-              className={classNames(
-                buttonCVA({
-                  className:
-                    "h-10 w-full gap-2 border-wosmongton-300 bg-wosmongton-300",
-                  mode: "primary",
-                })
-              )}
               href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
+              className="w-full"
             >
-              <span>{t("assets.table.preTransfer.deposit")}</span>
-              <Image
-                alt="external transfer link"
-                src="/icons/external-link-white.svg"
-                height={12}
-                width={12}
-              />
+              <Button className="flex w-full gap-2">
+                <span>{t("assets.table.preTransfer.deposit")}</span>
+                <Image
+                  alt="external transfer link"
+                  src="/icons/external-link-white.svg"
+                  height={12}
+                  width={12}
+                />
+              </Button>
             </a>
           )}
           {!isEthAsset && !externalDepositUrl && (
-            <Button className="h-10 w-full" onClick={onDeposit}>
+            <Button className="w-full" onClick={onDeposit}>
               {t("assets.table.preTransfer.deposit")}
             </Button>
           )}
