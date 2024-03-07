@@ -60,12 +60,15 @@ function getBatchLoader() {
 }
 
 export function getPriceBatched(asset: Asset) {
-  if (asset.decimals === 0)
-    throw new Error("SQS currently does not support 0 decimal tokens");
+  if (asset.decimals === 0) {
+    return getPriceFromCoinGecko(asset).catch(() => {
+      throw new Error("SQS currently does not support 0 decimal tokens");
+    });
+  }
 
   return cachified({
     cache: sidecarCache,
-    key: `coingecko-price-${asset.coinMinimalDenom}`,
+    key: `sidecar-price-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
