@@ -1,11 +1,15 @@
 import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { LiquidityPosition } from "@osmosis-labs/stores";
 
 import {
   calcSumCoinsValue,
   mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getCachedPoolIncentivesMap } from "~/server/queries/complex/pools/incentives";
+import {
+  getCachedPoolIncentivesMap,
+  PoolIncentives,
+} from "~/server/queries/complex/pools/incentives";
 import { queryBalances } from "~/server/queries/cosmos";
 import {
   StablePoolRawResponse,
@@ -26,8 +30,8 @@ import { getSuperfluidPoolIds } from "./superfluid";
 
 /** Gets info for all user pools of all types (excluding cosmwasm pools). */
 export async function getUserPools(bech32Address: string) {
-  const [accountPositions, poolIncentives, superfluidPoolIds] =
-    await Promise.all([
+  const [accountPositionsRes, poolIncentivesRes, superfluidPoolIdsRes] =
+    await Promise.allSettled([
       timeout(
         () => queryAccountPositions({ bech32Address }),
         10_000, // 10 seconds
@@ -50,7 +54,13 @@ export async function getUserPools(bech32Address: string) {
   );
 
   const userUniquePoolIds = new Set(poolIds);
-  accountPositions.positions
+
+  let accountPositions: LiquidityPosition[] =
+    accountPositionsRes.status === "fulfilled"
+      ? accountPositionsRes.value.positions
+      : [];
+
+  accountPositions
     .map(({ position: { pool_id } }) => pool_id)
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
@@ -69,15 +79,9 @@ export async function getUserPools(bech32Address: string) {
       );
 
       if (type === "concentrated") {
-        const positions = accountPositions.positions.filter(
+        const positions = accountPositions.filter(
           ({ position: { pool_id } }) => pool_id === id
         );
-
-        if (positions.length === 0) {
-          throw new Error(
-            `Positions for pool id ${id} not found. It should exist if the pool id is available in the userPoolIds set.`
-          );
-        }
 
         const aggregatedRawCoins = aggregateRawCoinsByDenom(
           positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
@@ -114,6 +118,16 @@ export async function getUserPools(bech32Address: string) {
           userValue = new PricePretty(DEFAULT_VS_CURRENCY, userValueAmount);
         }
       }
+
+      let poolIncentives =
+        poolIncentivesRes.status === "fulfilled"
+          ? poolIncentivesRes.value
+          : new Map<string, PoolIncentives>();
+
+      let superfluidPoolIds =
+        superfluidPoolIdsRes.status === "fulfilled"
+          ? superfluidPoolIdsRes.value
+          : [];
 
       return {
         id,
