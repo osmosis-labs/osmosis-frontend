@@ -767,7 +767,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       </span>
                     </div>
                   )}
-                {swapState.networkFee || swapState.isLoadingNetworkFee ? (
+                {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
                     <SkeletonLoader

@@ -238,6 +238,13 @@ export function useSwap({
       throw new Error("Routes are empty");
     }
 
+    /**
+     * Do not send transaction if there is an error since it will fail anyway.
+     */
+    if (precedentError) {
+      return undefined;
+    }
+
     return [
       routes.length === 1
         ? makeSwapExactAmountInMsg({
