@@ -293,16 +293,16 @@ export const NavBar: FunctionComponent<
               </div>
             )}
 
-            {/* {featureFlags.notifications && walletSupportsNotifications && ( */}
-            <NotifiContextProvider>
-              <NotifiPopover className="z-40 px-3 outline-none" />
-              <NotifiModal
-                isOpen={isNotifiOpen}
-                onRequestClose={onCloseNotifi}
-                onOpenNotifi={onOpenNotifi}
-              />
-            </NotifiContextProvider>
-            {/* )} */}
+            {featureFlags.notifications && walletSupportsNotifications && (
+              <NotifiContextProvider>
+                <NotifiPopover className="z-40 px-3 outline-none" />
+                <NotifiModal
+                  isOpen={isNotifiOpen}
+                  onRequestClose={onCloseNotifi}
+                  onOpenNotifi={onOpenNotifi}
+                />
+              </NotifiContextProvider>
+            )}
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}
