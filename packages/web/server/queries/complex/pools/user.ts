@@ -5,13 +5,19 @@ import {
   mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getCachedPoolIncentivesMap } from "~/server/queries/complex/pools/incentives";
+import {
+  getCachedPoolIncentivesMap,
+  PoolIncentives,
+} from "~/server/queries/complex/pools/incentives";
 import { queryBalances } from "~/server/queries/cosmos";
 import {
   StablePoolRawResponse,
   WeightedPoolRawResponse,
 } from "~/server/queries/osmosis";
-import { queryAccountPositions } from "~/server/queries/osmosis/concentratedliquidity";
+import {
+  LiquidityPosition,
+  queryAccountPositions,
+} from "~/server/queries/osmosis/concentratedliquidity";
 import {
   queryAccountLockedCoins,
   queryAccountUnlockingCoins,
@@ -29,20 +35,26 @@ export async function getUserPools(bech32Address: string) {
   const [accountPositions, poolIncentives, superfluidPoolIds] =
     await Promise.all([
       timeout(
-        () => queryAccountPositions({ bech32Address }),
+        () =>
+          queryAccountPositions({ bech32Address })
+            .then(({ positions }) => positions)
+            .catch(() => [] as LiquidityPosition[]),
         10_000, // 10 seconds
         "queryCLPositions"
-      )(),
+      )().catch(() => [] as LiquidityPosition[]),
       timeout(
-        () => getCachedPoolIncentivesMap(),
+        () =>
+          getCachedPoolIncentivesMap().catch(
+            () => new Map<string, PoolIncentives>()
+          ),
         10_000, // 10 seconds
         "getCachedPoolIncentivesMap"
-      )(),
+      )().catch(() => new Map<string, PoolIncentives>()),
       timeout(
-        () => getSuperfluidPoolIds(),
+        () => getSuperfluidPoolIds().catch(() => [] as string[]),
         10_000, // 10 seconds
         "getSuperfluidPoolIds"
-      )(),
+      )().catch(() => [] as string[]),
     ]);
 
   const { locked: lockedShares, poolIds } = await getUserShareRawCoins(
@@ -50,7 +62,7 @@ export async function getUserPools(bech32Address: string) {
   );
 
   const userUniquePoolIds = new Set(poolIds);
-  accountPositions.positions
+  accountPositions
     .map(({ position: { pool_id } }) => pool_id)
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
@@ -69,7 +81,7 @@ export async function getUserPools(bech32Address: string) {
       );
 
       if (type === "concentrated") {
-        const positions = accountPositions.positions.filter(
+        const positions = accountPositions.filter(
           ({ position: { pool_id } }) => pool_id === id
         );
 
