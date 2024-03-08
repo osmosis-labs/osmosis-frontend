@@ -1,7 +1,5 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
-
 export type PoolToken = {
   name: string;
   denom: string;
@@ -83,7 +81,8 @@ export async function queryFilteredPools(
   // collect params
   const url = new URL(
     "/stream/pool/v1/all",
-    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+    "https://public-osmosis-api.staging.numia.xyz/"
+    // IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   );
   const queryParams = new URLSearchParams();
   if (filters)
