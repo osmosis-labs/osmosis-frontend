@@ -671,12 +671,14 @@ function useRecommendedAssets(
         if (!asset) return;
 
         return makeMinimalAsset(asset);
-      }).filter(
-        (currency) =>
-          currency &&
-          currency.coinMinimalDenom !== fromCoinMinimalDenom &&
-          currency.coinMinimalDenom !== toCoinMinimalDenom
-      ),
+      })
+        .filter((c): c is NonNullable<typeof c> => !!c)
+        .filter(
+          (currency) =>
+            currency &&
+            currency.coinMinimalDenom !== fromCoinMinimalDenom &&
+            currency.coinMinimalDenom !== toCoinMinimalDenom
+        ),
     [fromCoinMinimalDenom, toCoinMinimalDenom]
   );
 }
