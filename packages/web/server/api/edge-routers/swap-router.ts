@@ -165,7 +165,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
           });
 
           return {
-            ...pool,
+            id: pool.id,
             spreadFactor: pool_?.spreadFactor,
             type: pool_?.type,
             inCurrency: inAsset,
