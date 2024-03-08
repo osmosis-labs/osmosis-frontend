@@ -62,7 +62,7 @@ export async function getPoolsFromIndexer({
 } = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `indexer-pools-${poolIds.join(",")}` : "indexer-pools",
+    key: "indexer-pools",
     ttl: 5_000, // 5 seconds
     staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
@@ -76,11 +76,14 @@ export async function getPoolsFromIndexer({
         { offset: 0, limit: Number(numPools.num_pools) }
       );
       return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
-        (pool): pool is Pool =>
-          !!pool && (poolIds ? poolIds.includes(pool.id) : true)
+        (pool): pool is Pool => !!pool
       );
     },
-  });
+  }).then((pools) =>
+    pools.filter((pool): pool is Pool =>
+      poolIds ? poolIds.includes(pool.id) : true
+    )
+  );
 }
 
 /** @deprecated Fetches pools from indexer. */
