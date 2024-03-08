@@ -18,10 +18,6 @@ import {
   LiquidityPosition,
   queryAccountPositions,
 } from "~/server/queries/osmosis/concentratedliquidity";
-import {
-  queryAccountLockedCoins,
-  queryAccountUnlockingCoins,
-} from "~/server/queries/osmosis/lockup";
 import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
 
@@ -282,39 +278,38 @@ export async function getUserSharePools(
 }
 
 async function getUserShareRawCoins(bech32Address: string) {
-  const [userBalances, lockedCoins, unlockingCoins] = await Promise.all([
+  const [userBalances, userLocks] = await Promise.all([
     timeout(
       () => queryBalances({ bech32Address }),
       10_000, // 10 seconds
       "queryBalances"
     )(),
     timeout(
-      () =>
-        queryAccountLockedCoins({
-          bech32Address,
-        }),
+      () => getUserLocks(bech32Address),
       10_000, // 10 seconds
-      "queryAccountLockedCoins"
-    )(),
-    timeout(
-      () =>
-        queryAccountUnlockingCoins({
-          bech32Address,
-        }),
-      10_000, // 10 seconds
-      "queryAccountUnlockingCoins"
+      "getUserLocks"
     )(),
   ]);
 
   const available = userBalances.balances.filter(
     ({ denom }) => denom && denom.startsWith("gamm/pool/")
   );
-  const locked = lockedCoins.coins.filter(
-    ({ denom }) => denom && denom.startsWith("gamm/pool/")
-  );
-  const unlocking = unlockingCoins.coins.filter(
-    ({ denom }) => denom && denom.startsWith("gamm/pool/")
-  );
+  const locked = userLocks
+    .filter((userLock) => !userLock.isCurrentlyUnlocking)
+    .filter((userLock) =>
+      userLock.coins.some((coin) => coin.denom.startsWith("gamm/pool"))
+    )
+    .flatMap((lock) =>
+      lock.coins.filter((coin) => coin.denom.startsWith("gamm/pool"))
+    );
+  const unlocking = userLocks
+    .filter((userLock) => userLock.isCurrentlyUnlocking)
+    .filter((userLock) =>
+      userLock.coins.some((coin) => coin.denom.startsWith("gamm/pool"))
+    )
+    .flatMap((lock) =>
+      lock.coins.filter((coin) => coin.denom.startsWith("gamm/pool"))
+    );
 
   const total = [...available, ...locked, ...unlocking];
   const poolIds = new Set<string>();
