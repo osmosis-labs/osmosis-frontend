@@ -15,7 +15,6 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getPool } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 const osmosisChainId = ChainList[0].chain_id;
@@ -155,8 +154,9 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
       const poolsWithInfos = await Promise.all(
         pools.map(async (pool, index) => {
-          const { id } = pool;
-          const pool_ = await getPool({ poolId: id }).catch(() => null);
+          // const { id } = pool;
+          // const pool_ = null;
+          // await getPool({ poolId: id }).catch(() => null);
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
@@ -166,8 +166,8 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
-            spreadFactor: pool_?.spreadFactor,
-            type: pool_?.type,
+            // spreadFactor: pool_?.spreadFactor,
+            // type: pool_?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
           };
