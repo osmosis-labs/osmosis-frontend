@@ -7,7 +7,6 @@ import { createEdgeTRPCContext } from "~/server/api/trpc";
 // We're using the edge-runtime
 export const config = {
   runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
 };
 
 /**
