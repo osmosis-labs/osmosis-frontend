@@ -17,6 +17,7 @@ import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
 import { useTranslation } from "~/hooks";
+import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
 const strategiesFilters = [
@@ -317,6 +318,21 @@ export const TopFilters = ({
         tokenFilterOptions={tokenFilterOptions}
         isMyAllSwitchDisabled={isInMyStrategies}
       />
+      <div className="-mt-1 flex flex-wrap items-center gap-x-3">
+        <span className="caption text-osmoverse-200">
+          Risk is calculated with a combined set of criteria about a strategy
+          and its underlying assets.
+        </span>
+        <span className="caption inline-flex items-center gap-1 text-wosmongton-300">
+          {t("pool.learnMore")}
+          <Icon
+            id="arrow-up-right"
+            width={18}
+            height={18}
+            color={theme.colors.wosmongton[300]}
+          />
+        </span>
+      </div>
     </div>
   );
 };
