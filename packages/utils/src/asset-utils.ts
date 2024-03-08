@@ -15,7 +15,7 @@ export function getAssetFromAssetList({
   coinGeckoId?: string;
   assetLists: AssetList[];
 }) {
-  if (symbol && !sourceDenom && !coinGeckoId && !coinMinimalDenom) {
+  if (!symbol && !sourceDenom && !coinGeckoId && !coinMinimalDenom) {
     return undefined;
   }
 
