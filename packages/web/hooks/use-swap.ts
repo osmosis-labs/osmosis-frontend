@@ -5,7 +5,7 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
@@ -14,6 +14,8 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
+import { RecommendedSwapDenoms } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
@@ -286,11 +288,7 @@ export function useSwap({
     isQuoteLoading,
     /** Spot price or user input quote. */
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading:
-      swapAssets.isLoadingFromAsset ||
-      swapAssets.isLoadingToAsset ||
-      isQuoteLoading ||
-      isSpotPriceQuoteLoading,
+    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
   };
 }
@@ -366,25 +364,15 @@ export function useSwapAssets({
     [selectableAssetPages?.pages]
   );
 
-  const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
+  const { asset: fromAsset } = useSwapAsset(
     fromAssetDenom,
     allSelectableAssets
   );
-  const { asset: toAsset, isLoading: isLoadingToAsset } = useSwapAsset(
-    toAssetDenom,
-    allSelectableAssets
-  );
+  const { asset: toAsset } = useSwapAsset(toAssetDenom, allSelectableAssets);
 
-  const { data: recommendedAssets_, isLoading: isLoadingRecommendedAssets } =
-    api.edge.assets.getRecommendedAssets.useQuery();
-  const recommendedAssets = useMemo(
-    () =>
-      recommendedAssets_?.filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [],
-    [recommendedAssets_, fromAsset, toAsset]
+  const recommendedAssets = useRecommendedAssets(
+    fromAsset?.coinMinimalDenom,
+    toAsset?.coinMinimalDenom
   );
 
   /** Remove to and from assets from assets that can be selected. */
@@ -404,13 +392,10 @@ export function useSwapAssets({
     assetsQueryInput,
     selectableAssets: filteredSelectableAssets,
     isLoadingSelectAssets,
-    isLoadingFromAsset,
-    isLoadingToAsset,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
     /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
-    isLoadingRecommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,
     setToAssetDenom,
@@ -501,29 +486,23 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  const queryEnabled =
-    !isNil(minDenomOrSymbol) &&
-    typeof minDenomOrSymbol === "string" &&
-    !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
-    {
-      findMinDenomOrSymbol: minDenomOrSymbol ?? "",
-    },
-    {
-      enabled: queryEnabled,
+  !existingAsset;
+  const asset = useMemo(() => {
+    if (existingAsset) return existingAsset;
 
-      // since asset is often point of attention, don't block on other potentially expensive queries
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
-      },
-    }
-  );
+    const asset = AssetLists.flatMap(({ assets }) => assets).find(
+      (asset) =>
+        minDenomOrSymbol &&
+        (asset.symbol === minDenomOrSymbol ||
+          asset.coinMinimalDenom === minDenomOrSymbol)
+    );
+    if (!asset) return;
+
+    return makeMinimalAsset(asset);
+  }, [minDenomOrSymbol, existingAsset]);
 
   return {
     asset: existingAsset ?? (asset as TAsset),
-    isLoading: isLoading && !existingAsset,
   };
 }
 
@@ -676,4 +655,28 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: true,
     };
   }
+}
+
+/** Gets recommended assets directly from asset list. */
+function useRecommendedAssets(
+  fromCoinMinimalDenom?: string,
+  toCoinMinimalDenom?: string
+) {
+  return useMemo(
+    () =>
+      RecommendedSwapDenoms.map((denom) => {
+        const asset = AssetLists.flatMap(({ assets }) => assets).find(
+          (asset) => asset.symbol === denom
+        );
+        if (!asset) return;
+
+        return makeMinimalAsset(asset);
+      }).filter(
+        (currency) =>
+          currency &&
+          currency.coinMinimalDenom !== fromCoinMinimalDenom &&
+          currency.coinMinimalDenom !== toCoinMinimalDenom
+      ),
+    [fromCoinMinimalDenom, toCoinMinimalDenom]
+  );
 }
