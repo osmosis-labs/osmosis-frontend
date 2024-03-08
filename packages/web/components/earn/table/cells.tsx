@@ -14,6 +14,7 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { type EarnStrategy } from "~/server/queries/numia/earn";
+import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
 export const StrategyTooltip = ({
@@ -247,11 +248,13 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
             <Icon
               id="arrow-up-right"
               className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+              color={theme.colors.osmoverse[300]}
             />
           ) : (
             <Icon
               id="arrow-up-right"
               className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+              color={theme.colors.osmoverse[300]}
             />
           )}
         </Link>
