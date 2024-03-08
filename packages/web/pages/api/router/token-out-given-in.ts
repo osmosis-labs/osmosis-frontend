@@ -2,7 +2,7 @@ import { Int } from "@keplr-wallet/unit";
 import { Route, SplitTokenInQuote } from "@osmosis-labs/pools";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
+import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 
 type Response = {
   amount: string;
@@ -43,13 +43,15 @@ export default async function routeTokenOutGivenIn(
 
   // get quote
   try {
-    const { quote, candidateRoutes } = await _routeTokenOutGivenIn({
-      token: { denom: tokenInDenom, amount: new Int(tokenInAmount) },
-      tokenOutDenom,
-    });
+    let router = new OsmosisSidecarRemoteRouter("https://sqsprod.osmosis.zone");
+
+    const quote = await router.routeByTokenIn(
+      { denom: tokenInDenom, amount: new Int(tokenInAmount) },
+      tokenOutDenom
+    );
 
     // return response
-    const quoteResponse = quoteToResponse(quote, candidateRoutes);
+    const quoteResponse = quoteToResponse(quote, quote.split);
     res.status(200).json(quoteResponse);
   } catch (e: any) {
     res.status(500).send(e.message);
