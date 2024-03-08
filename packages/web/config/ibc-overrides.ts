@@ -31,7 +31,7 @@ type AdditionalData = Partial<
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
-  "aUSDC.axl": {
+  "aUSDC.axl.axl": {
     sourceChainNameOverride: "Goerli Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
