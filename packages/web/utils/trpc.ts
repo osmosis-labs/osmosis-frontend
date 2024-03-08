@@ -88,7 +88,7 @@ export const api = createTRPCNext<AppRouter>({
             )(runtime),
 
             /**
-             * Create a separate links for specific edge server routers since its query is too expensive
+             * Create a separate links for specific edge server routers since their queries are too expensive
              * and it's slowing the other queries down because of JS single threaded nature.
              */
             poolsEdge: makeSkipBatchLink(
