@@ -3,11 +3,11 @@ import { NextRequest } from "next/server";
 
 import { edgeRouter } from "~/server/api/edge-routers/edge-router";
 import { createEdgeTRPCContext } from "~/server/api/trpc";
+import { constructEdgeUrlPathname } from "~/utils/trpc";
 
 // We're using the edge-runtime
 export const config = {
   runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
 };
 
 /**
@@ -16,7 +16,7 @@ export const config = {
  */
 export default async function handler(req: NextRequest) {
   return fetchRequestHandler({
-    endpoint: "/api/pools-edge-trpc",
+    endpoint: constructEdgeUrlPathname("pools"),
     router: edgeRouter,
     req,
     createContext: createEdgeTRPCContext,

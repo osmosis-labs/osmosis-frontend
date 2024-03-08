@@ -32,6 +32,12 @@ const makeSkipBatchLink = (url: string) =>
     }),
   });
 
+type EdgeRouterKey = keyof RouterOutputs["edge"];
+
+export const constructEdgeUrlPathname = (type: EdgeRouterKey | "main") => {
+  return `/api/edge-trpc-${type}`;
+};
+
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
@@ -82,15 +88,23 @@ export const api = createTRPCNext<AppRouter>({
           // initialize the different links for different targets (edge and node)
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
-            edge: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc`)(runtime),
+            edge: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
+            )(runtime),
 
             /**
-             * Create a separate link for the pools edge server since its query is too expensive
+             * Create a separate links for specific edge server routers since its query is too expensive
              * and it's slowing the other queries down because of JS single threaded nature.
              */
-            poolsEdge: makeSkipBatchLink(`${getBaseUrl()}/api/pools-edge-trpc`)(
-              runtime
-            ),
+            poolsEdge: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`
+            )(runtime),
+            quoteRouter: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("quoteRouter")}`
+            )(runtime),
+            assetsEdge: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`
+            )(runtime),
           };
 
           return (ctx) => {
@@ -105,17 +119,26 @@ export const api = createTRPCNext<AppRouter>({
              */
             const possibleEdgePath = pathParts.join(".");
 
+            const edgePathStartsWith = (type: EdgeRouterKey) =>
+              possibleEdgePath.startsWith(type);
+
             /**
              * If the base path is not `edge`, we can just call the node server directly.
              */
             const isEdge = basePath === "edge";
-            const isPoolsEdge = isEdge && possibleEdgePath.startsWith("pools");
+            const isPoolsEdge = isEdge && edgePathStartsWith("pools");
+            const isQuoteRouter = isEdge && edgePathStartsWith("quoteRouter");
+            const isAssetsEdge = isEdge && edgePathStartsWith("assets");
 
             let link: (typeof servers)["node"];
             if (isEdge && !isPoolsEdge) {
               link = servers["edge"];
-            } else if (isPoolsEdge && possibleEdgePath.startsWith("pools")) {
+            } else if (isPoolsEdge) {
               link = servers["poolsEdge"];
+            } else if (isQuoteRouter) {
+              link = servers["quoteRouter"];
+            } else if (isAssetsEdge) {
+              link = servers["assetsEdge"];
             } else {
               link = servers["node"];
             }
