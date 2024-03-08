@@ -11,7 +11,7 @@ const useGetEarnStrategies = (
   isWalletConnected: boolean
 ) => {
   const {
-    data: cmsStrategies,
+    data: cmsData,
     isLoading: areStrategiesLoading,
     isError,
     refetch,
@@ -32,7 +32,7 @@ const useGetEarnStrategies = (
 
   const _strategies: EarnStrategy[] = useMemo(
     () =>
-      (cmsStrategies ?? []).map((_strategy) => {
+      (cmsData?.strategies ?? []).map((_strategy) => {
         const involvedDenoms = _strategy.depositAssets.map(
           (asset) => asset.coinDenom
         );
@@ -46,7 +46,7 @@ const useGetEarnStrategies = (
           apr: undefined,
         };
       }),
-    [cmsStrategies, holdenDenoms]
+    [cmsData?.strategies, holdenDenoms]
   );
 
   const balanceQueries = api.useQueries((q) =>

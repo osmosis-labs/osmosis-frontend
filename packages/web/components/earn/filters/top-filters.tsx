@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
 import { useContext, useState } from "react";
 
@@ -61,7 +62,7 @@ export const TopFilters = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { data: earnStrategies } = api.edge.earn.getStrategies.useQuery();
+  const { data: cmsData } = api.edge.earn.getStrategies.useQuery();
 
   const rewardTypes = useMemo(
     () => [
@@ -116,23 +117,23 @@ export const TopFilters = ({
   const strategies: ListOption<string>[] = useMemo(
     () =>
       getListOptions<string>(
-        earnStrategies ?? [],
+        cmsData?.strategies ?? [],
         "type",
         "category",
         t("earnPage.rewardTypes.all")
       ),
-    [earnStrategies, t]
+    [cmsData, t]
   );
 
   const platforms: ListOption<string>[] = useMemo(
     () =>
       getListOptions<string>(
-        earnStrategies ?? [],
+        cmsData?.strategies ?? [],
         "platform",
         "platform",
         t("earnPage.rewardTypes.all")
       ),
-    [earnStrategies, t]
+    [cmsData, t]
   );
 
   const {
@@ -323,7 +324,11 @@ export const TopFilters = ({
           Risk is calculated with a combined set of criteria about a strategy
           and its underlying assets.
         </span>
-        <span className="caption inline-flex items-center gap-1 text-wosmongton-300">
+        <Link
+          href={cmsData?.riskReportUrl ?? "#"}
+          target="_blank"
+          className="caption inline-flex items-center gap-1 text-wosmongton-300"
+        >
           {t("pool.learnMore")}
           <Icon
             id="arrow-up-right"
@@ -331,7 +336,7 @@ export const TopFilters = ({
             height={18}
             color={theme.colors.wosmongton[300]}
           />
-        </span>
+        </Link>
       </div>
     </div>
   );

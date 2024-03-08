@@ -111,10 +111,14 @@ export async function getStrategies() {
     cache: earnRawStrategyCMSDataCache,
     ttl: 1000 * 60 * 30,
     key: "earn-strategy-cmsData",
-    getFreshValue: async (): Promise<StrategyCMSData[]> => {
+    getFreshValue: async (): Promise<{
+      riskReportUrl?: string;
+      strategies: StrategyCMSData[];
+    }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
+          riskReportUrl: string;
         }>({ filePath: `cms/earn/strategies.json` });
 
         const aggregatedStrategies: StrategyCMSData[] = [];
@@ -161,7 +165,10 @@ export async function getStrategies() {
           });
         }
 
-        return aggregatedStrategies;
+        return {
+          riskReportUrl: cmsData.riskReportUrl,
+          strategies: aggregatedStrategies,
+        };
       } catch (error) {
         throw new Error("Error while fetching strategy CMS data");
       }
