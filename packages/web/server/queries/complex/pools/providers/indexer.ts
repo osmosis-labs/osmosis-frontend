@@ -187,7 +187,7 @@ async function fetchAndProcessAllPools({
         { offset: 0, limit: Number(numPools.num_pools) }
       );
       const queryPoolRawResults = filteredPoolsResponse.pools.map((pool) =>
-        queryPoolRawFromFilteredPool(
+        makePoolRawFromIndexerPool(
           pool,
           poolManagerParams.params.taker_fee_params.default_taker_fee
         )
@@ -211,7 +211,7 @@ async function fetchAndProcessAllPools({
 }
 
 /** @deprecated */
-export function queryPoolRawFromFilteredPool(
+function makePoolRawFromIndexerPool(
   filteredPool: FilteredPoolsResponse["pools"][number],
   takerFeeRaw: string
 ):
