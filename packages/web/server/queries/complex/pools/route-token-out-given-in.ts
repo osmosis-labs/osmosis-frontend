@@ -141,7 +141,6 @@ export async function getRouter(
           return new Dec(0);
         }
         if (!pool.liquidityUsd) {
-          console.warn("No TVL found for pool", poolId);
           return new Dec(0);
         } else return new Dec(pool.liquidityUsd.toString());
       };
