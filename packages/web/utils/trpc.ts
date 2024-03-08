@@ -8,6 +8,7 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { EventName } from "~/config";
 import { type AppRouter } from "~/server/api/root";
 import { superjson } from "~/utils/superjson";
+import { constructEdgeUrlPathname, EdgeRouterKey } from "~/utils/trpc-edge";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -31,12 +32,6 @@ const makeSkipBatchLink = (url: string) =>
       url,
     }),
   });
-
-type EdgeRouterKey = keyof RouterOutputs["edge"];
-
-export const constructEdgeUrlPathname = (type: EdgeRouterKey | "main") => {
-  return `/api/edge-trpc-${type}`;
-};
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({

@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 
 import { edgeRouter } from "~/server/api/edge-routers/edge-router";
 import { createEdgeTRPCContext } from "~/server/api/trpc";
-import { constructEdgeUrlPathname } from "~/utils/trpc";
+import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
 // We're using the edge-runtime
 export const config = {
