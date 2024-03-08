@@ -543,7 +543,7 @@ function useQueryRouterBestQuote(
   const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
-      t.edge.quoteRouter.routeTokenOutGivenIn(
+      t.local.quoteRouter.routeTokenOutGivenIn(
         {
           ...input,
           preferredRouter: key,
@@ -624,7 +624,7 @@ function useQueryRouterBestQuote(
  *  Then we can show the user a useful translated error message vs just "Error". */
 function makeRouterErrorFromTrpcError(
   error:
-    | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
     | null
     | undefined
 ):
