@@ -12,7 +12,7 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   return fetchRequestHandler({
-    endpoint: "/api/edge-trpc",
+    endpoint: "/api/edge-trpc-main",
     router: edgeRouter,
     req,
     createContext: createEdgeTRPCContext,

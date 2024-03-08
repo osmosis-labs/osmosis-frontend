@@ -16,7 +16,7 @@ export const config = {
  */
 export default async function handler(req: NextRequest) {
   return fetchRequestHandler({
-    endpoint: "/api/pools-edge-trpc",
+    endpoint: "/api/edge-trpc-pools",
     router: edgeRouter,
     req,
     createContext: createEdgeTRPCContext,
