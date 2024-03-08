@@ -166,7 +166,7 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             ...pool,
-            // spreadFactor: pool_?.spreadFactor,
+            spreadFactor: new RatePretty(pool.swapFee ?? 0),
             // type: pool_?.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
