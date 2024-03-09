@@ -62,45 +62,33 @@ export async function getPoolsFromIndexer({
 }: {
   poolIds?: string[];
 } = {}): Promise<Pool[]> {
-  return cachified({
-    cache: poolsCache,
-    key: "indexer-pools",
-    ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 10_000, // 10 seconds
-    getFreshValue: async () => {
-      const numPools = await timeout(
-        getNumPools,
-        10_000,
-        "getNumPools timeout"
-      )();
-      const { pools } = await timeout(
-        () =>
-          queryFilteredPools(
-            {
-              min_liquidity: 0,
-              order_by: "desc",
-              order_key: "liquidity",
-            },
-            { offset: 0, limit: Number(numPools.num_pools) }
-          ),
-        10_000,
-        "queryFilteredPools timeout"
-      )();
-      const poolsWithTimeout = pools.map((pool) =>
-        timeout(
-          makePoolFromIndexerPool,
-          10_000,
-          `makePoolFromIndexerPool timeout ${pool.pool_id}`
-        )(pool)
-      );
-      return (await Promise.all(poolsWithTimeout)).filter(
-        (pool): pool is Pool => !!pool
-      );
-    },
-  }).then((pools) =>
-    pools.filter((pool): pool is Pool =>
-      poolIds ? poolIds.includes(pool.id) : true
-    )
+  const numPools = await timeout(getNumPools, 10_000, "getNumPools timeout")();
+  const { pools } = await timeout(
+    () =>
+      queryFilteredPools(
+        {
+          min_liquidity: 0,
+          order_by: "desc",
+          order_key: "liquidity",
+        },
+        { offset: 0, limit: Number(numPools.num_pools) }
+      ),
+    10_000,
+    "queryFilteredPools timeout"
+  )();
+  const poolsWithTimeout = pools.map((pool) =>
+    timeout(
+      makePoolFromIndexerPool,
+      10_000,
+      `makePoolFromIndexerPool timeout ${pool.pool_id}`
+    )(pool)
+  );
+
+  const cPools = (await Promise.all(poolsWithTimeout)).filter(
+    (pool): pool is Pool => !!pool
+  );
+  return cPools.filter((pool): pool is Pool =>
+    poolIds ? poolIds.includes(pool.id) : true
   );
 }
 
