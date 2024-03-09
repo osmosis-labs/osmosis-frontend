@@ -157,7 +157,7 @@ export const poolsRouter = createTRPCRouter({
           15000,
           "market incentive pools"
         )();
-        return { items };
+        return { items: items.slice(0, 50) };
       }
     ),
   getSuperfluidPoolIds: publicProcedure.query(getSuperfluidPoolIds),
