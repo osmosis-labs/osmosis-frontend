@@ -17,7 +17,6 @@ import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import timeout from "~/utils/async";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import {
   FilteredPoolsResponse,
@@ -34,7 +33,9 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const poolsCache = new LRUCache<string, CacheEntry>({
+  max: 10,
+});
 
 function getNumPools() {
   return cachified({
