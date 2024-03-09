@@ -184,7 +184,7 @@ export const api = createTRPCNext<AppRouter>({
             const isLocal = basePath === "local";
 
             let link: (typeof servers)["node"];
-            if (isEdge || isLocal) {
+            if (isEdge) {
               link =
                 servers[
                   constructEdgeRouterKey(pathParts[0] as EdgeRouterKey)
