@@ -165,7 +165,7 @@ export const AllPoolsTable: FunctionComponent<{
       minLiquidityUsd: 1_000,
     },
     {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      getNextPageParam: (_lastPage) => false,
       initialCursor: 0,
 
       keepPreviousData: true,
