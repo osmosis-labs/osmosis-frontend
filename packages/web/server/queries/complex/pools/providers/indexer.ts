@@ -16,6 +16,7 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import timeout from "~/utils/async";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import {
@@ -66,16 +67,32 @@ export async function getPoolsFromIndexer({
     ttl: 5_000, // 5 seconds
     staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
-      const numPools = await getNumPools();
-      const { pools } = await queryFilteredPools(
-        {
-          min_liquidity: 0,
-          order_by: "desc",
-          order_key: "liquidity",
-        },
-        { offset: 0, limit: Number(numPools.num_pools) }
+      const numPools = await timeout(
+        getNumPools,
+        11_500,
+        "getNumPools timeout"
+      )();
+      const { pools } = await timeout(
+        () =>
+          queryFilteredPools(
+            {
+              min_liquidity: 0,
+              order_by: "desc",
+              order_key: "liquidity",
+            },
+            { offset: 0, limit: Number(numPools.num_pools) }
+          ),
+        11_500,
+        "queryFilteredPools timeout"
+      )();
+      const poolsWithTimeout = pools.map((pool) =>
+        timeout(
+          makePoolFromIndexerPool,
+          11_500,
+          `makePoolFromIndexerPool timeout ${pool.pool_id}`
+        )(pool)
       );
-      return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
+      return (await Promise.all(poolsWithTimeout)).filter(
         (pool): pool is Pool => !!pool
       );
     },
