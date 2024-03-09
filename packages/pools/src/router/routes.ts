@@ -467,6 +467,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       ),
       swapFee: totalSwapFee,
       priceImpactTokenOut,
+      inOutSpotPrice: totalEffectivePriceInOverOut,
     };
   }
 

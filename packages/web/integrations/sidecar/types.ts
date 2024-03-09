@@ -6,6 +6,7 @@ export type SidecarQuoteResponse = {
   amount_out: string;
   effective_fee: string;
   price_impact: string;
+  in_out_spot_price: string;
   route: {
     in_amount: string;
     out_amount: string;

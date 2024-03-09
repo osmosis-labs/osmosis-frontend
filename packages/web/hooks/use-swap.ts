@@ -108,23 +108,12 @@ export function useSwap({
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
 
-  const {
-    data: spotPriceQuote,
-    isLoading: isSpotPriceQuoteLoading,
-    error: spotPriceQuoteError,
-  } = useQueryRouterBestQuote(
-    {
-      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: DecUtils.getTenExponentN(
-        swapAssets.fromAsset?.coinDecimals ?? 0
-      )
-        .truncate()
-        .toString(),
-      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      forcePoolId: forceSwapInPoolId,
-    },
-    isToFromAssets
-  );
+  let spotPriceQuote: Dec = new Dec(0);
+  let spotPriceQuoteError: Error | undefined = Error("Spot price unavailable");
+  if (quote && quote.inOutSpotPrice) {
+    spotPriceQuote = quote.inOutSpotPrice;
+    spotPriceQuoteError = undefined;
+  }
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
@@ -134,23 +123,13 @@ export function useSwap({
     | undefined = useMemo(() => {
     let error = quoteError;
 
-    // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
-      error = spotPriceQuoteError;
-
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
-  }, [
-    quoteError,
-    quote,
-    spotPriceQuoteError,
-    inAmountInput.error,
-    inAmountInput.isEmpty,
-  ]);
+  }, [quoteError, inAmountInput.error, inAmountInput.isEmpty]);
 
   const getSwapTxParameters = useCallback(
     ({
@@ -412,12 +391,11 @@ export function useSwap({
     isLoadingNetworkFee,
     error: precedentError,
     spotPriceQuote,
-    isSpotPriceQuoteLoading,
     spotPriceQuoteError,
     isQuoteLoading,
     /** Spot price or user input quote. */
-    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    isAnyQuoteLoading: isQuoteLoading,
+    isLoading: isQuoteLoading,
     sendTradeTokenInTx,
   };
 }
