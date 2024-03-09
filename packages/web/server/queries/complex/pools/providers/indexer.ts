@@ -69,7 +69,7 @@ export async function getPoolsFromIndexer({
     getFreshValue: async () => {
       const numPools = await timeout(
         getNumPools,
-        11_500,
+        10_000,
         "getNumPools timeout"
       )();
       const { pools } = await timeout(
@@ -82,13 +82,13 @@ export async function getPoolsFromIndexer({
             },
             { offset: 0, limit: Number(numPools.num_pools) }
           ),
-        11_500,
+        10_000,
         "queryFilteredPools timeout"
       )();
       const poolsWithTimeout = pools.map((pool) =>
         timeout(
           makePoolFromIndexerPool,
-          11_500,
+          10_000,
           `makePoolFromIndexerPool timeout ${pool.pool_id}`
         )(pool)
       );
