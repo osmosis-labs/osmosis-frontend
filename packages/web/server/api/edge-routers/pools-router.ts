@@ -121,17 +121,17 @@ export const poolsRouter = createTRPCRouter({
                       minLiquidityUsd,
                       types,
                     }),
-                  15000,
+                  12000,
                   "getPools timeout"
                 )();
                 const incentivesPromise = timeout(
                   () => getCachedPoolIncentivesMap(),
-                  15000,
+                  12000,
                   "getCachedPoolIncentivesMap timeout"
                 )();
                 const marketMetricsPromise = timeout(
                   () => getCachedPoolMarketMetricsMap(),
-                  15000,
+                  12000,
                   "getCachedPoolMarketMetricsMap timeout"
                 )();
 
