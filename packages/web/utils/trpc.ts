@@ -180,7 +180,7 @@ export const api = createTRPCNext<AppRouter>({
             /**
              * If the base path is not `edge`, we can just call the node server directly.
              */
-            const isEdge = false ?? basePath === "edge";
+            const isEdge = basePath === "edge";
             const isLocal = basePath === "local";
 
             let link: (typeof servers)["node"];
