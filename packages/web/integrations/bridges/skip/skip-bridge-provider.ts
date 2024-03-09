@@ -8,10 +8,8 @@ import { toHex } from "web3-utils";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import SkipApiClient from "~/integrations/bridges/skip/queries";
-import {
-  Erc20Abi,
-  NativeEVMTokenConstantAddress,
-} from "~/integrations/ethereum";
+import { Erc20Abi } from "~/integrations/ethereum/queries/types";
+import { NativeEVMTokenConstantAddress } from "~/integrations/ethereum/types";
 import { getAssetPrice } from "~/server/queries/complex/assets/price";
 import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";

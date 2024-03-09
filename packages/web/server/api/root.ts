@@ -1,8 +1,7 @@
-import { localRouter } from "~/server/api/local-routers/local-router";
-import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
-import { createTRPCRouter } from "~/server/api/trpc";
-
 import { edgeRouter } from "./edge-routers/edge-router";
+import { localRouter } from "./local-routers/local-router";
+import { bridgeTransferRouter } from "./routers/bridge-transfer";
+import { createTRPCRouter } from "./trpc";
 
 /**
  * This is the primary lambda router for our server.

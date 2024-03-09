@@ -64,6 +64,11 @@ const config = {
       },
     };
 
+    // workaround to get imports to work in web workers
+    config.optimization.splitChunks.cacheGroups = {
+      commons: { chunks: "initial" },
+    };
+
     return config;
   },
 };

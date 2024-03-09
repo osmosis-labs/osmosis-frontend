@@ -15,10 +15,8 @@ import { toHex } from "web3-utils";
 
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { removeAllCommas } from "~/integrations/bridges/squid/squid-bridge-utils";
-import {
-  Erc20Abi,
-  NativeEVMTokenConstantAddress,
-} from "~/integrations/ethereum";
+import { Erc20Abi } from "~/integrations/ethereum/queries/types";
+import { NativeEVMTokenConstantAddress } from "~/integrations/ethereum/types";
 import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 

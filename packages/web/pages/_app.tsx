@@ -44,6 +44,7 @@ import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
 import { api } from "~/utils/trpc";
+import { initializeTrpcWorker } from "~/utils/worker";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -68,6 +69,10 @@ const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
+
+  useEffect(() => {
+    initializeTrpcWorker();
+  }, []);
 
   return (
     <MultiLanguageProvider
