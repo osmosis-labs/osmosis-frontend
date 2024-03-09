@@ -23,6 +23,7 @@ import {
 import timeout from "~/utils/async";
 import { createSortSchema, sort } from "~/utils/sort";
 
+import { maybeCachePaginatedItems } from "../pagination";
 import { InfiniteQuerySchema } from "../zod-types";
 
 const GetInfinitePoolsSchema = InfiniteQuerySchema.and(PoolFilterSchema).and(
@@ -104,61 +105,86 @@ export const poolsRouter = createTRPCRouter({
           sort: sortInput,
           types,
           incentiveTypes,
+          cursor,
+          limit,
         },
-      }) => {
-        const items = await timeout(
-          async () => {
-            const poolsPromise = getPools({
-              search,
-              minLiquidityUsd,
-              types,
-            });
-            const incentivesPromise = getCachedPoolIncentivesMap();
-            const marketMetricsPromise = getCachedPoolMarketMetricsMap();
+      }) =>
+        timeout(
+          () =>
+            maybeCachePaginatedItems({
+              // @ts-ignore
+              getFreshItems: async () => {
+                const poolsPromise = timeout(
+                  () =>
+                    getPools({
+                      search,
+                      minLiquidityUsd,
+                      types,
+                    }),
+                  15000,
+                  "getPools timeout"
+                )();
+                const incentivesPromise = timeout(
+                  () => getCachedPoolIncentivesMap(),
+                  15000,
+                  "getCachedPoolIncentivesMap timeout"
+                )();
+                const marketMetricsPromise = timeout(
+                  () => getCachedPoolMarketMetricsMap(),
+                  15000,
+                  "getCachedPoolMarketMetricsMap timeout"
+                )();
 
-            /** Get remote data via concurrent requests, if needed. */
-            const [pools, incentives, marketMetrics] = await Promise.all([
-              poolsPromise,
-              incentivesPromise,
-              marketMetricsPromise,
-            ]);
+                /** Get remote data via concurrent requests, if needed. */
+                const [pools, incentives, marketMetrics] = await Promise.all([
+                  poolsPromise,
+                  incentivesPromise,
+                  marketMetricsPromise,
+                ]);
 
-            const marketIncentivePools = pools
-              .map((pool) => {
-                const incentivesForPool = incentives.get(pool.id);
-                const metricsForPool = marketMetrics.get(pool.id) ?? {};
+                const marketIncentivePools = pools
+                  .map((pool) => {
+                    const incentivesForPool = incentives.get(pool.id);
+                    const metricsForPool = marketMetrics.get(pool.id) ?? {};
 
-                const isIncentiveFiltered =
-                  incentivesForPool &&
-                  isIncentivePoolFiltered(incentivesForPool, {
-                    incentiveTypes,
-                  });
+                    const isIncentiveFiltered =
+                      incentivesForPool &&
+                      isIncentivePoolFiltered(incentivesForPool, {
+                        incentiveTypes,
+                      });
 
-                if (isIncentiveFiltered) return;
+                    if (isIncentiveFiltered) return;
 
-                return {
-                  ...pool,
-                  ...incentivesForPool,
-                  ...metricsForPool,
-                };
-              })
-              .filter((pool): pool is NonNullable<typeof pool> => !!pool);
+                    return {
+                      ...pool,
+                      ...incentivesForPool,
+                      ...metricsForPool,
+                    };
+                  })
+                  .filter((pool): pool is NonNullable<typeof pool> => !!pool);
 
-            // won't sort if searching
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
-          },
-
+                // won't sort if searching
+                if (search) return marketIncentivePools;
+                else
+                  return sort(
+                    marketIncentivePools,
+                    sortInput.keyPath,
+                    sortInput.direction
+                  );
+              },
+              cacheKey: JSON.stringify({
+                search,
+                sortInput,
+                minLiquidityUsd,
+                types,
+                incentiveTypes,
+              }),
+              cursor,
+              limit,
+            }),
           15000,
           "market incentive pools"
-        )();
-        return { items: items.slice(0, 50) };
-      }
+        )()
     ),
   getSuperfluidPoolIds: publicProcedure.query(getSuperfluidPoolIds),
   getPoolMarketMetrics: publicProcedure
