@@ -67,7 +67,7 @@ export async function getPoolsFromIndexer({
     cache: poolsCache,
     key: "indexer-pools",
     ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 10_000, // 10 seconds
+    // staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const numPools = await getNumPools();
       const { pools } = await queryFilteredPools(
