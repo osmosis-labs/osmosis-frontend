@@ -112,28 +112,14 @@ export const poolsRouter = createTRPCRouter({
         timeout(
           () =>
             maybeCachePaginatedItems({
-              // @ts-ignore
               getFreshItems: async () => {
-                const poolsPromise = timeout(
-                  () =>
-                    getPools({
-                      search,
-                      minLiquidityUsd,
-                      types,
-                    }),
-                  12000,
-                  "getPools timeout"
-                )();
-                const incentivesPromise = timeout(
-                  () => getCachedPoolIncentivesMap(),
-                  12000,
-                  "getCachedPoolIncentivesMap timeout"
-                )();
-                const marketMetricsPromise = timeout(
-                  () => getCachedPoolMarketMetricsMap(),
-                  12000,
-                  "getCachedPoolMarketMetricsMap timeout"
-                )();
+                const poolsPromise = getPools({
+                  search,
+                  minLiquidityUsd,
+                  types,
+                });
+                const incentivesPromise = getCachedPoolIncentivesMap();
+                const marketMetricsPromise = getCachedPoolMarketMetricsMap();
 
                 /** Get remote data via concurrent requests, if needed. */
                 const [pools, incentives, marketMetrics] = await Promise.all([
@@ -182,8 +168,8 @@ export const poolsRouter = createTRPCRouter({
               cursor,
               limit,
             }),
-          15000,
-          "market incentive pools"
+          12_000,
+          "getMarketIncentivePools"
         )()
     ),
   getSuperfluidPoolIds: publicProcedure.query(getSuperfluidPoolIds),
