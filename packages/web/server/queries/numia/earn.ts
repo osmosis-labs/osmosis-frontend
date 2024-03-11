@@ -33,7 +33,7 @@ export const EarnStrategyTypes = [
   "osmosis-staking",
 ] as const;
 
-export type EarnStrategyType = (typeof EarnStrategyProviders)[number];
+export type EarnStrategyType = (typeof EarnStrategyTypes)[number];
 
 export type EarnStrategyToken = {
   denom: string;
