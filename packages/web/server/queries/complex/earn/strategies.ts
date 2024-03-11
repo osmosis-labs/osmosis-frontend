@@ -61,7 +61,9 @@ export async function getStrategyBalance(
           },
         };
       } catch (error) {
-        throw new Error("Error while fetching strategy balance");
+        throw new Error("Error while fetching strategy balance", {
+          cause: error,
+        });
       }
     },
   });
@@ -96,7 +98,9 @@ export async function getStrategyTVL(strategyId: string) {
         const rawTvl = await queryStrategyTVL(strategyId);
         return processTVL(rawTvl);
       } catch (error) {
-        throw new Error("Error while fetching strategy TVL");
+        throw new Error("Error while fetching strategy TVL", {
+          cause: error,
+        });
       }
     },
   });
@@ -130,7 +134,7 @@ export async function getStrategies() {
           const depositAssets = await Promise.all(
             depositDenoms.map((token) =>
               getAsset({ anyDenom: token.coinMinimalDenom }).catch(
-                (_) => undefined
+                console.error
               )
             )
           );
@@ -138,7 +142,7 @@ export async function getStrategies() {
           const positionAssets = await Promise.all(
             positionDenoms.map((token) =>
               getAsset({ anyDenom: token.coinMinimalDenom }).catch(
-                (_) => undefined
+                console.error
               )
             )
           );
@@ -146,7 +150,7 @@ export async function getStrategies() {
           const rewardAssets = await Promise.all(
             rewardDenoms.map((reward) =>
               getAsset({ anyDenom: reward.coinMinimalDenom }).catch(
-                (_) => undefined
+                console.error
               )
             )
           );
@@ -170,7 +174,9 @@ export async function getStrategies() {
           strategies: aggregatedStrategies,
         };
       } catch (error) {
-        throw new Error("Error while fetching strategy CMS data");
+        throw new Error("Error while fetching strategy CMS data", {
+          cause: error,
+        });
       }
     },
   });
