@@ -5,17 +5,19 @@ import {
   mapRawCoinToPretty,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getCachedPoolIncentivesMap } from "~/server/queries/complex/pools/incentives";
+import {
+  getCachedPoolIncentivesMap,
+  PoolIncentives,
+} from "~/server/queries/complex/pools/incentives";
 import { queryBalances } from "~/server/queries/cosmos";
 import {
   StablePoolRawResponse,
   WeightedPoolRawResponse,
 } from "~/server/queries/osmosis";
-import { queryAccountPositions } from "~/server/queries/osmosis/concentratedliquidity";
 import {
-  queryAccountLockedCoins,
-  queryAccountUnlockingCoins,
-} from "~/server/queries/osmosis/lockup";
+  LiquidityPosition,
+  queryAccountPositions,
+} from "~/server/queries/osmosis/concentratedliquidity";
 import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
 
@@ -29,20 +31,26 @@ export async function getUserPools(bech32Address: string) {
   const [accountPositions, poolIncentives, superfluidPoolIds] =
     await Promise.all([
       timeout(
-        () => queryAccountPositions({ bech32Address }),
+        () =>
+          queryAccountPositions({ bech32Address })
+            .then(({ positions }) => positions)
+            .catch(() => [] as LiquidityPosition[]),
         10_000, // 10 seconds
         "queryCLPositions"
-      )(),
+      )().catch(() => [] as LiquidityPosition[]),
       timeout(
-        () => getCachedPoolIncentivesMap(),
+        () =>
+          getCachedPoolIncentivesMap().catch(
+            () => new Map<string, PoolIncentives>()
+          ),
         10_000, // 10 seconds
         "getCachedPoolIncentivesMap"
-      )(),
+      )().catch(() => new Map<string, PoolIncentives>()),
       timeout(
-        () => getSuperfluidPoolIds(),
+        () => getSuperfluidPoolIds().catch(() => [] as string[]),
         10_000, // 10 seconds
         "getSuperfluidPoolIds"
-      )(),
+      )().catch(() => [] as string[]),
     ]);
 
   const { locked: lockedShares, poolIds } = await getUserShareRawCoins(
@@ -50,7 +58,7 @@ export async function getUserPools(bech32Address: string) {
   );
 
   const userUniquePoolIds = new Set(poolIds);
-  accountPositions.positions
+  accountPositions
     .map(({ position: { pool_id } }) => pool_id)
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
@@ -69,7 +77,7 @@ export async function getUserPools(bech32Address: string) {
       );
 
       if (type === "concentrated") {
-        const positions = accountPositions.positions.filter(
+        const positions = accountPositions.filter(
           ({ position: { pool_id } }) => pool_id === id
         );
 
@@ -270,39 +278,38 @@ export async function getUserSharePools(
 }
 
 async function getUserShareRawCoins(bech32Address: string) {
-  const [userBalances, lockedCoins, unlockingCoins] = await Promise.all([
+  const [userBalances, userLocks] = await Promise.all([
     timeout(
       () => queryBalances({ bech32Address }),
       10_000, // 10 seconds
       "queryBalances"
     )(),
     timeout(
-      () =>
-        queryAccountLockedCoins({
-          bech32Address,
-        }),
+      () => getUserLocks(bech32Address),
       10_000, // 10 seconds
-      "queryAccountLockedCoins"
-    )(),
-    timeout(
-      () =>
-        queryAccountUnlockingCoins({
-          bech32Address,
-        }),
-      10_000, // 10 seconds
-      "queryAccountUnlockingCoins"
+      "getUserLocks"
     )(),
   ]);
 
   const available = userBalances.balances.filter(
     ({ denom }) => denom && denom.startsWith("gamm/pool/")
   );
-  const locked = lockedCoins.coins.filter(
-    ({ denom }) => denom && denom.startsWith("gamm/pool/")
-  );
-  const unlocking = unlockingCoins.coins.filter(
-    ({ denom }) => denom && denom.startsWith("gamm/pool/")
-  );
+  const locked = userLocks
+    .filter((userLock) => !userLock.isCurrentlyUnlocking)
+    .filter((userLock) =>
+      userLock.coins.some((coin) => coin.denom.startsWith("gamm/pool"))
+    )
+    .flatMap((lock) =>
+      lock.coins.filter((coin) => coin.denom.startsWith("gamm/pool"))
+    );
+  const unlocking = userLocks
+    .filter((userLock) => userLock.isCurrentlyUnlocking)
+    .filter((userLock) =>
+      userLock.coins.some((coin) => coin.denom.startsWith("gamm/pool"))
+    )
+    .flatMap((lock) =>
+      lock.coins.filter((coin) => coin.denom.startsWith("gamm/pool"))
+    );
 
   const total = [...available, ...locked, ...unlocking];
   const poolIds = new Set<string>();

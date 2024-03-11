@@ -57,6 +57,7 @@ export const createEdgeTRPCContext = (_opts: FetchCreateContextFnOptions) => {
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
+  allowOutsideOfServer: true,
   errorFormatter({ shape, error }) {
     return {
       ...shape,

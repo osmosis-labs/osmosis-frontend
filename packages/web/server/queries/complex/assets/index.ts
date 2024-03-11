@@ -146,7 +146,7 @@ function filterAssetList(
   });
 
   // Search raw asset list before reducing type to minimal Asset type
-  if (params.search) {
+  if (params.search && !params.findMinDenomOrSymbol) {
     assetListAssets = search(
       assetListAssets,
       searchableAssetListAssetKeys,

@@ -10,6 +10,8 @@ import {
 import { EdgeDataLoader } from "~/utils/batching";
 import { LARGE_LRU_OPTIONS } from "~/utils/cache";
 
+import { getPriceFromCoinGecko } from "./coingecko";
+
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 /** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to querying CoinGecko if not available.
@@ -58,19 +60,17 @@ function getBatchLoader() {
 }
 
 export function getPriceBatched(asset: Asset) {
-  if (asset.decimals === 0)
-    throw new Error("SQS currently does not support 0 decimal tokens");
-
   return cachified({
     cache: sidecarCache,
-    key: `coingecko-price-${asset.coinMinimalDenom}`,
+    key: `sidecar-price-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60, // 1 minute
     staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
-      getBatchLoader().then(
-        (loader) =>
-          loader.load(asset.coinMinimalDenom).then((price) => new Dec(price))
-        // .catch(() => getPriceFromCoinGecko(asset))
+      getBatchLoader().then((loader) =>
+        loader
+          .load(asset.coinMinimalDenom)
+          .then((price) => new Dec(price))
+          .catch(() => getPriceFromCoinGecko(asset))
       ),
   });
 }
