@@ -62,7 +62,7 @@ export async function getStrategyBalance(
         };
       } catch (error) {
         throw new Error("Error while fetching strategy balance", {
-          cause: error,
+          cause: error as Error,
         });
       }
     },
@@ -82,7 +82,9 @@ export async function getStrategyAnnualPercentages(strategyId: string) {
           apy: new RatePretty(calculateAPY(apr)),
         };
       } catch (error) {
-        throw new Error("Error while fetching strategy APR");
+        throw new Error("Error while fetching strategy APR", {
+          cause: error as Error,
+        });
       }
     },
   });
@@ -99,7 +101,7 @@ export async function getStrategyTVL(strategyId: string) {
         return processTVL(rawTvl);
       } catch (error) {
         throw new Error("Error while fetching strategy TVL", {
-          cause: error,
+          cause: error as Error,
         });
       }
     },
@@ -175,7 +177,7 @@ export async function getStrategies() {
         };
       } catch (error) {
         throw new Error("Error while fetching strategy CMS data", {
-          cause: error,
+          cause: error as Error,
         });
       }
     },
