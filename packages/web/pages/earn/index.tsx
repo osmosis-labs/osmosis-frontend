@@ -210,7 +210,13 @@ function Earn() {
           </TabButtons>
           <TabHeader>
             {(selectedIdx) => (
-              <TopFilters tokenHolderSwitchDisabled={selectedIdx === 1 || isAssetsBreakdownLoading || isAssetsBreakdownError} />
+              <TopFilters
+                tokenHolderSwitchDisabled={
+                  selectedIdx === 1 ||
+                  isAssetsBreakdownLoading ||
+                  isAssetsBreakdownError
+                }
+              />
             )}
           </TabHeader>
           <TabPanels>
