@@ -70,7 +70,6 @@ export async function getCoingeckoPrice({
     cache: coinGeckoCache,
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
-    staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
       currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
   });
@@ -82,7 +81,6 @@ export async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
     cache: coinGeckoCache,
     key: `coingecko-coin-${symbol}`,
     ttl: 1000 * 60 * 60, // 1 hour since the coin api ID won't change often
-    staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hours
     getFreshValue: async () =>
       queryCoingeckoSearch(symbol).then(
         ({ coins }) =>

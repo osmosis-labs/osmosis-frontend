@@ -35,7 +35,6 @@ export async function getMarketAsset<TAsset extends Asset>({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       const currentPrice = await getAssetPrice({ asset }).catch(() => null);
       const marketCap = await getAssetMarketCap(asset).catch(() => null);
@@ -89,7 +88,6 @@ async function getAssetMarketCap({
     cache: marketInfoCache,
     key: "assetMarketCaps",
     ttl: 1000 * 20, // 20 seconds
-    staleWhileRevalidate: 1000 * 40, // 40 seconds
     getFreshValue: async () => {
       const marketCaps = await queryTokenMarketCaps();
 
@@ -133,7 +131,6 @@ async function getCoingeckoCoin({
   return await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 10, // 10 minutes
     key: "coingecko-coin-" + coinGeckoId,
     getFreshValue: () => coingeckoCoinBatchLoader.load(coinGeckoId),
   });
@@ -143,7 +140,6 @@ async function getActiveCoingeckoCoins() {
   return await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 60, // 1 hour
-    staleWhileRevalidate: 1000 * 60 * 60 * 1.5, // 1.5 hour
     key: "coinGeckoIds",
     getFreshValue: queryCoingeckoCoinIds,
   });
@@ -156,7 +152,6 @@ async function getAssetMarketActivity({ coinDenom }: { coinDenom: string }) {
   const assetMarketMap = await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 5, // 5 minutes since there's price data
-    staleWhileRevalidate: 1000 * 60 * 10, // 10 minutes since there's price data
     key: "allTokenData",
     getFreshValue: async () => {
       try {

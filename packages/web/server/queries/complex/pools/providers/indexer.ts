@@ -33,7 +33,7 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
+const poolsCache = new Map();
 const smallQueriesPoolCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
@@ -43,7 +43,6 @@ function getNumPools() {
     cache: smallQueriesPoolCache,
     key: "num-pools",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryNumPools(),
   });
 }
@@ -52,7 +51,6 @@ function getPoolmanagerParams() {
     cache: smallQueriesPoolCache,
     key: "pool-manager-params",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryPoolmanagerParams(),
   });
 }
@@ -169,7 +167,6 @@ async function fetchAndProcessAllPools({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60, // 60 seconds
     async getFreshValue() {
       const poolManagerParamsPromise = getPoolmanagerParams();
       const numPoolsPromise = getNumPools();
