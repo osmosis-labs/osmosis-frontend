@@ -148,7 +148,7 @@ export const TopFilters = ({
 
   return (
     <div className="flex flex-col gap-5 px-10 py-8 1.5xs:px-7 1.5xs:py-7">
-      <div className="flex flex-wrap items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-0 xl:gap-4 lg:hidden">
+      <div className="flex flex-wrap items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-4 lg:hidden">
         <RadioWithOptions
           disabled={isInMyStrategies}
           mode="primary"
