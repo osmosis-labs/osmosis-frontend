@@ -11,6 +11,7 @@ import { EdgeDataLoader } from "~/utils/batching";
 import { LARGE_LRU_OPTIONS } from "~/utils/cache";
 
 import { getPriceFromCoinGecko } from "./coingecko";
+import { getPriceFromPools } from "./pools";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
@@ -69,7 +70,9 @@ export function getPriceBatched(asset: Asset) {
         loader
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
-          .catch(() => getPriceFromCoinGecko(asset))
+          .catch(() =>
+            getPriceFromPools(asset).catch(() => getPriceFromCoinGecko(asset))
+          )
       ),
   });
 }
