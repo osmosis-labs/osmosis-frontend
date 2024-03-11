@@ -8,7 +8,7 @@ export const ClaimAllRewardsButton: FunctionComponent<ToggleProps<any>> = ({
   onToggle,
 }) => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState<boolean>(false);
 
   return (
     <div className="max-w-xs">
