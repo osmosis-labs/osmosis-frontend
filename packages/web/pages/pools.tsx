@@ -1,10 +1,12 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
+import { ClaimAllRewardsButton } from "~/components/buttons/claim-all-rewards";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
@@ -320,12 +322,55 @@ export const MyPoolsSection = observer(() => {
     return null;
   }
 
+  const queriesStore = useStore().queriesStore;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+  const claimAllRewardsButton = (
+    <ClaimAllRewardsButton
+      isOn={false}
+      onToggle={() => {
+        const { chainId } = chainStore.osmosis;
+        const account = accountStore.getWallet(chainId);
+
+        const userPositions: ObservableQueryLiquidityPositionById[] =
+          queryOsmosis.queryPools
+            .getAllPools()
+            .reduce((acc: ObservableQueryLiquidityPositionById[], pool) => {
+              const positionsInPool = queryOsmosis.queryAccountsPositions
+                .get(account?.address ?? "")
+                .positionsInPool(pool.id);
+
+              if (positionsInPool.length > 0) {
+                acc.push(...positionsInPool);
+              }
+              return acc;
+            }, []);
+
+        account?.osmosis
+          .sendRewardsMsgsForAllPositions(
+            userPositions,
+            true,
+            undefined,
+            (tx) => {
+              if (!tx.code) {
+                logEvent([
+                  EventName.ConcentratedLiquidity.claimAllRewardsCompleted,
+                  {},
+                ]);
+              }
+            }
+          )
+          .catch(console.error);
+      }}
+    />
+  );
+
   return (
     <div className="pb-[3.75rem]">
       <h5 ref={titleRef} className="md:px-3">
         {t("pools.myPools")}
       </h5>
       <div className="flex flex-col gap-4">
+        {claimAllRewardsButton}
         <div className="grid-cards mt-5 grid md:gap-3">
           {isLoadingMyPoolDetails ? (
             <>

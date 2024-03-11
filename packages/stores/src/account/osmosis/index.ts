@@ -14,7 +14,10 @@ import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { OsmosisQueries } from "../../queries";
+import {
+  ObservableQueryLiquidityPositionById,
+  OsmosisQueries,
+} from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
@@ -160,6 +163,77 @@ export class OsmosisAccountImpl {
             });
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendRewardsMsgsForAllPositions(
+    positions: ObservableQueryLiquidityPositionById[],
+    alsoCollectIncentiveRewards = true,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    // Accumulate position IDs for each reward type
+    const spreadRewardPositions = [];
+    const incentiveRewardPositions = [];
+
+    for (const position of positions) {
+      if (position.claimableSpreadRewards.length > 0) {
+        spreadRewardPositions.push(BigInt(position.id));
+      }
+      if (
+        position.claimableIncentiveRewards.length > 0 &&
+        alsoCollectIncentiveRewards
+      ) {
+        incentiveRewardPositions.push(BigInt(position.id));
+      }
+    }
+
+    // Reject if no rewards to collect
+    if (
+      spreadRewardPositions.length === 0 &&
+      incentiveRewardPositions.length === 0
+    ) {
+      return Promise.reject("No rewards to collect");
+    }
+
+    // Construct reward messages
+    type CollectMessageType =
+      | ReturnType<
+          (typeof osmosisMsgOpts)["clCollectPositionsIncentivesRewards"]["messageComposer"]
+        >
+      | ReturnType<
+          (typeof osmosisMsgOpts)["clCollectPositionsSpreadRewards"]["messageComposer"]
+        >;
+    const msgs: CollectMessageType[] = [];
+
+    if (spreadRewardPositions.length > 0) {
+      const spreadRewardsMsg =
+        this.msgOpts.clCollectPositionsSpreadRewards.messageComposer({
+          positionIds: spreadRewardPositions,
+          sender: this.address,
+        });
+      msgs.push(spreadRewardsMsg);
+    }
+    if (incentiveRewardPositions.length > 0) {
+      const incentiveRewardsMsg =
+        this.msgOpts.clCollectPositionsIncentivesRewards.messageComposer({
+          positionIds: incentiveRewardPositions,
+          sender: this.address,
+        });
+      msgs.push(incentiveRewardsMsg);
+    }
+
+    // Sign and broadcast all messages at once
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "collectAllPositionsRewards",
+      () => msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
         onFulfill?.(tx);
       }
     );
