@@ -7,7 +7,7 @@ import { NUMIA_BASE_URL } from ".";
 
 export const EarnStrategyCategories = [
   "Lending",
-  "Trading Valut",
+  "Trading Vault",
   "Staking",
   "Liquid Staking",
   "Perp LP",
