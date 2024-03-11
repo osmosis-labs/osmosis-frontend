@@ -346,7 +346,7 @@ const Radios = () => {
   );
 };
 
-const ButtonsShadcn = () => {
+const Buttons = () => {
   return (
     <Card title="Buttons (Shadcn)">
       <Component title="Primary">
@@ -376,6 +376,11 @@ const ButtonsShadcn = () => {
       </Component>
       <Component title="Outline">
         <Button variant="outline" onClick={() => console.log("clicked")}>
+          Click
+        </Button>
+      </Component>
+      <Component title="Medium">
+        <Button onClick={() => console.log("clicked")} size="md">
           Click
         </Button>
       </Component>
@@ -1061,7 +1066,7 @@ const Components: NextPage = () => {
 
       <Switches />
 
-      <ButtonsShadcn />
+      <Buttons />
 
       <Checkboxes />
 

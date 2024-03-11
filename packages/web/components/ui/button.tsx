@@ -25,19 +25,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-wosmongton-700 text-primary-foreground shadow hover:bg-wosmongton-700/90",
-        destructive: "bg-rust-700 shadow-sm hover:bg-destructive/90",
+          "bg-wosmongton-700 text-white-full shadow hover:bg-wosmongton-700/90",
+        destructive: "bg-rust-700 shadow-sm hover:bg-rust-700/90",
         outline:
-          "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-wosmongton-400 hover:text-white-full",
         secondary:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        ghost: "hover:bg-osmoverse-600  hover:text-accent-foreground",
+        link: "text-white-full underline-offset-4 hover:underline",
       },
       size: {
         default: "h-14 px-6 py-2 rounded-xl",
-        sm: "h-6 rounded-md text-caption py-1 px-1.5",
-        md: "h-10 rounded-xl py-2 px-3",
+        sm: "h-6 py-1 px-1.5 rounded-md text-caption",
+        md: "h-10 py-2 px-3 rounded-xl",
         icon: "h-10 w-10 rounded-full",
       },
     },
