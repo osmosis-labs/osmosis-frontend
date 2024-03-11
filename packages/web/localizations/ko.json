@@ -859,7 +859,8 @@
     "tryChangingFilters": "필터를 바꿔보세요",
     "retry": "다시 해 보다",
     "manage": "관리하다",
-    "noLock": "잠금 없음"
+    "noLock": "잠금 없음",
+    "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다."
   },
   "disclaimer": "부인 성명",
   "unstableAssetsWarning": {

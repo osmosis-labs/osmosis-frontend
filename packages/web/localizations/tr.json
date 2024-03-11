@@ -859,7 +859,8 @@
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
     "retry": "Yeniden dene",
     "manage": "Üstesinden gelmek",
-    "noLock": "Kilit yok"
+    "noLock": "Kilit yok",
+    "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır."
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {

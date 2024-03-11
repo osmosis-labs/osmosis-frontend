@@ -859,7 +859,8 @@
     "tryChangingFilters": "Încercați să schimbați filtrele",
     "retry": "Reîncercați",
     "manage": "Administra",
-    "noLock": "Fără blocare"
+    "noLock": "Fără blocare",
+    "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente."
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

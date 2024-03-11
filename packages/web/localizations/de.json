@@ -859,7 +859,8 @@
     "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
     "retry": "Wiederholen",
     "manage": "Verwalten",
-    "noLock": "Kein Schloss"
+    "noLock": "Kein Schloss",
+    "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet."
   },
   "disclaimer": "Haftungsausschluss",
   "unstableAssetsWarning": {

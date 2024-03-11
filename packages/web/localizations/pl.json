@@ -859,7 +859,8 @@
     "tryChangingFilters": "Spróbuj zmienić filtry",
     "retry": "Spróbować ponownie",
     "manage": "Zarządzać",
-    "noLock": "Brak blokady"
+    "noLock": "Brak blokady",
+    "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych."
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {

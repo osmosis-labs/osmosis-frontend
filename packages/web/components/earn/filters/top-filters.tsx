@@ -321,8 +321,7 @@ export const TopFilters = ({
       />
       <div className="-mt-1 flex flex-wrap items-center gap-x-3">
         <span className="caption text-osmoverse-200">
-          Risk is calculated with a combined set of criteria about a strategy
-          and its underlying assets.
+          {t("earnPage.riskDisclaimer")}
         </span>
         <Link
           href={cmsData?.riskReportUrl ?? "#"}

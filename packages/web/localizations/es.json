@@ -859,7 +859,8 @@
     "tryChangingFilters": "Prueba a cambiar filtros",
     "retry": "Rever",
     "manage": "Administrar",
-    "noLock": "Sin bloqueo"
+    "noLock": "Sin bloqueo",
+    "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes."
   },
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {

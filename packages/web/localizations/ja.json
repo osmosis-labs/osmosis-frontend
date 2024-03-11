@@ -859,7 +859,8 @@
     "tryChangingFilters": "フィルターを変更してみる",
     "retry": "リトライ",
     "manage": "管理",
-    "noLock": "ロックなし"
+    "noLock": "ロックなし",
+    "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。"
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {

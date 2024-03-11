@@ -859,7 +859,8 @@
     "tryChangingFilters": "Try changing filters",
     "retry": "Retry",
     "manage": "Manage",
-    "noLock": "No Lock"
+    "noLock": "No Lock",
+    "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets."
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

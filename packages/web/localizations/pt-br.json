@@ -859,7 +859,8 @@
     "tryChangingFilters": "Tente alterar os filtros",
     "retry": "Tentar novamente",
     "manage": "Gerenciar",
-    "noLock": "Não feche"
+    "noLock": "Não feche",
+    "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes."
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {
