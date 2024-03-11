@@ -33,23 +33,24 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const poolsCache = new Map();
+const smallQueriesPoolCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
 
 function getNumPools() {
   return cachified({
-    cache: poolsCache,
+    cache: smallQueriesPoolCache,
     key: "num-pools",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryNumPools(),
   });
 }
 function getPoolmanagerParams() {
   return cachified({
-    cache: poolsCache,
+    cache: smallQueriesPoolCache,
     key: "pool-manager-params",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryPoolmanagerParams(),
   });
 }
@@ -62,9 +63,8 @@ export async function getPoolsFromIndexer({
 } = {}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `indexer-pools-${poolIds.join(",")}` : "indexer-pools",
+    key: "indexer-pools",
     ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const numPools = await getNumPools();
       const { pools } = await queryFilteredPools(
@@ -76,11 +76,14 @@ export async function getPoolsFromIndexer({
         { offset: 0, limit: Number(numPools.num_pools) }
       );
       return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
-        (pool): pool is Pool =>
-          !!pool && (poolIds ? poolIds.includes(pool.id) : true)
+        (pool): pool is Pool => !!pool
       );
     },
-  });
+  }).then((pools) =>
+    pools.filter((pool): pool is Pool =>
+      poolIds ? poolIds.includes(pool.id) : true
+    )
+  );
 }
 
 /** @deprecated Fetches pools from indexer. */
@@ -164,7 +167,6 @@ async function fetchAndProcessAllPools({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60, // 60 seconds
     async getFreshValue() {
       const poolManagerParamsPromise = getPoolmanagerParams();
       const numPoolsPromise = getNumPools();
@@ -184,7 +186,7 @@ async function fetchAndProcessAllPools({
         { offset: 0, limit: Number(numPools.num_pools) }
       );
       const queryPoolRawResults = filteredPoolsResponse.pools.map((pool) =>
-        queryPoolRawFromFilteredPool(
+        makePoolRawFromIndexerPool(
           pool,
           poolManagerParams.params.taker_fee_params.default_taker_fee
         )
@@ -208,7 +210,7 @@ async function fetchAndProcessAllPools({
 }
 
 /** @deprecated */
-export function queryPoolRawFromFilteredPool(
+function makePoolRawFromIndexerPool(
   filteredPool: FilteredPoolsResponse["pools"][number],
   takerFeeRaw: string
 ):

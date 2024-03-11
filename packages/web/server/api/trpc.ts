@@ -9,6 +9,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { ZodError } from "zod";
 
 import { Errors } from "~/server/api/errors";
+import timeout from "~/utils/async";
 import { superjson } from "~/utils/superjson";
 
 /**
@@ -57,6 +58,7 @@ export const createEdgeTRPCContext = (_opts: FetchCreateContextFnOptions) => {
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
+  allowOutsideOfServer: true,
   errorFormatter({ shape, error }) {
     return {
       ...shape,
@@ -91,4 +93,10 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but we can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(async (opts) => {
+  /**
+   * Default timeout for all procedures
+   */
+  const result = await timeout(() => opts.next(), 12_000, opts.path)();
+  return result;
+});
