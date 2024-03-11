@@ -59,6 +59,8 @@ function Earn() {
     totalUnclaimedRewards,
     areBalancesLoading,
     areStrategiesLoading,
+    isAssetsBreakdownLoading,
+    isAssetsBreakdownError,
     isError,
     refetch,
     unclaimedRewards,
@@ -208,7 +210,7 @@ function Earn() {
           </TabButtons>
           <TabHeader>
             {(selectedIdx) => (
-              <TopFilters isInMyStrategies={selectedIdx === 1} />
+              <TopFilters tokenHolderSwitchDisabled={selectedIdx === 1 || isAssetsBreakdownLoading || isAssetsBreakdownError} />
             )}
           </TabHeader>
           <TabPanels>

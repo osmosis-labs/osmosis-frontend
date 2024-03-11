@@ -19,16 +19,19 @@ const useGetEarnStrategies = (
     trpc: { context: { skipBatch: true } },
   });
 
-  const { data: holdenDenoms } =
-    api.edge.assets.getUserAssetsBreakdown.useQuery(
-      { userOsmoAddress },
-      {
-        trpc: { context: { skipBatch: true } },
-        enabled: !!userOsmoAddress,
-        select: (assetsBreakdown): string[] =>
-          assetsBreakdown.available.map((coin) => coin.denom),
-      }
-    );
+  const {
+    data: holdenDenoms,
+    isLoading: isAssetsBreakdownLoading,
+    isError: isAssetsBreakdownError,
+  } = api.edge.assets.getUserAssetsBreakdown.useQuery(
+    { userOsmoAddress },
+    {
+      trpc: { context: { skipBatch: true } },
+      enabled: !!userOsmoAddress,
+      select: (assetsBreakdown): string[] =>
+        assetsBreakdown.available.map((coin) => coin.denom),
+    }
+  );
 
   const _strategies: EarnStrategy[] = useMemo(
     () =>
@@ -180,7 +183,9 @@ const useGetEarnStrategies = (
     ...additionalBalanceData,
     areBalancesLoading,
     areStrategiesLoading,
+    isAssetsBreakdownLoading,
     isError,
+    isAssetsBreakdownError,
     refetch,
   };
 };
