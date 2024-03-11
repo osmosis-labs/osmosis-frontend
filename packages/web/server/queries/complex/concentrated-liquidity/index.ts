@@ -179,7 +179,6 @@ function getUserUnbondingPositions({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountUnbondingPositions({ bech32Address }),
   });
 }
@@ -193,7 +192,6 @@ function getUserDelegatedPositions({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountDelegatedPositions({ bech32Address }),
   });
 }
@@ -207,7 +205,6 @@ function getUserUndelegatingPositions({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountUndelegatingPositions({ bech32Address }),
   });
 }
