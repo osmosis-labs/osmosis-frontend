@@ -53,6 +53,7 @@ export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
 export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   const tvlUsd = item.getValue();
   const isLoadingTVL = item.row.original.isLoadingTVL;
+  const isErrorTVL = item.row.original.isErrorTVL;
 
   const { depositCap, depositCapOccupied } = useMemo(() => {
     if (!item.row.original.tvl)
@@ -70,8 +71,16 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
     return { depositCapOccupied, depositCap };
   }, [item.row.original.tvl, tvlUsd]);
 
-  if (isLoadingTVL) {
-    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
+  if (isLoadingTVL || !item.getValue()) {
+    return (
+      <div className="flex justify-end">
+        <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+      </div>
+    );
+  }
+
+  if (isErrorTVL) {
+    return <ColumnCellCell>N/A</ColumnCellCell>;
   }
 
   return (
@@ -130,9 +139,18 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
 
 export const APYCell = (item: CellContext<EarnStrategy, RatePretty>) => {
   const isLoadingAPR = item.row.original.isLoadingAPR;
+  const isErrorAPR = item.row.original.isErrorAPR;
 
-  if (isLoadingAPR) {
-    return <SkeletonLoader isLoaded={false} className="h-8 w-11" />;
+  if (isLoadingAPR || !item.getValue()) {
+    return (
+      <div className="flex justify-end">
+        <SkeletonLoader isLoaded={false} className="h-8 w-11" />
+      </div>
+    );
+  }
+
+  if (isErrorAPR) {
+    return <ColumnCellCell>N/A</ColumnCellCell>;
   }
 
   return (
