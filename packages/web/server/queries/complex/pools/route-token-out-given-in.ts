@@ -72,7 +72,6 @@ export async function getRouter(
     key: "router" + minLiquidityUsd,
     cache: routerCache,
     ttl: routerCacheTtl,
-    staleWhileRevalidate: routerCacheTtl + 1000 * 30, // add 30 seconds
     async getFreshValue() {
       // fetch pool data
       const numPoolsResponse = await queryNumPools();

@@ -20,6 +20,7 @@ import {
   getUserPools,
   getUserSharePools,
 } from "~/server/queries/complex/pools/user";
+import timeout from "~/utils/async";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -108,59 +109,68 @@ export const poolsRouter = createTRPCRouter({
           limit,
         },
       }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-            const poolsPromise = getPools({ search, minLiquidityUsd, types });
-            const incentivesPromise = getCachedPoolIncentivesMap();
-            const marketMetricsPromise = getCachedPoolMarketMetricsMap();
+        timeout(
+          () =>
+            maybeCachePaginatedItems({
+              getFreshItems: async () => {
+                const poolsPromise = getPools({
+                  search,
+                  minLiquidityUsd,
+                  types,
+                });
+                const incentivesPromise = getCachedPoolIncentivesMap();
+                const marketMetricsPromise = getCachedPoolMarketMetricsMap();
 
-            /** Get remote data via concurrent requests, if needed. */
-            const [pools, incentives, marketMetrics] = await Promise.all([
-              poolsPromise,
-              incentivesPromise,
-              marketMetricsPromise,
-            ]);
+                /** Get remote data via concurrent requests, if needed. */
+                const [pools, incentives, marketMetrics] = await Promise.all([
+                  poolsPromise,
+                  incentivesPromise,
+                  marketMetricsPromise,
+                ]);
 
-            const marketIncentivePools = pools
-              .map((pool) => {
-                const incentivesForPool = incentives.get(pool.id);
-                const metricsForPool = marketMetrics.get(pool.id) ?? {};
+                const marketIncentivePools = pools
+                  .map((pool) => {
+                    const incentivesForPool = incentives.get(pool.id);
+                    const metricsForPool = marketMetrics.get(pool.id) ?? {};
 
-                const isIncentiveFiltered =
-                  incentivesForPool &&
-                  isIncentivePoolFiltered(incentivesForPool, {
-                    incentiveTypes,
-                  });
+                    const isIncentiveFiltered =
+                      incentivesForPool &&
+                      isIncentivePoolFiltered(incentivesForPool, {
+                        incentiveTypes,
+                      });
 
-                if (isIncentiveFiltered) return;
+                    if (isIncentiveFiltered) return;
 
-                return {
-                  ...pool,
-                  ...incentivesForPool,
-                  ...metricsForPool,
-                };
-              })
-              .filter((pool): pool is NonNullable<typeof pool> => !!pool);
+                    return {
+                      ...pool,
+                      ...incentivesForPool,
+                      ...metricsForPool,
+                    };
+                  })
+                  .filter((pool): pool is NonNullable<typeof pool> => !!pool);
 
-            // won't sort if searching
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
-          },
-          cacheKey: JSON.stringify({
-            search,
-            sortInput,
-            minLiquidityUsd,
-            types,
-            incentiveTypes,
-          }),
-          cursor,
-          limit,
-        })
+                // won't sort if searching
+                if (search) return marketIncentivePools;
+                else
+                  return sort(
+                    marketIncentivePools,
+                    sortInput.keyPath,
+                    sortInput.direction
+                  );
+              },
+              cacheKey: JSON.stringify({
+                search,
+                sortInput,
+                minLiquidityUsd,
+                types,
+                incentiveTypes,
+              }),
+              cursor,
+              limit,
+            }),
+          12_000,
+          "getMarketIncentivePools"
+        )()
     ),
   getSuperfluidPoolIds: publicProcedure.query(getSuperfluidPoolIds),
   getPoolMarketMetrics: publicProcedure

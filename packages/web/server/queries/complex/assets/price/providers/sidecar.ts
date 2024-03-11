@@ -64,7 +64,6 @@ export function getPriceBatched(asset: Asset) {
     cache: sidecarCache,
     key: `sidecar-price-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60, // 1 minute
-    staleWhileRevalidate: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
       getBatchLoader().then((loader) =>
         loader
