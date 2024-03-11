@@ -6,7 +6,7 @@ export const DEFAULT_LRU_OPTIONS: LRUCache.Options<
   CacheEntry<unknown>,
   unknown
 > = {
-  max: 300,
+  max: 500,
 };
 
 export const LARGE_LRU_OPTIONS: LRUCache.Options<
