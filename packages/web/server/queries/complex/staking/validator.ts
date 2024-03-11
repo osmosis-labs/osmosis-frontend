@@ -14,7 +14,6 @@ export async function getValidators({ status }: { status: BondStatus }) {
     cache: validatorsCache,
     key: "validators",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       return (await queryValidators({ status })).validators;
     },
@@ -30,7 +29,6 @@ export async function getValidatorInfo({
     cache: validatorsCache,
     key: `validator-${validatorBech32Address}`,
     ttl: 1000 * 10, // 10 seconds
-    staleWhileRevalidate: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
       let jailed = false;
       let inactive = false;
