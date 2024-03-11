@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";

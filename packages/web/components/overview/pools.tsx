@@ -1,35 +1,34 @@
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+import SkeletonLoader from "../loaders/skeleton-loader";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 
 export const PoolsOverview: FunctionComponent<
   { setIsCreatingPool: () => void } & CustomClasses
 > = observer(({ className, setIsCreatingPool }) => {
-  const { chainStore, priceStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
   const { width } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { t } = useTranslation();
 
-  const osmoPrice = priceStore.calculatePrice(
-    new CoinPretty(
-      chainStore.osmosis.stakeCurrency,
-      DecUtils.getTenExponentNInPrecisionRange(
-        chainStore.osmosis.stakeCurrency.coinDecimals
-      )
-    )
+  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
+    {
+      coinMinimalDenom: "uosmo",
+    }
   );
 
   // update time every second
@@ -63,7 +62,7 @@ export const PoolsOverview: FunctionComponent<
   return (
     <div
       className={classNames(
-        "relative flex flex-wrap items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 py-8 1.5lg:gap-6 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
+        "relative flex flex-wrap items-center gap-32 rounded-3xl bg-osmoverse-800 px-20 py-8 1.5lg:gap-6 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
         className
       )}
     >
@@ -71,9 +70,17 @@ export const PoolsOverview: FunctionComponent<
         <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        <h2 className="text-white-full md:text-h4 md:font-h4">
-          {osmoPrice?.toString()}
-        </h2>
+        {osmoPrice && (
+          <SkeletonLoader
+            className={classNames(isFetched ? null : "h-5 w-13")}
+            isLoaded={isFetched}
+          >
+            <h2 className="mt-[3px]">
+              {osmoPrice.fiatCurrency.symbol}
+              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+            </h2>
+          </SkeletonLoader>
+        )}
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
         <h6 className="md:text-subtitle1 md:font-subtitle1">
@@ -110,9 +117,9 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          className="rounded-3xl text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
-          mode="icon-primary"
+          // TODO - ideally we shouldn't use overrides, reconsider this one off design
+          className="!bg-osmoverse-700 hover:!bg-osmoverse-600"
         >
           <div className="flex items-center gap-3">
             {t("pools.createPool.title")}

@@ -1,4 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
+import { makeMinimalAsset } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -6,10 +7,11 @@ import { FunctionComponent } from "react";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
-import SkeletonLoader from "~/components/skeleton-loader";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -20,6 +22,11 @@ import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
+
+const osmoAsset = AssetLists.flatMap(({ assets }) => assets).find(
+  (asset) => asset.symbol === "OSMO"
+);
+const osmoCurrency = makeMinimalAsset(osmoAsset!);
 
 const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
@@ -36,11 +43,8 @@ const NavbarOsmoPrice = observer(() => {
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: osmoCurrency } = api.edge.assets.getAsset.useQuery({
-    findMinDenomOrSymbol: "OSMO",
-  });
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
-    osmoCurrency!,
+    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
     { enabled: Boolean(osmoCurrency) }
   );
 
@@ -73,11 +77,8 @@ const NavbarOsmoPrice = observer(() => {
       {wallet?.walletStatus === WalletStatus.Connected && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
-            mode="unstyled"
-            className={classNames(
-              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
-              "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
-            )}
+            variant="outline"
+            className="button group relative flex w-full items-center justify-center gap-2 overflow-hidden !rounded-full border-osmoverse-700 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             onClick={() => onOpenFiatOnrampSelection()}
           >
             <CreditCardIcon
@@ -114,7 +115,7 @@ const NavbarOsmoPrice = observer(() => {
 
 const OsmoPriceAndChart: FunctionComponent = () => {
   const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
-    api.edge.assets.getAssetInfo.useQuery({
+    api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: "OSMO",
     });
 

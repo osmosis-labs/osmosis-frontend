@@ -15,7 +15,8 @@ export class AsyncTimeoutError extends Error {
  */
 export default function timeout<Fn extends (...args: any) => Promise<any>>(
   asyncFn: Fn,
-  milliseconds: number
+  milliseconds: number,
+  asyncFnName?: string
 ): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
   return (...args: Parameters<Fn>) =>
     new Promise<ReturnType<Fn>>(async (resolve, reject) => {
@@ -24,7 +25,7 @@ export default function timeout<Fn extends (...args: any) => Promise<any>>(
 
       // setup timer and call original function
       timer = setTimeout(() => {
-        let name = asyncFn.name || "anonymous";
+        let name = asyncFnName || asyncFn.name || "anonymous";
         let error = new AsyncTimeoutError(
           'Callback function "' + name + '" timed out.'
         );

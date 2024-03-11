@@ -6,9 +6,7 @@ import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { ShowMoreButton } from "~/components/buttons/show-more";
-import { SortMenu, Switch } from "~/components/control";
+import { SortMenu } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import {
@@ -21,6 +19,9 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { ShowMoreButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -43,7 +44,8 @@ import { HideBalancesState } from "~/stores/user-settings";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface Props {
-  nativeBalances: CoinBalance[];
+  nativeBalances: (CoinBalance & { isVerified: boolean })[];
+  unverifiedNativeBalances: (CoinBalance & { isVerified: boolean })[];
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
@@ -82,16 +84,16 @@ function mapCommonFields(
 }
 
 function nativeBalancesToTableCell(
-  balances: CoinBalance[],
+  balances: (CoinBalance & { isVerified: boolean })[],
   osmosisChainId: string
 ): SortableTableCell[] {
-  return balances.map(({ balance, fiatValue }) => {
+  return balances.map(({ balance, fiatValue, isVerified }) => {
     const commonFields = mapCommonFields(balance, fiatValue);
     return {
       ...commonFields,
       chainId: osmosisChainId,
       chainName: "",
-      isVerified: true,
+      isVerified,
     };
   });
 }
@@ -99,6 +101,7 @@ function nativeBalancesToTableCell(
 export const AssetsTableV1: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
+    unverifiedNativeBalances,
     ibcBalances,
     unverifiedIbcBalances,
     onDeposit: _onDeposit,
@@ -213,7 +216,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             )
           ),
           ...nativeBalancesToTableCell(
-            nativeBalances.filter(
+            (isSearching ? unverifiedNativeBalances : nativeBalances).filter(
               ({ balance, fiatValue }) =>
                 !(
                   balance.denom === "OSMO" ||
@@ -243,10 +246,11 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         }),
       [
         nativeBalances,
+        chainStore.osmosis.chainId,
         isSearching,
         unverifiedIbcBalances,
         ibcBalances,
-        chainStore.osmosis.chainId,
+        unverifiedNativeBalances,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
@@ -445,25 +449,31 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               size="small"
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
-              <Switch
-                isOn={hideZeroBalances}
-                disabled={!canHideZeroBalances}
-                onToggle={() => {
-                  logEvent([
-                    EventName.Assets.assetsListFiltered,
-                    {
-                      filteredBy: "Hide zero balances",
-                      isFilterOn: !hideZeroBalances,
-                    },
-                  ]);
-
-                  setHideZeroBalances(!hideZeroBalances);
-                }}
-              >
-                <span className="text-osmoverse-200">
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <label
+                  htmlFor="hide-zero-balances"
+                  className="subtitle1 flex shrink-0 items-center text-osmoverse-200"
+                >
                   {t("assets.table.hideZero")}
-                </span>
-              </Switch>
+                </label>
+                <Switch
+                  id="hide-zero-balances"
+                  checked={hideZeroBalances}
+                  disabled={!canHideZeroBalances}
+                  onCheckedChange={() => {
+                    logEvent([
+                      EventName.Assets.assetsListFiltered,
+                      {
+                        filteredBy: "Hide zero balances",
+                        isFilterOn: !hideZeroBalances,
+                      },
+                    ]);
+
+                    setHideZeroBalances(!hideZeroBalances);
+                  }}
+                />
+              </div>
+
               <SortMenu
                 selectedOptionId={sortKey}
                 onSelect={setSortKey}
@@ -491,25 +501,35 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             <div className="flex flex-wrap place-content-between items-center">
               <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
+                <label
+                  htmlFor="masked-balances"
+                  className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
+                >
+                  {t("assets.table.hideBalances")}
+                </label>
                 <Switch
-                  isOn={hideBalancesSetting?.state.hideBalances ?? false}
-                  onToggle={() => {
+                  id="masked-balances"
+                  checked={hideBalancesSetting?.state.hideBalances ?? false}
+                  onCheckedChange={() => {
                     setHideBalancesPrivacy(
                       !hideBalancesSetting!.state.hideBalances
                     );
                   }}
-                >
-                  {t("assets.table.hideBalances")}
-                </Switch>
-                <Switch
-                  isOn={hideZeroBalances}
-                  disabled={!canHideZeroBalances}
-                  onToggle={() => {
-                    setHideZeroBalances(!hideZeroBalances);
-                  }}
+                />
+                <label
+                  htmlFor="hide-zero-balances"
+                  className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
                 >
                   {t("assets.table.hideZero")}
-                </Switch>
+                </label>
+                <Switch
+                  id="hide-zero-balancse"
+                  checked={hideZeroBalances}
+                  disabled={!canHideZeroBalances}
+                  onCheckedChange={() => {
+                    setHideZeroBalances(!hideZeroBalances);
+                  }}
+                />
                 <SearchBox
                   currentValue={query}
                   onInput={(query) => {
@@ -675,8 +695,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       displayCell: (cell) =>
                         !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
                           <Button
-                            mode="text"
-                            className="whitespace-nowrap !p-0"
+                            variant="ghost"
+                            className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();

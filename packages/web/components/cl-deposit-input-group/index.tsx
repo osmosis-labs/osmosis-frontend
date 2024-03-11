@@ -1,22 +1,16 @@
 import { Currency } from "@keplr-wallet/types";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, useCallback } from "react";
+import React, { FunctionComponent, useCallback, useMemo } from "react";
 
 import { InputBox } from "~/components/input";
 import { useTranslation } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
 
 export const DepositAmountGroup: FunctionComponent<{
-  getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   currency?: Currency;
   onUpdate: (amount: number) => void;
   onMax: () => void;
@@ -28,7 +22,6 @@ export const DepositAmountGroup: FunctionComponent<{
   outOfRangeClassName?: string;
 }> = observer(
   ({
-    getFiatValue,
     currency,
     percentage,
     onUpdate,
@@ -45,17 +38,20 @@ export const DepositAmountGroup: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";
 
-    const currentValuePrice =
-      currency && getFiatValue
-        ? getFiatValue(
-            new CoinPretty(
-              currency,
-              new Dec(currentValue).mul(
-                DecUtils.getTenExponentN(currency.coinDecimals)
+    const currentValuePrice = useCoinFiatValue(
+      useMemo(
+        () =>
+          currency
+            ? new CoinPretty(
+                currency,
+                new Dec(currentValue).mul(
+                  DecUtils.getTenExponentN(currency.coinDecimals)
+                )
               )
-            )
-          )
-        : 0;
+            : undefined,
+        [currency, currentValue]
+      )
+    );
 
     const walletBalance = currency
       ? queriesStore
@@ -76,7 +72,7 @@ export const DepositAmountGroup: FunctionComponent<{
       return (
         <div
           className={classNames(
-            "flex flex-1 flex-shrink-0 items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7",
+            "flex flex-1 flex-shrink-0 items-center gap-3 rounded-2xl bg-osmoverse-700 px-6 py-7",
             outOfRangeClassName
           )}
         >
@@ -97,7 +93,7 @@ export const DepositAmountGroup: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "flex flex-1 flex-shrink-0 items-center rounded-[20px] bg-osmoverse-700 p-6",
+          "flex flex-1 flex-shrink-0 items-center rounded-2xl bg-osmoverse-700 p-6",
           className
         )}
       >
@@ -133,12 +129,13 @@ export const DepositAmountGroup: FunctionComponent<{
             )}
             <div
               className={classNames(
-                "flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800",
+                "flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-xl bg-osmoverse-800",
                 priceInputClass
               )}
             >
               <InputBox
-                className="border-0 bg-transparent text-h5 font-h5"
+                className="bg-transparent text-h5 font-h5"
+                style="no-border"
                 inputClassName="!leading-4"
                 type="number"
                 currentValue={currentValue}

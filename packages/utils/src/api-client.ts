@@ -37,6 +37,14 @@ interface ClientOptions extends RequestInit {
 
 const UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred.";
 
+function getErrorMessage({
+  message = UNEXPECTED_ERROR_MESSAGE,
+}: {
+  message?: string;
+} = {}) {
+  return `Fetch error. ${message}.`;
+}
+
 export async function apiClient<T>(
   endpoint: string,
   { data, headers: customHeaders, ...customConfig }: ClientOptions = {}
@@ -53,7 +61,19 @@ export async function apiClient<T>(
 
   return fetch(endpoint, config).then(async (response) => {
     try {
-      const data = await response.json();
+      let data: any;
+
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new ApiClientError({
+          message: `JSON parse error: ${e}`,
+          data: {
+            url: endpoint,
+          },
+          response,
+        });
+      }
 
       if (response.ok) {
         // Cosmos chains return a code if there's an error
@@ -67,7 +87,7 @@ export async function apiClient<T>(
 
         if ("status_code" in data && data.status_code >= 400) {
           throw new ApiClientError({
-            message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+            message: getErrorMessage({ message: data?.message }),
             data,
             response,
           });
@@ -76,7 +96,7 @@ export async function apiClient<T>(
         return data;
       } else {
         throw new ApiClientError({
-          message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+          message: getErrorMessage({ message: data?.message }),
           data,
           response,
         });
@@ -84,15 +104,24 @@ export async function apiClient<T>(
     } catch (e) {
       const error = e as Error | ApiClientError;
 
+      console.error("Fetch Error. Info:", {
+        endpoint,
+        config,
+        data,
+        status: response.status,
+      });
+
       if (e instanceof ApiClientError) {
         throw e;
       }
 
       throw new ApiClientError({
-        message:
-          error.message === "Unexpected token < in JSON at position 0"
-            ? UNEXPECTED_ERROR_MESSAGE
-            : error.message,
+        message: getErrorMessage({
+          message:
+            error.message === "Unexpected token < in JSON at position 0"
+              ? undefined
+              : error.message,
+        }),
         data: {},
         response,
       });

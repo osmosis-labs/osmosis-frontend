@@ -1,14 +1,14 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 
-import { Button } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
@@ -39,7 +39,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
   const account = accountStore.getWallet(chainId);
   const queries = queriesStore.get(chainId);
   const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+    BondStatus.Bonded
   );
 
   const activeValidators = queryValidators.validators;

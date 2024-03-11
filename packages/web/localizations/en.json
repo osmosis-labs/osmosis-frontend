@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
     "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
     "singleAsset": "Single asset",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}",
     "priceImpact": "Price Impact"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "This asset is not compatible with this wallet.",
-  "convertToStake": {
-    "adTitle": "We’ve detected a better earning strategy.",
-    "adSubtitle": "Some of your positions are earning less than you would earn by staking OSMO for a {apr}% APR. View and select positions to upgrade. ",
-    "title": "Convert to Staked OSMO",
-    "description": "Selected positions will be fully converted to OSMO. All OSMO will then be automatically staked to your existing validator set.",
-    "stakedOsmo": "Staked OSMO",
-    "APR": "APR",
-    "currentApr": "Current APR",
-    "pool": "POOL #{poolId}",
-    "position": "POSITION #{positionId}",
-    "convertAndStake": "Convert and Stake"
-  },
   "clPositions": {
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",
@@ -131,18 +118,6 @@
     "applyButton": "Apply",
     "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
     "allAppsHeader": "All Apps"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Supercharge your {pair}",
-    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
-    "primaryCta": "Upgrade to Supercharged",
-    "secondaryCta": "Learn in 30 seconds"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Earn more from your liquidity",
-    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
-    "primaryCta": "Upgrade to Supercharged",
-    "secondaryCta": "Learn in 30 seconds"
   },
   "createFirstPositionCta": {
     "title": "Create your first Supercharged position",
@@ -308,12 +283,10 @@
       "onrampMoneySubtitle": "Supports OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentive",
       "title": "Incentive types"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Pool",
       "title": "Pool types"
     },
     "searchTokens": "Search",
@@ -337,9 +310,6 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
-      "internal": "Internal incentives",
-      "external": "External incentives",
-      "superfluid": "Superfluid",
       "noIncentives": "No incentives"
     }
   },
@@ -379,7 +349,8 @@
     "chartUnavailable": "Chart unavailable",
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
-    "invalidAmounts": "Invalid amount(s)"
+    "invalidAmounts": "Invalid amount(s)",
+    "txTimedOutError": "Transaction timed out. Please retry."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -509,11 +480,11 @@
     "unbonding": "unbonding",
     "undelegating": "undelegating",
     "yourStats": "Your pool balance",
-    "onlyInRangePositions": "Only for positions in range"
+    "onlyInRangePositions": "Only for positions in range",
+    "custom": "Custom"
   },
   "pools": {
     "allPools": {
-      "search": "Search pools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",
@@ -580,8 +551,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
-    "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from pool #{poolId}"
+    "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
   "settings": {
@@ -678,20 +648,6 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
-    },
-    "introModal": {
-      "callout": "New feature",
-      "title": "Staking on Osmosis",
-      "description": {
-        "1": "Staking is one of the easiest ways to earn with your assets. Now you can stake your OSMO right on Osmosis.",
-        "2": "earn up to",
-        "3": "yearly in staking rewards!",
-        "4": "and put it to work",
-        "5": "Put your available {displayBalance} to work and",
-        "button": "Buy some OSMO"
-      },
-      "asterisk": "* Staking reward value subject to price and APR volatility.",
-      "button": "Start staking"
     }
   },
   "superfluidValidator": {
@@ -782,22 +738,6 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "upgrades": {
-    "title": "Upgrades available",
-    "detected": "We’ve detected upgrades for the assets or positions listed below.",
-    "positionUpgrade": "Position Upgrade",
-    "superchargedLiquidity": "Supercharged Liquidity",
-    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
-    "upgrade": "Upgrade",
-    "pool": "POOL",
-    "new": "NEW",
-    "current": "CURRENT",
-    "success": "Upgrade success!",
-    "clickHereToView": "Click here to view",
-    "foundHere": "Upgrades can be found here",
-    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
-  },
   "seo": {
     "404": {
       "title": "404 - Page not found",
@@ -864,9 +804,9 @@
     "osmosisUpdates": "Osmosis updates!",
     "seeWhatsNew": "See what's new"
   },
-  "unlistedAssetsEnabled": "Unlisted assets enabled",
-  "unlistedAssetsDisabled": "Unlisted assets disabled",
-  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Preview assets enabled",
+  "previewAssetsDisabled": "Preview assets disabled",
+  "previewAssetsEnabledForSession": "Preview assets enabled for this session. To disable open a new tab, or append `show_preview_assets=false`.",
   "earnPage": {
     "title": "Earn",
     "position": "Position",
@@ -909,7 +849,16 @@
       "all": "All",
       "single": "Single",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Total Value Invested",
+    "lookBelow": "Look below and find best strategies for you"
   },
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} deposits unstable",
+    "titleWithdraw": "{coinDenom} withdrawals unstable",
+    "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
+    "buttonContinue": "Continue Anyway",
+    "buttonCancel": "Cancel"
+  }
 }

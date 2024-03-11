@@ -1,6 +1,6 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { cosmosMsgOpts, TxStatus } from "@osmosis-labs/stores";
+import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
@@ -24,15 +24,12 @@ import {
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
-  BridgeTransferStatus,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
-  GetTransferStatusParams,
 } from "../types";
-import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
+import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
-const providerName = "Skip" as const;
 const logoUrl = "/bridges/skip.svg" as const;
 
 export class SkipBridgeProvider implements BridgeProvider {
@@ -137,10 +134,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           currency: "usd",
         });
 
-        if (!inputAssetPriceUSD) {
-          throw new Error(`Failed to get input ${fromAsset.denom} price`);
-        }
-
         const outputAssetPriceUSD = await getAssetPrice({
           asset: {
             coinDenom: toAsset.denom,
@@ -149,10 +142,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           },
           currency: "usd",
         });
-
-        if (!outputAssetPriceUSD) {
-          throw new Error(`Failed to get output ${toAsset.denom} price`);
-        }
 
         let transferFee: BridgeCoin = {
           amount: "0",
@@ -177,12 +166,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               },
               currency: "usd",
             });
-
-            if (!feeAssetPrice) {
-              throw new Error(
-                `Failed to get fee asset ${operation.axelar_transfer.asset} price`
-              );
-            }
 
             const feeAmount = new CoinPretty(
               {
@@ -245,13 +228,15 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const gasCost = await this.estimateGasCost(params, transactionRequest);
 
-        const gasAssetPriceUSD = await getAssetPrice({
-          asset: {
-            coinDenom: gasCost?.denom ?? "",
-            sourceDenom: gasCost?.sourceDenom ?? "",
-          },
-          currency: "usd",
-        });
+        const gasAssetPriceUSD = gasCost
+          ? await getAssetPrice({
+              asset: {
+                coinDenom: gasCost?.denom ?? "",
+                sourceDenom: gasCost?.sourceDenom ?? "",
+              },
+              currency: "usd",
+            })
+          : undefined;
 
         return {
           input: {
@@ -304,45 +289,6 @@ export class SkipBridgeProvider implements BridgeProvider {
       },
       ttl: 20 * 1000, // 20 seconds,
     });
-  }
-
-  async getTransferStatus({
-    sendTxHash,
-    fromChainId,
-  }: GetTransferStatusParams): Promise<BridgeTransferStatus | undefined> {
-    try {
-      const txStatus = await this.skipClient.transactionStatus({
-        chainID: fromChainId.toString(),
-        txHash: sendTxHash,
-      });
-
-      let status: TxStatus = "pending";
-      if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
-        status = "success";
-      }
-
-      if (txStatus.state === "STATE_COMPLETED_ERROR") {
-        status = "failed";
-      }
-
-      return {
-        id: sendTxHash,
-        status,
-      };
-    } catch (error: any) {
-      if ("message" in error) {
-        if (error.message.includes("not found")) {
-          await this.skipClient.trackTransaction({
-            chainID: fromChainId.toString(),
-            txHash: sendTxHash,
-          });
-
-          return undefined;
-        }
-      }
-
-      throw error;
-    }
   }
 
   async getTransactionData(

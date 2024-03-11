@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "가 페그를 유지합니다. 현재 단위조정인수:",
     "scalingFactorInformation": "이 인수를 설정하면 유동성으로 공급한 스테이킹 토큰의 가치 변동과 같은 예측가능한 가격 변동에 대해 곡선을 조정할 수 있습니다.",
     "singleAsset": "단일 자산",
-    "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
     "title": "유동성 추가",
     "titleInPool": "#{poolId}풀에 유동성을 추가합니다.",
     "priceImpact": "가격 영향"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
-  "convertToStake": {
-    "adTitle": "더 나은 수익 전략을 발견했습니다.",
-    "adSubtitle": "귀하의 포지션 중 일부는 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다.",
-    "title": "스테이킹된 OSMO로 전환",
-    "description": "선택한 직책은 OSMO로 완전히 전환됩니다. 그러면 모든 OSMO가 기존 검증자 세트에 자동으로 스테이킹됩니다.",
-    "stakedOsmo": "스테이킹된 OSMO",
-    "APR": "4월",
-    "currentApr": "현재 4월",
-    "pool": "유동성 풀 #{poolId}",
-    "position": "위치 # {positionId}",
-    "convertAndStake": "변환 및 스테이킹"
-  },
   "clPositions": {
     "inRange": "범위 내",
     "nearBounds": "가까운 경계",
@@ -100,7 +87,7 @@
     "pendingRewards": "보류 중인 보상",
     "superfluidValidator": "유효성 검사기",
     "superfluidUnstake": "스테이킹 해제 후 사용 가능",
-    "superfluidUnstaking": "언스테이킹, 사용 가능",
+    "superfluidUnstaking": "언스테이크, {fromNow}에 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "유동성 언스테이킹",
     "unbondingFromNow": "언본딩, 사용 가능",
@@ -108,7 +95,7 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동"
+    "goToPool": "풀 번호로 이동 #{poolId}"
   },
   "app": {
     "banner": {
@@ -131,18 +118,6 @@
     "applyButton": "신청",
     "storeDisclaimer": "특정 콘텐츠는 Osmosis Labs 또는 그 어떤 계열사와도 관련이 없는 제3자에 의해 준비되었으며 Osmosis Labs는 그러한 콘텐츠에 대한 책임을 지지 않습니다. Osmosis Labs는 콘텐츠의 오류 또는 지연에 대해 책임을 지지 않으며, 어떤 콘텐츠에 의존하여 취한 조치에 대해서도 책임을 지지 않습니다. 정보는 정보 제공 목적으로만 제공되며 투자 자문이 아닙니다. 이는 특정 디지털 자산을 사거나 팔거나 특정 투자 전략을 채택할 것을 권장하는 것이 아닙니다. Osmosis Labs는 제공된 정보의 정확성, 적합성 또는 유효성 또는 특정 자산에 대한 어떠한 표현도 하지 않습니다. 표시된 가격은 설명 목적으로만 사용되며, 실제 암호화폐 가격 및 관련 통계는 달라질 수 있습니다. 제시된 데이터는 Osmosis Labs 거래소 및 선택한 다른 암호화폐 거래소에서 거래된 자산을 반영할 수 있습니다.",
     "allAppsHeader": "모든 앱"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "당신의",
-    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 위치를 업그레이드하세요.",
-    "primaryCta": "슈퍼차저로 업그레이드",
-    "secondaryCta": "30초 안에 배우기"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "유동성에서 더 많은 수익을 올리세요",
-    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 유동성을 업그레이드하세요.",
-    "primaryCta": "슈퍼차저로 업그레이드",
-    "secondaryCta": "30초 안에 배우기"
   },
   "createFirstPositionCta": {
     "title": "첫 번째 슈퍼차지 포지션 생성",
@@ -308,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
     "incentive": {
-      "mobileTitle": "인센티브",
       "title": "인센티브 유형"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "풀",
       "title": "풀 유형"
     },
     "searchTokens": "검색",
@@ -337,9 +310,6 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
-      "internal": "내부 인센티브",
-      "external": "외부 인센티브",
-      "superfluid": "슈퍼플루이드",
       "noIncentives": "인센티브 없음"
     }
   },
@@ -379,7 +349,8 @@
     "chartUnavailable": "차트를 사용할 수 없음",
     "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
     "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
-    "invalidAmounts": "잘못된 금액"
+    "invalidAmounts": "잘못된 금액",
+    "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -509,11 +480,11 @@
     "unbonding": "예치 해제중",
     "undelegating": "위임 해제중",
     "yourStats": "내 잔액",
-    "onlyInRangePositions": "범위 내 위치에만 해당"
+    "onlyInRangePositions": "범위 내 위치에만 해당",
+    "custom": "관습"
   },
   "pools": {
     "allPools": {
-      "search": "풀 검색하기",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "수수료 (7D)",
@@ -580,8 +551,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",
-    "title": "유동성 해제하기",
-    "titleInPool": "{poolId}풀에서 유동성을 제거합니다."
+    "title": "유동성 해제하기"
   },
   "requestRejected": "요청이 거부됨",
   "settings": {
@@ -678,20 +648,6 @@
         "buttonKeep": "기존 밸리데이터 유지",
         "buttonSelect": "새 밸리데이터 선택"
       }
-    },
-    "introModal": {
-      "callout": "새로운 기능",
-      "title": "오스모시스에 스테이킹하기",
-      "description": {
-        "1": "스테이킹은 자산으로 돈을 벌 수 있는 가장 쉬운 방법 중 하나입니다. 이제 Osmosis에 바로 OSMO를 스테이킹할 수 있습니다.",
-        "2": "최대 적립",
-        "3": "매년 스테이킹 보상을 받으세요!",
-        "4": "그리고 그것을 작동시키세요",
-        "5": "사용 가능한 {displayBalance} 작동시키고",
-        "button": "OSMO를 구매하세요"
-      },
-      "asterisk": "* 스테이킹 보상 가치는 가격 및 APR 변동성에 따라 달라질 수 있습니다.",
-      "button": "스테이킹 시작"
     }
   },
   "superfluidValidator": {
@@ -775,29 +731,13 @@
     "step4Title": "지갑을 만들어 시작하세요",
     "step4Content": "첫 지갑을 설정하고 로그인하십시오! 자산을 보내거나 받거나 구매하십시오."
   },
-  "swapFailed": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
+  "swapFailed": "교환에 실패했습니다. 유동성이 충분하지 않을 수 있습니다. 허용되는 미끄러짐을 조정해 보십시오.",
   "transactionBroadcasting": "전송 진행중",
   "transactionFailed": "전송 실패",
   "transactionSuccessful": "전송 성공",
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
-  "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "upgrades": {
-    "title": "업그레이드 가능",
-    "detected": "아래 나열된 자산 또는 위치에 대한 업그레이드를 감지했습니다.",
-    "positionUpgrade": "직위 업그레이드",
-    "superchargedLiquidity": "강력한 유동성",
-    "newSuperchargedPool": "이 새로운 풀은 더 높은 수익 잠재력과 가장 높은 추정 APR을 제공합니다.",
-    "upgrade": "업그레이드",
-    "pool": "풀",
-    "new": "새로운",
-    "current": "현재의",
-    "success": "업그레이드 성공!",
-    "clickHereToView": "보려면 여기를 클릭하십시오",
-    "foundHere": "업그레이드는 여기에서 찾을 수 있습니다.",
-    "availableHereCaption": "사용 가능한 업그레이드는 여기에서 볼 수 있습니다. 언제든지 업그레이드하도록 선택할 수 있습니다."
-  },
   "seo": {
     "404": {
       "title": "404 페이지를 찾을 수 없습니다",
@@ -864,9 +804,9 @@
     "osmosisUpdates": "오스모시스 업데이트!",
     "seeWhatsNew": "새로운 소식 보기"
   },
-  "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
-  "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
-  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요.",
+  "previewAssetsEnabled": "자산 미리보기가 활성화되었습니다.",
+  "previewAssetsDisabled": "자산 미리보기가 비활성화되었습니다.",
+  "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
     "position": "위치",
@@ -909,7 +849,16 @@
       "all": "모두",
       "single": "하나의",
       "multi": "다중"
-    }
+    },
+    "totalValueInvested": "총 투자 가치",
+    "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} 예금이 불안정함",
+    "titleWithdraw": "{coinDenom} 출금이 불안정함",
+    "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
+    "buttonContinue": "계속 진행",
+    "buttonCancel": "취소"
+  }
 }

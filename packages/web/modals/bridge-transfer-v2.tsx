@@ -43,8 +43,8 @@ import {
 import {
   AxelarChainIds_SourceChainMap,
   SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar";
-import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
+} from "~/integrations/bridges/axelar/types";
+import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -324,6 +324,8 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
+const availableBridgeKeys: AvailableBridges[] = ["Skip", "Squid", "Axelar"];
+
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
   ModalBaseProps & {
@@ -472,6 +474,9 @@ export const TransferContent: FunctionComponent<
   useDebounce(
     () => {
       setDebouncedInputValue(inputAmountRaw);
+      // Every time the input amount changes, deactivate the controlled mode.
+      // Best quotes will be selected automatically.
+      setBridgeProviderControlledMode(false);
     },
     300,
     [inputAmountRaw]
@@ -547,162 +552,246 @@ export const TransferContent: FunctionComponent<
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
     useState<AvailableBridges | null>(null);
-  const bridgeQuote = api.bridgeTransfer.getQuotes.useQuery(
-    {
-      ...quoteParams,
-      fromAmount: inputAmount.truncate().toString(),
-    },
-    {
-      enabled:
-        inputAmount.gt(new Dec(0)) &&
-        counterpartyAddress !== "" &&
-        isCounterpartyAddressValid,
-      refetchInterval: 30 * 1000, // 30 seconds
-      retry(failureCount, error) {
-        if (failureCount > 3) return false;
-        /** Do not retry if there are no quotes */
-        if (error?.data?.errors?.[0]?.errorType === ErrorTypes.NoQuotesError) {
-          return false;
-        }
-        return true;
-      },
-      select: ({ quotes }) => {
-        const nextProviderId = selectedBridgeProvider ?? quotes[0].provider.id;
-        if (!selectedBridgeProvider) {
-          setSelectedBridgeProvider(nextProviderId);
-        }
+  const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
+    useState(false);
 
-        if (!quotes) throw new Error("No quotes found");
+  const quoteResults = api.useQueries((t) =>
+    availableBridgeKeys.map((bridge) =>
+      t.bridgeTransfer.getQuoteByBridge(
+        {
+          ...quoteParams,
+          bridge,
+          fromAmount: inputAmount.truncate().toString(),
+        },
+        {
+          enabled:
+            inputAmount.gt(new Dec(0)) &&
+            counterpartyAddress !== "" &&
+            isCounterpartyAddressValid,
+          staleTime: 5_000,
+          cacheTime: 5_000,
+          // Disable retries, as useQueries
+          // will block successful quotes from being returned
+          // if failed quotes are being returned
+          // until retry starts returning false.
+          // This causes slow UX even though there's a
+          // quote that the user can use.
+          retry: false,
 
-        let selectedQuote = quotes?.find(
-          (quote) => quote.provider.id === nextProviderId
-        );
+          refetchInterval: 30 * 1000, // 30 seconds
 
-        if (!selectedQuote) {
-          setSelectedBridgeProvider(quotes[0].provider.id);
-          selectedQuote = quotes[0];
-        }
+          select: ({ quote }) => {
+            const {
+              estimatedGasFee,
+              transferFee,
+              estimatedTime,
+              expectedOutput,
+              transactionRequest,
+              provider,
+              fromChain,
+              toChain,
+              input,
+            } = quote;
 
-        const {
-          estimatedGasFee,
-          transferFee,
-          estimatedTime,
-          expectedOutput,
-          transactionRequest,
-          provider,
-          fromChain,
-          toChain,
-          input,
-        } = selectedQuote;
+            const priceImpact = new RatePretty(
+              new Dec(expectedOutput.priceImpact)
+            );
+            const expectedOutputFiatDec = new Dec(
+              expectedOutput.fiatValue.amount
+            );
+            const inputFiatDec = new Dec(input.fiatValue.amount);
 
-        const priceImpact = new RatePretty(new Dec(expectedOutput.priceImpact));
-        const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
-        const inputFiatDec = new Dec(input.fiatValue.amount);
+            let transferSlippage: Dec;
+            if (expectedOutputFiatDec.gt(inputFiatDec)) {
+              // if expected output is greater than input, assume slippage is 0%
+              transferSlippage = new Dec(0);
+            } else if (expectedOutputFiatDec.lt(new Dec(0))) {
+              // if expected output is negative, assume slippage is 100%
+              transferSlippage = new Dec(1);
+            } else {
+              transferSlippage = new Dec(1).sub(
+                expectedOutputFiatDec.quo(inputFiatDec)
+              );
+            }
 
-        let transferSlippage: Dec;
-        if (expectedOutputFiatDec.gt(inputFiatDec)) {
-          // if expected output is greater than input, assume slippage is 0%
-          transferSlippage = new Dec(0);
-        } else if (expectedOutputFiatDec.lt(new Dec(0))) {
-          // if expected output is negative, assume slippage is 100%
-          transferSlippage = new Dec(1);
-        } else {
-          transferSlippage = new Dec(1).sub(
-            expectedOutputFiatDec.quo(inputFiatDec)
-          );
-        }
+            return {
+              gasCost: estimatedGasFee
+                ? new CoinPretty(
+                    {
+                      coinDecimals: estimatedGasFee.decimals,
+                      coinDenom: estimatedGasFee.denom,
+                      coinMinimalDenom: estimatedGasFee.sourceDenom,
+                    },
+                    new Dec(estimatedGasFee.amount)
+                  ).maxDecimals(8)
+                : undefined,
 
-        return {
-          gasCost: estimatedGasFee
-            ? new CoinPretty(
+              transferFee: new CoinPretty(
                 {
-                  coinDecimals: estimatedGasFee.decimals,
-                  coinDenom: estimatedGasFee.denom,
-                  coinMinimalDenom: estimatedGasFee.sourceDenom,
+                  coinDecimals: transferFee.decimals,
+                  coinDenom: transferFee.denom,
+                  coinMinimalDenom: transferFee.sourceDenom,
                 },
-                new Dec(estimatedGasFee.amount)
-              ).maxDecimals(8)
-            : undefined,
+                new Dec(transferFee.amount)
+              ).maxDecimals(8),
 
-          transferFee: new CoinPretty(
-            {
-              coinDecimals: transferFee.decimals,
-              coinDenom: transferFee.denom,
-              coinMinimalDenom: transferFee.sourceDenom,
+              expectedOutput: new CoinPretty(
+                {
+                  coinDecimals: expectedOutput.decimals,
+                  coinDenom: expectedOutput.denom,
+                  coinMinimalDenom: expectedOutput.sourceDenom,
+                },
+                new Dec(expectedOutput.amount)
+              ),
+
+              get expectedOutputFiat() {
+                if (!expectedOutput.fiatValue) return undefined;
+                const expectedOutputFiatValue = expectedOutput.fiatValue;
+                const fiat = priceStore.getFiatCurrency(
+                  expectedOutputFiatValue.currency
+                );
+                if (!fiat) return undefined;
+
+                return new PricePretty(
+                  fiat,
+                  new Dec(expectedOutputFiatValue.amount)
+                );
+              },
+
+              get transferFeeFiat() {
+                if (!transferFee.fiatValue) return undefined;
+
+                const transferFeeFiatValue = transferFee.fiatValue;
+                const fiat = priceStore.getFiatCurrency(
+                  transferFeeFiatValue?.currency ?? "usd"
+                );
+
+                if (!fiat) throw new Error("No fiat currency found");
+
+                return new PricePretty(
+                  fiat,
+                  new Dec(transferFeeFiatValue.amount)
+                );
+              },
+
+              get gasCostFiat() {
+                if (!estimatedGasFee?.fiatValue) return undefined;
+                const gasCostFiatValue = estimatedGasFee.fiatValue;
+                const fiat = priceStore.getFiatCurrency(
+                  gasCostFiatValue.currency
+                );
+                if (!fiat) return undefined;
+
+                return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
+              },
+
+              estimatedTime: dayjs.duration({
+                seconds: estimatedTime,
+              }),
+
+              responseTime: dayjs(),
+              quote,
+              transactionRequest,
+              priceImpact,
+              provider,
+              fromChain,
+              toChain,
+              isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
+              isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
+            };
+          },
+
+          // prevent batching so that fast routers can
+          // return requests faster than the slowest router
+          trpc: {
+            context: {
+              skipBatch: true,
             },
-            new Dec(transferFee.amount)
-          ).maxDecimals(8),
-
-          expectedOutput: new CoinPretty(
-            {
-              coinDecimals: expectedOutput.decimals,
-              coinDenom: expectedOutput.denom,
-              coinMinimalDenom: expectedOutput.sourceDenom,
-            },
-            new Dec(expectedOutput.amount)
-          ).maxDecimals(8),
-
-          get expectedOutputFiat() {
-            if (!expectedOutput.fiatValue) return undefined;
-            const expectedOutputFiatValue = expectedOutput.fiatValue;
-            const fiat = priceStore.getFiatCurrency(
-              expectedOutputFiatValue.currency
-            );
-            if (!fiat) return undefined;
-
-            return new PricePretty(
-              fiat,
-              new Dec(expectedOutputFiatValue.amount)
-            );
           },
-
-          get transferFeeFiat() {
-            if (!transferFee.fiatValue) return undefined;
-
-            const transferFeeFiatValue = transferFee.fiatValue;
-            const fiat = priceStore.getFiatCurrency(
-              transferFeeFiatValue?.currency ?? "usd"
-            );
-
-            if (!fiat) throw new Error("No fiat currency found");
-
-            return new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
-          },
-
-          get gasCostFiat() {
-            if (!estimatedGasFee?.fiatValue) return undefined;
-            const gasCostFiatValue = estimatedGasFee.fiatValue;
-            const fiat = priceStore.getFiatCurrency(gasCostFiatValue.currency);
-            if (!fiat) return undefined;
-
-            return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
-          },
-
-          estimatedTime: dayjs.duration({
-            seconds: estimatedTime,
-          }),
-
-          allBridgeProviders: quotes.map((quote) => quote.provider),
-
-          transactionRequest,
-          priceImpact,
-          provider,
-          fromChain,
-          toChain,
-          selectedQuote: selectedQuote,
-          isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
-          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
-        };
-      },
-    }
+        }
+      )
+    )
   );
+
+  // reduce the results' data to that with the highest out amount
+  const selectedQuote = useMemo(() => {
+    return quoteResults?.find(
+      ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
+    )?.data;
+  }, [quoteResults, selectedBridgeProvider]);
+
+  const numSucceeded = quoteResults.filter(({ isSuccess }) => isSuccess).length;
+  const isOneSuccessful = Boolean(numSucceeded);
+  const amountOfErrors = quoteResults.filter(({ isError }) => isError).length;
+  const isOneErrored = Boolean(amountOfErrors);
+
+  // if none have returned a resulting quote, find some error
+  const someError = useMemo(
+    () =>
+      !isOneSuccessful &&
+      isOneErrored &&
+      quoteResults.every(({ isLoading }) => !isLoading)
+        ? quoteResults.find((quoteResult) => Boolean(quoteResult.error))?.error
+        : undefined,
+    [isOneSuccessful, isOneErrored, quoteResults]
+  );
+
+  useEffect(() => {
+    const quoteResults_ = [...quoteResults];
+
+    const bestQuote = quoteResults_
+      // only those that have fetched
+      .filter((quoteResult) => Boolean(quoteResult.isFetched))
+      // Sort by response time. The fastest and highest quality quote will be first.
+      .sort((a, b) => {
+        if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+          return 1;
+        }
+        if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+          return -1;
+        }
+        return 0;
+      })
+      // only those that have returned a result without error
+      .map(({ data }) => data)
+      // only the best quote data
+      .reduce((bestAcc, cur) => {
+        if (!bestAcc) return cur;
+        if (
+          !!cur &&
+          bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+        ) {
+          return cur;
+        }
+        return bestAcc;
+      }, undefined);
+
+    // If the selected bridge provider is not found in the results, select the best quote provider
+    const isBridgeProviderNotFound = !quoteResults_.some(
+      ({ data }) => data?.provider.id === selectedBridgeProvider
+    );
+
+    if (
+      !!bestQuote &&
+      ((bestQuote?.provider.id !== selectedBridgeProvider &&
+        !isBridgeProviderControlledMode) ||
+        isBridgeProviderNotFound)
+    ) {
+      setSelectedBridgeProvider(bestQuote.provider.id);
+    }
+  }, [
+    selectedQuote,
+    quoteResults,
+    selectedBridgeProvider,
+    isBridgeProviderControlledMode,
+  ]);
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
-    bridgeQuote.data?.transferFee !== undefined &&
+    selectedQuote?.transferFee !== undefined &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
-      .lt(bridgeQuote.data?.transferFee.toDec());
+      .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -723,9 +812,9 @@ export const TransferContent: FunctionComponent<
          * If there is no transaction request data, fetch it.
          */
         enabled:
-          bridgeQuote.isSuccess &&
+          Boolean(selectedQuote) &&
           Boolean(selectedBridgeProvider) &&
-          !bridgeQuote.data?.transactionRequest &&
+          !selectedQuote?.transactionRequest &&
           inputAmount.gt(new Dec(0)) &&
           !isInsufficientBal &&
           !isInsufficientFee,
@@ -735,6 +824,7 @@ export const TransferContent: FunctionComponent<
 
   useUnmount(() => {
     setSelectedBridgeProvider(null);
+    setBridgeProviderControlledMode(false);
   });
 
   const [transferInitiated, setTransferInitiated] = useState(false);
@@ -742,7 +832,7 @@ export const TransferContent: FunctionComponent<
     (providerId: AvailableBridges, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
-          `${providerId.toLowerCase()}${JSON.stringify(params)}`,
+          `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
           osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
@@ -778,7 +868,7 @@ export const TransferContent: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
+    quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!ethWalletClient) throw new Error("No ETH wallet client found");
 
@@ -828,7 +918,9 @@ export const TransferContent: FunctionComponent<
           ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
         });
 
-        bridgeQuote.refetch();
+        for (const quoteResult of quoteResults) {
+          await quoteResult.refetch();
+        }
 
         return;
       }
@@ -909,7 +1001,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
+    quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -982,11 +1074,11 @@ export const TransferContent: FunctionComponent<
 
   const onTransfer = async () => {
     const transactionRequest =
-      bridgeQuote.data?.transactionRequest ??
+      selectedQuote?.transactionRequest ??
       bridgeTransaction.data?.transactionRequest;
-    const selectedQuote = bridgeQuote.data?.selectedQuote;
+    const quote = selectedQuote?.quote;
 
-    if (!transactionRequest || !selectedQuote) return;
+    if (!transactionRequest || !quote) return;
 
     logEvent([
       isWithdraw
@@ -1001,10 +1093,10 @@ export const TransferContent: FunctionComponent<
 
     try {
       if (transactionRequest.type === "evm") {
-        await handleEvmTx({ ...selectedQuote, transactionRequest });
+        await handleEvmTx({ ...quote, transactionRequest });
       } else if (transactionRequest.type === "cosmos") {
         await handleCosmosTx({
-          ...selectedQuote,
+          ...quote,
           transactionRequest,
         });
       }
@@ -1031,10 +1123,10 @@ export const TransferContent: FunctionComponent<
     } catch (e) {}
   };
 
-  const errors = bridgeQuote.error?.data?.errors ?? [];
+  const errors = someError?.data?.errors ?? [];
   const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
-  const warnUserOfSlippage = bridgeQuote.data?.isSlippageTooHigh;
-  const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
+  const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
+  const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
   if (!counterpartyAddress) {
@@ -1051,7 +1143,7 @@ export const TransferContent: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
     });
-  } else if (bridgeQuote.error) {
+  } else if (Boolean(someError)) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
@@ -1063,7 +1155,9 @@ export const TransferContent: FunctionComponent<
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
-    bridgeQuote.isLoading && bridgeQuote.fetchStatus !== "idle";
+    (!isOneSuccessful ||
+      quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
+    quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
   const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
@@ -1087,9 +1181,8 @@ export const TransferContent: FunctionComponent<
   } else if (isSendTxPending) {
     buttonText = t("assets.transfer.sending");
   } else if (
-    bridgeQuote.data?.selectedQuote?.transactionRequest?.type === "evm" &&
-    bridgeQuote.data?.selectedQuote?.transactionRequest
-      .approvalTransactionRequest &&
+    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
+    selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
@@ -1110,7 +1203,7 @@ export const TransferContent: FunctionComponent<
     });
   }
 
-  if (bridgeQuote.data && !bridgeQuote.data.expectedOutput) {
+  if (selectedQuote && !selectedQuote.expectedOutput) {
     throw new Error("Expected output is not defined.");
   }
 
@@ -1182,60 +1275,50 @@ export const TransferContent: FunctionComponent<
               }
             : undefined
         }
-        transferFee={
-          !bridgeQuote.error ? bridgeQuote.data?.transferFee ?? "-" : "-"
-        }
+        transferFee={!someError ? selectedQuote?.transferFee ?? "-" : "-"}
         transferFeeFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.transferFeeFiat : undefined
+          !someError ? selectedQuote?.transferFeeFiat : undefined
         }
         gasCost={
-          !bridgeQuote.error && bridgeQuote.data
-            ? bridgeQuote.data.gasCost
-            : undefined
+          !someError && selectedQuote ? selectedQuote.gasCost : undefined
         }
-        gasCostFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
-        }
+        gasCostFiat={!someError ? selectedQuote?.gasCostFiat : undefined}
         classes={{
           expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
           priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
         }}
         expectedOutput={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.expectedOutput ?? "-"
-            : undefined
+          !someError ? selectedQuote?.expectedOutput ?? "-" : undefined
         }
         expectedOutputFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.expectedOutputFiat : undefined
+          !someError ? selectedQuote?.expectedOutputFiat : undefined
         }
         priceImpact={
-          !bridgeQuote.error &&
+          !someError &&
           inputAmountRaw !== "" &&
-          bridgeQuote.data?.priceImpact.toDec().gt(new Dec(0))
-            ? bridgeQuote.data?.priceImpact
+          selectedQuote?.priceImpact.toDec().gt(new Dec(0))
+            ? selectedQuote?.priceImpact
             : undefined
         }
         waitTime={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.estimatedTime?.humanize() ?? "-"
-            : "-"
+          !someError ? selectedQuote?.estimatedTime?.humanize() ?? "-" : "-"
         }
-        disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={bridgeQuote.data?.allBridgeProviders?.map(
-          ({ id, logoUrl }) => ({
+        bridgeProviders={quoteResults
+          .map(({ data }) => data?.provider)
+          ?.filter((r): r is NonNullable<typeof r> => !!r)
+          .map(({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
             name: id,
-          })
-        )}
+          }))}
         selectedBridgeProvidersId={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.selectedQuote?.provider.id
-            : undefined
+          !someError ? selectedQuote?.provider.id : undefined
         }
         onSelectBridgeProvider={({ id }) => {
+          setBridgeProviderControlledMode(true);
           setSelectedBridgeProvider(id);
         }}
+        disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         isLoadingDetails={isLoadingBridgeQuote}
         addWithdrawAddrConfig={addWithdrawAddrConfig}
       />
@@ -1258,9 +1341,9 @@ export const TransferContent: FunctionComponent<
               isLoadingBridgeQuote ||
               isLoadingBridgeTransaction ||
               isApprovingToken ||
-              Boolean(bridgeQuote.error) ||
+              Boolean(someError) ||
               Boolean(bridgeTransaction.error) ||
-              !bridgeQuote.data?.selectedQuote ||
+              !selectedQuote?.quote ||
               isDisabledProp ||
               !counterpartyAddress
             }

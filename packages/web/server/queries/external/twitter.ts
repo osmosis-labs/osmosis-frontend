@@ -88,8 +88,8 @@ export class Twitter {
   constructor(cacheExpireTime: number = DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
     this.kvStore = createClient({
-      url: process.env.TWITTER_KV_STORE_REST_API_URL!,
-      token: process.env.TWITTER_KV_STORE_REST_API_TOKEN!,
+      url: process.env.KV_STORE_REST_API_URL!,
+      token: process.env.KV_STORE_REST_API_TOKEN!,
     });
     this.cache = kvStoreAdapter(this.kvStore);
   }

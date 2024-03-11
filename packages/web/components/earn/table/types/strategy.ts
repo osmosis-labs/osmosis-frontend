@@ -18,7 +18,11 @@ export interface Strategy {
   strategyName: string;
   tvl: {
     value: number;
-    fluctuation: number;
+    fluctuation?: number;
+    depositCap?: {
+      total: number;
+      actual: number;
+    };
   };
   apy: number;
   daily: number;

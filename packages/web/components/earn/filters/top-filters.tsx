@@ -4,7 +4,6 @@ import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -18,6 +17,7 @@ import {
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 
 const strategiesFilters = [
@@ -152,8 +152,8 @@ export const TopFilters = () => {
             {t("earnPage.lockingDuration")}
           </span>
           <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
+            checked={noLockingDuration}
+            onCheckedChange={(value) => setFilter("noLockingDuration", value)}
           />
         </div>
       </div>
@@ -242,8 +242,8 @@ export const TopFilters = () => {
             {t("earnPage.lockingDuration")}
           </span>
           <Switch
-            isOn={noLockingDuration}
-            onToggle={(value) => setFilter("noLockingDuration", value)}
+            checked={noLockingDuration}
+            onCheckedChange={(value) => setFilter("noLockingDuration", value)}
           />
         </div>
       </div>

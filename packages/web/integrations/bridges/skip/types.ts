@@ -1,3 +1,5 @@
+export const providerName = "Skip" as const;
+
 export type SkipAsset = {
   denom: string;
   chain_id: string;

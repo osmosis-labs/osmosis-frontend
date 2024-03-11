@@ -1,11 +1,12 @@
-import { AssetList } from "@osmosis-labs/types";
+import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -15,7 +16,7 @@ export type Asset = {
   coinMinimalDenom: string;
   coinDecimals: number;
   coinGeckoId: string | undefined;
-  coinImageUrl: string;
+  coinImageUrl?: string;
   isVerified: boolean;
   isUnstable: boolean;
 };
@@ -23,19 +24,22 @@ export type Asset = {
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
-  includeUnlisted: z.boolean().default(false).optional(),
+  includePreview: z.boolean().default(false).optional(),
 });
 /** Params for filtering assets. */
-export type AssetFilter = z.infer<typeof AssetFilterSchema>;
+export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys = ["symbol", "base", "name", "display"];
+const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
+  "symbol",
+  "coinMinimalDenom",
+  "name",
+];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
-  ...params
 }: {
   assetList?: AssetList[];
   anyDenom: string;
@@ -43,8 +47,7 @@ export async function getAsset({
   const assets = await getAssets({
     assetList,
     findMinDenomOrSymbol: anyDenom,
-    includeUnlisted: true,
-    ...params,
+    includePreview: true,
   });
   const asset = assets[0];
   if (!asset) throw new Error(anyDenom + " not found in asset list");
@@ -74,16 +77,43 @@ export async function getAssets({
     return cachified({
       cache: minimalAssetsCache,
       key: JSON.stringify(params),
-      getFreshValue: () => simplifyAssetListForDisplay(assetList, params),
+      getFreshValue: () => filterAssetList(assetList, params),
     });
   }
 
   // otherwise process the given novel asset list
-  return simplifyAssetListForDisplay(assetList, params);
+  return filterAssetList(assetList, params);
 }
 
-/** Transform given asset list into an array of minimal asset types for user in frontend. */
-function simplifyAssetListForDisplay(
+/**
+ * This function coins to a CoinPretty if listed in asset list. This is useful for
+ * converting raw assets returned from chain into coins listed in asset list.
+ *
+ * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
+ *
+ * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
+ */
+export async function mapRawCoinToPretty(
+  rawAssets: {
+    amount: string | number | Int | Dec | { toDec(): Dec };
+    denom: string;
+  }[]
+): Promise<CoinPretty[]> {
+  if (!rawAssets) return [];
+  const result = await Promise.all(
+    rawAssets.map(async ({ amount, denom }) => {
+      const asset = await getAsset({
+        anyDenom: denom,
+      });
+
+      return new CoinPretty(asset, amount);
+    })
+  );
+  return result.filter((p): p is NonNullable<typeof p> => !!p);
+}
+
+/** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
+function filterAssetList(
   assetList: AssetList[],
   params: {
     findMinDenomOrSymbol?: string;
@@ -94,33 +124,29 @@ function simplifyAssetListForDisplay(
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter((asset) =>
-      params.includeUnlisted
-        ? true // Do not filter the unlisted assets
-        : !asset.keywords?.includes("osmosis-unlisted")
-    );
+    .filter((asset) => params.includePreview || !asset.preview);
 
   let assetListAssets = listedAssets.filter((asset) => {
     if (params.findMinDenomOrSymbol) {
       return (
         params.findMinDenomOrSymbol.toUpperCase() ===
-          asset.base.toUpperCase() ||
+          asset.coinMinimalDenom.toUpperCase() ||
         params.findMinDenomOrSymbol.toUpperCase() === asset.symbol.toUpperCase()
       );
     }
 
     // Ensure denoms are unique on Osmosis chain
     // In the case the asset list has the same asset twice
-    if (coinMinimalDenomSet.has(asset.base)) {
+    if (coinMinimalDenomSet.has(asset.coinMinimalDenom)) {
       return false;
     } else {
-      coinMinimalDenomSet.add(asset.base);
+      coinMinimalDenomSet.add(asset.coinMinimalDenom);
       return true;
     }
   });
 
   // Search raw asset list before reducing type to minimal Asset type
-  if (params.search) {
+  if (params.search && !params.findMinDenomOrSymbol) {
     assetListAssets = search(
       assetListAssets,
       searchableAssetListAssetKeys,
@@ -130,16 +156,13 @@ function simplifyAssetListForDisplay(
 
   // Filter by only verified
   if (params.onlyVerified) {
-    assetListAssets = assetListAssets.filter((asset) =>
-      Boolean(asset.keywords?.includes("osmosis-main"))
-    );
+    assetListAssets = assetListAssets.filter((asset) => asset.verified);
   }
 
   // Transform into a more compact object
   return assetListAssets.map(makeMinimalAsset);
 }
 
-export * from "./info";
 export * from "./market";
 export * from "./price";
 export * from "./user";

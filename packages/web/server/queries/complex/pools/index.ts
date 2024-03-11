@@ -1,16 +1,18 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { IS_TESTNET } from "~/config/env";
 import { search, SearchSchema } from "~/utils/search";
 
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromSidecar } from "./providers/sidecar";
+import { getPoolsFromIndexer } from "./providers/indexer";
 
 const allPooltypes = [
   "concentrated",
   "weighted",
   "stable",
   "cosmwasm-transmuter",
+  "cosmwasm-astroport-pcl",
   "cosmwasm",
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
@@ -26,9 +28,10 @@ export type Pool = {
 
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
-export type PoolProvider = () => Promise<Pool[]>;
+export type PoolProvider = (params: { poolIds?: string[] }) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
+  poolIds: z.array(z.string()).optional(),
   /** Search pool ID, or denoms. */
   search: SearchSchema.optional(),
   /** Filter pool by minimum required USD liquidity. */
@@ -44,30 +47,36 @@ const searchablePoolKeys = ["id", "coinDenoms"];
 
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
-export async function getPool(poolId: string): Promise<Pool> {
-  const pools = await getPools();
+export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
+  const pools = await getPools({ poolIds: [poolId] });
   const pool = pools.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
   return pool;
 }
 
-/** Fetches cached pools from node and returns them as a more useful and simplified TS type.
+/** Fetches pools and returns them as a more useful and simplified TS type.
  *  Pools are filtered by isValidPool, which checks if the pool has at least 2 valid and listed assets.
  *  Preforms no default sorting.
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
   params?: PoolFilter,
-  poolProvider: PoolProvider = getPoolsFromSidecar
+  poolProvider: PoolProvider = getPoolsFromIndexer
 ): Promise<Pool[]> {
-  let pools = await poolProvider();
+  let pools = await poolProvider({ poolIds: params?.poolIds });
 
-  if (params?.types || params?.minLiquidityUsd) {
-    pools = pools.filter(
-      ({ type, totalFiatValueLocked }) =>
-        (params?.types ? params.types.includes(type) : true) &&
-        (params?.minLiquidityUsd
-          ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-          : true)
+  if (params?.types) {
+    pools = pools.filter(({ type }) =>
+      params?.types ? params.types.includes(type) : true
+    );
+  }
+
+  // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // information.
+  if (params?.minLiquidityUsd && !IS_TESTNET) {
+    pools = pools.filter(({ totalFiatValueLocked }) =>
+      params?.minLiquidityUsd
+        ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+        : true
     );
   }
 

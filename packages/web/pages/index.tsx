@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 
 import { AdBanner } from "~/components/ad-banner";
@@ -87,6 +88,14 @@ const SwapAdsBanner = () => {
       }),
     staleTime: 1000 * 60 * 30, // 30 minutes
     cacheTime: 1000 * 60 * 30, // 30 minutes
+    select: (data) => ({
+      ...data,
+      banners: data.banners.filter((banner) =>
+        banner.startDate || banner.endDate
+          ? dayjs().isBetween(banner.startDate, banner.endDate)
+          : true
+      ),
+    }),
   });
 
   if (!data?.banners || isLoading) return null;

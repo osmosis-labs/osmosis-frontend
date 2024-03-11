@@ -1,16 +1,18 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
+import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  positionId: string
+  position: UserPosition
 ): {
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
@@ -26,11 +28,22 @@ export function useRemoveConcentratedLiquidityConfig(
       new ObservableRemoveConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
-        queriesStore,
         poolId,
-        positionId
+        {
+          baseAsset: position.currentCoins[0],
+          quoteAsset: position.currentCoins[1],
+          liquidity: position.liquidity,
+        }
       )
   );
+
+  useEffect(() => {
+    config.setPosition({
+      baseAsset: position.currentCoins[0],
+      quoteAsset: position.currentCoins[1],
+      liquidity: position.liquidity,
+    });
+  }, [config, position]);
 
   const removeLiquidity = useCallback(
     () =>
@@ -49,13 +62,13 @@ export function useRemoveConcentratedLiquidityConfig(
             {
               liquidityUSD: Number(liquidity.toString()),
               poolId,
-              positionId,
+              positionId: position.id,
             },
           ]);
 
           account.osmosis
             .sendWithdrawConcentratedLiquidityPositionMsg(
-              positionId,
+              position.id,
               liquidity,
               undefined,
               (tx) => {
@@ -76,7 +89,7 @@ export function useRemoveConcentratedLiquidityConfig(
                     {
                       liquidityUSD: Number(liquidity.toString()),
                       poolId,
-                      positionId,
+                      positionId: position.id,
                       percentage: config.percentage.toString(),
                     },
                   ]);
@@ -91,13 +104,14 @@ export function useRemoveConcentratedLiquidityConfig(
         }
       }),
     [
-      osmosisQueries,
-      poolId,
-      account,
-      positionId,
       config.effectiveLiquidity,
       config.percentage,
+      account,
       logEvent,
+      poolId,
+      position.id,
+      osmosisQueries.queryLiquiditiesPerTickRange,
+      osmosisQueries.queryPools,
     ]
   );
 

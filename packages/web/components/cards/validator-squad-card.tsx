@@ -1,13 +1,14 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -33,7 +34,7 @@ export const ValidatorSquadCard: React.FC<{
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
+      BondStatus.Bonded
     );
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
@@ -136,18 +137,14 @@ export const ValidatorSquadCard: React.FC<{
             {t("stake.validatorHeader")}
           </span>
         </div>
-        <OsmoverseCard containerClasses="!rounded-[28px]">
+        <OsmoverseCard containerClasses="!rounded-3xl">
           <div className="flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
               <Button
+                variant="outline"
                 disabled={hasInsufficientBalance}
-                mode="bullish-special"
-                size="normal"
-                className="rounded-[19px]"
-                onClick={() => {
-                  setShowValidatorModal(true);
-                }}
+                onClick={() => setShowValidatorModal(true)}
               >
                 {t("stake.viewOrEdit")}
               </Button>

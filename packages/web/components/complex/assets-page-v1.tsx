@@ -10,11 +10,11 @@ import {
   useState,
 } from "react";
 
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import { Metric } from "~/components/types";
+import { ShowMoreButton } from "~/components/ui/button";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -46,7 +46,12 @@ const DenomQueryParamKey = "denom";
 export const AssetsPageV1: FunctionComponent = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
-  const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
+  const {
+    nativeBalances,
+    ibcBalances,
+    unverifiedIbcBalances,
+    unverifiedNativeBalances,
+  } = assetsStore;
   const { t } = useTranslation();
   const flags = useFeatureFlags();
 
@@ -77,7 +82,6 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         tokens: ibcBalances.map(({ balance }) => balance),
         externalDepositUrl: ibcBalance.depositUrlOverride,
         externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
-        isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
           transferConfig?.transferAsset(
@@ -246,9 +250,9 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         />
       )}
       <AssetsOverview />
-
       <AssetsTableV1
         nativeBalances={nativeBalances}
+        unverifiedNativeBalances={unverifiedNativeBalances}
         ibcBalances={ibcBalances}
         unverifiedIbcBalances={unverifiedIbcBalances}
         onDeposit={onTableDeposit}
@@ -335,7 +339,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   };
 
   return (
-    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-[32px] bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}
@@ -495,11 +499,13 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             {
               label: t("assets.poolCards.liquidity"),
               value: (
-                <DesktopOnlyPrivateText
-                  text={sharePoolDetail.userAvailableValue
-                    .maxDecimals(2)
-                    .toString()}
-                />
+                <h6>
+                  <DesktopOnlyPrivateText
+                    text={sharePoolDetail.userAvailableValue
+                      .maxDecimals(2)
+                      .toString()}
+                  />
+                </h6>
               ),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)

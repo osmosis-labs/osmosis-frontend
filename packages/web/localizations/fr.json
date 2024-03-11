@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
     "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
     "singleAsset": "Actif unique",
-    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
     "title": "Ajouter de la liquidité",
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "priceImpact": "Incidence sur les prix"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
-  "convertToStake": {
-    "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
-    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
-    "title": "Convertir en OSMO jalonné",
-    "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
-    "stakedOsmo": "OSMO jalonné",
-    "APR": "AVR",
-    "currentApr": "TAEG actuel",
-    "pool": "PISCINE #{poolId}",
-    "position": "POSITION # {positionId}",
-    "convertAndStake": "Convertir et miser"
-  },
   "clPositions": {
     "inRange": "DANS LA GAMME",
     "nearBounds": "PRÈS DES LIMITES",
@@ -100,7 +87,7 @@
     "pendingRewards": "Récompenses en attente",
     "superfluidValidator": "Validateur",
     "superfluidUnstake": "Une fois désemballé, disponible après",
-    "superfluidUnstaking": "Dégagement, disponible en",
+    "superfluidUnstaking": "Dégagement, disponible en {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
     "unbondingFromNow": "Décollage, disponible en",
@@ -108,7 +95,7 @@
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #"
+    "goToPool": "Aller à la piscine #{poolId}"
   },
   "app": {
     "banner": {
@@ -131,18 +118,6 @@
     "applyButton": "Appliquer",
     "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
     "allAppsHeader": "Toutes les applications"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Boostez votre",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Apprenez comment cela fonctionne en 30 secondes, ou améliorez votre position en quelques clics.",
-    "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Gagnez plus de vos liquidités",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes ou améliorez vos liquidités en quelques clics.",
-    "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
   },
   "createFirstPositionCta": {
     "title": "Créez votre première position suralimentée",
@@ -308,12 +283,10 @@
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incitation",
       "title": "Types d'incitations"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Piscine",
       "title": "Types de piscines"
     },
     "searchTokens": "Chercher",
@@ -337,9 +310,6 @@
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
       "transmuter": "Transmutateur",
-      "internal": "Incitations internes",
-      "external": "Incitations externes",
-      "superfluid": "Superfluid",
       "noIncentives": "Pas d'incitations"
     }
   },
@@ -379,7 +349,8 @@
     "chartUnavailable": "Graphique indisponible",
     "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
     "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
-    "invalidAmounts": "Montant(s) invalide(s)"
+    "invalidAmounts": "Montant(s) invalide(s)",
+    "txTimedOutError": "La transaction a expiré. Veuillez réessayer."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -509,11 +480,11 @@
     "unbonding": "Déblocage",
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
-    "onlyInRangePositions": "Uniquement pour les positions dans la plage"
+    "onlyInRangePositions": "Uniquement pour les positions dans la plage",
+    "custom": "Coutume"
   },
   "pools": {
     "allPools": {
-      "search": "Rechercher dans les bassins",
       "sort": {
         "APRIncentivized": "TAP",
         "fees": "Frais (7J)",
@@ -580,8 +551,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
-    "title": "Retirer de la liquidité",
-    "titleInPool": "Retirer des liquidités du pool {poolId}"
+    "title": "Retirer de la liquidité"
   },
   "requestRejected": "Demande rejetée",
   "settings": {
@@ -678,20 +648,6 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    },
-    "introModal": {
-      "callout": "Nouvelle fonctionnalité",
-      "title": "Miser sur l’osmose",
-      "description": {
-        "1": "Le jalonnement est l’un des moyens les plus simples de gagner de l’argent avec vos actifs. Vous pouvez désormais miser votre OSMO directement sur Osmosis.",
-        "2": "gagner jusqu'à",
-        "3": "chaque année en récompenses de mise !",
-        "4": "et mettez-le au travail",
-        "5": "Mettez votre {displayBalance} à profit et",
-        "button": "Achetez de l'OSMO"
-      },
-      "asterisk": "* Valeur de récompense de mise sous réserve de la volatilité des prix et du TAEG.",
-      "button": "Commencer à jalonner"
     }
   },
   "superfluidValidator": {
@@ -775,29 +731,13 @@
     "step4Title": "Créez un portefeuille pour commencer",
     "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs."
   },
-  "swapFailed": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
+  "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
   "transactionFailed": "Échec de la transaction",
   "transactionSuccessful": "Succès de la transaction",
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "upgrades": {
-    "title": "Mises à niveau disponibles",
-    "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
-    "positionUpgrade": "Mise à niveau de poste",
-    "superchargedLiquidity": "Liquidité suralimentée",
-    "newSuperchargedPool": "Ce nouveau pool offre un potentiel de gain plus élevé et un TAP estimé le plus élevé.",
-    "upgrade": "Améliorer",
-    "pool": "PISCINE",
-    "new": "NOUVEAU",
-    "current": "ACTUEL",
-    "success": "Mise à niveau réussie !",
-    "clickHereToView": "Cliquez ici pour afficher",
-    "foundHere": "Les mises à jour peuvent être trouvées ici",
-    "availableHereCaption": "Les mises à jour disponibles peuvent être consultées ici. Vous pouvez choisir de mettre à niveau à tout moment."
-  },
   "seo": {
     "404": {
       "title": "404 Page non trouvée",
@@ -864,9 +804,9 @@
     "osmosisUpdates": "Mises à jour sur l'osmose !",
     "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
-  "unlistedAssetsEnabled": "Actifs non répertoriés activés",
-  "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "previewAssetsEnabled": "Aperçu des éléments activé",
+  "previewAssetsDisabled": "Aperçu des éléments désactivé",
+  "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
     "position": "Position",
@@ -909,7 +849,16 @@
       "all": "Tous",
       "single": "Célibataire",
       "multi": "Multi"
-    }
+    },
+    "totalValueInvested": "Valeur totale investie",
+    "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
   },
-  "disclaimer": "Clause de non-responsabilité"
+  "disclaimer": "Clause de non-responsabilité",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} dépôts instables",
+    "titleWithdraw": "{coinDenom} retraits instables",
+    "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
+    "buttonContinue": "Continuer quand même",
+    "buttonCancel": "Annuler"
+  }
 }

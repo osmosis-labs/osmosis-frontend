@@ -92,13 +92,6 @@ export type Validators = {
   // pagination: {}
 };
 
-export enum BondStatus {
-  Unbonded = "Unbonded",
-  Unbonding = "Unbonding",
-  Bonded = "Bonded",
-  Unspecified = "Unspecified",
-}
-
 export type StakingParams = {
   params: {
     unbonding_time: string;

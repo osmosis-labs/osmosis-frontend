@@ -29,7 +29,7 @@ import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 
 const dataAttributeName = "data-token-id";
 

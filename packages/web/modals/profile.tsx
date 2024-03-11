@@ -34,7 +34,7 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "~/components/drawers";
-import Spinner from "~/components/spinner";
+import Spinner from "~/components/loaders/spinner";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
@@ -91,7 +91,7 @@ export const ProfileModal: FunctionComponent<
 
   const address = wallet?.address ?? "";
 
-  const { data: userOsmoAsset } = api.edge.assets.getAsset.useQuery(
+  const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: "OSMO",
       userOsmoAddress: wallet?.address ?? "",
@@ -203,7 +203,7 @@ export const ProfileModal: FunctionComponent<
             </p>
           </div>
 
-          <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
+          <div className="mt-7 flex w-full justify-between rounded-2xl border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
             <div className="flex flex-col gap-[30px]">
               <div className="flex items-center gap-1.5">
                 <Image
@@ -264,7 +264,7 @@ export const ProfileModal: FunctionComponent<
             </div>
           </div>
 
-          <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
+          <div className="mt-5 flex w-full flex-col gap-[30px] rounded-2xl border border-osmoverse-700 bg-osmoverse-800 p-5">
             <div className="flex items-center gap-1.5">
               <Icon
                 id="wallet"
@@ -470,7 +470,7 @@ const BaseAvatar = forwardRef<
       {...props}
       ref={ref}
       className={classNames(
-        "h-[140px] w-[140px] overflow-hidden rounded-[40px]",
+        "h-[140px] w-[140px] overflow-hidden rounded-3xl",
         {
           "group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200":
             isSelectable,

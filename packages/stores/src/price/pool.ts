@@ -39,9 +39,9 @@ export class PoolFallbackPriceStore
     const resultByCoingeckoId: Map<string, Asset> = new Map();
 
     for (const asset of assets) {
-      result.set(asset.base, asset);
-      if (asset.coingecko_id) {
-        resultByCoingeckoId.set(asset.coingecko_id, asset);
+      result.set(asset.coinMinimalDenom, asset);
+      if (asset.coingeckoId) {
+        resultByCoingeckoId.set(asset.coingeckoId, asset);
       }
     }
 
@@ -50,7 +50,7 @@ export class PoolFallbackPriceStore
   }
 
   readonly getPrice = computedFn(
-    (base: string, vsCurrency?: string): number | undefined => {
+    (coinMinimalDenom: string, vsCurrency?: string): number | undefined => {
       if (!vsCurrency) {
         vsCurrency = this.defaultVsCurrency;
       }
@@ -62,19 +62,22 @@ export class PoolFallbackPriceStore
 
       try {
         const asset =
-          this._assetsMap.get(base) ?? this._assetsByCoingeckoId.get(base);
+          this._assetsMap.get(coinMinimalDenom) ??
+          this._assetsByCoingeckoId.get(coinMinimalDenom);
 
-        if (!asset) throw new Error(`Asset not found: ${base}`);
-        if (!asset.price_info && !asset.coingecko_id) {
-          console.warn(`Asset ${base} has no price info or coingecko_id`);
+        if (!asset) throw new Error(`Asset not found: ${coinMinimalDenom}`);
+        if (!asset.price && !asset.coingeckoId) {
+          console.warn(
+            `Asset ${coinMinimalDenom} has no price info or coingecko_id`
+          );
           return undefined;
         }
 
-        if (asset.price_info) {
+        if (asset.price) {
           const route = {
-            poolId: asset.price_info.pool_id,
-            destCoinBase: asset.price_info.dest_coin_minimal_denom,
-            sourceCoinBase: asset.base,
+            poolId: asset.price.poolId,
+            destCoinBase: asset.price.denom,
+            sourceCoinBase: asset.coinMinimalDenom,
           };
           const pool = this.queryPools.getPool(route.poolId);
           if (!pool) {
@@ -123,13 +126,13 @@ export class PoolFallbackPriceStore
           return parseFloat(res.toFixed(10));
         }
 
-        if (!asset.coingecko_id)
-          throw new Error(`Asset ${base} has no coingecko_id`);
+        if (!asset.coingeckoId)
+          throw new Error(`Asset ${coinMinimalDenom} has no coingeckoId`);
 
-        return super.getPrice(asset.coingecko_id, vsCurrency);
+        return super.getPrice(asset.coingeckoId, vsCurrency);
       } catch (e: any) {
         console.error(
-          `Failed to calculate price of (${base}, ${vsCurrency}): ${e?.message}`
+          `Failed to calculate price of (${coinMinimalDenom}, ${vsCurrency}): ${e?.message}`
         );
         return undefined;
       }

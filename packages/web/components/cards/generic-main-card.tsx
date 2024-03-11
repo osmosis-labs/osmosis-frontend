@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 
 import { CustomClasses } from "../types";
 
@@ -11,12 +11,13 @@ export const GenericMainCard: React.FC<
     title?: string;
     titleIcon?: ReactNode;
     titleIconAction?: () => void;
+    className?: string;
   } & CustomClasses
 > = ({ children, title, titleIcon, titleIconAction, className }) => {
   return (
     <div
       className={classNames(
-        "flex flex-grow flex-col gap-4 overflow-hidden rounded-[32px] bg-osmoverse-850 px-6 py-8 lg:px-3 lg:pt-4 lg:pb-4",
+        "flex flex-grow flex-col gap-4 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-8 lg:px-3 lg:pt-4 lg:pb-4",
         className
       )}
     >
@@ -25,7 +26,11 @@ export const GenericMainCard: React.FC<
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
             <div className="absolute right-0">
-              <Button mode="unstyled" onClick={titleIconAction}>
+              <Button
+                variant="ghost"
+                onClick={titleIconAction}
+                className="px-0"
+              >
                 {titleIcon}
               </Button>
             </div>

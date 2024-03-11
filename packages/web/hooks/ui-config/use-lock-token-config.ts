@@ -12,8 +12,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   config: AmountConfig;
   lockToken: (gaugeDuration: Duration) => Promise<void>;
   unlockTokens: (
-    lockIds: string[],
-    duration: Duration
+    locks: { lockId: string; isSynthetic: boolean }[]
   ) => Promise<"synthetic" | "normal">;
 } {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -61,37 +60,12 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   );
 
   const unlockTokens = useCallback(
-    (lockIds: string[], duration: Duration) => {
+    (locks: { lockId: string; isSynthetic: boolean }[]) => {
       return new Promise<"synthetic" | "normal">(async (resolve, reject) => {
         if (!account) return reject();
 
         try {
-          const blockGasLimitLockIds = lockIds.slice(0, 4);
-
-          // refresh locks
-          for (const lockId of blockGasLimitLockIds) {
-            await queryOsmosis.querySyntheticLockupsByLockId
-              .get(lockId)
-              .waitFreshResponse();
-          }
-
-          // make msg lock objects
-          const locks = blockGasLimitLockIds.map((lockId) => ({
-            lockId,
-            isSyntheticLock:
-              queryOsmosis.querySyntheticLockupsByLockId.get(lockId)
-                .isSyntheticLock === true,
-          }));
-
-          const durations =
-            queryOsmosis.queryLockableDurations.lockableDurations;
-
-          const isSuperfluidDuration =
-            duration.asSeconds() ===
-            durations[durations.length - 1]?.asSeconds();
-
-          const isSuperfluidUnlock =
-            isSuperfluidDuration || locks.some((lock) => lock.isSyntheticLock);
+          const isSuperfluidUnlock = locks.some((lock) => lock.isSynthetic);
 
           if (isSuperfluidUnlock) {
             // superfluid (synthetic) unlock
@@ -105,7 +79,9 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             );
           } else {
             // normal unlock of available shares escrowed in lock
-            const blockGasLimitLockIds = lockIds.slice(0, 10);
+            const blockGasLimitLockIds = locks
+              .slice(0, 10)
+              .map(({ lockId }) => lockId);
             await account.osmosis.sendBeginUnlockingMsg(
               blockGasLimitLockIds,
               undefined,
@@ -121,7 +97,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [queryOsmosis, account]
+    [account]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open

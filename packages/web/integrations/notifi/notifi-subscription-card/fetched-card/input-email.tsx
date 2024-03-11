@@ -11,7 +11,7 @@ import {
 } from "react";
 
 import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { TargetGroupFragment } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
@@ -113,17 +113,14 @@ export const InputEmail: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        labelClassName=""
-        containerClassName={`${
+        className={`${
           !selected || targetGroup?.emailTargets?.[0]?.isConfirmed
             ? ""
             : "hidden"
         }`}
-        labelPosition="left"
-        isOn={selected}
-        onToggle={(toggled) => setSelected(toggled)}
-      ></Switch>
-
+        checked={selected}
+        onCheckedChange={(toggled) => setSelected(toggled)}
+      />
       <Button
         className={`${
           selected && !targetGroup?.emailTargets?.[0]?.isConfirmed
@@ -131,7 +128,7 @@ export const InputEmail: FunctionComponent<Props> = ({
             : "hidden"
         } h-7 ${
           isVerificationRequested ? "w-[5.5625rem]" : "w-[4.625rem]"
-        } rounded-[50rem] text-button`}
+        } rounded-full text-button`}
         size={"unstyled"}
         disabled={
           !emailRegex.test(inputProps.value?.toString() ?? "") ||
