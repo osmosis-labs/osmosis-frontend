@@ -19522,6 +19522,10 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stutia",
           },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
         ],
         relative_image_url: "/tokens/generated/strd.svg",
       },
@@ -19623,6 +19627,14 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stusomm",
           },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
+          },
         ],
         relative_image_url: "/tokens/generated/statom.svg",
       },
@@ -19723,6 +19735,14 @@ export const AssetLists: AssetList[] = [
           {
             chainName: "stride",
             sourceDenom: "stusomm",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
           },
         ],
         relative_image_url: "/tokens/generated/ststars.svg",
@@ -19926,6 +19946,14 @@ export const AssetLists: AssetList[] = [
           {
             chainName: "quicksilver",
             sourceDenom: "uqosmo",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
           },
           {
             chainName: "osmosis",
@@ -20136,6 +20164,14 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stadydx",
           },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
+          },
         ],
         relative_image_url: "/tokens/generated/stevmos.svg",
       },
@@ -20237,6 +20273,14 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stadydx",
           },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
+          },
         ],
         relative_image_url: "/tokens/generated/stumee.svg",
       },
@@ -20332,6 +20376,14 @@ export const AssetLists: AssetList[] = [
           {
             chainName: "quicksilver",
             sourceDenom: "uqsomm",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
           },
         ],
         relative_image_url: "/tokens/generated/stsomm.svg",
@@ -20438,6 +20490,14 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stusomm",
           },
+          {
+            chainNmame: "stride",
+            sourceDenom: "stadym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
+          },
         ],
         relative_image_url: "/tokens/generated/stdydx.svg",
       },
@@ -20543,8 +20603,116 @@ export const AssetLists: AssetList[] = [
             chainName: "stride",
             sourceDenom: "stusomm",
           },
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+          },
         ],
         relative_image_url: "/tokens/generated/sttia.svg",
+      },
+      {
+        chainName: "stride",
+        sourceDenom: "stadym",
+        coinMinimalDenom:
+          "ibc/D53E785DC9C5C2CA50CADB1EFE4DE5D0C30418BE0E9C6F2AF9F092A247E8BC22",
+        symbol: "stDYM",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.svg",
+        },
+        categories: ["liquid_staking", "defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "stride",
+              chainId: "stride-1",
+              sourceDenom: "stadym",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-326",
+              path: "transfer/channel-326/stadym",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+            chainType: "cosmos",
+            chainId: "stride-1",
+            symbol: "stDYM",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.svg",
+            },
+          },
+        ],
+        variantGroupKey: "stDYM",
+        name: "Stride Staked DYM",
+        description: "Stride's liquid staked DYM",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "stride",
+          sourceDenom: "ustrd",
+        },
+        listingDate: "2024-03-12T12:00:00.000Z",
+        relatedAssets: [
+          {
+            chainName: "stride",
+            sourceDenom: "ustrd",
+          },
+          {
+            chainName: "dymension",
+            sourceDenom: "adym",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stuatom",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stustars",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stujuno",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stuosmo",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stuluna",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "staevmos",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stuumee",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stusomm",
+          },
+          {
+            chainName: "stride",
+            sourceDenom: "stutia",
+          },
+        ],
+        relative_image_url: "/tokens/generated/stdym.svg",
       },
     ],
   },
