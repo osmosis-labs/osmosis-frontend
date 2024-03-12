@@ -74,7 +74,7 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   return useQuery({
-    queryKey: [`simulate-swap-tx-${superjson.stringify(messages)}`],
+    queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({

@@ -1,6 +1,12 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
 import { Currency } from "@osmosis-labs/types";
 
+/**
+ * Constructs a message for performing a split route swap with an exact input amount across
+ * multiple routes. This function allows users to swap a specific amount of one token
+ * for another through a series of split routes, specifying the minimum amount of
+ * the output token they are willing to accept.
+ */
 export function makeSplitRoutesSwapExactAmountInMsg({
   routes,
   tokenIn,
@@ -34,6 +40,12 @@ export function makeSplitRoutesSwapExactAmountInMsg({
   );
 }
 
+/**
+ * Constructs a message for performing a swap with an exact input amount across a route
+ * — single or multiple liquidity pools. This function enables users to swap a specific
+ * amount of one token for another through specified liquidity pools, with a minimum
+ * acceptable amount of the output token.
+ */
 export function makeSwapExactAmountInMsg({
   pools,
   tokenIn,
