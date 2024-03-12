@@ -1249,16 +1249,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   public async estimateFee({
     wallet,
     messages,
-    initialFee,
-    memo,
+    initialFee = { amount: [] },
+    memo = "",
     nonCriticalExtensionOptions,
     signOptions = {},
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    initialFee: Optional<TxFee, "gas">;
+    initialFee?: Optional<TxFee, "gas">;
     nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
-    memo: string;
+    memo?: string;
     signOptions?: SignOptions;
   }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
