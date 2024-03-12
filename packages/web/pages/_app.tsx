@@ -95,7 +95,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-interface LevanaGeoBlockedResponse {
+export interface LevanaGeoBlockedResponse {
   allowed: boolean;
   countryCode: string;
 }
