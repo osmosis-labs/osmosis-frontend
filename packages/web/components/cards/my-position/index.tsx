@@ -52,8 +52,6 @@ export const MyPositionCard: FunctionComponent<{
       }
     );
 
-  console.log(id);
-
   const { data: positionDetails, isLoading: isLoadingPositionDetails } =
     api.local.concentratedLiquidity.getPositionDetails.useQuery(
       {
