@@ -225,14 +225,29 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
           coinImageUrl={confirmUnverifiedCoin.coin.currency.coinImageUrl}
           isOpen={Boolean(confirmUnverifiedCoin)}
           onConfirm={() => {
-            if (!confirmUnverifiedCoin) return;
             showUnverifiedAssetsSetting?.setState({
               showUnverifiedAssets: true,
             });
-            bridgeAsset(
-              confirmUnverifiedCoin.coin.denom,
-              confirmUnverifiedCoin.direction
+
+            const balance = assetsStore.unverifiedIbcBalances.find(
+              ({ balance }) =>
+                balance.denom === confirmUnverifiedCoin.coin.denom
             );
+
+            if (!balance) {
+              console.error(
+                "Balance not found:",
+                confirmUnverifiedCoin.coin.denom
+              );
+              return;
+            }
+
+            transferConfig.transferAsset(
+              confirmUnverifiedCoin.direction,
+              balance.chainInfo.chainId,
+              balance.balance.denom
+            );
+            setConfirmUnverifiedCoin(null);
           }}
           onRequestClose={() => {
             setConfirmUnverifiedCoin(null);
