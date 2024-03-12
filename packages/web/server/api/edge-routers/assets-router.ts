@@ -110,7 +110,7 @@ export const assetsRouter = createTRPCRouter({
         ...userMarketAsset,
       };
     }),
-  getMarketAssets: publicProcedure
+  getUserMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({

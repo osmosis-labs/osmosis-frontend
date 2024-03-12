@@ -11,7 +11,7 @@ function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAsset.invalidate();
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getMarketAsset.invalidate();
-  apiUtils.edge.assets.getMarketAssets.invalidate();
+  apiUtils.edge.assets.getUserMarketAssets.invalidate();
   apiUtils.edge.assets.getUserAssetsBreakdown.invalidate();
   apiUtils.edge.concentratedLiquidity.getUserPositions.invalidate();
 }

@@ -47,7 +47,7 @@ import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
+  RouterOutputs["edge"]["assets"]["getUserMarketAssets"]["items"][number];
 type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
@@ -92,7 +92,7 @@ export const AssetsInfoTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getMarketAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserMarketAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
