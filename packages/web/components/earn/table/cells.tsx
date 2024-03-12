@@ -218,6 +218,11 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
 export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   const { t } = useTranslation();
 
+  const isGeoblocked = item.row.original.geoblocked;
+  const isDisabled = item.row.original.disabled;
+  const isLoadingGeoblock = item.row.original.isLoadingGeoblock;
+  const isErrorGeoblock = item.row.original.isErrorGeoblock;
+
   const isOsmosisStrategy = useMemo(
     () => item.row.original.link.includes("app.osmosis.zone"),
     [item]
@@ -241,42 +246,99 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
 
   return (
     <div className="flex items-center justify-center">
-      <Button asChild>
-        <Link
-          href={href}
-          target={target}
-          className={classNames(
-            "group/button inline-flex max-h-10 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700",
-            { "w-24": !isBalanceVisible, "w-32": isBalanceVisible }
-          )}
-          onClick={() => {
-            // This means that we are not in the "My Stragegies" tab
-            if (!isBalanceVisible) {
-              logEvent([
-                EventName.EarnPage.joinStrategyClicked,
-                { strategyId: item.row.original.id },
-              ]);
+      <Tooltip
+        content={
+          <StrategyTooltip
+            body={
+              <p className="text-caption text-osmoverse-200">
+                {t("earnPage.strategyGeoblocked")}
+              </p>
             }
-          }}
-        >
-          <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
-            {isBalanceVisible ? t("earnPage.manage") : t("earnPage.join")}
-          </p>
-          {isOsmosisStrategy ? (
-            <Icon
-              id="arrow-up-right"
-              className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
-              color={theme.colors.osmoverse[300]}
-            />
-          ) : (
-            <Icon
-              id="arrow-up-right"
-              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
-              color={theme.colors.osmoverse[300]}
-            />
-          )}
-        </Link>
-      </Button>
+          />
+        }
+        rootClassNames="-translate-x-[80%] translate-y-[110%]"
+        maxWidth={"200px"}
+        disabled={!isGeoblocked}
+      >
+        <Button asChild>
+          <Link
+            href={href}
+            target={target}
+            className={classNames(
+              "group/button inline-flex max-h-10 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-osmoverse-860 transition-all hover:!bg-wosmongton-700",
+              {
+                "w-24": !isBalanceVisible,
+                "w-32": isBalanceVisible,
+                "pointer-events-none opacity-50": isDisabled || isErrorGeoblock,
+              }
+            )}
+            onClick={() => {
+              // This means that we are not in the "My Stragegies" tab
+              if (!isBalanceVisible) {
+                logEvent([
+                  EventName.EarnPage.joinStrategyClicked,
+                  { strategyId: item.row.original.id },
+                ]);
+              }
+            }}
+          >
+            {isLoadingGeoblock ? (
+              <Image
+                src={"/images/loading-gradient.svg"}
+                alt="Loading spinner"
+                width={18}
+                height={18}
+                className="animate-spin"
+              />
+            ) : (
+              <>
+                <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
+                  {isBalanceVisible ? (
+                    <span>{t("earnPage.manage")}</span>
+                  ) : isGeoblocked ? (
+                    <span className="relative inline-flex h-4.5 w-7 group-hover/button:w-14">
+                      <span className="absolute w-full opacity-100 transition-all group-hover/button:w-0 group-hover/button:opacity-0">
+                        {t("earnPage.join")}
+                      </span>
+                      <span className="absolute w-0 opacity-0 transition-all group-hover/button:w-full group-hover/button:opacity-100">
+                        {t("frontierMigration.proceed")}
+                      </span>
+                    </span>
+                  ) : (
+                    <span>{t("earnPage.join")}</span>
+                  )}
+                </p>
+                {isGeoblocked ? (
+                  <div className="inline-flex">
+                    <Icon
+                      id="geoblock"
+                      className="h-4.5 w-4.5 opacity-100 transition-all group-hover/button:w-0 group-hover/button:opacity-0"
+                      color={theme.colors.osmoverse[300]}
+                    />
+                    <Icon
+                      id="arrow-up-right"
+                      className="h-4.5 w-0 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                      color={theme.colors.osmoverse[300]}
+                    />
+                  </div>
+                ) : isOsmosisStrategy ? (
+                  <Icon
+                    id="arrow-up-right"
+                    className="h-4.5 w-0 rotate-45 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                    color={theme.colors.osmoverse[300]}
+                  />
+                ) : (
+                  <Icon
+                    id="arrow-up-right"
+                    className="h-4.5 w-0 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                    color={theme.colors.osmoverse[300]}
+                  />
+                )}
+              </>
+            )}
+          </Link>
+        </Button>
+      </Tooltip>
     </div>
   );
 };
