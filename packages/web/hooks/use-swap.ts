@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { RouterKey } from "~/server/api/edge-routers/swap-router";
+import type { RouterKey } from "~/server/api/local-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
@@ -511,7 +511,7 @@ function useSwapAsset<TAsset extends Asset>(
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
-    RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+    RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter"
   >,
   enabled: boolean,
