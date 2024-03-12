@@ -208,12 +208,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
             currency,
           });
 
-          if (!expectedOutputAssetFiatValue) {
-            throw new Error(
-              `Failed to get expectedOutput ${toAsset.denom} price`
-            );
-          }
-
           const inputAssetFiatValue = await getAssetPrice({
             asset: {
               coinDenom: toAsset.denom,
@@ -221,10 +215,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
             },
             currency,
           });
-
-          if (!inputAssetFiatValue) {
-            throw new Error(`Failed to get input ${fromAsset.denom} price`);
-          }
 
           const expectedOutputAmount = new Dec(fromAmount).sub(
             new Dec(transferFeeRes.fee.amount)

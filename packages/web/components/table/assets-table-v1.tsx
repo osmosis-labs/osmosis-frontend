@@ -6,8 +6,6 @@ import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SortMenu } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
@@ -21,6 +19,8 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { ShowMoreButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -448,23 +448,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               placeholder={t("assets.table.search")}
               size="small"
             />
-            {/* <div className="flex gap-2 lg:gap-1">
-              <label
-                htmlFor="masked-balances"
-                className="subtitle1 flex shrink-0 items-center gap-2 text-osmoverse-200"
-              >
-                {t("assets.table.hideBalances")}
-              </label>
-              <Switch
-                id="masked-balances"
-                checked={hideBalancesSetting?.state.hideBalances ?? false}
-                onCheckedChange={() => {
-                  setHideBalancesPrivacy(
-                    !hideBalancesSetting!.state.hideBalances
-                  );
-                }}
-              />
-            </div> */}
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <div className="flex shrink-0 flex-wrap gap-2">
                 <label
@@ -712,8 +695,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       displayCell: (cell) =>
                         !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
                           <Button
-                            mode="text"
-                            className="whitespace-nowrap !p-0"
+                            variant="ghost"
+                            className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();

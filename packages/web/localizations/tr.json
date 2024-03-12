@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler"
     },
     "incentive": {
-      "mobileTitle": "Teşvik",
       "title": "Teşvik türleri"
     },
     "MAX": "MAKS",
     "pool": {
-      "mobileTitle": "Havuz",
       "title": "Havuz türleri"
     },
     "searchTokens": "Arama",
@@ -312,9 +310,6 @@
       "weighted": "Ağırlıklı",
       "concentrated": "Konsantre likidite",
       "transmuter": "Dönüştürücü",
-      "internal": "Dahili teşvikler",
-      "external": "Harici teşvikler",
-      "superfluid": "Superfluid",
       "noIncentives": "Teşvik yok"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Havuzlarda ara",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Ücretler (7G)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
-    "title": "Likiditeyi Kaldır",
-    "titleInPool": "{poolId} havuzundan Likiditeyi Kaldır"
+    "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Koru",
         "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
-    },
-    "introModal": {
-      "callout": "Yeni özellik",
-      "title": "Osmoz üzerinde stake etme",
-      "description": {
-        "1": "Staking, varlıklarınızla kazanmanın en kolay yollarından biridir. Artık OSMO'nuzu doğrudan Osmosis'e yatırabilirsiniz.",
-        "2": "kadar kazanmak",
-        "3": "yıllık stake ödüllerinde!",
-        "4": "ve onu işe koy",
-        "5": "Kullanılabilir {displayBalance} çalıştırın ve",
-        "button": "Biraz OSMO satın alın"
-      },
-      "asterisk": "* Staking ödül değeri fiyata ve APR oynaklığına bağlıdır.",
-      "button": "Staking'i başlat"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "Yine de takası gerçekleştir",
     "expectedOutput": "Elde Edilmesi Beklenen Miktar",
     "fee": "Takas Ücreti ({fee})",
+    "networkFee": "Ağ Ücreti",
+    "totalFee": "Toplam ücret",
     "HALF": "YARISI",
     "MAX": "MAKS.",
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
   "seo": {
     "404": {
       "title": "404 Sayfa Bulunamadı",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "Osmoz güncellemeleri!",
     "seeWhatsNew": "Yenilikleri görün"
   },
-  "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
-  "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
-  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
+  "previewAssetsEnabled": "Varlıkların önizlemesi etkinleştirildi",
+  "previewAssetsDisabled": "Varlıkların önizlemesi devre dışı bırakıldı",
+  "previewAssetsEnabledForSession": "Bu oturum için etkinleştirilen varlıkların önizlemesini görüntüleyin. Devre dışı bırakmak için yeni bir sekme açın veya \"show_preview_assets=false\" ifadesini ekleyin.",
   "earnPage": {
     "title": "Para kazanmak",
     "position": "Konum",
@@ -986,5 +966,12 @@
     "minutes": "dakika",
     "hour": "saat",
     "hours": "saat"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} yatırma işlemleri kararsız",
+    "titleWithdraw": "{coinDenom} para çekme işlemleri kararsız",
+    "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
+    "buttonContinue": "Her halükarda devam et",
+    "buttonCancel": "İptal etmek"
   }
 }

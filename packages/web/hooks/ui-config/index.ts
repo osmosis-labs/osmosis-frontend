@@ -5,7 +5,6 @@ export * from "./use-asset-info-config";
 export * from "./use-create-pool-config";
 export * from "./use-fake-fee-config";
 export * from "./use-lock-token-config";
-export * from "./use-remove-liquidity-config";
 export * from "./use-slippage-config";
 export * from "./use-staked-amount-config";
 export * from "./use-superfluid-pool";

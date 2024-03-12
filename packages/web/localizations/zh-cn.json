@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "支持OSMO、USDC"
     },
     "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
+      "title": "激励类型"
     },
     "MAX": "最大",
     "pool": {
-      "mobileTitle": "游泳池",
       "title": "游泳池類型"
     },
     "searchTokens": "搜索",
@@ -312,9 +310,6 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
-      "internal": "内部激励",
-      "external": "外部激励",
-      "superfluid": "超流体",
       "noIncentives": "无激励"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "搜索资金池",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份额",
-    "title": "移除流动性",
-    "titleInPool": "从#{poolId}号资金池移除流动性"
+    "title": "移除流动性"
   },
   "requestRejected": "请求拒绝",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
-    },
-    "introModal": {
-      "callout": "新功能",
-      "title": "Osmosis 质押",
-      "description": {
-        "1": "质押是利用资产赚钱的最简单方法之一。现在您可以将您的 OSMO 放在 Osmosis 上。",
-        "2": "赚取高达",
-        "3": "每年都有质押奖励！",
-        "4": "并付诸实践",
-        "5": "让您可用的{displayBalance}发挥作用并",
-        "button": "买一些OSMO"
-      },
-      "asterisk": "* 质押奖励价值受价格和年利率波动影响。",
-      "button": "开始质押"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "继续兑换",
     "expectedOutput": "预期产出",
     "fee": "交易费 ({fee})",
+    "networkFee": "网络费",
+    "totalFee": "总费用",
     "HALF": "对半",
     "MAX": "最大",
     "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
-  "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
   "seo": {
     "404": {
       "title": "404页面不存在",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "渗透更新！",
     "seeWhatsNew": "看看有什么新鲜事"
   },
-  "unlistedAssetsEnabled": "启用非上市资产",
-  "unlistedAssetsDisabled": "非上市资产已禁用",
-  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
+  "previewAssetsEnabled": "启用预览资产",
+  "previewAssetsDisabled": "预览资源已禁用",
+  "previewAssetsEnabledForSession": "预览为此会话启用的资产。要禁用打开新选项卡，或附加“show_preview_assets=false”。",
   "earnPage": {
     "title": "赚",
     "position": "位置",
@@ -978,6 +958,13 @@
     "lookBelow": "请参阅下文并找到最适合您的策略"
   },
   "disclaimer": "免责声明",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不稳定",
+    "titleWithdraw": "{coinDenom}提款不稳定",
+    "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
+    "buttonContinue": "无论如何继续",
+    "buttonCancel": "取消"
+  },
   "remaining": "其余的",
   "timeUnits": {
     "second": "第二",

@@ -17,23 +17,29 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ArrowButton, Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
+import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import type {
-  ClPosition,
-  ClPositionDetails,
   PositionHistoricalPerformance,
+  UserPosition,
+  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
@@ -48,8 +54,8 @@ const TokenPairHistoricalChart = dynamic(
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
-  position: ClPosition;
-  positionDetails: ClPositionDetails | undefined;
+  position: UserPosition;
+  positionDetails: UserPositionDetails | undefined;
   positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
 }> = observer(
@@ -72,6 +78,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
 
     const {
+      position: rawPosition,
       priceRange: [lowerPrice, upperPrice],
       isFullRange,
       currentCoins,
@@ -103,7 +110,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       "increase" | "remove" | null
     >(null);
 
-    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(poolId);
     const {
       xRange,
       yRange,
@@ -125,10 +132,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
     const sendCollectAllRewardsMsg = useCallback(() => {
       logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
+      const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
+      const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
       account!.osmosis
         .sendCollectAllPositionsRewardsMsgs(
-          [position.id],
-          undefined,
+          hasSpreadRewards ? [rawPosition.position.position_id] : [],
+          hasIncentiveRewards ? [rawPosition.position.position_id] : [],
           undefined,
           (tx) => {
             if (!tx.code) {
@@ -139,14 +148,22 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           }
         )
         .catch(console.error);
-    }, [account, logEvent, position.id]);
+    }, [account, logEvent, rawPosition]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex w-full gap-1 xl:hidden">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <ChartHeader config={chartConfig} />
-            <Chart config={chartConfig} position={position} />
+            {chartConfig.isHistoricalDataLoading ? (
+              <Spinner className="m-auto" />
+            ) : !chartConfig.historicalChartUnavailable ? (
+              <>
+                <ChartHeader config={chartConfig} />
+                <Chart config={chartConfig} position={position} />
+              </>
+            ) : (
+              <ChartUnavailable />
+            )}
           </div>
           <div className="flex h-[20.1875rem] w-80 rounded-r-2xl bg-osmoverse-700">
             <div className="mt-[84px] flex flex-1 flex-col">
@@ -346,7 +363,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     [
                       {
                         lockId: superfluidData.delegationLockId,
-                        isSyntheticLock: true,
+                        isSynthetic: true,
                       },
                     ]
                   )
@@ -520,7 +537,7 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-  position: ClPosition;
+  position: UserPosition;
 }> = observer(({ config, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;
@@ -543,7 +560,7 @@ const Chart: FunctionComponent<{
 });
 
 const SuperfluidPositionInfo: FunctionComponent<
-  RouterOutputs["edge"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
+  RouterOutputs["local"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
 > = (props) => {
   const {
     validatorName,

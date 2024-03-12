@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback } from "react";
 
-import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { StakeOrUnstake } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -87,9 +87,10 @@ export const StakeInfoCard: FunctionComponent<{
           </div>
           <div className="flex items-center gap-1.5">
             <Button
-              mode="amount"
+              variant="outline"
+              size="sm"
               className={classNames(
-                "caption py-1 px-1.5",
+                "text-wosmongton-300",
                 isHalf ? "bg-wosmongton-100/20" : "bg-transparent"
               )}
               onClick={handleHalfButtonClick}
@@ -97,9 +98,10 @@ export const StakeInfoCard: FunctionComponent<{
               {t("swap.HALF")}
             </Button>
             <Button
-              mode="amount"
+              variant="outline"
+              size="sm"
               className={classNames(
-                "caption py-1 px-1.5",
+                "text-wosmongton-300",
                 isMax ? "bg-wosmongton-100/20" : "bg-transparent"
               )}
               onClick={handleMaxButtonClick}

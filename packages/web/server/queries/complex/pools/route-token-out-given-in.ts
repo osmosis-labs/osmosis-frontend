@@ -24,7 +24,7 @@ import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { queryNumPools } from "../../osmosis";
-import { queryPaginatedPools } from "./providers/imperator";
+import { queryPaginatedPools } from "./providers/indexer";
 
 /**
  * This function routes a given token to a specified output token denomination.
@@ -72,7 +72,6 @@ export async function getRouter(
     key: "router" + minLiquidityUsd,
     cache: routerCache,
     ttl: routerCacheTtl,
-    staleWhileRevalidate: routerCacheTtl + 1000 * 30, // add 30 seconds
     async getFreshValue() {
       // fetch pool data
       const numPoolsResponse = await queryNumPools();
@@ -141,7 +140,6 @@ export async function getRouter(
           return new Dec(0);
         }
         if (!pool.liquidityUsd) {
-          console.warn("No TVL found for pool", poolId);
           return new Dec(0);
         } else return new Dec(pool.liquidityUsd.toString());
       };

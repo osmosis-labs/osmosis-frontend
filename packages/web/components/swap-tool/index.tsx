@@ -16,7 +16,6 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { InputBox } from "~/components/input";
@@ -25,6 +24,7 @@ import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -35,8 +35,10 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
+import { sum } from "~/utils/math";
 import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
@@ -185,6 +187,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               quoteTimeMilliseconds: swapState.quote?.timeMs,
               router: swapState.quote?.name,
               page,
+              valueUsd: Number(
+                swapState.quote?.amountFiatValue?.toString() ?? "0"
+              ),
             },
           ]);
         })
@@ -384,9 +389,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Button
-                    mode="amount"
+                    variant="outline"
+                    size="sm"
                     className={classNames(
-                      "py-1 px-1.5 text-xs",
+                      "text-wosmongton-300",
                       swapState.inAmountInput.fraction === 0.5
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
@@ -400,9 +406,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     {t("swap.HALF")}
                   </Button>
                   <Button
-                    mode="amount"
+                    variant="outline"
+                    size="sm"
                     className={classNames(
-                      "py-1 px-1.5 text-xs",
+                      "text-wosmongton-300",
                       swapState.inAmountInput.fraction === 1
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
@@ -418,38 +425,29 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
               <div className="mt-3 flex place-content-between items-center">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingFromAsset
-                      ? "h-full w-full"
-                      : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingFromAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect
-                    dropdownOpen={showFromTokenSelectDropdown}
-                    swapState={swapState}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("from");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setFromAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect
+                  dropdownOpen={showFromTokenSelectDropdown}
+                  swapState={swapState}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("from");
+                      } else {
                         closeTokenSelectDropdowns();
-                        fromAmountInputEl.current?.focus();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setFromAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                      fromAmountInputEl.current?.focus();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <input
                     ref={fromAmountInputEl}
@@ -484,7 +482,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </div>
-
+            {/* TODO - move this custom button to our own button component */}
             <button
               disabled={isSwapToolLoading}
               className={classNames(
@@ -549,38 +547,30 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </button>
-
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-transform">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingToAsset ? "h-full w-full" : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingToAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect={false}
-                    dropdownOpen={showToTokenSelectDropdown}
-                    swapState={swapState}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setToAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect={false}
+                  dropdownOpen={showToTokenSelectDropdown}
+                  swapState={swapState}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setToAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("to");
+                      } else {
                         closeTokenSelectDropdowns();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("to");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
@@ -634,7 +624,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </div>
-
             <SkeletonLoader
               className={classNames(
                 "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
@@ -654,6 +643,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 Boolean(swapState.spotPriceQuote)
               }
             >
+              {/* TODO - move this custom button to our own button component */}
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -761,6 +751,38 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       </span>
                     </div>
                   )}
+                {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                !swapState.error ? (
+                  <div className="flex items-center justify-between">
+                    <span className="caption">{t("swap.networkFee")}</span>
+                    <SkeletonLoader
+                      isLoaded={!swapState.isLoadingNetworkFee}
+                      className="min-w-[3rem] leading-[0]"
+                    >
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${swapState.networkFee?.gasUsdValueToPay ?? "0"} `}
+                      </span>
+                    </SkeletonLoader>
+                  </div>
+                ) : undefined}
+                {((swapState.quote?.tokenInFeeAmountFiatValue &&
+                  swapState.quote?.swapFee) ||
+                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) && (
+                  <div className="flex justify-between">
+                    <span className="caption">{t("swap.totalFee")}</span>
+                    <span className="caption text-osmoverse-200">
+                      {`≈ ${new PricePretty(
+                        DEFAULT_VS_CURRENCY,
+                        sum([
+                          swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
+                            new Dec(0),
+                          swapState.networkFee?.gasUsdValueToPay?.toDec() ??
+                            new Dec(0),
+                        ])
+                      )} `}
+                    </span>
+                  </div>
+                )}
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
@@ -832,12 +854,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           </div>
           {swapButton ?? (
             <Button
-              mode={
-                showPriceImpactWarning &&
-                account?.walletStatus === WalletStatus.Connected
-                  ? "primary-warning"
-                  : "primary"
-              }
               disabled={
                 isWalletLoading ||
                 swapState.isQuoteLoading ||

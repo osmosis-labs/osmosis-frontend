@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "incentive": {
-      "mobileTitle": "جایزه",
-      "title": "نوع جوایز"
+      "title": "انواع مشوق"
     },
     "MAX": "حداکثر",
     "pool": {
-      "mobileTitle": "استخر",
       "title": "استخرها"
     },
     "searchTokens": "جستجو",
@@ -312,9 +310,6 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
-      "internal": "مشوق های داخلی",
-      "external": "مشوق های خارجی",
-      "superfluid": "ابر سیال",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "جستجوی استخرها",
       "sort": {
         "APRIncentivized": "نرخ بازدهی",
         "fees": "کارمزد (7 روز)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
-    "title": "حذف نقدینگی",
-    "titleInPool": "حذف نقدینگی از استخر #{poolId}"
+    "title": "حذف نقدینگی"
   },
   "requestRejected": "درخواست رد شد",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "نگه‌داشتن اعتبارسنج‌های موجود",
         "buttonSelect": "انتخاب اعتبارسنج‌های جدید"
       }
-    },
-    "introModal": {
-      "callout": "خصوصیت جدید",
-      "title": "قرار گرفتن روی اسمز",
-      "description": {
-        "1": "شرط بندی یکی از ساده ترین راه ها برای کسب درآمد با دارایی های شما است. اکنون می توانید OSMO خود را مستقیماً روی اسموز قرار دهید.",
-        "2": "کسب درآمد تا",
-        "3": "سالانه در جوایز شرط بندی!",
-        "4": "و آن را به کار انداخت",
-        "5": "{displayBalance} موجود خود را به کار ببندید و",
-        "button": "مقداری OSMO بخرید"
-      },
-      "asterisk": "* ارزش پاداش به شرط قیمت و نوسانات آوریل.",
-      "button": "شروع به شرط بندی کنید"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "در هر شرایطی تبدیل کن",
     "expectedOutput": "خروجی مورد انتظار",
     "fee": "کارمزد تبدیل ({fee})",
+    "networkFee": "هزینه شبکه",
+    "totalFee": "هزینه کل",
     "HALF": "نصف",
     "MAX": "همه",
     "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
-  "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
   "seo": {
     "404": {
       "title": "404 - صفحه یافت نشد",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "به روز رسانی اسمز!",
     "seeWhatsNew": "ببینید چه چیز جدیدی است"
   },
-  "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
-  "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
-  "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید.",
+  "previewAssetsEnabled": "پیش‌نمایش دارایی‌ها فعال شد",
+  "previewAssetsDisabled": "پیش‌نمایش دارایی‌ها غیرفعال شد",
+  "previewAssetsEnabledForSession": "پیش‌نمایش دارایی‌های فعال برای این جلسه. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_preview_assets=false» را اضافه کنید.",
   "earnPage": {
     "title": "بدست آوردن",
     "position": "موقعیت",
@@ -986,5 +966,12 @@
     "minutes": "دقایق",
     "hour": "ساعت",
     "hours": "ساعت ها"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} سپرده های ناپایدار",
+    "titleWithdraw": "{coinDenom} برداشت‌های ناپایدار",
+    "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
+    "buttonContinue": "ادامه دادن به هر طریق",
+    "buttonCancel": "لغو کنید"
   }
 }

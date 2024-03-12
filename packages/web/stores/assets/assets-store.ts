@@ -19,6 +19,7 @@ import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { IBCAdditionalData } from "~/config/ibc-overrides";
+import { ShowPreviewAssetsKey } from "~/hooks/use-show-preview-assets";
 import {
   CoinBalance,
   IBCBalance,
@@ -26,8 +27,6 @@ import {
 } from "~/stores/assets/types";
 import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
 import { UserSettings } from "~/stores/user-settings/user-settings-store";
-
-const UnlistedAssetsKey = "show_unlisted_assets";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -53,30 +52,30 @@ export class ObservableAssets {
 
       const urlParams = new URLSearchParams(window.location.search);
       if (
-        urlParams.get(UnlistedAssetsKey) === "true" &&
-        sessionStorage.getItem(UnlistedAssetsKey) !== "true"
+        urlParams.get(ShowPreviewAssetsKey) === "true" &&
+        sessionStorage.getItem(ShowPreviewAssetsKey) !== "true"
       ) {
         displayToast(
           {
-            titleTranslationKey: "unlistedAssetsEnabled",
-            captionTranslationKey: "unlistedAssetsEnabledForSession",
+            titleTranslationKey: "previewAssetsEnabled",
+            captionTranslationKey: "previewAssetsEnabledForSession",
           },
           ToastType.SUCCESS
         );
-        return sessionStorage.setItem(UnlistedAssetsKey, "true");
+        return sessionStorage.setItem(ShowPreviewAssetsKey, "true");
       }
 
       if (
-        urlParams.get(UnlistedAssetsKey) === "false" &&
-        sessionStorage.getItem(UnlistedAssetsKey) === "true"
+        urlParams.get(ShowPreviewAssetsKey) === "false" &&
+        sessionStorage.getItem(ShowPreviewAssetsKey) === "true"
       ) {
         displayToast(
           {
-            titleTranslationKey: "unlistedAssetsDisabled",
+            titleTranslationKey: "previewAssetsDisabled",
           },
           ToastType.SUCCESS
         );
-        return sessionStorage.setItem(UnlistedAssetsKey, "false");
+        return sessionStorage.setItem(ShowPreviewAssetsKey, "false");
       }
     });
   }
@@ -126,7 +125,7 @@ export class ObservableAssets {
           throw new Error(`Unknown asset ${currency.coinDenom}`);
         }
 
-        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+        if (sessionStorage.getItem(ShowPreviewAssetsKey) === "true") {
           return true;
         }
         return !assetListAsset.preview;
@@ -159,13 +158,14 @@ export class ObservableAssets {
     return this.assets
       .filter((asset) => asset.transferMethods.length > 0) // Filter osmosis native assets
       .filter((asset) => {
+        // Remove preview assets if preview assets is disabled
         if (typeof window === "undefined") return true;
 
-        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+        if (sessionStorage.getItem(ShowPreviewAssetsKey) === "true") {
           return true;
         }
         return !asset.preview;
-      }) // Remove unlisted assets if preview assets is disabled
+      })
       .map((ibcAsset) => {
         const cosmosCounterparty = ibcAsset
           .counterparty[0] as CosmosCounterparty;

@@ -4,8 +4,6 @@ import "~/utils/superjson";
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
-// import superflow
-import { initSuperflow } from "@usesuperflow/client";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
@@ -23,7 +21,6 @@ import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
-import { useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
@@ -73,10 +70,6 @@ const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
-
-  useMount(() => {
-    initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
-  });
 
   return (
     <MultiLanguageProvider
@@ -256,8 +249,8 @@ const MainLayoutWrapper: FunctionComponent<{
     flags.earnPage,
     flags.staking,
     osmosisWallet?.walletInfo?.stakeUrl,
-    onOpenLeavingOsmosisToMars,
     onOpenLeavingOsmosisToLevana,
+    onOpenLeavingOsmosisToMars,
   ]);
 
   const secondaryMenuItems: MainLayoutMenu[] = [

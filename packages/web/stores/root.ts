@@ -8,6 +8,7 @@ import {
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
+  DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
@@ -42,7 +43,6 @@ import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
 import { ObservableAssets } from "~/stores/assets";
-import { DerivedDataStore } from "~/stores/derived-data";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -239,9 +239,7 @@ export class RootStore {
       this.queriesExternalStore,
       this.accountStore,
       this.priceStore,
-      this.chainStore,
-      this.assetsStore,
-      this.userSettings
+      this.chainStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -265,11 +263,7 @@ export class RootStore {
       assets
     );
 
-    this.navBarStore = new NavBarStore(
-      this.chainStore.osmosis.chainId,
-      this.accountStore,
-      this.queriesStore
-    );
+    this.navBarStore = new NavBarStore(this.chainStore.osmosis.chainId);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);

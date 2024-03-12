@@ -24,7 +24,7 @@ export type Asset = {
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
-  includeUnlisted: z.boolean().default(false).optional(),
+  includePreview: z.boolean().default(false).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
@@ -40,7 +40,6 @@ const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
 export async function getAsset({
   assetList = AssetLists,
   anyDenom,
-  ...params
 }: {
   assetList?: AssetList[];
   anyDenom: string;
@@ -48,8 +47,7 @@ export async function getAsset({
   const assets = await getAssets({
     assetList,
     findMinDenomOrSymbol: anyDenom,
-    includeUnlisted: true,
-    ...params,
+    includePreview: true,
   });
   const asset = assets[0];
   if (!asset) throw new Error(anyDenom + " not found in asset list");
@@ -94,6 +92,7 @@ export async function getAssets({
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
+ * @throws if a given denom is not in asset list.
  */
 export async function mapRawCoinToPretty(
   rawAssets: {
@@ -102,18 +101,13 @@ export async function mapRawCoinToPretty(
   }[]
 ): Promise<CoinPretty[]> {
   if (!rawAssets) return [];
-  const result = await Promise.all(
-    rawAssets.map(async ({ amount, denom }) => {
-      const asset = await getAsset({
+  return await Promise.all(
+    rawAssets.map(({ amount, denom }) =>
+      getAsset({
         anyDenom: denom,
-      });
-
-      if (!asset) return undefined;
-
-      return new CoinPretty(asset, amount);
-    })
+      }).then((asset) => new CoinPretty(asset, amount))
+    )
   );
-  return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
@@ -128,7 +122,7 @@ function filterAssetList(
 
   const listedAssets = assetList
     .flatMap(({ assets }) => assets)
-    .filter((asset) => !asset.preview);
+    .filter((asset) => params.includePreview || !asset.preview);
 
   let assetListAssets = listedAssets.filter((asset) => {
     if (params.findMinDenomOrSymbol) {
@@ -150,7 +144,7 @@ function filterAssetList(
   });
 
   // Search raw asset list before reducing type to minimal Asset type
-  if (params.search) {
+  if (params.search && !params.findMinDenomOrSymbol) {
     assetListAssets = search(
       assetListAssets,
       searchableAssetListAssetKeys,

@@ -1,5 +1,9 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
 
+import {
+  makeSplitRoutesSwapExactAmountInMsg,
+  makeSwapExactAmountInMsg,
+} from "../message-composers";
 import { createMsgOpts } from "../utils";
 
 export const osmosisMsgOpts = createMsgOpts({
@@ -32,13 +36,10 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
   splitRouteSwapExactAmountIn: {
-    messageComposer:
-      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
-        .splitRouteSwapExactAmountIn,
+    messageComposer: makeSplitRoutesSwapExactAmountInMsg,
   },
   swapExactAmountIn: {
-    messageComposer:
-      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
+    messageComposer: makeSwapExactAmountInMsg,
   },
   swapExactAmountOut: {
     messageComposer:

@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentivo",
       "title": "Tipos de incentivos"
     },
     "MAX": "Máximo",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscinas"
     },
     "searchTokens": "Buscar",
@@ -312,9 +310,6 @@
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
       "transmuter": "transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sin incentivos"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Buscar piscinas",
       "sort": {
         "APRIncentivized": "TPA",
         "fees": "Tarifas (7d)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participaciones",
-    "title": "Retirar liquidez",
-    "titleInPool": "Sacar la liquidez de {PoolId}"
+    "title": "Retirar liquidez"
   },
   "requestRejected": "Solicitud rechazada",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "Conservar los validadores existentes",
         "buttonSelect": "Seleccionar nuevos validadores"
       }
-    },
-    "introModal": {
-      "callout": "Nueva caracteristica",
-      "title": "Apostando por la ósmosis",
-      "description": {
-        "1": "Apostar es una de las formas más fáciles de ganar con sus activos. Ahora puedes apostar tu OSMO directamente en Osmosis.",
-        "2": "ganar hasta",
-        "3": "¡Anualmente en apuestas de recompensas!",
-        "4": "y ponlo a trabajar",
-        "5": "Pon tu {displayBalance} a trabajar y",
-        "button": "Compra algo de OSMO"
-      },
-      "asterisk": "* El valor de la recompensa de apuesta está sujeto a la volatilidad del precio y la APR.",
-      "button": "Empezar a apostar"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "Intercambio de todos modos",
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
+    "networkFee": "Tarifa de red",
+    "totalFee": "Costo total",
     "HALF": "Mitad",
     "MAX": "Máximo",
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
   "seo": {
     "404": {
       "title": "404 Pagina no encontrada",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
     "seeWhatsNew": "Ver qué hay de nuevo"
   },
-  "unlistedAssetsEnabled": "Activos no listados habilitados",
-  "unlistedAssetsDisabled": "Activos no listados inhabilitados",
-  "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Vista previa de recursos habilitada",
+  "previewAssetsDisabled": "Vista previa de recursos deshabilitada",
+  "previewAssetsEnabledForSession": "Vista previa de recursos habilitados para esta sesión. Para deshabilitarlo, abra una nueva pestaña o agregue `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganar",
     "position": "Posición",
@@ -978,6 +958,13 @@
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
   },
   "disclaimer": "Descargo de responsabilidad",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos inestables",
+    "titleWithdraw": "{coinDenom} retiros inestables",
+    "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
+    "buttonContinue": "De todas maneras, continúe",
+    "buttonCancel": "Cancelar"
+  },
   "remaining": "restantes",
   "timeUnits": {
     "second": "segundo",

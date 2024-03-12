@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે"
     },
     "incentive": {
-      "mobileTitle": "પ્રોત્સાહન",
       "title": "પ્રોત્સાહન પ્રકારો"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "પૂલ",
       "title": "પૂલ પ્રકારો"
     },
     "searchTokens": "શોધો",
@@ -312,9 +310,6 @@
       "weighted": "ભારિત",
       "concentrated": "સુપરચાર્જ્ડ",
       "transmuter": "ટ્રાન્સમ્યુટર",
-      "internal": "આંતરિક પ્રોત્સાહનો",
-      "external": "બાહ્ય પ્રોત્સાહનો",
-      "superfluid": "અતિપ્રવાહી",
       "noIncentives": "કોઈ પ્રોત્સાહન નથી"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "પૂલ શોધો",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "ફી (7D)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",
-    "title": "લિક્વિડિટી દૂર કરો",
-    "titleInPool": "પૂલ # {poolId} માંથી તરલતા દૂર કરો"
+    "title": "લિક્વિડિટી દૂર કરો"
   },
   "requestRejected": "વિનંતી નકારી",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "હાલના વેલિડેટર રાખો",
         "buttonSelect": "નવા વેલિડેટર પસંદ કરો"
       }
-    },
-    "introModal": {
-      "callout": "નવી સુવિધા",
-      "title": "ઓસ્મોસિસ પર સ્ટેકિંગ",
-      "description": {
-        "1": "સ્ટેકિંગ એ તમારી અસ્કયામતો વડે કમાણી કરવાની સૌથી સરળ રીતોમાંની એક છે. હવે તમે તમારા OSMO ને ઓસ્મોસિસ પર જ હિસ્સો આપી શકો છો.",
-        "2": "સુધી કમાય છે",
-        "3": "વાર્ષિક ધોરણે પુરસ્કારો મેળવવામાં!",
-        "4": "અને તેને કામ પર મૂકો",
-        "5": "તમારા ઉપલબ્ધ {displayBalance} કામ પર મૂકો અને",
-        "button": "કેટલાક OSMO ખરીદો"
-      },
-      "asterisk": "* કિંમત અને APR વોલેટિલિટીને આધીન પુરસ્કાર મૂલ્ય સ્ટેકિંગ.",
-      "button": "સ્ટેકિંગ શરૂ કરો"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "કોઈપણ રીતે સ્વેપ કરો",
     "expectedOutput": "અપેક્ષિત આઉટપુટ",
     "fee": "સ્વેપ ફી ( {fee} )",
+    "networkFee": "નેટવર્ક ફી",
+    "totalFee": "કુલ ફી",
     "HALF": "અર્ધ",
     "MAX": "MAX",
     "minimumSlippage": "સ્લિપેજ પછી પ્રાપ્ત ન્યૂનતમ ( {slippage} )",
@@ -861,7 +842,6 @@
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
   "waitingForTransaction": "ટ્રાન્ઝેક્શનને બ્લોકમાં સામેલ કરવાની રાહ જોઈ રહ્યાં છીએ",
-  "highPoolInflationWarning": "ઉચ્ચ APR ફુગાવાના પુરસ્કારોથી પરિણમી શકે છે. સાવધાની સાથે આગળ વધો.",
   "seo": {
     "404": {
       "title": "404 - પૃષ્ઠ મળ્યું નથી",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "ઓસ્મોસિસ અપડેટ્સ!",
     "seeWhatsNew": "નવું શું છે તે જુઓ"
   },
-  "unlistedAssetsEnabled": "અસૂચિબદ્ધ સંપત્તિઓ સક્ષમ",
-  "unlistedAssetsDisabled": "અસૂચિબદ્ધ સંપત્તિઓ અક્ષમ છે",
-  "unlistedAssetsEnabledForSession": "આ સત્ર માટે અસૂચિબદ્ધ સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો અથવા `show_unlisted_assets=false` ઉમેરો.",
+  "previewAssetsEnabled": "પૂર્વાવલોકન સંપત્તિ સક્ષમ",
+  "previewAssetsDisabled": "પૂર્વાવલોકન સંપત્તિ અક્ષમ છે",
+  "previewAssetsEnabledForSession": "આ સત્ર માટે પૂર્વાવલોકન સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો, અથવા `show_preview_assets=false` ઉમેરો.",
   "earnPage": {
     "title": "કમાઓ",
     "position": "પદ",
@@ -986,5 +966,12 @@
     "minutes": "મિનિટ",
     "hour": "કલાક",
     "hours": "કલાક"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} થાપણો અસ્થિર",
+    "titleWithdraw": "{coinDenom} ઉપાડ અસ્થિર",
+    "description": "અનિશ્ચિત તકનીકી સમસ્યાઓને લીધે, ઓસ્મોસિસ અને {prettyChainName} વચ્ચેના સ્થાનાંતરણમાં નોંધપાત્ર વિલંબ અથવા વ્યવહાર નિષ્ફળતાનો અનુભવ થઈ શકે છે. તમારા પોતાના જોખમે આગળ વધો.",
+    "buttonContinue": "કોઈપણ રીતે ચાલુ રાખો",
+    "buttonCancel": "રદ કરો"
   }
 }

@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Supports OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentive",
       "title": "Incentive types"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Pool",
       "title": "Pool types"
     },
     "searchTokens": "Search",
@@ -312,9 +310,6 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
-      "internal": "Internal incentives",
-      "external": "External incentives",
-      "superfluid": "Superfluid",
       "noIncentives": "No incentives"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Search pools",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
-    "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from pool #{poolId}"
+    "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
-    },
-    "introModal": {
-      "callout": "New feature",
-      "title": "Staking on Osmosis",
-      "description": {
-        "1": "Staking is one of the easiest ways to earn with your assets. Now you can stake your OSMO right on Osmosis.",
-        "2": "earn up to",
-        "3": "yearly in staking rewards!",
-        "4": "and put it to work",
-        "5": "Put your available {displayBalance} to work and",
-        "button": "Buy some OSMO"
-      },
-      "asterisk": "* Staking reward value subject to price and APR volatility.",
-      "button": "Start staking"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "Swap anyway",
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
+    "networkFee": "Network Fee",
+    "totalFee": "Total Fee",
     "HALF": "HALF",
     "MAX": "MAX",
     "minimumSlippage": "Minimum received after slippage ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
   "seo": {
     "404": {
       "title": "404 - Page not found",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "Osmosis updates!",
     "seeWhatsNew": "See what's new"
   },
-  "unlistedAssetsEnabled": "Unlisted assets enabled",
-  "unlistedAssetsDisabled": "Unlisted assets disabled",
-  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Preview assets enabled",
+  "previewAssetsDisabled": "Preview assets disabled",
+  "previewAssetsEnabledForSession": "Preview assets enabled for this session. To disable open a new tab, or append `show_preview_assets=false`.",
   "earnPage": {
     "title": "Earn",
     "position": "Position",
@@ -986,5 +966,12 @@
     "minutes": "minutes",
     "hour": "hour",
     "hours": "hours"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} deposits unstable",
+    "titleWithdraw": "{coinDenom} withdrawals unstable",
+    "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
+    "buttonContinue": "Continue Anyway",
+    "buttonCancel": "Cancel"
   }
 }

@@ -283,12 +283,10 @@
       "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Stimulent",
       "title": "Tipuri de stimulente"
     },
     "MAX": "MAX",
     "pool": {
-      "mobileTitle": "Piscină",
       "title": "Tipuri de piscine"
     },
     "searchTokens": "Cauta tokeni",
@@ -312,9 +310,6 @@
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
       "transmuter": "Transmutator",
-      "internal": "Incentive interne",
-      "external": "Incentive externe",
-      "superfluid": "Superfluid",
       "noIncentives": "Fără incentivi"
     }
   },
@@ -586,7 +581,6 @@
   },
   "pools": {
     "allPools": {
-      "search": "Cauta pool-uri",
       "sort": {
         "APRIncentivized": "APR",
         "fees": "Taxe (7z)",
@@ -654,8 +648,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
-    "title": "Elimina Lichiditate",
-    "titleInPool": "Elimina lichiditate din pool-ul #{poolId}"
+    "title": "Elimina Lichiditate"
   },
   "requestRejected": "Cerere respinsa",
   "settings": {
@@ -752,20 +745,6 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
-    },
-    "introModal": {
-      "callout": "Optiune noua",
-      "title": "Miza pe osmoză",
-      "description": {
-        "1": "Miza este una dintre cele mai simple modalități de a câștiga cu activele tale. Acum vă puteți miza OSMO chiar pe Osmosis.",
-        "2": "castiga pana la",
-        "3": "anual în mizați recompense!",
-        "4": "și pune-l la treabă",
-        "5": "Puneți {displayBalance} disponibil și",
-        "button": "Cumpără niște OSMO"
-      },
-      "asterisk": "* Valoarea recompensei de mizare este supusă volatilității prețului și APR.",
-      "button": "Începeți să mizați"
     }
   },
   "superfluidValidator": {
@@ -794,6 +773,8 @@
     "buttonError": "Schibma oricum",
     "expectedOutput": "Rezultat asteptat",
     "fee": "Taxa schimb ({fee})",
+    "networkFee": "Taxa de retea",
+    "totalFee": "Taxa totală",
     "HALF": "JUMATATE",
     "MAX": "MAXIM",
     "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
@@ -861,7 +842,6 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
   "seo": {
     "404": {
       "title": "404 Pagina nu a fost găsită",
@@ -928,9 +908,9 @@
     "osmosisUpdates": "Actualizări pentru osmoză!",
     "seeWhatsNew": "Vezi ce este nou"
   },
-  "unlistedAssetsEnabled": "Activele nelistate au fost activate",
-  "unlistedAssetsDisabled": "Active nelistate dezactivate",
-  "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
+  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
+  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "earnPage": {
     "title": "Câştiga",
     "position": "Poziţie",
@@ -986,5 +966,12 @@
     "minutes": "minute",
     "hour": "ora",
     "hours": "ore"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depozite instabile",
+    "titleWithdraw": "{coinDenom} retrageri instabile",
+    "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
+    "buttonContinue": "Continua oricum",
+    "buttonCancel": "Anulare"
   }
 }

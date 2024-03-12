@@ -95,7 +95,7 @@ export const ProfileModal: FunctionComponent<
 
   const address = wallet?.address ?? "";
 
-  const { data: userOsmoAsset } = api.edge.assets.getAsset.useQuery(
+  const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: "OSMO",
       userOsmoAddress: wallet?.address ?? "",

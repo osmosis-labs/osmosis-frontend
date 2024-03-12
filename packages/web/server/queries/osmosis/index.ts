@@ -1,3 +1,3 @@
 export * from "./icns";
-export * from "./pool-incentives";
+export * from "./incentives";
 export * from "./poolmanager";
