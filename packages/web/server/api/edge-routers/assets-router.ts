@@ -1,10 +1,8 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
-import { RecommendedSwapDenoms } from "~/config/feature-flag";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
-  Asset,
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
@@ -35,15 +33,6 @@ const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
 ).merge(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
-  getAsset: publicProcedure
-    .input(
-      z.object({
-        findMinDenomOrSymbol: z.string(),
-      })
-    )
-    .query(async ({ input: { findMinDenomOrSymbol } }) =>
-      getAsset({ anyDenom: findMinDenomOrSymbol })
-    ),
   getUserAsset: publicProcedure
     .input(
       z
@@ -100,13 +89,6 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
-  getRecommendedAssets: publicProcedure.query(() =>
-    Promise.all(
-      RecommendedSwapDenoms.map((denom) =>
-        getAsset({ anyDenom: denom }).catch(() => null)
-      )
-    ).then((assets) => assets.filter((a): a is Asset => !!a))
-  ),
   getMarketAsset: publicProcedure
     .input(
       z

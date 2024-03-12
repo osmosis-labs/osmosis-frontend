@@ -56,7 +56,6 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes, to allow plenty of time for pools to be queried in background
     getFreshValue: () => priceProvider(foundAsset, currency),
   });
 }

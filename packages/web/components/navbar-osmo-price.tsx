@@ -1,3 +1,4 @@
+import { makeMinimalAsset } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,6 +10,7 @@ import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -19,6 +21,11 @@ import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
+
+const osmoAsset = AssetLists.flatMap(({ assets }) => assets).find(
+  (asset) => asset.symbol === "OSMO"
+);
+const osmoCurrency = makeMinimalAsset(osmoAsset!);
 
 const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
@@ -35,9 +42,6 @@ const NavbarOsmoPrice = observer(() => {
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: osmoCurrency } = api.edge.assets.getAsset.useQuery({
-    findMinDenomOrSymbol: "OSMO",
-  });
   const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
     { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
     { enabled: Boolean(osmoCurrency) }

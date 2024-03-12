@@ -63,7 +63,6 @@ export function getAssetHistoricalPrice({
       numRecentFrames ?? "all"
     }`,
     ttl: 1000 * 60 * 3, // 3 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () =>
       queryTokenHistoricalChart({
         coinDenom,
@@ -94,7 +93,6 @@ export function getPoolAssetPairHistoricalPrice({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
     ttl: 1000 * 60 * 3, // 3 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () =>
       queryTokenPairHistoricalChart(
         poolId,

@@ -110,7 +110,11 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const poolsPromise = getPools({ search, minLiquidityUsd, types });
+            const poolsPromise = getPools({
+              search,
+              minLiquidityUsd,
+              types,
+            });
             const incentivesPromise = getCachedPoolIncentivesMap();
             const marketMetricsPromise = getCachedPoolMarketMetricsMap();
 
