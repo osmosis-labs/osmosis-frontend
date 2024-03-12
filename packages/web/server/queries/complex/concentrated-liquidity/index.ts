@@ -179,7 +179,6 @@ function getUserUnbondingPositions({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountUnbondingPositions({ bech32Address }),
   });
 }
@@ -193,7 +192,6 @@ function getUserDelegatedPositions({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountDelegatedPositions({ bech32Address }),
   });
 }
@@ -207,7 +205,6 @@ function getUserUndelegatingPositions({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryAccountUndelegatingPositions({ bech32Address }),
   });
 }
@@ -491,16 +488,7 @@ export async function mapGetUserPositions({
         ({ positions }) => positions
       );
 
-  const stakeCurrencyPromise = getAsset({
-    anyDenom: ChainList[0].staking.staking_tokens[0].denom,
-  });
-
-  const [positions, stakeCurrency] = await Promise.all([
-    positionsPromise,
-    stakeCurrencyPromise,
-  ]);
-
-  if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
+  const positions = await positionsPromise;
 
   const userPositions = await Promise.all(
     positions
@@ -524,7 +512,7 @@ export async function mapGetUserPositions({
         }
         const currentValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
+          await calcSumCoinsValue([baseCoin, quoteCoin]).catch(() => 0)
         );
 
         const lowerTick = new Int(position.lower_tick);

@@ -9,7 +9,7 @@ import {
   makeSwapExactAmountInMsg,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
@@ -18,6 +18,8 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
+import { RecommendedSwapDenoms } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
@@ -396,11 +398,7 @@ export function useSwap({
     isQuoteLoading,
     /** Spot price or user input quote. */
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading:
-      swapAssets.isLoadingFromAsset ||
-      swapAssets.isLoadingToAsset ||
-      isQuoteLoading ||
-      isSpotPriceQuoteLoading,
+    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
   };
 }
@@ -457,7 +455,7 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,
@@ -476,25 +474,15 @@ export function useSwapAssets({
     [selectableAssetPages?.pages]
   );
 
-  const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
+  const { asset: fromAsset } = useSwapAsset(
     fromAssetDenom,
     allSelectableAssets
   );
-  const { asset: toAsset, isLoading: isLoadingToAsset } = useSwapAsset(
-    toAssetDenom,
-    allSelectableAssets
-  );
+  const { asset: toAsset } = useSwapAsset(toAssetDenom, allSelectableAssets);
 
-  const { data: recommendedAssets_, isLoading: isLoadingRecommendedAssets } =
-    api.edge.assets.getRecommendedAssets.useQuery();
-  const recommendedAssets = useMemo(
-    () =>
-      recommendedAssets_?.filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [],
-    [recommendedAssets_, fromAsset, toAsset]
+  const recommendedAssets = useRecommendedAssets(
+    fromAsset?.coinMinimalDenom,
+    toAsset?.coinMinimalDenom
   );
 
   /** Remove to and from assets from assets that can be selected. */
@@ -514,13 +502,10 @@ export function useSwapAssets({
     assetsQueryInput,
     selectableAssets: filteredSelectableAssets,
     isLoadingSelectAssets,
-    isLoadingFromAsset,
-    isLoadingToAsset,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
     /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
-    isLoadingRecommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,
     setToAssetDenom,
@@ -603,10 +588,6 @@ function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
   existingAssets: TAsset[] = []
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -615,31 +596,23 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  const queryEnabled =
-    !isNil(minDenomOrSymbol) &&
-    typeof minDenomOrSymbol === "string" &&
-    !isLoadingWallet &&
-    !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
-    {
-      findMinDenomOrSymbol: minDenomOrSymbol ?? "",
-      userOsmoAddress: account?.address,
-    },
-    {
-      enabled: queryEnabled,
+  !existingAsset;
+  const asset = useMemo(() => {
+    if (existingAsset) return existingAsset;
 
-      // since asset is often point of attention, don't block on other potentially expensive queries
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
-      },
-    }
-  );
+    const asset = AssetLists.flatMap(({ assets }) => assets).find(
+      (asset) =>
+        minDenomOrSymbol &&
+        (asset.symbol === minDenomOrSymbol ||
+          asset.coinMinimalDenom === minDenomOrSymbol)
+    );
+    if (!asset) return;
+
+    return makeMinimalAsset(asset);
+  }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? asset,
-    isLoading: isLoading && !existingAsset,
+    asset: existingAsset ?? (asset as TAsset),
   };
 }
 
@@ -680,7 +653,7 @@ function useQueryRouterBestQuote(
   const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
-      t.edge.quoteRouter.routeTokenOutGivenIn(
+      t.local.quoteRouter.routeTokenOutGivenIn(
         {
           ...input,
           preferredRouter: key,
@@ -761,7 +734,7 @@ function useQueryRouterBestQuote(
  *  Then we can show the user a useful translated error message vs just "Error". */
 function makeRouterErrorFromTrpcError(
   error:
-    | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
     | null
     | undefined
 ):
@@ -792,4 +765,30 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: true,
     };
   }
+}
+
+/** Gets recommended assets directly from asset list. */
+function useRecommendedAssets(
+  fromCoinMinimalDenom?: string,
+  toCoinMinimalDenom?: string
+) {
+  return useMemo(
+    () =>
+      RecommendedSwapDenoms.map((denom) => {
+        const asset = AssetLists.flatMap(({ assets }) => assets).find(
+          (asset) => asset.symbol === denom
+        );
+        if (!asset) return;
+
+        return makeMinimalAsset(asset);
+      })
+        .filter((c): c is NonNullable<typeof c> => !!c)
+        .filter(
+          (currency) =>
+            currency &&
+            currency.coinMinimalDenom !== fromCoinMinimalDenom &&
+            currency.coinMinimalDenom !== toCoinMinimalDenom
+        ),
+    [fromCoinMinimalDenom, toCoinMinimalDenom]
+  );
 }

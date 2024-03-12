@@ -425,38 +425,29 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
               <div className="mt-3 flex place-content-between items-center">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingFromAsset
-                      ? "h-full w-full"
-                      : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingFromAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect
-                    dropdownOpen={showFromTokenSelectDropdown}
-                    swapState={swapState}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("from");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setFromAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect
+                  dropdownOpen={showFromTokenSelectDropdown}
+                  swapState={swapState}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("from");
+                      } else {
                         closeTokenSelectDropdowns();
-                        fromAmountInputEl.current?.focus();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setFromAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                      fromAmountInputEl.current?.focus();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <input
                     ref={fromAmountInputEl}
@@ -558,35 +549,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             </button>
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-transform">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingToAsset ? "h-full w-full" : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingToAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect={false}
-                    dropdownOpen={showToTokenSelectDropdown}
-                    swapState={swapState}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setToAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect={false}
+                  dropdownOpen={showToTokenSelectDropdown}
+                  swapState={swapState}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setToAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("to");
+                      } else {
                         closeTokenSelectDropdowns();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("to");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(

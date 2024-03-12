@@ -69,8 +69,8 @@ export type IntegratedBridgeTransferMethod = {
     /** If asset is wrapped */
     wrappedAssetId?: string;
     unwrappedAssetId: string;
-    evmChainId: number;
-    sourceChainId: string;
+    evmChainId?: number;
+    sourceChainId?: string;
   }[];
   wrappedAssetId?: string;
   unwrappedAssetId?: string;
