@@ -860,7 +860,8 @@
     "retry": "Yeniden dene",
     "manage": "Üstesinden gelmek",
     "noLock": "Kilit yok",
-    "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır."
+    "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
+    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor."
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {

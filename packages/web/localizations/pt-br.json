@@ -860,7 +860,8 @@
     "retry": "Tentar novamente",
     "manage": "Gerenciar",
     "noLock": "Não feche",
-    "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes."
+    "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
+    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {

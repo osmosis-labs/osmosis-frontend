@@ -860,7 +860,8 @@
     "retry": "リトライ",
     "manage": "管理",
     "noLock": "ロックなし",
-    "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。"
+    "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。",
+    "strategyGeoblocked": "申し訳ございませんが、この戦略はお住まいの国ではご利用いただけません。"
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {

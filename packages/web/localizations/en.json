@@ -860,7 +860,8 @@
     "retry": "Retry",
     "manage": "Manage",
     "noLock": "No Lock",
-    "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets."
+    "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
+    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country."
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

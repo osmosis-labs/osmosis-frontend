@@ -860,7 +860,8 @@
     "retry": "重试",
     "manage": "管理",
     "noLock": "无锁",
-    "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。"
+    "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
+    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。"
   },
   "disclaimer": "免责声明",
   "unstableAssetsWarning": {

@@ -860,7 +860,8 @@
     "retry": "Spróbować ponownie",
     "manage": "Zarządzać",
     "noLock": "Brak blokady",
-    "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych."
+    "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
+    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju."
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {

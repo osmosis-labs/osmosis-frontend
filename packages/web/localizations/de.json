@@ -860,7 +860,8 @@
     "retry": "Wiederholen",
     "manage": "Verwalten",
     "noLock": "Kein Schloss",
-    "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet."
+    "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
+    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
   },
   "disclaimer": "Haftungsausschluss",
   "unstableAssetsWarning": {

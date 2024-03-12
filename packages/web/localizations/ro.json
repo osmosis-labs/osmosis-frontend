@@ -860,7 +860,8 @@
     "retry": "Reîncercați",
     "manage": "Administra",
     "noLock": "Fără blocare",
-    "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente."
+    "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
+    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs."
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

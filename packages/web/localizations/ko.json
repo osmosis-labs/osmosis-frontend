@@ -860,7 +860,8 @@
     "retry": "다시 해 보다",
     "manage": "관리하다",
     "noLock": "잠금 없음",
-    "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다."
+    "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다.",
+    "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다."
   },
   "disclaimer": "부인 성명",
   "unstableAssetsWarning": {
