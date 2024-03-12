@@ -73,6 +73,7 @@ const TransferButton: FunctionComponent<{
   return externalUrl ? (
     <Button
       variant="ghost"
+      size="md"
       className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
       disabled={disabled}
       asChild
@@ -98,6 +99,7 @@ const TransferButton: FunctionComponent<{
   ) : (
     <Button
       variant="ghost"
+      size="md"
       className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
       onClick={(event) => {
         event.preventDefault();
