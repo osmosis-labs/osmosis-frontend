@@ -247,7 +247,6 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
               balance.chainInfo.chainId,
               balance.balance.denom
             );
-            setConfirmUnverifiedCoin(null);
           }}
           onRequestClose={() => {
             setConfirmUnverifiedCoin(null);
