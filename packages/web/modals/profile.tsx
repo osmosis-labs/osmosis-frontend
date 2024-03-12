@@ -129,6 +129,9 @@ export const ProfileModal: FunctionComponent<
           onCloseAvatarSelect();
           onCloseQR();
         }}
+        onAfterClose={() => {
+          setShow1CTSettings(false);
+        }}
         className="relative max-h-screen overflow-hidden"
       >
         <div className="flex flex-col items-center overflow-auto">

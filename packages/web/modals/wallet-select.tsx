@@ -798,7 +798,7 @@ const RightModalContent: FunctionComponent<
               width={64}
               height={64}
               src="/images/1ct-small-icon.svg"
-              alt="One Click Trading small logo"
+              alt="1-Click Trading small logo"
             />
           </div>
 
@@ -837,7 +837,7 @@ const RightModalContent: FunctionComponent<
               width={64}
               height={64}
               src="/images/1ct-small-icon.svg"
-              alt="One Click Trading small logo"
+              alt="1-Click Trading small logo"
             />
           </div>
 

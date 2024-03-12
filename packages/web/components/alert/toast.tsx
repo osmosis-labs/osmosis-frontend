@@ -150,7 +150,7 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
       <Image
-        alt="One Click Trading Small Icon"
+        alt="1-Click Trading Small Icon"
         src="/images/1ct-small-icon.svg"
         height={32}
         width={32}

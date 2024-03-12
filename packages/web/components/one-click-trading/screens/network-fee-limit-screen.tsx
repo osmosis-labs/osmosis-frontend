@@ -109,11 +109,10 @@ export const NetworkFeeLimitScreen = ({
                     key={step.id}
                     mode="unstyled"
                     className={classNames(
-                      "subtitle1 flex flex-1 flex-col items-center gap-2 rounded-lg bg-osmoverse-700 !py-4 !px-2 text-white-full hover:bg-osmoverse-600",
-                      {
-                        "border-2 border-osmoverse-200":
-                          String(value) === networkFeeLimit,
-                      }
+                      "subtitle1 flex flex-1 flex-col items-center gap-2 rounded-lg border-2 bg-osmoverse-700 !py-4 !px-2 text-white-full hover:bg-osmoverse-600",
+                      String(value) === networkFeeLimit
+                        ? "border-osmoverse-200"
+                        : "border-transparent"
                     )}
                     onClick={() => {
                       setNetworkFeeLimit(String(value));

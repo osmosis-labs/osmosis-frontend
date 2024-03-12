@@ -346,7 +346,7 @@ export const useCreateOneClickTradingSession = ({
                 isAuthenticatorOneClickTradingSession({ authenticator })
               )
               /**
-               * Find the oldest One Click Trading Session by comparing the id.
+               * Find the oldest 1-Click Trading Session by comparing the id.
                * The smallest id is the oldest authenticator.
                */
               .reduce((min, authenticator) => {

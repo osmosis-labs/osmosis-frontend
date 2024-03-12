@@ -814,7 +814,7 @@
     "reconnect": "Reconnect",
     "connectingWallet": "Connecting Wallet",
     "approveWalletConnect": "Approve {walletName} connection request on your mobile.",
-    "initializingOneClickTradingSession": "Initializing One Click Trading",
+    "initializingOneClickTradingSession": "Initializing 1-Click Trading",
     "approveOneClickTradingSession": "Approve Transaction on your wallet.",
     "errorInitializingOneClickTradingSession": "Error initializing Session",
     "continue": "Continue",

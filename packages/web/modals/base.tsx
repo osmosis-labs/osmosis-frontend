@@ -17,6 +17,7 @@ export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
   onRequestBack?: () => void;
+  onAfterClose?: () => void;
   backIcon?: SpriteIconId;
   title?: string | ReactNode;
   className?: string;
@@ -29,6 +30,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
   onRequestBack,
+  onAfterClose,
   backIcon,
   title,
   className,
@@ -61,6 +63,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         className
       )}
       closeTimeoutMS={150}
+      onAfterClose={onAfterClose}
     >
       <div className="flex place-content-between items-center">
         {onRequestBack && (
@@ -82,18 +85,22 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         ) : (
           <>{title}</>
         )}
-        {!hideCloseButton && (
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="absolute top-8 right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:top-7 md:right-7 xs:right-4"
-            icon={<Icon id="close" width={32} height={32} />}
-            onClick={onRequestClose}
-          />
-        )}
+        {!hideCloseButton && <ModalCloseButton onClick={onRequestClose} />}
       </div>
       {children}
     </ReactModal>
+  );
+};
+
+export const ModalCloseButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <IconButton
+      aria-label="Close"
+      mode="unstyled"
+      size="unstyled"
+      className="absolute top-8 right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:top-7 md:right-7 xs:right-4"
+      icon={<Icon id="close" width={32} height={32} />}
+      onClick={onClick}
+    />
   );
 };

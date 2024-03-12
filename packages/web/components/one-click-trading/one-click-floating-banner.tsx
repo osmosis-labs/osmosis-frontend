@@ -10,7 +10,7 @@ import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
 import { useFeatureFlags, useTranslation } from "~/hooks";
-import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-info";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -38,6 +38,8 @@ const OneClickFloatingBannerContent = () => {
   );
   const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
 
+  const onClose = () => setDoNotShowAgain(true);
+
   return (
     <Transition
       appear
@@ -52,9 +54,13 @@ const OneClickFloatingBannerContent = () => {
     >
       <div
         className={classNames(
-          "fixed bottom-8 right-8 z-50 w-fit rounded-5xl bg-osmoverse-800",
+          "fixed bottom-8 right-8 z-50 w-fit cursor-pointer rounded-5xl bg-osmoverse-800",
           "sm:right-auto sm:left-1/2 sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
         )}
+        onClick={() => {
+          setIs1CTIntroModalScreen("intro");
+          onClose();
+        }}
       >
         <div
           className={classNames(
@@ -112,7 +118,11 @@ const OneClickFloatingBannerContent = () => {
                   "text-subtitle1 font-subtitle1",
                   "sm:text-left sm:text-caption sm:font-caption"
                 )}
-                onClick={() => setIs1CTIntroModalScreen("intro")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIs1CTIntroModalScreen("intro");
+                  onClose();
+                }}
               >
                 {t("oneClickTrading.floatingBanner.tradeFasterButton")}
               </ArrowButton>
@@ -135,8 +145,9 @@ const OneClickFloatingBannerContent = () => {
                 height={24}
               />
             }
-            onClick={() => {
-              setDoNotShowAgain(true);
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
             }}
           />
         </div>
