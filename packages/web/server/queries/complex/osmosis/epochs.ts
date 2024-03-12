@@ -11,7 +11,6 @@ export function getEpochs() {
     cache: epochsCache,
     key: "epochs",
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: () => queryEpochs().then(({ epochs }) => epochs),
   });
 }

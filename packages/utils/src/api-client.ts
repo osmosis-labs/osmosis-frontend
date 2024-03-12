@@ -109,6 +109,7 @@ export async function apiClient<T>(
         config,
         data,
         status: response.status,
+        exception: e,
       });
 
       if (e instanceof ApiClientError) {

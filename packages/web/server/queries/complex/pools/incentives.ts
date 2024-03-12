@@ -88,7 +88,6 @@ export function getCachedPoolIncentivesMap(): Promise<
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
 
@@ -181,7 +180,6 @@ export function getLockableDurations() {
     cache: incentivesCache,
     key: "lockable-durations",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { lockable_durations } = await queryLockableDurations();
 
@@ -202,7 +200,6 @@ export function getIncentivizedPools() {
     cache: incentivesCache,
     key: "incentivized-pools",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { incentivized_pools } = await queryIncentivizedPools();
 
@@ -223,7 +220,6 @@ export function getActiveGauges() {
     cache: incentivesCache,
     key: "active-external-gauges",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { data } = await queryGauges();
       const epochs = await getEpochs();
