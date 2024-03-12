@@ -16,7 +16,7 @@ import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
 
 type Split =
-  RouterOutputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
+  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
 type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 

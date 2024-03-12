@@ -35,8 +35,10 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
+import { sum } from "~/utils/math";
 import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
@@ -749,6 +751,38 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       </span>
                     </div>
                   )}
+                {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                !swapState.error ? (
+                  <div className="flex items-center justify-between">
+                    <span className="caption">{t("swap.networkFee")}</span>
+                    <SkeletonLoader
+                      isLoaded={!swapState.isLoadingNetworkFee}
+                      className="min-w-[3rem] leading-[0]"
+                    >
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${swapState.networkFee?.gasUsdValueToPay ?? "0"} `}
+                      </span>
+                    </SkeletonLoader>
+                  </div>
+                ) : undefined}
+                {((swapState.quote?.tokenInFeeAmountFiatValue &&
+                  swapState.quote?.swapFee) ||
+                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) && (
+                  <div className="flex justify-between">
+                    <span className="caption">{t("swap.totalFee")}</span>
+                    <span className="caption text-osmoverse-200">
+                      {`≈ ${new PricePretty(
+                        DEFAULT_VS_CURRENCY,
+                        sum([
+                          swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
+                            new Dec(0),
+                          swapState.networkFee?.gasUsdValueToPay?.toDec() ??
+                            new Dec(0),
+                        ])
+                      )} `}
+                    </span>
+                  </div>
+                )}
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
