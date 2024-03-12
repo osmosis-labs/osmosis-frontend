@@ -21,11 +21,11 @@ export const StrategyTooltip = ({
   header,
   body,
 }: {
-  header: string;
+  header?: string;
   body: ReactNode;
 }) => (
   <div className="flex flex-col gap-1">
-    <p className="text-caption">{header}</p>
+    {header && <p className="text-caption">{header}</p>}
     {body}
   </div>
 );
