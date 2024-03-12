@@ -58,7 +58,7 @@ export const SessionPeriodScreen = ({
               key={id}
               mode="unstyled"
               className={classNames(
-                "subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  py-4 px-6 capitalize text-white-full hover:bg-osmoverse-900",
+                "subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  py-4 px-6 text-white-full hover:bg-osmoverse-900",
                 {
                   "bg-osmoverse-900":
                     transaction1CTParams?.sessionPeriod.end === id,

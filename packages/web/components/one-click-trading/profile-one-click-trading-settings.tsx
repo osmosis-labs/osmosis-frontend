@@ -8,8 +8,10 @@ import { api } from "~/utils/trpc";
 
 export const ProfileOneClickTradingSettings = ({
   onGoBack,
+  onClose,
 }: {
   onGoBack: () => void;
+  onClose: () => void;
 }) => {
   const { accountStore, chainStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
@@ -88,6 +90,7 @@ export const ProfileOneClickTradingSettings = ({
         reset1CTParams();
         onGoBack();
       }}
+      onClose={onClose}
       hasExistingSession={isOneClickTradingEnabled}
       onEndSession={() => {
         const rollback = () => {

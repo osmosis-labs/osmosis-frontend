@@ -121,6 +121,7 @@ export const ProfileModal: FunctionComponent<
         title={!show1CTSettings ? t("profile.modalTitle") : ""}
         {...props}
         isOpen={props.isOpen}
+        hideCloseButton={show1CTSettings}
         onRequestClose={() => {
           // Do not close the modal if the drawers are open
           if (!isQROpen && !isAvatarSelectOpen) return props.onRequestClose?.();
@@ -138,6 +139,7 @@ export const ProfileModal: FunctionComponent<
           {featureFlag.oneClickTrading && show1CTSettings ? (
             <ProfileOneClickTradingSettings
               onGoBack={() => setShow1CTSettings(false)}
+              onClose={props.onRequestClose}
             />
           ) : (
             <>

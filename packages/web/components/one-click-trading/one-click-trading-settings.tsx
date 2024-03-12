@@ -49,6 +49,7 @@ interface OneClickTradingSettingsProps {
   >;
   onStartTrading: () => void;
   onEndSession?: () => void;
+  onClose: () => void;
   isLoading?: boolean;
   isSendingTx?: boolean;
   isEndingSession?: boolean;
@@ -105,6 +106,7 @@ const OneClickTradingSettings = ({
   hideBackButton,
   hasExistingSession,
   onEndSession,
+  onClose,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
@@ -122,6 +124,11 @@ const OneClickTradingSettings = ({
     isOpen: isDiscardDialogOpen,
     onOpen: onOpenDiscardDialog,
     onClose: onCloseDiscardDialog,
+  } = useDisclosure();
+  const {
+    isOpen: isCloseConfirmDialogOpen,
+    onOpen: openCloseConfirmDialog,
+    onClose: closeCloseConfirmDialog,
   } = useDisclosure();
 
   const setTransaction1CTParams = (
@@ -158,20 +165,32 @@ const OneClickTradingSettings = ({
           onGoBack();
         }}
       />
+      <DiscardChangesConfirmationModal
+        isOpen={isCloseConfirmDialogOpen}
+        onCancel={closeCloseConfirmDialog}
+        onDiscard={onClose!}
+      />
       <ScreenManager defaultScreen={SettingsScreens.Main}>
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName="main">
-              <ModalCloseButton onClick={() => {}} />
+              {onClose && (
+                <ModalCloseButton
+                  onClick={() => {
+                    if (changes.length > 0) {
+                      return openCloseConfirmDialog();
+                    }
+
+                    onClose();
+                  }}
+                />
+              )}
 
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
                   <IconButton
                     onClick={() => {
-                      if (
-                        JSON.stringify(initialTransaction1CTParams) !==
-                        JSON.stringify(transaction1CTParams)
-                      ) {
+                      if (changes.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
@@ -321,7 +340,7 @@ const OneClickTradingSettings = ({
                         )}
                         disabled={isDisabled}
                       >
-                        <p className="capitalize">
+                        <p>
                           {transaction1CTParams
                             ? t(
                                 getSessionPeriodTranslationKey(

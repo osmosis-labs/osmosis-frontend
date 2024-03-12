@@ -150,6 +150,8 @@ export const WalletSelectModal: FunctionComponent<
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const hasInstalledWallets = useHasWalletsInstalled();
+  const [show1CTEditParams, setShow1CTEditParams] = useState(false);
+
   const create1CTSession = useCreateOneClickTradingSession({
     queryOptions: {
       onSuccess: () => {
@@ -430,16 +432,22 @@ export const WalletSelectModal: FunctionComponent<
             }
             show1CTConnectAWallet={show1CTConnectAWallet}
             setShow1CTConnectAWallet={setShow1CTConnectAWallet}
+            show1CTEditParams={show1CTEditParams}
+            setShow1CTEditParams={setShow1CTEditParams}
           />
-          <Button
-            aria-label="Close"
-            size="icon"
-            variant="ghost"
-            className="absolute right-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
-            onClick={onClose}
-          >
-            <Icon id="close" width={30} height={30} />
-          </Button>
+
+          {/* Hide close button since 1CT edit params will include it */}
+          {!show1CTEditParams && (
+            <Button
+              aria-label="Close"
+              size="icon"
+              variant="ghost"
+              className="absolute right-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
+              onClick={onClose}
+            >
+              <Icon id="close" width={30} height={30} />
+            </Button>
+          )}
         </div>
       </div>
     </ModalBase>
@@ -628,6 +636,8 @@ const RightModalContent: FunctionComponent<
     onCreate1CTSession: () => void;
     show1CTConnectAWallet: boolean;
     setShow1CTConnectAWallet: Dispatch<SetStateAction<boolean>>;
+    show1CTEditParams: boolean;
+    setShow1CTEditParams: Dispatch<SetStateAction<boolean>>;
   }
 > = observer(
   ({
@@ -642,6 +652,8 @@ const RightModalContent: FunctionComponent<
     onCreate1CTSession,
     show1CTConnectAWallet,
     setShow1CTConnectAWallet,
+    show1CTEditParams,
+    setShow1CTEditParams,
   }) => {
     const { t } = useTranslation();
     const { accountStore, chainStore } = useStore();
@@ -655,7 +667,6 @@ const RightModalContent: FunctionComponent<
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
       walletRepo?.chainRecord.chain.chain_name === chainStore.osmosis.chainName;
-    const [show1CTEditParams, setShow1CTEditParams] = useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -915,6 +926,7 @@ const RightModalContent: FunctionComponent<
                 onGoBack={() => {
                   setShow1CTEditParams(false);
                 }}
+                onClose={onRequestClose}
                 setTransaction1CTParams={setTransaction1CTParams}
                 transaction1CTParams={transaction1CTParams!}
                 onStartTrading={() => {
