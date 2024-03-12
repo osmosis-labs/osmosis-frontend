@@ -18,16 +18,17 @@ import {
 } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
 import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
+import { compare1CTTransactionParams } from "~/components/one-click-trading/one-click-trading-settings";
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
+import { getParametersFromOneClickTradingInfo } from "~/hooks/one-click-trading";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
-import { api } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 export class CreateOneClickSessionError extends Error {
   constructor(message: string) {
@@ -134,6 +135,53 @@ export function getOneClickTradingSessionAuthenticator({
   };
 }
 
+export async function getAuthenticatorIdFromTx({
+  events,
+  userOsmoAddress,
+  fallbackGetAuthenticatorId,
+  publicKey,
+}: {
+  events: DeliverTxResponse["events"];
+  userOsmoAddress: string;
+  publicKey: string;
+  fallbackGetAuthenticatorId: (
+    input: RouterInputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+  ) => Promise<
+    RouterOutputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+  >;
+}) {
+  let authenticatorId: string | undefined = events
+    ?.find(
+      ({ type, attributes }) =>
+        type === "message" &&
+        attributes.some(({ key, value }) => key === "authenticator_id" && value)
+    )
+    ?.attributes?.find(({ key }) => key === "authenticator_id")?.value;
+
+  if (!authenticatorId) {
+    try {
+      const authenticator = await fallbackGetAuthenticatorId({
+        userOsmoAddress,
+        publicKey,
+      });
+      if (!authenticator || isNil(authenticator?.id)) {
+        throw new Error("Authenticator id is not found");
+      }
+      authenticatorId = authenticator.id;
+    } catch (error) {
+      throw new CreateOneClickSessionError(
+        "Failed to fetch account public key and authenticators."
+      );
+    }
+  }
+
+  if (!authenticatorId) {
+    throw new CreateOneClickSessionError("Authenticator id is not found");
+  }
+
+  return authenticatorId;
+}
+
 export const useCreateOneClickTradingSession = ({
   queryOptions,
 }: {
@@ -186,6 +234,37 @@ export const useCreateOneClickTradingSession = ({
         throw new CreateOneClickSessionError(
           "Spend limit token decimals are not defined."
         );
+      }
+
+      const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+      const isOneClickTradingEnabled =
+        await accountStore.isOneCLickTradingEnabled();
+
+      /**
+       * If the only change is to the network fee limit, and because
+       * this fee limit is a local setting, just update it locally
+       * instead of sending a new transaction.
+       */
+      if (oneClickTradingInfo && isOneClickTradingEnabled) {
+        const session1CTParams = getParametersFromOneClickTradingInfo({
+          defaultIsOneClickEnabled: true,
+          oneClickTradingInfo,
+        });
+
+        const changes = compare1CTTransactionParams({
+          prevParams: session1CTParams,
+          nextParams: transaction1CTParams,
+        });
+
+        if (changes.length === 1 && changes.includes("networkFeeLimit")) {
+          return accountStore.setOneClickTradingInfo({
+            ...oneClickTradingInfo,
+            networkFeeLimit: {
+              ...transaction1CTParams.networkFeeLimit.currency,
+              amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
+            },
+          });
+        }
       }
 
       let accountPubKey: string,
@@ -258,7 +337,7 @@ export const useCreateOneClickTradingSession = ({
 
       /**
        * If the user has 15 authenticators, remove the oldest AllOfAuthenticator
-       * which is are previous OneClickTrading session
+       * which is the previous OneClickTrading session
        */
       const authenticatorToRemoveId =
         authenticators.length === 15
@@ -267,7 +346,7 @@ export const useCreateOneClickTradingSession = ({
                 isAuthenticatorOneClickTradingSession({ authenticator })
               )
               /**
-               * Find the oldest AllOfAuthenticator by comparing the id.
+               * Find the oldest One Click Trading Session by comparing the id.
                * The smallest id is the oldest authenticator.
                */
               .reduce((min, authenticator) => {
@@ -293,7 +372,7 @@ export const useCreateOneClickTradingSession = ({
           ]
         : [oneClickTradingAuthenticator];
 
-      await new Promise<DeliverTxResponse>((resolve, reject) => {
+      const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis
           .sendAddOrRemoveAuthenticatorsMsg({
             addAuthenticators: authenticatorsToAdd,
@@ -312,8 +391,19 @@ export const useCreateOneClickTradingSession = ({
           });
       });
 
+      const publicKey = toBase64(key.getPubKey().toBytes());
+
+      const authenticatorId = await getAuthenticatorIdFromTx({
+        events: tx.events,
+        userOsmoAddress: walletRepo.current.address!,
+        fallbackGetAuthenticatorId:
+          apiUtils.edge.oneClickTrading.getSessionAuthenticator.fetch,
+        publicKey,
+      });
+
       accountStore.setOneClickTradingInfo({
-        publicKey: toBase64(key.getPubKey().toBytes()),
+        authenticatorId,
+        publicKey,
         privateKey: toBase64(key.toBytes()),
         allowedMessages,
         resetPeriod,
@@ -339,7 +429,6 @@ export const useCreateOneClickTradingSession = ({
         unixNanoSecondsToSeconds(sessionPeriod.end)
       );
       const humanizedTime = humanizeTime(sessionEndDate);
-      toast.dismiss(); // Dismiss all toasts
       displayToast(
         {
           titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",

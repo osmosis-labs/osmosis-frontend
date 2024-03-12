@@ -21,12 +21,6 @@ export interface AccountAuthenticator {
    * authenticators to utilize it for their respective purposes.
    */
   data: Uint8Array;
-  /**
-   * IsReady indicates whether the authenticator is ready to be used.
-   * This flag is used to skip `ConfirmExecution` on the message
-   * that adds the authenticator itself.
-   */
-  isReady: boolean;
 }
 export interface AccountAuthenticatorProtoMsg {
   typeUrl: "/osmosis.authenticator.AccountAuthenticator";
@@ -53,12 +47,6 @@ export interface AccountAuthenticatorAmino {
    * authenticators to utilize it for their respective purposes.
    */
   data: Uint8Array;
-  /**
-   * IsReady indicates whether the authenticator is ready to be used.
-   * This flag is used to skip `ConfirmExecution` on the message
-   * that adds the authenticator itself.
-   */
-  is_ready: boolean;
 }
 export interface AccountAuthenticatorAminoMsg {
   type: "osmosis/authenticator/account-authenticator";
@@ -73,14 +61,12 @@ export interface AccountAuthenticatorSDKType {
   id: bigint;
   type: string;
   data: Uint8Array;
-  is_ready: boolean;
 }
 function createBaseAccountAuthenticator(): AccountAuthenticator {
   return {
     id: BigInt(0),
     type: "",
     data: new Uint8Array(),
-    isReady: false,
   };
 }
 export const AccountAuthenticator = {
@@ -97,9 +83,6 @@ export const AccountAuthenticator = {
     }
     if (message.data.length !== 0) {
       writer.uint32(26).bytes(message.data);
-    }
-    if (message.isReady === true) {
-      writer.uint32(32).bool(message.isReady);
     }
     return writer;
   },
@@ -123,9 +106,6 @@ export const AccountAuthenticator = {
         case 3:
           message.data = reader.bytes();
           break;
-        case 4:
-          message.isReady = reader.bool();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -141,7 +121,6 @@ export const AccountAuthenticator = {
         : BigInt(0);
     message.type = object.type ?? "";
     message.data = object.data ?? new Uint8Array();
-    message.isReady = object.isReady ?? false;
     return message;
   },
   fromAmino(object: AccountAuthenticatorAmino): AccountAuthenticator {
@@ -149,7 +128,6 @@ export const AccountAuthenticator = {
       id: BigInt(object.id),
       type: object.type,
       data: object.data,
-      isReady: object.is_ready,
     };
   },
   toAmino(message: AccountAuthenticator): AccountAuthenticatorAmino {
@@ -157,7 +135,6 @@ export const AccountAuthenticator = {
     obj.id = message.id ? message.id.toString() : undefined;
     obj.type = message.type;
     obj.data = message.data;
-    obj.is_ready = message.isReady;
     return obj;
   },
   fromAminoMsg(object: AccountAuthenticatorAminoMsg): AccountAuthenticator {

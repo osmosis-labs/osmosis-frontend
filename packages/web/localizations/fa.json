@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "enableOneClickTrading": "معاملات 1-Click را فعال کنید"
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
+      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
+      "continueWithWallet": "با کیف پول ادامه دهید",
+      "sessionEnded": "جلسه در این دستگاه به پایان رسید",
+      "errorEndingSession": "خطا در پایان جلسه",
+      "pleaseTryAgain": "خطای غیرمنتظره لطفا دوباره تلاش کنید."
     },
     "introduction": {
       "newFeature": "خصوصیت جدید",
@@ -525,8 +530,7 @@
       "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
     },
     "profile": {
-      "sessionExpired": "جلسه تمام شده",
-      "failedToGetSession": "تأییدکننده جلسه دریافت نشد. لطفا دوباره تلاش کنید."
+      "sessionExpired": "جلسه تمام شده"
     }
   },
   "pool": {

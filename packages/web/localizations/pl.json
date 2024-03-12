@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "Transakcja 1-Click wygasła",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "enableOneClickTrading": "Włącz handel jednym kliknięciem"
+      "enableOneClickTrading": "Włącz handel jednym kliknięciem",
+      "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
+      "continueWithWallet": "Kontynuuj z portfelem",
+      "sessionEnded": "Sesja zakończyła się na tym urządzeniu",
+      "errorEndingSession": "Błąd podczas kończenia sesji",
+      "pleaseTryAgain": "Niespodziewany błąd. Proszę spróbuj ponownie."
     },
     "introduction": {
       "newFeature": "Nowa cecha",
@@ -525,8 +530,7 @@
       "description": "Twoja sesja handlu 1-Click rozpocznie się w momencie zatwierdzenia transakcji w wybranym portfelu."
     },
     "profile": {
-      "sessionExpired": "Sesja wygasła",
-      "failedToGetSession": "Nie udało się uzyskać uwierzytelnienia sesji. Proszę spróbuj ponownie."
+      "sessionExpired": "Sesja wygasła"
     }
   },
   "pool": {

@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir"
+      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
+      "increaseFeeLimit": "Ağ ücreti sınırını artırın",
+      "continueWithWallet": "Cüzdanla devam et",
+      "sessionEnded": "Bu cihazda oturum sona erdi",
+      "errorEndingSession": "Oturum sonlandırılırken hata oluştu",
+      "pleaseTryAgain": "Beklenmeyen hata. Lütfen tekrar deneyin."
     },
     "introduction": {
       "newFeature": "Yeni özellik",
@@ -525,8 +530,7 @@
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     },
     "profile": {
-      "sessionExpired": "Oturum süresi doldu",
-      "failedToGetSession": "Oturum kimlik doğrulayıcısı alınamadı. Lütfen tekrar deneyin."
+      "sessionExpired": "Oturum süresi doldu"
     }
   },
   "pool": {

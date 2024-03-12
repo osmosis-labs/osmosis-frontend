@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "Le trading en 1 clic a expiré",
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
-      "enableOneClickTrading": "Activer le trading en 1 clic"
+      "enableOneClickTrading": "Activer le trading en 1 clic",
+      "increaseFeeLimit": "Augmenter la limite des frais de réseau",
+      "continueWithWallet": "Continuer avec le portefeuille",
+      "sessionEnded": "Session terminée sur cet appareil",
+      "errorEndingSession": "Erreur de fin de session",
+      "pleaseTryAgain": "Erreur inattendue. Veuillez réessayer."
     },
     "introduction": {
       "newFeature": "Nouvelle fonctionnalité",
@@ -525,8 +530,7 @@
       "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
     },
     "profile": {
-      "sessionExpired": "La session a expiré",
-      "failedToGetSession": "Échec de l'obtention de l'authentificateur de session. Veuillez réessayer."
+      "sessionExpired": "La session a expiré"
     }
   },
   "pool": {

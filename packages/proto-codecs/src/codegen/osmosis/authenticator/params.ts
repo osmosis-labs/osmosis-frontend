@@ -3,7 +3,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
 /** Params defines the parameters for the module. */
 export interface Params {
   maximumUnauthenticatedGas: bigint;
-  cosignerContract: string;
+  areSmartAccountsActive: boolean;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/osmosis.authenticator.Params";
@@ -12,7 +12,7 @@ export interface ParamsProtoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
   maximum_unauthenticated_gas: string;
-  cosigner_contract: string;
+  are_smart_accounts_active: boolean;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/authenticator/params";
@@ -21,12 +21,12 @@ export interface ParamsAminoMsg {
 /** Params defines the parameters for the module. */
 export interface ParamsSDKType {
   maximum_unauthenticated_gas: bigint;
-  cosigner_contract: string;
+  are_smart_accounts_active: boolean;
 }
 function createBaseParams(): Params {
   return {
     maximumUnauthenticatedGas: BigInt(0),
-    cosignerContract: "",
+    areSmartAccountsActive: false,
   };
 }
 export const Params = {
@@ -38,8 +38,8 @@ export const Params = {
     if (message.maximumUnauthenticatedGas !== BigInt(0)) {
       writer.uint32(8).uint64(message.maximumUnauthenticatedGas);
     }
-    if (message.cosignerContract !== "") {
-      writer.uint32(18).string(message.cosignerContract);
+    if (message.areSmartAccountsActive === true) {
+      writer.uint32(16).bool(message.areSmartAccountsActive);
     }
     return writer;
   },
@@ -55,7 +55,7 @@ export const Params = {
           message.maximumUnauthenticatedGas = reader.uint64();
           break;
         case 2:
-          message.cosignerContract = reader.string();
+          message.areSmartAccountsActive = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -71,13 +71,13 @@ export const Params = {
       object.maximumUnauthenticatedGas !== null
         ? BigInt(object.maximumUnauthenticatedGas.toString())
         : BigInt(0);
-    message.cosignerContract = object.cosignerContract ?? "";
+    message.areSmartAccountsActive = object.areSmartAccountsActive ?? false;
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
     return {
       maximumUnauthenticatedGas: BigInt(object.maximum_unauthenticated_gas),
-      cosignerContract: object.cosigner_contract,
+      areSmartAccountsActive: object.are_smart_accounts_active,
     };
   },
   toAmino(message: Params): ParamsAmino {
@@ -85,7 +85,7 @@ export const Params = {
     obj.maximum_unauthenticated_gas = message.maximumUnauthenticatedGas
       ? message.maximumUnauthenticatedGas.toString()
       : undefined;
-    obj.cosigner_contract = message.cosignerContract;
+    obj.are_smart_accounts_active = message.areSmartAccountsActive;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

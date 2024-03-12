@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel"
+      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
+      "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
+      "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
+      "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",
+      "errorEndingSession": "Fehler beim Beenden der Sitzung",
+      "pleaseTryAgain": "Unerwarteter Fehler. Bitte versuche es erneut."
     },
     "introduction": {
       "newFeature": "Neue Funktion",
@@ -525,8 +530,7 @@
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
     },
     "profile": {
-      "sessionExpired": "Sitzung abgelaufen",
-      "failedToGetSession": "Der Sitzungsauthentifikator konnte nicht abgerufen werden. Bitte versuche es erneut."
+      "sessionExpired": "Sitzung abgelaufen"
     }
   },
   "pool": {

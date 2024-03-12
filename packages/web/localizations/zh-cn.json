@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "一键交易已过期",
       "oneClickTradingDisabled": "一键交易已禁用",
       "networkFeeTooHigh": "网络费太高",
-      "enableOneClickTrading": "启用一键交易"
+      "enableOneClickTrading": "启用一键交易",
+      "increaseFeeLimit": "提高网络费用限额",
+      "continueWithWallet": "继续使用钱包",
+      "sessionEnded": "会话在此设备上结束",
+      "errorEndingSession": "结束会话时出错",
+      "pleaseTryAgain": "意外的错误。请再试一次。"
     },
     "introduction": {
       "newFeature": "新功能",
@@ -525,8 +530,7 @@
       "description": "当您在所选钱包中批准交易时，您的一键交易会话将开始。"
     },
     "profile": {
-      "sessionExpired": "会话已过期",
-      "failedToGetSession": "无法获取会话验证器。请再试一次。"
+      "sessionExpired": "会话已过期"
     }
   },
   "pool": {

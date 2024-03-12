@@ -49,6 +49,7 @@ import {
   osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/authenticator/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -82,19 +83,20 @@ import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
-  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
   TxEvents,
 } from "./types";
 import {
+  AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
   makeSignDocAmino,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
@@ -366,8 +368,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       walletWithAccountSet.disconnect = async (...args) => {
         const osmosisChain = this.chains[0];
         // Remove the one click trading info if the wallet is disconnected.
+        const oneClickTradingInfo = await this.getOneClickTradingInfo();
         if (
-          chainNameOrId === osmosisChain.chain_id ||
+          (oneClickTradingInfo && chainNameOrId === osmosisChain.chain_id) ||
           chainNameOrId === osmosisChain.chain_name
         ) {
           this.setOneClickTradingInfo(undefined);
@@ -562,15 +565,33 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
+      const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      const shouldBeSignedWithOneClickTrading =
+        await this.shouldBeSignedWithOneClickTrading({ messages: msgs });
+      const oneClickExtensionOptions = [
+        {
+          typeUrl: "/osmosis.authenticator.TxExtension",
+          value: TxExtension.encode({
+            selectedAuthenticators: [
+              Number(oneClickTradingInfo?.authenticatorId),
+            ],
+          }).finish(),
+        },
+      ];
+
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
-        usedFee = await this.estimateFee(
+        usedFee = await this.estimateFee({
           wallet,
-          msgs,
-          fee ?? { amount: [] },
+          messages: msgs,
+          fee: fee ?? { amount: [] },
+          nonCriticalExtensionOptions:
+            shouldBeSignedWithOneClickTrading && oneClickTradingInfo
+              ? oneClickExtensionOptions
+              : undefined,
           memo,
-          wallet.walletInfo?.signOptions
-        );
+          signOptions: wallet.walletInfo?.signOptions,
+        });
       } else {
         usedFee = fee;
       }
@@ -629,7 +650,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
           data?: string;
-          events?: TxEvent;
+          events?: TxEvent[];
           gas_used?: string;
           gas_wanted?: string;
           log?: string;
@@ -639,7 +660,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             data: string;
             code?: number;
             codespace: string;
-            events: TxEvent;
+            events: TxEvent[];
             gas_used: string;
             gas_wanted: string;
             info: string;
@@ -691,10 +712,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill(tx);
       }
     } catch (e) {
-      const error = e as Error;
+      const error = e as Error | AccountStoreNoBroadcastErrorEvent;
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
+
+      if (error instanceof AccountStoreNoBroadcastErrorEvent) {
+        throw e;
+      }
 
       if (this.options.preTxEvents?.onBroadcastFailed) {
         this.options.preTxEvents.onBroadcastFailed(chainNameOrId, error);
@@ -741,22 +766,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const shouldBeSignedWithOneClickTrading =
+      await this.shouldBeSignedWithOneClickTrading({ messages });
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
-    if (
+
+    const isWithinNetworkFeeLimit =
       oneClickTradingInfo &&
-      isOneClickTradingEnabled &&
-      messages.every(({ typeUrl }) =>
-        oneClickTradingInfo?.allowedMessages.includes(typeUrl)
-      ) &&
-      /**
-       * Should not surpass network fee limit.
-       */
       fee.amount.length === 1 &&
       fee.amount[0].denom === "uosmo" &&
       new Dec(fee.amount[0].amount).lte(
         new Dec(oneClickTradingInfo.networkFeeLimit.amount)
-      )
+      );
+
+    if (
+      shouldBeSignedWithOneClickTrading &&
+      /**
+       * Should not surpass network fee limit.
+       */
+      isWithinNetworkFeeLimit
     ) {
       return this.signOneClick(
         wallet,
@@ -768,6 +795,30 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
     }
 
+    if (
+      shouldBeSignedWithOneClickTrading &&
+      !isWithinNetworkFeeLimit &&
+      this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit
+    ) {
+      const confirmationState = await new Promise<"continue" | "finish">(
+        (resolve) => {
+          const fn = this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit;
+          if (!fn) return resolve("continue");
+          fn({
+            continueTx: () => resolve("continue"),
+            finish: () => resolve("finish"),
+          });
+        }
+      );
+      if (confirmationState === "finish") {
+        throw new AccountStoreNoBroadcastErrorEvent("User cancelled");
+      }
+    }
+
+    /**
+     * If the message is an authenticator message, force the direct signing.
+     * This is because the authenticator message should be signed with proto for now.
+     */
     const isAuthenticatorMsg = messages.some(
       (message) =>
         message.typeUrl === osmosis.authenticator.MsgAddAuthenticator.typeUrl ||
@@ -814,25 +865,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
-    const pubkey = encodePubkey(
-      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
-    );
-    const txBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: {
-        messages: messages,
-        memo: memo,
-      },
-    };
-
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      txBodyEncodeObject
-    ) as Uint8Array;
 
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
     if (isNil(oneClickTradingInfo)) {
       throw new Error("One click trading info is not available");
     }
+
+    const pubkey = encodePubkey(
+      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+    );
+
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
+      messages,
+      memo,
+      nonCriticalExtensionOptions: [
+        {
+          typeUrl: "/osmosis.authenticator.TxExtension",
+          value: TxExtension.encode({
+            selectedAuthenticators: [
+              Number(oneClickTradingInfo.authenticatorId),
+            ],
+          }).finish(),
+        },
+      ],
+    }) as Uint8Array;
+
     const privateKey = new PrivKeySecp256k1(
       fromBase64(oneClickTradingInfo.privateKey)
     );
@@ -1144,13 +1201,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * If the chain does not support transaction simulation, the function may
    * fall back to using the provided fee parameter.
    */
-  public async estimateFee(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: Optional<TxFee, "gas">,
-    memo: string,
-    signOptions: SignOptions = {}
-  ): Promise<TxFee> {
+  public async estimateFee({
+    wallet,
+    messages,
+    fee,
+    memo,
+    nonCriticalExtensionOptions,
+    signOptions = {},
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    fee: Optional<TxFee, "gas">;
+    nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
+    memo: string;
+    signOptions?: SignOptions;
+  }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
 
@@ -1159,6 +1224,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         TxBody.fromPartial({
           messages: encodedMessages,
           memo: memo,
+          nonCriticalExtensionOptions,
         })
       ).finish(),
       authInfoBytes: AuthInfo.encode({
@@ -1317,6 +1383,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       },
     });
+  }
+
+  /**
+   * Determines if a transaction should be signed using one-click trading based on various conditions.
+   */
+  async shouldBeSignedWithOneClickTrading({
+    messages,
+  }: {
+    messages: readonly EncodeObject[];
+  }): Promise<boolean> {
+    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
+      return false;
+    }
+
+    const isAllowedMessageType = messages.every(({ typeUrl }) =>
+      oneClickTradingInfo.allowedMessages.includes(typeUrl)
+    );
+
+    return isAllowedMessageType;
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {

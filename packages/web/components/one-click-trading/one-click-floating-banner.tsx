@@ -11,7 +11,7 @@ import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-info";
-import { useGlobalIs1CTIntroModalOpen } from "~/modals";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 
 export const OneClickFloatingBannerDoNotShowKey =
@@ -36,7 +36,7 @@ const OneClickFloatingBannerContent = () => {
     OneClickFloatingBannerDoNotShowKey,
     false
   );
-  const [, setIs1CTIntroModalOpen] = useGlobalIs1CTIntroModalOpen();
+  const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
 
   return (
     <Transition
@@ -112,7 +112,7 @@ const OneClickFloatingBannerContent = () => {
                   "text-subtitle1 font-subtitle1",
                   "sm:text-left sm:text-caption sm:font-caption"
                 )}
-                onClick={() => setIs1CTIntroModalOpen(true)}
+                onClick={() => setIs1CTIntroModalScreen("intro")}
               >
                 {t("oneClickTrading.floatingBanner.tradeFasterButton")}
               </ArrowButton>

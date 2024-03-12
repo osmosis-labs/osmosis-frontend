@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
-      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic"
+      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
+      "increaseFeeLimit": "Creșteți limita taxei de rețea",
+      "continueWithWallet": "Continuați cu portofelul",
+      "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv",
+      "errorEndingSession": "Eroare la încheierea sesiunii",
+      "pleaseTryAgain": "Eroare neașteptată. Vă rugăm să încercați din nou."
     },
     "introduction": {
       "newFeature": "Optiune noua",
@@ -525,8 +530,7 @@
       "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     },
     "profile": {
-      "sessionExpired": "Sesiunea a expirat",
-      "failedToGetSession": "Nu s-a putut obține autentificatorul de sesiune. Vă rugăm să încercați din nou."
+      "sessionExpired": "Sesiunea a expirat"
     }
   },
   "pool": {

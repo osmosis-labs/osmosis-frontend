@@ -1,42 +1,42 @@
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { createGlobalState, useMount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
+import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { Button } from "~/components/buttons";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
+import { Screen, ScreenManager } from "~/components/screen-manager";
 import {
   useOneClickTradingParams,
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
+import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
+import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { ModalBase } from "~/modals/base";
 import { useStore } from "~/stores";
 
-export const useGlobalIs1CTIntroModalOpen = createGlobalState(false);
+type Screens = "intro" | "settings" | "settings-no-back-button";
+
+export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
+  null
+);
 
 const OneClickTradingIntroModal = observer(() => {
-  const { accountStore, chainStore } = useStore();
-  const { oneClickTradingInfo } = useOneClickTradingSession();
+  const { accountStore } = useStore();
+  const { oneClickTradingInfo, isOneClickTradingEnabled } =
+    useOneClickTradingSession();
 
-  const [isOpen, setIsOpen] = useGlobalIs1CTIntroModalOpen();
-  const [show1CTEditParams, setShow1CTEditParams] = useState(false);
-  const [shouldHideSettingsBackButton, setShouldHideSettingsBackButton] =
-    useState(false);
+  const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
+
   const { t } = useTranslation();
-
-  const create1CTSession = useCreateOneClickTradingSession({
-    queryOptions: {
-      onSuccess: () => {
-        setIsOpen(false);
-      },
-    },
-  });
 
   const displayExpiredToast = useCallback(() => {
     const toastId = "one-click-trading-expired";
@@ -48,9 +48,7 @@ const OneClickTradingIntroModal = observer(() => {
             mode="text"
             className="caption"
             onClick={() => {
-              setIsOpen(true);
-              setShow1CTEditParams(true);
-              setShouldHideSettingsBackButton(true);
+              setCurrentScreen("settings-no-back-button");
               toast.dismiss(toastId);
             }}
           >
@@ -64,7 +62,7 @@ const OneClickTradingIntroModal = observer(() => {
         autoClose: false,
       }
     );
-  }, [t, setIsOpen]);
+  }, [t, setCurrentScreen]);
 
   const on1CTSessionExpire = useCallback(
     ({ oneClickTradingInfo }: { oneClickTradingInfo: OneClickTradingInfo }) => {
@@ -103,41 +101,83 @@ const OneClickTradingIntroModal = observer(() => {
     onExpire: on1CTSessionExpire,
   });
 
-  const {
-    transaction1CTParams,
-    setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
-    spendLimitTokenDecimals,
-    reset: reset1CTParams,
-    isError: isError1CTParams,
-  } = useOneClickTradingParams({
-    oneClickTradingInfo,
-  });
-
   const onClose = () => {
-    setIsOpen(false);
-    setShow1CTEditParams(false);
-    setShouldHideSettingsBackButton(false);
+    setCurrentScreen(null);
   };
+
+  const show1CTEditParams =
+    currentScreen === "settings" || currentScreen === "settings-no-back-button";
 
   return (
     <ModalBase
-      isOpen={isOpen}
+      isOpen={!isNil(currentScreen)}
       onRequestClose={onClose}
       className={classNames(show1CTEditParams && "px-0 py-9")}
     >
-      <div
-        className={classNames(
-          "flex items-center",
-          show1CTEditParams ? "px-8" : "mx-auto max-w-[31rem]"
-        )}
-      >
-        {show1CTEditParams ? (
+      <ScreenManager currentScreen={currentScreen ?? ""}>
+        <div
+          className={classNames(
+            "flex items-center",
+            show1CTEditParams ? "px-8" : "mx-auto max-w-[31rem]"
+          )}
+        >
+          {!!currentScreen && (
+            <IntroModal1CTScreens
+              oneClickTradingInfo={oneClickTradingInfo}
+              isOneClickTradingEnabled={isOneClickTradingEnabled}
+            />
+          )}
+        </div>
+      </ScreenManager>
+    </ModalBase>
+  );
+});
+
+const IntroModal1CTScreens = observer(
+  ({
+    oneClickTradingInfo,
+    isOneClickTradingEnabled,
+  }: {
+    isOneClickTradingEnabled: boolean | undefined;
+    oneClickTradingInfo: OneClickTradingInfo | undefined;
+  }) => {
+    const removeAuthenticator = useAddOrRemoveAuthenticators();
+    const { accountStore, chainStore } = useStore();
+
+    const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
+
+    const create1CTSession = useCreateOneClickTradingSession({
+      queryOptions: {
+        onSuccess: () => {
+          setCurrentScreen(null);
+        },
+      },
+    });
+    const removeSession = useRemoveOneClickTradingSession();
+
+    const {
+      transaction1CTParams,
+      setTransaction1CTParams,
+      isLoading: isLoading1CTParams,
+      spendLimitTokenDecimals,
+      reset: reset1CTParams,
+      isError: isError1CTParams,
+    } = useOneClickTradingParams({
+      oneClickTradingInfo,
+      defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
+    });
+
+    return (
+      <>
+        <Screen
+          screenName={["settings", "settings-no-back-button"] as Screens[]}
+        >
           <OneClickTradingSettings
             onGoBack={() => {
-              setShow1CTEditParams(false);
+              setCurrentScreen("intro");
             }}
-            hideBackButton={shouldHideSettingsBackButton}
+            isLoading={isLoading1CTParams}
+            hideBackButton={currentScreen === "settings-no-back-button"}
             setTransaction1CTParams={setTransaction1CTParams}
             transaction1CTParams={transaction1CTParams!}
             isSendingTx={create1CTSession.isLoading}
@@ -150,8 +190,42 @@ const OneClickTradingIntroModal = observer(() => {
                 ),
               });
             }}
+            hasExistingSession={isOneClickTradingEnabled}
+            isEndingSession={removeAuthenticator.isLoading}
+            onEndSession={() => {
+              const rollback = () => {
+                if (!transaction1CTParams) return;
+                setTransaction1CTParams({
+                  ...transaction1CTParams,
+                  isOneClickEnabled: true,
+                });
+              };
+
+              if (!oneClickTradingInfo) {
+                displayErrorRemovingSessionToast();
+                rollback();
+                throw new Error("oneClickTradingInfo is undefined");
+              }
+
+              removeSession.mutate(
+                {
+                  authenticatorId: oneClickTradingInfo?.authenticatorId,
+                },
+                {
+                  onSuccess: () => {
+                    accountStore.setOneClickTradingInfo(undefined);
+                  },
+                  onError: () => {
+                    rollback();
+                    displayErrorRemovingSessionToast();
+                  },
+                }
+              );
+            }}
           />
-        ) : (
+        </Screen>
+
+        <Screen screenName={"intro" as Screens}>
           <IntroducingOneClick
             isDisabled={isError1CTParams}
             isLoading={isLoading1CTParams || create1CTSession.isLoading}
@@ -166,13 +240,13 @@ const OneClickTradingIntroModal = observer(() => {
               });
             }}
             onClickEditParams={() => {
-              setShow1CTEditParams(true);
+              setCurrentScreen("settings");
             }}
           />
-        )}
-      </div>
-    </ModalBase>
-  );
-});
+        </Screen>
+      </>
+    );
+  }
+);
 
 export default OneClickTradingIntroModal;

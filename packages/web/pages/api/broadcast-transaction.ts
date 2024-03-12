@@ -1,37 +1,27 @@
-import { NextApiRequest, NextApiResponse } from "next";
-
 import { ChainList } from "~/config/generated/chain-list";
 
-/**
- * Broadcasts a transaction to the chain.
- *
- * We require this endpoint since many nodes do not have CORS enabled. Without CORS,
- * a node is unable to interact directly with browsers unless it's updated to incorporate
- * the CORS headers. Therefore, by having this endpoint, we can ensure that
- * users can still broadcast their transactions to the network.
- */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function broadcastTransactionHandler(req: Request) {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "Method not allowed" });
-    return;
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
-  const body = req.body as {
-    tx_bytes: string;
-    mode: string;
-    restEndpoint: string;
-  };
-
+  const body = await req.json();
   const isEndpointInChainConfig = ChainList.some(({ apis }) =>
     apis?.rest?.some(({ address }) => address.startsWith(body.restEndpoint))
   );
 
   if (!isEndpointInChainConfig) {
-    res.status(400).json({ error: "Invalid rest endpoint" });
-    return;
+    return new Response(JSON.stringify({ error: "Invalid rest endpoint" }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
   if (
@@ -40,8 +30,12 @@ export default async function handler(
     typeof body.tx_bytes !== "string" ||
     typeof body.mode !== "string"
   ) {
-    res.status(400).json({ error: "Invalid tx_bytes or mode" });
-    return;
+    return new Response(JSON.stringify({ error: "Invalid tx_bytes or mode" }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
   try {
@@ -60,28 +54,30 @@ export default async function handler(
       throw new Error("Response is not ok");
     }
 
-    const result: {
-      tx_response: {
-        height: string;
-        txhash: string;
-        codespace: string;
-        code: number;
-        data: string;
-        raw_log: string;
-        logs: unknown[];
-        info: string;
-        gas_wanted: string;
-        gas_used: string;
-        tx: unknown;
-        timestamp: string;
-        events: unknown[];
-      };
-    } = await response.json();
+    const result = await response.json();
 
-    res.status(200).json(result);
-  } catch (e) {
-    res.status(500).json({
-      message: "An unexpected error occurred. Please try again.",
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+  } catch (e) {
+    return new Response(
+      JSON.stringify({
+        message: "An unexpected error occurred. Please try again.",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
+
+export const config = {
+  runtime: "edge",
+  regions: ["cdg1"], // Only execute this function in the Paris region
+};

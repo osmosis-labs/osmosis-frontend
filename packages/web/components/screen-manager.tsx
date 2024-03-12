@@ -104,7 +104,7 @@ export const ScreenManager = ({
 };
 
 interface ScreenProps {
-  screenName: string;
+  screenName: string | string[];
   children: React.ReactNode | ((arg: ScreenManagerState) => React.ReactNode);
 }
 
@@ -121,13 +121,11 @@ interface ScreenProps {
 export const Screen = ({ children, screenName }: ScreenProps) => {
   const screenManagerContext = useScreenManager();
 
-  return (
-    <>
-      {screenName === screenManagerContext.currentScreen
-        ? runIfFn(children, screenManagerContext)
-        : null}
-    </>
-  );
+  const isActive = Array.isArray(screenName)
+    ? screenName.some((name) => name === screenManagerContext.currentScreen)
+    : screenName === screenManagerContext.currentScreen;
+
+  return <>{isActive ? runIfFn(children, screenManagerContext) : null}</>;
 };
 
 interface ScreenGoBackButtonProps {

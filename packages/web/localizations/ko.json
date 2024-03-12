@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "enableOneClickTrading": "1-클릭 거래 활성화"
+      "enableOneClickTrading": "1-클릭 거래 활성화",
+      "increaseFeeLimit": "네트워크 수수료 한도 인상",
+      "continueWithWallet": "지갑으로 계속하기",
+      "sessionEnded": "이 기기에서 세션이 종료되었습니다.",
+      "errorEndingSession": "세션을 종료하는 중에 오류가 발생했습니다.",
+      "pleaseTryAgain": "예기치 않은 오류. 다시 시도해 주세요."
     },
     "introduction": {
       "newFeature": "새로운 기능",
@@ -525,8 +530,7 @@
       "description": "선택한 지갑에서 거래를 승인하면 1-클릭 거래 세션이 시작됩니다."
     },
     "profile": {
-      "sessionExpired": "세션이 만료되었습니다.",
-      "failedToGetSession": "세션 인증자를 가져오지 못했습니다. 다시 시도해 주세요."
+      "sessionExpired": "세션이 만료되었습니다."
     }
   },
   "pool": {

@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "networkFeeTooHigh": "Network fee too high",
-      "enableOneClickTrading": "Enable 1-Click Trading"
+      "enableOneClickTrading": "Enable 1-Click Trading",
+      "increaseFeeLimit": "Increase network fee limit",
+      "continueWithWallet": "Continue with wallet",
+      "sessionEnded": "Session ended on this device",
+      "errorEndingSession": "Error ending session",
+      "pleaseTryAgain": "Unexpected Error. Please try again."
     },
     "introduction": {
       "newFeature": "New Feature",
@@ -525,8 +530,7 @@
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     },
     "profile": {
-      "sessionExpired": "Session expired",
-      "failedToGetSession": "Failed to get session authenticator. Please try again."
+      "sessionExpired": "Session expired"
     }
   },
   "pool": {

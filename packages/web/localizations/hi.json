@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
-      "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें"
+      "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
+      "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
+      "continueWithWallet": "बटुए के साथ जारी रखें",
+      "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया",
+      "errorEndingSession": "सत्र समाप्त करने में त्रुटि",
+      "pleaseTryAgain": "अप्रत्याशित त्रुटि। कृपया पुन: प्रयास करें।"
     },
     "introduction": {
       "newFeature": "नयी विशेषता",
@@ -525,8 +530,7 @@
       "description": "आपका 1-क्लिक ट्रेडिंग सत्र तब शुरू होगा जब आप अपने चुने हुए वॉलेट में लेनदेन को मंजूरी देंगे।"
     },
     "profile": {
-      "sessionExpired": "सत्र समाप्त हुआ",
-      "failedToGetSession": "सत्र प्रमाणक प्राप्त करने में विफल. कृपया पुन: प्रयास करें।"
+      "sessionExpired": "सत्र समाप्त हुआ"
     }
   },
   "pool": {

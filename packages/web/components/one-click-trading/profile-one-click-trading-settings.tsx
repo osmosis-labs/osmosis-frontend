@@ -1,12 +1,8 @@
-import { displayToast, ToastType } from "~/components/alert";
+import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
-import {
-  useOneClickTradingParams,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
+import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
-import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
+import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -19,14 +15,12 @@ export const ProfileOneClickTradingSettings = ({
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
     useOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { t } = useTranslation();
 
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
-    refetch: refetchSessionAuthenticator,
   } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
@@ -34,10 +28,11 @@ export const ProfileOneClickTradingSettings = ({
     },
     {
       enabled: shouldFetchSessionAuthenticator,
-      cacheTime: 1 * 60 * 1000, // 1 minutes
-      staleTime: 1 * 60 * 1000, // 1 minutes
+      cacheTime: 15_000, // 15 seconds
+      staleTime: 15_000, // 15 seconds
     }
   );
+
   const create1CTSession = useCreateOneClickTradingSession({
     queryOptions: {
       onSuccess: () => {
@@ -45,7 +40,7 @@ export const ProfileOneClickTradingSettings = ({
       },
     },
   });
-  const removeAuthenticator = useAddOrRemoveAuthenticators();
+  const removeSession = useRemoveOneClickTradingSession();
 
   const {
     transaction1CTParams,
@@ -103,36 +98,28 @@ export const ProfileOneClickTradingSettings = ({
           });
         };
 
-        if (!sessionAuthenticator) {
-          displayToast(
-            {
-              titleTranslationKey: t(
-                "oneClickTrading.profile.failedToGetSession"
-              ),
-            },
-            ToastType.ERROR
-          );
-          refetchSessionAuthenticator();
-          return rollback();
+        if (!oneClickTradingInfo) {
+          displayErrorRemovingSessionToast();
+          rollback();
+          throw new Error("oneClickTradingInfo is undefined");
         }
 
-        removeAuthenticator.mutate(
+        removeSession.mutate(
           {
-            addAuthenticators: [],
-            removeAuthenticators: [BigInt(sessionAuthenticator?.id)],
+            authenticatorId: oneClickTradingInfo?.authenticatorId,
           },
           {
             onSuccess: () => {
-              accountStore.setOneClickTradingInfo(undefined);
               onGoBack();
             },
             onError: () => {
               rollback();
+              displayErrorRemovingSessionToast();
             },
           }
         );
       }}
-      isEndingSession={removeAuthenticator.isLoading}
+      isEndingSession={removeSession.isLoading}
     />
   );
 };

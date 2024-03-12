@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
-      "enableOneClickTrading": "Включить торговлю в 1 клик"
+      "enableOneClickTrading": "Включить торговлю в 1 клик",
+      "increaseFeeLimit": "Увеличить лимит комиссии сети",
+      "continueWithWallet": "Продолжить с кошельком",
+      "sessionEnded": "Сеанс завершен на этом устройстве",
+      "errorEndingSession": "Ошибка завершения сеанса",
+      "pleaseTryAgain": "Неожиданная ошибка. Пожалуйста, попробуйте еще раз."
     },
     "introduction": {
       "newFeature": "Новая особенность",
@@ -525,8 +530,7 @@
       "description": "Ваша сессия торговли в 1 клик начнется, когда вы одобрите транзакцию в выбранном вами кошельке."
     },
     "profile": {
-      "sessionExpired": "Срок сеанса истек",
-      "failedToGetSession": "Не удалось получить аутентификатор сеанса. Пожалуйста, попробуйте еще раз."
+      "sessionExpired": "Срок сеанса истек"
     }
   },
   "pool": {

@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "networkFeeTooHigh": "Taxa de rede muito alta",
-      "enableOneClickTrading": "Habilite a negociação em 1 clique"
+      "enableOneClickTrading": "Habilite a negociação em 1 clique",
+      "increaseFeeLimit": "Aumentar o limite de taxa de rede",
+      "continueWithWallet": "Continuar com carteira",
+      "sessionEnded": "A sessão terminou neste dispositivo",
+      "errorEndingSession": "Erro ao encerrar sessão",
+      "pleaseTryAgain": "Erro inesperado. Por favor, tente novamente."
     },
     "introduction": {
       "newFeature": "Novo recurso",
@@ -525,8 +530,7 @@
       "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
     },
     "profile": {
-      "sessionExpired": "Sessão expirada",
-      "failedToGetSession": "Falha ao obter o autenticador de sessão. Por favor, tente novamente."
+      "sessionExpired": "Sessão expirada"
     }
   },
   "pool": {

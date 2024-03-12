@@ -442,7 +442,12 @@
       "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
-      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો"
+      "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
+      "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
+      "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
+      "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
+      "errorEndingSession": "સત્ર સમાપ્ત કરવામાં ભૂલ",
+      "pleaseTryAgain": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો."
     },
     "introduction": {
       "newFeature": "નવી સુવિધા",
@@ -525,8 +530,7 @@
       "description": "જ્યારે તમે તમારા પસંદ કરેલા વૉલેટમાં ટ્રાન્ઝેક્શન મંજૂર કરશો ત્યારે તમારું 1-ક્લિક ટ્રેડિંગ સત્ર શરૂ થશે."
     },
     "profile": {
-      "sessionExpired": "સત્ર સમાપ્ત થઈ",
-      "failedToGetSession": "સત્ર પ્રમાણીકરણ મેળવવામાં નિષ્ફળ. મહેરબાની કરીને ફરીથી પ્રયતન કરો."
+      "sessionExpired": "સત્ર સમાપ્ત થઈ"
     }
   },
   "pool": {
