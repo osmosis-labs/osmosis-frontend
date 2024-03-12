@@ -25,13 +25,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-wosmongton-700 text-white-full shadow hover:bg-wosmongton-700/90",
+          "bg-wosmongton-700 text-white-full shadow hover:bg-wosmongton-700/80",
         destructive: "bg-rust-700 shadow-sm hover:bg-rust-700/90",
         outline:
           "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-wosmongton-400 hover:text-white-full",
         secondary:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
-        ghost: "hover:bg-osmoverse-600  hover:text-accent-foreground",
+        ghost: "hover:bg-osmoverse-600",
         link: "text-white-full underline-offset-4 hover:underline",
       },
       size: {
