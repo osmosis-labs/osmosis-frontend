@@ -39,7 +39,7 @@ export const MyPositionCard: FunctionComponent<{
   const featureFlags = useFeatureFlags();
 
   const { data: positionPerformance } =
-    api.edge.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
+    api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
       {
         positionId: id,
       },
@@ -52,8 +52,10 @@ export const MyPositionCard: FunctionComponent<{
       }
     );
 
+  console.log(id);
+
   const { data: positionDetails, isLoading: isLoadingPositionDetails } =
-    api.edge.concentratedLiquidity.getPositionDetails.useQuery(
+    api.local.concentratedLiquidity.getPositionDetails.useQuery(
       {
         positionId: id,
         userOsmoAddress: account?.address ?? "",

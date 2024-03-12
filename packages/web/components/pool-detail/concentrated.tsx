@@ -64,7 +64,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       api.edge.pools.getSuperfluidPoolIds.useQuery();
 
     const { data: userPositions, isFetched: isUserPositionsFetched } =
-      api.edge.concentratedLiquidity.getUserPositions.useQuery(
+      api.local.concentratedLiquidity.getUserPositions.useQuery(
         {
           userOsmoAddress: account?.address ?? "",
           forPoolId: poolId,
