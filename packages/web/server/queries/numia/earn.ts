@@ -95,6 +95,7 @@ export interface RawStrategyCMSData {
   contract: string;
   tvl: string;
   apr: string;
+  geoblock: string;
   lockDuration: string;
   riskLevel: number;
   riskReportUrl: string;
@@ -173,6 +174,10 @@ export interface StrategyCMSData {
    */
   disabled: boolean;
   /**
+   * Link for geoblocking check
+   */
+  geoblock: string;
+  /**
    * Important messaging related to the strategy.
    */
   message: string;
@@ -221,10 +226,13 @@ export interface EarnStrategy extends StrategyCMSData {
   daily?: RatePretty;
   tvl?: StrategyTVL;
   annualPercentages?: StrategyAnnualPercentages;
+  geoblocked?: boolean;
   isLoadingTVL?: boolean;
   isLoadingAPR?: boolean;
+  isLoadingGeoblock?: boolean;
   isErrorTVL?: boolean;
   isErrorAPR?: boolean;
+  isErrorGeoblock?: boolean;
 }
 
 export function queryEarnUserBalance(

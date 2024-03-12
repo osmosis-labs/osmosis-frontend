@@ -1,6 +1,9 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { apiClient } from "@osmosis-labs/utils";
+import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+import { LevanaGeoBlockedResponse } from "~/pages/_app";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { getDailyApr } from "~/server/queries/complex/earn/strategies";
 import type { EarnStrategy } from "~/server/queries/numia/earn";
@@ -47,6 +50,7 @@ const useGetEarnStrategies = (
           balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           tvl: undefined,
           apr: undefined,
+          geoblocked: undefined,
         };
       }),
     [cmsData?.strategies, holdenDenoms]
@@ -101,6 +105,24 @@ const useGetEarnStrategies = (
     )
   );
 
+  const geoblockQueries = useQueries({
+    queries: (_strategies ?? []).map((strat) => ({
+      queryKey: ["geoblocked", strat.geoblock],
+      queryFn: async () =>
+        strat.geoblock !== ""
+          ? {
+              response: await apiClient<LevanaGeoBlockedResponse>(
+                strat.geoblock
+              ),
+              id: strat.id,
+            }
+          : {
+              response: undefined,
+              id: strat.id,
+            },
+    })),
+  });
+
   const strategies: EarnStrategy[] = useMemo(
     () =>
       _strategies.map((strat) => {
@@ -111,18 +133,25 @@ const useGetEarnStrategies = (
           (annualPercentagesQuery) =>
             annualPercentagesQuery.data?.strategyId === strat.id
         );
+        const geoblockQuery = geoblockQueries.find(
+          (geoblockQuery) => geoblockQuery.data?.id === strat.id
+        );
+
         return {
           ...strat,
           tvl: tvlQuery?.data,
           annualPercentages: annualPercentagesQuery?.data,
           daily: getDailyApr(annualPercentagesQuery?.data?.apr),
+          geoblocked: geoblockQuery?.data?.response?.allowed === false,
           isLoadingTVL: tvlQuery?.isLoading,
           isLoadingAPR: annualPercentagesQuery?.isLoading,
           isErrorTVL: tvlQuery?.isError,
           isErrorAPR: annualPercentagesQuery?.isError,
+          isLoadingGeoblock: geoblockQuery?.isLoading,
+          isErrorGeoblock: geoblockQuery?.isError,
         };
       }),
-    [_strategies, annualPercentagesQueries, tvlQueries]
+    [_strategies, annualPercentagesQueries, geoblockQueries, tvlQueries]
   );
 
   const areBalancesLoading = useMemo(
