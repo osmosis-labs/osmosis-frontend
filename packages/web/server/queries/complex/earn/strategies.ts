@@ -173,7 +173,7 @@ export async function getStrategies() {
 
         return {
           riskReportUrl: cmsData.riskReportUrl,
-          strategies: aggregatedStrategies,
+          strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {
         throw new Error("Error while fetching strategy CMS data", {
