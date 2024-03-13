@@ -10,15 +10,9 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import {
-  useAmplitudeAnalytics,
-  useDisclosure,
-  useFeatureFlags,
-  useTranslation,
-} from "~/hooks";
-import { FiatOnrampSelectionModal } from "~/modals";
+import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
@@ -31,14 +25,8 @@ const osmoCurrency = makeMinimalAsset(osmoAsset!);
 const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const flags = useFeatureFlags();
-
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onOpen: onOpenFiatOnrampSelection,
-    onClose: onCloseFiatOnrampSelection,
-  } = useDisclosure();
+  const { fiatRampSelection } = useBridge();
 
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
@@ -79,7 +67,7 @@ const NavbarOsmoPrice = observer(() => {
           <Button
             variant="outline"
             className="button group relative flex w-full items-center justify-center gap-2 overflow-hidden !rounded-full border-osmoverse-700 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
-            onClick={() => onOpenFiatOnrampSelection()}
+            onClick={() => fiatRampSelection()}
           >
             <CreditCardIcon
               isAnimated
@@ -99,16 +87,6 @@ const NavbarOsmoPrice = observer(() => {
           </Button>
         </SkeletonLoader>
       )}
-
-      <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
-        onSelectRamp={(ramp) => {
-          if (ramp !== "transak") return;
-
-          logEvent([EventName.Sidebar.buyOsmoClicked]);
-        }}
-      />
     </div>
   );
 });

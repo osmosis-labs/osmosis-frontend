@@ -35,6 +35,7 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
+import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -76,19 +77,21 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <StoreProvider>
         <WalletSelectProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: "#2d2755",
-            }}
-            transition={Bounce}
-          />
-          <MainLayoutWrapper>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayoutWrapper>
+          <BridgeProvider>
+            <DefaultSeo />
+            <IbcNotifier />
+            <ToastContainer
+              toastStyle={{
+                backgroundColor: "#2d2755",
+              }}
+              transition={Bounce}
+            />
+            <MainLayoutWrapper>
+              <ErrorBoundary fallback={ErrorFallback}>
+                {Component && <Component {...pageProps} />}
+              </ErrorBoundary>
+            </MainLayoutWrapper>
+          </BridgeProvider>
         </WalletSelectProvider>
       </StoreProvider>
     </MultiLanguageProvider>
