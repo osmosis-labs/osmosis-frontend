@@ -1,6 +1,5 @@
 import "~/utils/superjson";
 
-import { logEvent } from "@amplitude/analytics-browser";
 import {
   httpBatchLink,
   httpLink,
@@ -18,7 +17,6 @@ import {
 } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 
-import { EventName } from "~/config";
 import { type AppRouter, appRouter } from "~/server/api/root";
 import { superjson } from "~/utils/superjson";
 import {
@@ -90,20 +88,6 @@ const makeSkipBatchLink = (url: string) =>
 export const api = createTRPCNext<AppRouter>({
   config() {
     return {
-      queryClientConfig: {
-        defaultOptions: {
-          queries: {
-            onError: (error: any) => {
-              logEvent(EventName.QueryError, {
-                errorMessage:
-                  error instanceof Error ? error.message : String(error),
-              });
-            },
-            retry: 3, // Number of retry attempts
-          },
-        },
-      },
-
       /**
        * Transformer used for data de-serialization from the server.
        *
