@@ -1,7 +1,15 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { useDimension, useWalletSelect } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useDimension,
+  useNavBar,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -10,7 +18,32 @@ import { AssetsInfoTable } from "../table/asset-info";
 export const AssetsPageV2: FunctionComponent = observer(() => {
   const { accountStore, chainStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { t } = useTranslation();
   const { isLoading: isWalletLoading } = useWalletSelect();
+  const { startBridge, bridgeAsset } = useBridge();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
+
+  // set nav bar ctas
+  useNavBar({
+    ctas: [
+      {
+        label: t("assets.table.depositButton"),
+        onClick: () => {
+          startBridge("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
+      },
+      {
+        label: t("assets.table.withdrawButton"),
+        onClick: () => {
+          startBridge("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
+      },
+    ],
+  });
 
   const { data: value } = api.edge.assets.getUserAssetsBreakdown.useQuery(
     {
@@ -47,11 +80,11 @@ export const AssetsPageV2: FunctionComponent = observer(() => {
 
       <AssetsInfoTable
         tableTopPadding={valuesHeight}
-        onDeposit={(coinDenom) => {
-          console.log("deposit", coinDenom);
+        onDeposit={(coinMinimalDenom) => {
+          bridgeAsset(coinMinimalDenom, "deposit");
         }}
-        onWithdraw={(coinDenom) => {
-          console.log("withdraw", coinDenom);
+        onWithdraw={(coinMinimalDenom) => {
+          bridgeAsset(coinMinimalDenom, "withdraw");
         }}
       />
     </main>
