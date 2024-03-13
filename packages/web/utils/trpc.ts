@@ -151,18 +151,9 @@ export const api = createTRPCNext<AppRouter>({
             [constructEdgeRouterKey("pools")]: makeSkipBatchLink(
               `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`
             )(runtime),
-            [constructEdgeRouterKey("quoteRouter")]: makeSkipBatchLink(
-              `${getBaseUrl()}${constructEdgeUrlPathname("quoteRouter")}`
-            )(runtime),
             [constructEdgeRouterKey("assets")]: makeSkipBatchLink(
               `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`
             )(runtime),
-            [constructEdgeRouterKey("concentratedLiquidity")]:
-              makeSkipBatchLink(
-                `${getBaseUrl()}${constructEdgeUrlPathname(
-                  "concentratedLiquidity"
-                )}`
-              )(runtime),
           };
 
           return (ctx) => {

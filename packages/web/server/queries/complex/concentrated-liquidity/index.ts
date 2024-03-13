@@ -304,10 +304,12 @@ export async function mapGetUserPositionDetails({
             lowerTick: lowerTick.toString(),
             upperTick: upperTick.toString(),
             poolId: position.pool_id,
-          }).catch(() => undefined),
+          })
+            .then((rate) => rate ?? new RatePretty(0))
+            .catch(() => new RatePretty(0)),
         4_000, // 4 seconds
         "getConcentratedRangePoolApr"
-      )().catch(() => undefined);
+      )().catch(() => new RatePretty(0));
 
       const pool = pools.find((pool) => pool.id === position.pool_id);
       if (!pool) {
@@ -443,7 +445,7 @@ export async function mapGetUserPositionDetails({
 
       const totalRangeApr =
         isSuperfluidStaked || isSuperfluidUnstaking
-          ? rangeApr?.add(superfluidApr ?? new Dec(0))
+          ? rangeApr.add(superfluidApr ?? new Dec(0))
           : rangeApr;
 
       return {
@@ -512,7 +514,10 @@ export async function mapGetUserPositions({
         }
         const currentValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue([baseCoin, quoteCoin]).catch(() => 0)
+          await calcSumCoinsValue([baseCoin, quoteCoin]).catch((e) => {
+            console.warn(e);
+            return 0;
+          })
         );
 
         const lowerTick = new Int(position.lower_tick);
@@ -583,20 +588,38 @@ export async function getPositionHistoricalPerformance({
   ] = await Promise.all([
     mapRawCoinToPretty(performance.principal?.assets ?? [])
       .then(aggregateCoinsByDenom)
-      .catch(() => []),
-    mapRawCoinToPretty([position.asset0, position.asset1]),
-    mapRawCoinToPretty(position.claimable_incentives).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(position.claimable_spread_rewards).then(
-      aggregateCoinsByDenom
-    ),
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      }),
+    mapRawCoinToPretty([position.asset0, position.asset1]).catch((e) => {
+      console.warn(e);
+      return [];
+    }),
+    mapRawCoinToPretty(position.claimable_incentives)
+      .then(aggregateCoinsByDenom)
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      }),
+    mapRawCoinToPretty(position.claimable_spread_rewards)
+      .then(aggregateCoinsByDenom)
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      }),
     mapRawCoinToPretty(performance?.total_incentives_rewards ?? [])
       .then(aggregateCoinsByDenom)
-      .catch(() => []),
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      }),
     mapRawCoinToPretty(performance?.total_spread_rewards ?? [])
       .then(aggregateCoinsByDenom)
-      .catch(() => []),
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      }),
   ]);
 
   if (currentCoins.length !== 2)
@@ -615,24 +638,41 @@ export async function getPositionHistoricalPerformance({
 
   const currentValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    (await calcSumCoinsValue(currentCoins)) ?? 0
+    await calcSumCoinsValue(currentCoins).catch((e) => {
+      console.warn(e);
+      return new Dec(0);
+    })
   );
   const currentCoinsValues = (
-    await Promise.all(currentCoins.map(calcCoinValue))
-  )
-    .filter((p): p is NonNullable<typeof p> => !!p)
-    .map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p));
+    await Promise.all(
+      currentCoins.map(calcCoinValue).map((p) =>
+        p.catch((e) => {
+          console.warn(e);
+          return 0;
+        })
+      )
+    )
+  ).map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p));
   const principalValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    (await calcSumCoinsValue(principalCoins)) ?? 0
+    await calcSumCoinsValue(principalCoins).catch((e) => {
+      console.warn(e);
+      return new Dec(0);
+    })
   );
   const claimableRewardsValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    (await calcSumCoinsValue(claimableRewardCoins)) ?? 0
+    await calcSumCoinsValue(claimableRewardCoins).catch((e) => {
+      console.warn(e);
+      return 0;
+    })
   );
   const totalEarnedValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    (await calcSumCoinsValue(totalRewardCoins)) ?? 0
+    await calcSumCoinsValue(totalRewardCoins).catch((e) => {
+      console.warn(e);
+      return 0;
+    })
   );
 
   const principalValueDec = principalValue.toDec();
