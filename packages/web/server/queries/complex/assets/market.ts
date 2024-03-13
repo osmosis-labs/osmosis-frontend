@@ -6,6 +6,7 @@ import { LRUCache } from "lru-cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureErrorAndReturn } from "~/utils/error";
 
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
@@ -36,21 +37,18 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const currentPrice = await getAssetPrice({ asset }).catch((e) => {
-        console.warn(e);
-        return null;
-      });
-      const marketCap = await getAssetMarketCap(asset).catch((e) => {
-        console.warn(e);
-        return null;
-      });
+      const currentPrice = await getAssetPrice({ asset }).catch((e) =>
+        captureErrorAndReturn(e, undefined)
+      );
+      const marketCap = await getAssetMarketCap(asset).catch((e) =>
+        captureErrorAndReturn(e, undefined)
+      );
       const priceChange24h = (await getAssetMarketActivity(asset))
         ?.price_24h_change;
       const marketCapRank = (
-        await getCoingeckoCoin(asset).catch((e) => {
-          console.warn(e);
-          return null;
-        })
+        await getCoingeckoCoin(asset).catch((e) =>
+          captureErrorAndReturn(e, undefined)
+        )
       )?.market_cap_rank;
 
       return {
