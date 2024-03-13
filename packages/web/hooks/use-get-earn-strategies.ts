@@ -107,19 +107,20 @@ const useGetEarnStrategies = (
 
   const geoblockQueries = useQueries({
     queries: (_strategies ?? []).map((strat) => ({
-      queryKey: ["geoblocked", strat.geoblock],
-      queryFn: async () =>
-        strat.geoblock !== ""
-          ? {
-              response: await apiClient<LevanaGeoBlockedResponse>(
-                strat.geoblock
-              ),
-              id: strat.id,
-            }
-          : {
-              response: undefined,
-              id: strat.id,
-            },
+      queryKey: ["geoblocked", strat.geoblock, strat.id],
+      queryFn: async () => {
+        if (strat.geoblock === "") {
+          return {
+            response: undefined,
+            id: strat.id,
+          };
+        }
+
+        return {
+          response: await apiClient<LevanaGeoBlockedResponse>(strat.geoblock),
+          id: strat.id,
+        };
+      },
     })),
   });
 
