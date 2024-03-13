@@ -97,7 +97,7 @@ export async function getUserPools(bech32Address: string) {
 
         userValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          (await calcSumCoinsValue(coinsToCalculateValue)) ?? new Dec(0)
+          await calcSumCoinsValue(coinsToCalculateValue)
         );
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
@@ -196,31 +196,31 @@ export async function getUserSharePools(
     // underlying assets behind all shares
     // when catching: likely shares balance is too small for precision
     const underlyingAvailableCoins: CoinPretty[] = available
-      ? await getGammShareUnderlyingCoins(available).catch(() => [])
+      ? await getGammShareUnderlyingCoins(available).catch((e) =>
+          captureErrorAndReturn(e, [])
+        )
       : [];
     const underlyingLockedCoins: CoinPretty[] = locked
-      ? await getGammShareUnderlyingCoins(locked).catch(() => [])
+      ? await getGammShareUnderlyingCoins(locked).catch((e) =>
+          captureErrorAndReturn(e, [])
+        )
       : [];
     const underlyingUnlockingCoins: CoinPretty[] = unlocking
-      ? await getGammShareUnderlyingCoins(unlocking).catch(() => [])
+      ? await getGammShareUnderlyingCoins(unlocking).catch((e) =>
+          captureErrorAndReturn(e, [])
+        )
       : [];
     const totalCoins: CoinPretty[] = total
-      ? await getGammShareUnderlyingCoins(total).catch(() => [])
+      ? await getGammShareUnderlyingCoins(total).catch((e) =>
+          captureErrorAndReturn(e, [])
+        )
       : [];
 
     // value of all shares
-    const availableValue = await calcSumCoinsValue(
-      underlyingAvailableCoins
-    ).catch((e) => captureErrorAndReturn(e, new Dec(0)));
-    const lockedValue = await calcSumCoinsValue(underlyingLockedCoins).catch(
-      (e) => captureErrorAndReturn(e, new Dec(0))
-    );
-    const unlockingValue = await calcSumCoinsValue(
-      underlyingUnlockingCoins
-    ).catch((e) => captureErrorAndReturn(e, new Dec(0)));
-    const totalValue = await calcSumCoinsValue(totalCoins).catch((e) =>
-      captureErrorAndReturn(e, new Dec(0))
-    );
+    const availableValue = await calcSumCoinsValue(underlyingAvailableCoins);
+    const lockedValue = await calcSumCoinsValue(underlyingLockedCoins);
+    const unlockingValue = await calcSumCoinsValue(underlyingUnlockingCoins);
+    const totalValue = await calcSumCoinsValue(totalCoins);
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(

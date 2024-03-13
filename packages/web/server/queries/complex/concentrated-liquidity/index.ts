@@ -279,7 +279,7 @@ export async function mapGetUserPositionDetails({
       }
       const currentValue = new PricePretty(
         DEFAULT_VS_CURRENCY,
-        (await calcSumCoinsValue([baseCoin, quoteCoin])) ?? 0
+        await calcSumCoinsValue([baseCoin, quoteCoin])
       );
 
       const lowerTick = new Int(position.lower_tick);
@@ -515,9 +515,7 @@ export async function mapGetUserPositions({
         }
         const currentValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue([baseCoin, quoteCoin]).catch((e) =>
-            captureErrorAndReturn(e, 0)
-          )
+          await calcSumCoinsValue([baseCoin, quoteCoin])
         );
 
         const lowerTick = new Int(position.lower_tick);
@@ -586,24 +584,22 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal?.assets ?? [])
-      .then(aggregateCoinsByDenom)
-      .catch((e) => captureErrorAndReturn(e, [])),
-    mapRawCoinToPretty([position.asset0, position.asset1]).catch((e) =>
-      captureErrorAndReturn(e, [])
+    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
+      aggregateCoinsByDenom
     ),
-    mapRawCoinToPretty(position.claimable_incentives)
-      .then(aggregateCoinsByDenom)
-      .catch((e) => captureErrorAndReturn(e, [])),
-    mapRawCoinToPretty(position.claimable_spread_rewards)
-      .then(aggregateCoinsByDenom)
-      .catch((e) => captureErrorAndReturn(e, [])),
-    mapRawCoinToPretty(performance?.total_incentives_rewards ?? [])
-      .then(aggregateCoinsByDenom)
-      .catch((e) => captureErrorAndReturn(e, [])),
-    mapRawCoinToPretty(performance?.total_spread_rewards ?? [])
-      .then(aggregateCoinsByDenom)
-      .catch((e) => captureErrorAndReturn(e, [])),
+    mapRawCoinToPretty([position.asset0, position.asset1]),
+    mapRawCoinToPretty(position.claimable_incentives).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty(position.claimable_spread_rewards).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
+      aggregateCoinsByDenom
+    ),
+    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
+      aggregateCoinsByDenom
+    ),
   ]);
 
   if (currentCoins.length !== 2)
@@ -635,21 +631,15 @@ export async function getPositionHistoricalPerformance({
   ).map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p));
   const principalValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(principalCoins).catch((e) =>
-      captureErrorAndReturn(e, new Dec(0))
-    )
+    await calcSumCoinsValue(principalCoins)
   );
   const claimableRewardsValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(claimableRewardCoins).catch((e) =>
-      captureErrorAndReturn(e, 0)
-    )
+    await calcSumCoinsValue(claimableRewardCoins)
   );
   const totalEarnedValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(totalRewardCoins).catch((e) =>
-      captureErrorAndReturn(e, 0)
-    )
+    await calcSumCoinsValue(totalRewardCoins)
   );
 
   const principalValueDec = principalValue.toDec();

@@ -98,8 +98,7 @@ export async function calcAssetValue({
 }
 
 /** Calculate and sum the value of multiple coins.
- *  Will only include listed assets as part of sum.
- *  @throws — If there's an issue calculating the price for the given denoms. */
+ *  Will only include listed assets with prices as part of sum. */
 export function calcSumCoinsValue(coins: CoinPretty[]) {
   return calcSumAssetsValue({
     assets: coins
@@ -109,8 +108,7 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 }
 
 /** Calculate and sum the value of multiple assets.
- *  Will only include listed assets with prices as part of sum.
- *  @throws — If there's an issue calculating the price for the given denoms. */
+ *  Will only include listed assets with prices as part of sum. */
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",

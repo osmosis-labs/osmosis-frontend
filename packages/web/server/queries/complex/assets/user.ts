@@ -156,14 +156,12 @@ export async function getUserAssetsBreakdown(address: {
   const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
 
   const [delegatedValue, pooledValue, availableValue, aggregatedValue] =
-    await Promise.all(
-      [
-        calcCoinValue(delegatedCoin),
-        calcSumCoinsValue(pooledCoins),
-        calcSumCoinsValue(available),
-        calcSumCoinsValue(allCoins),
-      ].map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
-    );
+    await Promise.all([
+      calcCoinValue(delegatedCoin).catch((e) => captureErrorAndReturn(e, 0)),
+      calcSumCoinsValue(pooledCoins),
+      calcSumCoinsValue(available),
+      calcSumCoinsValue(allCoins),
+    ]);
 
   return {
     delegated: delegatedCoin, // Should be OSMO

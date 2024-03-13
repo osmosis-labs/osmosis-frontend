@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureErrorAndReturn } from "~/utils/error";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -92,11 +93,10 @@ export async function getAssets({
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
- * @throws if a given denom is not in asset list.
  */
 export async function mapRawCoinToPretty(
   rawAssets: {
-    amount: string | number | Int | Dec | { toDec(): Dec };
+    amount: ConstructorParameters<typeof CoinPretty>[1];
     denom: string;
   }[]
 ): Promise<CoinPretty[]> {
@@ -105,9 +105,11 @@ export async function mapRawCoinToPretty(
     rawAssets.map(({ amount, denom }) =>
       getAsset({
         anyDenom: denom,
-      }).then((asset) => new CoinPretty(asset, amount))
+      })
+        .then((asset) => new CoinPretty(asset, amount))
+        .catch((e) => captureErrorAndReturn(e, undefined))
     )
-  );
+  ).then((assets) => assets.filter((asset): asset is CoinPretty => !!asset));
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
