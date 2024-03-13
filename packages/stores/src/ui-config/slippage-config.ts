@@ -70,11 +70,10 @@ export class ObservableSlippageConfig {
       str = "0" + str;
     }
 
-    if (str !== "") {
-      const strDec = new Dec(str);
+    // within bound
+    const strDec = new Dec(str);
+    if (strDec.gte(new Dec(100)) || strDec.lt(new Dec(0))) return;
 
-      if (strDec.gte(new Dec(100)) || new Dec(str).lt(new Dec(0))) return;
-    }
     this._isManualSlippage = true;
     this._manualSlippage = str;
   }
