@@ -88,7 +88,7 @@ module.exports = withSentryConfig(
     silent: true,
 
     org: "osmosis-labs",
-    project: "javascript-nextjs",
+    project: "osmosis-web",
   },
   {
     // For all available options, see:
