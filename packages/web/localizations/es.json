@@ -682,6 +682,8 @@
     "buttonError": "Intercambio de todos modos",
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
+    "networkFee": "Tarifa de red",
+    "totalFee": "Costo total",
     "HALF": "Mitad",
     "MAX": "Máximo",
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",

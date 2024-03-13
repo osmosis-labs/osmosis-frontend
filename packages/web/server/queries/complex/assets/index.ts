@@ -92,6 +92,7 @@ export async function getAssets({
  * @param rawAssets An array of raw assets. Each raw asset is an object with an 'amount' and 'denom' property.
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
+ * @throws if a given denom is not in asset list.
  */
 export async function mapRawCoinToPretty(
   rawAssets: {
@@ -100,16 +101,13 @@ export async function mapRawCoinToPretty(
   }[]
 ): Promise<CoinPretty[]> {
   if (!rawAssets) return [];
-  const result = await Promise.all(
-    rawAssets.map(async ({ amount, denom }) => {
-      const asset = await getAsset({
+  return await Promise.all(
+    rawAssets.map(({ amount, denom }) =>
+      getAsset({
         anyDenom: denom,
-      });
-
-      return new CoinPretty(asset, amount);
-    })
+      }).then((asset) => new CoinPretty(asset, amount))
+    )
   );
-  return result.filter((p): p is NonNullable<typeof p> => !!p);
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */

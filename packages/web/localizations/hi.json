@@ -682,6 +682,8 @@
     "buttonError": "वैसे भी स्वैप करें",
     "expectedOutput": "अपेक्षित उत्पादन",
     "fee": "स्वैप शुल्क ( {fee} )",
+    "networkFee": "नेटवर्क शुल्क",
+    "totalFee": "कुल शुल्क",
     "HALF": "आधा",
     "MAX": "अधिकतम",
     "minimumSlippage": "स्लिपेज के बाद प्राप्त न्यूनतम राशि ( {slippage} )",

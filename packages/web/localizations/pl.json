@@ -682,6 +682,8 @@
     "buttonError": "Wymień mimo to",
     "expectedOutput": "Spodziewana wartość",
     "fee": "Prowizja ({fee})",
+    "networkFee": "Opłata sieciowa",
+    "totalFee": "Całkowita opłata",
     "HALF": "POŁOWA",
     "MAX": "MAKSIMUM",
     "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",

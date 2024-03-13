@@ -682,6 +682,8 @@
     "buttonError": "堅持交易",
     "expectedOutput": "預期產出",
     "fee": "交易費 ({fee})",
+    "networkFee": "網路費",
+    "totalFee": "總費用",
     "HALF": "一半",
     "MAX": "全部",
     "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",

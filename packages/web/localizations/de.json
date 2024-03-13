@@ -682,6 +682,8 @@
     "buttonError": "Trotzdem tauschen",
     "expectedOutput": "Erwartete Ausgabe",
     "fee": "Swap-Gebühr ( {fee} )",
+    "networkFee": "Netzwerkgebühr",
+    "totalFee": "Gesamtgebühr",
     "HALF": "HALB",
     "MAX": "MAX",
     "minimumSlippage": "Nach Slippage erhaltenes Minimum ( {slippage} )",

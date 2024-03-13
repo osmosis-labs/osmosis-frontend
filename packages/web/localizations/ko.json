@@ -682,6 +682,8 @@
     "buttonError": "무시하고 교환하기",
     "expectedOutput": "예상 교환치",
     "fee": "교환 수수료 ({fee})",
+    "networkFee": "네트워크 수수료",
+    "totalFee": "총 수수료",
     "HALF": "절반",
     "MAX": "최대",
     "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",

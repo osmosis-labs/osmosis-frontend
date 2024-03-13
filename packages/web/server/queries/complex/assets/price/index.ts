@@ -60,6 +60,8 @@ export async function getAssetPrice({
   });
 }
 
+/** Calculates the fiat value of a given coin.
+ *  @throws If there's an issue calculating the price for the given coin. */
 export function calcCoinValue(coin: CoinPretty) {
   return calcAssetValue({
     anyDenom: coin.currency.coinMinimalDenom,
@@ -95,7 +97,8 @@ export async function calcAssetValue({
 }
 
 /** Calculate and sum the value of multiple coins.
- *  Will only include listed assets as part of sum. */
+ *  Will only include listed assets as part of sum.
+ *  @throws — If there's an issue calculating the price for the given denoms. */
 export function calcSumCoinsValue(coins: CoinPretty[]) {
   return calcSumAssetsValue({
     assets: coins
@@ -105,7 +108,8 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 }
 
 /** Calculate and sum the value of multiple assets.
- *  Will only include listed assets that have prices as part of sum. */
+ *  Will only include listed assets as part of sum.
+ *  @throws — If there's an issue calculating the price for the given denoms. */
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",
@@ -117,20 +121,14 @@ export async function calcSumAssetsValue({
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec> {
   return (
-    (
-      await Promise.all(
-        assets.map(async (asset) => {
-          const price = await calcAssetValue({
-            ...asset,
-            currency,
-          }).catch(() => undefined);
-
-          return price;
+    await Promise.all(
+      assets.map((asset) =>
+        calcAssetValue({
+          ...asset,
+          currency,
         })
       )
-    ).filter(Boolean) as NonNullable<
-      Awaited<ReturnType<typeof calcAssetValue>>
-    >[]
+    )
   ).reduce((acc, price) => acc.add(price), new Dec(0));
 }
 

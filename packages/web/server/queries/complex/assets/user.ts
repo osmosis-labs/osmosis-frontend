@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -77,9 +77,9 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
       const usdValue = await calcAssetValue({
         anyDenom: asset.coinMinimalDenom,
         amount: balance.amount,
-      }).catch(() => {
-        console.error(asset.coinMinimalDenom, "likely missing price config");
-        return undefined;
+      }).catch((e) => {
+        console.warn(e);
+        return null;
       });
 
       return {
@@ -157,23 +157,33 @@ export async function getUserAssetsBreakdown(address: {
   const pooledCoins = [...underlyingGammShareCoins, ...clCoins, ...lockedCoins];
   const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
 
-  const delegatedValue = await calcCoinValue(delegatedCoin);
-  const pooledValue = await calcSumCoinsValue(pooledCoins);
-  const availableValue = await calcSumCoinsValue(available);
-  const aggregatedValue = await calcSumCoinsValue(allCoins);
+  const [delegatedValue, pooledValue, availableValue, aggregatedValue] =
+    await Promise.all(
+      [
+        calcCoinValue(delegatedCoin),
+        calcSumCoinsValue(pooledCoins),
+        calcSumCoinsValue(available),
+        calcSumCoinsValue(allCoins),
+      ].map((p) =>
+        p.catch((e) => {
+          console.warn(e);
+          return new Dec(0);
+        })
+      )
+    );
 
   return {
     delegated: delegatedCoin, // Should be OSMO
-    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue ?? 0),
+    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue),
 
     pooled: aggregateCoinsByDenom(pooledCoins),
-    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue ?? 0),
+    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue),
 
     available: aggregateCoinsByDenom(available),
-    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue ?? 0),
+    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue),
 
     aggregated: aggregateCoinsByDenom(allCoins),
-    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue ?? 0),
+    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
   };
 }
 
@@ -191,8 +201,8 @@ export async function getUserCoinsFromBank({
   // get bank balances
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
-  const eventualShareCoins: Promise<CoinPretty[] | undefined>[] = [];
-  const eventualAvailableCoins: Promise<CoinPretty | undefined>[] = [];
+  const eventualShareCoins: Promise<CoinPretty[] | null>[] = [];
+  const eventualAvailableCoins: Promise<CoinPretty | null>[] = [];
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
@@ -201,13 +211,19 @@ export async function getUserCoinsFromBank({
         getGammShareUnderlyingCoins({
           denom,
           amount,
-        }).catch(() => undefined)
+        }).catch((e) => {
+          console.warn(e);
+          return null;
+        })
       );
     } else {
       eventualAvailableCoins.push(
         getAsset({ anyDenom: denom })
           .then((asset) => new CoinPretty(asset, amount))
-          .catch(() => undefined)
+          .catch((e) => {
+            console.warn(e);
+            return null;
+          })
       );
     }
   });
@@ -238,11 +254,13 @@ export async function getUserShareUnderlyingCoinsFromLocks({
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
     if (coin.denom.includes("gamm")) {
-      return await getGammShareUnderlyingCoins(coin).catch(() => undefined);
+      return await getGammShareUnderlyingCoins(coin).catch((e) => {
+        console.warn(e);
+        return [];
+      });
     }
+    return [];
   });
 
-  return (await Promise.all(eventualUserLockedAssets))
-    .filter((a): a is CoinPretty[] => !!a)
-    .flat();
+  return (await Promise.all(eventualUserLockedAssets)).flat();
 }
