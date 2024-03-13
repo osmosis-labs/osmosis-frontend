@@ -5,14 +5,18 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
 
+import { EventName } from "~/config";
 import {
   Breakpoint,
+  useAmplitudeAnalytics,
   useDimension,
   useDisclosure,
+  useNavBar,
   useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
@@ -25,6 +29,32 @@ import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
 
 export const AssetsPageV2: FunctionComponent = () => {
+  const { t } = useTranslation();
+  const { startBridge, bridgeAsset } = useBridge();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
+
+  // set nav bar ctas
+  useNavBar({
+    ctas: [
+      {
+        label: t("assets.table.depositButton"),
+        onClick: () => {
+          startBridge("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
+      },
+      {
+        label: t("assets.table.withdrawButton"),
+        onClick: () => {
+          startBridge("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
+      },
+    ],
+  });
+
   const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
 
   return (
@@ -35,11 +65,11 @@ export const AssetsPageV2: FunctionComponent = () => {
 
       <AssetsInfoTable
         tableTopPadding={heroHeight}
-        onDeposit={(coinDenom) => {
-          console.log("deposit", coinDenom);
+        onDeposit={(coinMinimalDenom) => {
+          bridgeAsset(coinMinimalDenom, "deposit");
         }}
-        onWithdraw={(coinDenom) => {
-          console.log("withdraw", coinDenom);
+        onWithdraw={(coinMinimalDenom) => {
+          bridgeAsset(coinMinimalDenom, "withdraw");
         }}
       />
     </main>
