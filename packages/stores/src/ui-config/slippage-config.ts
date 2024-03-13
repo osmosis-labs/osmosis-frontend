@@ -64,11 +64,13 @@ export class ObservableSlippageConfig {
 
   @action
   setManualSlippage(str: string) {
+    if (isNaN(Number(str))) return;
+
     if (str.startsWith(".")) {
       str = "0" + str;
     }
 
-    if (str !== "" && isNaN(Number(str))) {
+    if (str !== "") {
       const strDec = new Dec(str);
 
       if (strDec.gte(new Dec(100)) || new Dec(str).lt(new Dec(0))) return;
