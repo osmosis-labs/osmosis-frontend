@@ -59,12 +59,6 @@ const Pool: FunctionComponent<Props> = ({
       router.push("/pools");
     }
   }, [isValidPoolId, isError, router]);
-  useEffect(() => {
-    // CL pools not supported on mobile
-    if (pool && pool.type === "concentrated" && isMobile) {
-      router.push(`/pools`);
-    }
-  }, [pool, isMobile, router]);
 
   return (
     <>
@@ -91,7 +85,7 @@ const Pool: FunctionComponent<Props> = ({
       ) : pool.type === "concentrated" && !isMobile ? (
         <ConcentratedLiquidityPool poolId={pool.id} />
       ) : pool.type === "weighted" || pool.type === "stable" ? (
-        <SharePool poolId={pool.id} />
+        <SharePool pool={pool} />
       ) : (
         <BasePoolDetails pool={pool} />
       )}

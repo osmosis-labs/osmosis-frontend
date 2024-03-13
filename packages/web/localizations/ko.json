@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",
-    "title": "유동성 해제하기",
-    "titleInPool": "{poolId}풀에서 유동성을 제거합니다."
+    "title": "유동성 해제하기"
   },
   "requestRejected": "요청이 거부됨",
   "settings": {
@@ -648,20 +647,6 @@
         "buttonKeep": "기존 밸리데이터 유지",
         "buttonSelect": "새 밸리데이터 선택"
       }
-    },
-    "introModal": {
-      "callout": "새로운 기능",
-      "title": "오스모시스에 스테이킹하기",
-      "description": {
-        "1": "스테이킹은 자산으로 돈을 벌 수 있는 가장 쉬운 방법 중 하나입니다. 이제 Osmosis에 바로 OSMO를 스테이킹할 수 있습니다.",
-        "2": "최대 적립",
-        "3": "매년 스테이킹 보상을 받으세요!",
-        "4": "그리고 그것을 작동시키세요",
-        "5": "사용 가능한 {displayBalance} 작동시키고",
-        "button": "OSMO를 구매하세요"
-      },
-      "asterisk": "* 스테이킹 보상 가치는 가격 및 APR 변동성에 따라 달라질 수 있습니다.",
-      "button": "스테이킹 시작"
     }
   },
   "superfluidValidator": {
@@ -690,6 +675,8 @@
     "buttonError": "무시하고 교환하기",
     "expectedOutput": "예상 교환치",
     "fee": "교환 수수료 ({fee})",
+    "networkFee": "네트워크 수수료",
+    "totalFee": "총 수수료",
     "HALF": "절반",
     "MAX": "최대",
     "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
@@ -752,7 +739,6 @@
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
-  "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
   "seo": {
     "404": {
       "title": "404 페이지를 찾을 수 없습니다",
@@ -868,5 +854,12 @@
     "totalValueInvested": "총 투자 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요."
   },
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} 예금이 불안정함",
+    "titleWithdraw": "{coinDenom} 출금이 불안정함",
+    "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
+    "buttonContinue": "계속 진행",
+    "buttonCancel": "취소"
+  }
 }

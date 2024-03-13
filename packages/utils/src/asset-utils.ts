@@ -2,18 +2,20 @@ import type { Asset, AssetList, Currency } from "@osmosis-labs/types";
 
 /** Find asset in asset list config given any of the available identifiers. */
 export function getAssetFromAssetList({
+  symbol,
   /** Denom as it exists on source chain. */
   sourceDenom,
   coinMinimalDenom,
   coinGeckoId,
   assetLists,
 }: {
+  symbol?: string;
   sourceDenom?: string;
   coinMinimalDenom?: string;
   coinGeckoId?: string;
   assetLists: AssetList[];
 }) {
-  if (!sourceDenom && !coinGeckoId && !coinMinimalDenom) {
+  if (!symbol && !sourceDenom && !coinGeckoId && !coinMinimalDenom) {
     return undefined;
   }
 
@@ -21,6 +23,7 @@ export function getAssetFromAssetList({
     .flatMap(({ assets }) => assets)
     .find(
       (asset) =>
+        (symbol && asset.symbol === symbol) ||
         (sourceDenom && asset.sourceDenom === sourceDenom) ||
         (asset.coingeckoId ? asset.coingeckoId === coinGeckoId : false) ||
         asset.coinMinimalDenom === coinMinimalDenom

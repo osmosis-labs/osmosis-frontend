@@ -21,8 +21,8 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import type {
-  ClPositionDetails,
   UserPosition,
+  UserPositionDetails,
 } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -40,7 +40,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
     position: UserPosition;
-    status: ClPositionDetails["status"];
+    status: UserPositionDetails["status"];
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, position, status } = props;

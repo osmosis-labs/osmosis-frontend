@@ -24,10 +24,9 @@ import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
-// import { Button } from "~/components/buttons";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -36,6 +35,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
@@ -69,6 +69,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
+    const featureFlags = useFeatureFlags();
 
     const account = accountStore.getWallet(chainId);
 
@@ -424,38 +425,29 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
               <div className="mt-3 flex place-content-between items-center">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingFromAsset
-                      ? "h-full w-full"
-                      : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingFromAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect
-                    dropdownOpen={showFromTokenSelectDropdown}
-                    swapState={swapState}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("from");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setFromAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect
+                  dropdownOpen={showFromTokenSelectDropdown}
+                  swapState={swapState}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("from");
+                      } else {
                         closeTokenSelectDropdowns();
-                        fromAmountInputEl.current?.focus();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setFromAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                      fromAmountInputEl.current?.focus();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <input
                     ref={fromAmountInputEl}
@@ -557,35 +549,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             </button>
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-transform">
-                <SkeletonLoader
-                  className={
-                    swapState.isLoadingToAsset ? "h-full w-full" : "h-fit w-fit"
-                  }
-                  isLoaded={!swapState.isLoadingToAsset}
-                >
-                  <TokenSelectWithDrawer
-                    isFromSelect={false}
-                    dropdownOpen={showToTokenSelectDropdown}
-                    swapState={swapState}
-                    onSelect={useCallback(
-                      (tokenDenom: string) => {
-                        swapState.setToAssetDenom(tokenDenom);
+                <TokenSelectWithDrawer
+                  isFromSelect={false}
+                  dropdownOpen={showToTokenSelectDropdown}
+                  swapState={swapState}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setToAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
+                  setDropdownState={useCallback(
+                    (isOpen) => {
+                      if (isOpen) {
+                        setOneTokenSelectOpen("to");
+                      } else {
                         closeTokenSelectDropdowns();
-                      },
-                      [swapState, closeTokenSelectDropdowns]
-                    )}
-                    setDropdownState={useCallback(
-                      (isOpen) => {
-                        if (isOpen) {
-                          setOneTokenSelectOpen("to");
-                        } else {
-                          closeTokenSelectDropdowns();
-                        }
-                      },
-                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
-                    )}
-                  />
-                </SkeletonLoader>
+                      }
+                    },
+                    [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                  )}
+                />
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
@@ -763,6 +748,35 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         {`≈ ${
                           swapState.quote.tokenInFeeAmountFiatValue ?? "0"
                         } `}
+                      </span>
+                    </div>
+                  )}
+                {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                featureFlags.swapToolSimulateFee &&
+                !swapState.error ? (
+                  <div className="flex items-center justify-between">
+                    <span className="caption">{t("swap.networkFee")}</span>
+                    <SkeletonLoader
+                      isLoaded={!swapState.isLoadingNetworkFee}
+                      className="min-w-[3rem] leading-[0]"
+                    >
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${swapState.networkFee?.gasUsdValueToPay ?? "0"} `}
+                      </span>
+                    </SkeletonLoader>
+                  </div>
+                ) : undefined}
+                {((swapState.quote?.tokenInFeeAmountFiatValue &&
+                  swapState.quote?.swapFee) ||
+                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
+                  featureFlags.swapToolSimulateFee && (
+                    <div className="flex justify-between">
+                      <span className="caption">{t("swap.totalFee")}</span>
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          swapState.totalFee
+                        )} `}
                       </span>
                     </div>
                   )}

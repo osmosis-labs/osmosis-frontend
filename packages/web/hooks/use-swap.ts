@@ -1,11 +1,17 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { SignOptions } from "@cosmos-kit/core";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+import {
+  makeSplitRoutesSwapExactAmountInMsg,
+  makeSwapExactAmountInMsg,
+  TxFee,
+} from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
@@ -14,11 +20,15 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
+import { RecommendedSwapDenoms } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { RouterKey } from "~/server/api/edge-routers/swap-router";
+import type { RouterKey } from "~/server/api/local-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
+import { sum } from "~/utils/math";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -63,6 +73,7 @@ export function useSwap({
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
+  const featureFlags = useFeatureFlags();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -141,71 +152,178 @@ export function useSwap({
     inAmountInput.isEmpty,
   ]);
 
+  const getSwapTxParameters = useCallback(
+    ({
+      coinAmount,
+      maxSlippage,
+    }: {
+      coinAmount: CoinPretty | undefined;
+      maxSlippage: Dec;
+    }) => {
+      if (!quote) {
+        throw new Error(
+          "User input should be disabled if no route is found or is being generated"
+        );
+      }
+
+      if (!coinAmount) throw new Error("No input");
+      if (!account) throw new Error("No account");
+      if (!swapAssets.fromAsset) throw new Error("No from asset");
+      if (!swapAssets.toAsset) throw new Error("No to asset");
+
+      /**
+       * Prepare swap data
+       */
+
+      type Pool = {
+        id: string;
+        tokenOutDenom: string;
+      };
+      type Route = {
+        pools: Pool[];
+        tokenInAmount: string;
+      };
+
+      const routes: Route[] = [];
+
+      for (const route of quote.split) {
+        const pools: Pool[] = [];
+
+        for (let i = 0; i < route.pools.length; i++) {
+          const pool = route.pools[i];
+
+          pools.push({
+            id: pool.id,
+            tokenOutDenom: route.tokenOutDenoms[i],
+          });
+        }
+
+        routes.push({
+          pools: pools,
+          tokenInAmount: route.initialAmount.toString(),
+        });
+      }
+
+      /** In amount converted to integer (remove decimals) */
+      const tokenIn = {
+        currency: swapAssets.fromAsset as Currency,
+        amount: coinAmount.toCoin().amount,
+      };
+
+      /** Out amount with slippage included */
+      const tokenOutMinAmount = quote.amount
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            swapAssets.toAsset.coinDecimals
+          )
+        )
+        .mul(new Dec(1).sub(maxSlippage))
+        .truncate()
+        .toString();
+
+      return {
+        routes,
+        tokenIn,
+        tokenOutMinAmount,
+      };
+    },
+    [quote, account, swapAssets]
+  );
+
+  const messages = useMemo(() => {
+    if (!account?.address) return undefined;
+
+    let txParams: ReturnType<typeof getSwapTxParameters>;
+
+    try {
+      txParams = getSwapTxParameters({
+        coinAmount: inAmountInput.amount,
+        maxSlippage: new Dec(0.95),
+      });
+    } catch {
+      return undefined;
+    }
+
+    const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+    const { pools } = routes[0];
+
+    if (routes.length < 1) {
+      throw new Error("Routes are empty");
+    }
+
+    /**
+     * Do not send transaction if there is an error since it will fail anyway.
+     */
+    if (precedentError) {
+      return undefined;
+    }
+
+    return [
+      routes.length === 1
+        ? makeSwapExactAmountInMsg({
+            pools,
+            tokenIn,
+            tokenOutMinAmount,
+            userOsmoAddress: account.address,
+          })
+        : makeSplitRoutesSwapExactAmountInMsg({
+            routes,
+            tokenIn,
+            tokenOutMinAmount,
+            userOsmoAddress: account.address,
+          }),
+    ];
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getSwapTxParameters, quote, inAmountInput, account, swapAssets]);
+
+  const { data: networkFee, isLoading: isLoadingNetworkFee } =
+    useEstimateTxFees({
+      chainId: chainStore.osmosis.chainId,
+      messages,
+      enabled: featureFlags.swapToolSimulateFee,
+    });
+  const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
+    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
+    { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
+  );
+
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     (maxSlippage: Dec) =>
       new Promise<"multiroute" | "multihop" | "exact-in">((resolve, reject) => {
-        if (!quote) {
-          return reject(
-            "User input should be disabled if no route is found or is being generated"
-          );
-        }
-
-        if (!inAmountInput.amount) return reject("No input");
         if (!account) return reject("No account");
-        if (!swapAssets.fromAsset) return reject("No from asset");
-        if (!swapAssets.toAsset) return reject("No to asset");
 
-        /**
-         * Prepare swap data
-         */
+        let txParams: ReturnType<typeof getSwapTxParameters>;
 
-        type Pool = {
-          id: string;
-          tokenOutDenom: string;
-        };
-        type Route = {
-          pools: Pool[];
-          tokenInAmount: string;
-        };
-
-        const routes: Route[] = [];
-
-        for (const route of quote.split) {
-          const pools: Pool[] = [];
-
-          for (let i = 0; i < route.pools.length; i++) {
-            const pool = route.pools[i];
-
-            pools.push({
-              id: pool.id,
-              tokenOutDenom: route.tokenOutDenoms[i],
-            });
-          }
-
-          routes.push({
-            pools: pools,
-            tokenInAmount: route.initialAmount.toString(),
+        try {
+          txParams = getSwapTxParameters({
+            coinAmount: inAmountInput.amount,
+            maxSlippage,
           });
+        } catch (e) {
+          const error = e as Error;
+          return reject(error.message);
         }
 
-        /** In amount converted to integer (remove decimals) */
-        const tokenIn = {
-          currency: swapAssets.fromAsset as Currency,
-          amount: inAmountInput.amount.toCoin().amount,
-        };
+        const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
-        /** Out amount with slippage included */
-        const tokenOutMinAmount = quote.amount
-          .toDec()
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              swapAssets.toAsset.coinDecimals
-            )
-          )
-          .mul(new Dec(1).sub(maxSlippage))
-          .truncate()
-          .toString();
+        const fee: (SignOptions & { fee: TxFee }) | undefined =
+          featureFlags.swapToolSimulateFee &&
+          networkFee &&
+          // Do not manually set the simulated fee if the user does not have enough OSMO
+          // TODO: Support other fee tokens
+          userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
+            ? {
+                preferNoSetFee: true,
+                fee: {
+                  gas: networkFee.gasLimit,
+                  amount: networkFee.amount,
+                },
+              }
+            : undefined;
 
         /**
          * Send messages to account
@@ -218,7 +336,7 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              undefined,
+              fee,
               () => {
                 resolve(pools.length === 1 ? "exact-in" : "multihop");
               }
@@ -237,7 +355,7 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              undefined,
+              fee,
               () => {
                 resolve("multiroute");
               }
@@ -259,7 +377,14 @@ export function useSwap({
 
         inAmountInput.reset();
       }),
-    [quote, inAmountInput, account, swapAssets, queryClient]
+    [
+      account,
+      getSwapTxParameters,
+      inAmountInput,
+      networkFee,
+      queryClient,
+      userOsmoCoin?.amount,
+    ]
   );
 
   const positivePrevQuote = usePreviousWhen(
@@ -279,6 +404,12 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
+    totalFee: sum([
+      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+    ]),
+    networkFee,
+    isLoadingNetworkFee,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
@@ -286,11 +417,7 @@ export function useSwap({
     isQuoteLoading,
     /** Spot price or user input quote. */
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading:
-      swapAssets.isLoadingFromAsset ||
-      swapAssets.isLoadingToAsset ||
-      isQuoteLoading ||
-      isSpotPriceQuoteLoading,
+    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
   };
 }
@@ -347,7 +474,7 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,
@@ -366,25 +493,15 @@ export function useSwapAssets({
     [selectableAssetPages?.pages]
   );
 
-  const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
+  const { asset: fromAsset } = useSwapAsset(
     fromAssetDenom,
     allSelectableAssets
   );
-  const { asset: toAsset, isLoading: isLoadingToAsset } = useSwapAsset(
-    toAssetDenom,
-    allSelectableAssets
-  );
+  const { asset: toAsset } = useSwapAsset(toAssetDenom, allSelectableAssets);
 
-  const { data: recommendedAssets_, isLoading: isLoadingRecommendedAssets } =
-    api.edge.assets.getRecommendedAssets.useQuery();
-  const recommendedAssets = useMemo(
-    () =>
-      recommendedAssets_?.filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [],
-    [recommendedAssets_, fromAsset, toAsset]
+  const recommendedAssets = useRecommendedAssets(
+    fromAsset?.coinMinimalDenom,
+    toAsset?.coinMinimalDenom
   );
 
   /** Remove to and from assets from assets that can be selected. */
@@ -404,13 +521,10 @@ export function useSwapAssets({
     assetsQueryInput,
     selectableAssets: filteredSelectableAssets,
     isLoadingSelectAssets,
-    isLoadingFromAsset,
-    isLoadingToAsset,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
     /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
-    isLoadingRecommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,
     setToAssetDenom,
@@ -493,10 +607,6 @@ function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
   existingAssets: TAsset[] = []
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -505,22 +615,23 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  const queryEnabled =
-    !isNil(minDenomOrSymbol) &&
-    typeof minDenomOrSymbol === "string" &&
-    !isLoadingWallet &&
-    !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
-    {
-      findMinDenomOrSymbol: minDenomOrSymbol ?? "",
-      userOsmoAddress: account?.address,
-    },
-    { enabled: queryEnabled }
-  );
+  !existingAsset;
+  const asset = useMemo(() => {
+    if (existingAsset) return existingAsset;
+
+    const asset = AssetLists.flatMap(({ assets }) => assets).find(
+      (asset) =>
+        minDenomOrSymbol &&
+        (asset.symbol === minDenomOrSymbol ||
+          asset.coinMinimalDenom === minDenomOrSymbol)
+    );
+    if (!asset) return;
+
+    return makeMinimalAsset(asset);
+  }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? asset,
-    isLoading: isLoading && !existingAsset,
+    asset: existingAsset ?? (asset as TAsset),
   };
 }
 
@@ -529,7 +640,7 @@ function useSwapAsset<TAsset extends Asset>(
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
-    RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+    RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter"
   >,
   enabled: boolean,
@@ -561,7 +672,7 @@ function useQueryRouterBestQuote(
   const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
-      t.edge.quoteRouter.routeTokenOutGivenIn(
+      t.local.quoteRouter.routeTokenOutGivenIn(
         {
           ...input,
           preferredRouter: key,
@@ -642,7 +753,7 @@ function useQueryRouterBestQuote(
  *  Then we can show the user a useful translated error message vs just "Error". */
 function makeRouterErrorFromTrpcError(
   error:
-    | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
     | null
     | undefined
 ):
@@ -656,7 +767,7 @@ function makeRouterErrorFromTrpcError(
     }
   | undefined {
   if (isNil(error)) return;
-  const tprcShapeMsg = error.shape?.message;
+  const tprcShapeMsg = error?.shape?.message;
 
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
@@ -673,4 +784,30 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: true,
     };
   }
+}
+
+/** Gets recommended assets directly from asset list. */
+function useRecommendedAssets(
+  fromCoinMinimalDenom?: string,
+  toCoinMinimalDenom?: string
+) {
+  return useMemo(
+    () =>
+      RecommendedSwapDenoms.map((denom) => {
+        const asset = AssetLists.flatMap(({ assets }) => assets).find(
+          (asset) => asset.symbol === denom
+        );
+        if (!asset) return;
+
+        return makeMinimalAsset(asset);
+      })
+        .filter((c): c is NonNullable<typeof c> => !!c)
+        .filter(
+          (currency) =>
+            currency &&
+            currency.coinMinimalDenom !== fromCoinMinimalDenom &&
+            currency.coinMinimalDenom !== toCoinMinimalDenom
+        ),
+    [fromCoinMinimalDenom, toCoinMinimalDenom]
+  );
 }

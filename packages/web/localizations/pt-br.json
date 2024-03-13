@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",
-    "title": "Remover Liquidez",
-    "titleInPool": "Remover liquidez de uma piscina #{poolId}"
+    "title": "Remover Liquidez"
   },
   "requestRejected": "Solicitação rejeitada",
   "settings": {
@@ -648,20 +647,6 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
-    },
-    "introModal": {
-      "callout": "Novo recurso",
-      "title": "Apostando na Osmose",
-      "description": {
-        "1": "O staking é uma das maneiras mais fáceis de ganhar com seus ativos. Agora você pode apostar seu OSMO diretamente no Osmosis.",
-        "2": "ganhe até",
-        "3": "anualmente em apostas de recompensas!",
-        "4": "e colocá-lo para funcionar",
-        "5": "Coloque seu {displayBalance} para funcionar e",
-        "button": "Compre um pouco de OSMO"
-      },
-      "asterisk": "* O valor da recompensa da aposta está sujeito à volatilidade do preço e da TAEG.",
-      "button": "Comece a apostar"
     }
   },
   "superfluidValidator": {
@@ -690,6 +675,8 @@
     "buttonError": "Trocar mesmo assim",
     "expectedOutput": "Resultado Esperado",
     "fee": "Taxa de Troca ({fee})",
+    "networkFee": "Taxa de rede",
+    "totalFee": "Taxa total",
     "HALF": "METADE",
     "MAX": "MÁXIMO",
     "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
@@ -752,7 +739,6 @@
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
-  "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela.",
   "seo": {
     "404": {
       "title": "404 Página Não Encontrada",
@@ -868,5 +854,12 @@
     "totalValueInvested": "Valor total investido",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
   },
-  "disclaimer": "Isenção de responsabilidade"
+  "disclaimer": "Isenção de responsabilidade",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos instáveis",
+    "titleWithdraw": "{coinDenom} saques instáveis",
+    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
+    "buttonContinue": "Continue de qualquer maneira",
+    "buttonCancel": "Cancelar"
+  }
 }

@@ -8,43 +8,28 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import { ComponentProps } from "react";
-import { useState } from "react";
 import { useCallback } from "react";
 import { ReactElement, useMemo } from "react";
 
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
-  useDisclosure,
   useFakeFeeConfig,
   useFeatureFlags,
   useGetApr,
   useHideDustUserSetting,
   useStakedAmountConfig,
-  useTransferConfig,
   useTranslation,
   useWalletSelect,
-  useWindowSize,
 } from "~/hooks";
-import {
-  ActivateUnverifiedTokenConfirmation,
-  BridgeTransferV1Modal,
-  BridgeTransferV2Modal,
-  FiatOnrampSelectionModal,
-  IbcTransferModal,
-  PreTransferModal,
-  SelectAssetSourceModal,
-  TransferAssetSelectModal,
-} from "~/modals";
+import { useBridge } from "~/hooks/bridge";
 import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -391,30 +376,11 @@ const ActionButton = ({
   );
 };
 
-const BalanceStats = observer((props: YourBalanceProps) => {
-  const { denom } = props;
-
-  const [confirmUnverifiedTokenDenom, setConfirmUnverifiedTokenDenom] =
-    useState<string | null>(null);
-  const [preTransferModalProps, setPreTransferModalProps] =
-    useState<ComponentProps<typeof PreTransferModal> | null>(null);
+const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const { t } = useTranslation();
-  const transferConfig = useTransferConfig();
-  const featureFlags = useFeatureFlags();
-  const { isMobile } = useWindowSize();
-  const { chainStore, accountStore, assetsStore, userSettings } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
+  const { chainStore, accountStore, assetsStore } = useStore();
+  const { bridgeAsset, fiatRampSelection } = useBridge();
   const { onOpenWalletSelect } = useWalletSelect();
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onOpen: onOpenFiatOnrampSelection,
-    onClose: onCloseFiatOnrampSelection,
-  } = useDisclosure();
-  const showUnverifiedAssetsSetting =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
-
-  const shouldDisplayUnverifiedAssets =
-    showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
   const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -458,67 +424,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
   const isWithdrawSupported =
     isChainSupported || Boolean(ibcBalance?.withdrawUrlOverride);
 
-  const launchPreTransferModal = useCallback(
-    (coinDenom: string) => {
-      const ibcBalance = ibcBalances.find(
-        (ibcBalance) => ibcBalance.balance.denom === coinDenom
-      );
-
-      if (!ibcBalance) {
-        console.error("launchPreTransferModal: ibcBalance not found");
-        return;
-      }
-
-      setPreTransferModalProps({
-        isOpen: true,
-        selectedToken: ibcBalance,
-        tokens: ibcBalances.map(({ balance }) => balance),
-        externalDepositUrl: ibcBalance.depositUrlOverride,
-        externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
-        isUnstable: ibcBalance.isUnstable,
-        onSelectToken: launchPreTransferModal,
-        onWithdraw: () => {
-          transferConfig?.transferAsset(
-            "withdraw",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
-          setPreTransferModalProps(null);
-        },
-        onDeposit: () => {
-          transferConfig?.transferAsset(
-            "deposit",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
-          setPreTransferModalProps(null);
-        },
-        onRequestClose: () => setPreTransferModalProps(null),
-      });
-    },
-    [ibcBalances, transferConfig]
-  );
-
-  const onDeposit = useCallback(
-    (chainId: string, coinDenom: string, externalDepositUrl?: string) => {
-      if (!externalDepositUrl) {
-        isMobile
-          ? launchPreTransferModal(coinDenom)
-          : transferConfig?.transferAsset("deposit", chainId, coinDenom);
-      }
-    },
-    [isMobile, launchPreTransferModal, transferConfig]
-  );
-
-  const onWithdraw = useCallback(
-    (chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
-      if (!externalWithdrawUrl) {
-        transferConfig?.transferAsset("withdraw", chainId, coinDenom);
-      }
-    },
-    [transferConfig]
-  );
-
   return (
     <div className="flex items-stretch justify-between gap-12 self-stretch 1.5xl:flex-col 1.5xl:gap-6 xl:flex-row 1.5md:flex-col">
       <div
@@ -561,50 +466,38 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         {!isNativeAsset ? (
           <>
             {ibcBalance?.depositUrlOverride ? (
-              <Link href={ibcBalance.depositUrlOverride} target="_blank">
+              <Link
+                href={ibcBalance.depositUrlOverride}
+                target="_blank"
+                className="w-full"
+              >
                 <Button
-                  size="sm"
-                  className="whitespace-nowrap !px-10 !text-base"
-                  disabled={!isDepositSupported || Boolean(data?.isUnstable)}
+                  className="w-full whitespace-nowrap"
+                  disabled={!isDepositSupported}
                 >
                   {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
               </Link>
             ) : (
               <Button
-                size="sm"
-                className="whitespace-nowrap !px-10 !text-base"
-                disabled={
-                  !tokenChain?.chainId ||
-                  !isDepositSupported ||
-                  Boolean(data?.isUnstable)
-                }
-                onClick={() => {
-                  if (tokenChain?.chainId) {
-                    if (!data?.isVerified && !shouldDisplayUnverifiedAssets) {
-                      setConfirmUnverifiedTokenDenom(denom);
-                    } else {
-                      onDeposit(
-                        tokenChain.chainId,
-                        denom,
-                        ibcBalance?.depositUrlOverride
-                      );
-                    }
-                  }
-                }}
+                className="w-full whitespace-nowrap"
+                disabled={!tokenChain?.chainId || !isDepositSupported}
+                onClick={() => bridgeAsset(denom, "deposit")}
               >
                 {t("assets.historyTable.colums.deposit")}
               </Button>
             )}
             {ibcBalance?.withdrawUrlOverride ? (
-              <Link href={ibcBalance.withdrawUrlOverride} target="_blank">
+              <Link
+                href={ibcBalance.withdrawUrlOverride}
+                target="_blank"
+                className="w-full"
+              >
                 <Button
-                  size="sm"
-                  className="whitespace-nowrap !px-10 !text-base"
-                  mode="secondary"
+                  className="w-full whitespace-nowrap"
+                  variant="outline"
                   disabled={
                     !isWithdrawSupported ||
-                    Boolean(data?.isUnstable) ||
                     !data?.amount?.toDec() ||
                     data.amount.toDec().isZero()
                   }
@@ -614,25 +507,15 @@ const BalanceStats = observer((props: YourBalanceProps) => {
               </Link>
             ) : (
               <Button
-                size="sm"
-                className="whitespace-nowrap !px-10 !text-base"
+                className="w-full whitespace-nowrap"
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||
-                  Boolean(data?.isUnstable) ||
                   !data?.amount?.toDec() ||
                   data.amount.toDec().isZero()
                 }
-                mode="secondary"
-                onClick={() => {
-                  if (tokenChain?.chainId) {
-                    onWithdraw(
-                      tokenChain.chainId,
-                      denom,
-                      ibcBalance?.withdrawUrlOverride
-                    );
-                  }
-                }}
+                variant="outline"
+                onClick={() => bridgeAsset(denom, "withdraw")}
               >
                 {t("assets.historyTable.colums.withdraw")}
               </Button>
@@ -643,9 +526,8 @@ const BalanceStats = observer((props: YourBalanceProps) => {
         )}
         {isOsmosis && account?.isWalletConnected ? (
           <Button
-            mode={"unstyled"}
-            onClick={onOpenFiatOnrampSelection}
-            className="subtitle1 group flex items-center gap-2.5 rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-1.5 px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+            onClick={fiatRampSelection}
+            className="group flex items-center gap-2.5 border-osmoverse-500 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
           >
             <CreditCardIcon
               isAnimated
@@ -660,59 +542,6 @@ const BalanceStats = observer((props: YourBalanceProps) => {
           </Button>
         ) : null}
       </div>
-      <ActivateUnverifiedTokenConfirmation
-        coinDenom={data?.coinDenom}
-        coinImageUrl={data?.coinImageUrl}
-        isOpen={Boolean(confirmUnverifiedTokenDenom)}
-        onConfirm={() => {
-          if (!confirmUnverifiedTokenDenom) return;
-          showUnverifiedAssetsSetting?.setState({
-            showUnverifiedAssets: true,
-          });
-        }}
-        onRequestClose={() => {
-          setConfirmUnverifiedTokenDenom(null);
-        }}
-      />
-      {isMobile && preTransferModalProps && (
-        <PreTransferModal {...preTransferModalProps} />
-      )}
-      {transferConfig?.assetSelectModal && (
-        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
-      )}
-      {transferConfig?.selectAssetSourceModal && (
-        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
-      )}
-      {transferConfig?.ibcTransferModal && (
-        <IbcTransferModal {...transferConfig.ibcTransferModal} />
-      )}
-      {transferConfig?.bridgeTransferModal &&
-        (!featureFlags.multiBridgeProviders ||
-        transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
-          ?.bridge === "nomic" ? (
-          <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
-        ) : (
-          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
-        ))}
-      <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
-        onSelectRamp={(ramp) => {
-          if (ramp !== "transak") return;
-          const fiatValue = data?.usdValue;
-          const coinValue = data?.amount;
-
-          logEvent([
-            EventName.ProfileModal.buyTokensClicked,
-            {
-              tokenName: denom,
-              tokenAmount: Number(
-                (fiatValue ?? coinValue)?.maxDecimals(4).toString()
-              ),
-            },
-          ]);
-        }}
-      />
     </div>
   );
 });

@@ -10,6 +10,8 @@ import {
   RatePrettyOptions,
 } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
+import dayjs, { isDuration } from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import superjson from "superjson";
 
 // https://github.com/blitz-js/superjson
@@ -104,6 +106,15 @@ superjson.registerCustom<RatePretty, string>(
     },
   },
   "RatePretty"
+);
+
+superjson.registerCustom<Duration, string>(
+  {
+    isApplicable: (v): v is Duration => isDuration(v),
+    serialize: (v) => v.asMilliseconds().toString(),
+    deserialize: (v) => dayjs.duration(parseInt(v)),
+  },
+  "dayjs.Duration"
 );
 
 export { superjson };

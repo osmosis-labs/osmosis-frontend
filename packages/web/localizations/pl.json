@@ -550,8 +550,7 @@
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
-    "title": "Usuń Płynność",
-    "titleInPool": "Usuń płynność z puli {poolId}"
+    "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
   "settings": {
@@ -648,20 +647,6 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
-    },
-    "introModal": {
-      "callout": "Nowa cecha",
-      "title": "Stawianie na osmozę",
-      "description": {
-        "1": "Stakowanie to jeden z najłatwiejszych sposobów zarabiania na swoich aktywach. Teraz możesz postawić swoje OSMO bezpośrednio na Osmozie.",
-        "2": "zarobić do",
-        "3": "co roku w nagrodach za stakowanie!",
-        "4": "i zabierz się do pracy",
-        "5": "Uruchom dostępny {displayBalance}",
-        "button": "Kup trochę OSMO"
-      },
-      "asterisk": "* Wartość nagrody za obstawianie zależy od ceny i zmienności RRSO.",
-      "button": "Zacznij obstawiać"
     }
   },
   "superfluidValidator": {
@@ -690,6 +675,8 @@
     "buttonError": "Wymień mimo to",
     "expectedOutput": "Spodziewana wartość",
     "fee": "Prowizja ({fee})",
+    "networkFee": "Opłata sieciowa",
+    "totalFee": "Całkowita opłata",
     "HALF": "POŁOWA",
     "MAX": "MAKSIMUM",
     "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
@@ -752,7 +739,6 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
   "seo": {
     "404": {
       "title": "404 — Nie znaleziono strony",
@@ -868,5 +854,12 @@
     "totalValueInvested": "Całkowita zainwestowana wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
   },
-  "disclaimer": "Zastrzeżenie"
+  "disclaimer": "Zastrzeżenie",
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depozyty są niestabilne",
+    "titleWithdraw": "{coinDenom} wypłaty są niestabilne",
+    "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
+    "buttonContinue": "Kontynuować mimo to",
+    "buttonCancel": "Anulować"
+  }
 }

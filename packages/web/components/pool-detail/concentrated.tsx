@@ -8,7 +8,6 @@ import { FunctionComponent, useState } from "react";
 import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import {
   ChartUnavailable,
@@ -17,6 +16,7 @@ import {
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/loaders/spinner";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -63,8 +63,8 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { data: superfluidPoolIds } =
       api.edge.pools.getSuperfluidPoolIds.useQuery();
 
-    const { data: userPositions } =
-      api.edge.concentratedLiquidity.getUserPositions.useQuery(
+    const { data: userPositions, isFetched: isUserPositionsFetched } =
+      api.local.concentratedLiquidity.getUserPositions.useQuery(
         {
           userOsmoAddress: account?.address ?? "",
           forPoolId: poolId,
@@ -327,15 +327,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <div className="flex gap-2">
                 <Button
                   className="subtitle1 w-fit"
-                  size="sm"
                   onClick={onClickCollectAllRewards}
                   disabled={!hasClaimableRewards}
                 >
                   {t("clPositions.collectAllRewards")}
                 </Button>
+
                 <Button
+                  variant="outline"
                   className="subtitle1 w-fit"
-                  size="sm"
                   onClick={() => {
                     setActiveModal("add-liquidity");
                   }}
@@ -344,7 +344,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </Button>
               </div>
             </div>
-            {!userHasPositionInPool && (
+            {!userHasPositionInPool && isUserPositionsFetched && (
               <>
                 <SuperchargePool
                   title={t("createFirstPositionCta.title")}

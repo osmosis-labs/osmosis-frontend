@@ -268,7 +268,6 @@ export const Transfer = observer(
             onSelectBridgeProvider={onSelectBridgeProvider}
             selectedBridgeProvidersId={selectedBridgeProvidersId}
           />
-
           <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
             {/* From Address */}
             <div

@@ -1,6 +1,6 @@
 import { createNodeQuery } from "~/server/queries/base-utils";
 
-interface Epochs {
+export interface Epochs {
   epochs: [
     {
       identifier: string;

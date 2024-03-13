@@ -3,6 +3,7 @@ import { AssetList } from "@osmosis-labs/types";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { aggregateCoinsByDenom } from "~/utils/coin";
+import { captureErrorAndReturn } from "~/utils/error";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
@@ -77,10 +78,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
       const usdValue = await calcAssetValue({
         anyDenom: asset.coinMinimalDenom,
         amount: balance.amount,
-      }).catch(() => {
-        console.error(asset.coinMinimalDenom, "likely missing price config");
-        return undefined;
-      });
+      }).catch((e) => captureErrorAndReturn(e, undefined));
 
       return {
         ...asset,
@@ -157,23 +155,26 @@ export async function getUserAssetsBreakdown(address: {
   const pooledCoins = [...underlyingGammShareCoins, ...clCoins, ...lockedCoins];
   const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
 
-  const delegatedValue = await calcCoinValue(delegatedCoin);
-  const pooledValue = await calcSumCoinsValue(pooledCoins);
-  const availableValue = await calcSumCoinsValue(available);
-  const aggregatedValue = await calcSumCoinsValue(allCoins);
+  const [delegatedValue, pooledValue, availableValue, aggregatedValue] =
+    await Promise.all([
+      calcCoinValue(delegatedCoin).catch((e) => captureErrorAndReturn(e, 0)),
+      calcSumCoinsValue(pooledCoins),
+      calcSumCoinsValue(available),
+      calcSumCoinsValue(allCoins),
+    ]);
 
   return {
     delegated: delegatedCoin, // Should be OSMO
-    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue ?? 0),
+    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue),
 
     pooled: aggregateCoinsByDenom(pooledCoins),
-    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue ?? 0),
+    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue),
 
     available: aggregateCoinsByDenom(available),
-    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue ?? 0),
+    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue),
 
     aggregated: aggregateCoinsByDenom(allCoins),
-    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue ?? 0),
+    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
   };
 }
 
@@ -201,13 +202,13 @@ export async function getUserCoinsFromBank({
         getGammShareUnderlyingCoins({
           denom,
           amount,
-        }).catch(() => undefined)
+        }).catch((e) => captureErrorAndReturn(e, undefined))
       );
     } else {
       eventualAvailableCoins.push(
         getAsset({ anyDenom: denom })
           .then((asset) => new CoinPretty(asset, amount))
-          .catch(() => undefined)
+          .catch((e) => captureErrorAndReturn(e, undefined))
       );
     }
   });
@@ -238,11 +239,12 @@ export async function getUserShareUnderlyingCoinsFromLocks({
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
     if (coin.denom.includes("gamm")) {
-      return await getGammShareUnderlyingCoins(coin).catch(() => undefined);
+      return await getGammShareUnderlyingCoins(coin).catch((e) =>
+        captureErrorAndReturn(e, [])
+      );
     }
+    return [];
   });
 
-  return (await Promise.all(eventualUserLockedAssets))
-    .filter((a): a is CoinPretty[] => !!a)
-    .flat();
+  return (await Promise.all(eventualUserLockedAssets)).flat();
 }

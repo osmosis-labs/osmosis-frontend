@@ -1,52 +1,69 @@
-import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
+import { Dec } from "@keplr-wallet/unit";
+import { NoAvailableSharesError } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
-import { RemoveLiquidity } from "~/components/complex/remove-liquidity";
+import {
+  RemovableShareLiquidity,
+  RemoveLiquidity,
+} from "~/components/complex/remove-liquidity";
 import { tError } from "~/components/localization";
 import { useTranslation } from "~/hooks";
-import {
-  useConnectWalletModalRedirect,
-  useRemoveLiquidityConfig,
-} from "~/hooks";
+import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    onRemoveLiquidity?: (
-      result: Promise<void>,
-      config: ObservableRemoveLiquidityConfig
-    ) => void;
-  } & ModalBaseProps
+    onRemoveLiquidity?: (result: Promise<void>) => void;
+  } & ModalBaseProps &
+    RemovableShareLiquidity
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
-  const { config, removeLiquidity } = useRemoveLiquidityConfig(
-    chainStore,
-    chainId,
-    poolId,
-    queriesStore
+  const [percentage, setPercentage] = useState("50");
+
+  const removeLiquidity = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        if (!account) return reject("No account");
+        account.osmosis
+          .sendExitPoolMsg(
+            poolId,
+            props.shares
+              .mul(new Dec(percentage).quo(new Dec(100)))
+              .toDec()
+              .toString(),
+            undefined,
+            undefined,
+            (tx) => {
+              if (Boolean(tx.code)) reject();
+              else resolve();
+            }
+          )
+          .catch(reject);
+      }),
+    [account, poolId, percentage, props.shares]
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: config.error !== undefined || isSendingMsg,
+      disabled: props.shares.toDec().isZero() || isSendingMsg,
       onClick: () => {
         const removeLiquidityResult = removeLiquidity().finally(() =>
           props.onRequestClose()
         );
-        props.onRemoveLiquidity?.(removeLiquidityResult, config);
+        props.onRemoveLiquidity?.(removeLiquidityResult);
       },
-      children: config.error
-        ? t(...tError(config.error))
+      children: props.shares.toDec().isZero()
+        ? t(...tError(new NoAvailableSharesError("No available shares")))
         : t("removeLiquidity.title"),
     },
     props.onRequestClose
@@ -60,8 +77,10 @@ export const RemoveLiquidityModal: FunctionComponent<
     >
       <RemoveLiquidity
         className="pt-4"
-        removeLiquidityConfig={config}
+        percentage={percentage}
+        setPercentage={setPercentage}
         actionButton={accountActionButton}
+        {...props}
       />
     </ModalBase>
   );

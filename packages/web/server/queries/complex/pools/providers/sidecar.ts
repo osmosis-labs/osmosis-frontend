@@ -27,7 +27,6 @@ export function getPoolsFromSidecar({
     cache: poolsCache,
     key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
     ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () => queryPools({ poolIds }),
@@ -57,7 +56,7 @@ export function getPoolsFromSidecar({
           reserve
             ? timeout(
                 () => calcTotalFiatValueLockedFromReserve(reserve),
-                9_000, // 9 seconds
+                15_000, // 15 seconds
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
             : null
@@ -219,7 +218,7 @@ function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
     amount: coin.toCoin().amount,
   }));
 
-  return calcSumAssetsValue({ assets })
-    .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0))
-    .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, 0));
+  return calcSumAssetsValue({ assets }).then(
+    (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+  );
 }
