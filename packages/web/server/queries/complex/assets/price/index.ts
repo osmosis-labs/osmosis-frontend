@@ -6,6 +6,7 @@ import { LRUCache } from "lru-cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { CoingeckoVsCurrencies } from "~/server/queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureErrorAndReturn } from "~/utils/error";
 
 import { getAsset } from "..";
 import { getPriceFromSidecar } from "./providers/sidecar";
@@ -70,7 +71,7 @@ export function calcCoinValue(coin: CoinPretty) {
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.
- *  @throws If there's an issue calculating the price for the given denom. */
+ *  @throws If there's an issue calculating the price for the given denom (missing in asset list or can't get price). */
 export async function calcAssetValue({
   anyDenom,
   amount,
@@ -108,7 +109,7 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 }
 
 /** Calculate and sum the value of multiple assets.
- *  Will only include listed assets as part of sum.
+ *  Will only include listed assets with prices as part of sum.
  *  @throws — If there's an issue calculating the price for the given denoms. */
 export async function calcSumAssetsValue({
   assets,
@@ -126,7 +127,7 @@ export async function calcSumAssetsValue({
         calcAssetValue({
           ...asset,
           currency,
-        })
+        }).catch((e) => captureErrorAndReturn(e, new Dec(0)))
       )
     )
   ).reduce((acc, price) => acc.add(price), new Dec(0));

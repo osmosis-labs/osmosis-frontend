@@ -20,6 +20,7 @@ import {
 } from "~/server/queries/osmosis/concentratedliquidity";
 import timeout from "~/utils/async";
 import { aggregateRawCoinsByDenom } from "~/utils/coin";
+import { captureErrorAndReturn } from "~/utils/error";
 
 import { getUserLocks } from "../osmosis/lockup";
 import { getPools } from "./index";
@@ -210,26 +211,16 @@ export async function getUserSharePools(
     // value of all shares
     const availableValue = await calcSumCoinsValue(
       underlyingAvailableCoins
-    ).catch((e) => {
-      console.warn(e);
-      new Dec(0);
-    });
+    ).catch((e) => captureErrorAndReturn(e, new Dec(0)));
     const lockedValue = await calcSumCoinsValue(underlyingLockedCoins).catch(
-      (e) => {
-        console.warn(e);
-        new Dec(0);
-      }
+      (e) => captureErrorAndReturn(e, new Dec(0))
     );
     const unlockingValue = await calcSumCoinsValue(
       underlyingUnlockingCoins
-    ).catch((e) => {
-      console.warn(e);
-      new Dec(0);
-    });
-    const totalValue = await calcSumCoinsValue(totalCoins).catch((e) => {
-      console.warn(e);
-      new Dec(0);
-    });
+    ).catch((e) => captureErrorAndReturn(e, new Dec(0)));
+    const totalValue = await calcSumCoinsValue(totalCoins).catch((e) =>
+      captureErrorAndReturn(e, new Dec(0))
+    );
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(

@@ -1,8 +1,9 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { aggregateCoinsByDenom } from "~/utils/coin";
+import { captureErrorAndReturn } from "~/utils/error";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
@@ -77,10 +78,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
       const usdValue = await calcAssetValue({
         anyDenom: asset.coinMinimalDenom,
         amount: balance.amount,
-      }).catch((e) => {
-        console.warn(e);
-        return null;
-      });
+      }).catch((e) => captureErrorAndReturn(e, undefined));
 
       return {
         ...asset,
@@ -164,12 +162,7 @@ export async function getUserAssetsBreakdown(address: {
         calcSumCoinsValue(pooledCoins),
         calcSumCoinsValue(available),
         calcSumCoinsValue(allCoins),
-      ].map((p) =>
-        p.catch((e) => {
-          console.warn(e);
-          return new Dec(0);
-        })
-      )
+      ].map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
     );
 
   return {
@@ -201,8 +194,8 @@ export async function getUserCoinsFromBank({
   // get bank balances
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
-  const eventualShareCoins: Promise<CoinPretty[] | null>[] = [];
-  const eventualAvailableCoins: Promise<CoinPretty | null>[] = [];
+  const eventualShareCoins: Promise<CoinPretty[] | undefined>[] = [];
+  const eventualAvailableCoins: Promise<CoinPretty | undefined>[] = [];
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
@@ -211,19 +204,13 @@ export async function getUserCoinsFromBank({
         getGammShareUnderlyingCoins({
           denom,
           amount,
-        }).catch((e) => {
-          console.warn(e);
-          return null;
-        })
+        }).catch((e) => captureErrorAndReturn(e, undefined))
       );
     } else {
       eventualAvailableCoins.push(
         getAsset({ anyDenom: denom })
           .then((asset) => new CoinPretty(asset, amount))
-          .catch((e) => {
-            console.warn(e);
-            return null;
-          })
+          .catch((e) => captureErrorAndReturn(e, undefined))
       );
     }
   });
@@ -254,10 +241,9 @@ export async function getUserShareUnderlyingCoinsFromLocks({
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
     if (coin.denom.includes("gamm")) {
-      return await getGammShareUnderlyingCoins(coin).catch((e) => {
-        console.warn(e);
-        return [];
-      });
+      return await getGammShareUnderlyingCoins(coin).catch((e) =>
+        captureErrorAndReturn(e, [])
+      );
     }
     return [];
   });
