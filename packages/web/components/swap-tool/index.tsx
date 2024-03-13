@@ -26,7 +26,7 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -70,6 +70,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
+    const featureFlags = useFeatureFlags();
 
     const account = accountStore.getWallet(chainId);
 
@@ -752,6 +753,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     </div>
                   )}
                 {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                featureFlags.swapToolSimulateFee &&
                 !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
@@ -767,22 +769,23 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 ) : undefined}
                 {((swapState.quote?.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
-                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) && (
-                  <div className="flex justify-between">
-                    <span className="caption">{t("swap.totalFee")}</span>
-                    <span className="caption text-osmoverse-200">
-                      {`≈ ${new PricePretty(
-                        DEFAULT_VS_CURRENCY,
-                        sum([
-                          swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
-                            new Dec(0),
-                          swapState.networkFee?.gasUsdValueToPay?.toDec() ??
-                            new Dec(0),
-                        ])
-                      )} `}
-                    </span>
-                  </div>
-                )}
+                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
+                  featureFlags.swapToolSimulateFee && (
+                    <div className="flex justify-between">
+                      <span className="caption">{t("swap.totalFee")}</span>
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          sum([
+                            swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
+                              new Dec(0),
+                            swapState.networkFee?.gasUsdValueToPay?.toDec() ??
+                              new Dec(0),
+                          ])
+                        )} `}
+                      </span>
+                    </div>
+                  )}
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
