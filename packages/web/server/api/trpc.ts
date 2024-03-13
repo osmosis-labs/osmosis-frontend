@@ -87,7 +87,9 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createTRPCRouter = t.router;
 
-/** Add Sentry middleware to capture info about errors in tRPC. */
+/** Add Sentry middleware to capture info about errors in tRPC.
+ *  See: https://docs.sentry.io/platforms/node/configuration/integrations/pluggable-integrations/#frameworks
+ */
 const sentryMiddleware = t.middleware(
   Sentry.Handlers.trpcMiddleware({
     attachRpcInput: true,
