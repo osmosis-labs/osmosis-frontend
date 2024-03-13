@@ -3,7 +3,6 @@
  * 1. You want to modify request context (see Part 1).
  * 2. You want to create a new middleware or type of procedure (see Part 3).
  */
-import * as Sentry from "@sentry/nextjs";
 import { initTRPC } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
@@ -87,16 +86,6 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const createTRPCRouter = t.router;
 
-/** Add Sentry middleware to capture info about errors in tRPC.
- *  See: https://docs.sentry.io/platforms/node/configuration/integrations/pluggable-integrations/#frameworks
- */
-const sentryMiddleware = t.middleware(
-  Sentry.Handlers.trpcMiddleware({
-    attachRpcInput: true,
-  })
-);
-const sentrifiedProcedure = t.procedure.use(sentryMiddleware);
-
 /**
  * Public (unauthenticated) procedure
  *
@@ -104,7 +93,7 @@ const sentrifiedProcedure = t.procedure.use(sentryMiddleware);
  * guarantee that a user querying is authorized, but we can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = sentrifiedProcedure.use(async (opts) => {
+export const publicProcedure = t.procedure.use(async (opts) => {
   /**
    * Default timeout for all procedures
    */
