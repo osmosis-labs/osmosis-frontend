@@ -87,7 +87,7 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
 
-    org: "osmosis-wu",
+    org: "osmosis-labs",
     project: "osmosis-web",
   },
   {
