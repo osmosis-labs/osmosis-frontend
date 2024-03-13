@@ -218,7 +218,7 @@ function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
     amount: coin.toCoin().amount,
   }));
 
-  return calcSumAssetsValue({ assets })
-    .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0))
-    .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, 0));
+  return calcSumAssetsValue({ assets }).then(
+    (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+  );
 }

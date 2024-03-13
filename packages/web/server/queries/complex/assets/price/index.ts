@@ -6,6 +6,7 @@ import { LRUCache } from "lru-cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { CoingeckoVsCurrencies } from "~/server/queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureErrorAndReturn } from "~/utils/error";
 
 import { getAsset } from "..";
 import { getPriceFromSidecar } from "./providers/sidecar";
@@ -20,7 +21,7 @@ export type PriceProvider = (
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
- *  @throws If the asset is not found in the asset list registry or the asset's price info is not found. */
+ *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
   asset,
   currency = "usd",
@@ -61,7 +62,7 @@ export async function getAssetPrice({
 }
 
 /** Calculates the fiat value of a given coin.
- *  @throws If there's an issue calculating the price for the given coin. */
+ *  @throws If there's an issue calculating the price for the given coin (missing in asset list or can't get price). */
 export function calcCoinValue(coin: CoinPretty) {
   return calcAssetValue({
     anyDenom: coin.currency.coinMinimalDenom,
@@ -70,7 +71,7 @@ export function calcCoinValue(coin: CoinPretty) {
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.
- *  @throws If there's an issue calculating the price for the given denom. */
+ *  @throws If there's an issue calculating the price for the given denom (missing in asset list or can't get price). */
 export async function calcAssetValue({
   anyDenom,
   amount,
@@ -97,8 +98,7 @@ export async function calcAssetValue({
 }
 
 /** Calculate and sum the value of multiple coins.
- *  Will only include listed assets as part of sum.
- *  @throws — If there's an issue calculating the price for the given denoms. */
+ *  Will only include listed assets with prices as part of sum. */
 export function calcSumCoinsValue(coins: CoinPretty[]) {
   return calcSumAssetsValue({
     assets: coins
@@ -108,8 +108,7 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 }
 
 /** Calculate and sum the value of multiple assets.
- *  Will only include listed assets as part of sum.
- *  @throws — If there's an issue calculating the price for the given denoms. */
+ *  Will only include listed assets with prices as part of sum. */
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",
@@ -126,7 +125,7 @@ export async function calcSumAssetsValue({
         calcAssetValue({
           ...asset,
           currency,
-        })
+        }).catch((e) => captureErrorAndReturn(e, new Dec(0)))
       )
     )
   ).reduce((acc, price) => acc.add(price), new Dec(0));
