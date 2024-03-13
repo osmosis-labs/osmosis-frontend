@@ -675,6 +675,8 @@
     "buttonError": "در هر شرایطی تبدیل کن",
     "expectedOutput": "خروجی مورد انتظار",
     "fee": "کارمزد تبدیل ({fee})",
+    "networkFee": "هزینه شبکه",
+    "totalFee": "هزینه کل",
     "HALF": "نصف",
     "MAX": "همه",
     "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",

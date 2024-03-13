@@ -36,12 +36,22 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const currentPrice = await getAssetPrice({ asset }).catch(() => null);
-      const marketCap = await getAssetMarketCap(asset).catch(() => null);
+      const currentPrice = await getAssetPrice({ asset }).catch((e) => {
+        console.warn(e);
+        return null;
+      });
+      const marketCap = await getAssetMarketCap(asset).catch((e) => {
+        console.warn(e);
+        return null;
+      });
       const priceChange24h = (await getAssetMarketActivity(asset))
         ?.price_24h_change;
-      const marketCapRank = (await getCoingeckoCoin(asset).catch(() => null))
-        ?.market_cap_rank;
+      const marketCapRank = (
+        await getCoingeckoCoin(asset).catch((e) => {
+          console.warn(e);
+          return null;
+        })
+      )?.market_cap_rank;
 
       return {
         currentPrice: currentPrice
@@ -91,7 +101,6 @@ async function getAssetMarketCap({
     getFreshValue: async () => {
       const marketCaps = await queryTokenMarketCaps();
 
-      if (!marketCaps) return new Map<string, number>();
       return marketCaps.reduce((map, mCap) => {
         return map.set(mCap.symbol, mCap.market_cap);
       }, new Map<string, number>());
@@ -154,18 +163,13 @@ async function getAssetMarketActivity({ coinDenom }: { coinDenom: string }) {
     ttl: 1000 * 60 * 5, // 5 minutes since there's price data
     key: "allTokenData",
     getFreshValue: async () => {
-      try {
-        const allTokenData = await queryAllTokenData();
+      const allTokenData = await queryAllTokenData();
 
-        const tokenInfoMap = new Map<string, TokenData>();
-        allTokenData.forEach((tokenData) => {
-          tokenInfoMap.set(tokenData.symbol, tokenData);
-        });
-        return tokenInfoMap;
-      } catch (error) {
-        console.error("Could not fetch token infos", error);
-        return new Map<string, TokenData>();
-      }
+      const tokenInfoMap = new Map<string, TokenData>();
+      allTokenData.forEach((tokenData) => {
+        tokenInfoMap.set(tokenData.symbol, tokenData);
+      });
+      return tokenInfoMap;
     },
   });
 

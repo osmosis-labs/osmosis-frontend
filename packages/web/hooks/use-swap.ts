@@ -1,9 +1,13 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+import {
+  makeSplitRoutesSwapExactAmountInMsg,
+  makeSwapExactAmountInMsg,
+} from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,8 +20,9 @@ import { useEffect } from "react";
 
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { RouterKey } from "~/server/api/edge-routers/swap-router";
+import type { RouterKey } from "~/server/api/local-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
@@ -143,71 +148,158 @@ export function useSwap({
     inAmountInput.isEmpty,
   ]);
 
+  const getSwapTxParameters = useCallback(
+    ({
+      coinAmount,
+      maxSlippage,
+    }: {
+      coinAmount: CoinPretty | undefined;
+      maxSlippage: Dec;
+    }) => {
+      if (!quote) {
+        throw new Error(
+          "User input should be disabled if no route is found or is being generated"
+        );
+      }
+
+      if (!coinAmount) throw new Error("No input");
+      if (!account) throw new Error("No account");
+      if (!swapAssets.fromAsset) throw new Error("No from asset");
+      if (!swapAssets.toAsset) throw new Error("No to asset");
+
+      /**
+       * Prepare swap data
+       */
+
+      type Pool = {
+        id: string;
+        tokenOutDenom: string;
+      };
+      type Route = {
+        pools: Pool[];
+        tokenInAmount: string;
+      };
+
+      const routes: Route[] = [];
+
+      for (const route of quote.split) {
+        const pools: Pool[] = [];
+
+        for (let i = 0; i < route.pools.length; i++) {
+          const pool = route.pools[i];
+
+          pools.push({
+            id: pool.id,
+            tokenOutDenom: route.tokenOutDenoms[i],
+          });
+        }
+
+        routes.push({
+          pools: pools,
+          tokenInAmount: route.initialAmount.toString(),
+        });
+      }
+
+      /** In amount converted to integer (remove decimals) */
+      const tokenIn = {
+        currency: swapAssets.fromAsset as Currency,
+        amount: coinAmount.toCoin().amount,
+      };
+
+      /** Out amount with slippage included */
+      const tokenOutMinAmount = quote.amount
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            swapAssets.toAsset.coinDecimals
+          )
+        )
+        .mul(new Dec(1).sub(maxSlippage))
+        .truncate()
+        .toString();
+
+      return {
+        routes,
+        tokenIn,
+        tokenOutMinAmount,
+      };
+    },
+    [quote, account, swapAssets]
+  );
+
+  const messages = useMemo(() => {
+    if (!account?.address) return undefined;
+
+    let txParams: ReturnType<typeof getSwapTxParameters>;
+
+    try {
+      txParams = getSwapTxParameters({
+        coinAmount: inAmountInput.amount,
+        maxSlippage: new Dec(0.95),
+      });
+    } catch {
+      return undefined;
+    }
+
+    const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+    const { pools } = routes[0];
+
+    if (routes.length < 1) {
+      throw new Error("Routes are empty");
+    }
+
+    /**
+     * Do not send transaction if there is an error since it will fail anyway.
+     */
+    if (precedentError) {
+      return undefined;
+    }
+
+    return [
+      routes.length === 1
+        ? makeSwapExactAmountInMsg({
+            pools,
+            tokenIn,
+            tokenOutMinAmount,
+            userOsmoAddress: account.address,
+          })
+        : makeSplitRoutesSwapExactAmountInMsg({
+            routes,
+            tokenIn,
+            tokenOutMinAmount,
+            userOsmoAddress: account.address,
+          }),
+    ];
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getSwapTxParameters, quote, inAmountInput, account, swapAssets]);
+
+  const { data: networkFee, isLoading: isLoadingNetworkFee } =
+    useEstimateTxFees({
+      chainId: chainStore.osmosis.chainId,
+      messages,
+    });
+
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     (maxSlippage: Dec) =>
       new Promise<"multiroute" | "multihop" | "exact-in">((resolve, reject) => {
-        if (!quote) {
-          return reject(
-            "User input should be disabled if no route is found or is being generated"
-          );
-        }
-
-        if (!inAmountInput.amount) return reject("No input");
         if (!account) return reject("No account");
-        if (!swapAssets.fromAsset) return reject("No from asset");
-        if (!swapAssets.toAsset) return reject("No to asset");
 
-        /**
-         * Prepare swap data
-         */
+        let txParams: ReturnType<typeof getSwapTxParameters>;
 
-        type Pool = {
-          id: string;
-          tokenOutDenom: string;
-        };
-        type Route = {
-          pools: Pool[];
-          tokenInAmount: string;
-        };
-
-        const routes: Route[] = [];
-
-        for (const route of quote.split) {
-          const pools: Pool[] = [];
-
-          for (let i = 0; i < route.pools.length; i++) {
-            const pool = route.pools[i];
-
-            pools.push({
-              id: pool.id,
-              tokenOutDenom: route.tokenOutDenoms[i],
-            });
-          }
-
-          routes.push({
-            pools: pools,
-            tokenInAmount: route.initialAmount.toString(),
+        try {
+          txParams = getSwapTxParameters({
+            coinAmount: inAmountInput.amount,
+            maxSlippage,
           });
+        } catch (e) {
+          const error = e as Error;
+          return reject(error.message);
         }
 
-        /** In amount converted to integer (remove decimals) */
-        const tokenIn = {
-          currency: swapAssets.fromAsset as Currency,
-          amount: inAmountInput.amount.toCoin().amount,
-        };
-
-        /** Out amount with slippage included */
-        const tokenOutMinAmount = quote.amount
-          .toDec()
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              swapAssets.toAsset.coinDecimals
-            )
-          )
-          .mul(new Dec(1).sub(maxSlippage))
-          .truncate()
-          .toString();
+        const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
         /**
          * Send messages to account
@@ -220,7 +312,15 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              undefined,
+              networkFee
+                ? {
+                    preferNoSetFee: true,
+                    fee: {
+                      gas: networkFee.gasLimit,
+                      amount: networkFee.amount,
+                    },
+                  }
+                : undefined,
               () => {
                 resolve(pools.length === 1 ? "exact-in" : "multihop");
               }
@@ -239,7 +339,15 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              undefined,
+              networkFee
+                ? {
+                    preferNoSetFee: true,
+                    fee: {
+                      gas: networkFee.gasLimit,
+                      amount: networkFee.amount,
+                    },
+                  }
+                : undefined,
               () => {
                 resolve("multiroute");
               }
@@ -261,7 +369,7 @@ export function useSwap({
 
         inAmountInput.reset();
       }),
-    [quote, inAmountInput, account, swapAssets, queryClient]
+    [account, getSwapTxParameters, inAmountInput, networkFee, queryClient]
   );
 
   const positivePrevQuote = usePreviousWhen(
@@ -281,6 +389,8 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
+    networkFee,
+    isLoadingNetworkFee,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
@@ -511,7 +621,7 @@ function useSwapAsset<TAsset extends Asset>(
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
-    RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+    RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter"
   >,
   enabled: boolean,
