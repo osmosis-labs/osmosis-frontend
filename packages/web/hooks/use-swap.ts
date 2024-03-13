@@ -1,3 +1,4 @@
+import { SignOptions } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -7,6 +8,7 @@ import {
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
+  TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
@@ -26,6 +28,7 @@ import type { RouterKey } from "~/server/api/local-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
+import { sum } from "~/utils/math";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -70,6 +73,7 @@ export function useSwap({
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
+  const featureFlags = useFeatureFlags();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -279,7 +283,12 @@ export function useSwap({
     useEstimateTxFees({
       chainId: chainStore.osmosis.chainId,
       messages,
+      enabled: featureFlags.swapToolSimulateFee,
     });
+  const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
+    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
+    { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
+  );
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -301,6 +310,21 @@ export function useSwap({
 
         const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
+        const fee: (SignOptions & { fee: TxFee }) | undefined =
+          featureFlags.swapToolSimulateFee &&
+          networkFee &&
+          // Do not manually set the simulated fee if the user does not have enough OSMO
+          // TODO: Support other fee tokens
+          userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
+            ? {
+                preferNoSetFee: true,
+                fee: {
+                  gas: networkFee.gasLimit,
+                  amount: networkFee.amount,
+                },
+              }
+            : undefined;
+
         /**
          * Send messages to account
          */
@@ -312,15 +336,7 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              networkFee
-                ? {
-                    preferNoSetFee: true,
-                    fee: {
-                      gas: networkFee.gasLimit,
-                      amount: networkFee.amount,
-                    },
-                  }
-                : undefined,
+              fee,
               () => {
                 resolve(pools.length === 1 ? "exact-in" : "multihop");
               }
@@ -339,15 +355,7 @@ export function useSwap({
               tokenIn,
               tokenOutMinAmount,
               undefined,
-              networkFee
-                ? {
-                    preferNoSetFee: true,
-                    fee: {
-                      gas: networkFee.gasLimit,
-                      amount: networkFee.amount,
-                    },
-                  }
-                : undefined,
+              fee,
               () => {
                 resolve("multiroute");
               }
@@ -369,7 +377,14 @@ export function useSwap({
 
         inAmountInput.reset();
       }),
-    [account, getSwapTxParameters, inAmountInput, networkFee, queryClient]
+    [
+      account,
+      getSwapTxParameters,
+      inAmountInput,
+      networkFee,
+      queryClient,
+      userOsmoCoin?.amount,
+    ]
   );
 
   const positivePrevQuote = usePreviousWhen(
@@ -389,6 +404,10 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
+    totalFee: sum([
+      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+    ]),
     networkFee,
     isLoadingNetworkFee,
     error: precedentError,
@@ -748,7 +767,7 @@ function makeRouterErrorFromTrpcError(
     }
   | undefined {
   if (isNil(error)) return;
-  const tprcShapeMsg = error.shape?.message;
+  const tprcShapeMsg = error?.shape?.message;
 
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
