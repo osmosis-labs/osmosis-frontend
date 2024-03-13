@@ -28,6 +28,7 @@ import type { RouterKey } from "~/server/api/local-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
 import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
+import { sum } from "~/utils/math";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -403,6 +404,10 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
+    totalFee: sum([
+      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+    ]),
     networkFee,
     isLoadingNetworkFee,
     error: precedentError,

@@ -38,7 +38,6 @@ import { useSwap } from "~/hooks/use-swap";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-import { sum } from "~/utils/math";
 import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
@@ -776,12 +775,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       <span className="caption text-osmoverse-200">
                         {`≈ ${new PricePretty(
                           DEFAULT_VS_CURRENCY,
-                          sum([
-                            swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
-                              new Dec(0),
-                            swapState.networkFee?.gasUsdValueToPay?.toDec() ??
-                              new Dec(0),
-                          ])
+                          swapState.totalFee
                         )} `}
                       </span>
                     </div>
