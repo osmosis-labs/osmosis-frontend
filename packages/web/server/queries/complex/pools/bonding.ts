@@ -2,6 +2,8 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 
+import { captureErrorAndReturn } from "~/utils/error";
+
 import { querySyntheticLockupsByLockId } from "../../osmosis/lockup";
 import {
   querySuperfluidDelegations,
@@ -172,7 +174,7 @@ export async function getSharePoolBondDurations(
         if (userShares.toDec().isPositive()) {
           const underlyingCoins = await getGammShareUnderlyingCoins(
             userShares.toCoin()
-          ).catch(() => []);
+          ).catch((e) => captureErrorAndReturn(e, []));
           const userSharesValue = await calcSumCoinsValue(underlyingCoins);
           if (userSharesValue) {
             userLockedShareValue = new PricePretty(
