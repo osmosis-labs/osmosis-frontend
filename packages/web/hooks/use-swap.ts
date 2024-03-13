@@ -282,10 +282,11 @@ export function useSwap({
     useEstimateTxFees({
       chainId: chainStore.osmosis.chainId,
       messages,
+      enabled: featureFlags.swapToolSimulateFee,
     });
   const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
     { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
-    { enabled: Boolean(account?.address) }
+    { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
   );
 
   /** Send trade token in transaction. */
