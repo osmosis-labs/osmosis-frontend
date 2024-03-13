@@ -265,7 +265,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
             href={href}
             target={target}
             className={classNames(
-              "group/button inline-flex max-h-10 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-osmoverse-860 transition-all hover:!bg-wosmongton-700",
+              "group/button inline-flex max-h-10 items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-osmoverse-860 transition-all hover:!bg-wosmongton-700",
               {
                 "w-24": !isBalanceVisible,
                 "w-32": isBalanceVisible,
