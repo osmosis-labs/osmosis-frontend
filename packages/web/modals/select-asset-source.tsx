@@ -36,7 +36,6 @@ export const SelectAssetSourceModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "mt-3 mx-auto",
       disabled:
         (props.initiallySelectedWalletId === undefined &&
           !selectedAssetSourceKey) ||

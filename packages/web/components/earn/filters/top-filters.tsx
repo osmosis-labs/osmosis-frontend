@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -17,6 +16,7 @@ import {
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 
@@ -276,11 +276,7 @@ export const TopFilters = () => {
           placeholder={t("store.searchPlaceholder")}
           size={"full"}
         />
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          mode={"quaternary-modal"}
-          className="max-w-[110px]"
-        >
+        <Button onClick={() => setIsModalOpen(true)} className="max-w-[110px]">
           {t("earnPage.filters")}
         </Button>
       </div>
