@@ -45,7 +45,13 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  getAssetFromAssetList,
+  getChain,
+  isNil,
+} from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -1088,9 +1094,104 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const gas = String(Math.round(gasUsed * GasMultiplier));
 
       if (signOptions.preferNoSetFee) {
+        const chainId = wallet.chainId;
+
+        const fee = await this.getGasAmount(gas, wallet.chainId);
+
+        if (
+          wallet.address &&
+          getChain({ chainList: this.chains, chainId })?.features?.includes(
+            "osmosis-txfees"
+          )
+        ) {
+          const [{ feeTokens }, { balances }] = await Promise.all([
+            this.queryFeeTokens({ chainId }),
+            this.queryAccountBalance({
+              userOsmoAddress: wallet.address,
+              chainId,
+            }),
+          ]);
+
+          const userBalanceForFeeDenom = balances.find(
+            (balance) => balance.denom === fee.denom
+          );
+
+          // If the user doesn't have enough balance for the fee denom, find another fee token to use.
+          if (
+            userBalanceForFeeDenom &&
+            new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
+          ) {
+            const filteredBalances = balances
+              .filter((balance) => feeTokens.includes(balance.denom))
+              .sort((a, b) => {
+                const aDec = new Dec(a.amount);
+                const bDec = new Dec(b.amount);
+                if (aDec.lt(bDec)) return 1;
+                if (aDec.gt(bDec)) return -1;
+                return 0;
+              });
+
+            if (!filteredBalances.length) {
+              throw new Error(
+                `User doesn't have enough balance for any fee token.`
+              );
+            }
+
+            const feeDenom = filteredBalances[0].denom;
+
+            const asset = getAssetFromAssetList({
+              assetLists: this.assets,
+              coinMinimalDenom: feeDenom,
+            });
+
+            if (!asset) {
+              throw new Error(
+                `Failed to find asset for fee token ${feeDenom}.`
+              );
+            }
+
+            const chain = getChain({
+              chainList: this.chains,
+              chainName: asset.rawAsset.chainName,
+            });
+
+            if (!chain) {
+              throw new Error(
+                `Failed to find chain for asset ${asset.rawAsset.chainName}.`
+              );
+            }
+
+            const feeCurrency = chain.fees.fee_tokens.find(
+              ({ denom }) => denom === feeDenom
+            );
+
+            const spotPriceDec = new Dec(
+              (
+                await this.queryFeeTokenSpotPrice({ chainId, denom: feeDenom })
+              ).spotPrice
+            );
+
+            const gasPrice = new Dec(
+              feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average
+            )
+              .quo(spotPriceDec)
+              .mul(new Dec(1.01));
+
+            return {
+              gas,
+              amount: [
+                {
+                  amount: new Dec(gas).mul(gasPrice).truncate().toString(),
+                  denom: feeDenom,
+                },
+              ],
+            };
+          }
+        }
+
         return {
           gas,
-          amount: [await this.getGasAmount(gas, wallet.chainId)],
+          amount: [fee],
         };
       }
 
@@ -1170,7 +1271,118 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
   }
 
-  public async queryOsmosisGasPrice() {
+  private async queryAccountBalance({
+    userOsmoAddress,
+    chainId,
+  }: {
+    chainId: string;
+    userOsmoAddress: string;
+  }) {
+    return cachified({
+      key: "account-balance",
+      cache: this._cache,
+      // 5 seconds
+      ttl: 5_000,
+      getFreshValue: async () => {
+        const restEndpoint = this.chainGetter.getChain(chainId).rest;
+
+        if (!restEndpoint)
+          throw new Error(
+            `Rest endpoint for chain ${chainId} is not provided.`
+          );
+
+        const result = await apiClient<{
+          balances: {
+            denom: string;
+            amount: string;
+          }[];
+        }>(`${restEndpoint}/cosmos/bank/v1beta1/balances/${userOsmoAddress}`);
+
+        return {
+          balances: result.balances,
+        };
+      },
+    });
+  }
+
+  /**
+   * Fetches and caches the fee tokens denoms from chains that have the fee module.
+   *
+   * @example
+   * ```typescript
+   * const feeTokensInfo = await queryFeeTokens();
+   * console.log(feeTokensInfo);
+   * // Output: { feeTokens: ["ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", ...] }
+   * ```
+   */
+  private async queryFeeTokens({ chainId }: { chainId: string }) {
+    return cachified({
+      key: "fee-tokens",
+      cache: this._cache,
+      // 15 minutes
+      ttl: 15 * 60 * 1000,
+      getFreshValue: async () => {
+        const restEndpoint = this.chainGetter.getChain(chainId).rest;
+
+        if (!restEndpoint)
+          throw new Error(
+            `Rest endpoint for chain ${chainId} is not provided.`
+          );
+
+        const [baseFeeToken, { fee_tokens: feeTokens }] = await Promise.all([
+          apiClient<{ base_denom: string }>(
+            `${restEndpoint}/osmosis/txfees/v1beta1/base_denom`
+          ),
+          apiClient<{ fee_tokens: { denom: string; poolID: number }[] }>(
+            `${restEndpoint}/osmosis/txfees/v1beta1/fee_tokens`
+          ),
+        ]);
+
+        const baseFeeTokenDenom = baseFeeToken.base_denom;
+
+        return {
+          baseFeeTokenDenom,
+          feeTokens: feeTokens.map(({ denom }) => denom),
+        };
+      },
+    });
+  }
+
+  private async queryFeeTokenSpotPrice({
+    denom,
+    chainId,
+  }: {
+    denom: string;
+    chainId: string;
+  }) {
+    return cachified({
+      key: `fee-token-spot-price-${denom}`,
+      cache: this._cache,
+      // 5 seconds
+      ttl: 5_000,
+      getFreshValue: async () => {
+        const restEndpoint = this.chainGetter.getChain(chainId).rest;
+
+        if (!restEndpoint)
+          throw new Error(
+            `Rest endpoint for chain ${chainId} is not provided.`
+          );
+
+        const result = await apiClient<{
+          pool_id: string;
+          spot_price: string;
+        }>(
+          `${restEndpoint}/osmosis/txfees/v1beta1/spot_price_by_denom?denom=${denom}`
+        );
+
+        return {
+          spotPrice: result.spot_price,
+        };
+      },
+    });
+  }
+
+  private async queryOsmosisGasPrice() {
     return cachified({
       key: "osmosis-gas-price",
       cache: this._cache,

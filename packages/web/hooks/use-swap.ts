@@ -285,10 +285,8 @@ export function useSwap({
       messages,
       enabled: featureFlags.swapToolSimulateFee,
     });
-  const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
-    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
-    { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
-  );
+
+  console.log(networkFee);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -311,11 +309,7 @@ export function useSwap({
         const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
         const fee: (SignOptions & { fee: TxFee }) | undefined =
-          featureFlags.swapToolSimulateFee &&
-          networkFee &&
-          // Do not manually set the simulated fee if the user does not have enough OSMO
-          // TODO: Support other fee tokens
-          userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
+          featureFlags.swapToolSimulateFee && networkFee
             ? {
                 preferNoSetFee: true,
                 fee: {
@@ -382,7 +376,6 @@ export function useSwap({
       inAmountInput,
       networkFee,
       queryClient,
-      userOsmoCoin?.amount,
       featureFlags.swapToolSimulateFee,
       getSwapTxParameters,
     ]
