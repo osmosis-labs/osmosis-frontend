@@ -72,7 +72,12 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: "desc",
               includePreview,
             }),
-          cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
+          cacheKey: JSON.stringify({
+            search,
+            userOsmoAddress,
+            onlyVerified,
+            includePreview,
+          }),
           cursor,
           limit,
         })
