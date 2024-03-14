@@ -106,22 +106,17 @@ const useGetEarnStrategies = (
   );
 
   const geoblockQueries = useQueries({
-    queries: (_strategies ?? []).map((strat) => ({
-      queryKey: ["geoblocked", strat.geoblock, strat.id],
-      queryFn: async () => {
-        if (strat.geoblock === "") {
+    queries: (_strategies ?? [])
+      .filter((strat) => strat.geoblock !== "")
+      .map((strat) => ({
+        queryKey: ["geoblocked", strat.geoblock],
+        queryFn: async () => {
           return {
-            response: undefined,
-            id: strat.id,
+            response: await apiClient<LevanaGeoBlockedResponse>(strat.geoblock),
+            geoblock: strat.geoblock,
           };
-        }
-
-        return {
-          response: await apiClient<LevanaGeoBlockedResponse>(strat.geoblock),
-          id: strat.id,
-        };
-      },
-    })),
+        },
+      })),
   });
 
   const strategies: EarnStrategy[] = useMemo(
@@ -135,7 +130,7 @@ const useGetEarnStrategies = (
             annualPercentagesQuery.data?.strategyId === strat.id
         );
         const geoblockQuery = geoblockQueries.find(
-          (geoblockQuery) => geoblockQuery.data?.id === strat.id
+          (geoblockQuery) => geoblockQuery.data?.geoblock === strat.geoblock
         );
 
         return {
