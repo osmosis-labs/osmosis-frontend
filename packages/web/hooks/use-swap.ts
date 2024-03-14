@@ -621,7 +621,7 @@ function useSwapAsset<TAsset extends Asset>(
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
-    RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
+    RouterInputs["local"]["quote"]["routeTokenOutGivenIn"],
     "preferredRouter"
   >,
   enabled: boolean,
@@ -653,7 +653,7 @@ function useQueryRouterBestQuote(
   const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
-      t.local.quoteRouter.routeTokenOutGivenIn(
+      t.local.quote.routeTokenOutGivenIn(
         {
           ...input,
           preferredRouter: key,
@@ -734,7 +734,7 @@ function useQueryRouterBestQuote(
  *  Then we can show the user a useful translated error message vs just "Error". */
 function makeRouterErrorFromTrpcError(
   error:
-    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | TRPCClientError<AppRouter["local"]["quote"]["routeTokenOutGivenIn"]>
     | null
     | undefined
 ):

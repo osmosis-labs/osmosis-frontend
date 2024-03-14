@@ -10,6 +10,6 @@ import { swapRouter } from "./swap-router";
  */
 export const localRouter = createTRPCRouter({
   assets: assetsRouter,
-  quoteRouter: swapRouter,
+  quote: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
 });
