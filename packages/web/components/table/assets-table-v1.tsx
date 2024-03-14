@@ -686,7 +686,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                           <TransferButtonCell type="withdraw" {...cell} />
                         </div>
                       ),
-                      className: "text-left max-w-[5rem]",
+                      className: "text-left",
                     },
                   ] as ColumnDef<TableCell>[])
                 : ([
@@ -709,7 +709,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         ) : (
                           <TransferButtonCell type="deposit" {...cell} />
                         ),
-                      className: "text-left max-w-[5rem]",
+                      className: "text-left",
                     },
                     {
                       display: t("assets.table.columns.withdraw"),
@@ -718,7 +718,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         !cell.isVerified ? null : (
                           <TransferButtonCell type="withdraw" {...cell} />
                         ),
-                      className: "text-left max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
