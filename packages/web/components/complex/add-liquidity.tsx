@@ -6,12 +6,12 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useMemo } from "react";
 
 import { Token } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { MenuToggle } from "~/components/control";
 import { PoolTokenSelect } from "~/components/control/pool-token-select";
 import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -239,11 +239,7 @@ const AmountInput: FunctionComponent<{
               )}
             </div>
             {isMobile && (
-              <Button
-                mode="amount"
-                className="py-0.5"
-                onClick={() => addLiquidityConfig.setMax()}
-              >
+              <Button size="sm" onClick={() => addLiquidityConfig.setMax()}>
                 {t("components.MAX")}
               </Button>
             )}
