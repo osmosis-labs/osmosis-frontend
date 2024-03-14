@@ -1206,14 +1206,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       (balance) => balance.denom === fee.denom
     );
 
-    const chainHasOsmosisFeeModule =
-      chain?.features?.includes("osmosis-txfees");
+    const chainHasOsmosisFeeModule = Boolean(
+      chain?.features?.includes("osmosis-txfees")
+    );
 
-    if (
-      !chainHasOsmosisFeeModule &&
-      userBalanceForFeeDenom &&
-      new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
-    ) {
+    const isUserBalanceInsufficientForBaseChainFee =
+      (userBalanceForFeeDenom &&
+        new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))) ||
+      !userBalanceForFeeDenom;
+
+    /**
+     * If the chain doesn't support the Osmosis chain fee module, check that the user has enough balance
+     * to pay the fee denom, otherwise throw an error.
+     */
+    if (!chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
       throw new InsufficientFeeError(
         `User doesn't have enough balance for fee token ${fee.denom}.`
       );
@@ -1223,11 +1229,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain supports the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise find another fee token to use.
      */
-    if (
-      chainHasOsmosisFeeModule &&
-      userBalanceForFeeDenom &&
-      new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
-    ) {
+    if (chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
       const { feeTokens } = await this.queryFeeTokens({ chainId });
 
       const feeTokenUserBalances = balances.filter((balance) =>
@@ -1249,8 +1251,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           });
           const amount = gasPrice.mul(new Dec(gasLimit)).roundUp().toString();
 
-          console.log(feeTokenBalance.denom, amount);
-
           // If the fee is greater than the user's balance, continue to the next fee token.
           if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
 
@@ -1259,7 +1259,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             denom: feeTokenBalance.denom,
           };
           break;
-        } catch {}
+        } catch {
+          console.warn(
+            `Failed to fetch gas price for fee token ${feeTokenBalance.denom}.`
+          );
+        }
       }
 
       if (!alternateFee) {
@@ -1345,7 +1349,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     const feeCurrency = chain.fees.fee_tokens.find(
-      ({ denom }) => denom === feeDenom
+      ({ denom }) => denom === asset.sourceDenom
     );
 
     const spotPriceDec = new Dec(

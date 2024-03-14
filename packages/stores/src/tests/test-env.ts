@@ -8,8 +8,6 @@ import {
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type { AssetList } from "@osmosis-labs/types";
-import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
 
@@ -23,7 +21,7 @@ import {
 } from "..";
 import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
-import { MockChainList, TestOsmosisChainId } from "./mock-data";
+import { MockAssetList, MockChainList, TestOsmosisChainId } from "./mock-data";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export class RootStore {
@@ -59,7 +57,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       MockChainList,
       TestOsmosisChainId,
-      assets as unknown as AssetList[],
+      MockAssetList,
       [testWallet],
       this.queriesStore,
       this.chainStore,
