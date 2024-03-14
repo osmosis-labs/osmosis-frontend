@@ -77,8 +77,8 @@ export const AssetsPageV2: FunctionComponent = () => {
 };
 
 const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
-  const { accountStore, chainStore } = useStore();
-  const wallet = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
