@@ -3,7 +3,6 @@ import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import { Optional } from "utility-types";
 
-import { CloseButton } from "~/components/buttons";
 import { ButtonProps } from "~/components/buttons/types";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useControllableState } from "~/hooks/use-controllable-state";
@@ -45,7 +44,6 @@ export const InputBox: FunctionComponent<Props> = ({
   type,
   rightEntry = false,
   labelButtons = [],
-  clearButton = false,
   trailingSymbol,
   inputClassName,
   disabled = false,
@@ -135,39 +133,31 @@ export const InputBox: FunctionComponent<Props> = ({
       </label>
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&
-          (clearButton && currentValue !== "" ? (
-            <CloseButton
-              className="my-2.5 mr-1.5"
-              onClick={() => onInput("")}
-              disabled={disabled}
-            />
-          ) : (
-            labelButtons
-              .slice(0, 2)
-              .map(
-                (
-                  { label, onClick, disabled: labelButtonDisabled, className },
-                  index
-                ) => (
-                  <button
-                    key={index}
-                    className={classNames(
-                      "button mt-2.5 h-[1.375rem] select-none rounded-lg border-2 border-wosmongton-200 bg-wosmongton-200/30",
-                      {
-                        "opacity-30": disabled || labelButtonDisabled,
-                        "hover:bg-wosmongton-200/60":
-                          !disabled && !labelButtonDisabled,
-                      },
-                      className
-                    )}
-                    onClick={onClick}
-                    disabled={disabled || labelButtonDisabled}
-                  >
-                    <span className="mx-2 text-caption">{label}</span>
-                  </button>
-                )
+          labelButtons
+            .slice(0, 2)
+            .map(
+              (
+                { label, onClick, disabled: labelButtonDisabled, className },
+                index
+              ) => (
+                <button
+                  key={index}
+                  className={classNames(
+                    "button mt-2.5 h-[1.375rem] select-none rounded-lg border-2 border-wosmongton-200 bg-wosmongton-200/30",
+                    {
+                      "opacity-30": disabled || labelButtonDisabled,
+                      "hover:bg-wosmongton-200/60":
+                        !disabled && !labelButtonDisabled,
+                    },
+                    className
+                  )}
+                  onClick={onClick}
+                  disabled={disabled || labelButtonDisabled}
+                >
+                  <span className="mx-2 text-caption">{label}</span>
+                </button>
               )
-          ))}
+            )}
       </div>
     </div>
   );

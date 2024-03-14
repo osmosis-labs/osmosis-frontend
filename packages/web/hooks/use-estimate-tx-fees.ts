@@ -64,9 +64,11 @@ async function estimateTxFeesQueryFn({
 export function useEstimateTxFees({
   messages,
   chainId,
+  enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
+  enabled?: boolean;
 }) {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
@@ -88,6 +90,7 @@ export function useEstimateTxFees({
     cacheTime: 3_000, // 3 seconds
     retry: false,
     enabled:
+      enabled &&
       !isNil(messages) &&
       Array.isArray(messages) &&
       messages.length > 0 &&

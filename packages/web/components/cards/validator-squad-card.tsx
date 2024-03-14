@@ -143,6 +143,7 @@ export const ValidatorSquadCard: React.FC<{
             <div className="flex items-center">
               <Button
                 variant="outline"
+                size="md"
                 disabled={hasInsufficientBalance}
                 onClick={() => setShowValidatorModal(true)}
               >

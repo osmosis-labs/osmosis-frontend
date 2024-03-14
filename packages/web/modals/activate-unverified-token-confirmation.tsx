@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -23,7 +23,7 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
       className="!max-w-[480px]"
       {...modalBaseProps}
     >
-      <div className="mx-auto flex max-w-sm flex-col items-center pt-8">
+      <div className="mx-auto flex max-w-sm flex-col items-center gap-8 pt-8">
         <div className="flex flex-col items-center gap-5">
           {coinImageUrl && (
             <div className="mr-4 h-16 w-16 rounded-full">
@@ -47,11 +47,8 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
             </p>
           </div>
         </div>
-
         <div className="max-w-md">
           <Button
-            mode="primary"
-            className="mt-8 gap-3 whitespace-nowrap !px-6"
             onClick={() => {
               onConfirm();
               modalBaseProps.onRequestClose?.();
