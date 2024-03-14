@@ -88,7 +88,6 @@ export function getCachedPoolIncentivesMap(): Promise<
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
 
@@ -181,7 +180,6 @@ export function getLockableDurations() {
     cache: incentivesCache,
     key: "lockable-durations",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { lockable_durations } = await queryLockableDurations();
 
@@ -202,7 +200,6 @@ export function getIncentivizedPools() {
     cache: incentivesCache,
     key: "incentivized-pools",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { incentivized_pools } = await queryIncentivizedPools();
 
@@ -223,25 +220,21 @@ export function getActiveGauges() {
     cache: incentivesCache,
     key: "active-external-gauges",
     ttl: 1000 * 60 * 10, // 10 mins
-    staleWhileRevalidate: 1000 * 60 * 60 * 24, // 24 hours
     getFreshValue: async () => {
       const { data } = await queryGauges();
       const epochs = await getEpochs();
 
       return data
-        .filter((gauge) => {
-          !gauge.is_perpetual &&
-            gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
+        .filter(
+          (gauge) =>
+            !gauge.is_perpetual &&
+            gauge.distribute_to.denom.startsWith("gamm/pool") && // only gamm share incentives
             !gauge.coins.some((coin) =>
               coin.denom.match(/gamm\/pool\/[0-9]+/m)
             ) && // no gamm share rewards
             gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
-            checkForStaleness(
-              gauge,
-              parseInt(data[data.length - 1].id),
-              epochs
-            );
-        })
+            checkForStaleness(gauge, parseInt(data[data.length - 1].id), epochs)
+        )
         .map((gauge) => ({
           ...gauge,
           start_time: new Date(gauge.start_time),

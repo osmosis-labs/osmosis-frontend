@@ -20,7 +20,6 @@ export async function getTimeoutHeight({
     cache: timeoutCache,
     key: `timeout-height-${chainId}-${destinationAddress}`,
     ttl: 1000 * 4, // 4 seconds (just less block time)
-    staleWhileRevalidate: 1000 * 60, // 1 min
     getFreshValue: async () => {
       const destinationCosmosChain = getChain({
         chainList: ChainList,

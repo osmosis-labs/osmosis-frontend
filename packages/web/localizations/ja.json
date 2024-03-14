@@ -675,6 +675,8 @@
     "buttonError": "とにかく交換する",
     "expectedOutput": "期待される出力",
     "fee": "スワップ手数料 ( {fee} )",
+    "networkFee": "ネットワーク料金",
+    "totalFee": "合計料金",
     "HALF": "半分",
     "MAX": "マックス",
     "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",

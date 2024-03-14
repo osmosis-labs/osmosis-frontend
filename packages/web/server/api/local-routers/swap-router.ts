@@ -22,6 +22,7 @@ import {
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
+import { captureErrorAndReturn } from "~/utils/error";
 
 const osmosisChainId = ChainList[0].chain_id;
 
@@ -115,15 +116,15 @@ export const swapRouter = createTRPCRouter({
           ? await calcAssetValue({
               anyDenom: tokenInDenom,
               amount: quote.tokenInFeeAmount,
-            }).catch(() => null)
+            }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined;
         const tokenOutPrice = await getAssetPrice({
           asset: { coinMinimalDenom: tokenOutDenom },
-        }).catch(() => null);
+        }).catch((e) => captureErrorAndReturn(e, undefined));
         const tokenOutValue = await calcAssetValue({
           anyDenom: tokenOutDenom,
           amount: quote.amount,
-        }).catch(() => null);
+        }).catch((e) => captureErrorAndReturn(e, undefined));
         const tokenInFeeAmountFiatValue = tokenInFeeAmountValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInFeeAmountValue)
           : undefined;

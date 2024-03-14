@@ -675,6 +675,8 @@
     "buttonError": "Trocar mesmo assim",
     "expectedOutput": "Resultado Esperado",
     "fee": "Taxa de Troca ({fee})",
+    "networkFee": "Taxa de rede",
+    "totalFee": "Taxa total",
     "HALF": "METADE",
     "MAX": "MÁXIMO",
     "minimumSlippage": "Mínimo recebido após o spread ({slippage})",

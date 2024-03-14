@@ -675,6 +675,8 @@
     "buttonError": "Yine de takası gerçekleştir",
     "expectedOutput": "Elde Edilmesi Beklenen Miktar",
     "fee": "Takas Ücreti ({fee})",
+    "networkFee": "Ağ Ücreti",
+    "totalFee": "Toplam ücret",
     "HALF": "YARISI",
     "MAX": "MAKS.",
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",

@@ -675,6 +675,8 @@
     "buttonError": "Swap anyway",
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
+    "networkFee": "Network Fee",
+    "totalFee": "Total Fee",
     "HALF": "HALF",
     "MAX": "MAX",
     "minimumSlippage": "Minimum received after slippage ({slippage})",

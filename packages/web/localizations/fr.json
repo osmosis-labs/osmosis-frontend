@@ -675,6 +675,8 @@
     "buttonError": "Échanger quand même",
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
+    "networkFee": "Frais de réseau",
+    "totalFee": "Montant total",
     "HALF": "MOITIÉ",
     "MAX": "MAX",
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",

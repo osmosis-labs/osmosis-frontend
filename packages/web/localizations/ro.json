@@ -675,6 +675,8 @@
     "buttonError": "Schibma oricum",
     "expectedOutput": "Rezultat asteptat",
     "fee": "Taxa schimb ({fee})",
+    "networkFee": "Taxa de retea",
+    "totalFee": "Taxa totală",
     "HALF": "JUMATATE",
     "MAX": "MAXIM",
     "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",

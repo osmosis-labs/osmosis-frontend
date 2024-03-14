@@ -1,14 +1,7 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
-import {
-  ComponentProps,
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
@@ -22,26 +15,14 @@ import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
   useNavBar,
-  useTransferConfig,
   useWindowSize,
 } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import {
-  BridgeTransferV1Modal,
-  BridgeTransferV2Modal,
-  FiatRampsModal,
-  IbcTransferModal,
-  PreTransferModal,
-  SelectAssetSourceModal,
-  TransferAssetSelectModal,
-} from "~/modals";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { removeQueryParam } from "~/utils/url";
 
 const INIT_POOL_CARD_COUNT = 6;
-const TransactionTypeQueryParamKey = "transaction_type";
-const DenomQueryParamKey = "denom";
 
 export const AssetsPageV1: FunctionComponent = observer(() => {
   const { isMobile } = useWindowSize();
@@ -53,57 +34,12 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     unverifiedNativeBalances,
   } = assetsStore;
   const { t } = useTranslation();
-  const flags = useFeatureFlags();
 
-  const router = useRouter();
+  const { startBridge, bridgeAsset } = useBridge();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
-  const transferConfig = useTransferConfig();
-
-  // mobile only
-  const [preTransferModalProps, setPreTransferModalProps] =
-    useState<ComponentProps<typeof PreTransferModal> | null>(null);
-  const launchPreTransferModal = useCallback(
-    (coinDenom: string) => {
-      const ibcBalance = ibcBalances.find(
-        (ibcBalance) => ibcBalance.balance.denom === coinDenom
-      );
-
-      if (!ibcBalance) {
-        console.error("launchPreTransferModal: ibcBalance not found");
-        return;
-      }
-
-      setPreTransferModalProps({
-        isOpen: true,
-        selectedToken: ibcBalance,
-        tokens: ibcBalances.map(({ balance }) => balance),
-        externalDepositUrl: ibcBalance.depositUrlOverride,
-        externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
-        onSelectToken: launchPreTransferModal,
-        onWithdraw: () => {
-          transferConfig?.transferAsset(
-            "withdraw",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
-          setPreTransferModalProps(null);
-        },
-        onDeposit: () => {
-          transferConfig?.transferAsset(
-            "deposit",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
-          setPreTransferModalProps(null);
-        },
-        onRequestClose: () => setPreTransferModalProps(null),
-      });
-    },
-    [ibcBalances, transferConfig]
-  );
 
   useEffect(() => {
     setUserProperty(
@@ -120,14 +56,14 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
       {
         label: t("assets.table.depositButton"),
         onClick: () => {
-          transferConfig?.startTransfer("deposit");
+          startBridge("deposit");
           logEvent([EventName.Assets.depositClicked]);
         },
       },
       {
         label: t("assets.table.withdrawButton"),
         onClick: () => {
-          transferConfig?.startTransfer("withdraw");
+          startBridge("withdraw");
           logEvent([EventName.Assets.withdrawClicked]);
         },
       },
@@ -135,120 +71,24 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   });
 
   const onTableDeposit = useCallback(
-    (chainId: string, coinDenom: string, externalDepositUrl?: string) => {
+    (_chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
-        isMobile
-          ? launchPreTransferModal(coinDenom)
-          : transferConfig?.transferAsset("deposit", chainId, coinDenom);
+        bridgeAsset(coinDenom, "deposit");
       }
     },
-    [isMobile, launchPreTransferModal, transferConfig]
+    [bridgeAsset]
   );
   const onTableWithdraw = useCallback(
-    (chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
+    (_chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
-        transferConfig?.transferAsset("withdraw", chainId, coinDenom);
+        bridgeAsset(coinDenom, "withdraw");
       }
     },
-    [transferConfig]
+    [bridgeAsset]
   );
-
-  /** Trigger transfer modal when `transaction_type` and `denom` search params are provided */
-  useEffect(() => {
-    const transactionType = router.query[TransactionTypeQueryParamKey];
-    const denom = router.query[DenomQueryParamKey];
-
-    if (typeof transactionType !== "string" || typeof denom !== "string") {
-      return;
-    }
-
-    if (transactionType !== "deposit" && transactionType !== "withdraw") {
-      console.warn("Invalid transaction type ", transactionType);
-      return;
-    }
-
-    const asset = unverifiedIbcBalances.find(
-      ({ balance }) =>
-        balance.currency.coinDenom?.toLowerCase() === denom?.toLowerCase() ||
-        balance.currency.coinMinimalDenom?.toLowerCase() ===
-          denom?.toLowerCase()
-    );
-
-    if (!asset) {
-      console.warn(
-        `Provided denom ${denom} for transaction type ${transactionType} is not found.}`
-      );
-      return;
-    }
-
-    if (transactionType === "deposit") {
-      onTableDeposit(
-        asset.chainInfo.chainId,
-        asset.balance.denom,
-        asset.depositUrlOverride
-      );
-    } else if (transactionType === "withdraw") {
-      onTableWithdraw(
-        asset.chainInfo.chainId,
-        asset.balance.denom,
-        asset.withdrawUrlOverride
-      );
-    }
-    removeQueryParam(TransactionTypeQueryParamKey);
-    removeQueryParam(DenomQueryParamKey);
-  }, [onTableDeposit, onTableWithdraw, router.query, unverifiedIbcBalances]);
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      {isMobile && preTransferModalProps && (
-        <PreTransferModal {...preTransferModalProps} />
-      )}
-      {transferConfig?.assetSelectModal && (
-        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
-      )}
-      {transferConfig?.selectAssetSourceModal && (
-        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
-      )}
-      {transferConfig?.ibcTransferModal && (
-        <IbcTransferModal {...transferConfig.ibcTransferModal} />
-      )}
-      {transferConfig?.bridgeTransferModal &&
-        (!flags.multiBridgeProviders ||
-        transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
-          ?.bridge === "nomic" ? (
-          <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
-        ) : (
-          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
-        ))}
-      {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal
-          transakModalProps={{
-            onCreateOrder: (data) => {
-              logEvent([
-                EventName.Assets.buyOsmoStarted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
-            },
-            onSuccessfulOrder: (data) => {
-              logEvent([
-                EventName.Assets.buyOsmoCompleted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
-            },
-          }}
-          {...transferConfig.fiatRampsModal}
-        />
-      )}
       <AssetsOverview />
       <AssetsTableV1
         nativeBalances={nativeBalances}

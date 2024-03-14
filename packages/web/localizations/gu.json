@@ -675,6 +675,8 @@
     "buttonError": "કોઈપણ રીતે સ્વેપ કરો",
     "expectedOutput": "અપેક્ષિત આઉટપુટ",
     "fee": "સ્વેપ ફી ( {fee} )",
+    "networkFee": "નેટવર્ક ફી",
+    "totalFee": "કુલ ફી",
     "HALF": "અર્ધ",
     "MAX": "MAX",
     "minimumSlippage": "સ્લિપેજ પછી પ્રાપ્ત ન્યૂનતમ ( {slippage} )",

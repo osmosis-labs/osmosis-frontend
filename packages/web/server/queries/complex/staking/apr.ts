@@ -20,7 +20,6 @@ export async function getAverageStakingApr({
   return await cachified({
     cache: averageStakingAprCache,
     ttl: 1000 * 60 * 30, // 30 minutes since APR changes once a day at an unkown time
-    staleWhileRevalidate: 1000 * 60 * 60, // 1 hour
     key: `average-staking-apr-${startDate}-${endDate}`,
     getFreshValue: async () => {
       try {

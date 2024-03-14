@@ -1,6 +1,5 @@
 import "~/utils/superjson";
 
-import { logEvent } from "@amplitude/analytics-browser";
 import {
   httpBatchLink,
   httpLink,
@@ -18,9 +17,13 @@ import {
 } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 
-import { EventName } from "~/config";
 import { type AppRouter, appRouter } from "~/server/api/root";
 import { superjson } from "~/utils/superjson";
+import {
+  constructEdgeRouterKey,
+  constructEdgeUrlPathname,
+  EdgeRouterKey,
+} from "~/utils/trpc-edge";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -85,20 +88,6 @@ const makeSkipBatchLink = (url: string) =>
 export const api = createTRPCNext<AppRouter>({
   config() {
     return {
-      queryClientConfig: {
-        defaultOptions: {
-          queries: {
-            onError: (error: any) => {
-              logEvent(EventName.QueryError, {
-                errorMessage:
-                  error instanceof Error ? error.message : String(error),
-              });
-            },
-            retry: 3, // Number of retry attempts
-          },
-        },
-      },
-
       /**
        * Transformer used for data de-serialization from the server.
        *
@@ -131,16 +120,24 @@ export const api = createTRPCNext<AppRouter>({
           // initialize the different links for different targets (edge and node)
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
-            edge: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc`)(runtime),
+            [constructEdgeRouterKey("main")]: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
+            )(runtime),
             local: localLink({ router: appRouter })(runtime),
 
             /**
-             * Create a separate link for the pools edge server since its query is too expensive
+             * Create a separate links for specific edge server routers since their queries are too expensive
              * and it's slowing the other queries down because of JS single threaded nature.
+             *
+             * If you add another key please remember to create the function on the
+             * /pages/api/ folder with the following format: edge-trpc-[key]/[trpc].ts
              */
-            poolsEdge: makeSkipBatchLink(`${getBaseUrl()}/api/pools-edge-trpc`)(
-              runtime
-            ),
+            [constructEdgeRouterKey("pools")]: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`
+            )(runtime),
+            [constructEdgeRouterKey("assets")]: makeSkipBatchLink(
+              `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`
+            )(runtime),
           };
 
           return (ctx) => {
@@ -160,15 +157,15 @@ export const api = createTRPCNext<AppRouter>({
              */
             const isEdge = basePath === "edge";
             const isLocal = basePath === "local";
-            const isPoolsEdge = isEdge && possibleEdgePath.startsWith("pools");
 
             let link: (typeof servers)["node"];
-            if (isEdge && !isPoolsEdge) {
-              link = servers["edge"];
+            if (isEdge) {
+              link =
+                servers[
+                  constructEdgeRouterKey(pathParts[0] as EdgeRouterKey)
+                ] ?? servers[constructEdgeRouterKey("main")]; // default to main edge server
             } else if (isLocal) {
               link = servers["local"];
-            } else if (isPoolsEdge && possibleEdgePath.startsWith("pools")) {
-              link = servers["poolsEdge"];
             } else {
               link = servers["node"];
             }

@@ -31,7 +31,7 @@ type AdditionalData = Partial<
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
-  "aUSDC.axl.axl": {
+  "aUSDC.axl": {
     sourceChainNameOverride: "Goerli Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -288,6 +288,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SEI: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=pacific-1&chainTo=osmosis-1&token0=usei&token1=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D",
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
@@ -549,9 +551,9 @@ const MainnetIBCAdditionalData: Partial<
   },
   ASTRO: {
     depositUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=phoenix-1&chainTo=osmosis-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4",
+      "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
     withdrawUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
   },
   "solana.USDC.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
@@ -569,6 +571,10 @@ const MainnetIBCAdditionalData: Partial<
   HEART: {
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=humans_1089-1&chainTo=osmosis-1&token0=aheart&token1=ibc%2F35CECC330D11DD00FACB555D07687631E0BC7D226260CC5F015F6D7980819533",
+  },
+  AIOZ: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=aioz_168-1&chainTo=osmosis-1&token0=attoaioz&token1=ibc%2FBB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
   },
 };
 

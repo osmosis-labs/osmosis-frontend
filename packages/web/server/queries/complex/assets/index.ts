@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureErrorAndReturn } from "~/utils/error";
 import { search, SearchSchema } from "~/utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -95,21 +96,20 @@ export async function getAssets({
  */
 export async function mapRawCoinToPretty(
   rawAssets: {
-    amount: string | number | Int | Dec | { toDec(): Dec };
+    amount: ConstructorParameters<typeof CoinPretty>[1];
     denom: string;
   }[]
 ): Promise<CoinPretty[]> {
   if (!rawAssets) return [];
-  const result = await Promise.all(
-    rawAssets.map(async ({ amount, denom }) => {
-      const asset = await getAsset({
+  return await Promise.all(
+    rawAssets.map(({ amount, denom }) =>
+      getAsset({
         anyDenom: denom,
-      });
-
-      return new CoinPretty(asset, amount);
-    })
-  );
-  return result.filter((p): p is NonNullable<typeof p> => !!p);
+      })
+        .then((asset) => new CoinPretty(asset, amount))
+        .catch((e) => captureErrorAndReturn(e, undefined))
+    )
+  ).then((assets) => assets.filter((asset): asset is CoinPretty => !!asset));
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
