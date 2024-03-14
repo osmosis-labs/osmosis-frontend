@@ -1,4 +1,10 @@
-import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
@@ -15,8 +21,8 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getPool } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
+import { captureErrorAndReturn } from "~/utils/error";
 
 const osmosisChainId = ChainList[0].chain_id;
 
@@ -110,15 +116,15 @@ export const swapRouter = createTRPCRouter({
           ? await calcAssetValue({
               anyDenom: tokenInDenom,
               amount: quote.tokenInFeeAmount,
-            }).catch(() => null)
+            }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined;
         const tokenOutPrice = await getAssetPrice({
           asset: { coinMinimalDenom: tokenOutDenom },
-        }).catch(() => null);
+        }).catch((e) => captureErrorAndReturn(e, undefined));
         const tokenOutValue = await calcAssetValue({
           anyDenom: tokenOutDenom,
           amount: quote.amount,
-        }).catch(() => null);
+        }).catch((e) => captureErrorAndReturn(e, undefined));
         const tokenInFeeAmountFiatValue = tokenInFeeAmountValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInFeeAmountValue)
           : undefined;
@@ -155,8 +161,6 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
       const poolsWithInfos = await Promise.all(
         pools.map(async (pool, index) => {
-          const { id } = pool;
-          const pool_ = await getPool({ poolId: id }).catch(() => null);
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
@@ -166,8 +170,10 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
 
           return {
             id: pool.id,
-            spreadFactor: pool_?.spreadFactor,
-            type: pool_?.type,
+            spreadFactor: new RatePretty(
+              pool.swapFee ? pool.swapFee : new Dec(0)
+            ),
+            type: pool.type,
             inCurrency: inAsset,
             outCurrency: outAsset,
           };

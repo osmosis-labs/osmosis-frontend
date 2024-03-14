@@ -33,23 +33,24 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
 import { AstroportPclPoolCodeIds, TransmuterPoolCodeIds } from "../env";
 
-const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const poolsCache = new Map();
+const smallQueriesPoolCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
 
 function getNumPools() {
   return cachified({
-    cache: poolsCache,
+    cache: smallQueriesPoolCache,
     key: "num-pools",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryNumPools(),
   });
 }
 function getPoolmanagerParams() {
   return cachified({
-    cache: poolsCache,
+    cache: smallQueriesPoolCache,
     key: "pool-manager-params",
     ttl: 1000 * 60 * 5, // 5 minutes
-    staleWhileRevalidate: 1000 * 60 * 6, // 6 minutes
     getFreshValue: () => queryPoolmanagerParams(),
   });
 }
@@ -64,7 +65,6 @@ export async function getPoolsFromIndexer({
     cache: poolsCache,
     key: "indexer-pools",
     ttl: 5_000, // 5 seconds
-    staleWhileRevalidate: 10_000, // 10 seconds
     getFreshValue: async () => {
       const numPools = await getNumPools();
       const { pools } = await queryFilteredPools(
@@ -167,7 +167,6 @@ async function fetchAndProcessAllPools({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: 1000 * 60, // 60 seconds
     async getFreshValue() {
       const poolManagerParamsPromise = getPoolmanagerParams();
       const numPoolsPromise = getNumPools();

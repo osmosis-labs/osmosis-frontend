@@ -110,7 +110,11 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const poolsPromise = getPools({ search, minLiquidityUsd, types });
+            const poolsPromise = getPools({
+              search,
+              minLiquidityUsd,
+              types,
+            });
             const incentivesPromise = getCachedPoolIncentivesMap();
             const marketMetricsPromise = getCachedPoolMarketMetricsMap();
 
@@ -166,11 +170,11 @@ export const poolsRouter = createTRPCRouter({
   getPoolMarketMetrics: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
-      getCachedPoolMarketMetricsMap().then((map) => map.get(poolId))
+      getCachedPoolMarketMetricsMap().then((map) => map.get(poolId) ?? null)
     ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
-      getCachedPoolIncentivesMap().then((map) => map.get(poolId))
+      getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
     ),
 });

@@ -1030,8 +1030,8 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @action
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
-    this._minHistoricalPrice = min;
-    this._maxHistoricalPrice = max;
+    if (min !== Infinity) this._minHistoricalPrice = min;
+    if (max !== Infinity) this._maxHistoricalPrice = max;
   };
 
   @action

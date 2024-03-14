@@ -37,22 +37,12 @@ export const concentratedLiquidityRouter = createTRPCRouter({
     .query(async ({ input: { positionId, userOsmoAddress } }) => {
       const { position } = await queryPositionById({ id: positionId });
 
-      if (!position) {
-        throw new Error("Position not found");
-      }
-
-      const details = (
+      return (
         await mapGetUserPositionDetails({
           positions: [position],
           userOsmoAddress,
         })
       )[0];
-
-      if (!details) {
-        throw new Error("Failed to get position details");
-      }
-
-      return details;
     }),
   getPositionHistoricalPerformance: publicProcedure
     .input(
