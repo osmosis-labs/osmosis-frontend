@@ -75,7 +75,7 @@ export async function apiClient<T>(
         });
       }
 
-      if (response.ok) {
+      if (response.ok && typeof data === "object") {
         // Cosmos chains return a code if there's an error
         if ("code" in data && Boolean(data.code)) {
           throw new ApiClientError({
@@ -92,8 +92,6 @@ export async function apiClient<T>(
             response,
           });
         }
-
-        return data;
       } else {
         throw new ApiClientError({
           message: getErrorMessage({ message: data?.message }),
@@ -101,6 +99,8 @@ export async function apiClient<T>(
           response,
         });
       }
+
+      return data;
     } catch (e) {
       const error = e as Error | ApiClientError;
 
