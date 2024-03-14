@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
+import * as Sentry from "@sentry/nextjs";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -69,7 +70,10 @@ export function getPriceBatched(asset: Asset) {
         loader
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
-          .catch(() => getPriceFromPools(asset))
+          .catch((e) => {
+            Sentry.captureException(e);
+            return getPriceFromPools(asset);
+          })
       ),
   });
 }
