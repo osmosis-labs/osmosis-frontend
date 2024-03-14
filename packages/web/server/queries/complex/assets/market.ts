@@ -37,19 +37,24 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const currentPrice = await getAssetPrice({ asset }).catch((e) =>
-        captureErrorAndReturn(e, undefined)
-      );
-      const marketCap = await getAssetMarketCap(asset).catch((e) =>
-        captureErrorAndReturn(e, undefined)
-      );
-      const priceChange24h = (await getAssetMarketActivity(asset))
-        ?.price_24h_change;
-      const marketCapRank = (
-        await getCoingeckoCoin(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        )
-      )?.market_cap_rank;
+      const [currentPrice, marketCap, assetMarketActivity, coingeckoCoin] =
+        await Promise.all([
+          getAssetPrice({ asset }).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          ),
+          getAssetMarketCap(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          ),
+          getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          ),
+          getCoingeckoCoin(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          ),
+        ]);
+
+      const priceChange24h = assetMarketActivity?.price_24h_change;
+      const marketCapRank = coingeckoCoin?.market_cap_rank;
 
       return {
         currentPrice: currentPrice
