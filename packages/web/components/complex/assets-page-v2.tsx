@@ -111,7 +111,7 @@ const UserAssetsBreakdown: FunctionComponent<{ userOsmoAddress: string }> = ({
   const { width, isMobile } = useWindowSize();
 
   const { data: userAssets, isFetched } =
-    api.edge.assets.getUserAssetsBreakdown.useQuery(
+    api.local.assets.getUserAssetsBreakdown.useQuery(
       {
         userOsmoAddress,
       },

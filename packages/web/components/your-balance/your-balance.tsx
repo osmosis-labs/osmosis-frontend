@@ -71,7 +71,7 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getMarketAsset.useQuery({
+    const { data } = api.local.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
@@ -388,7 +388,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const chainName = tokenChain?.chainName;
 
   const { data, isLoading: isCoinDataLoading } =
-    api.edge.assets.getMarketAsset.useQuery({
+    api.local.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });

@@ -25,11 +25,10 @@ export const PoolsOverview: FunctionComponent<
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { t } = useTranslation();
 
-  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
-    {
+  const { data: osmoPrice, isFetched } =
+    api.local.assets.getAssetPrice.useQuery({
       coinMinimalDenom: "uosmo",
-    }
-  );
+    });
 
   // update time every second
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);

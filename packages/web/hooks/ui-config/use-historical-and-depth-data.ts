@@ -73,7 +73,7 @@ export function useHistoricalAndLiquidityData(
     data: historicalPriceData,
     isLoading,
     isError,
-  } = api.edge.assets.getAssetPairHistoricalPrice.useQuery(
+  } = api.local.assets.getAssetPairHistoricalPrice.useQuery(
     {
       poolId,
       baseCoinMinimalDenom:

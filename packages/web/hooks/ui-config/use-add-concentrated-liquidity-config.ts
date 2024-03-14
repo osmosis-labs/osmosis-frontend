@@ -88,11 +88,11 @@ export function useAddConcentratedLiquidityConfig(
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
 
-  const { data: baseDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+  const { data: baseDepositPrice } = api.local.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
   });
 
-  const { data: quoteDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
+  const { data: quoteDepositPrice } = api.local.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
   });
 
@@ -101,7 +101,7 @@ export function useAddConcentratedLiquidityConfig(
   }
 
   const { data: historicalPriceData } =
-    api.edge.assets.getAssetPairHistoricalPrice.useQuery(
+    api.local.assets.getAssetPairHistoricalPrice.useQuery(
       {
         poolId,
         baseCoinMinimalDenom:

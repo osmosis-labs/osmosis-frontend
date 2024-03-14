@@ -455,7 +455,7 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getUserAssets.useInfiniteQuery(
+  } = api.local.assets.getUserAssets.useInfiniteQuery(
     {
       search: queryInput,
       userOsmoAddress: account?.address,

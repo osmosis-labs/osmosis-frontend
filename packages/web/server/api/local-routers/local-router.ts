@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 
+import { assetsRouter } from "./assets-router";
 import { concentratedLiquidityRouter } from "./concentrated-liquidity-router";
 import { swapRouter } from "./swap-router";
 
@@ -8,6 +9,7 @@ import { swapRouter } from "./swap-router";
  * Caution: Ensure no sensitive data is exposed through these functions.
  */
 export const localRouter = createTRPCRouter({
+  assets: assetsRouter,
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
 });

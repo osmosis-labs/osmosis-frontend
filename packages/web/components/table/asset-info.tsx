@@ -92,7 +92,7 @@ export const AssetsInfoTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getUserMarketAssets.useInfiniteQuery(
+  } = api.local.assets.getUserMarketAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
@@ -454,7 +454,7 @@ const SparklineChartCell: AssetInfoCellComponent<{
   timeFrame,
 }) => {
   const { data: recentPrices } =
-    api.edge.assets.getAssetHistoricalPrice.useQuery(
+    api.local.assets.getAssetHistoricalPrice.useQuery(
       {
         coinDenom,
         timeFrame,
