@@ -541,7 +541,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
   },
   DYM: {
-    depositUrlOverride: "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
+    depositUrlOverride:
+      "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
   },
   "injective.GLTO": {
     depositUrlOverride:
