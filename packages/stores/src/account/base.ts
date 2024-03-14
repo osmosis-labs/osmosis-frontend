@@ -1095,116 +1095,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const gasLimit = String(Math.round(gasUsed * GasMultiplier));
 
       /**
-       * Compute the fee amount based on the gas limit and the gas price.
-       * This means we won't leave the responsibility of calculating the fee to the wallet.
+       * Compute the fee amount based on the gas limit and the gas price rather than on the wallet.
+       * This is useful for wallets that do not support fee estimation.
        */
       if (signOptions.preferNoSetFee) {
-        const chainId = wallet.chainId;
-        const chain = getChain({ chainList: this.chains, chainId });
-
-        if (!wallet.address) {
-          const { feeDenom, gasPrice } = await this.getGasPriceByChainId({
-            chainId,
-          });
-          const fee: TxFee["amount"][number] = {
-            amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-            denom: feeDenom,
-          };
-          return {
-            gas: gasLimit,
-            amount: [fee],
-          };
-        }
-
-        const [{ gasPrice, feeDenom }, { balances }] = await Promise.all([
-          this.getGasPriceByChainId({
-            chainId,
-          }),
-          this.queryAccountBalance({
-            userOsmoAddress: wallet.address,
-            chainId,
-          }),
-        ]);
-        let fee: TxFee["amount"][number] = {
-          amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-          denom: feeDenom,
-        };
-
-        const userBalanceForFeeDenom = balances.find(
-          (balance) => balance.denom === fee.denom
-        );
-
-        const chainHasOsmosisFeeModule =
-          chain?.features?.includes("osmosis-txfees");
-
-        if (
-          !chainHasOsmosisFeeModule &&
-          userBalanceForFeeDenom &&
-          new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
-        ) {
-          throw new InsufficientFeeError(
-            `User doesn't have enough balance for fee token ${fee.denom}.`
-          );
-        }
-
-        /**
-         * If the chain supports the Osmosis chain fee module, check that the user has enough balance
-         * to pay the fee denom, otherwise find another fee token to use.
-         */
-        if (
-          chainHasOsmosisFeeModule &&
-          userBalanceForFeeDenom &&
-          new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
-        ) {
-          const { feeTokens } = await this.queryFeeTokens({ chainId });
-
-          const feeTokenUserBalances = balances.filter((balance) =>
-            feeTokens.includes(balance.denom)
-          );
-
-          if (!feeTokenUserBalances.length) {
-            throw new InsufficientFeeError(
-              `User doesn't have enough balance for any fee token.`
-            );
-          }
-
-          let alternateFee: TxFee["amount"][number] | undefined;
-          for (const feeTokenBalance of feeTokenUserBalances) {
-            try {
-              const { gasPrice } = await this.getGasPriceByFeeDenom({
-                feeDenom: feeTokenBalance.denom,
-                feeModuleChainId: chainId,
-              });
-              const amount = gasPrice
-                .mul(new Dec(gasLimit))
-                .roundUp()
-                .toString();
-
-              console.log(feeTokenBalance.denom, amount);
-
-              // If the fee is greater than the user's balance, continue to the next fee token.
-              if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
-
-              alternateFee = {
-                amount,
-                denom: feeTokenBalance.denom,
-              };
-              break;
-            } catch {}
-          }
-
-          if (!alternateFee) {
-            throw new InsufficientFeeError(
-              `User doesn't have enough balance for any fee token.`
-            );
-          }
-
-          fee = alternateFee;
-        }
-
         return {
           gas: gasLimit,
-          amount: [fee],
+          amount: [
+            await this.getFeeAmount({
+              gasLimit,
+              chainId: wallet.chainId,
+              address: wallet.address,
+            }),
+          ],
         };
       }
 
@@ -1240,6 +1143,135 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       throw e;
     }
+  }
+
+  /**
+   * Calculates the fee coin amount required for a transaction based on the gas limit, chain ID, and user address.
+   * It considers the chain's gas price and the user's balance for the fee token. If the chain supports the
+   * Osmosis fee module and the user doesn't have enough balance for the primary fee token, it attempts to find
+   * an alternative fee token that the user has sufficient balance for.
+   *
+   * @param {string} params.gasLimit - The gas limit for the transaction.
+   * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
+   * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
+   * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
+   *
+   * @example
+   * const gasAmount = await accountStore.getFeeAmount({
+   *   gasLimit: "200000",
+   *   chainId: "osmosis-1",
+   *   address: "osmo1..."
+   * });
+   * console.log(gasAmount); // { amount: "1000", denom: "uosmo" }
+   */
+  async getFeeAmount({
+    gasLimit,
+    chainId,
+    address,
+  }: {
+    gasLimit: string;
+    chainId: string;
+    address: string | undefined;
+  }) {
+    const chain = getChain({ chainList: this.chains, chainId });
+
+    let fee: TxFee["amount"][number];
+
+    if (!address) {
+      const { feeDenom, gasPrice } = await this.getGasPriceByChainId({
+        chainId,
+      });
+      fee = {
+        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+        denom: feeDenom,
+      };
+      return fee;
+    }
+
+    const [{ gasPrice, feeDenom }, { balances }] = await Promise.all([
+      this.getGasPriceByChainId({
+        chainId,
+      }),
+      this.queryAccountBalance({
+        userOsmoAddress: address,
+        chainId,
+      }),
+    ]);
+    fee = {
+      amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+      denom: feeDenom,
+    };
+
+    const userBalanceForFeeDenom = balances.find(
+      (balance) => balance.denom === fee.denom
+    );
+
+    const chainHasOsmosisFeeModule =
+      chain?.features?.includes("osmosis-txfees");
+
+    if (
+      !chainHasOsmosisFeeModule &&
+      userBalanceForFeeDenom &&
+      new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
+    ) {
+      throw new InsufficientFeeError(
+        `User doesn't have enough balance for fee token ${fee.denom}.`
+      );
+    }
+
+    /**
+     * If the chain supports the Osmosis chain fee module, check that the user has enough balance
+     * to pay the fee denom, otherwise find another fee token to use.
+     */
+    if (
+      chainHasOsmosisFeeModule &&
+      userBalanceForFeeDenom &&
+      new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
+    ) {
+      const { feeTokens } = await this.queryFeeTokens({ chainId });
+
+      const feeTokenUserBalances = balances.filter((balance) =>
+        feeTokens.includes(balance.denom)
+      );
+
+      if (!feeTokenUserBalances.length) {
+        throw new InsufficientFeeError(
+          `User doesn't have enough balance for any fee token.`
+        );
+      }
+
+      let alternateFee: TxFee["amount"][number] | undefined;
+      for (const feeTokenBalance of feeTokenUserBalances) {
+        try {
+          const { gasPrice } = await this.getGasPriceByFeeDenom({
+            feeDenom: feeTokenBalance.denom,
+            feeModuleChainId: chainId,
+          });
+          const amount = gasPrice.mul(new Dec(gasLimit)).roundUp().toString();
+
+          console.log(feeTokenBalance.denom, amount);
+
+          // If the fee is greater than the user's balance, continue to the next fee token.
+          if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
+
+          alternateFee = {
+            amount,
+            denom: feeTokenBalance.denom,
+          };
+          break;
+        } catch {}
+      }
+
+      if (!alternateFee) {
+        throw new InsufficientFeeError(
+          `User doesn't have enough balance for any fee token.`
+        );
+      }
+
+      fee = alternateFee;
+    }
+
+    return fee;
   }
 
   async getGasPriceByChainId({
