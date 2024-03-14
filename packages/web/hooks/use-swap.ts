@@ -285,7 +285,7 @@ export function useSwap({
       messages,
       enabled: featureFlags.swapToolSimulateFee,
     });
-  const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
+  const { data: userOsmoCoin } = api.local.assets.getUserAsset.useQuery(
     { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
     { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
   );
@@ -379,11 +379,12 @@ export function useSwap({
       }),
     [
       account,
-      getSwapTxParameters,
       inAmountInput,
       networkFee,
       queryClient,
       userOsmoCoin?.amount,
+      featureFlags.swapToolSimulateFee,
+      getSwapTxParameters,
     ]
   );
 
