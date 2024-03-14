@@ -267,7 +267,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
             className={classNames(
               "group/button inline-flex max-h-10 items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-osmoverse-860 transition-all hover:!bg-wosmongton-700",
               {
-                "w-24": !isBalanceVisible,
+                "w-28": !isBalanceVisible,
                 "w-32": isBalanceVisible,
                 "pointer-events-none opacity-50": isDisabled || isErrorGeoblock,
               }
@@ -291,16 +291,16 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
                 className="animate-spin"
               />
             ) : (
-              <>
+              <div className="inline-flex items-center gap-1">
                 <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
                   {isBalanceVisible ? (
                     <span>{t("earnPage.manage")}</span>
                   ) : isGeoblocked ? (
-                    <span className="relative inline-flex h-4.5 w-7 group-hover/button:w-14">
-                      <span className="absolute w-full opacity-100 transition-all group-hover/button:w-0 group-hover/button:opacity-0">
+                    <span className="inline-flex h-4.5">
+                      <span className="w-full opacity-100 group-hover/button:w-0 group-hover/button:opacity-0">
                         {t("earnPage.join")}
                       </span>
-                      <span className="absolute w-0 opacity-0 transition-all group-hover/button:w-full group-hover/button:opacity-100">
+                      <span className="w-0 opacity-0 group-hover/button:w-full group-hover/button:opacity-100">
                         {t("frontierMigration.proceed")}
                       </span>
                     </span>
@@ -309,32 +309,32 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
                   )}
                 </p>
                 {isGeoblocked ? (
-                  <div className="inline-flex">
+                  <div className="inline-flex items-center">
                     <Icon
                       id="geoblock"
-                      className="h-4.5 w-4.5 opacity-100 transition-all group-hover/button:w-0 group-hover/button:opacity-0"
+                      className="h-4.5 w-4.5 opacity-100 group-hover/button:w-0 group-hover/button:opacity-0"
                       color={theme.colors.osmoverse[300]}
                     />
                     <Icon
                       id="arrow-up-right"
-                      className="h-4.5 w-0 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                      className="h-4.5 w-0 opacity-0 group-hover/button:w-4.5 group-hover/button:opacity-100"
                       color={theme.colors.osmoverse[300]}
                     />
                   </div>
                 ) : isOsmosisStrategy ? (
                   <Icon
                     id="arrow-up-right"
-                    className="h-4.5 w-0 rotate-45 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                    className="h-4.5 w-0 rotate-45 opacity-0 group-hover/button:w-4.5 group-hover/button:opacity-100"
                     color={theme.colors.osmoverse[300]}
                   />
                 ) : (
                   <Icon
                     id="arrow-up-right"
-                    className="h-4.5 w-0 opacity-0 transition-all group-hover/button:w-4.5 group-hover/button:opacity-100"
+                    className="h-4.5 w-0 opacity-0 group-hover/button:w-4.5 group-hover/button:opacity-100"
                     color={theme.colors.osmoverse[300]}
                   />
                 )}
-              </>
+              </div>
             )}
           </Link>
         </Button>
