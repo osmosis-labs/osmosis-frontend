@@ -460,7 +460,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
     fee?: TxFee,
-    _signOptions?: KeplrSignOptions,
+    signOptions?: KeplrSignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -510,20 +510,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
+      const mergedSignOptions = {
+        ...wallet.walletInfo?.signOptions,
+        ...signOptions,
+      };
+
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
-        usedFee = await this.estimateFee(
+        usedFee = await this.estimateFee({
           wallet,
-          msgs,
-          fee ?? { amount: [] },
+          messages: msgs,
+          initialFee: fee ?? { amount: [] },
           memo,
-          wallet.walletInfo?.signOptions
-        );
+          signOptions: mergedSignOptions,
+        });
       } else {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      const txRaw = await this.sign({
+        wallet,
+        fee: usedFee,
+        memo: memo || "",
+        messages: msgs,
+        signOptions: mergedSignOptions,
+      });
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -660,12 +671,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
   }
 
-  public async sign(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string
-  ): Promise<TxRaw> {
+  public async sign({
+    wallet,
+    messages,
+    fee,
+    memo,
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    fee: TxFee;
+    memo: string;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
 
@@ -690,32 +708,43 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
 
     return "signAmino" in offlineSigner || "signAmino" in wallet.client
-      ? this.signAmino(
+      ? this.signAmino({
           wallet,
-          wallet.address ?? "",
+          signerAddress: wallet.address ?? "",
           messages,
           fee,
           memo,
-          signerData
-        )
-      : this.signDirect(
+          signerData,
+          signOptions,
+        })
+      : this.signDirect({
           wallet,
-          wallet.address ?? "",
+          signerAddress: wallet.address ?? "",
           messages,
           fee,
           memo,
-          signerData
-        );
+          signerData,
+          signOptions,
+        });
   }
 
-  private async signAmino(
-    wallet: AccountStoreWallet,
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData
-  ): Promise<TxRaw> {
+  private async signAmino({
+    wallet,
+    signerAddress,
+    messages,
+    fee,
+    memo,
+    signerData: { accountNumber, sequence, chainId },
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    signerAddress: string;
+    messages: readonly EncodeObject[];
+    fee: TxFee;
+    memo: string;
+    signerData: SignerData;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
@@ -766,7 +795,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           wallet.chainId,
           signerAddress,
           signDoc,
-          wallet.walletInfo?.signOptions
+          signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
           signerAddress,
@@ -832,14 +861,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
   }
 
-  private async signDirect(
-    wallet: AccountStoreWallet,
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData
-  ): Promise<TxRaw> {
+  private async signDirect({
+    wallet,
+    signerAddress,
+    messages,
+    fee,
+    memo,
+    signerData: { accountNumber, sequence, chainId },
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    signerAddress: string;
+    messages: readonly EncodeObject[];
+    fee: TxFee;
+    memo: string;
+    signerData: SignerData;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
@@ -890,7 +928,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           wallet.chainId,
           signerAddress,
           signDoc,
-          wallet.walletInfo?.signOptions
+          signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
           signerAddress,
@@ -975,13 +1013,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * If the chain does not support transaction simulation, the function may
    * fall back to using the provided fee parameter.
    */
-  public async estimateFee(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: Optional<TxFee, "gas">,
-    memo: string,
-    signOptions: SignOptions = {}
-  ): Promise<TxFee> {
+  public async estimateFee({
+    wallet,
+    messages,
+    initialFee = { amount: [] },
+    memo = "",
+    signOptions = {},
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    initialFee?: Optional<TxFee, "gas">;
+    memo?: string;
+    signOptions?: SignOptions;
+  }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
 
@@ -1008,7 +1052,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           }),
         ],
         fee: Fee.fromPartial({
-          amount: fee.amount.map((amount) => {
+          amount: initialFee.amount.map((amount) => {
             return { amount: amount.amount, denom: amount.denom };
           }),
         }),
@@ -1070,8 +1114,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
          * If the error message includes "invalid empty tx", it means that the chain does not
          * support tx simulation. In this case, just return the backup fee if available.
          */
-        if (message.includes("invalid empty tx") && fee.gas) {
-          return fee as TxFee;
+        if (message.includes("invalid empty tx") && initialFee.gas) {
+          return initialFee as TxFee;
         }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
