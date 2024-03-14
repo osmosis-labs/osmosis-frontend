@@ -85,6 +85,7 @@ import {
   DefaultGasPriceStep,
   getEndpointString,
   getWalletEndpoints,
+  InsufficientFeeError,
   logger,
   makeSignDocAmino,
   removeLastSlash,
@@ -1091,112 +1092,124 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * The gas amount is multiplied by a specific factor to provide additional
        * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
        *  */
-      const gas = String(Math.round(gasUsed * GasMultiplier));
+      const gasLimit = String(Math.round(gasUsed * GasMultiplier));
 
+      /**
+       * Compute the fee amount based on the gas limit and the gas price.
+       * This means we won't leave the responsibility of calculating the fee to the wallet.
+       */
       if (signOptions.preferNoSetFee) {
         const chainId = wallet.chainId;
+        const chain = getChain({ chainList: this.chains, chainId });
 
-        const fee = await this.getGasAmount(gas, wallet.chainId);
+        if (!wallet.address) {
+          const { feeDenom, gasPrice } = await this.getGasPriceByChainId({
+            chainId,
+          });
+          const fee: TxFee["amount"][number] = {
+            amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+            denom: feeDenom,
+          };
+          return {
+            gas: gasLimit,
+            amount: [fee],
+          };
+        }
+
+        const [{ gasPrice, feeDenom }, { balances }] = await Promise.all([
+          this.getGasPriceByChainId({
+            chainId,
+          }),
+          this.queryAccountBalance({
+            userOsmoAddress: wallet.address,
+            chainId,
+          }),
+        ]);
+        let fee: TxFee["amount"][number] = {
+          amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+          denom: feeDenom,
+        };
+
+        const userBalanceForFeeDenom = balances.find(
+          (balance) => balance.denom === fee.denom
+        );
+
+        const chainHasOsmosisFeeModule =
+          chain?.features?.includes("osmosis-txfees");
 
         if (
-          wallet.address &&
-          getChain({ chainList: this.chains, chainId })?.features?.includes(
-            "osmosis-txfees"
-          )
+          !chainHasOsmosisFeeModule &&
+          userBalanceForFeeDenom &&
+          new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
         ) {
-          const [{ feeTokens }, { balances }] = await Promise.all([
-            this.queryFeeTokens({ chainId }),
-            this.queryAccountBalance({
-              userOsmoAddress: wallet.address,
-              chainId,
-            }),
-          ]);
+          throw new InsufficientFeeError(
+            `User doesn't have enough balance for fee token ${fee.denom}.`
+          );
+        }
 
-          const userBalanceForFeeDenom = balances.find(
-            (balance) => balance.denom === fee.denom
+        /**
+         * If the chain supports the Osmosis chain fee module, check that the user has enough balance
+         * to pay the fee denom, otherwise find another fee token to use.
+         */
+        if (
+          chainHasOsmosisFeeModule &&
+          userBalanceForFeeDenom &&
+          new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
+        ) {
+          const { feeTokens } = await this.queryFeeTokens({ chainId });
+
+          const feeTokenUserBalances = balances.filter((balance) =>
+            feeTokens.includes(balance.denom)
           );
 
-          // If the user doesn't have enough balance for the fee denom, find another fee token to use.
-          if (
-            userBalanceForFeeDenom &&
-            new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))
-          ) {
-            const filteredBalances = balances
-              .filter((balance) => feeTokens.includes(balance.denom))
-              .sort((a, b) => {
-                const aDec = new Dec(a.amount);
-                const bDec = new Dec(b.amount);
-                if (aDec.lt(bDec)) return 1;
-                if (aDec.gt(bDec)) return -1;
-                return 0;
-              });
-
-            if (!filteredBalances.length) {
-              throw new Error(
-                `User doesn't have enough balance for any fee token.`
-              );
-            }
-
-            const feeDenom = filteredBalances[0].denom;
-
-            const asset = getAssetFromAssetList({
-              assetLists: this.assets,
-              coinMinimalDenom: feeDenom,
-            });
-
-            if (!asset) {
-              throw new Error(
-                `Failed to find asset for fee token ${feeDenom}.`
-              );
-            }
-
-            const chain = getChain({
-              chainList: this.chains,
-              chainName: asset.rawAsset.chainName,
-            });
-
-            if (!chain) {
-              throw new Error(
-                `Failed to find chain for asset ${asset.rawAsset.chainName}.`
-              );
-            }
-
-            const feeCurrency = chain.fees.fee_tokens.find(
-              ({ denom }) => denom === feeDenom
+          if (!feeTokenUserBalances.length) {
+            throw new InsufficientFeeError(
+              `User doesn't have enough balance for any fee token.`
             );
-
-            const spotPriceDec = new Dec(
-              (
-                await this.queryFeeTokenSpotPrice({ chainId, denom: feeDenom })
-              ).spotPrice
-            );
-
-            const gasPrice = new Dec(
-              feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average
-            )
-              .quo(spotPriceDec)
-              .mul(new Dec(1.01));
-
-            return {
-              gas,
-              amount: [
-                {
-                  amount: new Dec(gas).mul(gasPrice).truncate().toString(),
-                  denom: feeDenom,
-                },
-              ],
-            };
           }
+
+          let alternateFee: TxFee["amount"][number] | undefined;
+          for (const feeTokenBalance of feeTokenUserBalances) {
+            try {
+              const { gasPrice } = await this.getGasPriceByFeeDenom({
+                feeDenom: feeTokenBalance.denom,
+                feeModuleChainId: chainId,
+              });
+              const amount = gasPrice
+                .mul(new Dec(gasLimit))
+                .roundUp()
+                .toString();
+
+              console.log(feeTokenBalance.denom, amount);
+
+              // If the fee is greater than the user's balance, continue to the next fee token.
+              if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
+
+              alternateFee = {
+                amount,
+                denom: feeTokenBalance.denom,
+              };
+              break;
+            } catch {}
+          }
+
+          if (!alternateFee) {
+            throw new InsufficientFeeError(
+              `User doesn't have enough balance for any fee token.`
+            );
+          }
+
+          fee = alternateFee;
         }
 
         return {
-          gas,
+          gas: gasLimit,
           amount: [fee],
         };
       }
 
       return {
-        gas,
+        gas: gasLimit,
         amount: [],
       };
     } catch (e) {
@@ -1229,7 +1242,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
   }
 
-  async getGasAmount(gasLimit: string, chainId: string) {
+  async getGasPriceByChainId({
+    chainId,
+  }: {
+    chainId: string;
+  }): Promise<{ gasPrice: Dec; feeDenom: string }> {
     let gasPrice: number | undefined;
 
     const counterpartyChain = this.chains.find(
@@ -1264,13 +1281,60 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       gasPrice = DefaultGasPriceStep.average;
     }
 
-    const gasPriceDec = new Dec(gasPrice);
-    return {
-      amount: gasPriceDec.mul(new Dec(gasLimit)).roundUp().toString(),
-      denom: feeCurrency.denom,
-    };
+    return { gasPrice: new Dec(gasPrice), feeDenom: feeCurrency.denom };
   }
 
+  async getGasPriceByFeeDenom({
+    feeModuleChainId,
+    feeDenom,
+  }: {
+    // Chain to fetch the fee token spot price from. This requires the chain to have the Osmosis fee module.
+    feeModuleChainId: string;
+    feeDenom: string;
+  }): Promise<{ gasPrice: Dec }> {
+    const asset = getAssetFromAssetList({
+      assetLists: this.assets,
+      coinMinimalDenom: feeDenom,
+    });
+
+    if (!asset) {
+      throw new Error(`Failed to find asset for fee token ${feeDenom}.`);
+    }
+
+    const chain = getChain({
+      chainList: this.chains,
+      chainName: asset.rawAsset.chainName,
+    });
+
+    if (!chain) {
+      throw new Error(
+        `Failed to find chain for asset ${asset.rawAsset.chainName}.`
+      );
+    }
+
+    const feeCurrency = chain.fees.fee_tokens.find(
+      ({ denom }) => denom === feeDenom
+    );
+
+    const spotPriceDec = new Dec(
+      (
+        await this.queryFeeTokenSpotPrice({
+          chainId: feeModuleChainId,
+          denom: feeDenom,
+        })
+      ).spotPrice
+    );
+
+    const gasPrice = new Dec(
+      feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average
+    )
+      .quo(spotPriceDec)
+      .mul(new Dec(1.01));
+
+    return { gasPrice };
+  }
+
+  // TODO: Get this query from the server package once it exists.
   private async queryAccountBalance({
     userOsmoAddress,
     chainId,
@@ -1315,6 +1379,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * // Output: { feeTokens: ["ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", ...] }
    * ```
    */
+  // TODO: Get this query from the server package once it exists.
   private async queryFeeTokens({ chainId }: { chainId: string }) {
     return cachified({
       key: "fee-tokens",
@@ -1348,6 +1413,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
+  // TODO: Get this query from the server package once it exists.
   private async queryFeeTokenSpotPrice({
     denom,
     chainId,
@@ -1382,6 +1448,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
+  // TODO: Get this query from the server package once it exists.
   private async queryOsmosisGasPrice() {
     return cachified({
       key: "osmosis-gas-price",
