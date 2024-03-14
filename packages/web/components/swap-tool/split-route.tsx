@@ -15,8 +15,7 @@ import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
 
-type Split =
-  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
+type Split = RouterOutputs["local"]["quote"]["routeTokenOutGivenIn"]["split"];
 type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 

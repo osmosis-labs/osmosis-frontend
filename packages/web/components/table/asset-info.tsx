@@ -47,7 +47,7 @@ import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getUserMarketAssets"]["items"][number];
+  RouterOutputs["local"]["assets"]["getUserMarketAssets"]["items"][number];
 type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{

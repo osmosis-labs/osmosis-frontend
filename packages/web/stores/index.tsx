@@ -8,11 +8,11 @@ const storeContext = React.createContext<RootStore | null>(null);
 /** Once data is invalidated, React Query will automatically refetch data
  *  when the dependent component becomes visible. */
 function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
-  apiUtils.edge.assets.getUserAsset.invalidate();
-  apiUtils.edge.assets.getUserAssets.invalidate();
-  apiUtils.edge.assets.getMarketAsset.invalidate();
-  apiUtils.edge.assets.getUserMarketAssets.invalidate();
-  apiUtils.edge.assets.getUserAssetsBreakdown.invalidate();
+  apiUtils.local.assets.getUserAsset.invalidate();
+  apiUtils.local.assets.getUserAssets.invalidate();
+  apiUtils.local.assets.getMarketAsset.invalidate();
+  apiUtils.local.assets.getUserMarketAssets.invalidate();
+  apiUtils.local.assets.getUserAssetsBreakdown.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
 }
 

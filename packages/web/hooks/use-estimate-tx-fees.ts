@@ -37,7 +37,7 @@ async function estimateTxFeesQueryFn({
         preferNoSetFee: true, // this will automatically calculate the amount as well.
       },
     }),
-    apiUtils.edge.assets.getMarketAsset.fetch({
+    apiUtils.local.assets.getMarketAsset.fetch({
       findMinDenomOrSymbol: "OSMO",
     }),
   ]);
