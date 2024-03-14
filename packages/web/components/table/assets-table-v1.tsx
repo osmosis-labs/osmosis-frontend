@@ -3,7 +3,14 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  type FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useKey } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SortMenu } from "~/components/control";
@@ -33,6 +40,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
+import { useControllableState } from "~/hooks/use-controllable-state";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import {
@@ -98,6 +106,8 @@ function nativeBalancesToTableCell(
   });
 }
 
+const TOP_5 = ["OSMO", "ATOM", "USDC", "TIA", "DYM"];
+
 export const AssetsTableV1: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
@@ -118,6 +128,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       ["OSMO", "ATOM", "TIA"]
     );
 
+    const { searchBoxIsFocused, setSearchBoxIsFocused, searchBoxRef } =
+      useWebSearchBoxState();
     const [isSearching, setIsSearching] = useState(false);
     const [confirmUnverifiedTokenDenom, setConfirmUnverifiedTokenDenom] =
       useState<string | null>(null);
@@ -372,9 +384,19 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       setIsSearching(term !== "");
     };
 
+    const shouldShowTop5 = useMemo(
+      () => searchBoxIsFocused && (!query || query.length === 0),
+      [query, searchBoxIsFocused]
+    );
+
     const tableData = useMemo(() => {
       const data: TableCell[] = [];
       const favorites: TableCell[] = [];
+      if (shouldShowTop5) {
+        return filteredSortedCells.filter((coin) =>
+          TOP_5.includes(coin.coinDenom)
+        );
+      }
       filteredSortedCells.forEach((coin) => {
         if (favoritesList.includes(coin.coinDenom)) {
           coin.isFavorite = true;
@@ -396,7 +418,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       });
       const tableData = favorites.concat(data);
       return showAllAssets ? tableData : tableData.slice(0, 10);
-    }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
+    }, [
+      favoritesList,
+      filteredSortedCells,
+      onSetFavoritesList,
+      showAllAssets,
+      shouldShowTop5,
+    ]);
 
     const rowDefs = useMemo<RowDef[]>(
       () =>
@@ -447,6 +475,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               }}
               placeholder={t("assets.table.search")}
               size="small"
+              onFocusChange={(isFocused) => setSearchBoxIsFocused(isFocused)}
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <div className="flex shrink-0 flex-wrap gap-2">
@@ -531,6 +560,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   }}
                 />
                 <SearchBox
+                  ref={searchBoxRef}
                   currentValue={query}
                   onInput={(query) => {
                     setHideZeroBalances(false);
@@ -538,6 +568,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   }}
                   placeholder={t("assets.table.search")}
                   size="small"
+                  onFocusChange={(isFocused) =>
+                    setSearchBoxIsFocused(isFocused)
+                  }
+                  rightIcon={() =>
+                    !searchBoxIsFocused && (
+                      <text className="mr-2 rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
+                        /
+                      </text>
+                    )
+                  }
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
@@ -731,7 +771,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           />
         )}
         <div className="relative flex h-12 justify-center">
-          {filteredSortedCells.length > 10 && (
+          {!shouldShowTop5 && filteredSortedCells.length > 10 && (
             <ShowMoreButton
               className="m-auto"
               isOn={showAllAssets}
@@ -752,3 +792,27 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     );
   }
 );
+
+const useWebSearchBoxState = () => {
+  const [searchBoxIsFocused, setSearchBoxIsFocused] = useControllableState({
+    defaultValue: false,
+  });
+  const searchBoxRef = useRef<HTMLInputElement>(null);
+  useKey(
+    "/",
+    (event) => {
+      event.preventDefault(); // Prevent the '/' from being entered into the input
+      searchBoxRef.current?.focus();
+    },
+    { event: "keydown" },
+    [searchBoxRef]
+  );
+  useKey("Escape", () => searchBoxRef.current?.blur(), { event: "keydown" }, [
+    searchBoxRef,
+  ]);
+  return {
+    searchBoxIsFocused,
+    searchBoxRef,
+    setSearchBoxIsFocused,
+  };
+};
