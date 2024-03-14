@@ -4,10 +4,10 @@ import classNames from "classnames";
 import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -154,7 +154,6 @@ export const ActionsCell = (
     <div className="flex items-center justify-center">
       <Button
         onClick={item.getValue().onClick}
-        mode={"quaternary"}
         className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
       >
         <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">

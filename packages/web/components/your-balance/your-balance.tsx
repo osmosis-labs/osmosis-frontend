@@ -471,16 +471,13 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                 target="_blank"
                 className="w-full"
               >
-                <Button
-                  className="w-full whitespace-nowrap"
-                  disabled={!isDepositSupported}
-                >
+                <Button className="w-full" disabled={!isDepositSupported}>
                   {t("assets.historyTable.colums.deposit")} ↗️️
                 </Button>
               </Link>
             ) : (
               <Button
-                className="w-full whitespace-nowrap"
+                className="w-full"
                 disabled={!tokenChain?.chainId || !isDepositSupported}
                 onClick={() => bridgeAsset(denom, "deposit")}
               >
@@ -494,7 +491,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                 className="w-full"
               >
                 <Button
-                  className="w-full whitespace-nowrap"
+                  className="w-full"
                   variant="outline"
                   disabled={
                     !isWithdrawSupported ||
@@ -507,7 +504,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
               </Link>
             ) : (
               <Button
-                className="w-full whitespace-nowrap"
+                className="w-full"
                 disabled={
                   !tokenChain?.chainId ||
                   !isWithdrawSupported ||

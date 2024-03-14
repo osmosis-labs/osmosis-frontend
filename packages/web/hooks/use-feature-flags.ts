@@ -22,7 +22,8 @@ export type AvailableFlags =
   | "aprBreakdown"
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton"
-  | "positionRoi";
+  | "positionRoi"
+  | "swapToolSimulateFee";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -47,6 +48,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
   positionRoi: true,
+  swapToolSimulateFee: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
