@@ -11,9 +11,9 @@ import React, {
 import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
@@ -33,13 +33,13 @@ const NotifiIconButton: FunctionComponent<
 
   return (
     <>
+      {/* @ts-ignore */}
       <IconButton
         ref={ref}
         aria-label="Open Notifications dropdown"
         icon={<Icon id="bell" width={24} height={24} />}
         {...buttonProps}
       />
-
       {hasUnreadNotification ? (
         <div className="pointer-events-none absolute bottom-[-0.375rem] right-[-0.375rem]">
           <svg
