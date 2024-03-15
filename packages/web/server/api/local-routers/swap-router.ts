@@ -1,10 +1,4 @@
-import {
-  CoinPretty,
-  Dec,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
@@ -21,6 +15,7 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { getPool } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 import { captureErrorAndReturn } from "~/utils/error";
 
@@ -135,6 +130,8 @@ export const swapRouter = createTRPCRouter({
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
 
+        console.log("router", quote.inOutSpotPrice?.toString());
+
         return {
           ...quote,
           split: await makeDisplayableSplit(quote.split),
@@ -160,7 +157,8 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
     split.map(async (existingSplit) => {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
       const poolsWithInfos = await Promise.all(
-        pools.map(async (pool, index) => {
+        pools.map(async (pool_, index) => {
+          const pool = await getPool({ poolId: pool_.id });
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
@@ -171,8 +169,9 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
           return {
             id: pool.id,
             spreadFactor: new RatePretty(
-              pool.swapFee ? pool.swapFee : new Dec(0)
+              pool_.swapFee ? pool_.swapFee : pool.spreadFactor
             ),
+            dynamicSpreadFactor: pool.type === "cosmwasm-astroport-pcl",
             type: pool.type,
             inCurrency: inAsset,
             outCurrency: outAsset,

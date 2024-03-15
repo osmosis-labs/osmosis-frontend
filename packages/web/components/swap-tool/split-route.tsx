@@ -4,6 +4,7 @@ import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -141,6 +142,7 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
 
 const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const { isMobile } = useWindowSize();
+  const router = useRouter();
 
   const { t } = useTranslation();
   /** Share same tippy instance to handle animation */
@@ -155,8 +157,20 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
       />
       <div className="absolute mx-4 flex w-full justify-evenly">
         {pools.map(
-          ({ id, type, inCurrency, outCurrency, spreadFactor }, index) => {
+          (
+            {
+              id,
+              type,
+              inCurrency,
+              outCurrency,
+              spreadFactor,
+              dynamicSpreadFactor,
+            },
+            index
+          ) => {
             if (!inCurrency || !outCurrency) return null;
+
+            console.log(dynamicSpreadFactor);
 
             return (
               <Tooltip
@@ -185,12 +199,15 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
                         {t("swap.pool", { id })}
                       </p>
+
                       {spreadFactor && (
                         <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
                           {type === "concentrated"
                             ? t("swap.routerTooltipSpreadFactor")
                             : t("swap.routerTooltipFee")}{" "}
-                          {spreadFactor.maxDecimals(2).toString()}
+                          {dynamicSpreadFactor
+                            ? t("swap.dynamicSpreadFactor")
+                            : spreadFactor.maxDecimals(2).toString()}
                         </p>
                       )}
                     </div>
@@ -231,7 +248,12 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   </div>
                 }
               >
-                <div className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700">
+                <button
+                  className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700"
+                  onClick={() => {
+                    if (!isMobile) router.push("/pool/" + id);
+                  }}
+                >
                   <div className="flex">
                     <div className="h-[20px] w-[20px]">
                       <DenomImage currency={inCurrency} />
@@ -241,12 +263,15 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                     </div>
                   </div>
 
-                  {pools.length < 4 && !isMobile && spreadFactor && (
-                    <p className="text-caption">
-                      {spreadFactor.maxDecimals(1).toString()}
-                    </p>
-                  )}
-                </div>
+                  {pools.length < 4 &&
+                    !isMobile &&
+                    spreadFactor &&
+                    !dynamicSpreadFactor && (
+                      <p className="text-caption">
+                        {spreadFactor.maxDecimals(1).toString()}
+                      </p>
+                    )}
+                </button>
               </Tooltip>
             );
           }

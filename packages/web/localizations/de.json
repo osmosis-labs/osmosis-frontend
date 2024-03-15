@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "Neue Möglichkeit, mit {denom} zu verdienen",
       "discoverSuperchargedPools": "Entdecken Sie Supercharged Pools"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
     "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",

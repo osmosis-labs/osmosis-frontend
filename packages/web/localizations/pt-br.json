@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "Nova oportunidade de ganhar com",
       "discoverSuperchargedPools": "Descubra Piscinas Superalimentadas"
-    }
+    },
+    "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
     "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",

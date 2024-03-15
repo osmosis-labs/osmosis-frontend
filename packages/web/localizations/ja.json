@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "{denom}で獲得する新たな機会",
       "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    }
+    },
+    "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",

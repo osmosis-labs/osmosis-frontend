@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "Kazanmak için yeni fırsat",
       "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
-    }
+    },
+    "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
     "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",

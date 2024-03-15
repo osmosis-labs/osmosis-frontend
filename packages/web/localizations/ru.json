@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "Новая возможность заработка с помощью {denom}",
       "discoverSuperchargedPools": "Откройте для себя бассейны с наддувом"
-    }
+    },
+    "dynamicSpreadFactor": "Динамический"
   },
   "walletSelect": {
     "connectionInProgress": "Подключение кошелька уже выполняется. Пожалуйста, откройте свое расширение, чтобы проверить статус.",

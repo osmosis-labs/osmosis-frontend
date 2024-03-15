@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "新的赚钱机会",
       "discoverSuperchargedPools": "探索增压泳池"
-    }
+    },
+    "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",

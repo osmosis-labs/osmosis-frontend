@@ -108,6 +108,8 @@ export function useSwap({
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
 
+  console.log("useSwap", quote?.inOutSpotPrice?.toString());
+
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
@@ -123,7 +125,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
     },
-    isToFromAssets
+    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -379,11 +381,12 @@ export function useSwap({
       }),
     [
       account,
-      getSwapTxParameters,
       inAmountInput,
       networkFee,
       queryClient,
       userOsmoCoin?.amount,
+      featureFlags.swapToolSimulateFee,
+      getSwapTxParameters,
     ]
   );
 

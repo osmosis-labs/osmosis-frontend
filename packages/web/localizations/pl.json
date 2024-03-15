@@ -693,7 +693,8 @@
     "promo": {
       "newOpportunity": "Nowa możliwość zarabiania dzięki",
       "discoverSuperchargedPools": "Odkryj baseny Supercharged"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
     "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
