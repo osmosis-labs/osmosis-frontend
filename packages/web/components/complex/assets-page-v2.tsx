@@ -90,7 +90,10 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
 
   return (
     <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
-      <SkeletonLoader className="1.5lg:w-full" isLoaded={!isWalletLoading}>
+      <SkeletonLoader
+        className="rounded-5xl 1.5lg:w-full"
+        isLoaded={!isWalletLoading}
+      >
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <UserAssetsBreakdown userOsmoAddress={wallet.address} />
         ) : (
