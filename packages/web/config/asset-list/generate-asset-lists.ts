@@ -292,7 +292,7 @@ async function generateAssetListFile({
       )
         .map((category) => `"${category}"`)
         .join(", ")}
-    ]
+    ] as const;
     `;
   }
 

@@ -5,7 +5,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { AssetLists } from "~/config/generated/asset-lists";
+import { AssetCategories, AssetLists } from "~/config/generated/asset-lists";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 import { captureErrorAndReturn } from "~/utils/error";
 import { search, SearchSchema } from "~/utils/search";
@@ -26,6 +26,7 @@ export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
   includePreview: z.boolean().default(false).optional(),
+  categories: z.array(z.enum(AssetCategories)).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
@@ -73,12 +74,12 @@ export async function getAssets({
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
 } & AssetFilter = {}): Promise<Asset[]> {
-  // if it's the default asset list, cache it
-  if (assetList === AssetLists) {
+  // if it's the default asset list and there's no filters, cache it
+  if (assetList === AssetLists && Object.values(params).length === 0) {
     return cachified({
       cache: minimalAssetsCache,
-      key: JSON.stringify(params),
-      getFreshValue: () => filterAssetList(assetList, params),
+      key: "minified-assets",
+      getFreshValue: () => filterAssetList(assetList),
     });
   }
 
@@ -157,6 +158,14 @@ function filterAssetList(
   // Filter by only verified
   if (params.onlyVerified) {
     assetListAssets = assetListAssets.filter((asset) => asset.verified);
+  }
+
+  // Filter categories
+  const categories = params.categories;
+  if (categories) {
+    assetListAssets = assetListAssets.filter((asset) =>
+      categories.some((category) => asset.categories.includes(category))
+    );
   }
 
   // Transform into a more compact object
