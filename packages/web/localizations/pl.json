@@ -357,7 +357,8 @@
     "sequenceNumber": "Masz zbyt wiele jednoczesnych transakcji! Spróbuj wysłać ponownie, gdy poprzednia wiadomość trafi do łańcucha. (Sekwencja: {sequence} )",
     "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
     "invalidAmounts": "Nieprawidłowe kwoty",
-    "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie."
+    "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
+    "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",

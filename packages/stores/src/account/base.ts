@@ -1009,12 +1009,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * 1. Encodes the messages using the available registry.
    * 2. Constructs an unsigned transaction object, including specific signing modes, and possibly ignores the public key in simulation.
    * 3. Sends a POST request to simulate the transaction.
-   * 4. Calculates the estimated gas used, multiplying by a fixed factor (2) to provide a buffer.
+   * 4. Calculates the estimated gas used, multiplying by a fixed factor (1.5) to provide a buffer.
    * 5. Includes specific error handling for errors returned from the axios request.
    * 6. Utilizes a placeholder signature since the transaction signature is not actually verified.
    *
    * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
-   * This is offset by multiplying the estimated gas by a fixed factor (2) to provide a buffer.
+   * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
    *
    * If the chain does not support transaction simulation, the function may
    * fall back to using the provided fee parameter.
@@ -1220,8 +1220,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * to pay the fee denom, otherwise throw an error.
      */
     if (!chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+      console.error(
+        `Insufficient balance for the base fee token (${fee.denom}).`
+      );
       throw new InsufficientFeeError(
-        `User doesn't have enough balance for fee token ${fee.denom}.`
+        "Insufficient balance for transaction fees. Please add funds to continue."
       );
     }
 
@@ -1237,8 +1240,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
 
       if (!feeTokenUserBalances.length) {
+        console.error("No fee tokens found with sufficient balance.");
         throw new InsufficientFeeError(
-          `User doesn't have enough balance for any fee token.`
+          "Insufficient balance for transaction fees. Please add funds to continue."
         );
       }
 
@@ -1273,8 +1277,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (!alternateFee) {
+        console.error("No fee token found with sufficient balance.");
         throw new InsufficientFeeError(
-          `User doesn't have enough balance for any fee token.`
+          "Insufficient balance for transaction fees. Please add funds to continue."
         );
       }
 
@@ -1284,7 +1289,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return fee;
   }
 
-  async getGasPriceByChainId({
+  private async getGasPriceByChainId({
     chainId,
   }: {
     chainId: string;
@@ -1340,7 +1345,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *
    *
    */
-  async getGasPriceByFeeDenom({
+  private async getGasPriceByFeeDenom({
     chainId,
     feeDenom,
     baseFee,

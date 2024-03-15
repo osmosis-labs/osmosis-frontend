@@ -773,6 +773,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                 {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
                 featureFlags.swapToolSimulateFee &&
+                swapState.networkFee?.gasUsdValueToPay // Only display network fee if it's greater than 0.01 USD
+                  .toDec()
+                  .gte(new Dec(0.01)) &&
                 !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
@@ -789,7 +792,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 {((swapState.quote?.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
                   (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
-                  featureFlags.swapToolSimulateFee && (
+                  featureFlags.swapToolSimulateFee &&
+                  swapState.networkFee?.gasUsdValueToPay
+                    .toDec()
+                    .gte(new Dec(0.01)) && (
                     <div className="flex justify-between">
                       <span className="caption">{t("swap.totalFee")}</span>
                       <span className="caption text-osmoverse-200">

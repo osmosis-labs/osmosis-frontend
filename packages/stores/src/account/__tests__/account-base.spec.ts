@@ -543,7 +543,7 @@ describe("getFeeAmount — with address", () => {
       })
     ).rejects.toThrow(
       new InsufficientFeeError(
-        `User doesn't have enough balance for any fee token.`
+        "Insufficient balance for transaction fees. Please add funds to continue."
       )
     );
   });
@@ -619,7 +619,7 @@ describe("getFeeAmount — with address", () => {
       })
     ).rejects.toThrow(
       new InsufficientFeeError(
-        `User doesn't have enough balance for any fee token.`
+        "Insufficient balance for transaction fees. Please add funds to continue."
       )
     );
   });
@@ -693,7 +693,7 @@ describe("getFeeAmount — with address", () => {
       })
     ).rejects.toThrow(
       new InsufficientFeeError(
-        `User doesn't have enough balance for any fee token.`
+        "Insufficient balance for transaction fees. Please add funds to continue."
       )
     );
   });
