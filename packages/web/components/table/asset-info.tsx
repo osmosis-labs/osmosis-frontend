@@ -53,7 +53,9 @@ type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
+  /** Memoized function for handling deposits from table row. */
   onDeposit: (coinMinimalDenom: string) => void;
+  /** Memoized function for handling withdrawals from table row. */
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { chainStore, accountStore, userSettings } = useStore();
@@ -127,9 +129,9 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 
   // Define columns
-  const columnHelper = createColumnHelper<AssetInfo>();
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<AssetInfo>();
+    return [
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
@@ -206,19 +208,17 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      favoritesList,
-      columnHelper,
-      selectedTimeFrame,
-      sortKey,
-      sortDirection,
-      onAddFavoriteDenom,
-      onRemoveFavoriteDenom,
-      onDeposit,
-      onWithdraw,
-    ]
-  );
+    ];
+  }, [
+    favoritesList,
+    selectedTimeFrame,
+    sortKey,
+    sortDirection,
+    onAddFavoriteDenom,
+    onRemoveFavoriteDenom,
+    onDeposit,
+    onWithdraw,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {

@@ -3,7 +3,7 @@ import classNames from "classnames";
 import type { SeriesPieOptions } from "highcharts";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useCallback, useMemo } from "react";
 
 import { EventName } from "~/config";
 import {
@@ -65,12 +65,18 @@ export const AssetsPageV2: FunctionComponent = () => {
 
       <AssetsInfoTable
         tableTopPadding={heroHeight}
-        onDeposit={(coinMinimalDenom) => {
-          bridgeAsset(coinMinimalDenom, "deposit");
-        }}
-        onWithdraw={(coinMinimalDenom) => {
-          bridgeAsset(coinMinimalDenom, "withdraw");
-        }}
+        onDeposit={useCallback(
+          (coinMinimalDenom) => {
+            bridgeAsset(coinMinimalDenom, "deposit");
+          },
+          [bridgeAsset]
+        )}
+        onWithdraw={useCallback(
+          (coinMinimalDenom) => {
+            bridgeAsset(coinMinimalDenom, "withdraw");
+          },
+          [bridgeAsset]
+        )}
       />
     </main>
   );
