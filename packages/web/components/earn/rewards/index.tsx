@@ -1,4 +1,4 @@
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 export const EarnRewards = () => {
@@ -28,9 +28,7 @@ export const EarnRewards = () => {
         </small>
       </div>
       <div className="mt-4.5 flex flex-col gap-3">
-        <Button mode={"primary"} className="max-h-11">
-          {t("earnPage.claimAllRewards")}
-        </Button>
+        <Button className="max-h-11">{t("earnPage.claimAllRewards")}</Button>
       </div>
     </div>
   );

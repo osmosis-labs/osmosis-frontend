@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import { FunctionComponent, useState } from "react";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -188,7 +188,7 @@ const VerifyButton: FunctionComponent<{
 
   return (
     <Button
-      mode="primary"
+      className="w-full"
       disabled={loading}
       onClick={async () => {
         onClickVerify();

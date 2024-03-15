@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 
-import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";
 
@@ -94,7 +94,7 @@ export const RemoveLiquidity: FunctionComponent<
           <div className="mb-14 grid h-9 w-full grid-cols-4 gap-5 md:mb-6 md:gap-1">
             <Button
               className="!h-full"
-              mode="amount"
+              size="sm"
               onClick={() => setPercentage("25")}
               disabled={shareValue.toDec().isZero()}
             >
@@ -102,7 +102,7 @@ export const RemoveLiquidity: FunctionComponent<
             </Button>
             <Button
               className="!h-full"
-              mode="amount"
+              size="sm"
               onClick={() => setPercentage("50")}
               disabled={shareValue.toDec().isZero()}
             >
@@ -110,7 +110,7 @@ export const RemoveLiquidity: FunctionComponent<
             </Button>
             <Button
               className="!h-full"
-              mode="amount"
+              size="sm"
               onClick={() => setPercentage("75")}
               disabled={shareValue.toDec().isZero()}
             >
@@ -118,7 +118,7 @@ export const RemoveLiquidity: FunctionComponent<
             </Button>
             <Button
               className="!h-full"
-              mode="amount"
+              size="sm"
               onClick={() => setPercentage("100")}
               disabled={shareValue.toDec().isZero()}
             >

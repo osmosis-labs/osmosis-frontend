@@ -8,7 +8,6 @@ import { FunctionComponent, useState } from "react";
 import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { ChartButton } from "~/components/buttons";
 import {
   ChartUnavailable,
   PriceChartHeader,
@@ -16,6 +15,7 @@ import {
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/loaders/spinner";
+import { ChartButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";

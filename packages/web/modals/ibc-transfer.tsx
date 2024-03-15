@@ -70,7 +70,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       useConnectWalletModalRedirect(
         {
           className: "md:mt-4 mt-6 hover:opacity-75",
-          mode: isChainBlockedOrCongested ? "primary-warning" : "primary",
+          variant: isChainBlockedOrCongested ? "destructive" : "default",
           disabled:
             !account?.isReadyToSendTx ||
             !counterpartyAccount?.isReadyToSendTx ||

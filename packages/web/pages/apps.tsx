@@ -156,14 +156,16 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           </p>
         </div>
         <div className="flex w-48 items-center justify-center pl-6">
-          <a
-            href="https://tally.so/r/wge9xO"
-            target="_blank"
-            rel="noreferrer noopener"
-            onClick={handleApplyClick}
-          >
-            <Button variant="outline">{t("store.applyButton")} &rarr;</Button>
-          </a>
+          <Button variant="outline" asChild>
+            <a
+              href="https://tally.so/r/wge9xO"
+              target="_blank"
+              rel="noreferrer noopener"
+              onClick={handleApplyClick}
+            >
+              {t("store.applyButton")} &rarr;
+            </a>
+          </Button>
         </div>
       </div>
       <div className="flex w-full items-center overflow-x-auto rounded-2xl bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">

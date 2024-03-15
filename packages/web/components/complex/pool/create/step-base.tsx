@@ -2,10 +2,10 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { Info } from "~/components/alert";
-import { Button } from "~/components/buttons";
 import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { tError } from "~/components/localization";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
@@ -85,8 +85,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           )}
           <Button
             onClick={() => advanceStep()}
-            mode={
-              !canAdvance && urgentErrorMessage ? "primary-warning" : undefined
+            variant={
+              !canAdvance && urgentErrorMessage ? "destructive" : "default"
             }
             disabled={!canAdvance || isSendingMsg}
           >

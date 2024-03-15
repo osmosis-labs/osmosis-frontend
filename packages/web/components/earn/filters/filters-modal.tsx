@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
@@ -13,6 +12,7 @@ import {
   StrategyMethod,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
@@ -120,11 +120,7 @@ const FiltersModal = (
           options={props.tokenFilterOptions}
         />
       </div>
-      <Button
-        onClick={props.onRequestClose}
-        mode={"primary"}
-        className="mt-[70px] max-h-11"
-      >
+      <Button onClick={props.onRequestClose} className="mt-16 max-h-11">
         {t("earnPage.saveFilters")}
       </Button>
     </ModalBase>

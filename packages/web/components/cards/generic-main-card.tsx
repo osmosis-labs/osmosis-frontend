@@ -26,11 +26,7 @@ export const GenericMainCard: React.FC<
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
             <div className="absolute right-0">
-              <Button
-                variant="ghost"
-                onClick={titleIconAction}
-                className="px-0"
-              >
+              <Button variant="ghost" size="md" onClick={titleIconAction}>
                 {titleIcon}
               </Button>
             </div>

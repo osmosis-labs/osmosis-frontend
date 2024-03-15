@@ -26,7 +26,6 @@ import {
   QRIcon,
 } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { ArrowButton } from "~/components/buttons";
 import {
   Drawer,
   DrawerButton,
@@ -35,6 +34,7 @@ import {
   DrawerPanel,
 } from "~/components/drawers";
 import Spinner from "~/components/loaders/spinner";
+import { ArrowButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";

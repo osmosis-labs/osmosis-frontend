@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
@@ -55,9 +55,7 @@ export const FiatOnrampSelectionModal: FunctionComponent<
           ({ rampKey, displayName, initialAsset, logoId, subtitle }) => (
             <Button
               key={rampKey}
-              mode="unstyled"
-              size="unstyled"
-              className="flex items-center justify-start gap-[10px] rounded-2xl bg-osmoverse-900 py-5 px-5 transition-colors hover:bg-osmoverse-700"
+              className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 py-5 px-5 transition-colors hover:!bg-osmoverse-700"
               onClick={() => {
                 onSelectRamp?.(rampKey);
                 fiatRamp(rampKey, initialAsset);

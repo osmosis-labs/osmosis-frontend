@@ -2,7 +2,6 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -13,8 +12,8 @@ import {
 } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config/user-analytics-v2";
 import { useTranslation } from "~/hooks";
 import {
@@ -625,10 +624,6 @@ const AxelarTransfer: FunctionComponent<
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
-              className={classNames(
-                "transition-opacity duration-300 hover:opacity-75",
-                { "opacity-30": isDepositAddressLoading }
-              )}
               disabled={
                 (!userCanInteract && !userDisconnectedEthWallet) ||
                 (isDeposit &&
