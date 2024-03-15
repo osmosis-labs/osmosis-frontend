@@ -174,6 +174,14 @@ export interface StrategyCMSData {
    */
   disabled: boolean;
   /**
+   * URL for querying APR
+   */
+  apr: string;
+  /**
+   * URL for querying TVL
+   */
+  tvl: string;
+  /**
    * Link for geoblocking check
    */
   geoblock: string;
@@ -220,12 +228,14 @@ export interface EarnStrategyBalance {
 
 export type TokensType = "stablecoins" | "correlated" | "bluechip";
 
-export interface EarnStrategy extends StrategyCMSData {
+export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
   balance: PricePretty;
   holdsTokens: boolean;
   daily?: RatePretty;
   tvl?: StrategyTVL;
   annualPercentages?: StrategyAnnualPercentages;
+  aprUrl?: string;
+  tvlUrl?: string;
   geoblocked?: boolean;
   isLoadingTVL?: boolean;
   isLoadingAPR?: boolean;
@@ -246,12 +256,10 @@ export function queryEarnUserBalance(
   return apiClient(url.toString());
 }
 
-export function queryStrategyAPR(strategyId: string): Promise<RawStrategyAPR> {
-  const url = new URL(`/earn/strategies/${strategyId}/apr`, NUMIA_BASE_URL);
+export function queryStrategyAPR(url: string): Promise<RawStrategyAPR> {
   return apiClient(url.toString());
 }
 
-export function queryStrategyTVL(strategyId: string): Promise<RawStrategyTVL> {
-  const url = new URL(`/earn/strategies/${strategyId}/tvl`, NUMIA_BASE_URL);
+export function queryStrategyTVL(url: string): Promise<RawStrategyTVL> {
   return apiClient(url.toString());
 }

@@ -69,14 +69,14 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAnnualPercentages(strategyId: string) {
+export async function getStrategyAnnualPercentages(aprUrl: string) {
   return await cachified({
     cache: earnStrategyAnnualPercentagesCache,
     ttl: 1000 * 20,
-    key: `earn-strategy-annualPercentages-${strategyId}`,
+    key: `earn-strategy-annualPercentages-${aprUrl}`,
     getFreshValue: async (): Promise<StrategyAnnualPercentages> => {
       try {
-        const { apr } = await queryStrategyAPR(strategyId);
+        const { apr } = await queryStrategyAPR(aprUrl);
         return {
           apr: new RatePretty(apr),
           apy: new RatePretty(calculateAPY(apr)),
@@ -90,14 +90,14 @@ export async function getStrategyAnnualPercentages(strategyId: string) {
   });
 }
 
-export async function getStrategyTVL(strategyId: string) {
+export async function getStrategyTVL(tvlUrl: string) {
   return await cachified({
     cache: earnStrategyTVLCache,
     ttl: 1000 * 20,
-    key: `earn-strategy-tvl-${strategyId}`,
+    key: `earn-strategy-tvl-${tvlUrl}`,
     getFreshValue: async (): Promise<StrategyTVL> => {
       try {
-        const rawTvl = await queryStrategyTVL(strategyId);
+        const rawTvl = await queryStrategyTVL(tvlUrl);
         return processTVL(rawTvl);
       } catch (error) {
         throw new Error("Error while fetching strategy TVL", {

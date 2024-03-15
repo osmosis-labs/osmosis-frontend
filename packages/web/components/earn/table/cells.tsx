@@ -68,7 +68,10 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
           )
         : 0;
 
-    return { depositCapOccupied, depositCap };
+    return {
+      depositCapOccupied: Math.min(depositCapOccupied, 100),
+      depositCap,
+    };
   }, [item.row.original.tvl, tvlUsd]);
 
   if (isLoadingTVL || !item.getValue()) {

@@ -16,15 +16,15 @@ export default createTRPCRouter({
       return res;
     }),
   getStrategyAnnualPercentages: publicProcedure
-    .input(z.object({ strategyId: z.string() }))
-    .query(async ({ input: { strategyId } }) => {
-      const res = await getStrategyAnnualPercentages(strategyId);
+    .input(z.object({ aprUrl: z.string() }))
+    .query(async ({ input: { aprUrl } }) => {
+      const res = await getStrategyAnnualPercentages(aprUrl);
       return res;
     }),
   getStrategyTVL: publicProcedure
-    .input(z.object({ strategyId: z.string() }))
-    .query(async ({ input: { strategyId } }) => {
-      const res = await getStrategyTVL(strategyId);
+    .input(z.object({ tvlUrl: z.string() }))
+    .query(async ({ input: { tvlUrl } }) => {
+      const res = await getStrategyTVL(tvlUrl);
       return res;
     }),
   getStrategies: publicProcedure.query(async () => await getStrategies()),

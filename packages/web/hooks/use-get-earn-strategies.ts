@@ -48,8 +48,9 @@ const useGetEarnStrategies = (
             holdenDenoms?.includes(involvedDenom)
           ),
           balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+          aprUrl: _strategy.apr,
+          tvlUrl: _strategy.tvl,
           tvl: undefined,
-          apr: undefined,
           geoblocked: undefined,
         };
       }),
@@ -77,7 +78,7 @@ const useGetEarnStrategies = (
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyAnnualPercentages(
         {
-          strategyId: strat.id,
+          aprUrl: strat.aprUrl ?? "",
         },
         {
           staleTime: 1000 * 60 * 15,
@@ -93,7 +94,7 @@ const useGetEarnStrategies = (
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyTVL(
         {
-          strategyId: strat.id,
+          tvlUrl: strat.tvlUrl ?? "",
         },
         {
           staleTime: 1000 * 60 * 15,
