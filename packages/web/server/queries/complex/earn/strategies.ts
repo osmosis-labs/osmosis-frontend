@@ -5,6 +5,7 @@ import { LRUCache } from "lru-cache";
 
 import { type Asset, getAsset } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { convertToPricePretty } from "~/server/queries/complex/price";
 import {
   EarnStrategyBalance,
   queryEarnUserBalance,
@@ -187,22 +188,6 @@ export function getDailyApr(apr?: RatePretty) {
   const totalDaysOfTheYear = nextYearJanuaryFirst.diff(januaryFirst, "day");
 
   return new RatePretty(apr.quo(new Dec(totalDaysOfTheYear)));
-}
-
-/**
- * Converts a Dec or BigNumber to a PricePretty instance
- * @param value The value to convert
- * @returns A PricePretty instance representing the passed value
- */
-export function convertToPricePretty(
-  value:
-    | Dec
-    | {
-        toDec(): Dec;
-      }
-    | bigInt.BigNumber
-) {
-  return new PricePretty(DEFAULT_VS_CURRENCY, value);
 }
 
 /**
