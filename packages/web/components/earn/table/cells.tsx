@@ -15,6 +15,7 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { type EarnStrategy } from "~/server/queries/numia/earn";
 import { theme } from "~/tailwind.config";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export const StrategyTooltip = ({

@@ -10,6 +10,8 @@ import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
+import { Button } from "~/components/ui/button";
+import { useTranslation } from "~/hooks";
 
 export const EarnRewards = ({
   totalUnclaimedRewards,
