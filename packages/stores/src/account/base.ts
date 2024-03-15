@@ -48,7 +48,6 @@ import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
   ApiClientError,
-  getAssetFromAssetList,
   getChain,
   isNil,
 } from "@osmosis-labs/utils";
@@ -1188,17 +1187,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return fee;
     }
 
-    const [{ gasPrice, feeDenom }, { balances }] = await Promise.all([
-      this.getGasPriceByChainId({
-        chainId,
-      }),
-      this.queryAccountBalance({
-        userOsmoAddress: address,
-        chainId,
-      }),
-    ]);
+    const [{ gasPrice: chainGasPrice, feeDenom }, { balances }] =
+      await Promise.all([
+        this.getGasPriceByChainId({
+          chainId,
+        }),
+        this.queryAccountBalance({
+          userOsmoAddress: address,
+          chainId,
+        }),
+      ]);
     fee = {
-      amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+      amount: chainGasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
       denom: feeDenom,
     };
 
@@ -1245,11 +1245,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       let alternateFee: TxFee["amount"][number] | undefined;
       for (const feeTokenBalance of feeTokenUserBalances) {
         try {
-          const { gasPrice } = await this.getGasPriceByFeeDenom({
-            feeDenom: feeTokenBalance.denom,
-            feeModuleChainId: chainId,
-          });
-          const amount = gasPrice.mul(new Dec(gasLimit)).roundUp().toString();
+          const { gasPrice: feeDenomGasPrice } =
+            await this.getGasPriceByFeeDenom({
+              feeDenom: feeTokenBalance.denom,
+              chainId: chainId,
+              // Here chain gas price is the osmosis eip base fee since the osmosis fee module is enabled.
+              baseFee: chainGasPrice.toString(),
+            });
+          const amount = feeDenomGasPrice
+            .mul(new Dec(gasLimit))
+            .truncate()
+            .toString();
 
           // If the fee is greater than the user's balance, continue to the next fee token.
           if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
@@ -1285,15 +1291,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }): Promise<{ gasPrice: Dec; feeDenom: string }> {
     let gasPrice: number | undefined;
 
-    const counterpartyChain = this.chains.find(
-      ({ chain_id }) => chain_id === chainId
+    const chain = this.chains.find(({ chain_id }) => chain_id === chainId);
+
+    if (!chain) throw new Error(`Chain (${chainId}) not found`);
+
+    const chainHasOsmosisFeeModule = Boolean(
+      chain?.features?.includes("osmosis-txfees")
     );
 
-    if (!counterpartyChain) throw new Error(`Chain (${chainId}) not found`);
-
-    if (chainId === this.osmosisChainId) {
+    if (chainHasOsmosisFeeModule || chainId === this.osmosisChainId) {
       try {
-        const result = await this.queryOsmosisGasPrice();
+        const result = await this.queryOsmosisGasPrice({ chainId });
 
         /**
          * The gas amount is multiplied by a specific factor to provide additional
@@ -1308,7 +1316,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    const feeCurrency = counterpartyChain.fees.fee_tokens[0];
+    const feeCurrency = chain.fees.fee_tokens[0];
     if (isNil(gasPrice) && feeCurrency && feeCurrency.average_gas_price) {
       gasPrice = feeCurrency.average_gas_price;
     }
@@ -1320,50 +1328,49 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return { gasPrice: new Dec(gasPrice), feeDenom: feeCurrency.denom };
   }
 
+  /**
+   * Calculates the gas price for a given fee denom by fetching the spot price of the fee token
+   * and dividing the base fee by the spot price. This method is particularly useful for chains that
+   * have the Osmosis fee module, allowing for dynamic fee token usage based on market prices.
+   *
+   * The formula to compute gas price for a given fee token is:
+   * gasPrice = baseFee / spotPrice * 1.01
+   *
+   * Note: we multiply by 1.01 to provide a buffer for the gas price.
+   *
+   *
+   */
   async getGasPriceByFeeDenom({
-    feeModuleChainId,
+    chainId,
     feeDenom,
+    baseFee,
   }: {
-    // Chain to fetch the fee token spot price from. This requires the chain to have the Osmosis fee module.
-    feeModuleChainId: string;
+    /**
+     * Chain to fetch the fee token spot price from.
+     * This requires the chain to have the Osmosis fee module.
+     */
+    chainId: string;
     feeDenom: string;
+    /**
+     * The osmosis fee module current base fee token to use for
+     * the gas price calculation. It can be fetched with this.queryOsmosisGasPrice
+     */
+    baseFee: string | undefined;
   }): Promise<{ gasPrice: Dec }> {
-    const asset = getAssetFromAssetList({
-      assetLists: this.assets,
-      coinMinimalDenom: feeDenom,
-    });
-
-    if (!asset) {
-      throw new Error(`Failed to find asset for fee token ${feeDenom}.`);
-    }
-
-    const chain = getChain({
-      chainList: this.chains,
-      chainName: asset.rawAsset.chainName,
-    });
-
-    if (!chain) {
-      throw new Error(
-        `Failed to find chain for asset ${asset.rawAsset.chainName}.`
-      );
-    }
-
-    const feeCurrency = chain.fees.fee_tokens.find(
-      ({ denom }) => denom === asset.sourceDenom
-    );
-
     const spotPriceDec = new Dec(
       (
         await this.queryFeeTokenSpotPrice({
-          chainId: feeModuleChainId,
+          chainId: chainId,
           denom: feeDenom,
         })
       ).spotPrice
     );
 
-    const gasPrice = new Dec(
-      feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average
-    )
+    if (spotPriceDec.lte(new Dec(0))) {
+      throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
+    }
+
+    const gasPrice = new Dec(baseFee ?? DefaultGasPriceStep.average)
       .quo(spotPriceDec)
       .mul(new Dec(1.01));
 
@@ -1485,16 +1492,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   // TODO: Get this query from the server package once it exists.
-  private async queryOsmosisGasPrice() {
+  private async queryOsmosisGasPrice({ chainId }: { chainId: string }) {
     return cachified({
       key: "osmosis-gas-price",
       cache: this._cache,
       // 15 minutes
       ttl: 15 * 60 * 1000,
       getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(
-          this.osmosisChainId
-        ).rest;
+        const restEndpoint = this.chainGetter.getChain(chainId).rest;
         const result = await apiClient<{
           base_fee: string;
         }>(`${restEndpoint}/osmosis/txfees/v1beta1/cur_eip_base_fee`);

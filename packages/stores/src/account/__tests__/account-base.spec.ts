@@ -271,29 +271,24 @@ describe("getFeeAmount — with address", () => {
       address,
     });
 
-    const expectedGasAmount = new Dec(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      MockChainList.find(
-        ({ chain_id }) => chain_id === "cosmoshub-4" // It should use ATOM as a fee token
-      )!.fees.fee_tokens[0].average_gas_price!
-    )
+    const expectedGasAmount = new Dec(baseFee * GasMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .roundUp()
+      .truncate()
       .toString();
 
-    expect(gasAmount.amount).toBe(expectedGasAmount);
     expect(gasAmount.denom).toBe(
       "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
     );
+    expect(gasAmount.amount).toBe(expectedGasAmount);
   });
 
   it("should return the available correct gas amount with an alternative fee token — uion", async () => {
     const gasLimit = 1000;
     const chainId = TestOsmosisChainId;
     const address = "osmo1...";
-    const baseFee = 0.055;
+    const baseFee = 0.04655;
     const spotPrice = 8;
 
     server.use(
@@ -392,17 +387,15 @@ describe("getFeeAmount — with address", () => {
       address,
     });
 
-    const expectedGasAmount = new Dec(
-      DefaultGasPriceStep.average // Use the default gas price step since uion is not included as a fee token
-    )
+    const expectedGasAmount = new Dec(baseFee * GasMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .roundUp()
+      .truncate()
       .toString();
 
-    expect(gasAmount.amount).toBe(expectedGasAmount);
     expect(gasAmount.denom).toBe("uion");
+    expect(gasAmount.amount).toBe(expectedGasAmount);
   });
 
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {
