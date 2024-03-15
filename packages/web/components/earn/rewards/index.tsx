@@ -65,6 +65,7 @@ export const EarnRewards = ({
               funds: [],
             })
           );
+          break;
         case "Levana":
           messages.push(
             account.cosmwasm.msgOpts.executeWasm.messageComposer({
@@ -78,6 +79,7 @@ export const EarnRewards = ({
               funds: [],
             })
           );
+          break;
       }
     });
 
