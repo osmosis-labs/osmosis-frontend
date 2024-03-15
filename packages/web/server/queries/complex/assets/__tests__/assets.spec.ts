@@ -19,8 +19,8 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("ACRE");
     });
 
-    it("should be possible to search IBC denoms", async () => {
-      const assets = await getAssets({
+    it("should be possible to search IBC denoms", () => {
+      const assets = getAssets({
         search: {
           query:
             "ibc/C491E7582E94AE921F6A029790083CDE1106C28F3F6C4AD7F1340544C13EC372",
@@ -34,7 +34,7 @@ describe("getAssets", () => {
     });
 
     it("should not return preview assets", async () => {
-      const assets = await getAssets({
+      const assets = getAssets({
         search: { query: "PURSE" },
         assetList: AssetLists,
       });
@@ -45,7 +45,7 @@ describe("getAssets", () => {
     });
 
     it("should filter unverified assets if specified", async () => {
-      const assets = await getAssets({
+      const assets = getAssets({
         assetList: AssetLists,
         onlyVerified: true,
       });
@@ -54,7 +54,7 @@ describe("getAssets", () => {
     });
 
     it("should include unverified assets by default", async () => {
-      const assets = await getAssets({
+      const assets = getAssets({
         assetList: AssetLists,
       });
 
@@ -65,7 +65,7 @@ describe("getAssets", () => {
 
 describe("getAsset", () => {
   it("should return the asset that matches the provided denom", async () => {
-    const asset = await getAsset({ anyDenom: "ACRE" });
+    const asset = getAsset({ anyDenom: "ACRE" });
 
     expect(asset).toBeTruthy();
     expect(asset.coinDenom).toEqual("ACRE");

@@ -19,6 +19,7 @@ import {
 } from "~/server/queries/numia/earn";
 import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureIfError } from "~/utils/error";
 
 const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -122,29 +123,29 @@ export async function getStrategies() {
           const { depositDenoms, positionDenoms, rewardDenoms, lockDuration } =
             rawStrategy;
 
-          const depositAssets = await Promise.all(
-            depositDenoms.map((token) =>
-              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const depositAssets = [];
+          for (const token of depositDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ anyDenom: token.coinMinimalDenom })
+            );
+            if (asset) depositAssets.push(asset);
+          }
 
-          const positionAssets = await Promise.all(
-            positionDenoms.map((token) =>
-              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const positionAssets = [];
+          for (const token of positionDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ anyDenom: token.coinMinimalDenom })
+            );
+            if (asset) positionAssets.push(asset);
+          }
 
-          const rewardAssets = await Promise.all(
-            rewardDenoms.map((reward) =>
-              getAsset({ anyDenom: reward.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const rewardAssets = [];
+          for (const reward of rewardDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ anyDenom: reward.coinMinimalDenom })
+            );
+            if (asset) rewardAssets.push(asset);
+          }
 
           aggregatedStrategies.push({
             ...rawStrategy,

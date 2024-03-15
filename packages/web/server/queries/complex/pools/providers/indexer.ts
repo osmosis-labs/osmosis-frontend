@@ -17,6 +17,7 @@ import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { captureIfError } from "~/utils/error";
 
 import {
   FilteredPoolsResponse,
@@ -399,8 +400,8 @@ export async function makePoolFromIndexerPool(
     const token0 = filteredPool.pool_tokens.asset0.denom;
     const token1 = filteredPool.pool_tokens.asset1.denom;
 
-    const token0Asset = await getAsset({ anyDenom: token0 }).catch(() => null);
-    const token1Asset = await getAsset({ anyDenom: token1 }).catch(() => null);
+    const token0Asset = captureIfError(() => getAsset({ anyDenom: token0 }));
+    const token1Asset = captureIfError(() => getAsset({ anyDenom: token1 }));
 
     if (!token0Asset || !token1Asset) return;
 
@@ -533,13 +534,12 @@ export async function makePoolFromIndexerPool(
 
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
 async function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
-  const coins = await Promise.all(
-    poolTokens.map(makeCoinFromToken).map(async (coin) => {
-      const asset = await getAsset({ anyDenom: coin.denom }).catch(() => null);
-      if (!asset) return;
-      return new CoinPretty(asset, coin.amount);
-    })
-  );
+  const coins = poolTokens.map(makeCoinFromToken).map((coin) => {
+    const asset = captureIfError(() => getAsset({ anyDenom: coin.denom }));
+    if (!asset) return;
+    return new CoinPretty(asset, coin.amount);
+  });
+
   if (coins.some((asset) => !asset)) return;
   else return coins as CoinPretty[];
 }

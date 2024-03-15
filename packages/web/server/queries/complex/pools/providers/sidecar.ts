@@ -137,21 +137,16 @@ export async function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
   const poolDenoms = getPoolDenomsFromSidecarPool(sidecarPool);
-  const listedBalances = await Promise.all(
-    poolDenoms.map(async (denom) => {
-      const asset = await getAsset({ anyDenom: denom }).catch(() => null);
-      // not listed
-      if (!asset) throw new Error("Asset not listed: " + denom);
+  const listedBalances = poolDenoms.map((denom) => {
+    const asset = getAsset({ anyDenom: denom });
+    const amount = sidecarPool.balances.find(
+      (balance) => balance.denom === denom
+    )?.amount;
+    // no balance
+    if (!amount) throw new Error("No balance for asset: " + denom);
 
-      const amount = sidecarPool.balances.find(
-        (balance) => balance.denom === denom
-      )?.amount;
-      // no balance
-      if (!amount) throw new Error("No balance for asset: " + denom);
-
-      return new CoinPretty(asset, amount);
-    })
-  );
+    return new CoinPretty(asset, amount);
+  });
 
   return listedBalances as CoinPretty[];
 }

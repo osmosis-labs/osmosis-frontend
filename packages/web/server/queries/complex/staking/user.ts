@@ -24,7 +24,7 @@ export async function getUserTotalDelegatedCoin({
     chainList: ChainList,
   });
   if (!stakeDenom) throw new Error("No stake denom in chain list");
-  const stakeAsset = await getAsset({ anyDenom: stakeDenom });
+  const stakeAsset = getAsset({ anyDenom: stakeDenom });
 
   return delegations
     .map(({ balance: { denom, amount } }) => {

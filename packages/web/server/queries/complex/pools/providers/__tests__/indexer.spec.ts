@@ -23,7 +23,7 @@ describe("makePoolFromIndexerPool", () => {
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
-      return Promise.resolve(mockAsset);
+      return mockAsset;
     });
   });
 

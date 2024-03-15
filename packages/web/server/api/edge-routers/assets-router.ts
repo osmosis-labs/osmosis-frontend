@@ -43,7 +43,7 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+      const asset = getAsset({ anyDenom: findMinDenomOrSymbol });
 
       return await getUserAssetCoin({
         asset,
@@ -104,7 +104,7 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+      const asset = getAsset({ anyDenom: findMinDenomOrSymbol });
 
       const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
       const userMarketAsset = await getMarketAsset({

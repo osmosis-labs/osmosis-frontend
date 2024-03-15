@@ -31,7 +31,7 @@ describe("getPoolsFromSidecar", () => {
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
-      return Promise.resolve(mockAsset);
+      return mockAsset;
     });
     // Mock the getAsset function before calling getPoolsFromSidecar
     (calcAssetValue as jest.Mock).mockImplementation(() => {
