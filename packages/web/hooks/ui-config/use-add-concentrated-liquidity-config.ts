@@ -61,7 +61,12 @@ export function useAddConcentratedLiquidityConfig(
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
-  const { data: pool } = api.edge.pools.getPool.useQuery({ poolId });
+  const { data: pool } = api.edge.pools.getPool.useQuery(
+    { poolId },
+    {
+      refetchInterval: 5_000, // 5 seconds
+    }
+  );
 
   const [config] = useState(
     () =>
