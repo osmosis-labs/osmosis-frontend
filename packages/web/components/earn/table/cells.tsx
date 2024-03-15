@@ -125,7 +125,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
                 }}
               />
             </div>
-            <p className="text-caption text-osmoverse-200">
+            <p className="w-8 text-caption text-osmoverse-200">
               {depositCapOccupied}%
             </p>
           </span>
