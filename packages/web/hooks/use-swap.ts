@@ -286,8 +286,6 @@ export function useSwap({
       enabled: featureFlags.swapToolSimulateFee,
     });
 
-  console.log(networkFee);
-
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     (maxSlippage: Dec) =>
