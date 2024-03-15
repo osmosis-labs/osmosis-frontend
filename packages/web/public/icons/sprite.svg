@@ -845,6 +845,16 @@
       </g>
     </symbol>
 
+    <symbol id="earn" viewBox="0 0 24 24" fill="none">
+      <rect x="10" y="17.5" width="3" height="4" rx="1" fill="white"/>
+      <rect x="6" y="18.5" width="3" height="3" rx="1" fill="white"/>
+      <rect x="2" y="19.5" width="3" height="2" rx="1" fill="white"/>
+      <rect x="14" y="14.5" width="3" height="7" rx="1" fill="white"/>
+      <rect x="18" y="9.5" width="3" height="12" rx="1" fill="white"/>
+      <path d="M2.8356 16.0136C2.29083 16.1044 1.92281 16.6196 2.01361 17.1644C2.1044 17.7092 2.61963 18.0772 3.1644 17.9864L2.8356 16.0136ZM3.1644 17.9864C7.77754 17.2175 11.2354 15.7875 13.8025 13.423C16.3711 11.0572 17.9426 7.8528 18.9701 3.74254L17.0299 3.25746C16.0574 7.1472 14.6289 9.94284 12.4475 11.952C10.2646 13.9625 7.22246 15.2825 2.8356 16.0136L3.1644 17.9864Z" fill="white"/>
+      <path d="M14.5 4.5L18.5 3L19.5 7" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+
     <symbol id="external-link" viewBox="0 0 12 12" fill="none">
       <path
         d="M1.33333 0C0.604625 0 0 0.604625 0 1.33333V10.6667C0 11.3954 0.604625 12 1.33333 12H10.6667C11.3954 12 12 11.3954 12 10.6667V6H10.6667V10.6667H1.33333V1.33333H6V0H1.33333ZM7.33333 0V1.33333H9.72396L3.52865 7.52865L4.47135 8.47135L10.6667 2.27604V4.66667H12V0H7.33333Z"
@@ -993,14 +1003,14 @@
     <symbol id="arrow-up-right" viewBox="0 0 18 18" fill="none">
       <path
         d="M5.25 12.75L12.75 5.25"
-        stroke="#B0A9DC"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M5.25 5.25H12.75V12.75"
-        stroke="#B0A9DC"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -1095,6 +1105,19 @@
         d="M0 7C0 6.64855 0.285734 6.36698 0.635473 6.3323C3.64264 6.03416 6.03416 3.64264 6.3323 0.635473C6.36698 0.285734 6.64855 0 7 0C7.35145 0 7.63302 0.285734 7.6677 0.635473C7.96584 3.64263 10.3574 6.03416 13.3645 6.3323C13.7143 6.36698 14 6.64855 14 7C14 7.35145 13.7143 7.63302 13.3645 7.6677C10.3574 7.96585 7.96585 10.3574 7.6677 13.3645C7.63302 13.7143 7.35145 14 7 14C6.64855 14 6.36698 13.7143 6.3323 13.3645C6.03416 10.3574 3.64263 7.96584 0.635473 7.6677C0.285734 7.63302 0 7.35145 0 7Z"
         fill="currentColor"
       />
+    </symbol>
+    <symbol id="geoblock" viewBox="0 0 18 18" fill="none">
+      <g clip-path="url(#clip0_2110_33846)">
+        <path d="M6.5 9C6.55794 11.781 7.62404 14.4462 9.5 16.5C10.6261 15.2671 11.4604 13.8139 11.96 12.2476M8 3.56229C8.41893 2.82631 8.92088 2.13401 9.5 1.5C11.1213 3.27494 12.1377 5.50662 12.4212 7.875L12.5 9H13.25" stroke="#736CA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6.5 2.12407C7.41869 1.72267 8.43334 1.5 9.5 1.5C13.6421 1.5 17 4.85786 17 9C17 10.0667 16.7773 11.0813 16.3759 12M3.80031 4.125C2.67792 5.43602 2 7.13884 2 9C2 13.1421 5.35786 16.5 9.5 16.5C11.3612 16.5 13.064 15.8221 14.375 14.6997" stroke="#736CA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 9H8.75M17 9H13.25" stroke="#736CA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M1.25 1.5L16.25 16.5" stroke="#736CA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <defs>
+        <clipPath id="clip0_2110_33846">
+          <rect width="18" height="18" fill="white" transform="translate(0.5)"/>
+        </clipPath>
+      </defs>
     </symbol>
   </defs>
 </svg>
