@@ -176,6 +176,7 @@
       "titleWithdraw": "Retirer à"
     },
     "stakedAssets": "OSMO cautionné",
+    "pooledAssets": "Regroupé",
     "table": {
       "columns": {
         "assetChain": "Actif / Chaine",
@@ -203,6 +204,7 @@
       "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
+    "totalBalance": "Solde total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
@@ -272,6 +274,11 @@
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
+    },
+    "getStarted": {
+      "title": "Commencez avec {osmosis}",
+      "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
+      "addFunds": "Ajoutez des fonds pour commencer"
     }
   },
   "buyTokens": "Acheter jetons",

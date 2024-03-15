@@ -176,6 +176,7 @@
       "titleWithdraw": "Retrage catre"
     },
     "stakedAssets": "Staked OSMO",
+    "pooledAssets": "Adunate",
     "table": {
       "columns": {
         "assetChain": "Active / Retea",
@@ -203,6 +204,7 @@
       "activate": "Activati"
     },
     "totalAssets": "Total",
+    "totalBalance": "Sold total",
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
@@ -272,6 +274,11 @@
       "activate": "Activați activele neverificate",
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
+    },
+    "getStarted": {
+      "title": "Începeți cu {osmosis}",
+      "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
+      "addFunds": "Adăugați fonduri pentru a începe"
     }
   },
   "buyTokens": "Cumpărați jetoane",

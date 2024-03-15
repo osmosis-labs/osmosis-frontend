@@ -176,6 +176,7 @@
       "titleWithdraw": "Adrese çek"
     },
     "stakedAssets": "Stake Edilmiş OSMO",
+    "pooledAssets": "havuzlanmış",
     "table": {
       "columns": {
         "assetChain": "Varlık / Ağ",
@@ -203,6 +204,7 @@
       "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
+    "totalBalance": "Toplam bakiye",
     "transfer": {
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
@@ -272,6 +274,11 @@
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
+    },
+    "getStarted": {
+      "title": "{osmosis} ile başlayın",
+      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
+      "addFunds": "Başlamak için para ekleyin"
     }
   },
   "buyTokens": "jeton satın al",

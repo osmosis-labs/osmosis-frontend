@@ -176,6 +176,7 @@
       "titleWithdraw": "Sacar para"
     },
     "stakedAssets": "OSMO em stake",
+    "pooledAssets": "Agrupados",
     "table": {
       "columns": {
         "assetChain": "Ativo / Rede",
@@ -203,6 +204,7 @@
       "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
+    "totalBalance": "Balanço total",
     "transfer": {
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",
@@ -272,6 +274,11 @@
       "activate": "Ativar ativos não verificados",
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
+    },
+    "getStarted": {
+      "title": "Comece com {osmosis}",
+      "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
+      "addFunds": "Adicione fundos para começar"
     }
   },
   "buyTokens": "Comprar tokens",

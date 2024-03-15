@@ -176,6 +176,7 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
+    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -203,6 +204,7 @@
       "activate": "启用"
     },
     "totalAssets": "总资产",
+    "totalBalance": "总余额",
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",
@@ -272,6 +274,11 @@
       "activate": "激活未验证资产",
       "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
       "reminder": "您始终可以在设置模式中停用此设置。"
+    },
+    "getStarted": {
+      "title": "开始使用{osmosis}",
+      "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
+      "addFunds": "添加资金即可开始"
     }
   },
   "buyTokens": "购买代币",

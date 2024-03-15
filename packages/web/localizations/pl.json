@@ -176,6 +176,7 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
+    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -203,6 +204,7 @@
       "activate": "Aktywuj"
     },
     "totalAssets": "Aktywa ogółem",
+    "totalBalance": "Całkowita równowaga",
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
@@ -272,6 +274,11 @@
       "activate": "Aktywuj niezweryfikowane zasoby",
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
+    },
+    "getStarted": {
+      "title": "Zacznij od {osmosis}",
+      "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
+      "addFunds": "Dodaj środki, aby rozpocząć"
     }
   },
   "buyTokens": "Kup tokeny",
