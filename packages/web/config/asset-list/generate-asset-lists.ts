@@ -270,6 +270,7 @@ async function generateAssetListFile({
     `;
   }
 
+  // create available symbols type
   content += `    
     export type ${
       environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
@@ -282,6 +283,18 @@ async function generateAssetListFile({
     )
     .join(" | ")};
   `;
+
+  // create available asset categories array
+  if (!onlyTypes) {
+    content += `    
+      export const AssetCategories = [${Array.from(
+        new Set(assetList.assets.flatMap((asset) => asset.categories))
+      )
+        .map((category) => `"${category}"`)
+        .join(", ")}
+    ]
+    `;
+  }
 
   const prettierConfig = await prettier.resolveConfig("./");
   const formatted = prettier.format(content, {
