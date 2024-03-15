@@ -39,8 +39,8 @@ async function estimateTxFeesQueryFn({
 
   const coin = amount[0];
 
-  const asset = await apiUtils.edge.assets.getMarketAsset.fetch({
-    findMinDenomOrSymbol: coin.denom,
+  const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
+    coinMinimalDenom: coin.denom,
   });
 
   if (!coin || !asset?.currentPrice) {
