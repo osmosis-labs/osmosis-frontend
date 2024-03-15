@@ -108,8 +108,6 @@ export function useSwap({
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
 
-  console.log("useSwap", quote?.inOutSpotPrice?.toString());
-
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,

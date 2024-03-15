@@ -130,8 +130,6 @@ export const swapRouter = createTRPCRouter({
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
 
-        console.log("router", quote.inOutSpotPrice?.toString());
-
         return {
           ...quote,
           split: await makeDisplayableSplit(quote.split),

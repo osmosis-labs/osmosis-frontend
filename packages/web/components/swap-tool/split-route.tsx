@@ -170,8 +170,6 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           ) => {
             if (!inCurrency || !outCurrency) return null;
 
-            console.log(dynamicSpreadFactor);
-
             return (
               <Tooltip
                 key={`${id}${index}`}

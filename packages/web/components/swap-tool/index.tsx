@@ -217,8 +217,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       ? t("swap.buttonError")
       : t("swap.button");
 
-    console.log(swapState.quote?.inOutSpotPrice?.toString());
-
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
