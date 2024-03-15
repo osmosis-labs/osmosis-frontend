@@ -24,3 +24,10 @@ export type SidecarQuoteResponse = {
     }[];
   }[];
 };
+
+export const enum SidecarPoolType {
+  Weighted = 0,
+  Stable = 1,
+  Concentrated = 2,
+  CosmWasm = 3,
+}

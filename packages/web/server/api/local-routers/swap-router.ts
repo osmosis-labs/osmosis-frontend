@@ -15,7 +15,7 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getPool } from "~/server/queries/complex/pools";
+import { getPool, Pool } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 import { captureErrorAndReturn } from "~/utils/error";
 
@@ -158,7 +158,12 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
       const poolsWithInfos = await Promise.all(
         pools.map(async (pool_, index) => {
-          const pool = await getPool({ poolId: pool_.id });
+          let type: Pool["type"] = pool_.type as Pool["type"];
+
+          if (type === "cosmwasm") {
+            const pool = await getPool({ poolId: pool_.id });
+            type = pool.type;
+          }
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
@@ -167,12 +172,10 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
           });
 
           return {
-            id: pool.id,
-            spreadFactor: new RatePretty(
-              pool_.swapFee ? pool_.swapFee : pool.spreadFactor
-            ),
-            dynamicSpreadFactor: pool.type === "cosmwasm-astroport-pcl",
-            type: pool.type,
+            id: pool_.id,
+            type,
+            spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
+            dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
             inCurrency: inAsset,
             outCurrency: outAsset,
           };
