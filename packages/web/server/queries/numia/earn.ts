@@ -68,18 +68,20 @@ export interface RawStrategyTVL {
 }
 
 export interface StrategyAnnualPercentages {
-  apr: RatePretty;
-  apy: RatePretty;
+  apr?: RatePretty;
+  apy?: RatePretty;
+  strategyId?: string;
 }
 
 export interface StrategyTVL {
-  tvlUsd: PricePretty;
+  tvlUsd?: PricePretty;
   maxTvlUsd?: PricePretty;
   assets: {
     coinMinimalDenom: string;
     tvl: PricePretty;
     maxTvl?: PricePretty;
   }[];
+  strategyId?: string;
 }
 
 /**

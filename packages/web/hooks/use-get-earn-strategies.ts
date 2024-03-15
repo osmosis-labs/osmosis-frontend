@@ -83,8 +83,10 @@ const useGetEarnStrategies = (
         {
           staleTime: 1000 * 60 * 15,
           cacheTime: 1000 * 60 * 30,
+          placeholderData: { strategyId: strat.id },
           select: (data) => ({ ...data, strategyId: strat.id }),
           trpc: { context: { skipBatch: true } },
+          retry: false,
         }
       )
     )
@@ -99,8 +101,10 @@ const useGetEarnStrategies = (
         {
           staleTime: 1000 * 60 * 15,
           cacheTime: 1000 * 60 * 30,
-          select: (data) => ({ ...data, strategyId: strat.id }),
+          placeholderData: { strategyId: strat.id, assets: [] },
           trpc: { context: { skipBatch: true } },
+          select: (data) => ({ ...data, strategyId: strat.id }),
+          retry: false,
         }
       )
     )
@@ -140,10 +144,8 @@ const useGetEarnStrategies = (
           annualPercentages: annualPercentagesQuery?.data,
           daily: getDailyApr(annualPercentagesQuery?.data?.apr),
           geoblocked: geoblockQuery?.data?.response?.allowed === false,
-          isLoadingTVL: tvlQuery?.isLoading,
-          isLoadingAPR: annualPercentagesQuery?.isLoading,
-          isErrorTVL: tvlQuery?.isError,
-          isErrorAPR: annualPercentagesQuery?.isError,
+          isLoadingTVL: tvlQuery?.isFetching,
+          isLoadingAPR: annualPercentagesQuery?.isFetching,
           isLoadingGeoblock: geoblockQuery?.isLoading,
           isErrorGeoblock: geoblockQuery?.isError,
         };
