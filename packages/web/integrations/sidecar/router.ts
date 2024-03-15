@@ -41,7 +41,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         route: routes,
         effective_fee,
         price_impact,
-        in_out_spot_price,
+        // in_out_spot_price,
       } = await apiClient<SidecarQuoteResponse>(queryUrl.toString());
 
       const swapFee = new Dec(effective_fee);
@@ -53,7 +53,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         swapFee,
         priceImpactTokenOut: priceImpact,
         tokenInFeeAmount: tokenIn.amount.toDec().mul(swapFee).truncate(),
-        inOutSpotPrice: new Dec(in_out_spot_price),
+        // inOutSpotPrice: new Dec(in_out_spot_price),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
           pools: pools.map(({ id, spread_factor, type }) => ({
