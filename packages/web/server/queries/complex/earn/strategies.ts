@@ -75,17 +75,11 @@ export async function getStrategyAnnualPercentages(aprUrl: string) {
     ttl: 1000 * 20,
     key: `earn-strategy-annualPercentages-${aprUrl}`,
     getFreshValue: async (): Promise<StrategyAnnualPercentages> => {
-      try {
-        const { apr } = await queryStrategyAPR(aprUrl);
-        return {
-          apr: new RatePretty(apr),
-          apy: new RatePretty(calculateAPY(apr)),
-        };
-      } catch (error) {
-        throw new Error("Error while fetching strategy APR", {
-          cause: error as Error,
-        });
-      }
+      const { apr } = await queryStrategyAPR(aprUrl);
+      return {
+        apr: new RatePretty(apr),
+        apy: new RatePretty(calculateAPY(apr)),
+      };
     },
   });
 }
@@ -96,14 +90,8 @@ export async function getStrategyTVL(tvlUrl: string) {
     ttl: 1000 * 20,
     key: `earn-strategy-tvl-${tvlUrl}`,
     getFreshValue: async (): Promise<StrategyTVL> => {
-      try {
-        const rawTvl = await queryStrategyTVL(tvlUrl);
-        return processTVL(rawTvl);
-      } catch (error) {
-        throw new Error("Error while fetching strategy TVL", {
-          cause: error as Error,
-        });
-      }
+      const rawTvl = await queryStrategyTVL(tvlUrl);
+      return processTVL(rawTvl);
     },
   });
 }
