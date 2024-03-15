@@ -17,7 +17,6 @@ import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
 import { Button } from "~/components/ui/button";
-import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";

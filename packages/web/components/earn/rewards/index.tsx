@@ -3,15 +3,13 @@ import type { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
 import { useCallback } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
-import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
 
 export const EarnRewards = ({
   totalUnclaimedRewards,
@@ -149,7 +147,6 @@ export const EarnRewards = ({
             account?.txTypeInProgress !== "" ||
             filteredUnclaimedRewards.length === 0
           }
-          mode={"primary"}
           className="max-h-11"
           onClick={claimAllRewards}
         >
