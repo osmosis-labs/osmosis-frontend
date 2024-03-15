@@ -98,5 +98,7 @@ function translatePoolTypeFromSidecar(
       return "concentrated";
     case SidecarPoolType.CosmWasm:
       return "cosmwasm";
+    default:
+      throw new Error(`Unknown SidecarPoolType: ${sidecarPoolType}`);
   }
 }
