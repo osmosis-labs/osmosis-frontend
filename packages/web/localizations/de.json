@@ -284,7 +284,8 @@
       "newest": "Neueste",
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
-      "meme": "Meme"
+      "meme": "Meme",
+      "liquid_staking": "Flüssiges Abstecken"
     }
   },
   "buyTokens": "Kaufen Sie Token",

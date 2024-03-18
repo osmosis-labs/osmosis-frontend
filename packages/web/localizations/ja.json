@@ -284,7 +284,8 @@
       "newest": "最新",
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
-      "meme": "ミーム"
+      "meme": "ミーム",
+      "liquid_staking": "リキッドステーキング"
     }
   },
   "buyTokens": "トークンを購入する",

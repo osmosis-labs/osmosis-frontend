@@ -284,7 +284,8 @@
       "newest": "नवीनतम",
       "defi": "डेफी",
       "stablecoin": "स्थिर सिक्के",
-      "meme": "MEME"
+      "meme": "MEME",
+      "liquid_staking": "तरल दाँव"
     }
   },
   "buyTokens": "टोकन खरीदें",

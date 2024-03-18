@@ -8,8 +8,8 @@ import { getAsset, getAssets } from "../index";
 
 describe("getAssets", () => {
   describe("search", () => {
-    it("should return assets that match search", async () => {
-      const assets = await getAssets({
+    it("should return assets that match search", () => {
+      const assets = getAssets({
         search: { query: "acre" },
         assetList: AssetLists,
       });
@@ -33,7 +33,7 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("stLUNA");
     });
 
-    it("should not return preview assets", async () => {
+    it("should not return preview assets", () => {
       const assets = getAssets({
         search: { query: "PURSE" },
         assetList: AssetLists,
@@ -44,7 +44,7 @@ describe("getAssets", () => {
       ).toBeUndefined();
     });
 
-    it("should filter unverified assets if specified", async () => {
+    it("should filter unverified assets if specified", () => {
       const assets = getAssets({
         assetList: AssetLists,
         onlyVerified: true,
@@ -53,7 +53,7 @@ describe("getAssets", () => {
       expect(assets.some((asset) => !asset.isVerified)).toBeFalsy();
     });
 
-    it("should include unverified assets by default", async () => {
+    it("should include unverified assets by default", () => {
       const assets = getAssets({
         assetList: AssetLists,
       });
@@ -64,7 +64,7 @@ describe("getAssets", () => {
 });
 
 describe("getAsset", () => {
-  it("should return the asset that matches the provided denom", async () => {
+  it("should return the asset that matches the provided denom", () => {
     const asset = getAsset({ anyDenom: "ACRE" });
 
     expect(asset).toBeTruthy();
@@ -72,6 +72,6 @@ describe("getAsset", () => {
   });
 
   it("should throw if no asset matches the provided denom", () => {
-    expect(getAsset({ anyDenom: "NON_EXISTING_DENOM" })).rejects.toBeDefined();
+    expect(() => getAsset({ anyDenom: "NON_EXISTING_DENOM" })).toThrow();
   });
 });

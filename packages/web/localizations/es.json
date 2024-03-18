@@ -284,7 +284,8 @@
       "newest": "El más nuevo",
       "defi": "DeFi",
       "stablecoin": "Monedas estables",
-      "meme": "meme"
+      "meme": "meme",
+      "liquid_staking": "Estaca liquida"
     }
   },
   "buyTokens": "Comprar fichas",

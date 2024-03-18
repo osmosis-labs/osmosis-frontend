@@ -284,7 +284,8 @@
       "newest": "Новейший",
       "defi": "DeFi",
       "stablecoin": "Стейблкоины",
-      "meme": "Мем"
+      "meme": "Мем",
+      "liquid_staking": "Ликвидный стейкинг"
     }
   },
   "buyTokens": "Купить токены",

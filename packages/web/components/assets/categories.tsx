@@ -59,7 +59,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               }
             }}
           >
-            <span>{t("assets.categories." + category)}</span>
+            <span>{t(`assets.categories.${category}`)}</span>
             <div
               style={{
                 width: `${sampleAssets.slice(undefined, 4).length * 28}px`,

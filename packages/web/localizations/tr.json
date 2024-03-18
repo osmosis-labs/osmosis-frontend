@@ -284,7 +284,8 @@
       "newest": "En yeni",
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
-      "meme": "meme"
+      "meme": "meme",
+      "liquid_staking": "Sıvı esnetme"
     }
   },
   "buyTokens": "jeton satın al",

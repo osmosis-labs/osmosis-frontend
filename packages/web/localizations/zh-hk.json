@@ -284,7 +284,8 @@
       "newest": "最新",
       "defi": "去中心化金融",
       "stablecoin": "穩定幣",
-      "meme": "迷因"
+      "meme": "迷因",
+      "liquid_staking": "流動質押"
     }
   },
   "buyTokens": "購買代幣",

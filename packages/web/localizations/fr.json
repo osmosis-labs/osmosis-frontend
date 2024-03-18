@@ -284,7 +284,8 @@
       "newest": "Le plus récent",
       "defi": "DéFi",
       "stablecoin": "Pièces stables",
-      "meme": "Mème"
+      "meme": "Mème",
+      "liquid_staking": "Jalonnement liquide"
     }
   },
   "buyTokens": "Acheter jetons",

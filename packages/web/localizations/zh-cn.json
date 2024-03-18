@@ -284,7 +284,8 @@
       "newest": "最新",
       "defi": "去中心化金融",
       "stablecoin": "稳定币",
-      "meme": "模因"
+      "meme": "模因",
+      "liquid_staking": "流动质押"
     }
   },
   "buyTokens": "购买代币",

@@ -284,7 +284,8 @@
       "newest": "최신",
       "defi": "디파이",
       "stablecoin": "스테이블코인",
-      "meme": "나 나"
+      "meme": "나 나",
+      "liquid_staking": "리퀴드 스테이킹"
     }
   },
   "buyTokens": "토큰 구매",
