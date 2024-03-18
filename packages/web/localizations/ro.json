@@ -364,7 +364,8 @@
     "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
     "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
     "invalidAmounts": "Sume nevalide",
-    "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați."
+    "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
+    "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -707,7 +708,8 @@
     "promo": {
       "newOpportunity": "O nouă oportunitate de a câștiga cu",
       "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
-    }
+    },
+    "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
     "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",

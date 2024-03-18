@@ -364,7 +364,8 @@
     "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
     "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
     "invalidAmounts": "잘못된 금액",
-    "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요."
+    "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
+    "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -707,7 +708,8 @@
     "promo": {
       "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
       "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
-    }
+    },
+    "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
     "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",

@@ -364,7 +364,8 @@
     "sequenceNumber": "同時トランザクションが多すぎます。前の tx がチェーンに到達した後に再送信してみてください。 (シーケンス: {sequence}",
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です",
-    "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。"
+    "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
+    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -707,7 +708,8 @@
     "promo": {
       "newOpportunity": "{denom}で獲得する新たな機会",
       "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    }
+    },
+    "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",

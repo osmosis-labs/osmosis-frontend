@@ -31,7 +31,7 @@ import {
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { Pool } from "..";
-import { AstroportPclPoolCodeIds, TransmuterPoolCodeIds } from "../env";
+import { getCosmwasmPoolTypeFromCodeId } from "../env";
 
 const poolsCache = new Map();
 const smallQueriesPoolCache = new LRUCache<string, CacheEntry>(
@@ -442,11 +442,7 @@ export function makePoolFromIndexerPool(
 
     return {
       id: filteredPool.pool_id.toString(),
-      type: TransmuterPoolCodeIds.includes(filteredPool.code_id)
-        ? "cosmwasm-transmuter"
-        : AstroportPclPoolCodeIds.includes(filteredPool.code_id)
-        ? "cosmwasm-astroport-pcl"
-        : "cosmwasm",
+      type: getCosmwasmPoolTypeFromCodeId(filteredPool.code_id),
       raw: {
         contract_address: filteredPool.contract_address,
         pool_id: filteredPool.pool_id.toString(),

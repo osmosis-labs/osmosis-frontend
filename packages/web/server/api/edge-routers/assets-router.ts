@@ -98,6 +98,25 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
+  getAssetWithPrice: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenom: z.string(),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenom } }) => {
+      const [asset, price] = await Promise.all([
+        getAsset({ anyDenom: coinMinimalDenom }),
+        getAssetPrice({
+          asset: { coinMinimalDenom },
+        }),
+      ]);
+
+      return {
+        ...asset,
+        currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
+      };
+    }),
   getMarketAsset: publicProcedure
     .input(
       z

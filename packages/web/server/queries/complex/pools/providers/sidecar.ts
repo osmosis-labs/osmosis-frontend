@@ -10,7 +10,7 @@ import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
 import { calcSumCoinsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
-import { AstroportPclPoolCodeIds, TransmuterPoolCodeIds } from "../env";
+import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
@@ -118,11 +118,7 @@ export function getPoolTypeFromChainPool(
   if ("scaling_factors" in chain_model) return "stable";
   if ("current_sqrt_price" in chain_model) return "concentrated";
   if ("code_id" in chain_model) {
-    if (TransmuterPoolCodeIds.includes(chain_model.code_id.toString()))
-      return "cosmwasm-transmuter";
-    if (AstroportPclPoolCodeIds.includes(chain_model.code_id.toString()))
-      return "cosmwasm-astroport-pcl";
-    else return "cosmwasm";
+    return getCosmwasmPoolTypeFromCodeId(chain_model.code_id.toString());
   }
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
