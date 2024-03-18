@@ -183,8 +183,10 @@ export async function getAuthenticatorIdFromTx({
 }
 
 export const useCreateOneClickTradingSession = ({
+  onBroadcasted,
   queryOptions,
 }: {
+  onBroadcasted?: () => void;
   queryOptions?: UseMutationOptions<
     unknown,
     unknown,
@@ -215,7 +217,7 @@ export const useCreateOneClickTradingSession = ({
       additionalAuthenticatorsToRemove,
     }) => {
       if (!account?.osmosis) {
-        throw new Error("Osmosis account not found");
+        throw new CreateOneClickSessionError("Osmosis account not found");
       }
 
       if (!transaction1CTParams) {
@@ -378,6 +380,8 @@ export const useCreateOneClickTradingSession = ({
             addAuthenticators: authenticatorsToAdd,
             removeAuthenticators: authenticatorsToRemove,
             memo: "",
+
+            onBroadcasted,
             onFulfill: (tx) => {
               if (tx.code === 0) {
                 resolve(tx);

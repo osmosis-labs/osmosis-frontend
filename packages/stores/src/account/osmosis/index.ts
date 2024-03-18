@@ -2093,11 +2093,13 @@ export class OsmosisAccountImpl {
     removeAuthenticators,
     memo = "",
     onFulfill,
+    onBroadcasted,
   }: {
     addAuthenticators: { type: string; data: Uint8Array }[];
     removeAuthenticators: bigint[];
     memo?: string;
     onFulfill?: (tx: DeliverTxResponse) => void;
+    onBroadcasted?: () => void;
   }) {
     const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
       this.msgOpts.addAuthenticator.messageComposer({
@@ -2121,24 +2123,27 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
+      {
+        onBroadcasted,
+        onFulfill: (tx) => {
+          if (!tx.code) {
+            // Refresh the balances
+            const queries = this.queriesStore.get(this.chainId);
 
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
+            queries.queryBalances
+              .getQueryBech32Address(this.address)
+              .balances.forEach((balance) => balance.waitFreshResponse());
 
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
+            queries.cosmos.queryDelegations
+              .getQueryBech32Address(this.address)
+              .waitFreshResponse();
 
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
+            queries.cosmos.queryRewards
+              .getQueryBech32Address(this.address)
+              .waitFreshResponse();
+          }
+          onFulfill?.(tx);
+        },
       }
     );
   }
