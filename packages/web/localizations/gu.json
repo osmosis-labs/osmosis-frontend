@@ -700,7 +700,8 @@
     "promo": {
       "newOpportunity": "{denom} વડે કમાવાની નવી તક",
       "discoverSuperchargedPools": "સુપરચાર્જ્ડ પૂલ શોધો"
-    }
+    },
+    "dynamicSpreadFactor": "ગતિશીલ"
   },
   "walletSelect": {
     "connectionInProgress": "વૉલેટ કનેક્શન પહેલેથી જ ચાલુ છે. સ્થિતિ તપાસવા માટે કૃપા કરીને તમારું એક્સ્ટેંશન ખોલો.",

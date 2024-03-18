@@ -700,7 +700,8 @@
     "promo": {
       "newOpportunity": "{denom} से कमाई का नया अवसर",
       "discoverSuperchargedPools": "सुपरचार्ज्ड पूल खोजें"
-    }
+    },
+    "dynamicSpreadFactor": "गतिशील"
   },
   "walletSelect": {
     "connectionInProgress": "वॉलेट कनेक्शन पहले से ही प्रगति पर है. स्थिति जांचने के लिए कृपया अपना एक्सटेंशन खोलें।",

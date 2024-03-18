@@ -700,7 +700,8 @@
     "promo": {
       "newOpportunity": "New opportunity to earn with {denom}",
       "discoverSuperchargedPools": "Discover Supercharged Pools"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",

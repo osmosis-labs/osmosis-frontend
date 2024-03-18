@@ -700,7 +700,8 @@
     "promo": {
       "newOpportunity": "O nouă oportunitate de a câștiga cu",
       "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
-    }
+    },
+    "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
     "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",

@@ -6,9 +6,11 @@ export type SidecarQuoteResponse = {
   amount_out: string;
   effective_fee: string;
   price_impact: string;
+  in_out_spot_price: string;
   route: {
     in_amount: string;
     out_amount: string;
+    "has-cw-pool": boolean;
     pools: {
       id: number;
       type: number;
@@ -22,3 +24,10 @@ export type SidecarQuoteResponse = {
     }[];
   }[];
 };
+
+export const enum SidecarPoolType {
+  Weighted = 0,
+  Stable = 1,
+  Concentrated = 2,
+  CosmWasm = 3,
+}

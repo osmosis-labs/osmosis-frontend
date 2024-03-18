@@ -123,7 +123,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
     },
-    isToFromAssets
+    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -379,11 +379,12 @@ export function useSwap({
       }),
     [
       account,
-      getSwapTxParameters,
       inAmountInput,
       networkFee,
       queryClient,
       userOsmoCoin?.amount,
+      featureFlags.swapToolSimulateFee,
+      getSwapTxParameters,
     ]
   );
 

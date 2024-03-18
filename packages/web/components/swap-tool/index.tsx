@@ -1,5 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -640,7 +646,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                Boolean(swapState.spotPriceQuote)
+                !swapState.isSpotPriceQuoteLoading
               }
             >
               {/* TODO - move this custom button to our own button component */}
@@ -672,13 +678,27 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   </span>{" "}
                   {`≈ ${
-                    swapState.spotPriceQuote?.amount && swapState.toAsset
-                      ? formatPretty(swapState.spotPriceQuote.amount, {
-                          maxDecimals: Math.min(
-                            swapState.toAsset.coinDecimals,
-                            8
-                          ),
-                        })
+                    swapState.toAsset
+                      ? formatPretty(
+                          (swapState.quote?.inOutSpotPrice
+                            ? new CoinPretty(
+                                swapState.toAsset,
+                                swapState.quote.inOutSpotPrice.mul(
+                                  DecUtils.getTenExponentN(
+                                    swapState.toAsset.coinDecimals
+                                  )
+                                )
+                              )
+                            : null) ??
+                            swapState.spotPriceQuote?.amount ??
+                            new Dec(0),
+                          {
+                            maxDecimals: Math.min(
+                              swapState.toAsset.coinDecimals,
+                              8
+                            ),
+                          }
+                        )
                       : "0"
                   }`}
                 </span>
