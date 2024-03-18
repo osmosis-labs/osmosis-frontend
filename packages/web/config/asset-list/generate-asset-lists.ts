@@ -17,11 +17,8 @@ import type {
   ChainList,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
-import * as fs from "fs";
-import path from "path";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as prettier from "prettier";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
@@ -33,6 +30,7 @@ import {
   queryGithubFile,
   queryLatestCommitHash,
 } from "~/server/queries/github";
+import { generateTsFile } from "~/utils/codegen";
 
 import {
   getChainList,
@@ -47,6 +45,7 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
+const codegenDir = "config/generated";
 
 function getFilePath({
   chainId,
@@ -124,39 +123,10 @@ async function generateChainListFile({
     .join(" | ")};
   `;
 
-  const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = prettier.format(content, {
-    ...prettierConfig,
-    parser: "typescript",
-  });
-
-  const dirPath = "config/generated";
-  const fileName = "chain-list.ts";
-
-  try {
-    const filePath = path.join(dirPath, fileName);
-
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-
-    if (!overwriteFile) {
-      fs.appendFileSync(filePath, formatted, {
-        encoding: "utf8",
-        flag: "a",
-      });
-      console.info(`Successfully appended to ${fileName}`);
-      return;
-    }
-
-    fs.writeFileSync(filePath, formatted, {
-      encoding: "utf8",
-      flag: "w",
-    });
-    console.info(`Successfully wrote ${fileName}`);
-  } catch (e) {
-    console.error(`Error writing ${fileName}: ${e}`);
-  }
+  if (
+    !(await generateTsFile(content, codegenDir, "chain-list.ts", overwriteFile))
+  )
+    throw new Error("Failed to generate chain list file");
 }
 
 function createOrAddToAssetList(
@@ -286,7 +256,7 @@ async function generateAssetListFile({
 
   // create available asset categories array
   if (!onlyTypes) {
-    content += `    
+    const categoriesContent = `    
       export const AssetCategories = [${Array.from(
         new Set(assetList.assets.flatMap((asset) => asset.categories))
       )
@@ -294,51 +264,30 @@ async function generateAssetListFile({
         .join(", ")}
     ] as const;
     `;
+
+    await generateTsFile(categoriesContent, codegenDir, "asset-categories.ts");
   }
 
-  const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = prettier.format(content, {
-    ...prettierConfig,
-    parser: "typescript",
-  });
+  const success = await generateTsFile(
+    content,
+    codegenDir,
+    "asset-lists.ts",
+    overwriteFile
+  );
 
-  const dirPath = "config/generated";
-  const fileName = "asset-lists.ts";
-  const addedAssetsSize = assetLists
-    .flatMap(({ assets }) => assets)
-    .reduce((acc, asset) => {
-      acc.add(asset.symbol);
-      return acc;
-    }, new Set()).size;
-
-  try {
-    const filePath = path.join(dirPath, fileName);
-
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
+  if (success) {
+    if (overwriteFile) {
+      const addedAssetsSize = assetLists
+        .flatMap(({ assets }) => assets)
+        .reduce((acc, asset) => {
+          acc.add(asset.symbol);
+          return acc;
+        }, new Set()).size;
+      console.info("Successfully added", addedAssetsSize, "assets");
     }
-
-    if (!overwriteFile) {
-      fs.appendFileSync(filePath, formatted, {
-        encoding: "utf8",
-        flag: "a",
-      });
-      console.info(`Successfully appended to ${fileName}.`);
-      return assetLists;
-    }
-
-    fs.writeFileSync(filePath, formatted, {
-      encoding: "utf8",
-      flag: "w",
-    });
-
-    console.info(
-      `Successfully wrote ${fileName}. Added ${addedAssetsSize} assets.`
-    );
-
     return assetLists;
-  } catch (e) {
-    console.error(`Error writing ${fileName}: ${e}`);
+  } else {
+    throw new Error("Failed to write asset list file.");
   }
 }
 

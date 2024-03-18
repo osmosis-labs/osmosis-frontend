@@ -3,7 +3,8 @@ import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
-import { AssetCategories, AssetLists } from "~/config/generated/asset-lists";
+import { AssetCategories } from "~/config/generated/asset-categories";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { captureErrorAndReturn } from "~/utils/error";
 import { search, SearchSchema } from "~/utils/search";
 
