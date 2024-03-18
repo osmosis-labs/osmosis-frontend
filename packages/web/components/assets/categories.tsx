@@ -45,7 +45,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
           <button
             key={category}
             className={classNames(
-              "flex shrink-0 items-center gap-4 rounded-full border-2 px-4 py-6",
+              "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
               {
                 "border-wosmongton-700": selectedCategories.includes(category),
                 "border-osmoverse-600": !selectedCategories.includes(category),
