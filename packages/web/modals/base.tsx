@@ -5,7 +5,7 @@ import ReactModal, { setAppElement } from "react-modal";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/ui/button";
 import { SpriteIconId } from "~/config";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 
@@ -69,8 +69,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {onRequestBack && (
           <IconButton
             aria-label="Back"
-            mode="unstyled"
-            size="unstyled"
             className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
             icon={
               <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
@@ -92,13 +90,20 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   );
 };
 
-export const ModalCloseButton = ({ onClick }: { onClick: () => void }) => {
+export const ModalCloseButton = ({
+  onClick,
+  className,
+}: {
+  onClick: () => void;
+  className?: string;
+}) => {
   return (
     <IconButton
       aria-label="Close"
-      mode="unstyled"
-      size="unstyled"
-      className="absolute top-8 right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:top-7 md:right-7 xs:right-4"
+      className={classNames(
+        "absolute top-[28px] right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:top-7 md:right-7 xs:right-4",
+        className
+      )}
       icon={<Icon id="close" width={32} height={32} />}
       onClick={onClick}
     />

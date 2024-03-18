@@ -53,7 +53,7 @@ import {
   useCreateOneClickTradingSession,
 } from "~/hooks/mutations/one-click-trading";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { useStore } from "~/stores";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
@@ -437,17 +437,7 @@ export const WalletSelectModal: FunctionComponent<
           />
 
           {/* Hide close button since 1CT edit params will include it */}
-          {!show1CTEditParams && (
-            <Button
-              aria-label="Close"
-              size="icon"
-              variant="ghost"
-              className="absolute right-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
-              onClick={onClose}
-            >
-              <Icon id="close" width={30} height={30} />
-            </Button>
-          )}
+          {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
         </div>
       </div>
     </ModalBase>

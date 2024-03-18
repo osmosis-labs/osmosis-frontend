@@ -978,13 +978,6 @@
     "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
   },
   "disclaimer": "Haftungsausschluss",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} Einlagen instabil",
-    "titleWithdraw": "{coinDenom} Abhebungen instabil",
-    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
-    "buttonContinue": "Mache trotzdem weiter",
-    "buttonCancel": "Stornieren"
-  },
   "remaining": "übrig",
   "timeUnits": {
     "second": "zweite",
@@ -993,5 +986,12 @@
     "minutes": "Protokoll",
     "hour": "Stunde",
     "hours": "Std."
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} Einlagen instabil",
+    "titleWithdraw": "{coinDenom} Abhebungen instabil",
+    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
+    "buttonContinue": "Mache trotzdem weiter",
+    "buttonCancel": "Stornieren"
   }
 }

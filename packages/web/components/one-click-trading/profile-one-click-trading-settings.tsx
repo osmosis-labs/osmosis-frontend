@@ -1,4 +1,5 @@
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
+import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
@@ -115,9 +116,12 @@ export const ProfileOneClickTradingSettings = ({
             onSuccess: () => {
               onGoBack();
             },
-            onError: () => {
+            onError: (e) => {
+              const error = e as Error;
               rollback();
-              displayErrorRemovingSessionToast();
+              if (!isRejectedTxErrorMessage({ message: error?.message })) {
+                displayErrorRemovingSessionToast();
+              }
             },
           }
         );

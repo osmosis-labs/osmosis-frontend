@@ -458,7 +458,7 @@
       "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
-      "activeHourLimit": "A negociação com 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
+      "activeHourLimit": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
       "changeButton": "Mudar"
     },
     "floatingBanner": {
@@ -978,13 +978,6 @@
     "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
   },
   "disclaimer": "Isenção de responsabilidade",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depósitos instáveis",
-    "titleWithdraw": "{coinDenom} saques instáveis",
-    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
-    "buttonContinue": "Continue de qualquer maneira",
-    "buttonCancel": "Cancelar"
-  },
   "remaining": "restante",
   "timeUnits": {
     "second": "segundo",
@@ -993,5 +986,12 @@
     "minutes": "minutos",
     "hour": "hora",
     "hours": "horas"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos instáveis",
+    "titleWithdraw": "{coinDenom} saques instáveis",
+    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
+    "buttonContinue": "Continue de qualquer maneira",
+    "buttonCancel": "Cancelar"
   }
 }

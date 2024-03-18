@@ -27,13 +27,14 @@ export const IntroducingOneClick = ({
       <h1 className="text-h5 font-h5">
         {t("oneClickTrading.introduction.introducingTitle")}
       </h1>
-      <h2 className="text-body2 font-body2 text-osmoverse-200">
+      <h2 className="px-8 text-body2 font-body2 text-osmoverse-200">
         {t("oneClickTrading.introduction.introducingSubtitle")}{" "}
         <a
           className={buttonVariants({
             variant: "link",
             size: "sm",
-            className: "!inline w-auto px-0 text-body2 font-body2",
+            className:
+              "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
           })}
           // TODO: Add link
         >
@@ -55,11 +56,11 @@ export const IntroducingOneClick = ({
       >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
-      <p className="text-caption text-osmoverse-300">
-        {t("oneClickTrading.introduction.activeHourLimit")} –{" "}
+      <p className="px-8 text-caption text-osmoverse-300">
+        {t("oneClickTrading.introduction.defaultParameters")} –{" "}
         <Button
           variant="link"
-          className="!inline px-0 text-caption"
+          className="!inline !px-0 !text-caption text-wosmongton-300"
           size="sm"
           onClick={onClickEditParams}
           disabled={isLoading || isDisabled}

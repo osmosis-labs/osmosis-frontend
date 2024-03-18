@@ -458,7 +458,7 @@
       "introducingSubtitle": "進行更快、更輕鬆的交易，無需多個錢包批准的麻煩。",
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
-      "activeHourLimit": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5000 美元",
+      "activeHourLimit": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
       "changeButton": "改變"
     },
     "floatingBanner": {
@@ -978,13 +978,6 @@
     "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。"
   },
   "disclaimer": "免責聲明",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}存款不穩定",
-    "titleWithdraw": "{coinDenom}提款不穩定",
-    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
-    "buttonContinue": "無論如何繼續",
-    "buttonCancel": "取消"
-  },
   "remaining": "其餘的",
   "timeUnits": {
     "second": "第二",
@@ -993,5 +986,12 @@
     "minutes": "分分鐘",
     "hour": "小時",
     "hours": "小時"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不穩定",
+    "titleWithdraw": "{coinDenom}提款不穩定",
+    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
+    "buttonContinue": "無論如何繼續",
+    "buttonCancel": "取消"
   }
 }

@@ -10,7 +10,6 @@ import React, {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import { Spinner } from "~/components/loaders";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
@@ -23,7 +22,7 @@ import {
 } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { ModalBase, ModalCloseButton } from "~/modals";
@@ -198,7 +197,6 @@ const OneClickTradingSettings = ({
                     className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
                     icon={<Icon id="chevron-left" width={16} height={16} />}
                     aria-label="Go Back"
-                    mode="unstyled"
                   />
                 )}
 
@@ -221,7 +219,7 @@ const OneClickTradingSettings = ({
                         className={buttonVariants({
                           variant: "link",
                           className:
-                            "!inline w-auto px-0 text-body2 font-body2",
+                            "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
                         })}
                         // TODO: Add link
                       >
