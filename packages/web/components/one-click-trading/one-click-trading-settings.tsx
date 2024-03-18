@@ -28,6 +28,7 @@ import { useDisclosure, useTranslation } from "~/hooks";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { formatPretty } from "~/utils/formatter";
 import { noop, runIfFn } from "~/utils/function";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 type Classes = "root";
 
@@ -276,7 +277,12 @@ const OneClickTradingSettings = ({
                         disabled={isDisabled}
                       >
                         <p>
-                          {transaction1CTParams?.spendLimit.toString()}{" "}
+                          {transaction1CTParams?.spendLimit?.symbol}
+                          {trimPlaceholderZeros(
+                            transaction1CTParams?.spendLimit
+                              .toDec()
+                              .toString(2) ?? ""
+                          )}{" "}
                           {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
                         </p>
                         <Icon

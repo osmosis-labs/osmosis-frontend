@@ -1,5 +1,4 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { trimZerosFromEnd } from "@osmosis-labs/stores";
 import { DefaultGasPriceStep } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
@@ -11,6 +10,8 @@ import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/s
 import { ScreenGoBackButton } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { arrayOfLength } from "~/utils/array";
+import { isNumeric } from "~/utils/assertion";
+import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 interface PriceStep {
@@ -50,13 +51,26 @@ export const NetworkFeeLimitScreen = ({
   const { t } = useTranslation();
 
   const [networkFeeLimit, setNetworkFeeLimit] = useState<string>(
-    trimZerosFromEnd(transaction1CTParams.networkFeeLimit.toDec().toString())
+    trimPlaceholderZeros(
+      transaction1CTParams.networkFeeLimit.toDec().toString()
+    )
   );
 
   const stepAsset = transaction1CTParams.networkFeeLimit.currency;
 
   const { data: steps, isLoading } =
     api.edge.oneClickTrading.getNetworkFeeLimitStep.useQuery();
+
+  const getValueFromSteps = (
+    key: keyof RouterOutputs["edge"]["oneClickTrading"]["getNetworkFeeLimitStep"]
+  ) => {
+    const rawValue = (steps ?? DefaultGasPriceStep)[key];
+    const value =
+      rawValue instanceof CoinPretty
+        ? trimPlaceholderZeros(rawValue.toDec().toString())
+        : rawValue;
+    return value;
+  };
 
   return (
     <>
@@ -99,11 +113,7 @@ export const NetworkFeeLimitScreen = ({
           ) : (
             <>
               {(PriceSteps ?? DefaultGasPriceStep).map((step) => {
-                const rawValue = (steps ?? DefaultGasPriceStep)[step.key];
-                const value =
-                  rawValue instanceof CoinPretty
-                    ? trimZerosFromEnd(rawValue.toDec().toString())
-                    : rawValue;
+                const value = getValueFromSteps(step.key);
                 return (
                   <Button
                     key={step.id}
@@ -140,7 +150,17 @@ export const NetworkFeeLimitScreen = ({
             rightEntry
             currentValue={networkFeeLimit}
             onInput={(nextValue) => {
+              if (!isNumeric(nextValue)) return;
               setNetworkFeeLimit(nextValue);
+            }}
+            onBlur={() => {
+              const value = getValueFromSteps("average");
+              /**
+               * Value cannot be less than or equal to 0
+               */
+              if (Number(networkFeeLimit) <= 0) {
+                setNetworkFeeLimit(String(value));
+              }
             }}
             trailingSymbol={
               <span className="ml-2 text-body1 font-body1 text-osmoverse-300">
