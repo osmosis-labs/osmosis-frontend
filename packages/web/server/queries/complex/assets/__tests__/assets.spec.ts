@@ -60,6 +60,16 @@ describe("getAssets", () => {
 
       expect(assets.some((asset) => !asset.isVerified)).toBeTruthy();
     });
+
+    it("should filter assets by category", () => {
+      const assets = getAssets({
+        assetList: AssetLists,
+        categories: ["defi"],
+      });
+
+      expect(assets.some((asset) => asset.coinDenom === "OSMO")).toBeTruthy();
+      expect(assets.some((asset) => asset.coinDenom === "ION")).toBeFalsy();
+    });
   });
 });
 
