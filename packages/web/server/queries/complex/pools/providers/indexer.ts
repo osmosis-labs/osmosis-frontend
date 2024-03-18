@@ -76,9 +76,9 @@ export async function getPoolsFromIndexer({
         },
         { offset: 0, limit: Number(numPools.num_pools) }
       );
-      return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
-        (pool): pool is Pool => !!pool
-      );
+      return pools
+        .map(makePoolFromIndexerPool)
+        .filter((pool): pool is Pool => !!pool);
     },
   }).then((pools) =>
     pools.filter((pool): pool is Pool =>
@@ -361,9 +361,9 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
   };
 }
 
-export async function makePoolFromIndexerPool(
+export function makePoolFromIndexerPool(
   filteredPool: FilteredPoolsResponse["pools"][number]
-): Promise<Pool | undefined> {
+): Pool | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
@@ -433,10 +433,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -475,10 +472,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -504,10 +498,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -533,7 +524,7 @@ export async function makePoolFromIndexerPool(
 }
 
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
-async function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
+function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
   const coins = poolTokens.map(makeCoinFromToken).map((coin) => {
     const asset = captureIfError(() => getAsset({ anyDenom: coin.denom }));
     if (!asset) return;
