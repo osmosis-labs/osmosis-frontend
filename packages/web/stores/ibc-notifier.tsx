@@ -5,6 +5,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 /**
  * IbcNotifier hook tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.
@@ -16,6 +17,7 @@ export const IbcNotifier: FunctionComponent = observer(() => {
     useStore();
   const { chainId } = chainStore.osmosis;
   const [historyHandlerAdded, setHistoryHandlerAdded] = useState(false);
+  const apiUtils = api.useUtils();
 
   useEffect(() => {
     if (!historyHandlerAdded) {
@@ -80,6 +82,7 @@ export const IbcNotifier: FunctionComponent = observer(() => {
             history.recipient === account?.address
           ) {
             if (history.status === "complete") {
+              apiUtils.invalidate();
               queriesStore
                 .get(history.destChainId)
                 .queryBalances.getQueryBech32Address(history.recipient)
@@ -102,6 +105,7 @@ export const IbcNotifier: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     historyHandlerAdded,
+    apiUtils,
     setHistoryHandlerAdded,
   ]);
 

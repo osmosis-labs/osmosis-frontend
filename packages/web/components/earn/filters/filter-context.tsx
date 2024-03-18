@@ -2,18 +2,17 @@ import { createContext, PropsWithChildren, useCallback, useState } from "react";
 
 import {
   ListOption,
-  Platform,
+  LockType,
   RewardsTypes,
   StrategyButtonResponsibility,
-  StrategyMethod,
   TokenHolder,
 } from "~/components/earn/table/types/filters";
 
 export interface Filters {
   tokenHolder: TokenHolder;
-  strategyMethod: ListOption<StrategyMethod>;
-  platform: ListOption<Platform>;
-  noLockingDuration: boolean;
+  strategyMethod: ListOption<string>;
+  platform: ListOption<string>;
+  lockDurationType: LockType;
   search: string;
   specialTokens: ListOption<StrategyButtonResponsibility>[];
   rewardType: RewardsTypes;
@@ -24,9 +23,8 @@ export type SetFilterFn = (
   value:
     | string
     | boolean
-    | ListOption<StrategyMethod>
-    | ListOption<Platform>
     | ListOption<StrategyButtonResponsibility>
+    | ListOption<string>
 ) => void;
 
 type FilterContextState = {

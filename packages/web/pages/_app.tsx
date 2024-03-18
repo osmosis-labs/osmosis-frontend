@@ -36,6 +36,7 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
+import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -78,27 +79,29 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <StoreProvider>
         <WalletSelectProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: "#2d2755",
-            }}
-            transition={Bounce}
-            newestOnTop
-          />
-          <MainLayoutWrapper>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayoutWrapper>
+          <BridgeProvider>
+            <DefaultSeo />
+            <IbcNotifier />
+            <ToastContainer
+              toastStyle={{
+                backgroundColor: "#2d2755",
+              }}
+              transition={Bounce}
+              newestOnTop
+            />
+            <MainLayoutWrapper>
+              <ErrorBoundary fallback={ErrorFallback}>
+                {Component && <Component {...pageProps} />}
+              </ErrorBoundary>
+            </MainLayoutWrapper>
+          </BridgeProvider>
         </WalletSelectProvider>
       </StoreProvider>
     </MultiLanguageProvider>
   );
 }
 
-interface LevanaGeoBlockedResponse {
+export interface LevanaGeoBlockedResponse {
   allowed: boolean;
   countryCode: string;
 }
@@ -192,8 +195,8 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
+            icon: <Icon id="earn" className="h-5 w-5" />,
             isNew: true,
-            icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
         : null,

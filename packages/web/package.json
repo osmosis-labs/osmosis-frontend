@@ -65,7 +65,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@react-spring/web": "^9.6.1",
-    "@sentry/nextjs": "^7.8.1",
+    "@sentry/nextjs": "^7.106.1",
     "@tanstack/match-sorter-utils": "^8.8.4",
     "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-table": "^8.10.3",

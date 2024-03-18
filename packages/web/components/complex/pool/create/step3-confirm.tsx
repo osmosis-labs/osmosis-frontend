@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
 import {
-  generateSeries,
+  generateCoinProportionSeries,
   HIGHCHART_LEGEND_GRADIENTS,
   PieChart,
 } from "~/components/chart";
@@ -21,7 +21,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { t } = useTranslation();
 
   const series = useMemo(() => {
-    return generateSeries(
+    return generateCoinProportionSeries(
       config.assets.map((asset) => ({
         currency: asset.amountConfig.sendCurrency,
         percentage:

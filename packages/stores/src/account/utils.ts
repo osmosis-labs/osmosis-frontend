@@ -110,6 +110,13 @@ export const DefaultGasPriceStep: {
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@2:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
   "cosmos-kit@2:core//current-wallet";
+
+export class InsufficientFeeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InsufficientFeeError";
+  }
+}
 export const OneClickTradingLocalStorageKey = "one-click-trading";
 export const UseOneClickTradingLocalStorageKey = "use-one-click-enabled";
 export const HasUsedOneClickTradingLocalStorageKey = "has-used-one-click";

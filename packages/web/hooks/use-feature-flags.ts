@@ -23,6 +23,7 @@ export type AvailableFlags =
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton"
   | "positionRoi"
+  | "swapToolSimulateFee"
   | "oneClickTrading";
 
 type ModifiedFlags =
@@ -48,6 +49,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   topAnnouncementBanner: true,
   tfmProTradingNavbarButton: true,
   positionRoi: true,
+  swapToolSimulateFee: false,
   oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,

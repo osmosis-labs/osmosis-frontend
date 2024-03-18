@@ -176,6 +176,7 @@
       "titleWithdraw": "پرداخت به"
     },
     "stakedAssets": "سپرده گذاری شده OSMO",
+    "pooledAssets": "جمع شده",
     "table": {
       "columns": {
         "assetChain": "دارایی/شبکه",
@@ -203,6 +204,7 @@
       "activate": "فعال کنید"
     },
     "totalAssets": "کل دارایی ها",
+    "totalBalance": "موجودی کل",
     "transfer": {
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
@@ -272,6 +274,11 @@
       "activate": "دارایی های تایید نشده را فعال کنید",
       "description": "یک توکن تایید نشده است. آیا می خواهید آن را فعال کنید؟ حتما قبل از معامله به طور کامل تحقیق کنید.",
       "reminder": "همیشه می توانید این تنظیم را در حالت تنظیمات غیرفعال کنید."
+    },
+    "getStarted": {
+      "title": "با {osmosis} شروع کنید",
+      "description": "برای شروع تجارت فقط در چند مرحله، کیف پول خود را وصل کنید و سرمایه گذاری کنید.",
+      "addFunds": "برای شروع کار پول اضافه کنید"
     }
   },
   "buyTokens": "خرید توکن",
@@ -350,7 +357,8 @@
     "sequenceNumber": "شما تراکنش های همزمان زیادی دارید! پس از اینکه tx قبلی روی زنجیره قرار گرفت، دوباره ارسال کنید. (توالی: {sequence} )",
     "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
     "invalidAmounts": "مقدار(های) نامعتبر",
-    "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید."
+    "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
+    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -791,7 +799,8 @@
     "promo": {
       "newOpportunity": "فرصت جدید برای کسب درآمد با",
       "discoverSuperchargedPools": "استخرهای سوپرشارژ را کشف کنید"
-    }
+    },
+    "dynamicSpreadFactor": "پویا"
   },
   "walletSelect": {
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
@@ -918,6 +927,7 @@
     "allocation": "تخصیص",
     "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
+    "oneStrategy": "1 استراتژی",
     "value": "ارزش",
     "method": "روش",
     "platform": "سکو",
@@ -932,11 +942,10 @@
     "days": "روزها",
     "risk": "خطر",
     "strategyMethod": "روش استراتژی",
-    "allMethods": "همه روش",
+    "allMethods": "همه روش ها",
     "platforms": "بستر، زمینه",
     "allPlatforms": "همه پلتفرم ها",
-    "lockingDuration": "مدت زمان قفل کردن",
-    "specialTokens": "توکن های ویژه",
+    "allCategories": "همه دسته بندی ها",
     "filters": "فیلترها",
     "resetFilters": "بازنشانی فیلترها",
     "saveFilters": "ذخیره فیلترها",
@@ -954,8 +963,19 @@
       "single": "تنها",
       "multi": "چند"
     },
-    "totalValueInvested": "کل ارزش سرمایه گذاری شده",
-    "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید"
+    "totalValueInvested": "ارزش کل",
+    "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید",
+    "startEarning": "استراتژی ها را کشف کنید",
+    "startEarningDescription": "پتانسیل کسب درآمد کامل خود را باز کنید. دارایی های خود را از طریق یکی از چندین استراتژی زیر به کار بگیرید.",
+    "loadingStrategies": "بارگیری استراتژی‌ها...",
+    "sorryErrorOccurred": "با عرض پوزش، خطایی رخ داده است.",
+    "sorryNoResults": "هیچ استراتژی یافت نشد",
+    "tryChangingFilters": "سعی کنید فیلترها را تغییر دهید",
+    "retry": "دوباره امتحان کنید",
+    "manage": "مدیریت کنید",
+    "noLock": "بدون قفل",
+    "riskDisclaimer": "ریسک با مجموعه‌ای از معیارهای ترکیبی در مورد یک استراتژی و دارایی‌های زیربنایی آن محاسبه می‌شود.",
+    "strategyGeoblocked": "متأسفیم، این استراتژی در کشور شما در دسترس نیست."
   },
   "disclaimer": "سلب مسئولیت",
   "remaining": "باقی مانده است",

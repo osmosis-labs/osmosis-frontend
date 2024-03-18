@@ -176,6 +176,7 @@
       "titleWithdraw": "Sich zurückziehen"
     },
     "stakedAssets": "Abgestecktes OSMO",
+    "pooledAssets": "Gebündelt",
     "table": {
       "columns": {
         "assetChain": "Vermögenswert/Kette",
@@ -203,6 +204,7 @@
       "activate": "aktivieren Sie"
     },
     "totalAssets": "Gesamtvermögen",
+    "totalBalance": "Gesamtsaldo",
     "transfer": {
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",
@@ -272,6 +274,11 @@
       "activate": "Aktivieren Sie nicht verifizierte Assets",
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
+    },
+    "getStarted": {
+      "title": "Beginnen Sie mit {osmosis}",
+      "description": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
+      "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
     }
   },
   "buyTokens": "Kaufen Sie Token",
@@ -350,7 +357,8 @@
     "sequenceNumber": "Sie haben zu viele gleichzeitige Transaktionen! Versuchen Sie es erneut zu senden, nachdem Ihre vorherige Sendung in der Kette gelandet ist. (Sequenz: {sequence} )",
     "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
     "invalidAmounts": "Ungültige(r) Betrag(e)",
-    "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen."
+    "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
+    "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -791,7 +799,8 @@
     "promo": {
       "newOpportunity": "Neue Möglichkeit, mit {denom} zu verdienen",
       "discoverSuperchargedPools": "Entdecken Sie Supercharged Pools"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
     "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",
@@ -918,6 +927,7 @@
     "allocation": "Zuweisung",
     "tokensCount": "{number} Token",
     "strategiesCount": "{number} Strategien",
+    "oneStrategy": "1 Strategie",
     "value": "Wert",
     "method": "Methode",
     "platform": "Plattform",
@@ -932,11 +942,10 @@
     "days": "Tage",
     "risk": "Risiko",
     "strategyMethod": "Strategiemethode",
-    "allMethods": "Alle Methode",
+    "allMethods": "Alle Methoden",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
-    "lockingDuration": "Sperrdauer",
-    "specialTokens": "Spezielle Token",
+    "allCategories": "Alle Kategorien",
     "filters": "Filter",
     "resetFilters": "Filter zurücksetzen",
     "saveFilters": "Filter speichern",
@@ -954,8 +963,19 @@
       "single": "Einzel",
       "multi": "Multi"
     },
-    "totalValueInvested": "Gesamtinvestitionswert",
-    "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie"
+    "totalValueInvested": "Gesamtwert",
+    "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
+    "startEarning": "Entdecken Sie Strategien",
+    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mit einer der vielen unten aufgeführten Strategien.",
+    "loadingStrategies": "Lade Strategien...",
+    "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
+    "sorryNoResults": "Keine Strategien gefunden.",
+    "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
+    "retry": "Wiederholen",
+    "manage": "Verwalten",
+    "noLock": "Kein Schloss",
+    "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
+    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
   },
   "disclaimer": "Haftungsausschluss",
   "unstableAssetsWarning": {

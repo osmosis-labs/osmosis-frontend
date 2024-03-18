@@ -176,6 +176,7 @@
       "titleWithdraw": "Retirer à"
     },
     "stakedAssets": "OSMO cautionné",
+    "pooledAssets": "Regroupé",
     "table": {
       "columns": {
         "assetChain": "Actif / Chaine",
@@ -203,6 +204,7 @@
       "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
+    "totalBalance": "Solde total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
@@ -272,6 +274,11 @@
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
+    },
+    "getStarted": {
+      "title": "Commencez avec {osmosis}",
+      "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
+      "addFunds": "Ajoutez des fonds pour commencer"
     }
   },
   "buyTokens": "Acheter jetons",
@@ -350,7 +357,8 @@
     "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
     "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
     "invalidAmounts": "Montant(s) invalide(s)",
-    "txTimedOutError": "La transaction a expiré. Veuillez réessayer."
+    "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
+    "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -791,7 +799,8 @@
     "promo": {
       "newOpportunity": "Nouvelle opportunité de gagner avec",
       "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamique"
   },
   "walletSelect": {
     "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
@@ -918,6 +927,7 @@
     "allocation": "Allocation",
     "tokensCount": "{number} jetons",
     "strategiesCount": "Stratégies {number}",
+    "oneStrategy": "1 stratégie",
     "value": "Valeur",
     "method": "Méthode",
     "platform": "Plate-forme",
@@ -935,8 +945,7 @@
     "allMethods": "Toutes les méthodes",
     "platforms": "Plateformes",
     "allPlatforms": "Toutes les plateformes",
-    "lockingDuration": "Durée de verrouillage",
-    "specialTokens": "Jetons spéciaux",
+    "allCategories": "toutes catégories",
     "filters": "Filtres",
     "resetFilters": "Réinitialiser les filtres",
     "saveFilters": "Enregistrer les filtres",
@@ -954,8 +963,19 @@
       "single": "Célibataire",
       "multi": "Multi"
     },
-    "totalValueInvested": "Valeur totale investie",
-    "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous"
+    "totalValueInvested": "Valeur totale",
+    "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous",
+    "startEarning": "Découvrez les stratégies",
+    "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce à l’une des nombreuses stratégies ci-dessous.",
+    "loadingStrategies": "Chargement des stratégies...",
+    "sorryErrorOccurred": "Désolé, une erreur s'est produite.",
+    "sorryNoResults": "Aucune stratégie trouvée.",
+    "tryChangingFilters": "Essayez de changer les filtres",
+    "retry": "Recommencez",
+    "manage": "Gérer",
+    "noLock": "Aucun verrou",
+    "riskDisclaimer": "Le risque est calculé avec un ensemble combiné de critères concernant une stratégie et ses actifs sous-jacents.",
+    "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays."
   },
   "disclaimer": "Clause de non-responsabilité",
   "remaining": "restant",

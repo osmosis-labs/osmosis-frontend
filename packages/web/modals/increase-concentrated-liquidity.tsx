@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback, useEffect } from "react";
 
-import { ChartButton } from "~/components/buttons";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
+import { ChartButton } from "~/components/ui/button";
 import {
   ObservableAddConcentratedLiquidityConfig,
   useAddConcentratedLiquidityConfig,

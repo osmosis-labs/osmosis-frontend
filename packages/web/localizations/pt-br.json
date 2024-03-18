@@ -176,6 +176,7 @@
       "titleWithdraw": "Sacar para"
     },
     "stakedAssets": "OSMO em stake",
+    "pooledAssets": "Agrupados",
     "table": {
       "columns": {
         "assetChain": "Ativo / Rede",
@@ -203,6 +204,7 @@
       "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
+    "totalBalance": "Balanço total",
     "transfer": {
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",
@@ -272,6 +274,11 @@
       "activate": "Ativar ativos não verificados",
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
+    },
+    "getStarted": {
+      "title": "Comece com {osmosis}",
+      "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
+      "addFunds": "Adicione fundos para começar"
     }
   },
   "buyTokens": "Comprar tokens",
@@ -350,7 +357,8 @@
     "sequenceNumber": "Você tem muitas transações simultâneas! Tente reenviar depois que seu tx anterior chegar à cadeia. (Sequência: {sequence} )",
     "swapSlippage": "A troca por {coinDenom} falhou devido a derrapagem. Tente aumentar a tolerância ao deslizamento.",
     "invalidAmounts": "Quantidade(s) inválida(s)",
-    "txTimedOutError": "A transação expirou. Por favor tente novamente."
+    "txTimedOutError": "A transação expirou. Por favor tente novamente.",
+    "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -791,7 +799,8 @@
     "promo": {
       "newOpportunity": "Nova oportunidade de ganhar com",
       "discoverSuperchargedPools": "Descubra Piscinas Superalimentadas"
-    }
+    },
+    "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
     "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",
@@ -918,6 +927,7 @@
     "allocation": "Alocação",
     "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estratégias",
+    "oneStrategy": "1 estratégia",
     "value": "Valor",
     "method": "Método",
     "platform": "Plataforma",
@@ -935,8 +945,7 @@
     "allMethods": "Todos os métodos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas as plataformas",
-    "lockingDuration": "Duração do bloqueio",
-    "specialTokens": "Tokens Especiais",
+    "allCategories": "todas as categorias",
     "filters": "Filtros",
     "resetFilters": "Redefinir filtros",
     "saveFilters": "Salvar filtros",
@@ -954,8 +963,19 @@
       "single": "Solteiro",
       "multi": "Múltiplo"
     },
-    "totalValueInvested": "Valor total investido",
-    "lookBelow": "Veja abaixo e encontre as melhores estratégias para você"
+    "totalValueInvested": "Valor total",
+    "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
+    "startEarning": "Descubra estratégias",
+    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio de uma das muitas estratégias abaixo.",
+    "loadingStrategies": "Carregando estratégias...",
+    "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
+    "sorryNoResults": "Nenhuma estratégia encontrada.",
+    "tryChangingFilters": "Tente alterar os filtros",
+    "retry": "Tentar novamente",
+    "manage": "Gerenciar",
+    "noLock": "Não feche",
+    "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
+    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {

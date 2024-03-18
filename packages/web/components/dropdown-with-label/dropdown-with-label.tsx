@@ -35,10 +35,10 @@ export const DropdownWithLabel = <T,>({
               buttonClassName
             )}
           >
-            <span className="font-subtitle1 leading-6 2xl:hidden">
+            <span className="font-subtitle1 capitalize leading-6 2xl:hidden">
               {value.label}
             </span>
-            <span className="hidden overflow-hidden text-ellipsis whitespace-nowrap font-subtitle1 leading-6 2xl:block">
+            <span className="hidden max-w-[100px] truncate font-subtitle1 capitalize leading-6 2xl:block">
               {(value.value as unknown as string) === "" && allLabel
                 ? allLabel
                 : value.label}
@@ -74,7 +74,9 @@ export const DropdownWithLabel = <T,>({
                 >
                   {({ selected }) => (
                     <>
-                      <span className="block truncate">{option.label}</span>
+                      <span className="block truncate capitalize">
+                        {option.label}
+                      </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                           <Icon id="check-mark" className="h-4 w-4" />

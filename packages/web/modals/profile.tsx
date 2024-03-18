@@ -26,7 +26,6 @@ import {
   QRIcon,
 } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { ArrowButton } from "~/components/buttons";
 import {
   Drawer,
   DrawerButton,
@@ -37,11 +36,12 @@ import {
 import Spinner from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
+import { ArrowButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -64,6 +64,7 @@ export const ProfileModal: FunctionComponent<
   } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
+  const { fiatRampSelection } = useBridge();
   const featureFlag = useFeatureFlags();
 
   const {
@@ -75,11 +76,6 @@ export const ProfileModal: FunctionComponent<
     isOpen: isQROpen,
     onClose: onCloseQR,
     onOpen: onOpenQR,
-  } = useDisclosure();
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onOpen: onOpenFiatOnrampSelection,
-    onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
   const wallet = accountStore.getWallet(chainId);
@@ -258,7 +254,7 @@ export const ProfileModal: FunctionComponent<
                   <button
                     onClick={() => {
                       props.onRequestClose();
-                      onOpenFiatOnrampSelection();
+                      fiatRampSelection();
                     }}
                     className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
                   >
@@ -464,25 +460,6 @@ export const ProfileModal: FunctionComponent<
           )}
         </div>
       </ModalBase>
-      <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
-        onSelectRamp={(ramp) => {
-          if (ramp !== "transak") return;
-          const fiatValue = userOsmoAsset?.usdValue;
-          const coinValue = userOsmoAsset?.amount;
-
-          logEvent([
-            EventName.ProfileModal.buyTokensClicked,
-            {
-              tokenName: "OSMO",
-              tokenAmount: Number(
-                (fiatValue ?? coinValue)?.maxDecimals(4).toString()
-              ),
-            },
-          ]);
-        }}
-      />
     </>
   );
 });

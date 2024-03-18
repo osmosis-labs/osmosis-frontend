@@ -1,5 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import { NotEnoughQuotedError } from "@osmosis-labs/pools";
+import { NotEnoughQuotedError, PoolType } from "@osmosis-labs/pools";
 import {
   NoRouteError,
   SplitTokenInQuote,
@@ -8,7 +8,7 @@ import {
 } from "@osmosis-labs/pools/build/router";
 import { apiClient } from "@osmosis-labs/utils";
 
-import { SidecarQuoteResponse } from "./types";
+import { SidecarPoolType, SidecarQuoteResponse } from "./types";
 
 /** Use this as a client for generating quotes from a sidecar query server. */
 export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
@@ -41,6 +41,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         route: routes,
         effective_fee,
         price_impact,
+        // in_out_spot_price,
       } = await apiClient<SidecarQuoteResponse>(queryUrl.toString());
 
       const swapFee = new Dec(effective_fee);
@@ -52,10 +53,12 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         swapFee,
         priceImpactTokenOut: priceImpact,
         tokenInFeeAmount: tokenIn.amount.toDec().mul(swapFee).truncate(),
+        // inOutSpotPrice: new Dec(in_out_spot_price),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
-          pools: pools.map(({ id, spread_factor }) => ({
+          pools: pools.map(({ id, spread_factor, type }) => ({
             id: id.toString(),
+            type: translatePoolTypeFromSidecar(type),
             swapFee: new Dec(spread_factor),
           })),
           tokenInDenom: tokenIn.denom,
@@ -80,5 +83,22 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
 
       throw new Error(errorMessage ?? "Unexpected sidecar router error " + e);
     }
+  }
+}
+
+function translatePoolTypeFromSidecar(
+  sidecarPoolType: SidecarPoolType
+): PoolType {
+  switch (sidecarPoolType) {
+    case SidecarPoolType.Weighted:
+      return "weighted";
+    case SidecarPoolType.Stable:
+      return "stable";
+    case SidecarPoolType.Concentrated:
+      return "concentrated";
+    case SidecarPoolType.CosmWasm:
+      return "cosmwasm";
+    default:
+      throw new Error(`Unknown SidecarPoolType: ${sidecarPoolType}`);
   }
 }

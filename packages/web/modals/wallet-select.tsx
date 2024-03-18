@@ -29,7 +29,6 @@ import React, {
 import { useLocalStorage, useUpdateEffect } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
@@ -402,16 +401,17 @@ export const WalletSelectModal: FunctionComponent<
             modalView={modalView}
           />
         </ClientOnly>
-
         <div className="relative w-full overflow-auto py-8 sm:static">
           {onRequestBack && (
-            <IconButton
+            <Button
               aria-label="Go Back"
-              icon={<Icon id="chevron-left" width={16} height={16} />}
-              mode="unstyled"
-              className="absolute left-0 top-[2.2rem] z-50 ml-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
-              onClick={onRequestBack}
-            />
+              size="icon"
+              variant="ghost"
+              className="absolute left-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
+              onClick={onClose}
+            >
+              <Icon id="chevron-left" width={16} height={16} />
+            </Button>
           )}
           <RightModalContent
             {...props}
@@ -431,13 +431,15 @@ export const WalletSelectModal: FunctionComponent<
             show1CTConnectAWallet={show1CTConnectAWallet}
             setShow1CTConnectAWallet={setShow1CTConnectAWallet}
           />
-          <IconButton
+          <Button
             aria-label="Close"
-            icon={<Icon id="close" width={30} height={30} />}
-            mode="unstyled"
-            className="absolute right-0 top-[1.9rem] z-50 mr-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+            size="icon"
+            variant="ghost"
+            className="absolute right-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
             onClick={onClose}
-          />
+          >
+            <Icon id="close" width={30} height={30} />
+          </Button>
         </div>
       </div>
     </ModalBase>

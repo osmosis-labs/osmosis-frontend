@@ -31,7 +31,7 @@ type AdditionalData = Partial<
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
-  "aUSDC.axl.axl": {
+  "aUSDC.axl": {
     sourceChainNameOverride: "Goerli Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -288,6 +288,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SEI: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=pacific-1&chainTo=osmosis-1&token0=usei&token1=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D",
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
@@ -539,7 +541,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
   },
   DYM: {
-    depositUrlOverride: "https://portal.dymension.xyz/ibc",
+    depositUrlOverride:
+      "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
   },
   "injective.GLTO": {
     depositUrlOverride:
@@ -549,9 +552,9 @@ const MainnetIBCAdditionalData: Partial<
   },
   ASTRO: {
     depositUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=phoenix-1&chainTo=osmosis-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4",
+      "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
     withdrawUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
   },
   "solana.USDC.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",

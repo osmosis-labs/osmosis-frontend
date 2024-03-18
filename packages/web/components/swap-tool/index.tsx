@@ -1,5 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -26,7 +32,7 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -38,7 +44,6 @@ import { useSwap } from "~/hooks/use-swap";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-import { sum } from "~/utils/math";
 import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
@@ -70,6 +75,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
+    const featureFlags = useFeatureFlags();
 
     const account = accountStore.getWallet(chainId);
 
@@ -210,6 +216,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       : showPriceImpactWarning
       ? t("swap.buttonError")
       : t("swap.button");
+
+    // Only display network fee if it's greater than 0.01 USD
+    const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
+      .toDec()
+      .gte(new Dec(0.01));
 
     return (
       <>
@@ -640,7 +651,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                Boolean(swapState.spotPriceQuote)
+                !swapState.isSpotPriceQuoteLoading
               }
             >
               {/* TODO - move this custom button to our own button component */}
@@ -672,13 +683,27 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   </span>{" "}
                   {`≈ ${
-                    swapState.spotPriceQuote?.amount && swapState.toAsset
-                      ? formatPretty(swapState.spotPriceQuote.amount, {
-                          maxDecimals: Math.min(
-                            swapState.toAsset.coinDecimals,
-                            8
-                          ),
-                        })
+                    swapState.toAsset
+                      ? formatPretty(
+                          (swapState.quote?.inOutSpotPrice
+                            ? new CoinPretty(
+                                swapState.toAsset,
+                                swapState.quote.inOutSpotPrice.mul(
+                                  DecUtils.getTenExponentN(
+                                    swapState.toAsset.coinDecimals
+                                  )
+                                )
+                              )
+                            : null) ??
+                            swapState.spotPriceQuote?.amount ??
+                            new Dec(0),
+                          {
+                            maxDecimals: Math.min(
+                              swapState.toAsset.coinDecimals,
+                              8
+                            ),
+                          }
+                        )
                       : "0"
                   }`}
                 </span>
@@ -752,6 +777,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     </div>
                   )}
                 {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
+                featureFlags.swapToolSimulateFee &&
+                isNetworkFeeApplicable &&
                 !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
@@ -767,22 +794,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 ) : undefined}
                 {((swapState.quote?.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
-                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) && (
-                  <div className="flex justify-between">
-                    <span className="caption">{t("swap.totalFee")}</span>
-                    <span className="caption text-osmoverse-200">
-                      {`≈ ${new PricePretty(
-                        DEFAULT_VS_CURRENCY,
-                        sum([
-                          swapState.quote?.tokenInFeeAmountFiatValue?.toDec() ??
-                            new Dec(0),
-                          swapState.networkFee?.gasUsdValueToPay?.toDec() ??
-                            new Dec(0),
-                        ])
-                      )} `}
-                    </span>
-                  </div>
-                )}
+                  (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
+                  featureFlags.swapToolSimulateFee &&
+                  isNetworkFeeApplicable && (
+                    <div className="flex justify-between">
+                      <span className="caption">{t("swap.totalFee")}</span>
+                      <span className="caption text-osmoverse-200">
+                        {`≈ ${new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          swapState.totalFee
+                        )} `}
+                      </span>
+                    </div>
+                  )}
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">

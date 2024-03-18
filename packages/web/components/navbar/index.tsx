@@ -17,12 +17,12 @@ import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { MainMenu } from "~/components/main-menu";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
@@ -309,12 +309,10 @@ export const NavBar: FunctionComponent<
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (
                   <Button
-                    className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
-                      className ?? ""
-                    }`}
-                    mode={index > 0 ? "secondary" : undefined}
+                    size="md"
+                    className={`w-48 lg:w-fit ${className ?? ""}`}
+                    variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    size="sm"
                     {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
@@ -328,11 +326,10 @@ export const NavBar: FunctionComponent<
               <div className="group">
                 <a href="https://pro.osmosis.zone">
                   <Button
-                    className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
-                    mode="icon-primary"
-                    size="unstyled"
+                    className="subtitle2 group mr-0 flex !h-10 !w-40 transform items-center justify-center bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
                     style={{ maxWidth: "180px" }}
                     onClick={handleTradeClicked}
+                    variant="ghost"
                   >
                     <Image
                       className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
@@ -450,7 +447,7 @@ const WalletInfo: FunctionComponent<
     <div className={className}>
       {!walletConnected ? (
         <Button
-          className="!h-[42px] w-40 lg:w-36 md:w-full"
+          size="md"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect(chainId);
@@ -766,8 +763,8 @@ const FrontierMigrationModal: FunctionComponent<
         <div className="mt-6 flex w-full items-center gap-3">
           <Button
             size="sm"
-            mode="secondary"
-            className="whitespace-nowrap border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
+            variant="outline"
+            className="border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
             onClick={() => {
               props.onOpenSettings();
               props.onRequestClose?.();
@@ -777,8 +774,7 @@ const FrontierMigrationModal: FunctionComponent<
           </Button>
           <Button
             size="sm"
-            mode="primary"
-            className="whitespace-nowrap border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
+            className="border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
             onClick={props.onRequestClose}
           >
             {t("frontierMigration.proceed")}

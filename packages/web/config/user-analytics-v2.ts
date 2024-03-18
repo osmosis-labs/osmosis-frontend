@@ -41,6 +41,7 @@ export type EventProperties = {
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
   strategy: string;
+  strategyId: string;
   liquidityUSD: number;
   positionId: string;
   rewardAmountUSD: number;
@@ -239,6 +240,12 @@ export const EventName = {
     cardClicked: "Token Info: Card clicked",
     viewMoreClicked: "Token Info: View more clicked",
     socialPostClicked: "Token Info: Social post clicked",
+  },
+  EarnPage: {
+    pageViewed: "Earn Page: Page viewed",
+    rewardsClaimStarted: "Earn Page: Rewards claim started",
+    joinStrategyClicked: "Earn Page: Join strategy clicked",
+    joinStrategyCompleted: "Earn Page: Join strategy completed",
   },
   QueryError: "Query error",
 };
