@@ -86,9 +86,9 @@ export const AssetsInfoTable: FunctionComponent<{
   );
   const selectCategory = useCallback(
     (category: AssetCategory) => {
-      const selectedCategores = new Set(selectedCategories);
-      selectedCategores.add(category);
-      setSelectedCategories(Array.from(selectedCategores));
+      const selected = new Set(selectedCategories);
+      selected.add(category);
+      setSelectedCategories(Array.from(selected));
     },
     [selectedCategories]
   );
