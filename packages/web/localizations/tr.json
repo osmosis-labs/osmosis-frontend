@@ -279,6 +279,12 @@
       "title": "{osmosis} ile başlayın",
       "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
       "addFunds": "Başlamak için para ekleyin"
+    },
+    "categories": {
+      "newest": "En yeni",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoin'ler",
+      "meme": "meme"
     }
   },
   "buyTokens": "jeton satın al",

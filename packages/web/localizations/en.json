@@ -279,6 +279,13 @@
       "title": "Get started with {osmosis}",
       "description": "Connect and fund your wallet to start trading in just a few steps.",
       "addFunds": "Add funds to get started"
+    },
+    "categories": {
+      "newest": "Newest",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoins",
+      "meme": "Meme",
+      "liquid_staking": "Liquid staking"
     }
   },
   "buyTokens": "Buy tokens",

@@ -54,7 +54,7 @@ export function getAsset({
   return asset;
 }
 
-/** Cached function that returns minimal asset information for assets in asset list. Return values can double as the `Currency` type.
+/** Returns minimal asset information for assets in asset list. Return values can double as the `Currency` type.
  *  Search was added to this function since members of the asset list type are search before mapped
  *  into minimal assets. See `searchableAssetListAssetKeys` for the keys that are searched.
  *

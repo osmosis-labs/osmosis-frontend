@@ -61,6 +61,7 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           onlyVerified,
           includePreview,
+          categories,
         },
       }) =>
         maybeCachePaginatedItems({
@@ -71,12 +72,14 @@ export const assetsRouter = createTRPCRouter({
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
+              categories,
             }),
           cacheKey: JSON.stringify({
             search,
             userOsmoAddress,
             onlyVerified,
             includePreview,
+            categories,
           }),
           cursor,
           limit,
@@ -122,8 +125,6 @@ export const assetsRouter = createTRPCRouter({
         z.object({
           /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
-          /** List of asset list categories to filter results by. */
-          assetCategoriesFilter: z.array(z.string()).optional(),
           sort: createSortSchema([
             "currentPrice",
             "marketCap",
@@ -142,6 +143,7 @@ export const assetsRouter = createTRPCRouter({
           preferredDenoms,
           sort: sortInput,
           onlyPositiveBalances,
+          categories,
           cursor,
           limit,
           includePreview,
@@ -156,6 +158,7 @@ export const assetsRouter = createTRPCRouter({
               search,
               onlyVerified,
               includePreview,
+              categories,
             });
 
             assets = await mapGetUserAssetCoins({
@@ -229,6 +232,7 @@ export const assetsRouter = createTRPCRouter({
             preferredDenoms,
             sort: sortInput,
             onlyPositiveBalances,
+            categories,
             includePreview,
           }),
           cursor,

@@ -39,6 +39,7 @@ import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
+import { AssetCategoriesSelectors, AssetCategory } from "../assets/categories";
 import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
@@ -80,6 +81,24 @@ export const AssetsInfoTable: FunctionComponent<{
     "allTokens"
   );
 
+  const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>(
+    []
+  );
+  const selectCategory = useCallback(
+    (category: AssetCategory) => {
+      const selectedCategores = new Set(selectedCategories);
+      selectedCategores.add(category);
+      setSelectedCategories(Array.from(selectedCategores));
+    },
+    [selectedCategories]
+  );
+  const unselectCategory = useCallback(
+    (category: AssetCategory) => {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    },
+    [selectedCategories]
+  );
+
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
   const showUnverifiedAssets =
@@ -109,6 +128,7 @@ export const AssetsInfoTable: FunctionComponent<{
           }
         : undefined,
       onlyPositiveBalances: selectedView === "myTokens",
+      categories: selectedCategories.length ? selectedCategories : undefined,
     },
     {
       enabled: !isLoadingWallet,
@@ -279,6 +299,13 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <section>
+        <AssetCategoriesSelectors
+          selectedCategories={selectedCategories}
+          onSelectCategory={selectCategory}
+          unselectCategory={unselectCategory}
+        />
+      </section>
       <TableControls
         selectedTimeFrame={selectedTimeFrame}
         setSelectedTimeFrame={setSelectedTimeFrame}

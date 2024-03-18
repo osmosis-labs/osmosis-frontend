@@ -279,6 +279,12 @@
       "title": "Commencez avec {osmosis}",
       "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
       "addFunds": "Ajoutez des fonds pour commencer"
+    },
+    "categories": {
+      "newest": "Le plus récent",
+      "defi": "DéFi",
+      "stablecoin": "Pièces stables",
+      "meme": "Mème"
     }
   },
   "buyTokens": "Acheter jetons",

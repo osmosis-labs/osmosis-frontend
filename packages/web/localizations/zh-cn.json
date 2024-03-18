@@ -279,6 +279,12 @@
       "title": "开始使用{osmosis}",
       "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
       "addFunds": "添加资金即可开始"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "去中心化金融",
+      "stablecoin": "稳定币",
+      "meme": "模因"
     }
   },
   "buyTokens": "购买代币",
