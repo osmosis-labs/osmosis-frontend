@@ -17,7 +17,6 @@ import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { captureIfError } from "~/utils/error";
 
 import {
   FilteredPoolsResponse,
@@ -400,10 +399,15 @@ export function makePoolFromIndexerPool(
     const token0 = filteredPool.pool_tokens.asset0.denom;
     const token1 = filteredPool.pool_tokens.asset1.denom;
 
-    const token0Asset = captureIfError(() => getAsset({ anyDenom: token0 }));
-    const token1Asset = captureIfError(() => getAsset({ anyDenom: token1 }));
-
-    if (!token0Asset || !token1Asset) return;
+    let token0Asset;
+    let token1Asset;
+    try {
+      token0Asset = getAsset({ anyDenom: token0 });
+      token1Asset = getAsset({ anyDenom: token1 });
+    } catch {
+      // Do nothing as it's expected to get unlisted assets from low liq pools
+      return;
+    }
 
     return {
       id: filteredPool.pool_id.toString(),
@@ -526,9 +530,12 @@ export function makePoolFromIndexerPool(
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
 function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
   const coins = poolTokens.map(makeCoinFromToken).map((coin) => {
-    const asset = captureIfError(() => getAsset({ anyDenom: coin.denom }));
-    if (!asset) return;
-    return new CoinPretty(asset, coin.amount);
+    try {
+      const asset = getAsset({ anyDenom: coin.denom });
+      return new CoinPretty(asset, coin.amount);
+    } catch {
+      // Do nothing as it's expected to get unlisted assets from low liq pools
+    }
   });
 
   if (coins.some((asset) => !asset)) return;
