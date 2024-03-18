@@ -15,7 +15,8 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getPool, Pool } from "~/server/queries/complex/pools";
+import { Pool } from "~/server/queries/complex/pools";
+import { getCosmwasmPoolTypeFromCodeId } from "~/server/queries/complex/pools/env";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 import { captureErrorAndReturn } from "~/utils/error";
 
@@ -158,10 +159,10 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
         pools.map(async (pool_, index) => {
           let type: Pool["type"] = pool_.type as Pool["type"];
 
-          if (type === "cosmwasm") {
-            const pool = await getPool({ poolId: pool_.id });
-            type = pool.type;
+          if (pool_?.codeId) {
+            type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
           }
+
           const inAsset = await getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
