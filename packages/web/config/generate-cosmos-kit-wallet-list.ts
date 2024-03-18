@@ -8,6 +8,7 @@ import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
+import { trustMobileInfo } from "@cosmos-kit/trust-mobile";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import * as fs from "fs";
 import path from "path";
@@ -23,6 +24,7 @@ const CosmosKitWalletList = [
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
   trustExtensionInfo,
+  trustMobileInfo,
   xdefiExtensionInfo,
   stationExtensionInfo,
 ];

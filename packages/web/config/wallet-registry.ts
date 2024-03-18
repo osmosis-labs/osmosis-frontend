@@ -21,17 +21,12 @@ export const WalletRegistry: RegistryWallet[] = [
         "osmosis-1",
         "stride-1",
         "neutron-1",
-        "agoric-3",
-        "axelar-dojo-1",
         "evmos_9001-2",
         "injective-1",
         "stargaze-1",
-        "columbus-5",
-        "laozi-mainnet",
         "crypto-org-chain-mainnet-1",
         "kava_2222-10",
       ];
-
       return trustAvailableChains.includes(chainId as MainnetChainIds);
     },
     stakeUrl: "https://trustwallet.com/staking",
@@ -44,6 +39,61 @@ export const WalletRegistry: RegistryWallet[] = [
       },
     ] as DownloadInfo[],
     mode: "extension", // Add mode property with correct value
+  },
+
+  {
+    ...CosmosKitWalletList["keplr-extension"],
+    mobileDisabled: false,
+    logo: "/wallets/keplr.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/keplr-extension").then((m) => m.KeplrExtensionWallet),
+    windowPropertyName: "keplr",
+    stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
+    governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
+    features: ["notifications"],
+    mode: "extension",
+  },
+  {
+    ...CosmosKitWalletList["trust-mobile"],
+    logo: "/wallets/trust.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-mobile").then((m) => m.TrustMobileWallet),
+    supportsChain: async (chainId) => {
+      const keplrMobileAvailableChains: MainnetChainIds[] = [
+        "agoric-3",
+        "akashnet-2",
+        "mantle-1",
+        "axelar-dojo-1",
+        "carbon-1",
+        "celestia",
+        "chihuahua-1",
+        "cosmoshub-4",
+        "mainnet-3",
+        "dydx-mainnet-1",
+        "emoney-3",
+        "evmos_9001-2",
+        "injective-1",
+        "irishub-1",
+        "juno-1",
+        "kava_2222-10",
+        "likecoin-mainnet-2",
+        "mars-1",
+        "neutron-1",
+        "osmosis-1",
+        "secret-4",
+        "pacific-1",
+        "sentinelhub-2",
+        "stargaze-1",
+        "iov-mainnet-ibc",
+        "stride-1",
+        "phoenix-1",
+      ];
+
+      return keplrMobileAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
   },
   {
     ...CosmosKitWalletList["keplr-extension"],
@@ -99,7 +149,6 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: [],
-    mode: "extension",
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -193,7 +242,6 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: [],
-    mode: "extension",
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],

@@ -2356,7 +2356,7 @@
   dependencies:
     "@cosmos-kit/core" "^2.8.9"
 
-"@cosmos-kit/trust-mobile@^2.5.9":
+"@cosmos-kit/trust-mobile@2.5.9", "@cosmos-kit/trust-mobile@^2.5.9":
   version "2.5.9"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/trust-mobile/-/trust-mobile-2.5.9.tgz#b469252096b03d2ede9bb68a7d172fd4ff7478e5"
   integrity sha512-ib9Ojk02hZeKslDfu1S8rbmGu7Hnc+ldcm6hydshmubPAozF8o5Mv6KisTSdktewgkYrZzKVd6xWaB1zxQFEOA==
