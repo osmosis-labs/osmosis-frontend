@@ -6,7 +6,7 @@ import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
@@ -32,14 +32,10 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
+  useUserFavoriteAssetDenoms,
   useWindowSize,
 } from "~/hooks";
-import {
-  useAssetInfoConfig,
-  useFeatureFlags,
-  useLocalStorageState,
-  useNavBar,
-} from "~/hooks";
+import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import {
   CoingeckoCoin,
   queryCoingeckoCoin,
@@ -195,36 +191,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       return asset?.rawAsset.name;
     }, [denom, details]);
 
-    const description = useMemo(() => {
-      if (details) {
-        return details.description;
-      }
-
-      const currencies = ChainList.map(
-        (info) => info.keplrChain.currencies
-      ).reduce((a, b) => [...a, ...b]);
-
-      const currency = currencies.find(
-        (el) => el.coinDenom === denom.toUpperCase()
-      );
-
-      if (!currency) {
-        return undefined;
-      }
-
-      const asset = getAssetFromAssetList({
-        coinMinimalDenom: currency?.coinMinimalDenom,
-        assetLists: AssetLists,
-      });
-
-      return asset?.rawAsset.description;
-    }, [denom, details]);
-
     return (
       <AssetInfoViewProvider value={contextValue}>
         <NextSeo
           title={`${title ? `${title} (${denom})` : denom} | Osmosis`}
-          description={description}
+          description={details?.description}
         />
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
           <LinkButton
@@ -294,10 +265,7 @@ const Navigation = observer((props: NavigationProps) => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
-  const [favoritesList, setFavoritesList] = useLocalStorageState(
-    "favoritesList",
-    ["OSMO", "ATOM"]
-  );
+  const { favoritesList, toggleFavoriteDenom } = useUserFavoriteAssetDenoms();
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -309,14 +277,6 @@ const Navigation = observer((props: NavigationProps) => {
     () => favoritesList.includes(denom),
     [denom, favoritesList]
   );
-
-  const toggleFavoriteList = useCallback(() => {
-    if (isFavorite) {
-      setFavoritesList(favoritesList.filter((item) => item !== denom));
-    } else {
-      setFavoritesList([...favoritesList, denom]);
-    }
-  }, [isFavorite, favoritesList, denom, setFavoritesList]);
 
   const chain = useMemo(
     () => chainStore.getChainFromCurrency(denom),
@@ -406,7 +366,7 @@ const Navigation = observer((props: NavigationProps) => {
           variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={toggleFavoriteList}
+          onClick={() => toggleFavoriteDenom(denom)}
         >
           <Icon
             id="star"
