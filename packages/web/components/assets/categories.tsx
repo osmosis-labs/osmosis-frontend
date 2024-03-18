@@ -37,7 +37,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   const { t } = useTranslation();
 
   return (
-    <div className="flex w-full items-center gap-3 overflow-scroll">
+    <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
       {AssetCategories.map((category) => {
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
 
@@ -45,7 +45,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
           <button
             key={category}
             className={classNames(
-              "flex items-center gap-4 rounded-full border-2 px-4 py-6",
+              "flex shrink-0 items-center gap-4 rounded-full border-2 px-4 py-6",
               {
                 "border-wosmongton-700": selectedCategories.includes(category),
                 "border-osmoverse-600": !selectedCategories.includes(category),
