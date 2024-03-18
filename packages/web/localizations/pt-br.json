@@ -357,7 +357,8 @@
     "sequenceNumber": "Você tem muitas transações simultâneas! Tente reenviar depois que seu tx anterior chegar à cadeia. (Sequência: {sequence} )",
     "swapSlippage": "A troca por {coinDenom} falhou devido a derrapagem. Tente aumentar a tolerância ao deslizamento.",
     "invalidAmounts": "Quantidade(s) inválida(s)",
-    "txTimedOutError": "A transação expirou. Por favor tente novamente."
+    "txTimedOutError": "A transação expirou. Por favor tente novamente.",
+    "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",

@@ -357,7 +357,8 @@
     "sequenceNumber": "您的并发事务太多！在您之前的交易到达链上后尝试重新发送。 (序列: {sequence} )",
     "swapSlippage": "由于滑点，兑换{coinDenom}失败。尝试增加滑动容差。",
     "invalidAmounts": "金额无效",
-    "txTimedOutError": "交易超时。请重试。"
+    "txTimedOutError": "交易超时。请重试。",
+    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",

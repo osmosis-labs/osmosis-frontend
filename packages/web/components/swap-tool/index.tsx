@@ -217,6 +217,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       ? t("swap.buttonError")
       : t("swap.button");
 
+    // Only display network fee if it's greater than 0.01 USD
+    const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
+      .toDec()
+      .gte(new Dec(0.01));
+
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
@@ -773,6 +778,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                 {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
                 featureFlags.swapToolSimulateFee &&
+                isNetworkFeeApplicable &&
                 !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
@@ -789,7 +795,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 {((swapState.quote?.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
                   (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
-                  featureFlags.swapToolSimulateFee && (
+                  featureFlags.swapToolSimulateFee &&
+                  isNetworkFeeApplicable && (
                     <div className="flex justify-between">
                       <span className="caption">{t("swap.totalFee")}</span>
                       <span className="caption text-osmoverse-200">

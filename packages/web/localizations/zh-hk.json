@@ -357,7 +357,8 @@
     "sequenceNumber": "您的並發事務太多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
     "invalidAmounts": "金額無效",
-    "txTimedOutError": "交易超時。請重試。"
+    "txTimedOutError": "交易超時。請重試。",
+    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
