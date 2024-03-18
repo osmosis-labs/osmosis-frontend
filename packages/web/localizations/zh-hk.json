@@ -176,6 +176,7 @@
       "titleWithdraw": "轉出到"
     },
     "stakedAssets": "已質押嘅OSMO",
+    "pooledAssets": "匯集",
     "table": {
       "columns": {
         "assetChain": "資產 / 鏈",
@@ -203,6 +204,7 @@
       "activate": "啟用"
     },
     "totalAssets": "總資產",
+    "totalBalance": "總餘額",
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
@@ -272,6 +274,11 @@
       "activate": "啟動未驗證資產",
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
+    },
+    "getStarted": {
+      "title": "開始使用{osmosis}",
+      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
+      "addFunds": "增加資金即可開始"
     }
   },
   "buyTokens": "購買代幣",
@@ -815,6 +822,7 @@
     "allocation": "分配",
     "tokensCount": "{number}標記",
     "strategiesCount": "{number}策略",
+    "oneStrategy": "1 策略",
     "value": "價值",
     "method": "方法",
     "platform": "平台",
@@ -832,8 +840,7 @@
     "allMethods": "所有方法",
     "platforms": "平台",
     "allPlatforms": "所有平台",
-    "lockingDuration": "鎖定時間",
-    "specialTokens": "特殊代幣",
+    "allCategories": "所有類別",
     "filters": "過濾器",
     "resetFilters": "重置過濾器",
     "saveFilters": "保存過濾器",
@@ -851,8 +858,19 @@
       "single": "單身的",
       "multi": "多"
     },
-    "totalValueInvested": "投資總額",
-    "lookBelow": "請參閱下文並找到最適合您的策略"
+    "totalValueInvested": "總價值",
+    "lookBelow": "請參閱下文並找到最適合您的策略",
+    "startEarning": "發現策略",
+    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下眾多策略之一讓您的資產發揮作用。",
+    "loadingStrategies": "載入策略...",
+    "sorryErrorOccurred": "抱歉，發生錯誤。",
+    "sorryNoResults": "沒有找到策略。",
+    "tryChangingFilters": "嘗試更換過濾器",
+    "retry": "重試",
+    "manage": "管理",
+    "noLock": "無鎖",
+    "riskDisclaimer": "風險是根據策略及其基礎資產的一組組合標準來計算的。",
+    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。"
   },
   "disclaimer": "免責聲明",
   "unstableAssetsWarning": {

@@ -176,6 +176,7 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
+    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -203,6 +204,7 @@
       "activate": "Aktywuj"
     },
     "totalAssets": "Aktywa ogółem",
+    "totalBalance": "Całkowita równowaga",
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
@@ -272,6 +274,11 @@
       "activate": "Aktywuj niezweryfikowane zasoby",
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
+    },
+    "getStarted": {
+      "title": "Zacznij od {osmosis}",
+      "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
+      "addFunds": "Dodaj środki, aby rozpocząć"
     }
   },
   "buyTokens": "Kup tokeny",
@@ -815,6 +822,7 @@
     "allocation": "Przydział",
     "tokensCount": "tokeny {number}",
     "strategiesCount": "Strategie {number}",
+    "oneStrategy": "1 strategia",
     "value": "Wartość",
     "method": "metoda",
     "platform": "Platforma",
@@ -832,8 +840,7 @@
     "allMethods": "Wszystkie metody",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
-    "lockingDuration": "Czas trwania blokady",
-    "specialTokens": "Specjalne żetony",
+    "allCategories": "Wszystkie kategorie",
     "filters": "Filtry",
     "resetFilters": "Zresetuj filtry",
     "saveFilters": "Zapisz filtry",
@@ -851,8 +858,19 @@
       "single": "Pojedynczy",
       "multi": "Wielo"
     },
-    "totalValueInvested": "Całkowita zainwestowana wartość",
-    "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie"
+    "totalValueInvested": "Całkowita wartość",
+    "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
+    "startEarning": "Odkryj strategie",
+    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z jednej z wielu poniższych strategii.",
+    "loadingStrategies": "Ładowanie strategii...",
+    "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",
+    "sorryNoResults": "Nie znaleziono strategii.",
+    "tryChangingFilters": "Spróbuj zmienić filtry",
+    "retry": "Spróbować ponownie",
+    "manage": "Zarządzać",
+    "noLock": "Brak blokady",
+    "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
+    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju."
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {

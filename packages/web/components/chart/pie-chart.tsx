@@ -32,13 +32,7 @@ const defaultOptions: Partial<Options> = {
     margin: 0,
   },
   tooltip: {
-    pointFormatter: function () {
-      return `<p>${
-        this.x
-      }<span style='font-size: 10px;'>${this.name.toUpperCase()}</span> / ${
-        this.y
-      }%</p>`;
-    },
+    enabled: false,
   },
   title: {
     text: undefined,

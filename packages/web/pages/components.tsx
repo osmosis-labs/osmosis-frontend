@@ -21,12 +21,9 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GradientView } from "~/components/assets/gradient-view";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import { ArrowButton, Button, ChartButton } from "~/components/buttons";
 import ClipboardButton from "~/components/buttons/clipboard-button";
-import { CloseButton } from "~/components/buttons/close-button";
 import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
-import LinkIconButton from "~/components/buttons/link-icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,
@@ -43,8 +40,10 @@ import Spinner from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
+import { LinkIconButton } from "~/components/ui/button";
+import { ArrowButton } from "~/components/ui/button";
 import { ShowMoreButton } from "~/components/ui/button";
-import { Button as ButtonShadcn } from "~/components/ui/button";
+import { Button, ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input as InputShadcn } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -305,7 +304,7 @@ const RadiosWithOptions = () => {
         tokenHolder: "all",
         strategyMethod: { label: "All", value: "" },
         platform: { label: "All", value: "" },
-        noLockingDuration: false,
+        lockDurationType: "all",
         search: "",
         specialTokens: [],
         rewardType: "all",
@@ -349,166 +348,65 @@ const Radios = () => {
 
 const Buttons = () => {
   return (
-    <Card title="Buttons">
+    <Card title="Buttons (Shadcn)">
       <Component title="Primary">
-        <Button onClick={() => console.log("clicked")}>Click</Button>
+        <Button onClick={() => console.log("clicked")} size="default">
+          Click
+        </Button>
       </Component>
       <Component title="Disabled">
         <Button disabled onClick={() => console.log("clicked")}>
           Click
         </Button>
       </Component>
-      <Component title="Primary Bullish">
-        <Button mode="primary-bullish" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Primary Warning">
-        <Button mode="primary-warning" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
       <Component title="Secondary">
-        <Button mode="secondary" onClick={() => console.log("clicked")}>
+        <Button onClick={() => console.log("clicked")} variant="secondary">
           Click
         </Button>
-      </Component>
-      <Component title="Secondary Bullish">
-        <Button mode="secondary-bullish" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Tertiary">
-        <Button mode="tertiary" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Text">
-        <Button mode="text" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Text White">
-        <Button mode="text-white" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Framed Primary">
-        <Button mode="framed-primary" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Framed Secondary">
-        <Button mode="framed-secondary" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Amount">
-        <Button mode="amount" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Special 1">
-        <Button mode="special-1" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Icon Primary">
-        <Button mode="icon-primary" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Icon Social">
-        <Button mode="icon-social" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Bullish Special">
-        <Button mode="bullish-special" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Quaternary Modal">
-        <Button mode="quaternary-modal" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Quaternary">
-        <Button mode="quaternary" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-      <Component title="Unstyled">
-        <Button mode="unstyled" onClick={() => console.log("clicked")}>
-          Click
-        </Button>
-      </Component>
-    </Card>
-  );
-};
-
-const ButtonsShadcn = () => {
-  return (
-    <Card title="Buttons (Shadcn)">
-      <Component title="Primary">
-        <ButtonShadcn onClick={() => console.log("clicked")} size="default">
-          Click
-        </ButtonShadcn>
-      </Component>
-      <Component title="Disabled">
-        <ButtonShadcn disabled onClick={() => console.log("clicked")}>
-          Click
-        </ButtonShadcn>
-      </Component>
-      <Component title="Secondary">
-        <ButtonShadcn
-          onClick={() => console.log("clicked")}
-          variant="secondary"
-        >
-          Click
-        </ButtonShadcn>
       </Component>
       <Component title="Destructive">
-        <ButtonShadcn
-          onClick={() => console.log("clicked")}
-          variant="destructive"
-        >
+        <Button onClick={() => console.log("clicked")} variant="destructive">
           Click
-        </ButtonShadcn>
+        </Button>
       </Component>
       <Component title="Ghost">
-        <ButtonShadcn onClick={() => console.log("clicked")} variant="ghost">
+        <Button onClick={() => console.log("clicked")} variant="ghost">
           Click
-        </ButtonShadcn>
+        </Button>
       </Component>
       <Component title="Outline">
-        <ButtonShadcn variant="outline" onClick={() => console.log("clicked")}>
+        <Button variant="outline" onClick={() => console.log("clicked")}>
           Click
-        </ButtonShadcn>
+        </Button>
+      </Component>
+      <Component title="Medium">
+        <Button onClick={() => console.log("clicked")} size="md">
+          Click
+        </Button>
       </Component>
       <Component title="Small">
-        <ButtonShadcn onClick={() => console.log("clicked")} size="sm">
+        <Button onClick={() => console.log("clicked")} size="sm">
           Click
-        </ButtonShadcn>
+        </Button>
       </Component>
       <Component title="Small Outline">
-        <ButtonShadcn
+        <Button
           onClick={() => console.log("clicked")}
           size="sm"
           variant="outline"
         >
           Click
-        </ButtonShadcn>
+        </Button>
       </Component>
       <Component title="Icon">
-        <ButtonShadcn onClick={() => console.log("clicked")} size="icon">
+        <Button onClick={() => console.log("clicked")} size="icon">
           <Icon id="close" />
-        </ButtonShadcn>
+        </Button>
       </Component>
       <Component title="Link">
-        <ButtonShadcn onClick={() => console.log("clicked")} variant="link">
+        <Button onClick={() => console.log("clicked")} variant="link">
           Click
-        </ButtonShadcn>
+        </Button>
       </Component>
     </Card>
   );
@@ -536,12 +434,6 @@ const CustomButtons = () => {
         >
           Click
         </ClipboardButton>
-      </Component>
-      <Component title="Close">
-        <CloseButton
-          onClick={() => console.log("clicked")}
-          className="bg-osmoverse-600"
-        />
       </Component>
       <Component title="Icon">
         <IconButton
@@ -577,8 +469,6 @@ const CustomButtons = () => {
       <Component title="Link Icon">
         <LinkIconButton
           href=""
-          mode="icon-social"
-          size="md-icon-social"
           target="_blank"
           rel="external"
           aria-label="X"
@@ -1176,7 +1066,6 @@ const Components: NextPage = () => {
 
       <Switches />
 
-      <ButtonsShadcn />
       <Buttons />
 
       <Checkboxes />

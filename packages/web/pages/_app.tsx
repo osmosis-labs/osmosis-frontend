@@ -98,7 +98,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-interface LevanaGeoBlockedResponse {
+export interface LevanaGeoBlockedResponse {
   allowed: boolean;
   countryCode: string;
 }
@@ -192,8 +192,8 @@ const MainLayoutWrapper: FunctionComponent<{
         ? {
             label: t("earnPage.title"),
             link: "/earn",
+            icon: <Icon id="earn" className="h-5 w-5" />,
             isNew: true,
-            icon: <Icon id="trade" className="h-5 w-5" />,
             selectionTest: /\/earn/,
           }
         : null,

@@ -176,6 +176,7 @@
       "titleWithdraw": "को वापस ले लें"
     },
     "stakedAssets": "स्टेक्ड OSMO",
+    "pooledAssets": "जमा",
     "table": {
       "columns": {
         "assetChain": "संपत्ति/श्रृंखला",
@@ -203,6 +204,7 @@
       "activate": "सक्रिय"
     },
     "totalAssets": "कुल संपत्ति",
+    "totalBalance": "कुल शेष",
     "transfer": {
       "availableMobile": "उपलब्ध",
       "availableOn": "{network} पर उपलब्ध है",
@@ -272,6 +274,11 @@
       "activate": "असत्यापित संपत्तियों को सक्रिय करें",
       "description": "एक असत्यापित टोकन है. क्या आप इसे सक्रिय करना चाहते हैं? ट्रेडिंग से पहले अच्छी तरह से शोध अवश्य कर लें।",
       "reminder": "आप सेटिंग मोडल में इस सेटिंग को हमेशा निष्क्रिय कर सकते हैं।"
+    },
+    "getStarted": {
+      "title": "{osmosis} से आरंभ करें",
+      "description": "बस कुछ ही चरणों में ट्रेडिंग शुरू करने के लिए अपने वॉलेट से कनेक्ट करें और उसमें धनराशि डालें।",
+      "addFunds": "आरंभ करने के लिए धनराशि जोड़ें"
     }
   },
   "buyTokens": "टोकन खरीदें",
@@ -815,6 +822,7 @@
     "allocation": "आवंटन",
     "tokensCount": "{number} टोकन",
     "strategiesCount": "{number} रणनीतियाँ",
+    "oneStrategy": "1 रणनीति",
     "value": "कीमत",
     "method": "तरीका",
     "platform": "प्लैटफ़ॉर्म",
@@ -829,11 +837,10 @@
     "days": "दिन",
     "risk": "जोखिम",
     "strategyMethod": "रणनीति विधि",
-    "allMethods": "सभी विधि",
+    "allMethods": "सभी विधियाँ",
     "platforms": "प्लेटफार्म",
     "allPlatforms": "सभी प्लेटफार्म",
-    "lockingDuration": "लॉक करने की अवधि",
-    "specialTokens": "विशेष टोकन",
+    "allCategories": "सब वर्ग",
     "filters": "फिल्टर",
     "resetFilters": "फ़िल्टर रीसेट करें",
     "saveFilters": "फ़िल्टर सहेजें",
@@ -851,8 +858,19 @@
       "single": "अकेला",
       "multi": "मल्टी"
     },
-    "totalValueInvested": "निवेशित कुल मूल्य",
-    "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें"
+    "totalValueInvested": "कुल मूल्य",
+    "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें",
+    "startEarning": "रणनीतियों की खोज करें",
+    "startEarningDescription": "अपनी पूरी कमाई क्षमता को अनलॉक करें। नीचे दी गई कई रणनीतियों में से किसी एक के माध्यम से अपनी संपत्ति को काम में लगाएं।",
+    "loadingStrategies": "रणनीतियाँ लोड हो रही हैं...",
+    "sorryErrorOccurred": "क्षमा करें, एक त्रुटि उत्पन्न हुई.",
+    "sorryNoResults": "कोई रणनीति नहीं मिली.",
+    "tryChangingFilters": "फ़िल्टर बदलने का प्रयास करें",
+    "retry": "पुन: प्रयास करें",
+    "manage": "प्रबंधित करना",
+    "noLock": "ताला रहित",
+    "riskDisclaimer": "जोखिम की गणना किसी रणनीति और उसकी अंतर्निहित परिसंपत्तियों के बारे में मानदंडों के संयुक्त सेट के साथ की जाती है।",
+    "strategyGeoblocked": "क्षमा करें, यह रणनीति आपके देश में उपलब्ध नहीं है।"
   },
   "disclaimer": "अस्वीकरण",
   "unstableAssetsWarning": {

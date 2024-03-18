@@ -23,6 +23,7 @@ import {
 } from "~/server/queries/imperator";
 import { TimeDuration } from "~/server/queries/imperator";
 import { compareDec, compareMemberDefinition } from "~/utils/compare";
+import { captureErrorAndReturn } from "~/utils/error";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -71,7 +72,12 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: "desc",
               includePreview,
             }),
-          cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
+          cacheKey: JSON.stringify({
+            search,
+            userOsmoAddress,
+            onlyVerified,
+            includePreview,
+          }),
           cursor,
           limit,
         })
@@ -110,7 +116,7 @@ export const assetsRouter = createTRPCRouter({
         ...userMarketAsset,
       };
     }),
-  getMarketAssets: publicProcedure
+  getUserMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
@@ -260,7 +266,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      })
+      }).catch((e) => captureErrorAndReturn(e, []))
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
@@ -287,6 +293,8 @@ export const assetsRouter = createTRPCRouter({
           quoteCoinMinimalDenom,
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
-        })
+        }).catch((e) =>
+          captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
+        )
     ),
 });
