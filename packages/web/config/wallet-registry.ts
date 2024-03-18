@@ -45,19 +45,6 @@ export const WalletRegistry: RegistryWallet[] = [
     ] as DownloadInfo[],
     mode: "extension", // Add mode property with correct value
   },
-
-  {
-    ...CosmosKitWalletList["keplr-extension"],
-    mobileDisabled: false,
-    logo: "/wallets/keplr.svg",
-    lazyInstall: () =>
-      import("@cosmos-kit/keplr-extension").then((m) => m.KeplrExtensionWallet),
-    windowPropertyName: "keplr",
-    stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
-    governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: ["notifications"],
-    mode: "extension",
-  },
   {
     ...CosmosKitWalletList["trust-mobile"],
     logo: "/wallets/trust.png",
