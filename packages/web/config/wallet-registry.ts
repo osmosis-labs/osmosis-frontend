@@ -56,10 +56,11 @@ export const WalletRegistry: RegistryWallet[] = [
   {
     ...CosmosKitWalletList["trust-mobile"],
     logo: "/wallets/trust.png",
+    mobileDisabled: false,
     lazyInstall: () =>
       import("@cosmos-kit/trust-mobile").then((m) => m.TrustMobileWallet),
     supportsChain: async (chainId) => {
-      const keplrMobileAvailableChains: MainnetChainIds[] = [
+      const trustMobileAvailableChains: MainnetChainIds[] = [
         "agoric-3",
         "akashnet-2",
         "mantle-1",
@@ -89,11 +90,12 @@ export const WalletRegistry: RegistryWallet[] = [
         "phoenix-1",
       ];
 
-      return keplrMobileAvailableChains.includes(chainId as MainnetChainIds);
+      return trustMobileAvailableChains.includes(chainId as MainnetChainIds);
     },
     stakeUrl: "https://trustwallet.com/staking",
     governanceUrl: "https://governance.trustwallet.com/",
     features: [],
+    mode: "wallet-connect",
   },
   {
     ...CosmosKitWalletList["keplr-extension"],
