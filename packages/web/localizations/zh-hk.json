@@ -458,7 +458,7 @@
       "introducingSubtitle": "進行更快、更輕鬆的交易，無需多個錢包批准的麻煩。",
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
-      "activeHourLimit": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
+      "defaultParameters": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
       "changeButton": "改變"
     },
     "floatingBanner": {

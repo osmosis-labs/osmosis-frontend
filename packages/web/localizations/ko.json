@@ -458,7 +458,7 @@
       "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
-      "activeHourLimit": "1-클릭 거래는 $5,000 USD 지출 한도로 이 기기에서 1시간 동안 활성화됩니다.",
+      "defaultParameters": "1-클릭 거래는 $5,000 USD 지출 한도로 이 기기에서 1시간 동안 활성화됩니다.",
       "changeButton": "변화"
     },
     "floatingBanner": {

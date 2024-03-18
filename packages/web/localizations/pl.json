@@ -458,7 +458,7 @@
       "introducingSubtitle": "Dokonuj szybszych i łatwiejszych transakcji bez konieczności zatwierdzania wielu portfeli.",
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
-      "activeHourLimit": "Handel jednym kliknięciem będzie aktywny przez 1 godzinę na tym urządzeniu z limitem wydatków wynoszącym 5000 USD",
+      "defaultParameters": "Handel jednym kliknięciem będzie aktywny przez 1 godzinę na tym urządzeniu z limitem wydatków wynoszącym 5000 USD",
       "changeButton": "Zmiana"
     },
     "floatingBanner": {

@@ -458,7 +458,7 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "activeHourLimit": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
+      "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
       "changeButton": "変化"
     },
     "floatingBanner": {

@@ -458,7 +458,7 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "activeHourLimit": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
+      "defaultParameters": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
       "changeButton": "Ändern"
     },
     "floatingBanner": {

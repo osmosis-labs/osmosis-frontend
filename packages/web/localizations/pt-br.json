@@ -458,7 +458,7 @@
       "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
-      "activeHourLimit": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
+      "defaultParameters": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
       "changeButton": "Mudar"
     },
     "floatingBanner": {

@@ -458,7 +458,7 @@
       "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
       "learnMore": "بیشتر بدانید",
       "startTradingButton": "شروع تجارت با 1 کلیک",
-      "activeHourLimit": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
+      "defaultParameters": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
       "changeButton": "تغییر دادن"
     },
     "floatingBanner": {
