@@ -47,7 +47,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
             className={classNames(
               "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
               {
-                "border-wosmongton-700": selectedCategories.includes(category),
+                "border-wosmongton-400": selectedCategories.includes(category),
                 "border-osmoverse-600": !selectedCategories.includes(category),
               }
             )}
