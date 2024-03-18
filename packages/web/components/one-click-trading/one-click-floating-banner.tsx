@@ -6,9 +6,8 @@ import { Fragment } from "react";
 import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { ArrowButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
 import { Pill } from "~/components/indicators/pill";
+import { ArrowButton, IconButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
@@ -131,10 +130,10 @@ const OneClickFloatingBannerContent = () => {
 
           <IconButton
             aria-label="Close"
-            mode="icon-primary"
-            size="unstyled"
+            variant="default"
+            size={null}
             className={classNames(
-              "group mt-5 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
+              "group mt-3 mr-0.5 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
               "sm:mt-0 sm:ml-2 sm:self-center"
             )}
             icon={
