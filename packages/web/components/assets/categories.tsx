@@ -62,7 +62,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
             <span>{t("assets.categories." + category)}</span>
             <div
               style={{
-                width: `${sampleAssets.slice(undefined, 4).length * 35}px`,
+                width: `${sampleAssets.slice(undefined, 4).length * 28}px`,
               }}
               className="relative flex h-fit items-center"
             >
@@ -70,11 +70,11 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 <div
                   key={coinImageUrl}
                   style={{
-                    marginLeft: `${index * 28}px`,
-                    zIndex: 50 - index,
+                    marginLeft: `${index * 24}px`,
+                    zIndex: 50 + index,
                   }}
                   className={classNames(
-                    "absolute flex h-[3.125rem] w-[3.125rem] items-center justify-center",
+                    "absolute flex h-8 w-8 items-center justify-center",
                     {
                       "shrink-0": index > 0,
                     }
@@ -88,15 +88,15 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                     <img
                       src={coinImageUrl}
                       alt={coinImageUrl}
-                      width={50}
-                      height={50}
+                      width={32}
+                      height={32}
                     />
                   ) : (
                     <img
                       src="/icons/question-mark.svg"
                       alt="no token icon"
-                      width={50}
-                      height={50}
+                      width={32}
+                      height={32}
                     />
                   )}
                 </div>
