@@ -43,7 +43,7 @@ import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
 const CONSTANTS = {
-  HIGH_APR: "0.3",
+  HIGH_APR: "0.2",
   HIGH_VOTING_POWER: "0.015",
 };
 
@@ -212,6 +212,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const data = useMemo(() => {
         return validators
           .filter(({ description }) => Boolean(description.moniker))
+          .filter((validator) => {
+            const commissions = getCommissions(validator);
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            return !isAPRTooHigh; // Only include validators where commissions <20%
+          })
           .map((validator) => {
             const votingPower = getVotingPower(validator);
             const myStake = getMyStake(validator);
@@ -223,6 +228,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             const formattedCommissions = getFormattedCommissions(commissions);
 
             const isAPRTooHigh = getIsAPRTooHigh(commissions);
+
+            if (isAPRTooHigh) return undefined;
+
             const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
             const website = validator?.description?.website || "";
