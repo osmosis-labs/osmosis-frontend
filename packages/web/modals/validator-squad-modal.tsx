@@ -213,7 +213,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           .filter((validator) => {
             const commissions = getCommissions(validator);
             const isAPRTooHigh = getIsAPRTooHigh(commissions);
-            return !isAPRTooHigh; // Only include validators where commissions <20%
+            return !isAPRTooHigh; // don't include validators where commissions >20%
           })
           .map((validator) => {
             const votingPower = getVotingPower(validator);
