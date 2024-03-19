@@ -16,70 +16,18 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "osmosis",
         price: {
-          poolId: "1430",
+          poolId: "1077",
           denom:
-            "ibc/D1542AA8762DB13087D8364F3EA6509FD6F009A34F00426AF9E4F9FA85CBBF1F",
+            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
         },
         categories: ["defi"],
         transferMethods: [],
         counterparty: [],
         name: "Osmosis",
-        description:
-          "The native token of Osmosis\n\nOsmosis (OSMO) is the premier DEX and cross-chain DeFi hub within the Cosmos ecosystem, a network of over 50 sovereign, interoperable blockchains seamlessly connected through the Inter-Blockchain Communication Protocol (IBC). Pioneering in its approach, Osmosis offers a dynamic trading and liquidity provision experience, integrating non-IBC assets from other ecosystems, including Ethereum, Solana, Avalanche, and Polkadot. Initially adopting Balancer-style pools, Osmosis now also features a concentrated liquidity model that is orders of magnitude more capital efficient, meaning that significantly less liquidity is required to handle the same amount of trading volume with minimal slippage.\n\nAs a true appchain, Osmosis has greater control over the full blockchain stack than traditional smart contract DEXs, which must follow the code of the parent chain that it is built on. This fine-grained control has enabled, for example, the development of Superfluid Staking, an extension of Proof of Stake that allows assets at the application layer to be staked to secure the chain. The customizability of appchains also allows implementing features like the Protocol Revenue module, which enables Osmosis to conduct on-chain arbitrage on behalf of OSMO stakers, balancing prices across pools while generating real yield revenue from this volume. Additionally, as a sovereign appchain, Osmosis governance can vote on upgrades to the protocol. One example of this was the introduction of a Taker Fee, which switched on the collection of exchange fees to generate diverse yield from Osmosis volume and distribute it to OSMO stakers.\n\nOsmosis is bringing the full centralized exchange experience to the decentralized world by building a cross-chain native DEX and trading suite that connects all chains over IBC, including Ethereum and Bitcoin. To reach this goal, Osmosis hosts an ever-expanding suite of DeFi applications aimed at providing a one-stop experience that includes lending, credit, margin, DeFi strategy vaults, power perps, fiat on-ramps, NFTs, stablecoins, and more — all of the functionalities that centralized exchange offer and more, in the trust-minimized environment of decentralized finance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/osmosiszone",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/osmo.svg",
       },
       {
@@ -101,61 +49,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Ion DAO",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/_IONDAO",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/ion.svg",
       },
       {
@@ -179,59 +76,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "IBC Index",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/ibcx.svg",
       },
       {
@@ -254,59 +102,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Staked IBCX",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/stibcx.svg",
       },
       {
@@ -328,59 +127,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "ERIS Amplified OSMO",
-        description: "ERIS liquid staked OSMO",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/amposmo.png",
       },
       {
@@ -405,59 +155,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "CDT Stablecoin",
-        description: "Membrane's CDP-style stablecoin called CDT",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/cdt.svg",
       },
       {
@@ -480,59 +181,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Membrane",
-        description: "Membrane's protocol token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/mbrn.svg",
       },
       {
@@ -554,59 +206,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "OSMO Squared",
-        description: "Margined Power Token sqOSMO",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqosmo.svg",
       },
       {
@@ -629,59 +232,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "ATOM Squared",
-        description: "Margined Power Token sqATOM",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqatom.svg",
       },
       {
@@ -699,59 +253,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "BTC Squared",
-        description: "Margined Power Token sqBTC",
         verified: true,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqbtc.svg",
       },
       {
@@ -775,59 +280,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Levana",
-        description: "Levana native token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/lvn.svg",
       },
       {
@@ -852,58 +308,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "milkTIA",
-        description: "MilkyWay's liquid staked TIA",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "celestia",
-            sourceDenom: "utia",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-        ],
         relative_image_url: "/tokens/generated/milktia.svg",
       },
       {
@@ -919,9 +327,8 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
         },
         price: {
-          poolId: "1436",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1434",
+          denom: "uosmo",
         },
         categories: ["meme"],
         transferMethods: [],
@@ -952,55 +359,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTC",
         name: "Wrapped Bitcoin",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-29T09:57:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "nomic",
-            sourceDenom: "usat",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-        ],
         relative_image_url: "/tokens/generated/wbtc.svg",
       },
       {
@@ -1022,61 +385,11 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "WOSMO",
-        description:
-          "The first native memecoin on Osmosis. Crafted by the deftest of hands in the lab of lunacy. It's scientifically anarchic, professionally foolish, and your ticket to the madhouse.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-22T15:42:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/wosmo.png",
       },
       {
@@ -1099,60 +412,11 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "TIA Squared",
-        description: "Margined Power Token sqTIA",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-19T15:51:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqtia.svg",
       },
       {
@@ -1170,60 +434,10 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "RAPTR",
-        description:
-          "Rapture insurance is the first ever P2P insurance platform on $OSMO. Get rewarded to take care of peoples loved ones after the Rapture.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/raptr.png",
       },
       {
@@ -1245,8 +459,6 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "BADKID",
-        description:
-          "A clan of 11y bad kids crafting chaos on the Cosmos eco. One bad memecoin to rule them all  $BADKID. Airdropped to Badkids NFT holders and $STARS stakers. It's so bad, your wallet's throwing a tantrum for it.",
         verified: false,
         unstable: false,
         disabled: false,
@@ -1254,55 +466,29 @@ export const AssetLists: AssetList[] = [
         tooltipMessage:
           "This asset is NOT affiliated with the Bad Kids NFT collection.",
         listingDate: "2024-02-13T21:32:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/badkid.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+        coinMinimalDenom:
+          "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+        symbol: "SAIL",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sail.png",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Sail",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-14T22:20:00.000Z",
+        relative_image_url: "/tokens/generated/sail.png",
       },
     ],
   },
@@ -1405,55 +591,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Axelar)",
-        description: "Circle's stablecoin on Axelar",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdc.axl.svg",
       },
       {
@@ -1552,55 +693,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Ether",
-        description:
-          "Ethereum (ETH) is a decentralized, open-source blockchain system featuring smart contract functionality. It's the native cryptocurrency of the Ethereum platform, often regarded as the second most popular digital currency after Bitcoin. Ethereum was proposed in late 2013 and development was crowdfunded in 2014, leading to its network going live on 30 July 2015.\n\nETH, as a digital currency, is used for a variety of purposes within the Ethereum ecosystem, including the execution of decentralized smart contracts and as a mode of payment. Unlike Bitcoin, Ethereum was designed to be a platform for applications that can operate without the need for intermediaries, using blockchain technology. This has made Ethereum a leading platform for various applications, including decentralized finance (DeFi), non-fungible tokens (NFTs), and more. Ethereum is constantly evolving, with a significant upgrade termed Ethereum 2.0, which aims to improve its scalability, security, and sustainability.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/eth.png",
       },
       {
@@ -1666,7 +762,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WBTC",
         name: "Wrapped Bitcoin (Axelar)",
-        description: "Wrapped Bitcoin on Axelar",
         verified: true,
         unstable: false,
         disabled: false,
@@ -1675,49 +770,6 @@ export const AssetLists: AssetList[] = [
           chainName: "axelar",
           sourceDenom: "uaxl",
         },
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "nomic",
-            sourceDenom: "usat",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/wbtc.axl.svg",
       },
       {
@@ -1783,7 +835,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Axelar)",
-        description: "Tether's USD stablecoin on Axelar",
         verified: true,
         unstable: false,
         disabled: false,
@@ -1792,49 +843,6 @@ export const AssetLists: AssetList[] = [
           chainName: "axelar",
           sourceDenom: "uaxl",
         },
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdt.axl.svg",
       },
       {
@@ -1901,54 +909,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DAI",
         name: "Dai Stablecoin",
-        description:
-          "Multi-Collateral Dai, brings a lot of new and exciting features, such as support for new CDP collateral types and Dai Savings Rate.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/dai.svg",
       },
       {
@@ -2015,54 +979,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BUSD",
         name: "Binance USD",
-        description:
-          "Binance USD (BUSD) is a dollar-backed stablecoin issued and custodied by Paxos Trust Company, and regulated by the New York State Department of Financial Services. BUSD is available directly for sale 1:1 with USD on Paxos.com and will be listed for trading on Binance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/busd.svg",
       },
       {
@@ -2142,54 +1062,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BNB",
         name: "Binance Coin",
-        description:
-          "BNB powers the BNB Chain ecosystem and is the native coin of the BNB Beacon Chain and BNB Smart Chain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-        ],
         relative_image_url: "/tokens/generated/bnb.svg",
       },
       {
@@ -2267,54 +1143,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MATIC",
         name: "Polygon",
-        description:
-          "Polygon (formerly Matic) Network brings massive scale to Ethereum using an adapted version of Plasma with PoS based side chains. Polygon is a well-structured, easy-to-use platform for Ethereum scaling and infrastructure development.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-        ],
         relative_image_url: "/tokens/generated/matic.png",
       },
       {
@@ -2391,54 +1223,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AVAX",
         name: "Avalanche",
-        description:
-          "AVAX is the native token of Avalanche. It is a hard-capped, scarce asset that is used to pay for fees, secure the platform through staking, and provide a basic unit of account between the multiple subnets created on Avalanche.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-        ],
         relative_image_url: "/tokens/generated/avax.png",
       },
       {
@@ -2446,13 +1234,13 @@ export const AssetLists: AssetList[] = [
         sourceDenom: "dot-planck",
         coinMinimalDenom:
           "ibc/3FF92D26B407FD61AE95D975712A7C319CDE28DE4D80BDC9978D935932B991D7",
-        symbol: "DOT.axl",
+        symbol: "moonbeam.DOT.axl",
         decimals: 10,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/dot.axl.svg",
         },
         price: {
-          poolId: "1091",
+          poolId: "773",
           denom: "uosmo",
         },
         categories: [],
@@ -2503,7 +1291,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "xcDOT",
         name: "Wrapped Polkadot (Axelar)",
-        description: "Wrapped Polkadot on Axelar",
         verified: true,
         unstable: false,
         disabled: false,
@@ -2512,50 +1299,7 @@ export const AssetLists: AssetList[] = [
           chainName: "axelar",
           sourceDenom: "uaxl",
         },
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "composable",
-            sourceDenom:
-              "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-        ],
-        relative_image_url: "/tokens/generated/dot.axl.svg",
+        relative_image_url: "/tokens/generated/moonbeam.dot.axl.svg",
       },
       {
         chainName: "axelar",
@@ -2620,54 +1364,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FRAX",
         name: "Frax",
-        description:
-          "Frax is a fractional-algorithmic stablecoin protocol. It aims to provide a highly scalable, decentralized, algorithmic money in place of fixed-supply assets like BTC. Additionally, FXS is the value accrual and governance token of the entire Frax ecosystem.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/frax.svg",
       },
       {
@@ -2734,54 +1434,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LINK",
         name: "Chainlink",
-        description:
-          "A blockchain-based middleware, acting as a bridge between cryptocurrency smart contracts, data feeds, APIs and traditional bank account payments.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/link.svg",
       },
       {
@@ -2841,54 +1497,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AAVE",
         name: "Aave",
-        description:
-          "Aave is an Open Source and Non-Custodial protocol to earn interest on deposits & borrow assets. It also features access to highly innovative flash loans, which let developers borrow instantly and easily; no collateral needed. With 16 different assets, 5 of which are stablecoins.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/aave.svg",
       },
       {
@@ -2948,54 +1560,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APE",
         name: "ApeCoin",
-        description:
-          "ApeCoin found new expression in web3 through art, gaming, entertainment, and events. APE is a token made to support what’s next, controlled, and built on by the community. It will serve as a decentralized protocol layer for community-led initiatives that drive culture forward into the metaverse.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/ape.svg",
       },
       {
@@ -3010,8 +1578,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "maker",
         price: {
-          poolId: "733",
-          denom: "uosmo",
+          poolId: "1517",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: [],
         transferMethods: [
@@ -3059,54 +1628,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MKR",
         name: "Maker",
-        description:
-          "Maker is a Decentralized Autonomous Organization that creates and insures the dai stablecoin on the Ethereum blockchain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/mkr.svg",
       },
       {
@@ -3166,54 +1691,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAI",
         name: "Rai Reflex Index",
-        description:
-          "RAI is a non-pegged, ETH-backed stable asset. It is useful as more 'stable' collateral for other DeFi protocols (compared to ETH or BTC) or as a stable asset with an embedded interest rate.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/rai.svg",
       },
       {
@@ -3277,54 +1758,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHIB",
         name: "Shiba Inu",
-        description:
-          "SHIBA INU is a 100% decentralized community experiment with it claims that 1/2 the tokens have been sent to Vitalik and the other half were locked to a Uniswap pool and the keys burned.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/shib.svg",
       },
       {
@@ -3339,8 +1776,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "moonbeam",
         price: {
-          poolId: "825",
-          denom: "uosmo",
+          poolId: "1543",
+          denom:
+            "ibc/4F3B0EC2FE2D370D10C3671A1B7B06D2A964C721470C305CBB846ED60E6CAA20",
         },
         categories: [],
         transferMethods: [
@@ -3401,54 +1839,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLMR",
         name: "Moonbeam",
-        description:
-          "Glimmer (GLMR) is the utility token of the Moonbeam Network, Moonbeam’s primary deployment on the Polkadot network that serves as a developer-friendly parachain.",
-        verified: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/glmr.svg",
       },
       {
@@ -3502,55 +1896,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AXL",
         name: "Axelar",
-        description:
-          "The native token of Axelar\n\nAxelar delivers secure cross-chain communication for Web3. Our infrastructure enables dApp users to interact with any asset or application, on any chain, with one click.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/axelarnetwork",
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-        ],
         relative_image_url: "/tokens/generated/axl.svg",
       },
       {
@@ -3629,54 +1978,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FTM",
         name: "Fantom",
-        description:
-          "Fantom's native utility token — FTM — powers the entire Fantom blockchain ecosystem. FTM tokens are used for staking, governance, payments, and fees on the network.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/ftm.svg",
       },
       {
@@ -3684,7 +1989,7 @@ export const AssetLists: AssetList[] = [
         sourceDenom: "polygon-uusdc",
         coinMinimalDenom:
           "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A",
-        symbol: "polygon.USDC",
+        symbol: "polygon.USDC.axl",
         decimals: 6,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/polygon.usdc.svg",
@@ -3755,64 +2060,18 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Polygon)",
-        description:
-          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-        ],
-        relative_image_url: "/tokens/generated/polygon.usdc.svg",
+        relative_image_url: "/tokens/generated/polygon.usdc.axl.svg",
       },
       {
         chainName: "axelar",
         sourceDenom: "avalanche-uusdc",
         coinMinimalDenom:
           "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C",
-        symbol: "avalanche.USDC",
+        symbol: "avalanche.USDC.axl",
         decimals: 6,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/avalanche.usdc.svg",
@@ -3883,57 +2142,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Avalanche)",
-        description:
-          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-        ],
-        relative_image_url: "/tokens/generated/avalanche.usdc.svg",
+        relative_image_url: "/tokens/generated/avalanche.usdc.axl.svg",
       },
       {
         chainName: "axelar",
@@ -3948,8 +2161,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "filecoin",
         price: {
-          poolId: "1006",
-          denom: "uosmo",
+          poolId: "1562",
+          denom:
+            "ibc/FE2CD1E6828EC0FAB8AF39BAC45BC25B965BA67CCBC50C13A14BD610B0D1E2C4",
         },
         categories: [],
         transferMethods: [
@@ -4012,54 +2226,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FIL",
         name: "Filecoin",
-        description:
-          "Filecoin is a decentralized storage network designed to turn cloud storage into an algorithmic market. The network facilitates open markets for storing and retrieving data, where users pay to store their files on storage miners. Filecoin is built on top of the InterPlanetary File System (IPFS), a peer-to-peer storage network. Filecoin aims to store data in a decentralized manner, unlike traditional cloud storage providers.\n\nParticipants in the Filecoin network are incentivized to act honestly and store as much data as possible because they earn the Filecoin cryptocurrency (FIL) in exchange for their storage services. This setup ensures the integrity and accessibility of data stored. Filecoin's model allows for a variety of storage options, including long-term archival storage and more rapid retrieval services, making it a versatile solution for decentralized data storage. The project, developed by Protocol Labs, also focuses on ensuring that data is stored reliably and efficiently.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/fil.svg",
       },
       {
@@ -4126,53 +2296,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARB",
         name: "Arbitrum",
-        description: "Native token of Arbitrum",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/arb.svg",
       },
       {
@@ -4239,53 +2366,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PEPE",
         name: "Pepe",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/pepe.svg",
       },
       {
@@ -4350,54 +2434,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "cbETH",
         name: "Coinbase Wrapped Staked ETH",
-        description:
-          "Coinbase Wrapped Staked ETH (“cbETH”) is a utility token and liquid representation of ETH staked through Coinbase. cbETH gives customers the option to sell, transfer, or otherwise use their staked ETH in dapps while it remains locked by the Ethereum protocol.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/cbeth.png",
       },
       {
@@ -4462,54 +2502,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "rETH",
         name: "Rocket Pool Ether",
-        description:
-          "Rocket Pool is a decentralised Ethereum Proof of Stake pool.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/reth.png",
       },
       {
@@ -4587,54 +2583,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "frxETH",
         name: "Staked Frax Ether",
-        description:
-          "sfrxETH is the version of frxETH which accrues staking yield. All profit generated from Frax Ether validators is distributed to sfrxETH holders. By exchanging frxETH for sfrxETH, one become's eligible for staking yield, which is redeemed upon converting sfrxETH back to frxETH.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/sfrxeth.svg",
       },
       {
@@ -4710,7 +2662,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stETH",
         name: "Wrapped Lido Staked Ether (Axelar)",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
@@ -4719,49 +2670,6 @@ export const AssetLists: AssetList[] = [
           chainName: "axelar",
           sourceDenom: "uaxl",
         },
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/wsteth.axl.svg",
       },
       {
@@ -4829,54 +2737,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "YieldETH",
         name: "Real Yield ETH",
-        description:
-          "Maximize ETH yield through leveraged staking across Aave, Compound and Morpho and liquidity provision of ETH liquid staking tokens on Uniswap V3.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbnb-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wmatic-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wavax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/yieldeth.svg",
       },
     ],
@@ -4936,55 +2800,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ATOM",
         name: "Cosmos Hub",
-        description:
-          "The native staking and governance token of the Cosmos Hub.\n\nIn a nutshell, Cosmos Hub bills itself as a project that solves some of the hardest problems facing the blockchain industry. It aims to offer an antidote to slow, expensive, unscalable and environmentally harmful proof-of-work protocols, like those used by Bitcoin, by offering an ecosystem of connected blockchains.\n\nThe project’s other goals include making blockchain technology less complex and difficult for developers thanks to a modular framework that demystifies decentralized apps. Last but not least, an Inter-blockchain Communication protocol makes it easier for blockchain networks to communicate with each other — preventing fragmentation in the industry.\n\nCosmos Hub's origins can be dated back to 2014, when Tendermint, a core contributor to the network, was founded. In 2016, a white paper for Cosmos was published — and a token sale was held the following year. ATOM tokens are earned through a hybrid proof-of-stake algorithm, and they help to keep the Cosmos Hub, the project’s flagship blockchain, secure. This cryptocurrency also has a role in the network’s governance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/cosmoshub",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "stafihub",
-            sourceDenom: "uratom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stafihub",
-            sourceDenom: "ufis",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-        ],
         relative_image_url: "/tokens/generated/atom.svg",
       },
     ],
@@ -5042,14 +2861,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRO",
         name: "Cronos POS Chain",
-        description:
-          "CRO is the native token of the Crypto.org Chain, referred to as Native CRO.\n\nCronos PoS Chain is a public, open-source and permissionless blockchain - a fully decentralized network with high speed and low fees, designed to be a public good that helps drive mass adoption of blockchain technology through use cases like Payments, DeFi and NFTs.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/cronos_chain",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/cro.svg",
       },
     ],
@@ -5115,21 +2930,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUNC",
         name: "Luna Classic",
-        description: "The native staking token of Terra Classic.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra",
-            sourceDenom: "uusd",
-          },
-          {
-            chainName: "terra",
-            sourceDenom: "ukrw",
-          },
-        ],
         relative_image_url: "/tokens/generated/lunc.svg",
       },
       {
@@ -5184,21 +2988,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USTC",
         name: "TerraClassicUSD",
-        description: "The USD stablecoin of Terra Classic.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "terra",
-            sourceDenom: "ukrw",
-          },
-        ],
         relative_image_url: "/tokens/generated/ustc.svg",
       },
       {
@@ -5254,21 +3047,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KRTC",
         name: "TerraClassicKRW",
-        description: "The KRW stablecoin of Terra Classic.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "terra",
-            sourceDenom: "uusd",
-          },
-        ],
         relative_image_url: "/tokens/generated/krtc.svg",
       },
     ],
@@ -5328,65 +3110,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JUNO",
         name: "Juno",
-        description:
-          "The native token of JUNO Chain\n\nJuno is a completely community owned and operated smart contract platform.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/JunoNetwork",
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/juno.svg",
       },
       {
@@ -5443,62 +3170,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MARBLE",
         name: "Marble",
-        description: "The native token cw20 for Marble DAO on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/marble.svg",
       },
       {
@@ -5555,62 +3230,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NETA",
         name: "Neta",
-        description: "The native token cw20 for Neta on Juno Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/neta.svg",
       },
       {
@@ -5667,63 +3290,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HOPE",
         name: "Hope Galaxy",
-        description:
-          "Hope Galaxy is an NFT collection based on its own native Token $HOPE, a cw20 token on Juno chain.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/hope.svg",
       },
       {
@@ -5780,63 +3350,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAC",
         name: "Racoon",
-        description:
-          "Racoon aims to simplify accessibility to AI, NFTs and Gambling on the Cosmos Ecosystem",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/juno.rac.svg",
       },
       {
@@ -5892,62 +3409,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLOCK",
         name: "Block",
-        description: "The native token of Marble DEX on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/block.svg",
       },
       {
@@ -6003,62 +3468,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DHK",
         name: "DHK",
-        description: "The DAO token to build consensus among Hong Kong People",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/dhk.svg",
       },
       {
@@ -6115,62 +3528,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAW",
         name: "JunoSwap",
-        description: "Token governance for Junoswap",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/raw.svg",
       },
       {
@@ -6225,63 +3586,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ASVT",
         name: "Another.Software Validator Token",
-        description:
-          "Profit sharing token for Another.Software validator. Hold and receive dividends from Another.Software validator commissions!",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/asvt.png",
       },
       {
@@ -6335,62 +3643,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JOE",
         name: "JoeDAO",
-        description: "DAO dedicated to building tools on the Juno Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-        ],
         relative_image_url: "/tokens/generated/joe.png",
       },
       {
@@ -6446,60 +3702,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLTO",
         name: "Gelotto",
-        description: "DeFi gaming platform built on Juno",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "injective",
-            sourceDenom: "peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "injective",
-            sourceDenom: "inj",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-        ],
         relative_image_url: "/tokens/generated/glto.svg",
       },
       {
@@ -6555,62 +3761,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GKEY",
         name: "GKey",
-        description: "Gelotto Year 1 Grand Prize Token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/gkey.svg",
       },
       {
@@ -6668,62 +3822,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEJUNO",
         name: "StakeEasy seJUNO",
-        description: "Staking derivative seJUNO for staked JUNO",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/sejuno.svg",
       },
       {
@@ -6776,62 +3878,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BJUNO",
         name: "StakeEasy bJUNO",
-        description: "Staking derivative bJUNO for staked JUNO",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/bjuno.svg",
       },
       {
@@ -6887,63 +3937,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOLAR",
         name: "Solarbank DAO",
-        description:
-          "Solarbank DAO Governance Token for speeding up the shift to renewable and green energy",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/solar.svg",
       },
       {
@@ -6999,62 +3996,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEASY",
         name: "StakeEasy SEASY",
-        description: "StakeEasy governance token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/seasy.svg",
       },
       {
@@ -7104,62 +4049,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MUSE",
         name: "MuseDAO",
-        description: "The native token cw20 for MuseDAO on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/muse.png",
       },
       {
@@ -7210,62 +4103,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FURY",
         name: "Fanfury",
-        description: "The native token cw20 for Fanfury on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/fury.png",
       },
       {
@@ -7323,62 +4164,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PHMN",
         name: "POSTHUMAN",
-        description: "The native token cw20 for PHMN on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/phmn.svg",
       },
       {
@@ -7435,62 +4224,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HOPERS",
         name: "Hopers",
-        description: "The native token cw20 for Hopers on Juno Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/hopers.svg",
       },
       {
@@ -7547,62 +4284,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WYND",
         name: "Wynd DAO Governance Token",
-        description: "WYND DAO Governance Token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/wynd.svg",
       },
       {
@@ -7658,62 +4343,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NRIDE",
         name: "nRide Token",
-        description: "nRide Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/nride.svg",
       },
       {
@@ -7767,63 +4400,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FOX",
         name: "Juno Fox",
-        description:
-          "Inspired by Bonk. A community project to celebrate the settlers of JunoNetwork.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/fox.png",
       },
       {
@@ -7877,62 +4457,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GRDN",
         name: "Guardian",
-        description: "Evmos Guardians governance token.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/grdn.png",
       },
       {
@@ -7988,62 +4516,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNPU",
         name: "Mini Punks",
-        description: "Mini Punks Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/mnpu.svg",
       },
       {
@@ -8097,62 +4573,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHIBAC",
         name: "ShibaCosmos",
-        description: "Shiba Cosmos",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/shibac.png",
       },
       {
@@ -8208,62 +4632,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SKOJ",
         name: "Sikoba Token",
-        description: "Sikoba Governance Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/skoj.svg",
       },
       {
@@ -8317,62 +4689,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CLST",
         name: "Celestims",
-        description: "Celestims",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/clst.png",
       },
       {
@@ -8426,62 +4746,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "OSDOGE",
         name: "Osmosis Doge",
-        description: "The First Doge on Osmosis",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/osdoge.png",
       },
       {
@@ -8535,62 +4803,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APEMOS",
         name: "Apemos",
-        description: "Apemos",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/apemos.png",
       },
       {
@@ -8644,62 +4860,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "INVDRS",
         name: "Invaders",
-        description: "Evmos Guardians' Invaders DAO token.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/invdrs.png",
       },
       {
@@ -8753,62 +4917,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DOGA",
         name: "Doge Apr",
-        description: "Doge Apr",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/doga.png",
       },
       {
@@ -8862,62 +4974,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CATMOS",
         name: "Catmos",
-        description: "Catmos",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/catmos.png",
       },
       {
@@ -8971,63 +5031,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SUMMIT",
         name: "Summit",
-        description:
-          "Social Impact DAO providing showers, meals, and vehicles to the homeless",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/summit.png",
       },
       {
@@ -9081,62 +5088,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SPACER",
         name: "Spacer",
-        description: "Spacer",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/spacer.png",
       },
       {
@@ -9190,62 +5145,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LIGHT",
         name: "LIGHT",
-        description: "Light: LumenX community DAO treasury token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/light.png",
       },
       {
@@ -9299,62 +5202,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MILE",
         name: "Mille",
-        description: "Mille: the 1000th token on osmosis",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/mile.png",
       },
       {
@@ -9408,63 +5259,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MANNA",
         name: "Manna",
-        description:
-          "Social Impact DAO dedicated to combatting food insecurity and malnutrition",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/manna.png",
       },
       {
@@ -9518,62 +5316,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "VOID",
         name: "Void",
-        description: "Void",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/void.png",
       },
       {
@@ -9628,62 +5374,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SLCA",
         name: "Silica",
-        description: "Silica",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/slca.png",
       },
       {
@@ -9737,62 +5431,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PEPEC",
         name: "Pepec",
-        description: "Pepec",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/pepec.png",
       },
       {
@@ -9846,63 +5488,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CASA",
         name: "Casa",
-        description:
-          "An innovative DAO dedicated to housing the most vulnerable",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/casa.png",
       },
       {
@@ -9956,63 +5545,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WATR",
         name: "WATR",
-        description:
-          "A revolutionary DAO created to bring clean drinking water to men, women, and children worldwide. We hope you join us on our journey!",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/watr.png",
       },
       {
@@ -10065,62 +5601,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DGL",
         name: "Licorice",
-        description: "",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/dgl.png",
       },
       {
@@ -10175,62 +5659,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KLEO",
         name: "Kleomedes",
-        description: "Kleomedes Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/kleo.png",
       },
       {
@@ -10284,64 +5716,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JAPE",
         name: "Junø Apes",
-        description:
-          "Governance and utility token for the Junø Apes NFT platform on Juno",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-17T17:14:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/jape.png",
       },
       {
@@ -10395,63 +5774,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SGNL",
         name: "Signal",
-        description: "Signal Art and Gaming on Juno",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-18T15:42:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
-          },
-        ],
         relative_image_url: "/tokens/generated/sgnl.png",
       },
     ],
@@ -10517,55 +5844,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EVMOS",
         name: "Evmos",
-        description:
-          "The native EVM, governance and staking token of the Evmos Hub\n\nDevelopers use Evmos as the Ethereum Canary Chain to deploy applications of the future. Get all the functionalities of Ethereum with the power of IBC and Interchain composability.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/EvmosOrg",
-        relatedAssets: [
-          {
-            chainName: "evmos",
-            sourceDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/evmos.svg",
       },
       {
@@ -10623,54 +5905,74 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NEOK",
         name: "Neokingdom DAO",
-        description: "The token of Neokingdom DAO.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
+        relative_image_url: "/tokens/generated/neok.svg",
+      },
+      {
+        chainName: "evmos",
+        sourceDenom: "erc20/0x1cFc8f1FE8D5668BAFF2724547EcDbd6f013a280",
+        coinMinimalDenom:
+          "ibc/2BF9656CAB0384A31167DB9B0254F0FB1CB4346A229BD7E5CBDCBB911C3740F7",
+        symbol: "BERLIN",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/berlin.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/berlin.svg",
+        },
+        price: {
+          poolId: "1488",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
           {
-            chainName: "evmos",
-            sourceDenom: "aevmos",
+            name: "Evmos App",
+            type: "external_interface",
+            depositUrl: "https://app.evmos.org/assets",
           },
           {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "evmos",
+              chainId: "evmos_9001-2",
+              sourceDenom: "erc20/0x1cFc8f1FE8D5668BAFF2724547EcDbd6f013a280",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-204",
+              path: "transfer/channel-204/erc20/0x1cFc8f1FE8D5668BAFF2724547EcDbd6f013a280",
+            },
           },
         ],
-        relative_image_url: "/tokens/generated/neok.svg",
+        counterparty: [
+          {
+            chainName: "evmos",
+            sourceDenom: "erc20/0x1cFc8f1FE8D5668BAFF2724547EcDbd6f013a280",
+            chainType: "cosmos",
+            chainId: "evmos_9001-2",
+            symbol: "BERLIN",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/berlin.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/berlin.svg",
+            },
+          },
+        ],
+        variantGroupKey: "BERLIN",
+        name: "Teledisko DAO",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-07T18:18:00.000Z",
+        relative_image_url: "/tokens/generated/berlin.svg",
       },
     ],
   },
@@ -10729,56 +6031,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KAVA",
         name: "Kava",
-        description:
-          "The native staking and governance token of Kava\n\nKava is a decentralized blockchain that combines the speed and interoperability of Cosmos with the developer power of Ethereum.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/KAVA_CHAIN",
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "hard",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "swp",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "usdx",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/kava.svg",
       },
       {
@@ -10828,54 +6084,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HARD",
         name: "Kava Hard",
-        description: "Governance token of Kava Lend Protocol",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "swp",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "usdx",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/hard.svg",
       },
       {
@@ -10925,54 +6137,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SWP",
         name: "Kava Swap",
-        description: "Governance token of Kava Swap Protocol",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "hard",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "usdx",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/swp.svg",
       },
       {
@@ -11026,54 +6194,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDX",
         name: "Kava USDX",
-        description: "The native stablecoin of Kava",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "hard",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "swp",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdx.svg",
       },
       {
@@ -11139,55 +6263,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD",
-        description:
-          "Tether gives you the joint benefits of open blockchain technology and traditional currency by converting your cash into a stable digital currency equivalent.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "frax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdt.svg",
       },
     ],
@@ -11247,47 +6326,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SCRT",
         name: "Secret Network",
-        description:
-          "The native token of Secret Network\n\nSecret Network is the first blockchain with customizable privacy. You get to choose what you share, with whom, and how. This protects users, and empowers developers to build a better Web3.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/SecretNetwork",
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/scrt.svg",
       },
       {
@@ -11346,45 +6388,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ALTER",
         name: "Alter",
-        description: "The native token cw20 for Alter on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/alter.svg",
       },
       {
@@ -11443,45 +6450,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BUTT",
         name: "Button",
-        description: "The native token cw20 for Button on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/butt.svg",
       },
       {
@@ -11537,45 +6509,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHD(old)",
         name: "Shade (old)",
-        description: "The native token cw20 for Shade on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/shd(old).svg",
       },
       {
@@ -11634,45 +6571,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SIENNA",
         name: "SIENNA",
-        description: "The native token cw20 for SIENNA on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/sienna.svg",
       },
       {
@@ -11732,46 +6634,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkd-SCRT",
         name: "SCRT Staking Derivatives",
-        description:
-          "The native token cw20 for SCRT Staking Derivatives on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/stkd-scrt.svg",
       },
       {
@@ -11829,45 +6695,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AMBER",
         name: "Amber",
-        description: "The native token cw20 for Amber on Secret Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/amber.svg",
       },
       {
@@ -11927,45 +6758,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SILK",
         name: "Silk",
-        description: "The native token cw20 for Silk on Secret Network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
-          },
-        ],
         relative_image_url: "/tokens/generated/silk.svg",
       },
       {
@@ -12020,45 +6816,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHD",
         name: "Shade",
-        description: "The native token cw20 for Shade on Secret Network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "uscrt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          },
-          {
-            chainName: "secretnetwork",
-            sourceDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
-          },
-        ],
         relative_image_url: "/tokens/generated/shd.svg",
       },
     ],
@@ -12118,58 +6879,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STARS",
         name: "Stargaze",
-        description:
-          "The native token of Stargaze\n\nThe premier community-focused blockchain for NFTs. Stargaze empowers creators, developers, collectors, and traders to participate on the platform. The Stargaze chain consists of various NFT-related apps such as a Launchpad, and a Marketplace with offers and auctions.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/StargazeZone",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars1xx5976njvxpl9n4v8huvff6cudhx7yuu8e7rt4/usneaky",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/stars.svg",
       },
       {
@@ -12227,55 +6940,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STRDST",
         name: "Stardust STRDST",
-        description: "The native token of ohhNFT.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars1xx5976njvxpl9n4v8huvff6cudhx7yuu8e7rt4/usneaky",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/strdst.svg",
       },
       {
@@ -12333,55 +7001,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BRNCH",
         name: "Branch",
-        description: "ohhNFT LP token.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars1xx5976njvxpl9n4v8huvff6cudhx7yuu8e7rt4/usneaky",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/brnch.svg",
       },
       {
@@ -12439,56 +7062,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SNEAKY",
         name: "Sneaky Productions",
-        description: "The native coin of Sneaky Productions.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-22T12:50:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sneaky.svg",
       },
     ],
@@ -12548,28 +7126,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HUAHUA",
         name: "Chihuahua",
-        description: "The native token of Chihuahua Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "cw20:chihuahua1yl8z39ugle8s02fpwkhh293509q5xcpalmdzc4amvchz8nkexrmsy95gef",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua1x4q2vkrz4dfgd9hcw0p5m2f2nuv2uqmt9xr8k2/achihuahuawifhat",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof",
-          },
-        ],
         relative_image_url: "/tokens/generated/huahua.svg",
       },
       {
@@ -12623,27 +7183,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PUPPY",
         name: "Puppy",
-        description: "Puppy",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "chihuahua",
-            sourceDenom: "uhuahua",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua1x4q2vkrz4dfgd9hcw0p5m2f2nuv2uqmt9xr8k2/achihuahuawifhat",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof",
-          },
-        ],
         relative_image_url: "/tokens/generated/puppy.png",
       },
       {
@@ -12698,27 +7241,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BADDOG",
         name: "Chihuahuawifhat",
-        description: "has a hat",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "chihuahua",
-            sourceDenom: "uhuahua",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "cw20:chihuahua1yl8z39ugle8s02fpwkhh293509q5xcpalmdzc4amvchz8nkexrmsy95gef",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof",
-          },
-        ],
         relative_image_url: "/tokens/generated/baddog.png",
       },
       {
@@ -12773,28 +7299,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WOOF",
         name: "WOOF",
-        description: "Woof",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-17T17:41:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "chihuahua",
-            sourceDenom: "uhuahua",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "cw20:chihuahua1yl8z39ugle8s02fpwkhh293509q5xcpalmdzc4amvchz8nkexrmsy95gef",
-          },
-          {
-            chainName: "chihuahua",
-            sourceDenom:
-              "factory/chihuahua1x4q2vkrz4dfgd9hcw0p5m2f2nuv2uqmt9xr8k2/achihuahuawifhat",
-          },
-        ],
         relative_image_url: "/tokens/generated/woof.png",
       },
     ],
@@ -12854,56 +7363,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XPRT",
         name: "Persistence",
-        description:
-          "The XPRT token is primarily a governance token for the Persistence chain.\n\nPersistence is an app chain for Liquid Staking powering an ecosystem of DeFi applications focused on unlocking the liquidity of staked assets.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/PersistenceOne",
-        relatedAssets: [
-          {
-            chainName: "persistence",
-            sourceDenom:
-              "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uatom",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uosmo",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-        ],
         relative_image_url: "/tokens/generated/xprt.svg",
       },
       {
@@ -12985,54 +7448,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PSTAKE",
         name: "pSTAKE Finance",
-        description:
-          "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets. Stakers of PoS tokens can stake their assets while maintaining the liquidity of these assets. Users earn staking rewards + receive 1:1 pegged staked representative tokens which can be used to generate additional yield.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "persistence",
-            sourceDenom: "uxprt",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uatom",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uosmo",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-        ],
         relative_image_url: "/tokens/generated/pstake.svg",
       },
       {
@@ -13052,7 +7471,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: [],
+        categories: ["liquid_staking", "defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13087,54 +7506,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkATOM",
         name: "PSTAKE staked ATOM",
-        description: "PSTAKE Liquid-Staked ATOM",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "persistence",
-            sourceDenom: "uxprt",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom:
-              "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uosmo",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-        ],
         relative_image_url: "/tokens/generated/stkatom.svg",
       },
       {
@@ -13153,7 +7528,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1323",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["liquid_staking", "defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13188,54 +7563,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkOSMO",
         name: "PSTAKE staked OSMO",
-        description: "PSTAKE Liquid-Staked OSMO",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "persistence",
-            sourceDenom: "uxprt",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom:
-              "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uatom",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-        ],
         relative_image_url: "/tokens/generated/stkosmo.svg",
       },
     ],
@@ -13295,14 +7626,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AKT",
         name: "Akash",
-        description:
-          "Akash Token (AKT) is the Akash Network's native utility token, used as the primary means to govern, secure the blockchain, incentivize participants, and provide a default mechanism to store and exchange value.\n\nAkash is open-source Supercloud that lets users buy and sell computing resources securely and efficiently. Purpose-built for public utility.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/akashnet_",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/akt.svg",
       },
     ],
@@ -13324,7 +7651,7 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "regen",
         price: {
-          poolId: "42",
+          poolId: "1483",
           denom: "uosmo",
         },
         categories: ["defi"],
@@ -13362,55 +7689,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "REGEN",
         name: "Regen",
-        description:
-          "REGEN coin is the token for the Regen Network Platform\n\nRegen Network, a platform to originate and invest in high-integrity carbon and biodiversity credits from ecological regeneration projects.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/regen_network",
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "regen",
-            sourceDenom: "eco.uC.NCT",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-        ],
         relative_image_url: "/tokens/generated/regen.svg",
       },
       {
@@ -13465,54 +7747,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NCT",
         name: "Nature Carbon Ton",
-        description:
-          "Nature Carbon Ton (NCT) is a carbon token standard backed 1:1 by carbon credits issued by Verra, a global leader in the voluntary carbon market. NCT credits on Regen Network have been tokenized by Toucan.earth.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "regen",
-            sourceDenom: "uregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-        ],
         relative_image_url: "/tokens/generated/nct.svg",
       },
     ],
@@ -13534,9 +7772,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "sentinel",
         price: {
-          poolId: "6",
-          denom:
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          poolId: "5",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -13573,14 +7810,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DVPN",
         name: "Sentinel",
-        description:
-          "DVPN is the native token of the Sentinel Hub.\n\nThe Sentinel ecosystem is a global network of autonomous dVPN applications that enable private and censorship resistant internet access.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/SentinelVPN",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dvpn.svg",
       },
     ],
@@ -13602,8 +7835,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "iris-network",
         price: {
-          poolId: "1106",
-          denom: "uosmo",
+          poolId: "8",
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
         categories: ["defi"],
         transferMethods: [
@@ -13640,13 +7874,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IRIS",
         name: "IRISnet",
-        description:
-          "The IRIS token is the native governance token for the IrisNet chain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/iris.svg",
       },
     ],
@@ -13706,14 +7937,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IOV",
         name: "Starname",
-        description:
-          "IOV coin is the token for the Starname (IOV) Asset Name Service\n\nStarname is the best way to claim your part of the blockchain. You can use it for decentralized identification, payments, ownership and applications. Starname can be integrated into digital wallets, dapps and exchanges.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/starname_me",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/iov.svg",
       },
     ],
@@ -13773,18 +8000,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NGM",
         name: "e-Money",
-        description:
-          "e-Money NGM staking token. In addition to earning staking rewards the token is bought back and burned based on e-Money stablecoin inflation.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "emoney",
-            sourceDenom: "eeur",
-          },
-        ],
         relative_image_url: "/tokens/generated/ngm.svg",
       },
       {
@@ -13838,18 +8057,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EEUR",
         name: "e-Money EUR",
-        description:
-          "e-Money EUR stablecoin. Audited and backed by fiat EUR deposits and government bonds.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "emoney",
-            sourceDenom: "ungm",
-          },
-        ],
         relative_image_url: "/tokens/generated/eeur.svg",
       },
     ],
@@ -13909,13 +8120,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LIKE",
         name: "LikeCoin",
-        description:
-          "LIKE is the native staking and governance token of LikeCoin chain, a Decentralized Publishing Infrastructure to empower content ownership, authenticity, and provenance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/like.svg",
       },
     ],
@@ -13976,12 +8184,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IXO",
         name: "Impacts Hub",
-        description: "The native token of IXO Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/ixo.svg",
       },
     ],
@@ -14003,8 +8209,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bitcanna",
         price: {
-          poolId: "571",
-          denom: "uosmo",
+          poolId: "572",
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
         categories: ["defi"],
         transferMethods: [
@@ -14041,13 +8248,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BCNA",
         name: "BitCanna",
-        description:
-          "The BCNA coin is the transactional token within the BitCanna network, serving the legal cannabis industry through its payment network, supply chain and trust network.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/bcna.svg",
       },
     ],
@@ -14069,9 +8273,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bitsong",
         price: {
-          poolId: "574",
-          denom:
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          poolId: "1109",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -14108,14 +8311,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTSG",
         name: "BitSong",
-        description:
-          "BitSong Native Token\n\nArtists, Fans, Managers and Labels in One Single Holistic Ecosystem: $BTSG. Earn real-time royalties, discover exclusive content, mint and trade Fantokens, buy & sell NFTs.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/BitSongOfficial",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/btsg.svg",
       },
     ],
@@ -14175,18 +8374,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XKI",
         name: "Ki",
-        description: "The native token of Ki Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kichain",
-            sourceDenom:
-              "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
-          },
-        ],
         relative_image_url: "/tokens/generated/xki.svg",
       },
       {
@@ -14202,9 +8393,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "lvn",
         price: {
-          poolId: "772",
-          denom:
-            "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+          poolId: "774",
+          denom: "uosmo",
         },
         categories: ["meme"],
         transferMethods: [
@@ -14242,17 +8432,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LVN",
         name: "LVN",
-        description: "ELEVENPARIS loyalty token on KiChain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kichain",
-            sourceDenom: "uxki",
-          },
-        ],
         relative_image_url: "/tokens/generated/kichain.lvn.png",
       },
     ],
@@ -14312,13 +8495,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MED",
         name: "Medibloc",
-        description:
-          "Panacea is a public blockchain launched by MediBloc, which is the key infrastructure for reinventing the patient-centered healthcare data ecosystem",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/med.svg",
       },
     ],
@@ -14340,9 +8520,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bostrom",
         price: {
-          poolId: "912",
-          denom:
-            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          poolId: "597",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -14379,29 +8558,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BOOT",
         name: "bostrom",
-        description: "The staking token of Bostrom",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "bostrom",
-            sourceDenom: "hydrogen",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "tocyb",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "millivolt",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "milliampere",
-          },
-        ],
         relative_image_url: "/tokens/generated/boot.svg",
       },
       {
@@ -14454,29 +8614,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HYDROGEN",
         name: "Bostrom Hydrogen",
-        description: "The liquid staking token of Bostrom",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "bostrom",
-            sourceDenom: "boot",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "tocyb",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "millivolt",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "milliampere",
-          },
-        ],
         relative_image_url: "/tokens/generated/hydrogen.svg",
       },
       {
@@ -14530,29 +8671,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TOCYB",
         name: "Bostrom Tocyb",
-        description: "The staking token of Cyber",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "bostrom",
-            sourceDenom: "boot",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "hydrogen",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "millivolt",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "milliampere",
-          },
-        ],
         relative_image_url: "/tokens/generated/tocyb.svg",
       },
       {
@@ -14605,29 +8727,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "V",
         name: "Bostrom Volt",
-        description: "The resource token of Bostrom",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "bostrom",
-            sourceDenom: "boot",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "hydrogen",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "tocyb",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "milliampere",
-          },
-        ],
         relative_image_url: "/tokens/generated/v.svg",
       },
       {
@@ -14680,29 +8783,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "A",
         name: "Bostrom Ampere",
-        description: "The resource token of Bostrom",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "bostrom",
-            sourceDenom: "boot",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "hydrogen",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "tocyb",
-          },
-          {
-            chainName: "bostrom",
-            sourceDenom: "millivolt",
-          },
-        ],
         relative_image_url: "/tokens/generated/a.svg",
       },
     ],
@@ -14762,21 +8846,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CMDX",
         name: "Comdex",
-        description: "Native Token of Comdex Protocol",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "comdex",
-            sourceDenom: "ucmst",
-          },
-          {
-            chainName: "comdex",
-            sourceDenom: "uharbor",
-          },
-        ],
         relative_image_url: "/tokens/generated/cmdx.svg",
       },
       {
@@ -14832,21 +8905,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CMST",
         name: "CMST",
-        description: "Stable Token of Harbor protocol on Comdex network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "comdex",
-            sourceDenom: "ucmdx",
-          },
-          {
-            chainName: "comdex",
-            sourceDenom: "uharbor",
-          },
-        ],
         relative_image_url: "/tokens/generated/cmst.svg",
       },
       {
@@ -14900,21 +8962,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HARBOR",
         name: "Harbor",
-        description: "Governance Token of Harbor protocol on Comdex network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "comdex",
-            sourceDenom: "ucmdx",
-          },
-          {
-            chainName: "comdex",
-            sourceDenom: "ucmst",
-          },
-        ],
         relative_image_url: "/tokens/generated/harbor.svg",
       },
     ],
@@ -14975,12 +9026,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CHEQ",
         name: "Cheqd",
-        description: "Native token for the cheqd network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/cheq.svg",
       },
     ],
@@ -15040,12 +9089,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUM",
         name: "Lum Network",
-        description: "Native token of the Lum Network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/lum.svg",
       },
     ],
@@ -15105,12 +9152,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "VDL",
         name: "Vidulum",
-        description: "The native token of Vidulum",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/vdl.svg",
       },
     ],
@@ -15170,12 +9215,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DSM",
         name: "Desmos",
-        description: "The native token of Desmos",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dsm.svg",
       },
     ],
@@ -15233,12 +9276,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DIG",
         name: "Dig Chain",
-        description: "Native token of Dig Chain",
         verified: true,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dig.png",
       },
     ],
@@ -15299,55 +9340,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOMM",
         name: "Sommelier",
-        description:
-          "Somm Token (SOMM) is the native staking token of the Sommelier Chain\n\nAutomated vaults find best-in-class yields while mitigating risk.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/sommfinance",
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-        ],
         relative_image_url: "/tokens/generated/somm.svg",
       },
     ],
@@ -15407,14 +9403,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BAND",
         name: "Band Protocol",
-        description:
-          "The native token of BandChain\n\nBand Protocol is a cross-chain data oracle platform that aggregates and connects real-world data and APIs to smart contracts.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/BandProtocol",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/band.svg",
       },
     ],
@@ -15474,12 +9466,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DARC",
         name: "Konstellation",
-        description: "The native token of Konstellation Network",
         verified: true,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/darc.svg",
       },
     ],
@@ -15538,54 +9528,11 @@ export const AssetLists: AssetList[] = [
           },
         ],
         variantGroupKey: "UMEE",
-        name: "Umee",
-        description: "The native token of Umee",
+        name: "UX Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stadydx",
-          },
-        ],
         relative_image_url: "/tokens/generated/umee.svg",
       },
     ],
@@ -15645,56 +9592,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GRAV",
         name: "Gravity Bridge",
-        description:
-          "The native token of Gravity Bridge\n\nAn open, decentralized bridge that unlocks the power of interoperability & liquidity between blockchain ecosystems.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/gravity_bridge",
-        relatedAssets: [
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/grav.svg",
       },
       {
@@ -15768,7 +9669,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WBTC",
         name: "Wrapped Bitcoin (Gravity Bridge)",
-        description: "Gravity Bridge WBTC",
         verified: false,
         unstable: false,
         disabled: false,
@@ -15777,49 +9677,6 @@ export const AssetLists: AssetList[] = [
           chainName: "gravitybridge",
           sourceDenom: "ugrav",
         },
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "nomic",
-            sourceDenom: "usat",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-        ],
         relative_image_url: "/tokens/generated/wbtc.grv.svg",
       },
       {
@@ -15904,7 +9761,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Ether (Gravity Bridge)",
-        description: "Gravity Bridge WETH",
         verified: true,
         unstable: false,
         disabled: false,
@@ -15913,49 +9769,6 @@ export const AssetLists: AssetList[] = [
           chainName: "gravitybridge",
           sourceDenom: "ugrav",
         },
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x60e683C6514Edd5F758A55b6f393BeBBAfaA8d5e",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "cbeth-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/weth.grv.svg",
       },
       {
@@ -16028,7 +9841,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Gravity Bridge)",
-        description: "Gravity Bridge USDC",
         verified: true,
         unstable: false,
         disabled: false,
@@ -16037,50 +9849,6 @@ export const AssetLists: AssetList[] = [
           chainName: "gravitybridge",
           sourceDenom: "ugrav",
         },
-        relatedAssets: [
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdc.grv.svg",
       },
       {
@@ -16153,7 +9921,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DAI",
         name: "DAI Stablecoin (Gravity Bridge)",
-        description: "Gravity Bridge DAI",
         verified: false,
         unstable: false,
         disabled: false,
@@ -16162,48 +9929,6 @@ export const AssetLists: AssetList[] = [
           chainName: "gravitybridge",
           sourceDenom: "ugrav",
         },
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "frax-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/dai.grv.svg",
       },
       {
@@ -16275,7 +10000,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Gravity Bridge)",
-        description: "Gravity Bridge USDT",
         verified: true,
         unstable: false,
         disabled: false,
@@ -16284,49 +10008,6 @@ export const AssetLists: AssetList[] = [
           chainName: "gravitybridge",
           sourceDenom: "ugrav",
         },
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdt.grv.svg",
       },
       {
@@ -16401,55 +10082,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PAGE",
         name: "Page",
-        description:
-          "The PAGE token is used for actions in the PageDAO NFT literary ecosystem and for DAO governance.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/page.svg",
       },
     ],
@@ -16509,12 +10145,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DEC",
         name: "Decentr",
-        description: "The native token of Decentr",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dec.svg",
       },
     ],
@@ -16582,12 +10216,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SWTH",
         name: "Carbon",
-        description: "The native governance token of Carbon",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/swth.svg",
       },
     ],
@@ -16647,12 +10279,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRBRUS",
         name: "Cerberus",
-        description: "The native token of Cerberus Chain",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/crbrus.svg",
       },
     ],
@@ -16712,13 +10342,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FET",
         name: "Fetch.ai",
-        description:
-          "The native staking and governance token of the Fetch Hub.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/fet.svg",
       },
     ],
@@ -16779,14 +10406,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNTL",
         name: "AssetMantle",
-        description:
-          "The native token of Asset Mantle\n\nAssetMantle’s suite of products is focused on the NFT ecosystem, helping you up your game with digital asset ownership.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/AssetMantle",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/mntl.svg",
       },
     ],
@@ -16855,63 +10478,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "INJ",
         name: "Injective",
-        description:
-          "The INJ token is the native governance token for the Injective chain.\n\nInjective’s mission is to create a truly free and inclusive financial system through decentralization.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/Injective_",
-        relatedAssets: [
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj14lf8xm6fcvlggpa7guxzjqwjmtr24gnvf56hvz/autism",
-          },
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w/ninja",
-          },
-          {
-            chainName: "injective",
-            sourceDenom: "peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-        ],
         relative_image_url: "/tokens/generated/inj.svg",
       },
       {
@@ -16962,61 +10532,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AUTISM",
         name: "Autism",
-        description:
-          "$AUTISM exists to celebrate autism as a superior biological tech stack for a changing world",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "injective",
-            sourceDenom: "inj",
-          },
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w/ninja",
-          },
-          {
-            chainName: "injective",
-            sourceDenom: "peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-        ],
         relative_image_url: "/tokens/generated/autism.png",
       },
       {
@@ -17037,12 +10556,12 @@ export const AssetLists: AssetList[] = [
         categories: ["meme"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainFrom=injective-1&chainTo=osmosis-1&token0=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja&token1=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3",
+              "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja&token1=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -17078,62 +10597,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NINJA",
         name: "Dog wif nunchucks",
-        description:
-          "The first meme coin on Injective. It’s a dog, but he has nunchucks",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-24T10:58:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "injective",
-            sourceDenom: "inj",
-          },
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj14lf8xm6fcvlggpa7guxzjqwjmtr24gnvf56hvz/autism",
-          },
-          {
-            chainName: "injective",
-            sourceDenom: "peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-        ],
         relative_image_url: "/tokens/generated/ninja.png",
       },
       {
@@ -17146,6 +10614,10 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/glto.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/glto.svg",
+        },
+        price: {
+          poolId: "1574",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -17208,62 +10680,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLTO",
         name: "Gelotto (Injective)",
-        description: "GLTO-ERC20 on injective",
         verified: false,
         unstable: false,
         disabled: false,
-        preview: true,
-        twitterURL: "https://twitter.com/Gelotto2",
-        relatedAssets: [
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
-          },
-          {
-            chainName: "injective",
-            sourceDenom: "inj",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj14lf8xm6fcvlggpa7guxzjqwjmtr24gnvf56hvz/autism",
-          },
-          {
-            chainName: "injective",
-            sourceDenom:
-              "factory/inj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w/ninja",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-        ],
+        preview: false,
+        listingDate: "2024-03-01T20:23:00.000Z",
         relative_image_url: "/tokens/generated/injective.glto.svg",
       },
     ],
@@ -17324,13 +10745,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TICK",
         name: "Microtick",
-        description:
-          "TICK coin is the token for the Microtick Price Discovery & Oracle App",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/tick.svg",
       },
     ],
@@ -17390,13 +10808,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ROWAN",
         name: "Sifchain",
-        description:
-          "Rowan Token (ROWAN) is the Sifchain Network's native utility token, used as the primary means to govern, provide liquidity, secure the blockchain, incentivize participants, and provide a default mechanism to store and exchange value.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/rowan.svg",
       },
     ],
@@ -17456,12 +10871,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CTK",
         name: "Shentu",
-        description: "The native token of Shentu",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/ctk.svg",
       },
     ],
@@ -17521,12 +10934,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HASH",
         name: "Provenance",
-        description: "Hash is the staking token of the Provenance Blockchain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/hash.svg",
       },
     ],
@@ -17585,12 +10996,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLX",
         name: "Galaxy",
-        description: "GLX is the staking token of the Galaxy Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/glx.svg",
       },
     ],
@@ -17650,13 +11059,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MEME",
         name: "MEME",
-        description:
-          "MEME Token (MEME) is the native staking token of the MEME Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/meme.svg",
       },
     ],
@@ -17717,59 +11123,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUNA",
         name: "Luna",
-        description:
-          "The native staking token of Terra.\n\nFueled by a passionate community and deep developer talent pool, the Terra blockchain is built to enable the next generation of Web3 products and services.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/terra_money",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/luna.svg",
       },
       {
@@ -17791,12 +11148,12 @@ export const AssetLists: AssetList[] = [
         categories: ["meme"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv&token1=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv&token1=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0&token1=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0&token1=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -17832,57 +11189,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ROAR",
         name: "Lion DAO",
-        description:
-          "Lion DAO is a community DAO that lives on the Terra blockchain with the mission to reactivate the LUNAtic community and showcase Terra protocols & tooling",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra2",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/roar.png",
       },
       {
@@ -17904,12 +11214,12 @@ export const AssetLists: AssetList[] = [
         categories: ["meme"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t&token1=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t&token1=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3&token1=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3&token1=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -17945,56 +11255,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CUB",
         name: "Lion Cub DAO",
-        description: "Lion Cub DAO is a useless meme community DAO on Terra",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra2",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/cub.png",
       },
       {
@@ -18016,12 +11280,12 @@ export const AssetLists: AssetList[] = [
         categories: ["meme"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584&token1=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584&token1=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E&token1=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E&token1=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -18057,56 +11321,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLUE",
         name: "BLUE CUB DAO",
-        description: "BLUE CUB DAO is a community DAO on Terra",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "terra2",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/blue.png",
       },
       {
@@ -18114,7 +11332,7 @@ export const AssetLists: AssetList[] = [
         sourceDenom:
           "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
         coinMinimalDenom:
-          "ibc/E5916C205E90C7C3481AFD8663A13C1D6C63145FB6C38DA9FC151FEE706F32EF",
+          "ibc/C25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
         symbol: "ASTRO",
         decimals: 6,
         logoURIs: {
@@ -18124,12 +11342,12 @@ export const AssetLists: AssetList[] = [
         categories: ["meme"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F8410580A4F5421DFDBD888212624591E92A9E3B5C87D3C58913CE16ABD98B9B4&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -18139,13 +11357,13 @@ export const AssetLists: AssetList[] = [
               chainId: "phoenix-1",
               sourceDenom:
                 "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
-              port: "wasm.terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
-              channelId: "channel-26",
+              port: "wasm.terra1jhfjnm39y3nn9l4520mdn4k5mw23nz0674c4gsvyrcr90z9tqcvst22fce",
+              channelId: "channel-392",
             },
             chain: {
               port: "transfer",
-              channelId: "channel-341",
-              path: "transfer/channel-341/cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+              channelId: "channel-21671",
+              path: "transfer/channel-21671/cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
             },
           },
         ],
@@ -18165,59 +11383,78 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ASTRO",
         name: "Astroport",
-        description:
-          "Astroport is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
         verified: true,
         unstable: false,
         disabled: false,
-        preview: true,
-        twitterURL: "https://twitter.com/astroport_fi",
-        relatedAssets: [
+        preview: false,
+        listingDate: "2024-03-13T17:30:00.000Z",
+        relative_image_url: "/tokens/generated/astro.png",
+      },
+      {
+        chainName: "terra2",
+        sourceDenom:
+          "cw20:terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
+        coinMinimalDenom:
+          "ibc/7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942",
+        symbol: "BMOS",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/bitmos.png",
+        },
+        price: {
+          poolId: "1505",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [
           {
-            chainName: "terra2",
-            sourceDenom: "uluna",
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq&token1=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942",
+            withdrawUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F7D389F0ABF1E4D45BE6D7BBE36A2C50EA0559C01E076B02F8E381E685EC1F942&token1=terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
           },
           {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "terra2",
+              chainId: "phoenix-1",
+              sourceDenom:
+                "cw20:terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
+              port: "wasm.terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+              channelId: "channel-26",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-341",
+              path: "transfer/channel-341/cw20:terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
+            },
           },
         ],
-        relative_image_url: "/tokens/generated/astro.png",
+        counterparty: [
+          {
+            chainName: "terra2",
+            sourceDenom:
+              "cw20:terra1sxe8u2hjczlekwfkcq0rs28egt38pg3wqzfx4zcrese4fnvzzupsk9gjkq",
+            chainType: "cosmos",
+            chainId: "phoenix-1",
+            symbol: "BMOS",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/bitmos.png",
+            },
+          },
+        ],
+        variantGroupKey: "BMOS",
+        name: "Bitmos",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-02T22:12:00.000Z",
+        relative_image_url: "/tokens/generated/bmos.png",
       },
     ],
   },
@@ -18276,12 +11513,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ATOLO",
         name: "Rizon",
-        description: "Native token of Rizon Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/atolo.svg",
       },
     ],
@@ -18340,13 +11575,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "L1",
         name: "GenesisL1",
-        description:
-          "L1 coin is the GenesisL1 blockchain utility, governance and EVM token",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/l1.svg",
       },
     ],
@@ -18413,30 +11645,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KUJI",
         name: "Kujira",
-        description:
-          "The native staking and governance token of the Kujira chain.\n\nA decentralized ecosystem for protocols, builders and web3 users seeking sustainable FinTech.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/TeamKujira",
-        relatedAssets: [
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
-          },
-        ],
         relative_image_url: "/tokens/generated/kuji.svg",
       },
       {
@@ -18499,28 +11711,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USK",
         name: "USK",
-        description:
-          "The native over-collateralized stablecoin from the Kujira chain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kujira",
-            sourceDenom: "ukuji",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
-          },
-        ],
         relative_image_url: "/tokens/generated/usk.svg",
       },
       {
@@ -18583,27 +11777,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNTA",
         name: "MantaDAO",
-        description: "MantaDAO Governance Token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kujira",
-            sourceDenom: "ukuji",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
-          },
-        ],
         relative_image_url: "/tokens/generated/mnta.svg",
       },
       {
@@ -18654,27 +11831,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NSTK",
         name: "Unstake Fi",
-        description: "The Revenue & Governance token of Unstake.fi",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kujira",
-            sourceDenom: "ukuji",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
-          },
-          {
-            chainName: "kujira",
-            sourceDenom:
-              "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
-          },
-        ],
         relative_image_url: "/tokens/generated/nstk.svg",
       },
     ],
@@ -18734,12 +11894,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TGD",
         name: "Tgrade",
-        description: "The native token of Tgrade",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/tgd.svg",
       },
     ],
@@ -18803,13 +11961,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ECH",
         name: "Echelon",
-        description:
-          "Echelon - a scalable EVM on Cosmos, built on Proof-of-Stake with fast-finality that prioritizes interoperability and novel economics",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/ech.svg",
       },
     ],
@@ -18869,21 +12024,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ODIN",
         name: "Odin Protocol",
-        description: "Staking and governance token for ODIN Protocol",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "odin",
-            sourceDenom: "mGeo",
-          },
-          {
-            chainName: "odin",
-            sourceDenom: "mO9W",
-          },
-        ],
         relative_image_url: "/tokens/generated/odin.svg",
       },
       {
@@ -18936,21 +12080,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GEO",
         name: "GEO",
-        description: "GEO token for ODIN Protocol",
         verified: false,
-        unstable: false,
-        disabled: false,
+        unstable: true,
+        disabled: true,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "odin",
-            sourceDenom: "loki",
-          },
-          {
-            chainName: "odin",
-            sourceDenom: "mO9W",
-          },
-        ],
         relative_image_url: "/tokens/generated/geo.svg",
       },
       {
@@ -19003,22 +12136,68 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "O9W",
         name: "O9W",
-        description: "O9W token for ODIN Protocol",
+        verified: false,
+        unstable: true,
+        disabled: true,
+        preview: false,
+        relative_image_url: "/tokens/generated/o9w.svg",
+      },
+      {
+        chainName: "odin",
+        sourceDenom: "udoki",
+        coinMinimalDenom:
+          "ibc/C12C353A83CD1005FC38943410B894DBEC5F2ABC97FC12908F0FB03B970E8E1B",
+        symbol: "DOKI",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/odin/images/doki_Logo.png",
+        },
+        coingeckoId: "doki",
+        price: {
+          poolId: "1573",
+          denom:
+            "ibc/C360EF34A86D334F625E4CBB7DA3223AEA97174B61F35BB3758081A8160F7D9B",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "odin",
+              chainId: "odin-mainnet-freya",
+              sourceDenom: "udoki",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-258",
+              path: "transfer/channel-258/udoki",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "odin",
+            sourceDenom: "udoki",
+            chainType: "cosmos",
+            chainId: "odin-mainnet-freya",
+            symbol: "DOKI",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/odin/images/doki_Logo.png",
+            },
+          },
+        ],
+        variantGroupKey: "DOKI",
+        name: "DOKI",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "odin",
-            sourceDenom: "loki",
-          },
-          {
-            chainName: "odin",
-            sourceDenom: "mGeo",
-          },
-        ],
-        relative_image_url: "/tokens/generated/o9w.svg",
+        listingDate: "2024-03-13T15:44:00.000Z",
+        relative_image_url: "/tokens/generated/doki.png",
       },
     ],
   },
@@ -19077,12 +12256,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRE",
         name: "Crescent",
-        description: "The native token of Crescent",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/cre.svg",
       },
     ],
@@ -19141,12 +12318,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUMEN",
         name: "LumenX",
-        description: "The native token of LumenX Network",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/lumen.svg",
       },
     ],
@@ -19206,12 +12381,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ORAI",
         name: "Oraichain",
-        description: "The native token of Oraichain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/orai.svg",
       },
     ],
@@ -19271,12 +12444,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CUDOS",
         name: "Cudos",
-        description: "The native token of the Cudos blockchain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/cudos.svg",
       },
     ],
@@ -19336,19 +12507,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLD",
         name: "Agoric",
-        description:
-          "BLD is the token used to secure the Agoric chain through staking and to backstop Inter Protocol.\n\nThe Agoric platform makes it safe and seamless to build decentralized apps using your existing JavaScript knowledge.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/agoric",
-        relatedAssets: [
-          {
-            chainName: "agoric",
-            sourceDenom: "uist",
-          },
-        ],
         relative_image_url: "/tokens/generated/bld.svg",
       },
       {
@@ -19403,18 +12565,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IST",
         name: "Inter Stable Token",
-        description:
-          "IST is the stable token used by the Agoric chain for execution fees and commerce.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "agoric",
-            sourceDenom: "ubld",
-          },
-        ],
         relative_image_url: "/tokens/generated/ist.svg",
       },
     ],
@@ -19436,7 +12590,7 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "stride",
         price: {
-          poolId: "1098",
+          poolId: "806",
           denom: "uosmo",
         },
         categories: ["defi"],
@@ -19474,55 +12628,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STRD",
         name: "Stride",
-        description:
-          "The native token of Stride\n\nStride is a blockchain that provides liquidity for staked tokens. Using Stride, you can earn both taking and DeFi yields across the Cosmos IBC ecosystem.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/stride_zone",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stadydx",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stutia",
-          },
-        ],
         relative_image_url: "/tokens/generated/strd.svg",
       },
       {
@@ -19577,53 +12686,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stATOM",
         name: "Stride Staked ATOM",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/statom.svg",
       },
       {
@@ -19678,53 +12744,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stSTARS",
         name: "Stride Staked STARS",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/ststars.svg",
       },
       {
@@ -19779,59 +12802,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stJUNO",
         name: "Stride Staked JUNO",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "juno",
-            sourceDenom: "ujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
-          },
-          {
-            chainName: "juno",
-            sourceDenom:
-              "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
-          },
-        ],
         relative_image_url: "/tokens/generated/stjuno.svg",
       },
       {
@@ -19885,54 +12859,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stOSMO",
         name: "Stride Staked OSMO",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-        ],
         relative_image_url: "/tokens/generated/stosmo.svg",
       },
       {
@@ -19987,55 +12917,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stLUNA",
         name: "Stride Staked LUNA",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom: "uluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "terra2",
-            sourceDenom:
-              "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
-          },
-        ],
         relative_image_url: "/tokens/generated/stluna.svg",
       },
       {
@@ -20090,53 +12975,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stEVMOS",
         name: "Stride Staked EVMOS",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "evmos",
-            sourceDenom: "aevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stadydx",
-          },
-        ],
         relative_image_url: "/tokens/generated/stevmos.svg",
       },
       {
@@ -20191,53 +13033,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stUMEE",
         name: "Stride Staked UMEE",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "umee",
-            sourceDenom: "uumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stadydx",
-          },
-        ],
         relative_image_url: "/tokens/generated/stumee.svg",
       },
       {
@@ -20252,6 +13051,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stsomm.svg",
         },
         coingeckoId: "stride-staked-sommelier",
+        price: {
+          poolId: "1120",
+          denom:
+            "ibc/9BBA9A1C257E971E38C1422780CE6F0B0686F0A3085E2D61118D904BFE0F5F5E",
+        },
         categories: ["liquid_staking", "defi"],
         transferMethods: [
           {
@@ -20287,53 +13091,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stSOMM",
         name: "Stride Staked SOMM",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "sommelier",
-            sourceDenom: "usomm",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/stsomm.svg",
       },
       {
@@ -20387,7 +13148,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stDYDX",
         name: "Stride Staked DYDX",
-        description: "Stride's liquid staked DYDX",
         verified: true,
         unstable: false,
         disabled: false,
@@ -20397,48 +13157,6 @@ export const AssetLists: AssetList[] = [
           sourceDenom: "ustrd",
         },
         listingDate: "2024-01-29T12:48:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "dydx",
-            sourceDenom: "adydx",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/stdydx.svg",
       },
       {
@@ -20492,7 +13210,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stTIA",
         name: "Stride Staked TIA",
-        description: "Stride's liquid staked TIA",
         verified: true,
         unstable: false,
         disabled: false,
@@ -20502,49 +13219,69 @@ export const AssetLists: AssetList[] = [
           sourceDenom: "ustrd",
         },
         listingDate: "2024-01-31T23:17:00.000Z",
-        relatedAssets: [
+        relative_image_url: "/tokens/generated/sttia.svg",
+      },
+      {
+        chainName: "stride",
+        sourceDenom: "stadym",
+        coinMinimalDenom:
+          "ibc/D53E785DC9C5C2CA50CADB1EFE4DE5D0C30418BE0E9C6F2AF9F092A247E8BC22",
+        symbol: "stDYM",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.svg",
+        },
+        price: {
+          poolId: "1566",
+          denom:
+            "ibc/9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
+        },
+        categories: ["liquid_staking", "defi"],
+        transferMethods: [
           {
-            chainName: "celestia",
-            sourceDenom: "utia",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "stride",
+              chainId: "stride-1",
+              sourceDenom: "stadym",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-326",
+              path: "transfer/channel-326/stadym",
+            },
           },
         ],
-        relative_image_url: "/tokens/generated/sttia.svg",
+        counterparty: [
+          {
+            chainName: "stride",
+            sourceDenom: "stadym",
+            chainType: "cosmos",
+            chainId: "stride-1",
+            symbol: "stDYM",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stdym.svg",
+            },
+          },
+        ],
+        variantGroupKey: "stDYM",
+        name: "Stride Staked DYM",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "stride",
+          sourceDenom: "ustrd",
+        },
+        listingDate: "2024-03-14T03:23:00.000Z",
+        relative_image_url: "/tokens/generated/stdym.svg",
       },
     ],
   },
@@ -20603,12 +13340,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "REBUS",
         name: "Rebus",
-        description: "REBUS, the native coin of the Rebus chain.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/rebus.svg",
       },
     ],
@@ -20668,12 +13403,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TORI",
         name: "Teritori",
-        description: "The native token of Teritori",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/tori.svg",
       },
     ],
@@ -20733,12 +13466,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LAMB",
         name: "Lambda",
-        description: "The native token of Lambda",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/lamb.svg",
       },
     ],
@@ -20760,8 +13491,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "unification",
         price: {
-          poolId: "1240",
-          denom: "uosmo",
+          poolId: "1576",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: ["defi"],
         transferMethods: [
@@ -20798,13 +13530,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FUND",
         name: "Unification",
-        description:
-          "Staking and governance coin for the Unification Blockchain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/fund.svg",
       },
     ],
@@ -20864,12 +13593,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JKL",
         name: "Jackal",
-        description: "The native staking and governance token of Jackal.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/jkl.svg",
       },
     ],
@@ -20929,12 +13656,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BZE",
         name: "BeeZee",
-        description: "BeeZee native blockchain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/bze.svg",
       },
     ],
@@ -20994,22 +13719,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ACRE",
         name: "Acrechain",
-        description:
-          "The native EVM, governance and staking token of the Acrechain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "acrechain",
-            sourceDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
-          },
-          {
-            chainName: "acrechain",
-            sourceDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
-          },
-        ],
         relative_image_url: "/tokens/generated/acre.svg",
       },
       {
@@ -21070,21 +13783,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "arUSD",
         name: "Arable USD",
-        description: "Overcollateralized stable coin for Arable derivatives v1",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "acrechain",
-            sourceDenom: "aacre",
-          },
-          {
-            chainName: "acrechain",
-            sourceDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
-          },
-        ],
         relative_image_url: "/tokens/generated/arusd.svg",
       },
       {
@@ -21144,21 +13846,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CNTO",
         name: "Ciento Token",
-        description: "Ciento Exchange Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "acrechain",
-            sourceDenom: "aacre",
-          },
-          {
-            chainName: "acrechain",
-            sourceDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
-          },
-        ],
         relative_image_url: "/tokens/generated/cnto.svg",
       },
     ],
@@ -21219,13 +13910,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IMV",
         name: "Imversed",
-        description:
-          "The native EVM, governance and staking token of the Imversed",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/imv.svg",
       },
     ],
@@ -21246,9 +13934,9 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/medasdigital/images/medas.svg",
         },
         price: {
-          poolId: "1329",
+          poolId: "1266",
           denom:
-            "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
+            "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580",
         },
         categories: ["defi"],
         transferMethods: [
@@ -21285,12 +13973,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MEDAS",
         name: "Medas Digital Network",
-        description: "The native token of Medas Digital Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/medas.svg",
       },
     ],
@@ -21350,12 +14036,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NOM",
         name: "Onomy",
-        description: "The native token of Onomy Protocol",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/nom.svg",
       },
     ],
@@ -21416,13 +14100,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYS",
         name: "Dyson Protocol",
-        description:
-          "The native staking and governance token of the Dyson Protocol",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dys.svg",
       },
     ],
@@ -21451,10 +14132,10 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -21489,13 +14170,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PLQ",
         name: "Planq",
-        description:
-          "The native EVM, governance and staking token of the Planq Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/plq.svg",
       },
     ],
@@ -21555,13 +14233,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CANTO",
         name: "Canto",
-        description:
-          "Canto is a Layer-1 blockchain built to deliver on the promise of DeFi",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/canto.svg",
       },
     ],
@@ -21621,7 +14296,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qSTARS",
         name: "Quicksilver Liquid Staked STARS",
-        description: "Quicksilver Liquid Staked STARS",
         verified: true,
         unstable: false,
         disabled: false,
@@ -21630,51 +14304,6 @@ export const AssetLists: AssetList[] = [
           chainName: "quicksilver",
           sourceDenom: "uqck",
         },
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom:
-              "factory/stars1xx5976njvxpl9n4v8huvff6cudhx7yuu8e7rt4/usneaky",
-          },
-        ],
         relative_image_url: "/tokens/generated/qstars.svg",
       },
       {
@@ -21728,7 +14357,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qATOM",
         name: "Quicksilver Liquid Staked ATOM",
-        description: "Quicksilver Liquid Staked ATOM",
         verified: true,
         unstable: false,
         disabled: false,
@@ -21737,48 +14365,6 @@ export const AssetLists: AssetList[] = [
           chainName: "quicksilver",
           sourceDenom: "uqck",
         },
-        relatedAssets: [
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "stafihub",
-            sourceDenom: "uratom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/qatom.svg",
       },
       {
@@ -21832,7 +14418,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qREGEN",
         name: "Quicksilver Liquid Staked Regen",
-        description: "Quicksilver Liquid Staked REGEN",
         verified: true,
         unstable: false,
         disabled: false,
@@ -21841,48 +14426,6 @@ export const AssetLists: AssetList[] = [
           chainName: "quicksilver",
           sourceDenom: "uqck",
         },
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "regen",
-            sourceDenom: "uregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "regen",
-            sourceDenom: "eco.uC.NCT",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-        ],
         relative_image_url: "/tokens/generated/qregen.svg",
       },
       {
@@ -21934,55 +14477,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QCK",
         name: "Quicksilver",
-        description:
-          "QCK - native token of Quicksilver\n\nLiquid Stake your Cosmos assets with your preferred validator and receive liquid staked assets (qASSETs) that you can use for swapping, pooling, lending, and more, all while your original stake earns staking APY from securing the network.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/quicksilverzone",
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqsomm",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stargaze",
-            sourceDenom: "ustars",
-          },
-          {
-            chainName: "regen",
-            sourceDenom: "uregen",
-          },
-          {
-            chainName: "sommelier",
-            sourceDenom: "usomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/qck.png",
       },
       {
@@ -22035,7 +14533,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qOSMO",
         name: "Quicksilver Liquid Staked OSMO",
-        description: "Quicksilver Liquid Staked OSMO",
         verified: true,
         unstable: false,
         disabled: false,
@@ -22044,51 +14541,6 @@ export const AssetLists: AssetList[] = [
           chainName: "quicksilver",
           sourceDenom: "uqck",
         },
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-        ],
         relative_image_url: "/tokens/generated/qosmo.svg",
       },
       {
@@ -22101,6 +14553,11 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsomm.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsomm.svg",
+        },
+        price: {
+          poolId: "1087",
+          denom:
+            "ibc/9BBA9A1C257E971E38C1422780CE6F0B0686F0A3085E2D61118D904BFE0F5F5E",
         },
         categories: ["liquid_staking", "defi"],
         transferMethods: [
@@ -22137,7 +14594,6 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qSOMM",
         name: "Quicksilver Liquid Staked SOMM",
-        description: "Quicksilver Liquid Staked SOMM",
         verified: true,
         unstable: false,
         disabled: false,
@@ -22146,48 +14602,6 @@ export const AssetLists: AssetList[] = [
           chainName: "quicksilver",
           sourceDenom: "uqck",
         },
-        relatedAssets: [
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "sommelier",
-            sourceDenom: "usomm",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqregen",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/qsomm.svg",
       },
     ],
@@ -22247,14 +14661,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MARS",
         name: "Mars Hub",
-        description:
-          "Mars protocol token\n\nLend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/mars_protocol",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/mars.svg",
       },
     ],
@@ -22314,12 +14724,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EBL",
         name: "8ball",
-        description: "The native staking token of 8ball.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/ebl.svg",
       },
     ],
@@ -22378,12 +14786,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARKH",
         name: "Arkhadian",
-        description: "The native token of Arkhadian",
         verified: false,
         unstable: true,
         disabled: true,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/arkh.svg",
       },
     ],
@@ -22443,56 +14849,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FRNZ",
         name: "Frienzies",
-        description:
-          "Frienzies are an IBC token redeemable exclusively for a physical asset issued by the Noble entity.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-        ],
         relative_image_url: "/tokens/generated/frnz.svg",
       },
       {
@@ -22558,56 +14918,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin",
-        description:
-          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdc.svg",
       },
     ],
@@ -22667,28 +14981,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WHALE",
         name: "Migaloo",
-        description: "The native token of Migaloo Chain",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1erul6xyq0gk6ws98ncj7lnq9l4jn4gnnu9we73gdz78yyl2lr7qqrvcgup/ash",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/urac",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1etlu2h30tjvv8rfa4fwdc43c92f6ul5w9acxzk/uguppy",
-          },
-        ],
         relative_image_url: "/tokens/generated/whale.svg",
       },
       {
@@ -22743,27 +15039,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ASH",
         name: "ASH",
-        description: "ASH",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "migaloo",
-            sourceDenom: "uwhale",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/urac",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1etlu2h30tjvv8rfa4fwdc43c92f6ul5w9acxzk/uguppy",
-          },
-        ],
         relative_image_url: "/tokens/generated/ash.svg",
       },
       {
@@ -22820,27 +15099,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAC",
         name: "RAC",
-        description: "RAC",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "migaloo",
-            sourceDenom: "uwhale",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1erul6xyq0gk6ws98ncj7lnq9l4jn4gnnu9we73gdz78yyl2lr7qqrvcgup/ash",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1etlu2h30tjvv8rfa4fwdc43c92f6ul5w9acxzk/uguppy",
-          },
-        ],
         relative_image_url: "/tokens/generated/rac.svg",
       },
       {
@@ -22895,28 +15157,65 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GUPPY",
         name: "GUPPY",
-        description: "GUPPY",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
+        relative_image_url: "/tokens/generated/guppy.png",
+      },
+      {
+        chainName: "migaloo",
+        sourceDenom:
+          "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/shark",
+        coinMinimalDenom:
+          "ibc/64D56DF9EC69BE554F49EBCE0199611062FF1137EF105E2F645C1997344F3834",
+        symbol: "SHARK",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/shark.png",
+        },
+        categories: ["meme"],
+        transferMethods: [
           {
-            chainName: "migaloo",
-            sourceDenom: "uwhale",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1erul6xyq0gk6ws98ncj7lnq9l4jn4gnnu9we73gdz78yyl2lr7qqrvcgup/ash",
-          },
-          {
-            chainName: "migaloo",
-            sourceDenom:
-              "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/urac",
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "migaloo",
+              chainId: "migaloo-1",
+              sourceDenom:
+                "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/shark",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-642",
+              path: "transfer/channel-642/factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/shark",
+            },
           },
         ],
-        relative_image_url: "/tokens/generated/guppy.png",
+        counterparty: [
+          {
+            chainName: "migaloo",
+            sourceDenom:
+              "factory/migaloo1eqntnl6tzcj9h86psg4y4h6hh05g2h9nj8e09l/shark",
+            chainType: "cosmos",
+            chainId: "migaloo-1",
+            symbol: "SHARK",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/shark.png",
+            },
+          },
+        ],
+        variantGroupKey: "SHARK",
+        name: "SHARK",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-15T19:51:00.000Z",
+        relative_image_url: "/tokens/generated/shark.png",
       },
     ],
   },
@@ -22975,14 +15274,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FLIX",
         name: "OmniFlix",
-        description:
-          "The native staking token of OmniFlix Hub.\n\nDecentralized media and network layer for Creators & Sovereign Communities powered by NFTs and related distribution protocols.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/OmniFlixNetwork",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/flix.svg",
       },
     ],
@@ -23043,12 +15338,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLZ",
         name: "Bluzelle",
-        description: "The native token of Bluzelle",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/blz.svg",
       },
     ],
@@ -23108,14 +15401,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LORE",
         name: "Gitopia",
-        description:
-          "The native token of Gitopia\n\nGitopia is the next-generation Code Collaboration Platform fuelled by a decentralized network and interactive token economy. It is designed to optimize the open-source software development process through collaboration, transparency, and incentivization.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/gitopiaDAO",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/lore.svg",
       },
     ],
@@ -23176,14 +15465,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NLS",
         name: "Nolus",
-        description:
-          "The native token of Nolus chain\n\nElevate your game with up to 3x equity. Dive into a world of minimized risks and unlock the full potential of your assets.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/NolusProtocol",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/nls.svg",
       },
     ],
@@ -23244,61 +15529,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NTRN",
         name: "Neutron",
-        description:
-          "The native token of Neutron chain.\n\nThe most secure CosmWasm platform in Cosmos, Neutron lets smart-contracts leverage bleeding-edge Interchain technology with minimal overhead.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/Neutron_org",
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron170v88vrtnedesyfytuku257cggxc79rd7lwt7q/ucircus",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron143wp6g8paqasnuuey6zyapucknwy9rhnld8hkr/bad",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/ntrn.svg",
       },
       {
@@ -23314,7 +15548,7 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "wrapped-steth",
         price: {
-          poolId: "1292",
+          poolId: "1431",
           denom:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
@@ -23378,59 +15612,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stETH",
         name: "Wrapped Lido Staked Ether",
-        description:
-          "wstETH is a wrapped version of stETH. As some DeFi protocols require a constant balance mechanism for tokens, wstETH keeps your balance of stETH fixed and uses an underlying share system to reflect your earned staking rewards.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron170v88vrtnedesyfytuku257cggxc79rd7lwt7q/ucircus",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron143wp6g8paqasnuuey6zyapucknwy9rhnld8hkr/bad",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/wsteth.svg",
       },
       {
@@ -23485,58 +15670,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NEWT",
         name: "Newt",
-        description: "The cutest NEWT token on Neutron chain.",
-        verified: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron170v88vrtnedesyfytuku257cggxc79rd7lwt7q/ucircus",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron143wp6g8paqasnuuey6zyapucknwy9rhnld8hkr/bad",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/newt.png",
       },
       {
@@ -23591,58 +15728,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CIRCUS",
         name: "AtomEconomicZone69JaeKwonInu",
-        description: "clownmaxxed store of value",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron143wp6g8paqasnuuey6zyapucknwy9rhnld8hkr/bad",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/circus.png",
       },
       {
@@ -23697,59 +15786,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BAD",
         name: "Badcoin",
-        description: "Baddest coin on Cosmos",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-15T14:42:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron170v88vrtnedesyfytuku257cggxc79rd7lwt7q/ucircus",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron154gg0wtm2v4h9ur8xg32ep64e8ef0g5twlsgvfeajqwghdryvyqsqhgk8e/APOLLO",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/bad.png",
       },
       {
@@ -23804,59 +15845,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APOLLO",
         name: "Apollo DAO",
-        description: "The deflationary utility token of the Apollo DAO project",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-22T21:05:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "neutron",
-            sourceDenom: "untrn",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron170v88vrtnedesyfytuku257cggxc79rd7lwt7q/ucircus",
-          },
-          {
-            chainName: "neutron",
-            sourceDenom:
-              "factory/neutron143wp6g8paqasnuuey6zyapucknwy9rhnld8hkr/bad",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wsteth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-        ],
         relative_image_url: "/tokens/generated/apollo.svg",
       },
     ],
@@ -23930,57 +15923,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PICA",
         name: "Composable",
-        description:
-          "The native staking and governance token of Composable.\n\nComposable is the base layer connecting L1s and L2s. We are scaling IBC to other ecosystems, pushing the boundaries of trust-minimized interoperability. We abstract the cross-chain experience for users, delivering seamless chain-agnostic execution of user intentions.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/ComposableFin",
-        relatedAssets: [
-          {
-            chainName: "composable",
-            sourceDenom:
-              "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
-          },
-          {
-            chainName: "composable",
-            sourceDenom:
-              "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/pica.svg",
       },
       {
@@ -24061,55 +16007,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KSM",
         name: "Kusama",
-        description:
-          "The native fee, governance, staking, and bonding token of the Polkadot platform.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "composable",
-            sourceDenom: "ppica",
-          },
-          {
-            chainName: "composable",
-            sourceDenom:
-              "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/ksm.svg",
       },
       {
@@ -24200,55 +16101,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DOT",
         name: "Polkadot",
-        description:
-          "The native fee, governance, staking, and bonding token of the Polkadot platform.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "composable",
-            sourceDenom: "ppica",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dot-planck",
-          },
-          {
-            chainName: "composable",
-            sourceDenom:
-              "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "busd-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/dot.svg",
       },
     ],
@@ -24306,14 +16162,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QSR",
         name: "Quasar",
-        description:
-          "The native token of Quasar\n\nQuasar is the first decentralized asset management (D.A.M.) platform enabled by IBC. A secure, permissionless, composable, and diversified interchain DeFi experience is finally here.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/QuasarFi",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/qsr.png",
       },
     ],
@@ -24335,9 +16187,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "archway",
         price: {
-          poolId: "1375",
+          poolId: "1298",
           denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+            "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
         },
         categories: ["defi"],
         transferMethods: [
@@ -24374,14 +16226,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARCH",
         name: "Archway",
-        description:
-          "The native token of Archway network\n\nAn incentivized L1 blockchain that allows developers to capture the value their dapps create, enabling sustainable economic models.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/archwayHQ",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/arch.svg",
       },
     ],
@@ -24407,10 +16255,10 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -24444,12 +16292,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MPWR",
         name: "EmpowerChain",
-        description: "The native staking and governance token of Empower.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/mpwr.svg",
       },
     ],
@@ -24509,14 +16355,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KYVE",
         name: "KYVE",
-        description:
-          "The native utility token of the KYVE network.\n\nRevolutionizing data reliability in the Web3 space, KYVE Network provides fast and easy tooling for data validation, immutability, and retrieval, ensuring trustless data for seamless scalability and eliminating data risks and roadblocks.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/KYVENetwork",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/kyve.svg",
       },
     ],
@@ -24544,10 +16386,12 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Osmosis Pro TFM IBC Transfer",
             type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=pacific-1&chainTo=osmosis-1&token0=usei&token1=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D",
             withdrawUrl:
-              "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -24582,20 +16426,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEI",
         name: "Sei",
-        description:
-          "The native staking token of Sei.\n\nSei is the fastest Layer 1 blockchain, designed to scale with the industry.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/SeiNetwork",
-        relatedAssets: [
-          {
-            chainName: "sei",
-            sourceDenom:
-              "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
-          },
-        ],
         relative_image_url: "/tokens/generated/sei.svg",
       },
       {
@@ -24649,18 +16483,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "OIN",
         name: "OIN STORE OF VALUE",
-        description:
-          "OIN Token ($OIN) is a groundbreaking digital asset developed on the $SEI Blockchain. It transcends being merely a cryptocurrency; $OIN stands as a robust store of value, symbolizing the future of decentralized finance and its potential to reshape the crypto landscape.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "sei",
-            sourceDenom: "usei",
-          },
-        ],
         relative_image_url: "/tokens/generated/oin.png",
       },
     ],
@@ -24681,9 +16507,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "passage",
         price: {
-          poolId: "1137",
+          poolId: "1498",
           denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4",
         },
         categories: ["defi"],
         transferMethods: [
@@ -24719,13 +16545,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PASG",
         name: "Passage",
-        description:
-          "The native staking and governance token of the Passage chain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/pasg.png",
       },
     ],
@@ -24813,62 +16636,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOL",
         name: "Solana",
-        description:
-          "Solana (SOL) is the native asset of the Solana blockchain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/B8ohBnfisop27exk2gtNABJyYjLwQA7ogrp5uNzvZCoy",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/sol.svg",
       },
       {
@@ -24940,61 +16711,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BONK",
         name: "Bonk",
-        description: "The Official Bonk Inu token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/B8ohBnfisop27exk2gtNABJyYjLwQA7ogrp5uNzvZCoy",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/bonk.png",
       },
       {
@@ -25068,56 +16788,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Wormhole)",
-        description:
-          "Tether USD (Wormhole), USDT, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdt",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "ukava",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "dai-wei",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdt.wh.svg",
       },
       {
@@ -25133,9 +16807,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "sui",
         price: {
-          poolId: "1127",
+          poolId: "1502",
           denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: [],
         transferMethods: [
@@ -25189,61 +16863,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SUI",
         name: "Sui",
-        description: "Sui’s native asset is called SUI.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/B8ohBnfisop27exk2gtNABJyYjLwQA7ogrp5uNzvZCoy",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/sui.svg",
       },
       {
@@ -25259,9 +16882,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "aptos",
         price: {
-          poolId: "1125",
+          poolId: "1500",
           denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: [],
         transferMethods: [
@@ -25315,62 +16938,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APT",
         name: "Aptos Coin",
-        description:
-          "Aptos token (APT) is the Aptos blockchain native token used for paying network and transaction fees.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/B8ohBnfisop27exk2gtNABJyYjLwQA7ogrp5uNzvZCoy",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/apt.svg",
       },
       {
@@ -25444,58 +17015,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Wormhole)",
-        description:
-          "USD Coin (Wormhole), USDC, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-        ],
         relative_image_url: "/tokens/generated/usdc.wh.svg",
       },
       {
@@ -25510,8 +17033,9 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/weth.hole.svg",
         },
         price: {
-          poolId: "1424",
-          denom: "uosmo",
+          poolId: "1214",
+          denom:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
         categories: ["defi"],
         transferMethods: [
@@ -25581,60 +17105,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Wrapped Ether (Wormhole)",
-        description:
-          "Wrapped Ether (Wormhole), WETH, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "axelar",
-            sourceDenom: "weth-wei",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-        ],
         relative_image_url: "/tokens/generated/weth.wh.svg",
       },
       {
@@ -25706,62 +17180,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PYTH",
         name: "Pyth Network",
-        description:
-          "Pyth is a protocol that allows market participants to publish pricing information on-chain for others to use. The protocol is an interaction between three parties:\n-Publishers submit pricing information to Pyth's oracle program. Pyth has multiple data publishers for every product to improve the accuracy and robustness of the system.\n-Pyth's oracle program combines publishers' data to produce a single aggregate price and confidence interval.\nConsumers read the price information produced by the oracle program.\n\nPyth's oracle program runs simultaneously on both Solana mainnet and Pythnet. Each instance of the program is responsible for its own set of price feeds. Solana Price Feeds are available for use by Solana protocols. In this case, since the oracle program itself runs on Solana, the resulting prices are immediately available to consumers without requiring any additional work. Pythnet Price Feeds are available on 12+ blockchains. The prices constructed on Pythnet are transferred cross-chain to reach consumers on these blockchains.\n\nIn both cases, the critical component of the system is the oracle program that combines the data from each individual publisher. This program maintains a number of different Solana accounts that list the products on Pyth and their current price data. Publishers publish their price and confidence by interacting with the oracle program on every slot. The program stores this information in its accounts. The first price update in a slot additionally triggers price aggregation, which combines the price data from the previous slot into a single aggregate price and confidence interval. This aggregate price is written to the Solana account where it is readable by other on-chain programs and available for transmission to other blockchains.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
-          },
-          {
-            chainName: "noble",
-            sourceDenom: "uusdc",
-          },
-        ],
         relative_image_url: "/tokens/generated/pyth.svg",
       },
       {
@@ -25846,59 +17268,82 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "Solana USD Coin (Wormhole)",
-        description:
-          "Solana USD Coin (Wormhole), Solana USDC, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
         verified: true,
         unstable: false,
         disabled: false,
-        preview: true,
-        relatedAssets: [
+        preview: false,
+        listingDate: "2024-02-20T20:45:00.000Z",
+        relative_image_url: "/tokens/generated/solana.usdc.wh.svg",
+      },
+      {
+        chainName: "gateway",
+        sourceDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/bqqqpqsxzelp2hdfd4cgmxr6ekpatlj8yt2eghk52vst",
+        coinMinimalDenom:
+          "ibc/CDD1E59BD5034C1B2597DD199782204EB397DB93200AA2E99C0AF3A66B2915FA",
+        symbol: "BSKT",
+        decimals: 5,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/bskt.png",
+        },
+        coingeckoId: "basket",
+        categories: ["defi"],
+        transferMethods: [
           {
-            chainName: "noble",
-            sourceDenom: "uusdc",
+            name: "Wormhole Portal Bridge",
+            type: "external_interface",
+            depositUrl: "https://portalbridge.com/cosmos/",
+            withdrawUrl: "https://portalbridge.com/cosmos/",
           },
           {
-            chainName: "axelar",
-            sourceDenom: "uusdc",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "polygon-uusdc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "avalanche-uusdc",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
-          },
-          {
-            chainName: "gateway",
-            sourceDenom:
-              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
-          },
-          {
-            chainName: "kava",
-            sourceDenom: "erc20/tether/usdt",
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "gateway",
+              chainId: "wormchain",
+              sourceDenom:
+                "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/bqqqpqsxzelp2hdfd4cgmxr6ekpatlj8yt2eghk52vst",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-2186",
+              path: "transfer/channel-2186/factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/bqqqpqsxzelp2hdfd4cgmxr6ekpatlj8yt2eghk52vst",
+            },
           },
         ],
-        relative_image_url: "/tokens/generated/solana.usdc.wh.svg",
+        counterparty: [
+          {
+            chainName: "gateway",
+            sourceDenom:
+              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/bqqqpqsxzelp2hdfd4cgmxr6ekpatlj8yt2eghk52vst",
+            chainType: "cosmos",
+            chainId: "wormchain",
+            symbol: "BSKT",
+            decimals: 5,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/bskt.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "6gnCPhXtLnUD76HjQuSYPENLSZdG8RvDB1pTLM5aLSJA",
+            chainType: "non-cosmos",
+            symbol: "BSKT",
+            decimals: 5,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/bskt.png",
+            },
+          },
+        ],
+        variantGroupKey: "BSKT",
+        name: "Basket",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/bskt.png",
       },
     ],
   },
@@ -25962,12 +17407,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XPLA",
         name: "XPLA",
-        description: "The native staking token of XPLA.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/xpla.svg",
       },
     ],
@@ -26033,12 +17476,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RIO",
         name: "Realio Network",
-        description: "The native currency of the Realio Network.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/rio.svg",
       },
     ],
@@ -26099,12 +17540,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SGE",
         name: "SGE",
-        description: "The native token of SGE Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/sge.svg",
       },
     ],
@@ -26163,54 +17602,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FIS",
         name: "StaFi Hub",
-        description:
-          "The native staking and governance token of the StaFi Hub.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stafihub",
-            sourceDenom: "uratom",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-        ],
         relative_image_url: "/tokens/generated/fis.svg",
       },
       {
@@ -26263,53 +17658,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "rATOM",
         name: "rATOM",
-        description: "A liquid staking representation of staked ATOMs",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "stafihub",
-            sourceDenom: "ufis",
-          },
-          {
-            chainName: "cosmoshub",
-            sourceDenom: "uatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqstars",
-          },
-        ],
         relative_image_url: "/tokens/generated/ratom.svg",
       },
     ],
@@ -26366,13 +17718,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DORA",
         name: "Dora Vota",
-        description:
-          "The native staking and governance token of the Theta testnet version of the Dora Vota.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dora.svg",
       },
     ],
@@ -26432,12 +17781,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "COREUM",
         name: "Coreum",
-        description: "The native token of Coreum",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/coreum.svg",
       },
     ],
@@ -26497,56 +17844,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TIA",
         name: "Celestia",
-        description:
-          "Celestia is a modular data availability network that securely scales with the number of users, making it easy for anyone to launch their own blockchain.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/CelestiaOrg",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stutia",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-        ],
         relative_image_url: "/tokens/generated/tia.svg",
       },
     ],
@@ -26567,9 +17868,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "dydx",
         price: {
-          poolId: "1246",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1245",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -26606,55 +17906,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYDX",
         name: "dYdX Protocol",
-        description:
-          "The native staking token of dYdX Protocol.\n\nOur goal is to build open source code that can power a first class product and trading experience.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/dYdX",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stadydx",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuluna",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "staevmos",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuumee",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stusomm",
-          },
-        ],
         relative_image_url: "/tokens/generated/dydx.svg",
       },
     ],
@@ -26720,12 +17975,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FX",
         name: "f(x)Core",
-        description: "The native staking token of the Function X",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/fx.svg",
       },
     ],
@@ -26746,9 +17999,9 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nomic/images/nbtc.svg",
         },
         price: {
-          poolId: "1284",
+          poolId: "1490",
           denom:
-            "ibc/D1542AA8762DB13087D8364F3EA6509FD6F009A34F00426AF9E4F9FA85CBBF1F",
+            "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
         },
         categories: [],
         transferMethods: [
@@ -26795,55 +18048,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTC",
         name: "Nomic Bitcoin",
-        description: "Bitcoin. On Cosmos.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-        ],
         relative_image_url: "/tokens/generated/nbtc.svg",
       },
     ],
@@ -26903,12 +18111,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NOIS",
         name: "Nois",
-        description: "The native token of Nois",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/nois.svg",
       },
     ],
@@ -26966,12 +18172,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QWOYN",
         name: "Qwoyn",
-        description: "QWOYN is the native governance token for Qwoyn Network",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/qwoyn.png",
       },
     ],
@@ -27032,13 +18236,94 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOURCE",
         name: "Source",
-        description: "The native token of SOURCE Chain",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/source.svg",
+      },
+      {
+        chainName: "source",
+        sourceDenom:
+          "ibc/FC5A7360EEED0713AE3E83E9D55A69AF873056A172AC495890ACE4582FF9685A",
+        coinMinimalDenom:
+          "ibc/C97473CD237EBA2F94FDFA6ABA5EC0E22FA140655D73D2A2754F03A347BBA40B",
+        symbol: "SRCX",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/srcx.png",
+        },
+        coingeckoId: "source-protocol",
+        price: {
+          poolId: "1513",
+          denom:
+            "ibc/E7905742CE2EA4EA5D592527DC89220C59B617DE803939FE7293805A64B484D7",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "source",
+              chainId: "source-1",
+              sourceDenom:
+                "ibc/FC5A7360EEED0713AE3E83E9D55A69AF873056A172AC495890ACE4582FF9685A",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-8945",
+              path: "transfer/channel-8945/transfer/channel-1/erc20/0x091F9A57A3F58d758b6572E9d41675918EAC7F09",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "source",
+            sourceDenom:
+              "ibc/FC5A7360EEED0713AE3E83E9D55A69AF873056A172AC495890ACE4582FF9685A",
+            chainType: "cosmos",
+            chainId: "source-1",
+            symbol: "SRCX",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/srcx.png",
+            },
+          },
+          {
+            chainName: "planq",
+            sourceDenom: "erc20/0x091F9A57A3F58d758b6572E9d41675918EAC7F09",
+            chainType: "cosmos",
+            chainId: "planq_7070-2",
+            symbol: "SRCX",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/srcx.png",
+            },
+          },
+          {
+            chainName: "binancesmartchain",
+            sourceDenom: "0x454b90716a9435e7161a9aea5cf00e0acbe565ae",
+            chainType: "evm",
+            chainId: 56,
+            address: "0x454b90716a9435e7161a9aea5cf00e0acbe565ae",
+            symbol: "SRCX",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/srcx.png",
+            },
+          },
+        ],
+        variantGroupKey: "SRCX",
+        name: "Source Token",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-03T21:47:00.000Z",
+        relative_image_url: "/tokens/generated/srcx.png",
       },
     ],
   },
@@ -27098,13 +18383,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ISLM",
         name: "Haqq Network",
-        description:
-          "The native EVM, governance and staking token of the Haqq Network",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/islm.svg",
       },
     ],
@@ -27175,12 +18457,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PURSE",
         name: "PURSE Token (Function X)",
-        description: "PURSE Token",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/purse.svg",
       },
     ],
@@ -27234,17 +18514,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NYX",
         name: "Nym",
-        description: "NYX Token (NYX) is the Nym Network's native token.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "nyx",
-            sourceDenom: "unym",
-          },
-        ],
         relative_image_url: "/tokens/generated/nyx.png",
       },
       {
@@ -27290,24 +18563,16 @@ export const AssetLists: AssetList[] = [
             symbol: "NYM",
             decimals: 6,
             logoURIs: {
-              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nyx/images/nym.png",
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nyx/images/nym_token_light.png",
             },
           },
         ],
         variantGroupKey: "NYM",
         name: "NYM",
-        description:
-          "NYM Token (NYM) is the Nym Network's native utility token, used as the primary means to incentivize mixnet node operators.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "nyx",
-            sourceDenom: "unyx",
-          },
-        ],
         relative_image_url: "/tokens/generated/nym.png",
       },
     ],
@@ -27336,10 +18601,10 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [
           {
-            name: "TFM IBC Transfer",
+            name: "Dymension Portal",
             type: "external_interface",
             depositUrl:
-              "https://tfm.com/bridge?chainFrom=dymension_1100-1&chainTo=osmosis-1&token0=adym&token1=ibc%2F9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
+              "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -27374,16 +18639,328 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYM",
         name: "Dymension Hub",
-        description:
-          "The native governance and staking token of the Dymension Hub\n\nDymension is a network of easily deployable and lightning fast modular blockchains called RollApps.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/dymension",
         listingDate: "2024-02-06T08:36:00.000Z",
-        relatedAssets: [],
         relative_image_url: "/tokens/generated/dym.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "humans",
+    chain_id: "humans_1089-1",
+    assets: [
+      {
+        chainName: "humans",
+        sourceDenom: "aheart",
+        coinMinimalDenom:
+          "ibc/35CECC330D11DD00FACB555D07687631E0BC7D226260CC5F015F6D7980819533",
+        symbol: "HEART",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/humans/images/heart-dark-mode.png",
+        },
+        coingeckoId: "humans-ai",
+        price: {
+          poolId: "1493",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "humans",
+              chainId: "humans_1089-1",
+              sourceDenom: "aheart",
+              port: "transfer",
+              channelId: "channel-4",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-20082",
+              path: "transfer/channel-20082/aheart",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "humans",
+            sourceDenom: "aheart",
+            chainType: "cosmos",
+            chainId: "humans_1089-1",
+            symbol: "HEART",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/humans/images/heart-dark-mode.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/humans/images/heart-dark-mode.svg",
+            },
+          },
+        ],
+        variantGroupKey: "HEART",
+        name: "Humans.ai",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-08T16:25:00.000Z",
+        relative_image_url: "/tokens/generated/heart.png",
+      },
+    ],
+  },
+  {
+    chain_name: "scorum",
+    chain_id: "scorum-1",
+    assets: [
+      {
+        chainName: "scorum",
+        sourceDenom: "nscr",
+        coinMinimalDenom:
+          "ibc/178248C262DE2E141EE6287EE7AB0854F05F25B0A3F40C4B912FA1C7E51F466E",
+        symbol: "SCR",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/scorum/images/scr.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/scorum/images/scr.svg",
+        },
+        price: {
+          poolId: "1507",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "scorum",
+              chainId: "scorum-1",
+              sourceDenom: "nscr",
+              port: "transfer",
+              channelId: "channel-1",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-20100",
+              path: "transfer/channel-20100/nscr",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "scorum",
+            sourceDenom: "nscr",
+            chainType: "cosmos",
+            chainId: "scorum-1",
+            symbol: "SCR",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/scorum/images/scr.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/scorum/images/scr.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SCR",
+        name: "Scorum",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/scr.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "chain4energy",
+    chain_id: "perun-1",
+    assets: [
+      {
+        chainName: "chain4energy",
+        sourceDenom: "uc4e",
+        coinMinimalDenom:
+          "ibc/62118FB4D5FEDD5D2B18DC93648A745CD5E5B01D420E9B7A5FED5381CB13A7E8",
+        symbol: "C4E",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/chain4energy/images/c4e.png",
+        },
+        coingeckoId: "",
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "chain4energy",
+              chainId: "perun-1",
+              sourceDenom: "uc4e",
+              port: "transfer",
+              channelId: "channel-1",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-22172",
+              path: "transfer/channel-22172/uc4e",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "chain4energy",
+            sourceDenom: "uc4e",
+            chainType: "cosmos",
+            chainId: "perun-1",
+            symbol: "C4E",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/chain4energy/images/c4e.png",
+            },
+          },
+        ],
+        variantGroupKey: "C4E",
+        name: "C4E",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/c4e.png",
+      },
+    ],
+  },
+  {
+    chain_name: "pylons",
+    chain_id: "pylons-mainnet-1",
+    assets: [
+      {
+        chainName: "pylons",
+        sourceDenom: "ubedrock",
+        coinMinimalDenom:
+          "ibc/0835781EF3F3ADD053874323AB660C75B50B18B16733CAB783CA6BBD78244EDF",
+        symbol: "ROCK",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pylons/images/pylons.png",
+        },
+        price: {
+          poolId: "1386",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "pylons",
+              chainId: "pylons-mainnet-1",
+              sourceDenom: "ubedrock",
+              port: "transfer",
+              channelId: "channel-29",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-17683",
+              path: "transfer/channel-17683/ubedrock",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "pylons",
+            sourceDenom: "ubedrock",
+            chainType: "cosmos",
+            chainId: "pylons-mainnet-1",
+            symbol: "ROCK",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pylons/images/pylons.png",
+            },
+          },
+        ],
+        variantGroupKey: "ROCK",
+        name: "Pylons",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-03T22:27:00.000Z",
+        relative_image_url: "/tokens/generated/rock.png",
+      },
+    ],
+  },
+  {
+    chain_name: "aioz",
+    chain_id: "aioz_168-1",
+    assets: [
+      {
+        chainName: "aioz",
+        sourceDenom: "attoaioz",
+        coinMinimalDenom:
+          "ibc/BB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
+        symbol: "AIOZ",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/aioz/images/aioz.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/aioz/images/aioz.svg",
+        },
+        coingeckoId: "aioz-network",
+        price: {
+          poolId: "1565",
+          denom:
+            "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
+        },
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=aioz_168-1&chainTo=osmosis-1&token0=attoaioz&token1=ibc%2FBB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "aioz",
+              chainId: "aioz_168-1",
+              sourceDenom: "attoaioz",
+              port: "transfer",
+              channelId: "channel-1",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-779",
+              path: "transfer/channel-779/attoaioz",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "aioz",
+            sourceDenom: "attoaioz",
+            chainType: "cosmos",
+            chainId: "aioz_168-1",
+            symbol: "AIOZ",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/aioz/images/aioz.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/aioz/images/aioz.svg",
+            },
+          },
+        ],
+        variantGroupKey: "AIOZ",
+        name: "AIOZ Network",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-12T23:14:00.000Z",
+        relative_image_url: "/tokens/generated/aioz.svg",
       },
     ],
   },
