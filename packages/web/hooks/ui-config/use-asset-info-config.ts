@@ -73,8 +73,6 @@ export const useAssetInfoConfig = (
   config.setIsHistoricalDataLoading(isLoading);
   config.setHistoricalDataError(isError);
 
-  console.log(historicalPriceData, customTimeFrame);
-
   return config;
 };
 
