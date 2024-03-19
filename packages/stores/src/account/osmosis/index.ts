@@ -843,7 +843,7 @@ export class OsmosisAccountImpl {
       denom: string;
       amount: string;
     },
-    maxSlippage = "10",
+    maxSlippage = "20",
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
