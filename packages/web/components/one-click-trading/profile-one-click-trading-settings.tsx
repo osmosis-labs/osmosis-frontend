@@ -24,7 +24,7 @@ export const ProfileOneClickTradingSettings = ({
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
-  } = api.edge.oneClickTrading.getSessionAuthenticator.useQuery(
+  } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
       publicKey: oneClickTradingInfo?.publicKey ?? "",

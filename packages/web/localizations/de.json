@@ -477,6 +477,7 @@
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
       "endingSession": "Sitzung beenden",
+      "feeToDisable": "Gebühr für die Deaktivierung des 1-Click-Handels:",
       "spendLimitScreen": {
         "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
         "fixedAmount": "Fester Betrag",

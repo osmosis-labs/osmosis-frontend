@@ -37,6 +37,9 @@ export const useRemoveOneClickTradingSession = ({
               reject(new Error("Transaction failed"));
             }
           },
+          signOptions: {
+            preferNoSetFee: true,
+          },
         })
         .catch((error) => {
           reject(error);

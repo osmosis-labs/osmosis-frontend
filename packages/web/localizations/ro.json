@@ -477,6 +477,7 @@
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "editSessionButton": "Salvează modificările",
       "endingSession": "Încheierea sesiunii",
+      "feeToDisable": "Taxă pentru dezactivarea tranzacționării cu 1 clic:",
       "spendLimitScreen": {
         "spendLimitDescription": "Setați suma maximă pe care o puteți cheltui într-o perioadă de sesiune de tranzacționare cu 1 clic.",
         "fixedAmount": "Cantitate fixă",

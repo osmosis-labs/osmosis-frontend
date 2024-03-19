@@ -1,4 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { SignOptions } from "@cosmos-kit/core";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
@@ -2094,12 +2095,14 @@ export class OsmosisAccountImpl {
     memo = "",
     onFulfill,
     onBroadcasted,
+    signOptions,
   }: {
     addAuthenticators: { type: string; data: Uint8Array }[];
     removeAuthenticators: bigint[];
     memo?: string;
     onFulfill?: (tx: DeliverTxResponse) => void;
     onBroadcasted?: () => void;
+    signOptions?: SignOptions;
   }) {
     const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
       this.msgOpts.addAuthenticator.messageComposer({
@@ -2122,7 +2125,7 @@ export class OsmosisAccountImpl {
       msgs,
       memo,
       undefined,
-      undefined,
+      signOptions,
       {
         onBroadcasted,
         onFulfill: (tx) => {

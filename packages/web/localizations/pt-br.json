@@ -477,6 +477,7 @@
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
       "endingSession": "Encerrando sessão",
+      "feeToDisable": "Taxa para desativar a negociação em 1 clique:",
       "spendLimitScreen": {
         "spendLimitDescription": "Defina o valor máximo que você pode gastar em um período de sessão de negociação com 1 clique.",
         "fixedAmount": "Quantia fixa",

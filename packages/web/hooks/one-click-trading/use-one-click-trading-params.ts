@@ -55,7 +55,7 @@ export const useOneClickTradingParams = ({
     data: defaultTransaction1CTParams,
     isLoading,
     isError,
-  } = api.edge.oneClickTrading.getParameters.useQuery();
+  } = api.local.oneClickTrading.getParameters.useQuery();
 
   const [transaction1CTParams, setTransaction1CTParams] = useState<
     OneClickTradingTransactionParams | undefined

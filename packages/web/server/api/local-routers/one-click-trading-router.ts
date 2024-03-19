@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { OsmosisAverageGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
@@ -13,7 +13,9 @@ import {
   getAuthenticators,
   getSessionAuthenticator,
 } from "~/server/queries/complex/authenticators";
+import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
+import { queryAuthenticatorSpendLimit } from "~/server/queries/osmosis/authenticators";
 
 export const oneClickTradingRouter = createTRPCRouter({
   getParameters: publicProcedure.query(
@@ -45,7 +47,9 @@ export const oneClickTradingRouter = createTRPCRouter({
     getNetworkFeeLimitStep()
   ),
   getSessionAuthenticator: publicProcedure
-    .input(z.object({ userOsmoAddress: z.string(), publicKey: z.string() }))
+    .input(
+      UserOsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
+    )
     .query(async ({ input }) => {
       const sessionAuthenticator = await getSessionAuthenticator({
         userOsmoAddress: input.userOsmoAddress,
@@ -62,7 +66,7 @@ export const oneClickTradingRouter = createTRPCRouter({
       return sessionAuthenticator;
     }),
   getAccountPubKeyAndAuthenticators: publicProcedure
-    .input(z.object({ userOsmoAddress: z.string() }))
+    .input(UserOsmoAddressSchema.required())
     .query(async ({ input }) => {
       const [cosmosAccount, authenticators] = await Promise.all([
         queryCosmosAccount({ address: input.userOsmoAddress }),
@@ -73,6 +77,30 @@ export const oneClickTradingRouter = createTRPCRouter({
         accountPubKey: cosmosAccount.account.pub_key.key,
         authenticators,
         shouldAddFirstAuthenticator: authenticators.length === 0,
+      };
+    }),
+  getAmountSpent: publicProcedure
+    .input(
+      UserOsmoAddressSchema.required().and(
+        z.object({ authenticatorId: z.string() })
+      )
+    )
+    .query(async ({ input: { userOsmoAddress, authenticatorId } }) => {
+      const [spendLimit, usdcAsset] = await Promise.all([
+        queryAuthenticatorSpendLimit({
+          address: userOsmoAddress,
+          authenticatorId,
+        }),
+        getAsset({ anyDenom: "usdc" }),
+      ]);
+
+      return {
+        amountSpent: new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          new Dec(spendLimit.data.spending.value_spent_in_period).quo(
+            DecUtils.getTenExponentN(usdcAsset.coinDecimals)
+          )
+        ),
       };
     }),
 });

@@ -477,6 +477,7 @@
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "editSessionButton": "Zapisz zmiany",
       "endingSession": "Zakończenie sesji",
+      "feeToDisable": "Opłata za wyłączenie handlu jednym kliknięciem:",
       "spendLimitScreen": {
         "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
         "fixedAmount": "Stała kwota",

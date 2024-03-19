@@ -2,12 +2,13 @@ import { OneClickTradingHumanizedSessionPeriod } from "@osmosis-labs/types";
 import classNames from "classnames";
 
 import { Button } from "~/components/buttons";
+import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import {
   ScreenGoBackButton,
   useScreenManager,
 } from "~/components/screen-manager";
-import { useTranslation } from "~/hooks";
+import { useOneClickTradingSession, useTranslation } from "~/hooks";
 
 export function getSessionPeriodTranslationKey(
   input: OneClickTradingHumanizedSessionPeriod
@@ -40,14 +41,20 @@ export const SessionPeriodScreen = ({
 }: SessionPeriodScreenProps) => {
   const { t } = useTranslation();
   const { goBack } = useScreenManager();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
   return (
     <>
       <ScreenGoBackButton className="absolute top-7 left-7" />
       <div className="flex flex-col items-center gap-6 px-16 ">
-        <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-          {t("oneClickTrading.settings.sessionPeriodScreen.title")}
-        </h1>
+        <div className="flex flex-col items-center gap-0.5">
+          <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
+            {t("oneClickTrading.settings.sessionPeriodScreen.title")}
+          </h1>
+          {isOneClickTradingEnabled && (
+            <OneClickTradingRemainingTime className="!text-body2 !text-osmoverse-400" />
+          )}
+        </div>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.sessionPeriodScreen.description")}
         </p>

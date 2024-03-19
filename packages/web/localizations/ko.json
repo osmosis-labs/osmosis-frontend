@@ -477,6 +477,7 @@
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
       "endingSession": "세션 종료",
+      "feeToDisable": "1-클릭 거래 비활성화 수수료:",
       "spendLimitScreen": {
         "spendLimitDescription": "1-클릭 거래 세션 기간 내에 지출할 수 있는 최대 금액을 설정하세요.",
         "fixedAmount": "정액",

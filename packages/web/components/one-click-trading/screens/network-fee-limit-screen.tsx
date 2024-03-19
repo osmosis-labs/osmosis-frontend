@@ -16,7 +16,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 interface PriceStep {
   id: string;
-  key: keyof RouterOutputs["edge"]["oneClickTrading"]["getNetworkFeeLimitStep"];
+  key: keyof RouterOutputs["local"]["oneClickTrading"]["getNetworkFeeLimitStep"];
   displayTranslationKey: string;
   recommended?: boolean;
 }
@@ -24,19 +24,19 @@ interface PriceStep {
 const PriceSteps: PriceStep[] = [
   {
     id: "low",
-    key: "low",
+    key: "low" as const,
     displayTranslationKey: "oneClickTrading.settings.networkFeeLimitScreen.low",
   },
   {
     id: "average",
-    key: "average",
+    key: "average" as const,
     recommended: true,
     displayTranslationKey:
       "oneClickTrading.settings.networkFeeLimitScreen.average",
   },
   {
     id: "high",
-    key: "high",
+    key: "high" as const,
     displayTranslationKey:
       "oneClickTrading.settings.networkFeeLimitScreen.high",
   },
@@ -59,10 +59,10 @@ export const NetworkFeeLimitScreen = ({
   const stepAsset = transaction1CTParams.networkFeeLimit.currency;
 
   const { data: steps, isLoading } =
-    api.edge.oneClickTrading.getNetworkFeeLimitStep.useQuery();
+    api.local.oneClickTrading.getNetworkFeeLimitStep.useQuery();
 
   const getValueFromSteps = (
-    key: keyof RouterOutputs["edge"]["oneClickTrading"]["getNetworkFeeLimitStep"]
+    key: keyof RouterOutputs["local"]["oneClickTrading"]["getNetworkFeeLimitStep"]
   ) => {
     const rawValue = (steps ?? DefaultGasPriceStep)[key];
     const value =
@@ -112,7 +112,7 @@ export const NetworkFeeLimitScreen = ({
             </>
           ) : (
             <>
-              {(PriceSteps ?? DefaultGasPriceStep).map((step) => {
+              {PriceSteps.map((step) => {
                 const value = getValueFromSteps(step.key);
                 return (
                   <Button

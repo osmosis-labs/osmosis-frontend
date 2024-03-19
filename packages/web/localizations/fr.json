@@ -477,6 +477,7 @@
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
       "endingSession": "Fin de la séance",
+      "feeToDisable": "Frais pour désactiver le trading en 1 clic :",
       "spendLimitScreen": {
         "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
         "fixedAmount": "Montant fixé",

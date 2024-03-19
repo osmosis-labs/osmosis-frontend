@@ -477,6 +477,7 @@
       "startButton": "開始一鍵交易",
       "editSessionButton": "儲存變更",
       "endingSession": "結束會議",
+      "feeToDisable": "停用一鍵交易的費用：",
       "spendLimitScreen": {
         "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
         "fixedAmount": "固定值",

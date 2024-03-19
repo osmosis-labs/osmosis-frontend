@@ -1,4 +1,3 @@
-import { oneClickTradingRouter } from "~/server/api/edge-routers/one-click-trading-router";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { assetsRouter } from "./assets-router";
@@ -12,5 +11,4 @@ export const edgeRouter = createTRPCRouter({
   pools: poolsRouter,
   staking: stakingRouter,
   earn: earnRouter,
-  oneClickTrading: oneClickTradingRouter,
 });

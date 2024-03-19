@@ -1,6 +1,8 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
 
 import {
+  makeAddAuthenticatorMsg,
+  makeRemoveAuthenticatorMsg,
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
 } from "../message-composers";
@@ -154,12 +156,10 @@ export const osmosisMsgOpts = createMsgOpts({
         .undelegateFromRebalancedValidatorSet,
   },
   addAuthenticator: {
-    messageComposer:
-      osmosis.authenticator.MessageComposer.withTypeUrl.addAuthenticator,
+    messageComposer: makeAddAuthenticatorMsg,
   },
   removeAuthenticator: {
-    messageComposer:
-      osmosis.authenticator.MessageComposer.withTypeUrl.removeAuthenticator,
+    messageComposer: makeRemoveAuthenticatorMsg,
   },
 });
 

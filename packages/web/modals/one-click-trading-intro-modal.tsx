@@ -19,7 +19,6 @@ import {
 } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
-import { useAddOrRemoveAuthenticators } from "~/hooks/mutations/osmosis/add-or-remove-authenticators";
 import { ModalBase } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -145,7 +144,6 @@ const IntroModal1CTScreens = observer(
     oneClickTradingInfo: OneClickTradingInfo | undefined;
     onCloseModal: () => void;
   }) => {
-    const removeAuthenticator = useAddOrRemoveAuthenticators();
     const { accountStore, chainStore } = useStore();
 
     const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
@@ -195,7 +193,7 @@ const IntroModal1CTScreens = observer(
               });
             }}
             hasExistingSession={isOneClickTradingEnabled}
-            isEndingSession={removeAuthenticator.isLoading}
+            isEndingSession={removeSession.isLoading}
             onClose={onCloseModal}
             onEndSession={() => {
               const rollback = () => {

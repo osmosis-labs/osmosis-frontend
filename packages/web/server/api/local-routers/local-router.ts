@@ -1,3 +1,4 @@
+import { oneClickTradingRouter } from "~/server/api/local-routers/one-click-trading-router";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { concentratedLiquidityRouter } from "./concentrated-liquidity-router";
@@ -10,4 +11,5 @@ import { swapRouter } from "./swap-router";
 export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
+  oneClickTrading: oneClickTradingRouter,
 });
