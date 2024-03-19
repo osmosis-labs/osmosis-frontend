@@ -74,7 +74,6 @@ export type Validator = {
   website: string | undefined;
   imageUrl: string;
   operatorAddress: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
 };
 
@@ -85,7 +84,6 @@ export type FormattedValidator = {
   formattedCommissions: string;
   formattedWebsite: string;
   website: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
   operatorAddress: string;
 };
@@ -227,10 +225,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             const commissions = getCommissions(validator);
             const formattedCommissions = getFormattedCommissions(commissions);
 
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
-
-            if (isAPRTooHigh) return undefined;
-
             const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
             const website = validator?.description?.website || "";
@@ -248,7 +242,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               formattedCommissions,
               formattedWebsite,
               website,
-              isAPRTooHigh,
               isVotingPowerTooHigh,
               operatorAddress,
             };
@@ -383,15 +376,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 ) => {
                   const formattedCommissions =
                     props.row.original.formattedCommissions;
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                   return (
-                    <div
-                      className={classNames(
-                        "text-right",
-                        isAPRTooHigh ? "text-rust-200" : "text-white"
-                      )}
-                    >
+                    <div className="text-white text-right">
                       {formattedCommissions}
                     </div>
                   );
@@ -407,20 +394,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const isVotingPowerTooHigh =
                     props.row.original.isVotingPowerTooHigh;
 
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
-
                   return (
                     <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("stake.isAPRTooHighTooltip")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {!isAPRTooHigh && isVotingPowerTooHigh && (
+                      {isVotingPowerTooHigh && (
                         <Tooltip
                           content={t("stake.isVotingPowerTooHighTooltip")}
                         >
