@@ -10,7 +10,6 @@ import React, {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import { Spinner } from "~/components/loaders";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
@@ -23,12 +22,13 @@ import {
 } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useDisclosure, useTranslation } from "~/hooks";
-import { ModalBase } from "~/modals";
+import { ModalBase, ModalCloseButton } from "~/modals";
 import { formatPretty } from "~/utils/formatter";
-import { runIfFn } from "~/utils/function";
+import { noop, runIfFn } from "~/utils/function";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 type Classes = "root";
 
@@ -49,6 +49,7 @@ interface OneClickTradingSettingsProps {
   >;
   onStartTrading: () => void;
   onEndSession?: () => void;
+  onClose: () => void;
   isLoading?: boolean;
   isSendingTx?: boolean;
   isEndingSession?: boolean;
@@ -105,6 +106,7 @@ const OneClickTradingSettings = ({
   hideBackButton,
   hasExistingSession,
   onEndSession,
+  onClose,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
@@ -122,6 +124,11 @@ const OneClickTradingSettings = ({
     isOpen: isDiscardDialogOpen,
     onOpen: onOpenDiscardDialog,
     onClose: onCloseDiscardDialog,
+  } = useDisclosure();
+  const {
+    isOpen: isCloseConfirmDialogOpen,
+    onOpen: openCloseConfirmDialog,
+    onClose: closeCloseConfirmDialog,
   } = useDisclosure();
 
   const setTransaction1CTParams = (
@@ -158,18 +165,32 @@ const OneClickTradingSettings = ({
           onGoBack();
         }}
       />
+      <DiscardChangesConfirmationModal
+        isOpen={isCloseConfirmDialogOpen}
+        onCancel={closeCloseConfirmDialog}
+        onDiscard={onClose!}
+      />
       <ScreenManager defaultScreen={SettingsScreens.Main}>
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName="main">
+              {onClose && (
+                <ModalCloseButton
+                  onClick={() => {
+                    if (changes.length > 0) {
+                      return openCloseConfirmDialog();
+                    }
+
+                    onClose();
+                  }}
+                />
+              )}
+
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
                   <IconButton
                     onClick={() => {
-                      if (
-                        JSON.stringify(initialTransaction1CTParams) !==
-                        JSON.stringify(transaction1CTParams)
-                      ) {
+                      if (changes.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
@@ -177,7 +198,6 @@ const OneClickTradingSettings = ({
                     className="absolute top-7 left-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
                     icon={<Icon id="chevron-left" width={16} height={16} />}
                     aria-label="Go Back"
-                    mode="unstyled"
                   />
                 )}
 
@@ -200,7 +220,7 @@ const OneClickTradingSettings = ({
                         className={buttonVariants({
                           variant: "link",
                           className:
-                            "!inline w-auto px-0 text-body2 font-body2",
+                            "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
                         })}
                         // TODO: Add link
                       >
@@ -213,6 +233,16 @@ const OneClickTradingSettings = ({
                 <div className="flex flex-col gap-0">
                   <SettingRow
                     title={t("oneClickTrading.settings.enableTitle")}
+                    onClick={() => {
+                      if (hasExistingSession) onEndSession?.();
+                      setTransaction1CTParams((params) => {
+                        if (!params) throw new Error("1CT Params is undefined");
+                        return {
+                          ...params,
+                          isOneClickEnabled: !params.isOneClickEnabled,
+                        };
+                      });
+                    }}
                     content={
                       <div className="flex items-center gap-3">
                         {hasExistingSession && isEndingSession && (
@@ -228,17 +258,6 @@ const OneClickTradingSettings = ({
                           checked={
                             transaction1CTParams?.isOneClickEnabled ?? false
                           }
-                          onCheckedChange={(nextValue) => {
-                            if (hasExistingSession) onEndSession?.();
-                            setTransaction1CTParams((params) => {
-                              if (!params)
-                                throw new Error("1CT Params is undefined");
-                              return {
-                                ...params,
-                                isOneClickEnabled: nextValue,
-                              };
-                            });
-                          }}
                         />
                       </div>
                     }
@@ -246,28 +265,31 @@ const OneClickTradingSettings = ({
                   />
                   <SettingRow
                     title={t("oneClickTrading.settings.spendLimitTitle")}
+                    onClick={() => setCurrentScreen(SettingsScreens.SpendLimit)}
                     content={
                       <Button
                         variant="link"
                         size="sm"
                         className={classNames(
-                          "flex items-center gap-2 px-0 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
                           changes.includes("spendLimit") && "text-bullish-400"
                         )}
-                        onClick={() =>
-                          setCurrentScreen(SettingsScreens.SpendLimit)
-                        }
                         disabled={isDisabled}
                       >
                         <p>
-                          {transaction1CTParams?.spendLimit.toString()}{" "}
+                          {transaction1CTParams?.spendLimit?.symbol}
+                          {trimPlaceholderZeros(
+                            transaction1CTParams?.spendLimit
+                              .toDec()
+                              .toString(2) ?? ""
+                          )}{" "}
                           {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
                         </p>
                         <Icon
                           id="chevron-right"
                           width={18}
                           height={18}
-                          className="text-osmoverse-500"
+                          className="text-osmoverse-500 group-hover:text-white-full"
                         />
                       </Button>
                     }
@@ -275,18 +297,18 @@ const OneClickTradingSettings = ({
                   />
                   <SettingRow
                     title={t("oneClickTrading.settings.networkFeeLimitTitle")}
+                    onClick={() =>
+                      setCurrentScreen(SettingsScreens.NetworkFeeLimit)
+                    }
                     content={
                       <Button
                         variant="link"
                         size="sm"
                         className={classNames(
-                          "flex items-center gap-2 px-0 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
                           changes.includes("networkFeeLimit") &&
                             "text-bullish-400"
                         )}
-                        onClick={() =>
-                          setCurrentScreen(SettingsScreens.NetworkFeeLimit)
-                        }
                         disabled={isDisabled}
                       >
                         <p>
@@ -300,7 +322,7 @@ const OneClickTradingSettings = ({
                           id="chevron-right"
                           width={18}
                           height={18}
-                          className="text-osmoverse-500"
+                          className="text-osmoverse-500 group-hover:text-white-full"
                         />
                       </Button>
                     }
@@ -308,21 +330,21 @@ const OneClickTradingSettings = ({
                   />
                   <SettingRow
                     title={t("oneClickTrading.settings.sessionPeriodTitle")}
+                    onClick={() =>
+                      setCurrentScreen(SettingsScreens.SessionPeriod)
+                    }
                     content={
                       <Button
                         variant="link"
                         size="sm"
                         className={classNames(
-                          "flex items-center gap-2 px-0 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
                           changes.includes("sessionPeriod") &&
                             "text-bullish-400"
                         )}
-                        onClick={() =>
-                          setCurrentScreen(SettingsScreens.SessionPeriod)
-                        }
                         disabled={isDisabled}
                       >
-                        <p className="capitalize">
+                        <p>
                           {transaction1CTParams
                             ? t(
                                 getSessionPeriodTranslationKey(
@@ -335,7 +357,7 @@ const OneClickTradingSettings = ({
                           id="chevron-right"
                           width={18}
                           height={18}
-                          className="text-osmoverse-500"
+                          className="text-osmoverse-500 group-hover:text-white-full"
                         />
                       </Button>
                     }
@@ -343,17 +365,17 @@ const OneClickTradingSettings = ({
                   />
                   <SettingRow
                     title={t("oneClickTrading.settings.resetPeriodTitle")}
+                    onClick={() =>
+                      setCurrentScreen(SettingsScreens.ResetPeriod)
+                    }
                     content={
                       <Button
                         variant="link"
                         size="sm"
                         className={classNames(
-                          "flex items-center gap-2 px-0 text-wosmongton-200",
+                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
                           changes.includes("resetPeriod") && "text-bullish-400"
                         )}
-                        onClick={() =>
-                          setCurrentScreen(SettingsScreens.ResetPeriod)
-                        }
                         disabled={isDisabled}
                       >
                         <p>
@@ -369,7 +391,7 @@ const OneClickTradingSettings = ({
                           id="chevron-right"
                           width={18}
                           height={18}
-                          className="text-osmoverse-500"
+                          className="text-osmoverse-500 group-hover:text-white-full"
                         />
                       </Button>
                     }
@@ -472,16 +494,23 @@ const OneClickTradingSettings = ({
 interface SettingRowProps {
   title: string;
   content: React.ReactNode;
+  onClick: () => void;
   isDisabled?: boolean;
 }
 
-const SettingRow = ({ title, content, isDisabled }: SettingRowProps) => {
+const SettingRow = ({
+  title,
+  content,
+  isDisabled,
+  onClick,
+}: SettingRowProps) => {
   return (
     <div
       className={classNames(
-        "flex items-center justify-between border-b border-osmoverse-700 py-3.5 px-8 last:border-none",
+        "group flex cursor-pointer items-center justify-between border-b border-osmoverse-700 py-3.5 px-8 last:border-none",
         isDisabled && "pointer-events-none opacity-50"
       )}
+      onClick={isDisabled ? noop : onClick}
     >
       <p className="text-subtitle1 font-subtitle1">{title}</p>
       <div>{content}</div>

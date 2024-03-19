@@ -109,7 +109,6 @@ export const useOneClickTradingParams = ({
         }
       : initialTransaction1CTParams;
     setTransaction1CTParams(nextTransaction1CTParams);
-    setInitialTransaction1CTParams(nextTransaction1CTParams);
   }, [
     defaultIsOneClickEnabled,
     defaultTransaction1CTParams,

@@ -113,6 +113,7 @@ const OneClickTradingIntroModal = observer(() => {
       isOpen={!isNil(currentScreen)}
       onRequestClose={onClose}
       className={classNames(show1CTEditParams && "px-0 py-9")}
+      hideCloseButton={show1CTEditParams}
     >
       <ScreenManager currentScreen={currentScreen ?? ""}>
         <div
@@ -125,6 +126,7 @@ const OneClickTradingIntroModal = observer(() => {
             <IntroModal1CTScreens
               oneClickTradingInfo={oneClickTradingInfo}
               isOneClickTradingEnabled={isOneClickTradingEnabled}
+              onCloseModal={onClose}
             />
           )}
         </div>
@@ -137,9 +139,11 @@ const IntroModal1CTScreens = observer(
   ({
     oneClickTradingInfo,
     isOneClickTradingEnabled,
+    onCloseModal,
   }: {
     isOneClickTradingEnabled: boolean | undefined;
     oneClickTradingInfo: OneClickTradingInfo | undefined;
+    onCloseModal: () => void;
   }) => {
     const removeAuthenticator = useAddOrRemoveAuthenticators();
     const { accountStore, chainStore } = useStore();
@@ -192,6 +196,7 @@ const IntroModal1CTScreens = observer(
             }}
             hasExistingSession={isOneClickTradingEnabled}
             isEndingSession={removeAuthenticator.isLoading}
+            onClose={onCloseModal}
             onEndSession={() => {
               const rollback = () => {
                 if (!transaction1CTParams) return;

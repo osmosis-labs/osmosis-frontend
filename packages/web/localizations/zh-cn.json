@@ -458,7 +458,7 @@
       "introducingSubtitle": "进行更快、更轻松的交易，无需多个钱包批准的麻烦。",
       "learnMore": "了解更多",
       "startTradingButton": "开始一键交易",
-      "activeHourLimit": "一键交易将在此设备上激活 1 小时，支出限额为 5000 美元",
+      "defaultParameters": "一键交易将在此设备上激活 1 小时，支出限额为 5,000 美元",
       "changeButton": "改变"
     },
     "floatingBanner": {
@@ -814,10 +814,11 @@
     "reconnect": "重新连接",
     "connectingWallet": "连接钱包中",
     "approveWalletConnect": "在您的移动设备上批准 {walletName} 连接请求。",
-    "initializingOneClickTradingSession": "初始化一键交易",
-    "approveOneClickTradingSession": "在您的钱包上批准交易。",
-    "errorInitializingOneClickTradingSession": "初始化会话时出错",
-    "continue": "继续",
+    "enablingOneClickTrading": "启用一键交易。",
+    "approveOneClickTradingSession": "批准{walletName}中的一键交易。",
+    "errorInitializingOneClickTradingSession": "无法启用一键交易。",
+    "retryInWalletOrContinue": "在{walletName}中重试，或继续而不进行一键交易。",
+    "continueWithoutOneClickTrading": "无需一键交易即可继续",
     "retry": "重试",
     "openExtension": "打开 {walletName} 浏览器扩展程序以连接您的钱包。",
     "initializingWallet": "初始化钱包客户端",
@@ -978,13 +979,6 @@
     "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。"
   },
   "disclaimer": "免责声明",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}存款不稳定",
-    "titleWithdraw": "{coinDenom}提款不稳定",
-    "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
-    "buttonContinue": "无论如何继续",
-    "buttonCancel": "取消"
-  },
   "remaining": "其余的",
   "timeUnits": {
     "second": "第二",
@@ -993,5 +987,12 @@
     "minutes": "分钟",
     "hour": "小时",
     "hours": "小时"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom}存款不稳定",
+    "titleWithdraw": "{coinDenom}提款不稳定",
+    "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
+    "buttonContinue": "无论如何继续",
+    "buttonCancel": "取消"
   }
 }

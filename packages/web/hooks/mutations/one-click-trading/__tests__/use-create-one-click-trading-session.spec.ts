@@ -25,7 +25,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
   ];
   const sessionPeriod = { end: "3600000000000" }; // 1 hour in nanoseconds
 
-  it("should return true for a valid One Click Trading Session authenticator", () => {
+  it("should return true for a valid 1-Click Trading Session authenticator", () => {
     const rawAuthenticator = getOneClickTradingSessionAuthenticator({
       key,
       allowedAmount,
@@ -43,7 +43,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
     expect(isAuthenticatorOneClickTradingSession({ authenticator })).toBe(true);
   });
 
-  it("should return false for an invalid One Click Trading Session authenticator", () => {
+  it("should return false for an invalid 1-Click Trading Session authenticator", () => {
     const authenticator = {
       type: "AllOfAuthenticator",
       subAuthenticators: [{ type: "InvalidType" }],
@@ -57,7 +57,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
 });
 
 describe("getOneClickTradingSessionAuthenticator", () => {
-  it("should generate a correct One Click Trading Session authenticator", () => {
+  it("should generate a correct 1-Click Trading Session authenticator", () => {
     const key = PrivKeySecp256k1.generateRandomKey();
     const allowedAmount = "1000";
     const resetPeriod = "day";

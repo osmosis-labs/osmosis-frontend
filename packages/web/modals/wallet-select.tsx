@@ -53,7 +53,7 @@ import {
   useCreateOneClickTradingSession,
 } from "~/hooks/mutations/one-click-trading";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { useStore } from "~/stores";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
@@ -67,17 +67,20 @@ type ModalView =
   | "doesNotExist"
   | "rejected"
   | "initializingOneClickTrading"
+  | "broadcastedOneClickTrading"
   | "initializeOneClickTradingError";
 
 function getModalView({
   qrState,
   isInitializingOneClickTrading,
   hasOneClickTradingError,
+  hasBroadcastedTx,
   walletStatus,
 }: {
   qrState: State;
   isInitializingOneClickTrading: boolean;
   hasOneClickTradingError: boolean;
+  hasBroadcastedTx: boolean;
   walletStatus?: WalletStatus;
 }): ModalView {
   switch (walletStatus) {
@@ -89,7 +92,10 @@ function getModalView({
       }
     case WalletStatus.Connected:
       if (hasOneClickTradingError) return "initializeOneClickTradingError";
-      if (isInitializingOneClickTrading) return "initializingOneClickTrading";
+      if (isInitializingOneClickTrading)
+        return hasBroadcastedTx
+          ? "broadcastedOneClickTrading"
+          : "initializingOneClickTrading";
       return "connected";
     case WalletStatus.Error:
       if (qrState === State.Init) {
@@ -126,7 +132,7 @@ const OnboardingSteps = (t: MultiLanguageT) => [
   },
 ];
 
-const useHasWalletsInstalled = () => {
+const useHasInstalledWallets = () => {
   return useMemo(() => {
     const wallets = WalletRegistry.filter(
       (wallet) =>
@@ -149,17 +155,21 @@ export const WalletSelectModal: FunctionComponent<
   const { isMobile } = useWindowSize();
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
-  const hasInstalledWallets = useHasWalletsInstalled();
+  const hasInstalledWallets = useHasInstalledWallets();
+  const [show1CTEditParams, setShow1CTEditParams] = useState(false);
+  const [hasBroadcastedTx, setHasBroadcastedTx] = useState(false);
+
   const create1CTSession = useCreateOneClickTradingSession({
+    onBroadcasted: () => {
+      setHasBroadcastedTx(true);
+    },
     queryOptions: {
       onSuccess: () => {
         onRequestClose();
       },
-      onError: () => {
-        setHasOneClickTradingError(true);
-      },
       onSettled: () => {
         setIsInitializingOneClickTrading(false);
+        setHasBroadcastedTx(false);
       },
     },
   });
@@ -169,10 +179,11 @@ export const WalletSelectModal: FunctionComponent<
   const [modalView, setModalView] = useState<ModalView>("list");
   const [isInitializingOneClickTrading, setIsInitializingOneClickTrading] =
     useState(false);
-  const [hasOneClickTradingError, setHasOneClickTradingError] = useState(false);
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
   const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
+
+  const hasOneClickTradingError = !!create1CTSession.error;
 
   const {
     transaction1CTParams,
@@ -194,6 +205,7 @@ export const WalletSelectModal: FunctionComponent<
           walletStatus,
           isInitializingOneClickTrading,
           hasOneClickTradingError,
+          hasBroadcastedTx,
         })
       );
     }
@@ -204,12 +216,12 @@ export const WalletSelectModal: FunctionComponent<
     qrMessage,
     isInitializingOneClickTrading,
     hasOneClickTradingError,
+    hasBroadcastedTx,
   ]);
 
   useUpdateEffect(() => {
     if (!isOpen) {
       setIsInitializingOneClickTrading(false);
-      setHasOneClickTradingError(false);
     }
   }, [isOpen]);
 
@@ -243,6 +255,7 @@ export const WalletSelectModal: FunctionComponent<
     walletRepo: WalletRepo;
     transaction1CTParams: OneClickTradingTransactionParams | undefined;
   }) => {
+    create1CTSession.reset();
     setIsInitializingOneClickTrading(true);
     return create1CTSession.mutate({
       walletRepo,
@@ -327,7 +340,6 @@ export const WalletSelectModal: FunctionComponent<
             await onCreate1CTSession({ walletRepo, transaction1CTParams });
           } catch (e) {
             const error = e as CreateOneClickSessionError | Error;
-            setHasOneClickTradingError(true);
 
             if (error instanceof Error) {
               throw new CreateOneClickSessionError(error.message);
@@ -363,7 +375,7 @@ export const WalletSelectModal: FunctionComponent<
             modalView === "initializingOneClickTrading"
           ) {
             reset1CTParams();
-            setHasOneClickTradingError(false);
+            create1CTSession.reset();
             setIsInitializingOneClickTrading(false);
             setShow1CTConnectAWallet(false);
           }
@@ -430,16 +442,12 @@ export const WalletSelectModal: FunctionComponent<
             }
             show1CTConnectAWallet={show1CTConnectAWallet}
             setShow1CTConnectAWallet={setShow1CTConnectAWallet}
+            show1CTEditParams={show1CTEditParams}
+            setShow1CTEditParams={setShow1CTEditParams}
           />
-          <Button
-            aria-label="Close"
-            size="icon"
-            variant="ghost"
-            className="absolute right-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
-            onClick={onClose}
-          >
-            <Icon id="close" width={30} height={30} />
-          </Button>
+
+          {/* Hide close button since 1CT edit params will include it */}
+          {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
         </div>
       </div>
     </ModalBase>
@@ -628,6 +636,8 @@ const RightModalContent: FunctionComponent<
     onCreate1CTSession: () => void;
     show1CTConnectAWallet: boolean;
     setShow1CTConnectAWallet: Dispatch<SetStateAction<boolean>>;
+    show1CTEditParams: boolean;
+    setShow1CTEditParams: Dispatch<SetStateAction<boolean>>;
   }
 > = observer(
   ({
@@ -642,11 +652,13 @@ const RightModalContent: FunctionComponent<
     onCreate1CTSession,
     show1CTConnectAWallet,
     setShow1CTConnectAWallet,
+    show1CTEditParams,
+    setShow1CTEditParams,
   }) => {
     const { t } = useTranslation();
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
-    const hasInstalledWallets = useHasWalletsInstalled();
+    const hasInstalledWallets = useHasInstalledWallets();
     const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
       OneClickFloatingBannerDoNotShowKey
     );
@@ -655,7 +667,6 @@ const RightModalContent: FunctionComponent<
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
       walletRepo?.chainRecord.chain.chain_name === chainStore.osmosis.chainName;
-    const [show1CTEditParams, setShow1CTEditParams] = useState(false);
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -791,34 +802,40 @@ const RightModalContent: FunctionComponent<
     }
 
     if (modalView === "initializeOneClickTradingError") {
+      const title = t("walletSelect.errorInitializingOneClickTradingSession");
+      const desc = t("walletSelect.retryInWalletOrContinue", {
+        walletName: walletInfo?.prettyName ?? "",
+      });
+
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <img
-              width={64}
-              height={64}
-              src="/images/1ct-small-icon.svg"
-              alt="One Click Trading small logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-center text-h6 font-h6">
-                {t("walletSelect.errorInitializingOneClickTradingSession")}
-              </h1>
+              <h1 className="text-center text-h6 font-h6">{title}</h1>
+              <p className="body2 text-center text-wosmongton-100">{desc}</p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => onCreate1CTSession()} className="!w-full">
+                {t("walletSelect.retry")}
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => onRequestClose()}
                 className="!w-full"
               >
-                {t("walletSelect.continue")}
-              </Button>
-              <Button onClick={() => onCreate1CTSession()} className="!w-full">
-                {t("walletSelect.retry")}
+                {t("walletSelect.continueWithoutOneClickTrading")}
               </Button>
             </div>
           </div>
@@ -826,24 +843,32 @@ const RightModalContent: FunctionComponent<
       );
     }
 
-    if (modalView === "initializingOneClickTrading") {
-      const title = t("walletSelect.initializingOneClickTradingSession");
-      const desc = t("walletSelect.approveOneClickTradingSession");
+    if (
+      modalView === "initializingOneClickTrading" ||
+      modalView === "broadcastedOneClickTrading"
+    ) {
+      const title =
+        modalView === "broadcastedOneClickTrading"
+          ? t("walletSelect.enablingOneClickTrading")
+          : t("walletSelect.approveOneClickTradingSession", {
+              walletName: walletInfo?.prettyName ?? "",
+            });
 
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
-            <img
-              width={64}
-              height={64}
-              src="/images/1ct-small-icon.svg"
-              alt="One Click Trading small logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <h1 className="text-center text-h6 font-h6">{title}</h1>
-            <p className="body2 text-center text-wosmongton-100">{desc}</p>
           </div>
         </div>
       );
@@ -915,6 +940,7 @@ const RightModalContent: FunctionComponent<
                 onGoBack={() => {
                   setShow1CTEditParams(false);
                 }}
+                onClose={onRequestClose}
                 setTransaction1CTParams={setTransaction1CTParams}
                 transaction1CTParams={transaction1CTParams!}
                 onStartTrading={() => {

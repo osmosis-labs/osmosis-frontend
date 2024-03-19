@@ -25,7 +25,7 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
-import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-info";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -426,7 +426,7 @@ const WalletInfo: FunctionComponent<
                   <div className="absolute -bottom-0.5 -right-1">
                     <Image
                       src="/images/1ct-small-icon.svg"
-                      alt="One Click Trading Small Icon"
+                      alt="1-Click Trading Small Icon"
                       width={16}
                       height={16}
                     />

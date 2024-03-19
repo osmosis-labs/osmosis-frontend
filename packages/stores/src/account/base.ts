@@ -267,6 +267,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         viewWalletRepo: () => this.refresh(),
       });
       repo.wallets.forEach((wallet) => {
+        wallet.updateCallbacks({
+          ...wallet.callbacks,
+          afterDisconnect: async () => {
+            const osmosisChain = this.chains[0];
+            // Remove the one click trading info if the Osmosis wallet is disconnected.
+            const oneClickTradingInfo = await this.getOneClickTradingInfo();
+            if (
+              oneClickTradingInfo &&
+              wallet.chainName === osmosisChain.chain_name
+            ) {
+              this.setOneClickTradingInfo(undefined);
+            }
+          },
+        });
+
         wallet.setActions({
           data: () => this.refresh(),
           state: () => this.refresh(),
@@ -365,20 +380,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
          * Set it to true by default, allowing any errors to be confirmed through a real wallet connection.
          */
         (async () => true);
-
-      const originalDisconnect = walletWithAccountSet.disconnect;
-      walletWithAccountSet.disconnect = async (...args) => {
-        const osmosisChain = this.chains[0];
-        // Remove the one click trading info if the wallet is disconnected.
-        const oneClickTradingInfo = await this.getOneClickTradingInfo();
-        if (
-          (oneClickTradingInfo && chainNameOrId === osmosisChain.chain_id) ||
-          chainNameOrId === osmosisChain.chain_name
-        ) {
-          this.setOneClickTradingInfo(undefined);
-        }
-        await originalDisconnect(...args);
-      };
 
       return walletWithAccountSet;
     }

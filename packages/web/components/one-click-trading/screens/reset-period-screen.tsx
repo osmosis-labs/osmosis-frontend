@@ -3,7 +3,10 @@ import classNames from "classnames";
 
 import { Button } from "~/components/buttons";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
-import { ScreenGoBackButton } from "~/components/screen-manager";
+import {
+  ScreenGoBackButton,
+  useScreenManager,
+} from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 
 const ResetPeriods = [
@@ -37,6 +40,7 @@ export const ResetPeriodScreen = ({
   setTransaction1CTParams,
 }: ResetPeriodScreenProps) => {
   const { t } = useTranslation();
+  const { goBack } = useScreenManager();
 
   return (
     <>
@@ -68,6 +72,7 @@ export const ResetPeriodScreen = ({
                     resetPeriod: id,
                   };
                 });
+                goBack();
               }}
             >
               {t(getResetPeriodTranslationKey(id))}

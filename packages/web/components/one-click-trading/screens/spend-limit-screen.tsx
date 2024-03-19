@@ -16,6 +16,7 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { isNumeric } from "~/utils/assertion";
+import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 interface ShareOfBalanceOption {
@@ -50,7 +51,7 @@ export const SpendLimitScreen = ({
     useState<SpendLimitViews>("fixed-amount");
 
   const [fixedAmountValue, setFixedAmountValue] = useState(
-    transaction1CTParams?.spendLimit.toDec().truncate().toString()
+    trimPlaceholderZeros(transaction1CTParams?.spendLimit.toDec().toString(2))
   );
   const [previousShareOfBalanceValue, setPreviousShareOfBalanceValue] =
     useState("25");
@@ -174,6 +175,14 @@ export const SpendLimitScreen = ({
                 const parsedValue = parseFixedValue(nextValue);
                 if (!isNumeric(parsedValue) && parsedValue !== "") return;
                 setFixedAmountValue(parseFixedValue(nextValue));
+              }}
+              onBlur={() => {
+                /**
+                 * Value cannot be less than or equal to 0
+                 */
+                if (Number(fixedAmountValue) <= 0) {
+                  setFixedAmountValue("1");
+                }
               }}
               trailingSymbol={
                 <span className="ml-2 text-body1 font-body1 text-osmoverse-300">

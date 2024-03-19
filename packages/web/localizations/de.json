@@ -458,7 +458,7 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "activeHourLimit": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
+      "defaultParameters": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
       "changeButton": "Ändern"
     },
     "floatingBanner": {
@@ -814,10 +814,11 @@
     "reconnect": "Wieder verbinden",
     "connectingWallet": "Wallet verbinden",
     "approveWalletConnect": "Genehmigen Sie die Verbindungsanfrage {walletName} auf Ihrem Mobiltelefon.",
-    "initializingOneClickTradingSession": "Initialisierung des One-Click-Handels",
-    "approveOneClickTradingSession": "Genehmigen Sie die Transaktion in Ihrem Wallet.",
-    "errorInitializingOneClickTradingSession": "Fehler beim Initialisieren der Sitzung",
-    "continue": "Weitermachen",
+    "enablingOneClickTrading": "Ermöglichen des 1-Click-Handels.",
+    "approveOneClickTradingSession": "Genehmigen Sie den 1-Klick-Handel in {walletName} .",
+    "errorInitializingOneClickTradingSession": "1-Click-Handel konnte nicht aktiviert werden.",
+    "retryInWalletOrContinue": "Versuchen Sie es erneut in {walletName} oder fahren Sie ohne 1-Click-Handel fort.",
+    "continueWithoutOneClickTrading": "Ohne 1-Click-Handel fortfahren",
     "retry": "Wiederholen",
     "openExtension": "Öffnen Sie die Browsererweiterung {walletName} um Ihre Wallet zu verbinden.",
     "initializingWallet": "Wallet-Client wird initialisiert",
@@ -978,13 +979,6 @@
     "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
   },
   "disclaimer": "Haftungsausschluss",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} Einlagen instabil",
-    "titleWithdraw": "{coinDenom} Abhebungen instabil",
-    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
-    "buttonContinue": "Mache trotzdem weiter",
-    "buttonCancel": "Stornieren"
-  },
   "remaining": "übrig",
   "timeUnits": {
     "second": "zweite",
@@ -993,5 +987,12 @@
     "minutes": "Protokoll",
     "hour": "Stunde",
     "hours": "Std."
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} Einlagen instabil",
+    "titleWithdraw": "{coinDenom} Abhebungen instabil",
+    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
+    "buttonContinue": "Mache trotzdem weiter",
+    "buttonCancel": "Stornieren"
   }
 }

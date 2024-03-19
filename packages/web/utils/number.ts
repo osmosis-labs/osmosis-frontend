@@ -42,3 +42,26 @@ export function toScientificNotation(
     ? numberAsExponential.split("e")[0]
     : `${numberAsExponential.split("e")[0]}*10^${magnitude}`;
 }
+
+/** Trims 0s from end iff trailing integers from '.' are not all 0s. */
+export function trimPlaceholderZeros(str: string) {
+  const decimalPointIndex = str.indexOf(".");
+
+  if (decimalPointIndex === -1) {
+    // No decimal point in this string, so return original
+    return str;
+  }
+
+  // Return if all chars after decimal point are 0
+  let i = str.length - 1;
+  while (i > decimalPointIndex && str.charAt(i) === "0") {
+    i--;
+  }
+
+  // If we have only . left from the trimming, remove it as well
+  if (str.charAt(i) === ".") {
+    i--;
+  }
+
+  return str.substring(0, i + 1);
+}

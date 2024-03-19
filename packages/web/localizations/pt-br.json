@@ -458,7 +458,7 @@
       "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
-      "activeHourLimit": "A negociação com 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
+      "defaultParameters": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
       "changeButton": "Mudar"
     },
     "floatingBanner": {
@@ -814,10 +814,11 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando carteira",
     "approveWalletConnect": "Aprovar solicitação de conexão {walletName} em seu dispositivo móvel.",
-    "initializingOneClickTradingSession": "Inicializando a negociação com um clique",
-    "approveOneClickTradingSession": "Aprove a transação em sua carteira.",
-    "errorInitializingOneClickTradingSession": "Erro ao inicializar a sessão",
-    "continue": "Continuar",
+    "enablingOneClickTrading": "Habilitando a negociação em 1 clique.",
+    "approveOneClickTradingSession": "Aprove a negociação com 1 clique em {walletName} .",
+    "errorInitializingOneClickTradingSession": "A negociação em 1 clique não pôde ser ativada.",
+    "retryInWalletOrContinue": "Tente novamente em {walletName} ou continue sem negociação em 1 clique.",
+    "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
     "retry": "Tentar novamente",
     "openExtension": "Abra a extensão do navegador {walletName} para conectar sua carteira.",
     "initializingWallet": "Inicializando cliente de carteira",
@@ -978,13 +979,6 @@
     "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
   },
   "disclaimer": "Isenção de responsabilidade",
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depósitos instáveis",
-    "titleWithdraw": "{coinDenom} saques instáveis",
-    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
-    "buttonContinue": "Continue de qualquer maneira",
-    "buttonCancel": "Cancelar"
-  },
   "remaining": "restante",
   "timeUnits": {
     "second": "segundo",
@@ -993,5 +987,12 @@
     "minutes": "minutos",
     "hour": "hora",
     "hours": "horas"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos instáveis",
+    "titleWithdraw": "{coinDenom} saques instáveis",
+    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
+    "buttonContinue": "Continue de qualquer maneira",
+    "buttonCancel": "Cancelar"
   }
 }
