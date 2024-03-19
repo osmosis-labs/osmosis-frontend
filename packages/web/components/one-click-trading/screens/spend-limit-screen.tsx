@@ -1,4 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
 
@@ -139,7 +140,9 @@ export const SpendLimitScreen = ({
           <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
             {t("oneClickTrading.settings.spendLimitTitle")}
           </h1>
-          <p className="text-body2 text-osmoverse-300">{subtitle}</p>
+          {!isNil(subtitle) && (
+            <p className="text-body2 text-osmoverse-300">{subtitle}</p>
+          )}
         </div>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.spendLimitScreen.spendLimitDescription")}
