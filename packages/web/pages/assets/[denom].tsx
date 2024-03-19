@@ -33,6 +33,7 @@ import {
   useCurrentLanguage,
   useTranslation,
   useUserFavoriteAssetDenoms,
+  useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import {
@@ -452,8 +453,51 @@ const TokenChartHeader = observer(() => {
   );
 });
 
+const useNumTicks = () => {
+  const { assetInfoConfig } = useAssetInfoView();
+  const { isMobile, isLargeDesktop, isExtraLargeDesktop } = useWindowSize();
+
+  const numTicks = useMemo(() => {
+    let ticks: number | undefined = isMobile ? 3 : 6;
+
+    if (isExtraLargeDesktop) {
+      return 10;
+    }
+
+    if (isLargeDesktop) {
+      return 8;
+    }
+
+    switch (assetInfoConfig.historicalRange) {
+      case "7d":
+        ticks = isMobile ? 1 : 8;
+        break;
+      case "1mo":
+        ticks = isMobile ? 2 : 6;
+        break;
+      case "1d":
+        ticks = isMobile ? 3 : 10;
+        break;
+      case "1y":
+      case "all":
+        ticks = isMobile ? 4 : 6;
+        break;
+    }
+
+    return ticks;
+  }, [
+    assetInfoConfig.historicalRange,
+    isMobile,
+    isLargeDesktop,
+    isExtraLargeDesktop,
+  ]);
+
+  return numTicks;
+};
+
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
@@ -467,6 +511,7 @@ const TokenChart = observer(() => {
             minimal
             showTooltip
             showGradient
+            xNumTicks={xNumTicks}
             data={assetInfoConfig.historicalChartData}
             fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
             annotations={[]}
