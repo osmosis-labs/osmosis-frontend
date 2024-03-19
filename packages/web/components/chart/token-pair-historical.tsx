@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { PriceRange } from "@osmosis-labs/stores";
 import { curveNatural } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
@@ -23,7 +22,7 @@ import React, { FunctionComponent, memo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
