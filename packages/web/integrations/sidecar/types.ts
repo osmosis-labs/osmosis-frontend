@@ -6,7 +6,7 @@ export type SidecarQuoteResponse = {
   amount_out: string;
   effective_fee: string;
   price_impact: string;
-  in_out_spot_price: string;
+  in_base_out_quote_spot_price: string;
   route: {
     in_amount: string;
     out_amount: string;
@@ -21,6 +21,9 @@ export type SidecarQuoteResponse = {
       spread_factor: string;
       taker_fee: string;
       token_out_denom: string;
+
+      /** Code ID, if a Cosmwasm pool. */
+      code_id?: number;
     }[];
   }[];
 };
