@@ -28,9 +28,8 @@ import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
-} from "~/env";
-import { queryGithubFile, queryLatestCommitHash } from "~/queries/github";
-
+} from "../env";
+import { queryGithubFile, queryLatestCommitHash } from "../queries/github";
 import {
   getChainList,
   getImageRelativeFilePath,

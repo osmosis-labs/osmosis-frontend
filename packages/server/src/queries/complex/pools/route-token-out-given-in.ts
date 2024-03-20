@@ -19,10 +19,9 @@ import {
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/env";
-import { ChainList } from "~/codegen/generated/chain-list";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-
+import { ChainList } from "../../../codegen/generated/chain-list";
+import { IS_TESTNET } from "../../../env";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryNumPools } from "../../osmosis";
 import { queryPaginatedPools } from "./providers/indexer";
 

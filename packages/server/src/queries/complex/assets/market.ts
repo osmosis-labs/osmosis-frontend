@@ -3,11 +3,10 @@ import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { AssetLists } from "~/codegen/generated/asset-lists";
-import { EdgeDataLoader } from "~/utils/batching";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { captureErrorAndReturn } from "~/utils/error";
-
+import { AssetLists } from "../../../codegen/generated/asset-lists";
+import { EdgeDataLoader } from "../../../utils/batching";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { captureErrorAndReturn } from "../../../utils/error";
 import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
   queryAllTokenData,
@@ -84,7 +83,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
   assets?: TAsset[];
 } & AssetFilter = {}): Promise<(TAsset & AssetMarketInfo)[]> {
   let { assets } = params;
-  if (!assets) assets = (await getAssets(params)) as TAsset[];
+  if (!assets) assets = (await getAssets({ assetList, ...params })) as TAsset[];
 
   return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
 }

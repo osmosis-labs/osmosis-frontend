@@ -1,6 +1,6 @@
 import { FE_CONTENT_COMMIT_HASH } from "~/env";
 
-import { queryGithubFile } from "~/queries/github";
+import { queryGithubFile } from "../../../queries/github";
 
 export const OsmosisCmsRepo = "osmosis-labs/fe-content";
 

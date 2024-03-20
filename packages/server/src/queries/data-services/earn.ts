@@ -1,9 +1,9 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
-import { Asset } from "~/queries/complex/assets";
-
 import { NUMIA_BASE_URL } from "~/env";
+
+import { Asset } from "../../queries/complex/assets";
 
 export const EarnStrategyCategories = [
   "Lending",

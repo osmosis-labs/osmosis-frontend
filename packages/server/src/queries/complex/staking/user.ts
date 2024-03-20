@@ -1,8 +1,7 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { getChainStakeTokenSourceDenom } from "@osmosis-labs/utils";
 
-import { ChainList } from "~/codegen/generated/chain-list";
-
+import { ChainList } from "../../../codegen/generated/chain-list";
 import { queryDelegations } from "../../cosmos/staking/delegations";
 import { getAsset } from "../assets";
 

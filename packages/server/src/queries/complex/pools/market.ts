@@ -2,8 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPoolsFees } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 

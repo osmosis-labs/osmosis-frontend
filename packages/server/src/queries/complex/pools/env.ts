@@ -1,4 +1,4 @@
-import { IS_TESTNET } from "~/env";
+import { IS_TESTNET } from "../../../env";
 
 /** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
 const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];

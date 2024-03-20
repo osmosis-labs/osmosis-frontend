@@ -16,7 +16,7 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "~/env";
+} from "../env";
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
@@ -199,7 +199,6 @@ export function getKeplrCompatibleChain({
           coinMinimalDenom: isCW20ContractToken
             ? sourceDenom + `:${asset.symbol}`
             : sourceDenom,
-          // @ts-ignore
           contractAddress: isCW20ContractToken
             ? sourceDenom.split(":")[1]
             : undefined,
@@ -283,7 +282,6 @@ export function getKeplrCompatibleChain({
         coinMinimalDenom: isContractToken
           ? sourceDenom + `:${asset.symbol}`
           : sourceDenom,
-        // @ts-ignore
         contractAddress: isContractToken
           ? sourceDenom.split(":")[1]
           : undefined,

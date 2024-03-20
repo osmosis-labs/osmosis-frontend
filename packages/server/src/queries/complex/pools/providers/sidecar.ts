@@ -2,12 +2,11 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/env";
-import { PoolRawResponse } from "~/queries/osmosis";
-import { queryPools } from "~/queries/sidecar";
-import { timeout, AsyncTimeoutError } from "~/utils/async";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-
+import { IS_TESTNET } from "../../../../env";
+import { PoolRawResponse } from "../../../../queries/osmosis";
+import { queryPools } from "../../../../queries/sidecar";
+import { AsyncTimeoutError, timeout } from "../../../../utils/async";
+import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { calcSumAssetsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";

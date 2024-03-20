@@ -1,5 +1,6 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
@@ -12,8 +13,6 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getAssetPrice } from "~/server/queries/complex/assets/price";
-import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 
 import {

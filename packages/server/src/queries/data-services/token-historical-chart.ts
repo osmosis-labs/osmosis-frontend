@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "~/env";
+import { TIMESERIES_DATA_URL } from "../../env";
 
 /**
  * Time frame represents the amount of minutes per bar, basically price every

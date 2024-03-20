@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { CMS_REPOSITORY_PATH, GITHUB_URL } from "~/env";
+import { CMS_REPOSITORY_PATH, GITHUB_URL } from "../../env";
 
 const githubApi = axios.create({
   baseURL: GITHUB_URL,

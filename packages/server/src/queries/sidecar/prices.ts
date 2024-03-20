@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { SIDECAR_BASE_URL } from "~/env";
+import { SIDECAR_BASE_URL } from "../../env";
 
 /** Current quote denom for prices returned by sidecar. Currently Noble USDC. */
 export const QUOTE_COIN_MINIMAL_DENOM =

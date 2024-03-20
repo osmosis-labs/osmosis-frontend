@@ -3,9 +3,6 @@ import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
-import { type Asset, getAsset } from "~/queries/complex/assets";
-import { DEFAULT_VS_CURRENCY } from "~/queries/complex/assets/config";
-import { convertToPricePretty } from "~/queries/complex/price";
 import {
   EarnStrategyBalance,
   queryEarnUserBalance,
@@ -16,9 +13,12 @@ import {
   StrategyAnnualPercentages,
   StrategyCMSData,
   StrategyTVL,
-} from "~/queries/data-services/earn";
-import { queryOsmosisCMS } from "~/queries/osmosis/cms";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+} from "../../../queries/data-services/earn";
+import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { type Asset, getAsset } from "../assets";
+import { DEFAULT_VS_CURRENCY } from "../assets/config";
+import { convertToPricePretty } from "../price";
 
 const earnStrategyBalanceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -116,7 +116,7 @@ export async function getStrategies() {
 
         const aggregatedStrategies: StrategyCMSData[] = [];
 
-        for (let rawStrategy of cmsData.strategies) {
+        for (const rawStrategy of cmsData.strategies) {
           const { depositDenoms, positionDenoms, rewardDenoms, lockDuration } =
             rawStrategy;
 

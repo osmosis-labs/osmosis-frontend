@@ -5,8 +5,8 @@ import {
   getStrategyAnnualPercentages,
   getStrategyBalance,
   getStrategyTVL,
-} from "~/queries/complex/earn/strategies";
-import { createTRPCRouter, publicProcedure } from "~/trpc";
+} from "../queries/complex/earn/strategies";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const earnRouter = createTRPCRouter({
   getStrategyBalance: publicProcedure

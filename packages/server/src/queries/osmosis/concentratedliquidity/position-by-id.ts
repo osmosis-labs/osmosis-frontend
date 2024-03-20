@@ -1,5 +1,5 @@
-import { createNodeQuery } from "~/queries/base-utils";
-import { LiquidityPosition } from "~/queries/osmosis/concentratedliquidity/account-positions";
+import { createNodeQuery } from "../../../queries/base-utils";
+import { LiquidityPosition } from "../../../queries/osmosis/concentratedliquidity/account-positions";
 
 export const queryPositionById = createNodeQuery<
   {

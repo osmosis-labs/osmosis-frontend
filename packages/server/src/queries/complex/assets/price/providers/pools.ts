@@ -3,10 +3,9 @@ import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 
-import { AssetLists } from "~/codegen/generated/asset-lists";
-import { CoingeckoVsCurrencies } from "~/queries/coingecko";
-import { queryPaginatedPools } from "~/queries/complex/pools/providers/indexer";
-
+import { AssetLists } from "../../../../../codegen/generated/asset-lists";
+import { CoingeckoVsCurrencies } from "../../../../coingecko";
+import { queryPaginatedPools } from "../../../../complex/pools/providers/indexer";
 import { getCoingeckoPrice, getPriceFromCoinGecko } from "./coingecko";
 
 /** Calculates prices by querying pools and finding spot prices through routes in those pools. Falls back to CoinGecko if price not found.

@@ -4,24 +4,23 @@ import { aggregateRawCoinsByDenom } from "@osmosis-labs/utils";
 import {
   calcSumCoinsValue,
   mapRawCoinToPretty,
-} from "~/queries/complex/assets";
-import { DEFAULT_VS_CURRENCY } from "~/queries/complex/assets/config";
+} from "../../../queries/complex/assets";
+import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import {
   getCachedPoolIncentivesMap,
   PoolIncentives,
-} from "~/queries/complex/pools/incentives";
-import { queryBalances } from "~/queries/cosmos";
+} from "../../../queries/complex/pools/incentives";
+import { queryBalances } from "../../../queries/cosmos";
 import {
   StablePoolRawResponse,
   WeightedPoolRawResponse,
-} from "~/queries/osmosis";
+} from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
-} from "~/queries/osmosis/concentratedliquidity";
-import { timeout } from "~/utils/async";
-import { captureErrorAndReturn } from "~/utils/error";
-
+} from "../../../queries/osmosis/concentratedliquidity";
+import { timeout } from "../../../utils/async";
+import { captureErrorAndReturn } from "../../../utils/error";
 import { getUserLocks } from "../osmosis/lockup";
 import { getPools } from "./index";
 import { getGammShareUnderlyingCoins, makeShareCoin } from "./share";

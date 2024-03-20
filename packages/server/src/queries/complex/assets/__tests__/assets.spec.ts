@@ -1,5 +1,4 @@
-import { AssetLists } from "~/codegen/mock-asset-lists";
-
+import { AssetLists } from "../../../../codegen/mock-asset-lists";
 import { getAsset, getAssets } from "../index";
 
 describe("getAssets", () => {

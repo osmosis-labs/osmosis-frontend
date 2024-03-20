@@ -1,13 +1,9 @@
-/**
- * @jest-environment node
- */
-
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import cases from "jest-in-case";
 
 import { calcPositionStatus, getPriceFromSqrtPrice, getTickPrice } from "..";
 
-jest.mock("~/server/queries/complex/assets");
+jest.mock("../../assets");
 
 cases(
   "getClTickPrice",
@@ -72,7 +68,7 @@ cases(
   [
     {
       name: "should return correct price for given sqrtPrice and assets - case 1",
-      sqrtPrice: new Dec(1161983.14366067570700148679299597079855642),
+      sqrtPrice: new Dec("1161983.14366067570700148679299597079855642"),
       baseAsset: new CoinPretty(
         { coinDenom: "OSMO", coinDecimals: 6, coinMinimalDenom: "uosmo" },
         new Dec(13757)
@@ -90,7 +86,7 @@ cases(
     },
     {
       name: "should return correct price for given sqrtPrice and assets - case 2",
-      sqrtPrice: new Dec(0.39300548668001036940254010993077268),
+      sqrtPrice: new Dec("0.39300548668001036940254010993077268"),
       baseAsset: new CoinPretty(
         { coinDenom: "OSMO", coinDecimals: 6, coinMinimalDenom: "uosmo" },
         new Dec(29278)

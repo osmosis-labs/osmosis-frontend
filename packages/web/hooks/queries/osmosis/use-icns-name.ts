@@ -1,6 +1,5 @@
+import { queryICNSName } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
-
-import { queryICNSName } from "~/server/queries/osmosis/icns";
 
 export const useICNSName = ({ address }: { address: string }) => {
   return useQuery({

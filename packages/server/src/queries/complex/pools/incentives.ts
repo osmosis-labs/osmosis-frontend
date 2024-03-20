@@ -6,10 +6,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { queryPriceRangeApr } from "~/queries/data-services";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-
-import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "~/env";
+import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
+import { queryPriceRangeApr } from "../../../queries/data-services";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPoolAprs } from "../../data-services/pool-aprs";
 import { Gauge, queryGauges, queryLockableDurations } from "../../osmosis";
 import { Epochs } from "../../osmosis/epochs";
@@ -263,7 +262,7 @@ function checkForStaleness(
   lastGaugeId: number,
   epochs: Epochs["epochs"]
 ) {
-  let parsedGaugeStartTime = Date.parse(gauge.start_time);
+  const parsedGaugeStartTime = Date.parse(gauge.start_time);
 
   const NOW = Date.now();
   const CURRENT_EPOCH_START_TIME = Date.parse(

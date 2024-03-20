@@ -1,16 +1,14 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
-import * as Sentry from "@sentry/nextjs";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
   queryPrices,
   QUOTE_COIN_MINIMAL_DENOM,
-} from "~/queries/sidecar/prices";
-import { EdgeDataLoader } from "~/utils/batching";
-import { LARGE_LRU_OPTIONS } from "~/utils/cache";
-
+} from "../../../../../queries/sidecar/prices";
+import { EdgeDataLoader } from "../../../../../utils/batching";
+import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
 import { getPriceFromPools } from "./pools";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
@@ -70,8 +68,7 @@ export function getPriceBatched(asset: Asset) {
         loader
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
-          .catch((e) => {
-            Sentry.captureException(e);
+          .catch(() => {
             return getPriceFromPools(asset);
           })
       ),

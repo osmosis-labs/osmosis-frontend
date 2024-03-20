@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
-
-import { SIDECAR_BASE_URL } from "~/env";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { setupServer } from "msw/node";
 
+import { SIDECAR_BASE_URL } from "../../../../../env";
 import { calcAssetValue, calcSumAssetsValue, getAsset } from "../../../assets";
 import { getPoolsFromSidecar, getPoolTypeFromChainPool } from "../sidecar";
 

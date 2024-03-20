@@ -1,4 +1,4 @@
-import { createNodeQuery } from "~/queries/base-utils";
+import { createNodeQuery } from "../../../queries/base-utils";
 
 export declare type Gauge = {
   id: string;

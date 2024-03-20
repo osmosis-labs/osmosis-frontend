@@ -1,5 +1,4 @@
-import { createNodeQuery } from "~/queries/base-utils";
-
+import { createNodeQuery } from "../../../queries/base-utils";
 import { ConcentratedPoolAccountPositionRecord } from "./types";
 
 export interface AccountDelegatedClPositionsResponse {

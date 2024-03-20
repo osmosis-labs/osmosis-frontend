@@ -1,6 +1,6 @@
-import { MockChains } from "../mock-chains";
 import { AssetLists } from "../mock-asset-lists";
-import { getKeplrCompatibleChain, getChainList } from "~/codegen/utils";
+import { MockChains } from "../mock-chains";
+import { getChainList, getKeplrCompatibleChain } from "../utils";
 
 beforeAll(() => {
   jest.spyOn(console, "warn").mockImplementation(() => {});

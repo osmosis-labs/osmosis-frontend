@@ -1,6 +1,5 @@
+import { queryBalances } from "@osmosis-labs/server";
 import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query";
-
-import { queryBalances } from "~/server/queries/cosmos";
 
 type ResponseData = Awaited<ReturnType<typeof queryBalances>>;
 

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { GITHUB_RAW_DEFAULT_BASEURL } from "~/env";
+import { GITHUB_RAW_DEFAULT_BASEURL } from "../../env";
 
 export async function queryGithubFile<T>({
   repo,

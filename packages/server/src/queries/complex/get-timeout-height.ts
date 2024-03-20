@@ -4,9 +4,9 @@ import { getChain } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "~/codegen/generated/chain-list";
-import { queryRPCStatus } from "~/queries/cosmos";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { ChainList } from "../../codegen/generated/chain-list";
+import { queryRPCStatus } from "../../queries/cosmos";
+import { DEFAULT_LRU_OPTIONS } from "../../utils/cache";
 
 const timeoutCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 export async function getTimeoutHeight({

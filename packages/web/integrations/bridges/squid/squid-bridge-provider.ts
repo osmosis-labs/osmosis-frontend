@@ -5,6 +5,7 @@ import type {
   TransactionRequest,
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { apiClient, ApiClientError } from "@osmosis-labs/utils";
@@ -19,7 +20,6 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 
 import {

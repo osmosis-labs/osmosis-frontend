@@ -1,11 +1,10 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
-
-import { AssetLists } from "~/codegen/generated/asset-lists";
 import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
-import { captureErrorAndReturn } from "~/utils/error";
-import { SortDirection } from "~/utils/sort";
 
+import { AssetLists } from "../../../codegen/generated/asset-lists";
+import { captureErrorAndReturn } from "../../../utils/error";
+import { SortDirection } from "../../../utils/sort";
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
 import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";
@@ -62,7 +61,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
 } & AssetFilter = {}): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
-  if (!assets) assets = (await getAssets(params)) as TAsset[];
+  if (!assets) assets = (await getAssets({ assetList, ...params })) as TAsset[];
   if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });

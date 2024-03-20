@@ -2,7 +2,7 @@ import { createClient, VercelKV } from "@vercel/kv";
 import axios from "axios";
 import { Cache, CacheEntry, cachified } from "cachified";
 
-import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "~/env";
+import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "../../env";
 
 const twitterApi = axios.create({
   baseURL: TWITTER_API_URL,

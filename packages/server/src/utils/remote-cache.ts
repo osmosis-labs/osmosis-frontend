@@ -3,9 +3,9 @@ import { createClient, VercelKV } from "@vercel/kv";
 import { Cache as CachifiedCache, CacheEntry, totalTtl } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "~/config/generated/chain-list";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { superjson } from "~/utils/superjson";
+import { ChainList } from "../codegen/generated/chain-list";
+import { DEFAULT_LRU_OPTIONS } from "./cache";
+import { superjson } from "./superjson";
 
 const isTestEnv = process.env.NODE_ENV === "test";
 

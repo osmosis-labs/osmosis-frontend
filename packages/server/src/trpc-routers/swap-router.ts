@@ -5,21 +5,21 @@ import type {
 } from "@osmosis-labs/pools";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/trpc";
-import { ChainList } from "~/codegen/generated/chain-list";
-import { OsmosisSidecarRemoteRouter } from "~/queries/sidecar/router";
-import { TfmRemoteRouter } from "~/queries/tfm/router";
+import { ChainList } from "../codegen/generated/chain-list";
+import { SIDECAR_BASE_URL } from "../env";
 import {
   calcAssetValue,
   getAsset,
   getAssetPrice,
-} from "~/queries/complex/assets";
-import { DEFAULT_VS_CURRENCY } from "~/queries/complex/assets/config";
-import { Pool } from "~/queries/complex/pools";
-import { getCosmwasmPoolTypeFromCodeId } from "~/queries/complex/pools/env";
-import { routeTokenOutGivenIn } from "~/queries/complex/pools/route-token-out-given-in";
-import { captureErrorAndReturn } from "~/utils/error";
-import { SIDECAR_BASE_URL } from "~/env";
+} from "../queries/complex/assets";
+import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
+import { Pool } from "../queries/complex/pools";
+import { getCosmwasmPoolTypeFromCodeId } from "../queries/complex/pools/env";
+import { routeTokenOutGivenIn } from "../queries/complex/pools/route-token-out-given-in";
+import { OsmosisSidecarRemoteRouter } from "../queries/sidecar/router";
+import { TfmRemoteRouter } from "../queries/tfm/router";
+import { createTRPCRouter, publicProcedure } from "../trpc";
+import { captureErrorAndReturn } from "../utils/error";
 
 const osmosisChainId = ChainList[0].chain_id;
 

@@ -2,8 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 
-import { captureErrorAndReturn } from "~/utils/error";
-
+import { captureErrorAndReturn } from "../../../utils/error";
 import { querySyntheticLockupsByLockId } from "../../osmosis/lockup";
 import {
   querySuperfluidDelegations,

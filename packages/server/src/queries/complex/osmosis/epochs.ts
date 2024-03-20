@@ -1,8 +1,8 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryEpochs } from "~/queries/osmosis/epochs";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { queryEpochs } from "../../../queries/osmosis/epochs";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 
 const epochsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

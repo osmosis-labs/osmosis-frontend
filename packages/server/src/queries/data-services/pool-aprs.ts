@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "~/env";
+import { NUMIA_BASE_URL } from "../../env";
 
 type PoolApr = {
   pool_id: string;

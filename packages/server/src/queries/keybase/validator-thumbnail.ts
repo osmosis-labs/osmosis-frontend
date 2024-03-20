@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { KEYBASE_BASE_URL } from "~/env";
+import { KEYBASE_BASE_URL } from "../../env";
 
 interface KeybaseResult {
   status: {

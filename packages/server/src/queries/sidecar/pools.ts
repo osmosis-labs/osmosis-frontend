@@ -1,12 +1,13 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+import { SIDECAR_BASE_URL } from "~/env";
+
 import {
   ConcentratedPoolRawResponse,
   CosmwasmPoolRawResponse,
   StablePoolRawResponse,
   WeightedPoolRawResponse,
 } from "../osmosis";
-import { SIDECAR_BASE_URL } from "~/env";
 
 // overwrite types from node pool type
 

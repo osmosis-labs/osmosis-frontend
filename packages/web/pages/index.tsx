@@ -1,3 +1,4 @@
+import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -8,7 +9,6 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
-import { queryOsmosisCMS } from "~/server/queries/osmosis/cms";
 
 const Home = () => {
   const featureFlags = useFeatureFlags();

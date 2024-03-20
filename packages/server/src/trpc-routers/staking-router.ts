@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/trpc";
-import { getAverageStakingApr } from "~/queries/complex/staking/apr";
+import { getAverageStakingApr } from "../queries/complex/staking/apr";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const stakingRouter = createTRPCRouter({
   getApr: publicProcedure

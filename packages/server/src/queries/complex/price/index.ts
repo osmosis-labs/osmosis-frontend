@@ -1,6 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 
-import { DEFAULT_VS_CURRENCY } from "~/queries/complex/assets/config";
+import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 
 /**
  * Converts a Dec or BigNumber to a PricePretty instance

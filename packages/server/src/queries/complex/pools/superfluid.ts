@@ -1,7 +1,7 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryAllSuperfluidAssets } from "~/queries/osmosis/superfluid";
+import { queryAllSuperfluidAssets } from "../../../queries/osmosis/superfluid";
 
 const superfluidCache = new LRUCache<string, CacheEntry>({ max: 1 });
 

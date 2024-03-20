@@ -5,10 +5,10 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { AssetLists } from "~/codegen/generated/asset-lists";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { captureErrorAndReturn } from "~/utils/error";
-import { search, SearchSchema } from "~/utils/search";
+import { AssetLists } from "../../../codegen/generated/asset-lists";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { captureErrorAndReturn } from "../../../utils/error";
+import { search, SearchSchema } from "../../../utils/search";
 
 /** An asset with minimal data that conforms to `Currency` type. */
 export type Asset = {
@@ -163,6 +163,7 @@ function filterAssetList(
   return assetListAssets.map(makeMinimalAsset);
 }
 
+export * from "./config";
 export * from "./market";
 export * from "./price";
 export * from "./user";

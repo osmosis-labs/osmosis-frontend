@@ -7,39 +7,38 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "~/codegen/generated/chain-list";
+import { ChainList } from "../../../codegen/generated/chain-list";
 import {
   calcCoinValue,
   calcSumCoinsValue,
   getAsset,
   mapRawCoinToPretty,
-} from "~/queries/complex/assets";
-import { getPools } from "~/queries/complex/pools";
+} from "../../../queries/complex/assets";
+import { getPools } from "../../../queries/complex/pools";
 import {
   getConcentratedRangePoolApr,
   getLockableDurations,
   getPoolIncentives,
-} from "~/queries/complex/pools/incentives";
-import { getValidatorInfo } from "~/queries/complex/staking/validator";
-import { ConcentratedPoolRawResponse } from "~/queries/osmosis";
+} from "../../../queries/complex/pools/incentives";
+import { getValidatorInfo } from "../../../queries/complex/staking/validator";
+import { ConcentratedPoolRawResponse } from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
   queryAccountUnbondingPositions,
   queryPositionById,
-} from "~/queries/osmosis/concentratedliquidity";
+} from "../../../queries/osmosis/concentratedliquidity";
 import {
   queryAccountDelegatedPositions,
   queryAccountUndelegatingPositions,
-} from "~/queries/osmosis/superfluid";
-import { timeout } from "~/utils/async";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
-import { captureErrorAndReturn } from "~/utils/error";
-
+} from "../../../queries/osmosis/superfluid";
+import { timeout } from "../../../utils/async";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { captureErrorAndReturn } from "../../../utils/error";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";

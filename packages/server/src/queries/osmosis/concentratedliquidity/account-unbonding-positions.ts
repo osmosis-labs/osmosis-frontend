@@ -1,7 +1,6 @@
 // "/osmosis/concentratedliquidity/v1beta1"/positions/${bech32Address}?pagination.limit=10000
 
-import { createNodeQuery } from "~/queries/base-utils";
-
+import { createNodeQuery } from "../../../queries/base-utils";
 import { LiquidityPosition } from "./account-positions";
 
 interface PeriodLock {

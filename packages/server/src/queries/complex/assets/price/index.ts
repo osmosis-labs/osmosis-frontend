@@ -3,11 +3,10 @@ import { Asset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { AssetLists } from "~/codegen/generated/asset-lists";
-import { CoingeckoVsCurrencies } from "~/queries/coingecko";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
-import { captureErrorAndReturn } from "~/utils/error";
-
+import { AssetLists } from "../../../../codegen/generated/asset-lists";
+import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
+import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getPriceFromSidecar } from "./providers/sidecar";
 

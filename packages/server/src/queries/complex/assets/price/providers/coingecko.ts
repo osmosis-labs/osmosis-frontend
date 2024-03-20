@@ -3,13 +3,13 @@ import { Asset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { EdgeDataLoader } from "../../../../../utils/batching";
+import { DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,
   querySimplePrice,
-} from "~/queries/coingecko";
-import { EdgeDataLoader } from "~/utils/batching";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+} from "../../../../coingecko";
 
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

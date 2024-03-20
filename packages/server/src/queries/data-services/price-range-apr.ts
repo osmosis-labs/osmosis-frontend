@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { INDEXER_DATA_URL } from "~/env";
+import { INDEXER_DATA_URL } from "../../env";
 
 interface PriceRangeAPR {
   APR: number;

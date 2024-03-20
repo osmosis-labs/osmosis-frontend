@@ -1,8 +1,8 @@
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, getChainRestUrl } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/codegen/generated/chain-list";
 import { runIfFn } from "@osmosis-labs/utils";
+
+import { ChainList } from "../codegen/generated/chain-list";
 
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({

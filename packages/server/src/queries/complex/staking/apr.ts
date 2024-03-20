@@ -2,8 +2,8 @@ import { Dec } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryStakingApr } from "~/queries/data-services/staking-apr";
-import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
+import { queryStakingApr } from "../../../queries/data-services/staking-apr";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 
 const averageStakingAprCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "~/env";
+import { TIMESERIES_DATA_URL } from "../../env";
 
 export interface TokenData {
   price: number;

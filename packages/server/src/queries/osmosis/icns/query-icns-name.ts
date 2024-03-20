@@ -1,5 +1,4 @@
-import { createNodeQuery } from "~/queries/base-utils";
-
+import { createNodeQuery } from "../../../queries/base-utils";
 import { ICNS_RESOLVER_CONTRACT_ADDRESS } from ".";
 
 interface ICNSNameResponse {
