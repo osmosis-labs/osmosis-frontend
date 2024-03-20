@@ -14,6 +14,7 @@ import { ethers } from "ethers";
 import Long from "long";
 import { toHex } from "web3-utils";
 
+import { ChainList } from "~/config/generated/chain-list";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { removeAllCommas } from "~/integrations/bridges/squid/squid-bridge-utils";
 import {
@@ -391,6 +392,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       }
 
       const timeoutHeight = await getTimeoutHeight({
+        chainList: ChainList,
         destinationAddress: parsedData.msg.receiver,
       });
 

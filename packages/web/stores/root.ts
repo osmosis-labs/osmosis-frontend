@@ -3,7 +3,6 @@ import {
   CosmwasmQueries,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { AssetLists, ChainList } from "@osmosis-labs/server";
 import {
   AccountStore,
   ChainStore,
@@ -29,11 +28,14 @@ import {
 import {
   BlacklistedPoolIds,
   INDEXER_DATA_URL,
+  IS_TESTNET,
   TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
@@ -50,7 +52,6 @@ import {
   UserSettings,
 } from "~/stores/user-settings";
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {

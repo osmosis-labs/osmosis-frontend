@@ -3,6 +3,8 @@ import { Route, SplitTokenInQuote } from "@osmosis-labs/pools";
 import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "@osmosis-labs/server";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { ChainList } from "~/config/generated/chain-list";
+
 type Response = {
   amount: string;
   candidateRoutes: {
@@ -43,6 +45,7 @@ export default async function routeTokenOutGivenIn(
   // get quote
   try {
     const { quote, candidateRoutes } = await _routeTokenOutGivenIn({
+      chainList: ChainList,
       token: { denom: tokenInDenom, amount: new Int(tokenInAmount) },
       tokenOutDenom,
     });

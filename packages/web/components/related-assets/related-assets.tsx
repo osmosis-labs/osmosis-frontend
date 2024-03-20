@@ -1,5 +1,4 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetLists, ChainList } from "@osmosis-labs/server";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { AppCurrency } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -10,6 +9,8 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { EventName } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";

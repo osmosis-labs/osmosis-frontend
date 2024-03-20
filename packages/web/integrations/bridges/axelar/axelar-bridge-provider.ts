@@ -3,12 +3,7 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import {
-  AssetLists,
-  ChainList,
-  getAssetPrice,
-  getTimeoutHeight,
-} from "@osmosis-labs/server";
+import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
@@ -17,6 +12,8 @@ import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import {
   Erc20Abi,
@@ -179,6 +176,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           let transferFeeFiatValue: Dec | undefined;
           try {
             transferFeeFiatValue = await getAssetPrice({
+              assetLists: AssetLists,
+              chainList: ChainList,
               asset: {
                 coinDenom: fromAsset.denom,
                 sourceDenom: transferFeeRes.fee.denom,
@@ -192,6 +191,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           let gasCostFiatValue: Dec | undefined;
           try {
             gasCostFiatValue = await getAssetPrice({
+              assetLists: AssetLists,
+              chainList: ChainList,
               asset: {
                 coinDenom: fromAsset.denom,
                 sourceDenom: gasCost?.sourceDenom ?? "",
@@ -203,6 +204,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const expectedOutputAssetFiatValue = await getAssetPrice({
+            assetLists: AssetLists,
+            chainList: ChainList,
             asset: {
               coinDenom: toAsset.denom,
               sourceDenom: toAsset.sourceDenom ?? "",
@@ -211,6 +214,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           });
 
           const inputAssetFiatValue = await getAssetPrice({
+            assetLists: AssetLists,
+            chainList: ChainList,
             asset: {
               coinDenom: toAsset.denom,
               sourceDenom: toAsset.sourceDenom ?? "",
@@ -528,6 +533,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           });
 
       const timeoutHeight = await getTimeoutHeight({
+        chainList: ChainList,
         destinationAddress: depositAddress,
       });
 

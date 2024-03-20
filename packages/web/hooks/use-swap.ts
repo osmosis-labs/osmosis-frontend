@@ -5,7 +5,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import { type Asset, AssetLists, type RouterKey } from "@osmosis-labs/server";
+import type { Asset, RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
@@ -23,6 +23,7 @@ import { useCallback } from "react";
 import { useEffect } from "react";
 
 import { RecommendedSwapDenoms } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root";

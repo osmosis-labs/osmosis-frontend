@@ -1,12 +1,10 @@
 import { FE_CONTENT_COMMIT_HASH } from "../../../env";
 import { queryGithubFile } from "../../../queries/github";
 
-export const OsmosisCmsRepo = "osmosis-labs/fe-content";
-
 export async function queryOsmosisCMS<T>({
   commitHash = FE_CONTENT_COMMIT_HASH,
   filePath,
-  repo = OsmosisCmsRepo,
+  repo = "osmosis-labs/fe-content",
 }: {
   repo?: string;
   filePath: string;
