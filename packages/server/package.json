@@ -8,7 +8,7 @@
     "src/utils/superjson.ts"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rm -rf node_modules; rm -rf build; rm -rf src/codegen/generated",
     "build": "yarn generate && tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
