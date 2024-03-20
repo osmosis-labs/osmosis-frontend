@@ -7,6 +7,7 @@ import {
   PricePretty,
 } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import { ellipsisText } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
@@ -44,7 +45,6 @@ import { useSwap } from "~/hooks/use-swap";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */

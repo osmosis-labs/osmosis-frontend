@@ -8,6 +8,7 @@ import {
 } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -64,7 +65,6 @@ import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 import { ErrorTypes } from "~/utils/error-types";
 import { noop } from "~/utils/function";
-import { getKeyByValue } from "~/utils/object";
 import { createContext } from "~/utils/react-context";
 import { api } from "~/utils/trpc";
 

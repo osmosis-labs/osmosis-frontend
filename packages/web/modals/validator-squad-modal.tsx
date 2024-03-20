@@ -5,6 +5,7 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import { normalizeUrl, truncateString } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -40,7 +41,6 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { normalizeUrl, truncateString } from "~/utils/string";
 
 const CONSTANTS = {
   HIGH_APR: "0.3",

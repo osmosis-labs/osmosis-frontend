@@ -1,24 +1,9 @@
-import "~/utils/superjson";
-
-import {
-  httpBatchLink,
-  httpLink,
-  loggerLink,
-  OperationResultEnvelope,
-  splitLink,
-  TRPCClientError,
-  TRPCLink,
-} from "@trpc/client";
+import { localLink, makeSkipBatchLink, superjson } from "@osmosis-labs/server";
+import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import {
-  AnyRouter,
-  type inferRouterInputs,
-  type inferRouterOutputs,
-} from "@trpc/server";
-import { observable } from "@trpc/server/observable";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import { type AppRouter, appRouter } from "~/server/api/root";
-import { superjson } from "~/utils/superjson";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
@@ -30,59 +15,6 @@ const getBaseUrl = () => {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
-
-/**
- * Creates a local link for tRPC operations.
- * This function is used to create a custom TRPCLink that intercepts operations and
- * handles them locally using the provided router, instead of sending them over the network.
- */
-export function localLink<TRouter extends AnyRouter>({
-  router,
-}: {
-  router: TRouter;
-}): TRPCLink<TRouter> {
-  return () =>
-    ({ op }) =>
-      observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
-        (observer) => {
-          async function execute() {
-            const caller = router.createCaller({});
-            try {
-              // Attempt to execute the operation using the router's caller.
-              const data = await (
-                caller[op.path] as (input: unknown) => unknown
-              )(op.input);
-              // If successful, notify the observer with the result.
-              observer.next({ result: { data, type: "data" } });
-              observer.complete();
-            } catch (err) {
-              // If an error occurs, convert it to a TRPCClientError and notify the observer.
-              observer.error(TRPCClientError.from(err as Error));
-            }
-          }
-
-          // Execute the operation asynchronously.
-          void execute();
-        }
-      );
-}
-
-/** Provides ability to skip batching given a new custom query option context: `skipBatch: boolean` */
-const makeSkipBatchLink = (url: string) =>
-  splitLink({
-    condition(op) {
-      // check for context property `skipBatch`
-      return op.context.skipBatch === true;
-    },
-    // when condition is true, use normal request
-    true: httpLink({
-      url,
-    }),
-    // when condition is false, use batching
-    false: httpBatchLink({
-      url,
-    }),
-  });
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({

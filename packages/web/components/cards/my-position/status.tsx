@@ -1,9 +1,9 @@
+import type { PositionStatus } from "@osmosis-labs/server";
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
-import type { PositionStatus } from "~/server/queries/complex/concentrated-liquidity";
 
 export const MyPositionStatus: FunctionComponent<
   {

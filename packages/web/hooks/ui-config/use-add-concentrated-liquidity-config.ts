@@ -24,6 +24,7 @@ import {
   roundPriceToNearestTick,
   roundToNearestDivisible,
 } from "@osmosis-labs/math";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import {
   FakeFeeConfig,
   IPriceStore,
@@ -35,8 +36,6 @@ import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { Pool } from "~/server/queries/complex/pools";
-import type { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 

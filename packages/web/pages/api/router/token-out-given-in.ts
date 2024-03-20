@@ -1,8 +1,7 @@
 import { Int } from "@keplr-wallet/unit";
 import { Route, SplitTokenInQuote } from "@osmosis-labs/pools";
+import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "@osmosis-labs/server";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 
 type Response = {
   amount: string;

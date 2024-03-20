@@ -1,3 +1,4 @@
+import { parseObjectValues } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -11,7 +12,6 @@ import {
 } from "~/integrations/bridges/types";
 import timeout from "~/utils/async";
 import { ErrorTypes } from "~/utils/error-types";
-import { parseObjectValues } from "~/utils/object";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,

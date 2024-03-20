@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import WalletConnect from "@walletconnect/client";
 import {
   action,
@@ -12,7 +13,6 @@ import { isAddress, numberToHex, toHex } from "web3-utils";
 
 import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
 import { WalletDisplay, WalletKey } from "~/integrations/wallets";
-import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";

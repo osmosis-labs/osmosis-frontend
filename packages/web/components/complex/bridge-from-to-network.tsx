@@ -1,4 +1,5 @@
 import { Menu } from "@headlessui/react";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 
@@ -11,7 +12,6 @@ import {
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
-import { truncateString } from "~/utils/string";
 
 interface BridgeFromToNetworkProps<
   BridgeProviderOption extends BaseBridgeProviderOption

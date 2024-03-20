@@ -1,9 +1,9 @@
 import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { Breakpoint, useWindowSize } from "~/hooks";
-import { truncateString } from "~/utils/string";
 
 const ColorCycle = [
   "bg-ion-500",

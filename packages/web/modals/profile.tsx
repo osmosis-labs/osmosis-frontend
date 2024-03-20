@@ -1,4 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { formatICNSName, getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -43,7 +44,6 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { formatICNSName, getShortAddress } from "~/utils/string";
 import { api } from "~/utils/trpc";
 
 const QRCode = dynamic(() => import("~/components/qrcode"));

@@ -1,0 +1,49 @@
+{
+  "name": "@osmosis-labs/server",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "license": "Apache-2.0",
+  "sideEffects": [
+    "src/queries/complex/**/*",
+    "src/utils/superjson.ts"
+  ],
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "yarn generate && tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "generate": "yarn generate:lists",
+    "generate:lists": "dotenv -c -- tsx src/codegen/generate-lists.ts",
+    "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/pools": "^5.1.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0",
+    "@sentry/node": "^7.107.0",
+    "@trpc/client": "^10.45.1",
+    "@trpc/server": "^10.45.1",
+    "cachified": "^3.5.4",
+    "dataloader": "^2.2.2",
+    "dayjs": "^1.10.7",
+    "fuse.js": "^6.5.3",
+    "lru-cache": "^10.0.1",
+    "superjson": "^2.2.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/jest-in-case": "^1.0.6",
+    "jest-in-case": "^1.0.2",
+    "dotenv-cli": "^7.2.1"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  }
+}
