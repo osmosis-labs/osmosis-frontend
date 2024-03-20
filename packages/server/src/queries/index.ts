@@ -5,3 +5,4 @@ export * from "./data-services";
 export * from "./keybase";
 export * from "./osmosis";
 export * from "./complex";
+export * from "./github";
