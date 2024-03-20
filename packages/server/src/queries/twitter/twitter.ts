@@ -2,7 +2,12 @@ import { createClient, VercelKV } from "@vercel/kv";
 import axios from "axios";
 import { Cache, CacheEntry, cachified } from "cachified";
 
-import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "../../env";
+import {
+  KV_STORE_REST_API_TOKEN,
+  KV_STORE_REST_API_URL,
+  TWITTER_API_ACCESS_TOKEN,
+  TWITTER_API_URL,
+} from "../../env";
 
 const twitterApi = axios.create({
   baseURL: TWITTER_API_URL,
@@ -88,8 +93,8 @@ export class Twitter {
   constructor(cacheExpireTime: number = DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
     this.kvStore = createClient({
-      url: process.env.KV_STORE_REST_API_URL!,
-      token: process.env.KV_STORE_REST_API_TOKEN!,
+      url: KV_STORE_REST_API_URL!,
+      token: KV_STORE_REST_API_TOKEN!,
     });
     this.cache = kvStoreAdapter(this.kvStore);
   }

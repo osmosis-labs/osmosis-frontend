@@ -10,6 +10,7 @@
  */
 
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
 import type {
   Asset,
   AssetList,
@@ -28,8 +29,7 @@ import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
-} from "../env";
-import { queryGithubFile, queryLatestCommitHash } from "../queries/github";
+} from "./env";
 import {
   getChainList,
   getImageRelativeFilePath,
@@ -43,7 +43,7 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
-const dirPath = "src/codegen/generated";
+const dirPath = "config/generated";
 
 function getFilePath({
   chainId,

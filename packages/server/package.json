@@ -7,14 +7,12 @@
     "src/utils/superjson.ts"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build; rm -rf src/codegen/generated",
-    "build": "yarn generate && tsc",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "generate": "yarn generate:lists",
-    "generate:lists": "dotenv -c -- tsx src/codegen/generate-lists.ts",
     "prepare": "yarn build"
   },
   "dependencies": {
@@ -40,8 +38,7 @@
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
-    "jest-in-case": "^1.0.2",
-    "dotenv-cli": "^7.2.1"
+    "jest-in-case": "^1.0.2"
   },
   "lint-staged": {
     "*": [

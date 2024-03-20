@@ -97,7 +97,6 @@ export const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * ZodErrors to get typesafety on the frontend if our procedure fails due to validation
  * errors on the backend.
  */
-
 const t = initTRPC.context<typeof createInnerTRPCContext>().create({
   transformer: superjson,
   allowOutsideOfServer: true,

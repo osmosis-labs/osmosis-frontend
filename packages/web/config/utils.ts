@@ -16,7 +16,7 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "../env";
+} from "./env";
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";

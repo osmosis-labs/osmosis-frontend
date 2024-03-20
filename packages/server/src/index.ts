@@ -1,4 +1,3 @@
-export * from "./codegen";
 export * from "./env";
 export * from "./queries";
 export * from "./trpc";

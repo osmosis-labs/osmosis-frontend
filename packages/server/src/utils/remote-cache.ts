@@ -3,7 +3,7 @@ import { createClient, VercelKV } from "@vercel/kv";
 import { Cache as CachifiedCache, CacheEntry, totalTtl } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "../codegen/generated/chain-list";
+import { KV_STORE_REST_API_TOKEN, KV_STORE_REST_API_URL } from "../env";
 import { DEFAULT_LRU_OPTIONS } from "./cache";
 import { superjson } from "./superjson";
 
@@ -38,14 +38,14 @@ export class RemoteCache implements CachifiedCache {
    */
   get keyPrefix() {
     return `${process.env.VERCEL_GIT_COMMIT_SHA ?? "localdev"}-${
-      ChainList[0].chain_id
+      this.chainId
     }-${process.env.VERCEL_ENV ?? process.env.NODE_ENV}--`;
   }
 
-  constructor() {
+  constructor(readonly chainId: string) {
     if (!isTestEnv) {
-      const url = process.env.KV_STORE_REST_API_URL;
-      const token = process.env.KV_STORE_REST_API_TOKEN;
+      const url = KV_STORE_REST_API_URL;
+      const token = KV_STORE_REST_API_TOKEN;
 
       if (!url || !token) {
         console.error(

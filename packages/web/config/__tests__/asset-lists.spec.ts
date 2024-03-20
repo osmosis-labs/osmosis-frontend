@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { AssetLists } from "../mock-asset-lists";
 import { MockChains } from "../mock-chains";
 import { getChainList, getKeplrCompatibleChain } from "../utils";
