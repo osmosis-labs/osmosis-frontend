@@ -577,6 +577,10 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=aioz_168-1&chainTo=osmosis-1&token0=attoaioz&token1=ibc%2FBB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
   },
+  BSKT: {
+    depositUrlOverride: "https://www.bskt.fi/wormhole",
+    withdrawUrlOverride: "https://www.bskt.fi/wormhole",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
