@@ -137,19 +137,8 @@ export interface Asset {
   logoURIs: LogoURIs;
   coingeckoId?: string;
 
-  // likely to be removed
-  /** @deprecated */
-  description?: string;
-  /** @deprecated */
-  twitterURL?: string;
-  /** @deprecated */
-  relatedAssets?: {
-    chainName: string;
-    sourceDenom: string;
-  }[];
-  /** @deprecated */
   tooltipMessage?: string;
-  /** @deprecated */
+
   sortWith?: {
     chainName: string;
     sourceDenom: string;

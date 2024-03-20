@@ -10,6 +10,9 @@ export interface ResultPool {
   type?: PoolType;
   inCurrency?: Currency;
   outCurrency?: Currency;
+
+  /** Code ID if Cosmwasm pool. */
+  codeId?: string;
 }
 
 /** Single route through pools. */
