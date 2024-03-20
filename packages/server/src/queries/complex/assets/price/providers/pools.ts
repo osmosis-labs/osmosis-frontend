@@ -1,9 +1,8 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
-import { Asset } from "@osmosis-labs/types";
+import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList, isNil } from "@osmosis-labs/utils";
 
-import { AssetLists } from "../../../../../codegen/generated/asset-lists";
 import { CoingeckoVsCurrencies } from "../../../../coingecko";
 import { queryPaginatedPools } from "../../../../complex/pools/providers/indexer";
 import { getCoingeckoPrice, getPriceFromCoinGecko } from "./coingecko";
@@ -11,11 +10,15 @@ import { getCoingeckoPrice, getPriceFromCoinGecko } from "./coingecko";
 /** Calculates prices by querying pools and finding spot prices through routes in those pools. Falls back to CoinGecko if price not found.
  *  @throws if there's no price info for that asset, or there's an issue calculating the price. */
 export async function getPriceFromPools(
+  assetLists: AssetList[],
+  chainList: Chain[],
   asset: Asset,
   currency: CoingeckoVsCurrencies = "usd"
 ): Promise<Dec> {
   if (asset.price) {
     return await calculatePriceThroughPools({
+      assetLists,
+      chainList,
       asset,
       currency,
     });
@@ -37,9 +40,13 @@ export async function getPriceFromPools(
  * @throws If the asset is not found in the asset list registry or the asset's price info is not found. Or if there's an issue getting the price from CoinGecko.
  */
 async function calculatePriceThroughPools({
+  assetLists,
+  chainList,
   asset,
   currency,
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   asset: Pick<Asset, "coinMinimalDenom" | "price" | "coingeckoId">;
   currency: "usd";
 }): Promise<Dec> {
@@ -75,12 +82,12 @@ async function calculatePriceThroughPools({
 
   const tokenInAsset = getAssetFromAssetList({
     coinMinimalDenom: poolPriceRoute.sourceCoinMinimalDenom,
-    assetLists: AssetLists,
+    assetLists,
   });
 
   const tokenOutAsset = getAssetFromAssetList({
     coinMinimalDenom: poolPriceRoute.destCoinMinimalDenom,
-    assetLists: AssetLists,
+    assetLists,
   });
 
   if (!tokenInAsset)
@@ -97,6 +104,7 @@ async function calculatePriceThroughPools({
 
   const rawPool: PoolRaw = (
     await queryPaginatedPools({
+      chainList,
       poolId: poolPriceRoute.poolId,
     })
   )?.pools[0];
@@ -134,6 +142,8 @@ async function calculatePriceThroughPools({
     : new Dec(1).quo(inSpotPrice.toDec());
 
   const destCoinPrice = await calculatePriceThroughPools({
+    assetLists,
+    chainList,
     asset: tokenOutAsset.rawAsset,
     currency,
   });

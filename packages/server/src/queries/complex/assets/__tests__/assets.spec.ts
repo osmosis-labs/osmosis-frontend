@@ -1,4 +1,4 @@
-import { AssetLists } from "../../../../codegen/mock-asset-lists";
+import { AssetLists as MockAssetLists } from "../../../__tests__/mock-asset-lists";
 import { getAsset, getAssets } from "../index";
 
 describe("getAssets", () => {
@@ -6,7 +6,7 @@ describe("getAssets", () => {
     it("should return assets that match search", async () => {
       const assets = await getAssets({
         search: { query: "acre" },
-        assetList: AssetLists,
+        assetLists: MockAssetLists,
       });
 
       // ACRE should clearly be the best search result
@@ -20,7 +20,7 @@ describe("getAssets", () => {
           query:
             "ibc/C491E7582E94AE921F6A029790083CDE1106C28F3F6C4AD7F1340544C13EC372",
         },
-        assetList: AssetLists,
+        assetLists: MockAssetLists,
       });
 
       // OSMO should clearly be the best search result
@@ -31,7 +31,7 @@ describe("getAssets", () => {
     it("should not return preview assets", async () => {
       const assets = await getAssets({
         search: { query: "PURSE" },
-        assetList: AssetLists,
+        assetLists: MockAssetLists,
       });
 
       expect(
@@ -41,7 +41,7 @@ describe("getAssets", () => {
 
     it("should filter unverified assets if specified", async () => {
       const assets = await getAssets({
-        assetList: AssetLists,
+        assetLists: MockAssetLists,
         onlyVerified: true,
       });
 
@@ -50,7 +50,7 @@ describe("getAssets", () => {
 
     it("should include unverified assets by default", async () => {
       const assets = await getAssets({
-        assetList: AssetLists,
+        assetLists: MockAssetLists,
       });
 
       expect(assets.some((asset) => !asset.isVerified)).toBeTruthy();
@@ -60,13 +60,18 @@ describe("getAssets", () => {
 
 describe("getAsset", () => {
   it("should return the asset that matches the provided denom", async () => {
-    const asset = await getAsset({ anyDenom: "ACRE" });
+    const asset = await getAsset({
+      assetLists: MockAssetLists,
+      anyDenom: "ACRE",
+    });
 
     expect(asset).toBeTruthy();
     expect(asset.coinDenom).toEqual("ACRE");
   });
 
   it("should throw if no asset matches the provided denom", () => {
-    expect(getAsset({ anyDenom: "NON_EXISTING_DENOM" })).rejects.toBeDefined();
+    expect(
+      getAsset({ assetLists: MockAssetLists, anyDenom: "NON_EXISTING_DENOM" })
+    ).rejects.toBeDefined();
   });
 });

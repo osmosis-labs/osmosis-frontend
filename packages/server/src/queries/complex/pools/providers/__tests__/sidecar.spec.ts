@@ -4,10 +4,13 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";
+import { AssetLists as MockAssetLists } from "../../../../__tests__/mock-asset-lists";
+import { MockChains } from "../../../../__tests__/mock-chains";
 import { calcAssetValue, calcSumAssetsValue, getAsset } from "../../../assets";
 import { getPoolsFromSidecar, getPoolTypeFromChainPool } from "../sidecar";
 
 export const server = setupServer();
+const params = { assetLists: MockAssetLists, chainList: MockChains };
 
 export const mockAsset = {
   coinDenom: "mockCoinDenom",
@@ -49,13 +52,13 @@ describe("getPoolsFromSidecar", () => {
 
   it("works with caching", async () => {
     const start1 = Date.now();
-    const pools1 = await getPoolsFromSidecar();
+    const pools1 = await getPoolsFromSidecar(params);
     const end1 = Date.now();
     const duration1 = end1 - start1;
 
     // should hit cache now
     const start2 = Date.now();
-    const pools2 = await getPoolsFromSidecar();
+    const pools2 = await getPoolsFromSidecar(params);
     const end2 = Date.now();
     const duration2 = end2 - start2;
 

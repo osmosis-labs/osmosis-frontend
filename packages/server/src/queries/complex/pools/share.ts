@@ -1,6 +1,6 @@
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import { estimateExitSwap } from "@osmosis-labs/math";
-import { Currency } from "@osmosis-labs/types";
+import { AssetList, Chain, Currency } from "@osmosis-labs/types";
 
 import { StablePoolRawResponse, WeightedPoolRawResponse } from "../../osmosis";
 import { getLockableDurations } from "../pools/incentives";
@@ -13,12 +13,15 @@ import { getPool } from ".";
 export async function getGammShareUnderlyingCoins({
   denom,
   amount,
+  ...params
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   denom: string;
   amount: string;
 }): Promise<CoinPretty[]> {
   const poolId = denom.split("/")[2];
-  const pool = await getPool({ poolId });
+  const pool = await getPool({ ...params, poolId });
   if (pool.type !== "weighted" && pool.type !== "stable") {
     throw new Error("Shares are for unexpected pool type");
   }
@@ -54,10 +57,14 @@ export async function getGammShareUnderlyingCoins({
  *  A share pool is a pool that issues liquidity ownership a share token (gamm/pool/{poolId}) and is either stable or weighted.
  *  It is considered a legacy type of pool.
  *  @throws if pool is not share pool (stable or weighted). */
-export async function getSharePool(poolId: string) {
+export async function getSharePool(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  poolId: string;
+}) {
   const [pool, lockableDurations] = await Promise.all([
-    getPool({ poolId }),
-    getLockableDurations(),
+    getPool(params),
+    getLockableDurations(params),
   ]);
 
   const basePool = {
@@ -68,7 +75,7 @@ export async function getSharePool(poolId: string) {
       WeightedPoolRawResponse | StablePoolRawResponse,
       "@type"
     >,
-    currency: makeGammShareCurrency(poolId),
+    currency: makeGammShareCurrency(params.poolId),
     lockableDurations,
   };
 

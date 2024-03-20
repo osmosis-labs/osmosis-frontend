@@ -7,11 +7,11 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "../../../codegen/generated/chain-list";
 import {
   calcCoinValue,
   calcSumCoinsValue,
@@ -45,11 +45,16 @@ import { getSuperfluidPoolIds } from "../pools/superfluid";
 
 /** Lists all of a user's coins within all concentrated liquidity positions, aggregated by denom. */
 export async function getUserUnderlyingCoinsFromClPositions({
+  assetLists,
+  chainList,
   userOsmoAddress,
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   userOsmoAddress: string;
 }): Promise<CoinPretty[]> {
   const clPositions = await queryAccountPositions({
+    chainList,
     bech32Address: userOsmoAddress,
   });
 
@@ -64,7 +69,9 @@ export async function getUserUnderlyingCoinsFromClPositions({
     )
     .flat();
 
-  return await mapRawCoinToPretty(positionAssets).then(aggregateCoinsByDenom);
+  return await mapRawCoinToPretty(assetLists, positionAssets).then(
+    aggregateCoinsByDenom
+  );
 }
 
 export type PositionStatus =
@@ -171,41 +178,50 @@ const concentratedLiquidityCache = new LRUCache<string, CacheEntry>(
 );
 
 function getUserUnbondingPositions({
+  chainList,
   bech32Address,
 }: {
+  chainList: Chain[];
   bech32Address: string;
 }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    getFreshValue: () => queryAccountUnbondingPositions({ bech32Address }),
+    getFreshValue: () =>
+      queryAccountUnbondingPositions({ chainList, bech32Address }),
   });
 }
 
 function getUserDelegatedPositions({
+  chainList,
   bech32Address,
 }: {
+  chainList: Chain[];
   bech32Address: string;
 }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    getFreshValue: () => queryAccountDelegatedPositions({ bech32Address }),
+    getFreshValue: () =>
+      queryAccountDelegatedPositions({ chainList, bech32Address }),
   });
 }
 
 function getUserUndelegatingPositions({
+  chainList,
   bech32Address,
 }: {
+  chainList: Chain[];
   bech32Address: string;
 }) {
   return cachified({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
-    getFreshValue: () => queryAccountUndelegatingPositions({ bech32Address }),
+    getFreshValue: () =>
+      queryAccountUndelegatingPositions({ chainList, bech32Address }),
   });
 }
 
@@ -218,29 +234,36 @@ export type UserPositionDetails = Awaited<
 export async function mapGetUserPositionDetails({
   positions: initialPositions,
   userOsmoAddress,
+  ...params
 }: {
+  chainList: Chain[];
+  assetLists: AssetList[];
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ ...params, bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
-  const lockableDurationsPromise = getLockableDurations();
+  const lockableDurationsPromise = getLockableDurations(params);
   const userUnbondingPositionsPromise = getUserUnbondingPositions({
+    ...params,
     bech32Address: userOsmoAddress,
   });
   const delegatedPositionsPromise = getUserDelegatedPositions({
+    ...params,
     bech32Address: userOsmoAddress,
   });
   const undelegatingPositionsPromise = getUserUndelegatingPositions({
+    ...params,
     bech32Address: userOsmoAddress,
   });
   const stakeCurrencyPromise = getAsset({
-    anyDenom: ChainList[0].staking.staking_tokens[0].denom,
+    ...params,
+    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
   });
-  const superfluidPoolIdsPromise = getSuperfluidPoolIds();
+  const superfluidPoolIdsPromise = getSuperfluidPoolIds(params);
 
   const [
     positions,
@@ -261,6 +284,7 @@ export async function mapGetUserPositionDetails({
   ]);
 
   const pools = await getPools({
+    ...params,
     poolIds: positions.map(({ position }) => position.pool_id),
   });
 
@@ -270,7 +294,10 @@ export async function mapGetUserPositionDetails({
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
-      const [baseCoin, quoteCoin] = await mapRawCoinToPretty([asset0, asset1]);
+      const [baseCoin, quoteCoin] = await mapRawCoinToPretty(
+        params.assetLists,
+        [asset0, asset1]
+      );
       if (!baseCoin || !quoteCoin) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
@@ -278,7 +305,7 @@ export async function mapGetUserPositionDetails({
       }
       const currentValue = new PricePretty(
         DEFAULT_VS_CURRENCY,
-        await calcSumCoinsValue([baseCoin, quoteCoin])
+        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
       );
 
       const lowerTick = new Int(position.lower_tick);
@@ -416,6 +443,7 @@ export async function mapGetUserPositionDetails({
         const longestLockDuration =
           lockableDurations[lockableDurations.length - 1];
         const validatorInfo = await getValidatorInfo({
+          ...params,
           validatorBech32Address: delegatedSuperfluidPosition.validatorAddress,
         });
 
@@ -431,6 +459,7 @@ export async function mapGetUserPositionDetails({
         // undelegating position info
 
         const validatorInfo = await getValidatorInfo({
+          ...params,
           validatorBech32Address:
             undelegatingSuperfluidPosition.validatorAddress,
         });
@@ -479,14 +508,17 @@ export async function mapGetUserPositions({
   positions: initialPositions,
   userOsmoAddress,
   forPoolId,
+  ...params
 }: {
+  chainList: Chain[];
+  assetLists: AssetList[];
   positions?: LiquidityPosition[];
   userOsmoAddress: string;
   forPoolId?: string;
 }) {
   const positionsPromise = initialPositions
     ? Promise.resolve(initialPositions)
-    : queryAccountPositions({ bech32Address: userOsmoAddress }).then(
+    : queryAccountPositions({ ...params, bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
 
@@ -503,10 +535,10 @@ export async function mapGetUserPositions({
       .map(async (position_) => {
         const { asset0, asset1, position } = position_;
 
-        const [baseCoin, quoteCoin] = await mapRawCoinToPretty([
-          asset0,
-          asset1,
-        ]);
+        const [baseCoin, quoteCoin] = await mapRawCoinToPretty(
+          params.assetLists,
+          [asset0, asset1]
+        );
         if (!baseCoin || !quoteCoin) {
           throw new Error(
             `Error finding assets for position ${position.position_id}`
@@ -514,7 +546,7 @@ export async function mapGetUserPositions({
         }
         const currentValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue([baseCoin, quoteCoin])
+          await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
         );
 
         const lowerTick = new Int(position.lower_tick);
@@ -559,11 +591,14 @@ export type PositionHistoricalPerformance = Awaited<
 /** Gets a breakdown of current and reward coins, with fiat values, for a single CL position. */
 export async function getPositionHistoricalPerformance({
   positionId,
+  ...params
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   positionId: string;
 }) {
   const [{ position }, performance] = await Promise.all([
-    queryPositionById({ id: positionId }),
+    queryPositionById({ ...params, id: positionId }),
     queryPositionPerformance({
       positionId,
     }),
@@ -583,22 +618,26 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
+    mapRawCoinToPretty(
+      params.assetLists,
+      performance.principal?.assets ?? []
+    ).then(aggregateCoinsByDenom),
+    mapRawCoinToPretty(params.assetLists, [position.asset0, position.asset1]),
+    mapRawCoinToPretty(params.assetLists, position.claimable_incentives).then(
       aggregateCoinsByDenom
     ),
-    mapRawCoinToPretty([position.asset0, position.asset1]),
-    mapRawCoinToPretty(position.claimable_incentives).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(position.claimable_spread_rewards).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
+    mapRawCoinToPretty(
+      params.assetLists,
+      position.claimable_spread_rewards
+    ).then(aggregateCoinsByDenom),
+    mapRawCoinToPretty(
+      params.assetLists,
+      performance?.total_incentives_rewards ?? []
+    ).then(aggregateCoinsByDenom),
+    mapRawCoinToPretty(
+      params.assetLists,
+      performance?.total_spread_rewards ?? []
+    ).then(aggregateCoinsByDenom),
   ]);
 
   if (currentCoins.length !== 2)
@@ -617,28 +656,28 @@ export async function getPositionHistoricalPerformance({
 
   const currentValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(currentCoins).catch((e) =>
+    await calcSumCoinsValue({ ...params, coins: currentCoins }).catch((e) =>
       captureErrorAndReturn(e, new Dec(0))
     )
   );
   const currentCoinsValues = (
     await Promise.all(
       currentCoins
-        .map(calcCoinValue)
+        .map((coin) => calcCoinValue({ ...params, coin }))
         .map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
     )
   ).map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p));
   const principalValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(principalCoins)
+    await calcSumCoinsValue({ ...params, coins: principalCoins })
   );
   const claimableRewardsValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(claimableRewardCoins)
+    await calcSumCoinsValue({ ...params, coins: claimableRewardCoins })
   );
   const totalEarnedValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue(totalRewardCoins)
+    await calcSumCoinsValue({ ...params, coins: totalRewardCoins })
   );
 
   const principalValueDec = principalValue.toDec();

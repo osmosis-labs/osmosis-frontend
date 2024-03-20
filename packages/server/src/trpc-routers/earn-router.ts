@@ -27,5 +27,5 @@ export const earnRouter = createTRPCRouter({
       const res = await getStrategyTVL(tvlUrl);
       return res;
     }),
-  getStrategies: publicProcedure.query(async () => await getStrategies()),
+  getStrategies: publicProcedure.query(({ ctx }) => getStrategies(ctx)),
 });

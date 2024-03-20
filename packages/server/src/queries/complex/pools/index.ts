@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";
@@ -27,7 +28,11 @@ export type Pool = {
 
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
-export type PoolProvider = (params: { poolIds?: string[] }) => Promise<Pool[]>;
+export type PoolProvider = (params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  poolIds?: string[];
+}) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
   poolIds: z.array(z.string()).optional(),
@@ -46,8 +51,16 @@ const searchablePoolKeys = ["id", "coinDenoms"];
 
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
-export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
-  const pools = await getPools({ poolIds: [poolId] });
+export async function getPool({
+  assetLists,
+  chainList,
+  poolId,
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  poolId: string;
+}): Promise<Pool> {
+  const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
   const pool = pools.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
   return pool;
@@ -58,10 +71,10 @@ export async function getPool({ poolId }: { poolId: string }): Promise<Pool> {
  *  Preforms no default sorting.
  *  Params can be used to filter the results by a fuzzy search on the id, type, or coin denoms, as well as a specific id or type. */
 export async function getPools(
-  params?: PoolFilter,
+  params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromIndexer
 ): Promise<Pool[]> {
-  let pools = await poolProvider({ poolIds: params?.poolIds });
+  let pools = await poolProvider({ ...params, poolIds: params?.poolIds });
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>

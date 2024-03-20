@@ -2,21 +2,21 @@ import { Chain } from "@osmosis-labs/types";
 import { apiClient, getChainRestUrl } from "@osmosis-labs/utils";
 import { runIfFn } from "@osmosis-labs/utils";
 
-import { ChainList } from "../codegen/generated/chain-list";
-
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({
     path,
-    chainList = ChainList,
   }: {
     path: string | ((params: PathParameters) => string);
-    chainList?: Chain[];
   }) =>
   async (
     ...params: PathParameters extends Record<any, any>
-      ? [PathParameters & { chainId?: string }]
-      : [{ chainId?: string }?]
+      ? [PathParameters & { chainId?: string; chainList: Chain[] }]
+      : [{ chainId?: string; chainList: Chain[] }]
   ): Promise<Result> => {
+    const chainList = params[0]?.chainList;
+
+    if (!chainList) throw new Error("Missing chainList");
+
     const url = new URL(
       runIfFn(
         path,

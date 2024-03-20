@@ -16,10 +16,10 @@ import {
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
+import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { ChainList } from "../../../codegen/generated/chain-list";
 import { IS_TESTNET } from "../../../env";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryNumPools } from "../../osmosis";
@@ -33,16 +33,18 @@ import { queryPaginatedPools } from "./providers/indexer";
  * @param tokenOutDenom - The output token denomination.
  * @returns Returns a promise that resolves with the quote and candidate routes. */
 export async function routeTokenOutGivenIn({
+  chainList,
   token,
   tokenOutDenom,
   forcePoolId,
 }: {
+  chainList: Chain[];
   token: Token;
   tokenOutDenom: string;
   forcePoolId?: string;
 }) {
   // get quote
-  const router = await getRouter(forcePoolId ? 0 : undefined);
+  const router = await getRouter(chainList, forcePoolId ? 0 : undefined);
   const quote = await router.routeByTokenIn(token, tokenOutDenom, forcePoolId);
   const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
 
@@ -64,6 +66,7 @@ const routerCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Gets pools and returns a cached router instance. */
 export async function getRouter(
+  chainList: Chain[],
   minLiquidityUsd = IS_TESTNET ? 0 : 1000,
   routerCacheTtl = 30 * 1000
 ): Promise<OptimizedRoutes> {
@@ -73,8 +76,9 @@ export async function getRouter(
     ttl: routerCacheTtl,
     async getFreshValue() {
       // fetch pool data
-      const numPoolsResponse = await queryNumPools();
+      const numPoolsResponse = await queryNumPools({ chainList });
       const poolsResponse = await queryPaginatedPools({
+        chainList,
         page: 1,
         limit: Number(numPoolsResponse.num_pools),
         minimumLiquidity: minLiquidityUsd,
@@ -88,7 +92,7 @@ export async function getRouter(
             return new ConcentratedLiquidityPool(
               pool,
               new FetchTickDataProvider(
-                ChainList[0].apis.rest[0].address,
+                chainList[0].apis.rest[0].address,
                 pool.id
               )
             );

@@ -1,4 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
@@ -99,7 +100,11 @@ export async function getStrategyTVL(tvlUrl: string) {
  * Gets the (cached) strategies data from the CMS
  * @returns An array containing the strategies info from the CMS without TVL & APY, which needs to be calculated separately.
  */
-export async function getStrategies() {
+export async function getStrategies({
+  assetLists,
+}: {
+  assetLists: AssetList[];
+}) {
   return await cachified({
     cache: earnRawStrategyCMSDataCache,
     ttl: 1000 * 60 * 30,
@@ -122,7 +127,7 @@ export async function getStrategies() {
 
           const depositAssets = await Promise.all(
             depositDenoms.map((token) =>
-              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
+              getAsset({ assetLists, anyDenom: token.coinMinimalDenom }).catch(
                 console.error
               )
             )
@@ -130,7 +135,7 @@ export async function getStrategies() {
 
           const positionAssets = await Promise.all(
             positionDenoms.map((token) =>
-              getAsset({ anyDenom: token.coinMinimalDenom }).catch(
+              getAsset({ assetLists, anyDenom: token.coinMinimalDenom }).catch(
                 console.error
               )
             )
@@ -138,7 +143,7 @@ export async function getStrategies() {
 
           const rewardAssets = await Promise.all(
             rewardDenoms.map((reward) =>
-              getAsset({ anyDenom: reward.coinMinimalDenom }).catch(
+              getAsset({ assetLists, anyDenom: reward.coinMinimalDenom }).catch(
                 console.error
               )
             )

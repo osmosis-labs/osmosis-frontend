@@ -1,4 +1,5 @@
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -7,7 +8,7 @@ import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { AsyncTimeoutError, timeout } from "../../../../utils/async";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import { calcSumAssetsValue, getAsset } from "../../assets";
+import { calcSumCoinsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolType } from "../index";
@@ -18,10 +19,14 @@ const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
+  assetLists,
+  chainList,
   poolIds,
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   poolIds?: string[];
-} = {}): Promise<Pool[]> {
+}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
@@ -35,7 +40,7 @@ export function getPoolsFromSidecar({
       const reserveCoins = await Promise.all(
         sidecarPools.map((sidecarPool) =>
           timeout(
-            () => getListedReservesFromSidecarPool(sidecarPool),
+            () => getListedReservesFromSidecarPool(assetLists, sidecarPool),
             9_000, // 9 seconds
             "getListedReservesFromSidecarPool"
           )().catch((e) => {
@@ -54,7 +59,12 @@ export function getPoolsFromSidecar({
         reserveCoins.map((reserve) =>
           reserve
             ? timeout(
-                () => calcTotalFiatValueLockedFromReserve(reserve),
+                () =>
+                  calcTotalFiatValueLockedFromReserve(
+                    assetLists,
+                    chainList,
+                    reserve
+                  ),
                 15_000, // 15 seconds
                 "sidecarCalcTotalFiatValueLockedFromReserve"
               )()
@@ -129,12 +139,15 @@ export function getPoolTypeFromChainPool(
 
 /** @throws if an asset is not in asset list */
 export async function getListedReservesFromSidecarPool(
+  assetLists: AssetList[],
   sidecarPool: SidecarPool
 ): Promise<CoinPretty[]> {
   const poolDenoms = getPoolDenomsFromSidecarPool(sidecarPool);
   const listedBalances = await Promise.all(
     poolDenoms.map(async (denom) => {
-      const asset = await getAsset({ anyDenom: denom }).catch(() => null);
+      const asset = await getAsset({ assetLists, anyDenom: denom }).catch(
+        () => null
+      );
       // not listed
       if (!asset) throw new Error("Asset not listed: " + denom);
 
@@ -207,13 +220,12 @@ function makePoolRawResponseFromChainPool(
   } as PoolRawResponse;
 }
 
-function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
-  const assets = reserve.map((coin) => ({
-    anyDenom: coin.currency.coinMinimalDenom,
-    amount: coin.toCoin().amount,
-  }));
-
-  return calcSumAssetsValue({ assets }).then(
+function calcTotalFiatValueLockedFromReserve(
+  assetLists: AssetList[],
+  chainList: Chain[],
+  reserve: CoinPretty[]
+) {
+  return calcSumCoinsValue({ assetLists, chainList, coins: reserve }).then(
     (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
   );
 }

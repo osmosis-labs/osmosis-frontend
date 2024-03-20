@@ -1,3 +1,4 @@
+import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -5,13 +6,15 @@ import { queryAllSuperfluidAssets } from "../../../queries/osmosis/superfluid";
 
 const superfluidCache = new LRUCache<string, CacheEntry>({ max: 1 });
 
-export function getSuperfluidPoolIds() {
+export function getSuperfluidPoolIds({ chainList }: { chainList: Chain[] }) {
   return cachified({
     cache: superfluidCache,
     key: "superfluid-pool-ids",
     ttl: 1000 * 60 * 5, // 5 mins
     getFreshValue: async () => {
-      const { assets: superfluidAssets } = await queryAllSuperfluidAssets();
+      const { assets: superfluidAssets } = await queryAllSuperfluidAssets({
+        chainList,
+      });
 
       const superfluidPoolIds = new Set<string>();
       for (const asset of superfluidAssets) {

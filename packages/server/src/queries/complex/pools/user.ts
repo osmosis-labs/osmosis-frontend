@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateRawCoinsByDenom } from "@osmosis-labs/utils";
 
 import {
@@ -27,12 +28,18 @@ import { getGammShareUnderlyingCoins, makeShareCoin } from "./share";
 import { getSuperfluidPoolIds } from "./superfluid";
 
 /** Gets info for all user pools of all types (excluding cosmwasm pools). */
-export async function getUserPools(bech32Address: string) {
+export async function getUserPools(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  bech32Address: string;
+}) {
+  const { assetLists } = params;
+
   const [accountPositions, poolIncentives, superfluidPoolIds] =
     await Promise.all([
       timeout(
         () =>
-          queryAccountPositions({ bech32Address })
+          queryAccountPositions(params)
             .then(({ positions }) => positions)
             .catch(() => [] as LiquidityPosition[]),
         10_000, // 10 seconds
@@ -47,15 +54,13 @@ export async function getUserPools(bech32Address: string) {
         "getCachedPoolIncentivesMap"
       )().catch(() => new Map<string, PoolIncentives>()),
       timeout(
-        () => getSuperfluidPoolIds().catch(() => [] as string[]),
+        () => getSuperfluidPoolIds(params).catch(() => [] as string[]),
         10_000, // 10 seconds
         "getSuperfluidPoolIds"
       )().catch(() => [] as string[]),
     ]);
 
-  const { locked: lockedShares, poolIds } = await getUserShareRawCoins(
-    bech32Address
-  );
+  const { locked: lockedShares, poolIds } = await getUserShareRawCoins(params);
 
   const userUniquePoolIds = new Set(poolIds);
   accountPositions
@@ -63,7 +68,7 @@ export async function getUserPools(bech32Address: string) {
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
   const eventualPools = await timeout(
-    () => getPools({ poolIds: Array.from(userUniquePoolIds) }),
+    () => getPools({ ...params, poolIds: Array.from(userUniquePoolIds) }),
     10_000, // 10 seconds
     "getPools"
   )();
@@ -91,12 +96,13 @@ export async function getUserPools(bech32Address: string) {
           positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
         );
         const coinsToCalculateValue = await mapRawCoinToPretty(
+          assetLists,
           aggregatedRawCoins
         );
 
         userValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue(coinsToCalculateValue)
+          await calcSumCoinsValue({ ...params, coins: coinsToCalculateValue })
         );
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
@@ -139,14 +145,16 @@ export async function getUserPools(bech32Address: string) {
   );
 }
 
-export async function getUserSharePools(
-  bech32Address: string,
-  poolIds?: string[]
-) {
+export async function getUserSharePools(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  bech32Address: string;
+  poolIds?: string[];
+}) {
   const [userRawCoins, userLocks, specifiedPools] = await Promise.all([
-    getUserShareRawCoins(bech32Address),
-    getUserLocks(bech32Address),
-    poolIds ? getPools({ poolIds: poolIds }) : null,
+    getUserShareRawCoins(params),
+    getUserLocks(params),
+    params.poolIds ? getPools(params) : null,
   ]);
 
   const {
@@ -158,7 +166,7 @@ export async function getUserSharePools(
   } = userRawCoins;
 
   const userSharePools =
-    specifiedPools ?? (await getPools({ poolIds: ownedPoolIds }));
+    specifiedPools ?? (await getPools({ ...params, poolIds: ownedPoolIds }));
 
   const eventualUserSharePools = userSharePools.map(async (sharePool) => {
     // get aggregate of raw shares of each variation
@@ -195,31 +203,43 @@ export async function getUserSharePools(
     // underlying assets behind all shares
     // when catching: likely shares balance is too small for precision
     const underlyingAvailableCoins: CoinPretty[] = available
-      ? await getGammShareUnderlyingCoins(available).catch((e) =>
-          captureErrorAndReturn(e, [])
+      ? await getGammShareUnderlyingCoins({ ...params, ...available }).catch(
+          (e) => captureErrorAndReturn(e, [])
         )
       : [];
     const underlyingLockedCoins: CoinPretty[] = locked
-      ? await getGammShareUnderlyingCoins(locked).catch((e) =>
+      ? await getGammShareUnderlyingCoins({ ...params, ...locked }).catch((e) =>
           captureErrorAndReturn(e, [])
         )
       : [];
     const underlyingUnlockingCoins: CoinPretty[] = unlocking
-      ? await getGammShareUnderlyingCoins(unlocking).catch((e) =>
-          captureErrorAndReturn(e, [])
+      ? await getGammShareUnderlyingCoins({ ...params, ...unlocking }).catch(
+          (e) => captureErrorAndReturn(e, [])
         )
       : [];
     const totalCoins: CoinPretty[] = total
-      ? await getGammShareUnderlyingCoins(total).catch((e) =>
+      ? await getGammShareUnderlyingCoins({ ...params, ...total }).catch((e) =>
           captureErrorAndReturn(e, [])
         )
       : [];
 
     // value of all shares
-    const availableValue = await calcSumCoinsValue(underlyingAvailableCoins);
-    const lockedValue = await calcSumCoinsValue(underlyingLockedCoins);
-    const unlockingValue = await calcSumCoinsValue(underlyingUnlockingCoins);
-    const totalValue = await calcSumCoinsValue(totalCoins);
+    const availableValue = await calcSumCoinsValue({
+      ...params,
+      coins: underlyingAvailableCoins,
+    });
+    const lockedValue = await calcSumCoinsValue({
+      ...params,
+      coins: underlyingLockedCoins,
+    });
+    const unlockingValue = await calcSumCoinsValue({
+      ...params,
+      coins: underlyingUnlockingCoins,
+    });
+    const totalValue = await calcSumCoinsValue({
+      ...params,
+      coins: totalCoins,
+    });
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(
@@ -273,10 +293,13 @@ export async function getUserSharePools(
   return Promise.all(eventualUserSharePools);
 }
 
-async function getUserShareRawCoins(bech32Address: string) {
+async function getUserShareRawCoins(params: {
+  chainList: Chain[];
+  bech32Address: string;
+}) {
   const [userBalances, userLocks] = await Promise.all([
-    queryBalances({ bech32Address }),
-    getUserLocks(bech32Address),
+    queryBalances(params),
+    getUserLocks(params),
   ]);
 
   const available = userBalances.balances.filter(

@@ -1,3 +1,4 @@
+import { AssetLists as MockAssetLists } from "../../../../__tests__/mock-asset-lists";
 import { getAsset } from "../../../assets";
 import { makePoolFromIndexerPool } from "../indexer";
 
@@ -24,7 +25,10 @@ describe("makePoolFromIndexerPool", () => {
   });
 
   it("should return a valid pool object for a weighted pool", async () => {
-    const result = await makePoolFromIndexerPool(weightedPool as any);
+    const result = await makePoolFromIndexerPool(
+      MockAssetLists,
+      weightedPool as any
+    );
 
     if (!result) throw new Error("result is undefined");
 
@@ -35,7 +39,10 @@ describe("makePoolFromIndexerPool", () => {
   });
 
   it("should return a valid pool object for a stable pool", async () => {
-    const result = await makePoolFromIndexerPool(stablePool as any);
+    const result = await makePoolFromIndexerPool(
+      MockAssetLists,
+      stablePool as any
+    );
 
     if (!result) throw new Error("result is undefined");
 
@@ -47,7 +54,10 @@ describe("makePoolFromIndexerPool", () => {
   });
 
   it("should return a valid pool object for a concentrated liquidity pool", async () => {
-    const result = await makePoolFromIndexerPool(concentratedPool as any);
+    const result = await makePoolFromIndexerPool(
+      MockAssetLists,
+      concentratedPool as any
+    );
 
     if (!result) throw new Error("result is undefined");
 
@@ -58,7 +68,10 @@ describe("makePoolFromIndexerPool", () => {
   });
 
   it("should return a valid pool object for a cosmwasm transmuter pool", async () => {
-    const result = await makePoolFromIndexerPool(cosmwasmTransmuterPool as any);
+    const result = await makePoolFromIndexerPool(
+      MockAssetLists,
+      cosmwasmTransmuterPool as any
+    );
 
     if (!result) throw new Error("result is undefined");
 
@@ -68,7 +81,10 @@ describe("makePoolFromIndexerPool", () => {
   });
 
   it("should return a valid pool object for a cosmwasm pool", async () => {
-    const result = await makePoolFromIndexerPool(cosmwasmPool as any);
+    const result = await makePoolFromIndexerPool(
+      MockAssetLists,
+      cosmwasmPool as any
+    );
 
     if (!result) throw new Error("result is undefined");
 

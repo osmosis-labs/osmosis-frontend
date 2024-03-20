@@ -1,3 +1,4 @@
+import { Chain } from "@osmosis-labs/types";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 
@@ -14,10 +15,11 @@ export type UserLock = {
   }[];
 };
 
-export async function getUserLocks(bech32Address: string): Promise<UserLock[]> {
-  const { locks: userLocks } = await queryAccountLockedLongerDuration({
-    bech32Address,
-  });
+export async function getUserLocks(params: {
+  chainList: Chain[];
+  bech32Address: string;
+}): Promise<UserLock[]> {
+  const { locks: userLocks } = await queryAccountLockedLongerDuration(params);
 
   return userLocks.map((lock) => ({
     ID: lock.ID,

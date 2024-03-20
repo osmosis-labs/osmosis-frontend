@@ -3,6 +3,8 @@ import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { type AppRouter, appRouter } from "~/server/api/root";
 import {
   constructEdgeRouterKey,
@@ -55,7 +57,11 @@ export const api = createTRPCNext<AppRouter>({
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
               `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
             )(runtime),
-            local: localLink({ router: appRouter })(runtime),
+            local: localLink({
+              router: appRouter,
+              assetLists: AssetLists,
+              chainList: ChainList,
+            })(runtime),
 
             /**
              * Create a separate links for specific edge server routers since their queries are too expensive

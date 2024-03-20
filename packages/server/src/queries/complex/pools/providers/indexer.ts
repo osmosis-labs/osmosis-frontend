@@ -13,6 +13,7 @@ import {
   StablePoolRaw,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -37,35 +38,39 @@ const smallQueriesPoolCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-function getNumPools() {
+function getNumPools(chainList: Chain[]) {
   return cachified({
     cache: smallQueriesPoolCache,
     key: "num-pools",
     ttl: 1000 * 60 * 5, // 5 minutes
-    getFreshValue: () => queryNumPools(),
+    getFreshValue: () => queryNumPools({ chainList }),
   });
 }
-function getPoolmanagerParams() {
+function getPoolmanagerParams(chainList: Chain[]) {
   return cachified({
     cache: smallQueriesPoolCache,
     key: "pool-manager-params",
     ttl: 1000 * 60 * 5, // 5 minutes
-    getFreshValue: () => queryPoolmanagerParams(),
+    getFreshValue: () => queryPoolmanagerParams({ chainList }),
   });
 }
 
 /** Get pools from indexer that are listed in asset list. */
 export async function getPoolsFromIndexer({
+  assetLists,
+  chainList,
   poolIds,
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   poolIds?: string[];
-} = {}): Promise<Pool[]> {
+}): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
     key: "indexer-pools",
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
-      const numPools = await getNumPools();
+      const numPools = await getNumPools(chainList);
       const { pools } = await queryFilteredPools(
         {
           min_liquidity: 0,
@@ -74,9 +79,11 @@ export async function getPoolsFromIndexer({
         },
         { offset: 0, limit: Number(numPools.num_pools) }
       );
-      return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
-        (pool): pool is Pool => !!pool
-      );
+      return (
+        await Promise.all(
+          pools.map((pool) => makePoolFromIndexerPool(assetLists, pool))
+        )
+      ).filter((pool): pool is Pool => !!pool);
     },
   }).then((pools) =>
     pools.filter((pool): pool is Pool =>
@@ -87,12 +94,14 @@ export async function getPoolsFromIndexer({
 
 /** @deprecated Fetches pools from indexer. */
 export async function queryPaginatedPools({
+  chainList,
   page,
   limit,
   minimumLiquidity,
   poolId: poolIdParam,
   poolIds: poolIdsParam,
 }: {
+  chainList: Chain[];
   page?: number;
   limit?: number;
   minimumLiquidity?: number;
@@ -110,6 +119,7 @@ export async function queryPaginatedPools({
   // This is just a placeholder, replace it with your actual data fetching logic
   const { pools: allPools, totalNumberOfPools } = await fetchAndProcessAllPools(
     {
+      chainList,
       minimumLiquidity,
     }
   );
@@ -160,15 +170,19 @@ const allPoolsLruCache = new LRUCache<string, CacheEntry>({
 });
 
 async function fetchAndProcessAllPools({
+  chainList,
   minimumLiquidity = 0,
+}: {
+  chainList: Chain[];
+  minimumLiquidity?: number;
 }): Promise<{ pools: PoolRaw[]; totalNumberOfPools: string }> {
   return cachified({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     ttl: 1000 * 30, // 30 seconds
     async getFreshValue() {
-      const poolManagerParamsPromise = getPoolmanagerParams();
-      const numPoolsPromise = getNumPools();
+      const poolManagerParamsPromise = getPoolmanagerParams(chainList);
+      const numPoolsPromise = getNumPools(chainList);
 
       const [poolManagerParams, numPools] = await Promise.all([
         poolManagerParamsPromise,
@@ -360,6 +374,7 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
 }
 
 export async function makePoolFromIndexerPool(
+  assetLists: AssetList[],
   filteredPool: FilteredPoolsResponse["pools"][number]
 ): Promise<Pool | undefined> {
   // deny pools containing tokens with gamm denoms
@@ -398,8 +413,12 @@ export async function makePoolFromIndexerPool(
     const token0 = filteredPool.pool_tokens.asset0.denom;
     const token1 = filteredPool.pool_tokens.asset1.denom;
 
-    const token0Asset = await getAsset({ anyDenom: token0 }).catch(() => null);
-    const token1Asset = await getAsset({ anyDenom: token1 }).catch(() => null);
+    const token0Asset = await getAsset({ assetLists, anyDenom: token0 }).catch(
+      () => null
+    );
+    const token1Asset = await getAsset({ assetLists, anyDenom: token1 }).catch(
+      () => null
+    );
 
     if (!token0Asset || !token1Asset) return;
 
@@ -432,6 +451,7 @@ export async function makePoolFromIndexerPool(
     Array.isArray(filteredPool.pool_tokens)
   ) {
     const reserveCoins = await getReservesFromPoolTokens(
+      assetLists,
       filteredPool.pool_tokens
     );
 
@@ -470,6 +490,7 @@ export async function makePoolFromIndexerPool(
     Array.isArray(filteredPool.pool_tokens)
   ) {
     const reserveCoins = await getReservesFromPoolTokens(
+      assetLists,
       filteredPool.pool_tokens
     );
 
@@ -499,6 +520,7 @@ export async function makePoolFromIndexerPool(
     Array.isArray(filteredPool.pool_tokens)
   ) {
     const reserveCoins = await getReservesFromPoolTokens(
+      assetLists,
       filteredPool.pool_tokens
     );
 
@@ -527,10 +549,15 @@ export async function makePoolFromIndexerPool(
 }
 
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
-async function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
+async function getReservesFromPoolTokens(
+  assetLists: AssetList[],
+  poolTokens: PoolToken[]
+) {
   const coins = await Promise.all(
     poolTokens.map(makeCoinFromToken).map(async (coin) => {
-      const asset = await getAsset({ anyDenom: coin.denom }).catch(() => null);
+      const asset = await getAsset({ assetLists, anyDenom: coin.denom }).catch(
+        () => null
+      );
       if (!asset) return;
       return new CoinPretty(asset, coin.amount);
     })

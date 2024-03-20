@@ -1,4 +1,5 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -180,13 +181,15 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
 
 const incentivesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-export function getLockableDurations() {
+export function getLockableDurations({ chainList }: { chainList: Chain[] }) {
   return cachified({
     cache: incentivesCache,
     key: "lockable-durations",
     ttl: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
-      const { lockable_durations } = await queryLockableDurations();
+      const { lockable_durations } = await queryLockableDurations({
+        chainList,
+      });
 
       return lockable_durations
         .map((durationStr: string) => {
@@ -200,13 +203,15 @@ export function getLockableDurations() {
 }
 
 /** Gets internally incentivized pools with gauges that distribute minted staking tokens. */
-export function getIncentivizedPools() {
+export function getIncentivizedPools({ chainList }: { chainList: Chain[] }) {
   return cachified({
     cache: incentivesCache,
     key: "incentivized-pools",
     ttl: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
-      const { incentivized_pools } = await queryIncentivizedPools();
+      const { incentivized_pools } = await queryIncentivizedPools({
+        chainList,
+      });
 
       return incentivized_pools.map((pool) => ({
         pool_id: pool.pool_id,
@@ -220,14 +225,14 @@ export function getIncentivizedPools() {
 }
 
 /** Gets gauges and filters those that are active. */
-export function getActiveGauges() {
+export function getActiveGauges({ chainList }: { chainList: Chain[] }) {
   return cachified({
     cache: incentivesCache,
     key: "active-external-gauges",
     ttl: 1000 * 60 * 10, // 10 mins
     getFreshValue: async () => {
-      const { data } = await queryGauges();
-      const epochs = await getEpochs();
+      const { data } = await queryGauges({ chainList });
+      const epochs = await getEpochs({ chainList });
 
       return data
         .filter(

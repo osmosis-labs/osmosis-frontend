@@ -3,10 +3,10 @@ import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
+import { AssetList } from "@osmosis-labs/types";
 import { z } from "zod";
 
-import { ChainList } from "../codegen/generated/chain-list";
-import { SIDECAR_BASE_URL } from "../env";
+import { SIDECAR_BASE_URL, TFM_BASE_URL } from "../env";
 import {
   calcAssetValue,
   getAsset,
@@ -21,52 +21,8 @@ import { TfmRemoteRouter } from "../queries/tfm/router";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { captureErrorAndReturn } from "../utils/error";
 
-const osmosisChainId = ChainList[0].chain_id;
-
-const tfmBaseUrl = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
-
-if (!tfmBaseUrl) console.error("TFM base url not set in env");
-
-const sidecarBaseUrl = SIDECAR_BASE_URL;
-
-if (!sidecarBaseUrl) console.error("Sidecar base url not set in env");
-
 const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
-
-const routers: {
-  name: RouterKey;
-  router: TokenOutGivenInRouter;
-}[] = [
-  {
-    name: "tfm",
-    router: new TfmRemoteRouter(
-      osmosisChainId,
-      tfmBaseUrl ?? "https://api.tfm.com",
-      (coinMinimalDenom, amount) =>
-        calcAssetValue({ anyDenom: coinMinimalDenom, amount })
-    ),
-  },
-  {
-    name: "sidecar",
-    router: new OsmosisSidecarRemoteRouter(
-      sidecarBaseUrl ?? "https://sqs.stage.osmosis.zone"
-    ),
-  },
-  {
-    name: "legacy",
-    router: {
-      routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
-        (
-          await routeTokenOutGivenIn({
-            token: tokenIn,
-            tokenOutDenom,
-            forcePoolId,
-          })
-        ).quote,
-    } as TokenOutGivenInRouter,
-  },
-];
 
 export const swapRouter = createTRPCRouter({
   routeTokenOutGivenIn: publicProcedure
@@ -88,7 +44,45 @@ export const swapRouter = createTRPCRouter({
           preferredRouter,
           forcePoolId,
         },
+        ctx,
       }) => {
+        const osmosisChainId = ctx.chainList[0].chain_id;
+
+        const routers: {
+          name: RouterKey;
+          router: TokenOutGivenInRouter;
+        }[] = [
+          {
+            name: "tfm",
+            router: new TfmRemoteRouter(
+              osmosisChainId,
+              TFM_BASE_URL ?? "https://api.tfm.com",
+              (coinMinimalDenom, amount) =>
+                calcAssetValue({ ...ctx, anyDenom: coinMinimalDenom, amount })
+            ),
+          },
+          {
+            name: "sidecar",
+            router: new OsmosisSidecarRemoteRouter(
+              SIDECAR_BASE_URL ?? "https://sqs.stage.osmosis.zone"
+            ),
+          },
+          {
+            name: "legacy",
+            router: {
+              routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
+                (
+                  await routeTokenOutGivenIn({
+                    ...ctx,
+                    token: tokenIn,
+                    tokenOutDenom,
+                    forcePoolId,
+                  })
+                ).quote,
+            } as TokenOutGivenInRouter,
+          },
+        ];
+
         const { name, router } = routers.find(
           ({ name }) => name === preferredRouter
         )!;
@@ -105,20 +99,26 @@ export const swapRouter = createTRPCRouter({
         );
         const timeMs = Date.now() - startTime;
 
-        const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
+        const tokenOutAsset = await getAsset({
+          ...ctx,
+          anyDenom: tokenOutDenom,
+        });
 
         // calculate fiat value of amounts
         // get fiat value
         const tokenInFeeAmountValue = quote.tokenInFeeAmount
           ? await calcAssetValue({
+              ...ctx,
               anyDenom: tokenInDenom,
               amount: quote.tokenInFeeAmount,
             }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined;
         const tokenOutPrice = await getAssetPrice({
+          ...ctx,
           asset: { coinMinimalDenom: tokenOutDenom },
         }).catch((e) => captureErrorAndReturn(e, undefined));
         const tokenOutValue = await calcAssetValue({
+          ...ctx,
           anyDenom: tokenOutDenom,
           amount: quote.amount,
         }).catch((e) => captureErrorAndReturn(e, undefined));
@@ -134,7 +134,7 @@ export const swapRouter = createTRPCRouter({
 
         return {
           ...quote,
-          split: await makeDisplayableSplit(quote.split),
+          split: await makeDisplayableSplit(quote.split, ctx.assetLists),
           // supplementary data with display types
           name,
           timeMs,
@@ -152,7 +152,10 @@ export const swapRouter = createTRPCRouter({
 });
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
-async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
+async function makeDisplayableSplit(
+  split: SplitTokenInQuote["split"],
+  assetLists: AssetList[]
+) {
   return await Promise.all(
     split.map(async (existingSplit) => {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
@@ -165,9 +168,11 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
           }
 
           const inAsset = await getAsset({
+            assetLists,
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
           const outAsset = await getAsset({
+            assetLists,
             anyDenom: tokenOutDenoms[index],
           });
 

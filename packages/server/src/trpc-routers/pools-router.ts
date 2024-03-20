@@ -32,39 +32,36 @@ const marketIncentivePoolsSortKeys = [
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
 
-/**
- * This router is run on another edge api route since these queries are too expensive
- * and are slowing the other queries down because of JS single threaded nature. Client calls are still
- * the same. The separation is strictly on the server and automatically handled on trpc link.
- *
- * @see /web/utils/trpc.ts
- */
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) => getPool({ poolId })),
+    .query(({ input: { poolId }, ctx }) => getPool({ ...ctx, poolId })),
   getSharePool: publicProcedure
     .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) => getSharePool(poolId)),
+    .query(({ input: { poolId }, ctx }) => getSharePool({ ...ctx, poolId })),
   getUserPools: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(async ({ input: { userOsmoAddress } }) =>
-      getUserPools(userOsmoAddress).then((pools) => sort(pools, "userValue"))
+    .query(async ({ input: { userOsmoAddress }, ctx }) =>
+      getUserPools({ ...ctx, bech32Address: userOsmoAddress }).then((pools) =>
+        sort(pools, "userValue")
+      )
     ),
   getUserSharePool: publicProcedure
     .input(
       z.object({ poolId: z.string() }).merge(UserOsmoAddressSchema.required())
     )
-    .query(async ({ input: { poolId, userOsmoAddress } }) =>
-      getUserSharePools(userOsmoAddress, [poolId]).then(
-        (pools) => pools[0] ?? null
-      )
+    .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
+      getUserSharePools({
+        ...ctx,
+        bech32Address: userOsmoAddress,
+        poolIds: [poolId],
+      }).then((pools) => pools[0] ?? null)
     ),
   getUserSharePools: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(async ({ input: { userOsmoAddress } }) =>
-      getUserSharePools(userOsmoAddress).then((pools) =>
-        sort(pools, "totalValue")
+    .query(async ({ input: { userOsmoAddress }, ctx }) =>
+      getUserSharePools({ ...ctx, bech32Address: userOsmoAddress }).then(
+        (pools) => sort(pools, "totalValue")
       )
     ),
   getSharePoolBondDurations: publicProcedure
@@ -75,8 +72,12 @@ export const poolsRouter = createTRPCRouter({
         })
         .merge(UserOsmoAddressSchema)
     )
-    .query(async ({ input: { poolId, userOsmoAddress } }) =>
-      getSharePoolBondDurations(poolId, userOsmoAddress)
+    .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
+      getSharePoolBondDurations({
+        ...ctx,
+        poolId,
+        bech32Address: userOsmoAddress,
+      })
     ),
   getMarketIncentivePools: publicProcedure
     .input(
@@ -99,10 +100,12 @@ export const poolsRouter = createTRPCRouter({
           cursor,
           limit,
         },
+        ctx,
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
             const poolsPromise = getPools({
+              ...ctx,
               search,
               minLiquidityUsd,
               types,
@@ -158,7 +161,9 @@ export const poolsRouter = createTRPCRouter({
           limit,
         })
     ),
-  getSuperfluidPoolIds: publicProcedure.query(getSuperfluidPoolIds),
+  getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
+    getSuperfluidPoolIds(ctx)
+  ),
   getPoolMarketMetrics: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>

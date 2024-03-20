@@ -1,4 +1,5 @@
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 
@@ -63,11 +64,17 @@ export type BondDuration = {
   } & UserDurationSuperfluidDelegation;
 };
 
-export async function getSharePoolBondDurations(
-  poolId: string,
-  bech32Address?: string
-): Promise<BondDuration[]> {
-  const activeGaugesPromise = getActiveGauges().then((activeGauges) =>
+export async function getSharePoolBondDurations({
+  poolId,
+  bech32Address,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  poolId: string;
+  bech32Address?: string;
+}): Promise<BondDuration[]> {
+  const activeGaugesPromise = getActiveGauges(params).then((activeGauges) =>
     activeGauges.filter(
       (gauge) =>
         gauge.distribute_to.lock_query_type === "ByDuration" &&
@@ -77,17 +84,17 @@ export async function getSharePoolBondDurations(
   const poolIncentivesPromise = getCachedPoolIncentivesMap().then((map) =>
     map.get(poolId)
   );
-  const isSuperfluidPromise = getSuperfluidPoolIds().then((ids) =>
+  const isSuperfluidPromise = getSuperfluidPoolIds(params).then((ids) =>
     ids.includes(poolId)
   );
-  const longestDurationPromise = getLockableDurations().then(
+  const longestDurationPromise = getLockableDurations(params).then(
     (durations) => durations[durations.length - 1]
   );
-  const internalIncentivesPromise = getIncentivizedPools().then(
+  const internalIncentivesPromise = getIncentivizedPools(params).then(
     (incentivizedPools) => incentivizedPools.find((p) => p.pool_id === poolId)
   );
   const userPoolLocksPromise = bech32Address
-    ? getUserLocks(bech32Address).then((locks) =>
+    ? getUserLocks({ ...params, bech32Address }).then((locks) =>
         locks.filter((userLock) =>
           userLock.coins.some(
             (coin) => getShareDenomPoolId(coin.denom) === poolId
@@ -171,10 +178,14 @@ export async function getSharePoolBondDurations(
         }
         let userLockedShareValue = new PricePretty(DEFAULT_VS_CURRENCY, 0);
         if (userShares.toDec().isPositive()) {
-          const underlyingCoins = await getGammShareUnderlyingCoins(
-            userShares.toCoin()
-          ).catch((e) => captureErrorAndReturn(e, []));
-          const userSharesValue = await calcSumCoinsValue(underlyingCoins);
+          const underlyingCoins = await getGammShareUnderlyingCoins({
+            ...params,
+            ...userShares.toCoin(),
+          }).catch((e) => captureErrorAndReturn(e, []));
+          const userSharesValue = await calcSumCoinsValue({
+            ...params,
+            coins: underlyingCoins,
+          });
           if (userSharesValue) {
             userLockedShareValue = new PricePretty(
               DEFAULT_VS_CURRENCY,
@@ -241,7 +252,7 @@ export async function getSharePoolBondDurations(
           aggregateApr = aggregateApr.add(superfluidApr);
 
           const userDelegations = bech32Address
-            ? await querySuperfluidDelegations({ bech32Address })
+            ? await querySuperfluidDelegations({ ...params, bech32Address })
             : undefined;
           const userPoolDelegation =
             userDelegations?.superfluid_delegation_records.find(
@@ -250,7 +261,7 @@ export async function getSharePoolBondDurations(
             );
           const userUndelegations =
             bech32Address && !userPoolDelegation
-              ? await querySuperfluidUnelegations({ bech32Address })
+              ? await querySuperfluidUnelegations({ ...params, bech32Address })
               : undefined;
           const userPoolUndelegation =
             userUndelegations?.superfluid_delegation_records.find(
@@ -272,6 +283,7 @@ export async function getSharePoolBondDurations(
               userPoolUndelegation?.validator_address;
             const validatorInfo = validatorAddress
               ? await getValidatorInfo({
+                  ...params,
                   validatorBech32Address: validatorAddress,
                 })
               : undefined;
@@ -309,7 +321,7 @@ export async function getSharePoolBondDurations(
         );
         const syntheticLocks = await Promise.all(
           queryableLockIds.map((lockId) =>
-            querySyntheticLockupsByLockId({ lockId })
+            querySyntheticLockupsByLockId({ ...params, lockId })
           )
         );
         syntheticLocks.forEach(({ synthetic_locks }) => {

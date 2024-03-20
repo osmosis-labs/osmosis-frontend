@@ -1,7 +1,8 @@
 import { PoolRaw } from "@osmosis-labs/pools/build/types";
+import { queryPaginatedPools } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 
-import { queryPaginatedPools } from "../../server/queries/complex/pools/providers/indexer";
+import { ChainList } from "~/config/generated/chain-list";
 
 type Response = {
   pools: PoolRaw[];
@@ -26,6 +27,7 @@ export default async function pools(req: Request) {
 
   const { status, pools, totalNumberOfPools, pageInfo } =
     await queryPaginatedPools({
+      chainList: ChainList,
       page,
       limit,
       minimumLiquidity,

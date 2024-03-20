@@ -41,14 +41,20 @@ export const assetsRouter = createTRPCRouter({
         })
         .merge(UserOsmoAddressSchema)
     )
-    .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = await getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
 
-      return await getUserAssetCoin({
-        asset,
-        userOsmoAddress,
-      });
-    }),
+        return await getUserAssetCoin({
+          ...ctx,
+          asset,
+          userOsmoAddress,
+        });
+      }
+    ),
   getUserAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(
@@ -61,10 +67,12 @@ export const assetsRouter = createTRPCRouter({
           onlyVerified,
           includePreview,
         },
+        ctx,
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
             mapGetUserAssetCoins({
+              ...ctx,
               search,
               userOsmoAddress,
               onlyVerified,
@@ -87,8 +95,9 @@ export const assetsRouter = createTRPCRouter({
         coinMinimalDenom: z.string(),
       })
     )
-    .query(async ({ input: { coinMinimalDenom } }) => {
+    .query(async ({ input: { coinMinimalDenom }, ctx }) => {
       const price = await getAssetPrice({
+        ...ctx,
         asset: { coinMinimalDenom },
       });
 
@@ -100,10 +109,11 @@ export const assetsRouter = createTRPCRouter({
         coinMinimalDenom: z.string(),
       })
     )
-    .query(async ({ input: { coinMinimalDenom } }) => {
+    .query(async ({ input: { coinMinimalDenom }, ctx }) => {
       const [asset, price] = await Promise.all([
-        getAsset({ anyDenom: coinMinimalDenom }),
+        getAsset({ ...ctx, anyDenom: coinMinimalDenom }),
         getAssetPrice({
+          ...ctx,
           asset: { coinMinimalDenom },
         }),
       ]);
@@ -121,19 +131,29 @@ export const assetsRouter = createTRPCRouter({
         })
         .merge(UserOsmoAddressSchema)
     )
-    .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = await getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
 
-      const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
-      const userMarketAsset = await getMarketAsset({
-        asset: userAsset,
-      });
+        const userAsset = await getUserAssetCoin({
+          ...ctx,
+          asset,
+          userOsmoAddress,
+        });
+        const userMarketAsset = await getMarketAsset({
+          ...ctx,
+          asset: userAsset,
+        });
 
-      return {
-        ...userAsset,
-        ...userMarketAsset,
-      };
-    }),
+        return {
+          ...userAsset,
+          ...userMarketAsset,
+        };
+      }
+    ),
   getUserMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
@@ -164,6 +184,7 @@ export const assetsRouter = createTRPCRouter({
           limit,
           includePreview,
         },
+        ctx,
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
@@ -171,12 +192,14 @@ export const assetsRouter = createTRPCRouter({
 
             let assets;
             assets = await mapGetMarketAssets({
+              ...ctx,
               search,
               onlyVerified,
               includePreview,
             });
 
             assets = await mapGetUserAssetCoins({
+              ...ctx,
               assets,
               userOsmoAddress,
               includePreview,
@@ -255,9 +278,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssetsBreakdown: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input: userOsmoAddress }) =>
-      getUserAssetsBreakdown(userOsmoAddress)
-    ),
+    .query(({ input, ctx }) => getUserAssetsBreakdown({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

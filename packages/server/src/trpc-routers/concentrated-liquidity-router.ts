@@ -20,8 +20,9 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         })
         .merge(UserOsmoAddressSchema.required())
     )
-    .query(({ input: { userOsmoAddress, sortDirection, forPoolId } }) =>
+    .query(({ input: { userOsmoAddress, sortDirection, forPoolId }, ctx }) =>
       mapGetUserPositions({
+        ...ctx,
         userOsmoAddress,
         forPoolId,
       }).then((positions) => sort(positions, "joinTime", sortDirection))
@@ -34,11 +35,12 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         })
         .merge(UserOsmoAddressSchema.required())
     )
-    .query(async ({ input: { positionId, userOsmoAddress } }) => {
-      const { position } = await queryPositionById({ id: positionId });
+    .query(async ({ input: { positionId, userOsmoAddress }, ctx }) => {
+      const { position } = await queryPositionById({ ...ctx, id: positionId });
 
       return (
         await mapGetUserPositionDetails({
+          ...ctx,
           positions: [position],
           userOsmoAddress,
         })
@@ -50,7 +52,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         positionId: z.string(),
       })
     )
-    .query(({ input: { positionId } }) =>
-      getPositionHistoricalPerformance({ positionId })
+    .query(({ input: { positionId }, ctx }) =>
+      getPositionHistoricalPerformance({ ...ctx, positionId })
     ),
 });

@@ -1,8 +1,7 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
 
-import { AssetLists } from "../../../codegen/generated/asset-lists";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { SortDirection } from "../../../utils/sort";
 import { queryBalances } from "../../cosmos";
@@ -28,18 +27,21 @@ export type MaybeUserAssetCoin = Partial<{
 }>;
 
 export async function getUserAssetCoin<TAsset extends Asset>({
-  assetList = AssetLists,
+  assetLists,
+  chainList,
   asset,
   userOsmoAddress,
 }: {
-  assetList?: AssetList[];
+  assetLists: AssetList[];
+  chainList: Chain[];
   asset: TAsset;
   userOsmoAddress?: string;
 }): Promise<TAsset & MaybeUserAssetCoin> {
   if (!userOsmoAddress) return asset;
 
   const userAssets = await mapGetUserAssetCoins({
-    assetList,
+    assetLists,
+    chainList,
     assets: [asset],
     userOsmoAddress,
     includePreview: true,
@@ -50,21 +52,24 @@ export async function getUserAssetCoin<TAsset extends Asset>({
 /** Maps user coin data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
-export async function mapGetUserAssetCoins<TAsset extends Asset>({
-  assetList = AssetLists,
-  ...params
-}: {
-  assetList?: AssetList[];
-  assets?: TAsset[];
-  userOsmoAddress?: string;
-  sortFiatValueDirection?: SortDirection;
-} & AssetFilter = {}): Promise<(TAsset & MaybeUserAssetCoin)[]> {
+export async function mapGetUserAssetCoins<TAsset extends Asset>(
+  params: {
+    assetLists: AssetList[];
+    chainList: Chain[];
+    assets?: TAsset[];
+    userOsmoAddress?: string;
+    sortFiatValueDirection?: SortDirection;
+  } & AssetFilter
+): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
-  if (!assets) assets = (await getAssets({ assetList, ...params })) as TAsset[];
+  if (!assets) assets = (await getAssets({ ...params })) as TAsset[];
   if (!userOsmoAddress) return assets;
 
-  const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
+  const { balances } = await queryBalances({
+    ...params,
+    bech32Address: userOsmoAddress,
+  });
 
   const eventualUserAssets = assets
     .map(async (asset) => {
@@ -75,6 +80,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
 
       // is user asset, include user data
       const usdValue = await calcAssetValue({
+        ...params,
         anyDenom: asset.coinMinimalDenom,
         amount: balance.amount,
       }).catch((e) => captureErrorAndReturn(e, undefined));
@@ -122,7 +128,9 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
 /** Lists of all of a user's underlying coins that are listed in asset list, along with their total fiat values.
  *  Broken down by delegated/staked, pooled (CL and GAMM shares), and available assets (not CL assets).
  *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
-export async function getUserAssetsBreakdown(address: {
+export async function getUserAssetsBreakdown(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   userOsmoAddress: string;
 }): Promise<{
   delegated: CoinPretty;
@@ -139,10 +147,10 @@ export async function getUserAssetsBreakdown(address: {
 }> {
   // Use Promise.all to send concurrent requests.
   const coins = await Promise.all([
-    getUserCoinsFromBank(address),
-    getUserUnderlyingCoinsFromClPositions(address),
-    getUserShareUnderlyingCoinsFromLocks(address),
-    getUserTotalDelegatedCoin(address),
+    getUserCoinsFromBank(params),
+    getUserUnderlyingCoinsFromClPositions(params),
+    getUserShareUnderlyingCoinsFromLocks(params),
+    getUserTotalDelegatedCoin(params),
   ]);
 
   const { underlyingGammShareCoins, available } = coins[0];
@@ -156,10 +164,12 @@ export async function getUserAssetsBreakdown(address: {
 
   const [delegatedValue, pooledValue, availableValue, aggregatedValue] =
     await Promise.all([
-      calcCoinValue(delegatedCoin).catch((e) => captureErrorAndReturn(e, 0)),
-      calcSumCoinsValue(pooledCoins),
-      calcSumCoinsValue(available),
-      calcSumCoinsValue(allCoins),
+      calcCoinValue({ ...params, coin: delegatedCoin }).catch((e) =>
+        captureErrorAndReturn(e, 0)
+      ),
+      calcSumCoinsValue({ ...params, coins: pooledCoins }),
+      calcSumCoinsValue({ ...params, coins: available }),
+      calcSumCoinsValue({ ...params, coins: allCoins }),
     ]);
 
   return {
@@ -180,16 +190,19 @@ export async function getUserAssetsBreakdown(address: {
 /** Lists all of a user's underlying assets in bank module.
  *  Only includes assets in asset list.
  *  Returns breakdown by underlying assets in GAMM pools as well as available assets. */
-export async function getUserCoinsFromBank({
-  userOsmoAddress,
-}: {
+export async function getUserCoinsFromBank(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   userOsmoAddress: string;
 }): Promise<{
   underlyingGammShareCoins: CoinPretty[];
   available: CoinPretty[];
 }> {
   // get bank balances
-  const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
+  const { balances } = await queryBalances({
+    ...params,
+    bech32Address: params.userOsmoAddress,
+  });
 
   const eventualShareCoins: Promise<CoinPretty[] | undefined>[] = [];
   const eventualAvailableCoins: Promise<CoinPretty | undefined>[] = [];
@@ -199,13 +212,14 @@ export async function getUserCoinsFromBank({
     if (denom.includes("gamm")) {
       eventualShareCoins.push(
         getGammShareUnderlyingCoins({
+          ...params,
           denom,
           amount,
         }).catch((e) => captureErrorAndReturn(e, undefined))
       );
     } else {
       eventualAvailableCoins.push(
-        getAsset({ anyDenom: denom })
+        getAsset({ ...params, anyDenom: denom })
           .then((asset) => new CoinPretty(asset, amount))
           .catch((e) => captureErrorAndReturn(e, undefined))
       );
@@ -227,19 +241,20 @@ export async function getUserCoinsFromBank({
 
 /** Lists all of a user's assets contained within locks. Locked or unlocking.
  *  NOTE: only considers locked GAMM shares. */
-export async function getUserShareUnderlyingCoinsFromLocks({
-  userOsmoAddress,
-}: {
+export async function getUserShareUnderlyingCoinsFromLocks(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   userOsmoAddress: string;
 }): Promise<CoinPretty[]> {
   const lockedCoins = await queryAccountLockedCoins({
-    bech32Address: userOsmoAddress,
+    ...params,
+    bech32Address: params.userOsmoAddress,
   });
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
     if (coin.denom.includes("gamm")) {
-      return await getGammShareUnderlyingCoins(coin).catch((e) =>
-        captureErrorAndReturn(e, [])
+      return await getGammShareUnderlyingCoins({ ...params, ...coin }).catch(
+        (e) => captureErrorAndReturn(e, [])
       );
     }
     return [];

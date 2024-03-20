@@ -5,7 +5,6 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { AssetLists } from "../../../codegen/generated/asset-lists";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
@@ -39,14 +38,14 @@ const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
 export async function getAsset({
-  assetList = AssetLists,
+  assetLists,
   anyDenom,
 }: {
-  assetList?: AssetList[];
+  assetLists: AssetList[];
   anyDenom: string;
 }): Promise<Asset> {
   const assets = await getAssets({
-    assetList,
+    assetLists,
     findMinDenomOrSymbol: anyDenom,
     includePreview: true,
   });
@@ -66,24 +65,22 @@ const minimalAssetsCache = new LRUCache<string, CacheEntry>(
  *  Instead, compose this function with other functions to get the data you need.
  *  The goal is to keep this function simple and lightweight. */
 export async function getAssets({
-  assetList = AssetLists,
+  assetLists,
   ...params
 }: {
-  assetList?: AssetList[];
+  assetLists: AssetList[];
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
-} & AssetFilter = {}): Promise<Asset[]> {
+} & AssetFilter): Promise<Asset[]> {
   // if it's the default asset list, cache it
-  if (assetList === AssetLists) {
-    return cachified({
-      cache: minimalAssetsCache,
-      key: JSON.stringify(params),
-      getFreshValue: () => filterAssetList(assetList, params),
-    });
-  }
+  return cachified({
+    cache: minimalAssetsCache,
+    key: JSON.stringify(params),
+    getFreshValue: () => filterAssetList(assetLists, params),
+  });
 
   // otherwise process the given novel asset list
-  return filterAssetList(assetList, params);
+  // return filterAssetList(assetLists, params);
 }
 
 /**
@@ -95,6 +92,7 @@ export async function getAssets({
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
  */
 export async function mapRawCoinToPretty(
+  assetLists: AssetList[],
   rawAssets: {
     amount: ConstructorParameters<typeof CoinPretty>[1];
     denom: string;
@@ -104,6 +102,7 @@ export async function mapRawCoinToPretty(
   return await Promise.all(
     rawAssets.map(({ amount, denom }) =>
       getAsset({
+        assetLists,
         anyDenom: denom,
       })
         .then((asset) => new CoinPretty(asset, amount))
@@ -114,15 +113,15 @@ export async function mapRawCoinToPretty(
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
 function filterAssetList(
-  assetList: AssetList[],
+  assetLists: AssetList[],
   params: {
     findMinDenomOrSymbol?: string;
-  } & AssetFilter = {}
+  } & AssetFilter
 ): Asset[] {
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 
-  const listedAssets = assetList
+  const listedAssets = assetLists
     .flatMap(({ assets }) => assets)
     .filter((asset) => params.includePreview || !asset.preview);
 

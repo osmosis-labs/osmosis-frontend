@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { Asset } from "@osmosis-labs/types";
+import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -15,8 +15,12 @@ const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 /** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to querying CoinGecko if not available.
  *  @throws if there's an issue getting the price. */
-export function getPriceFromSidecar(asset: Asset) {
-  return getPriceBatched(asset);
+export function getPriceFromSidecar(
+  assetLists: AssetList[],
+  chainList: Chain[],
+  asset: Asset
+) {
+  return getPriceBatched(assetLists, chainList, asset);
 }
 
 /** Prevent long-running batch loaders as recommended by `DataLoader` docs. */
@@ -58,7 +62,11 @@ function getBatchLoader() {
   });
 }
 
-export function getPriceBatched(asset: Asset) {
+export function getPriceBatched(
+  assetLists: AssetList[],
+  chainList: Chain[],
+  asset: Asset
+) {
   return cachified({
     cache: sidecarCache,
     key: `sidecar-price-${asset.coinMinimalDenom}`,
@@ -69,7 +77,7 @@ export function getPriceBatched(asset: Asset) {
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
           .catch(() => {
-            return getPriceFromPools(asset);
+            return getPriceFromPools(assetLists, chainList, asset);
           })
       ),
   });

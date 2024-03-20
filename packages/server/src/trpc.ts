@@ -1,3 +1,4 @@
+import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   httpBatchLink,
   httpLink,
@@ -15,66 +16,12 @@ import { Errors } from "./utils/errors";
 import { superjson } from "./utils/superjson";
 
 /**
- * Creates a local link for tRPC operations.
- * This function is used to create a custom TRPCLink that intercepts operations and
- * handles them locally using the provided router, instead of sending them over the network.
+ * Pass asset lists and chain list to be used cas context in backend service.
  */
-export function localLink<TRouter extends AnyRouter>({
-  router,
-}: {
-  router: TRouter;
-}): TRPCLink<TRouter> {
-  return () =>
-    ({ op }) =>
-      observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
-        (observer) => {
-          async function execute() {
-            const caller = router.createCaller({});
-            try {
-              // Attempt to execute the operation using the router's caller.
-              const data = await (
-                caller[op.path] as (input: unknown) => unknown
-              )(op.input);
-              // If successful, notify the observer with the result.
-              observer.next({ result: { data, type: "data" } });
-              observer.complete();
-            } catch (err) {
-              // If an error occurs, convert it to a TRPCClientError and notify the observer.
-              observer.error(TRPCClientError.from(err as Error));
-            }
-          }
-
-          // Execute the operation asynchronously.
-          void execute();
-        }
-      );
-}
-
-/** Provides ability to skip batching given a new custom query option context: `skipBatch: boolean` */
-export const makeSkipBatchLink = (url: string) =>
-  splitLink({
-    condition(op) {
-      // check for context property `skipBatch`
-      return op.context.skipBatch === true;
-    },
-    // when condition is true, use normal request
-    true: httpLink({
-      url,
-    }),
-    // when condition is false, use batching
-    false: httpBatchLink({
-      url,
-    }),
-  });
-
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow access to resources when processing a request, like the database, the session, etc.
- */
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  assetLists: AssetList[];
+  chainList: Chain[];
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If we need to use it, we can export
@@ -86,8 +33,8 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-export const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {};
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return opts;
 };
 
 /**
@@ -141,3 +88,64 @@ export const publicProcedure = t.procedure.use(async (opts) => {
   const result = await timeout(() => opts.next(), 12_000, opts.path)();
   return result;
 });
+
+/**
+ * Creates a local link for tRPC operations.
+ * This function is used to create a custom TRPCLink that intercepts operations and
+ * handles them locally using the provided router, instead of sending them over the network.
+ */
+export function localLink<TRouter extends AnyRouter>({
+  router,
+  assetLists,
+  chainList,
+}: {
+  router: TRouter;
+  assetLists: AssetList[];
+  chainList: Chain[];
+}): TRPCLink<TRouter> {
+  return () =>
+    ({ op }) =>
+      observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
+        (observer) => {
+          async function execute() {
+            const createCaller = t.createCallerFactory(router);
+            const caller = createCaller({
+              assetLists,
+              chainList,
+            });
+            try {
+              // Attempt to execute the operation using the router's caller.
+              const data = await (
+                caller[op.path] as (input: unknown) => unknown
+              )(op.input);
+              // If successful, notify the observer with the result.
+              observer.next({ result: { data, type: "data" } });
+              observer.complete();
+            } catch (err) {
+              // If an error occurs, convert it to a TRPCClientError and notify the observer.
+              observer.error(TRPCClientError.from(err as Error));
+            }
+          }
+
+          // Execute the operation asynchronously.
+          void execute();
+        }
+      );
+}
+
+/** Provides ability to skip batching given a new custom query option context: `skipBatch: boolean` */
+export const makeSkipBatchLink = (url: string) =>
+  splitLink({
+    condition(op) {
+      // check for context property `skipBatch`
+      return op.context.skipBatch === true;
+    },
+    // when condition is true, use normal request
+    true: httpLink({
+      url,
+    }),
+    // when condition is false, use batching
+    false: httpBatchLink({
+      url,
+    }),
+  });

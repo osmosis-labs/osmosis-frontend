@@ -1,9 +1,8 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { Asset } from "@osmosis-labs/types";
+import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { AssetLists } from "../../../../codegen/generated/asset-lists";
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { captureErrorAndReturn } from "../../../../utils/error";
@@ -13,6 +12,8 @@ import { getPriceFromSidecar } from "./providers/sidecar";
 /** Provides a price given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
+  assetLists: AssetList[],
+  chainList: Chain[],
   asset: Asset,
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
@@ -22,10 +23,14 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
+  assetLists,
+  chainList,
   asset,
   currency = "usd",
   priceProvider = getPriceFromSidecar,
 }: {
+  chainList: Chain[];
+  assetLists: AssetList[];
   asset: { coinDenom?: string } & (
     | { coinMinimalDenom: string }
     | { sourceDenom: string }
@@ -37,7 +42,8 @@ export async function getAssetPrice({
     "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
   const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
 
-  const foundAsset = AssetLists.map((assets) => assets.assets)
+  const foundAsset = assetLists
+    .map((assets) => assets.assets)
     .flat()
     .find(
       (asset) =>
@@ -56,14 +62,23 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
-    getFreshValue: () => priceProvider(foundAsset, currency),
+    getFreshValue: () =>
+      priceProvider(assetLists, chainList, foundAsset, currency),
   });
 }
 
 /** Calculates the fiat value of a given coin.
  *  @throws If there's an issue calculating the price for the given coin (missing in asset list or can't get price). */
-export function calcCoinValue(coin: CoinPretty) {
+export function calcCoinValue({
+  coin,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  coin: CoinPretty;
+}) {
   return calcAssetValue({
+    ...params,
     anyDenom: coin.currency.coinMinimalDenom,
     amount: coin.toCoin().amount,
   });
@@ -72,17 +87,23 @@ export function calcCoinValue(coin: CoinPretty) {
 /** Calculates the fiat value of an asset given any denom and base amount.
  *  @throws If there's an issue calculating the price for the given denom (missing in asset list or can't get price). */
 export async function calcAssetValue({
+  assetLists,
+  chainList,
   anyDenom,
   amount,
   currency = "usd",
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   anyDenom: string;
   amount: Int | Dec | string;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec> {
-  const asset = await getAsset({ anyDenom });
+  const asset = await getAsset({ assetLists, anyDenom });
 
   const price = await getAssetPrice({
+    assetLists,
+    chainList,
     asset,
     currency,
   });
@@ -98,8 +119,16 @@ export async function calcAssetValue({
 
 /** Calculate and sum the value of multiple coins.
  *  Will only include listed assets with prices as part of sum. */
-export function calcSumCoinsValue(coins: CoinPretty[]) {
+export function calcSumCoinsValue({
+  coins,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  coins: CoinPretty[];
+}) {
   return calcSumAssetsValue({
+    ...params,
     assets: coins
       .map((coin) => coin.toCoin())
       .map((coin) => ({ anyDenom: coin.denom, amount: coin.amount })),
@@ -111,7 +140,10 @@ export function calcSumCoinsValue(coins: CoinPretty[]) {
 export async function calcSumAssetsValue({
   assets,
   currency = "usd",
+  ...params
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   assets: {
     anyDenom: string;
     amount: Int | string;
@@ -122,6 +154,7 @@ export async function calcSumAssetsValue({
     await Promise.all(
       assets.map((asset) =>
         calcAssetValue({
+          ...params,
           ...asset,
           currency,
         }).catch((e) => captureErrorAndReturn(e, new Dec(0)))
