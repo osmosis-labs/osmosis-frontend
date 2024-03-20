@@ -9,6 +9,7 @@ import {
 } from "../../../../../queries/sidecar/prices";
 import { EdgeDataLoader } from "../../../../../utils/batching";
 import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
+import { captureError } from "../../../../../utils/error";
 import { getPriceFromPools } from "./pools";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
@@ -76,7 +77,8 @@ export function getPriceBatched(
         loader
           .load(asset.coinMinimalDenom)
           .then((price) => new Dec(price))
-          .catch(() => {
+          .catch((e) => {
+            captureError(e);
             return getPriceFromPools(assetLists, chainList, asset);
           })
       ),

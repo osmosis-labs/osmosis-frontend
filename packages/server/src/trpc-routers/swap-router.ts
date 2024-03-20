@@ -99,7 +99,7 @@ export const swapRouter = createTRPCRouter({
         );
         const timeMs = Date.now() - startTime;
 
-        const tokenOutAsset = await getAsset({
+        const tokenOutAsset = getAsset({
           ...ctx,
           anyDenom: tokenOutDenom,
         });
@@ -134,7 +134,7 @@ export const swapRouter = createTRPCRouter({
 
         return {
           ...quote,
-          split: await makeDisplayableSplit(quote.split, ctx.assetLists),
+          split: makeDisplayableSplit(quote.split, ctx.assetLists),
           // supplementary data with display types
           name,
           timeMs,
@@ -152,45 +152,41 @@ export const swapRouter = createTRPCRouter({
 });
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
-async function makeDisplayableSplit(
+function makeDisplayableSplit(
   split: SplitTokenInQuote["split"],
   assetLists: AssetList[]
 ) {
-  return await Promise.all(
-    split.map(async (existingSplit) => {
-      const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
-      const poolsWithInfos = await Promise.all(
-        pools.map(async (pool_, index) => {
-          let type: Pool["type"] = pool_.type as Pool["type"];
+  return split.map((existingSplit) => {
+    const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
+    const poolsWithInfos = pools.map((pool_, index) => {
+      let type: Pool["type"] = pool_.type as Pool["type"];
 
-          if (pool_?.codeId) {
-            type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
-          }
+      if (pool_?.codeId) {
+        type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
+      }
 
-          const inAsset = await getAsset({
-            assetLists,
-            anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
-          });
-          const outAsset = await getAsset({
-            assetLists,
-            anyDenom: tokenOutDenoms[index],
-          });
-
-          return {
-            id: pool_.id,
-            type,
-            spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
-            dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
-            inCurrency: inAsset,
-            outCurrency: outAsset,
-          };
-        })
-      );
+      const inAsset = getAsset({
+        assetLists,
+        anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
+      });
+      const outAsset = getAsset({
+        assetLists,
+        anyDenom: tokenOutDenoms[index],
+      });
 
       return {
-        ...existingSplit,
-        pools: poolsWithInfos,
+        id: pool_.id,
+        type,
+        spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
+        dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
+        inCurrency: inAsset,
+        outCurrency: outAsset,
       };
-    })
-  );
+    });
+
+    return {
+      ...existingSplit,
+      pools: poolsWithInfos,
+    };
+  });
 }

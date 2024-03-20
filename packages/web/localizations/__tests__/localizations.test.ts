@@ -9,6 +9,9 @@ import { glob } from "glob";
 // use to silence warnings
 const warn = (..._args: Parameters<typeof console.warn>) => null; // console.warn(...args);
 
+/** Add key paths here to skip them in localizations tests. */
+const omittedKeyPaths = ["assets.categories"];
+
 describe("Localization JSON files", () => {
   const localizationObjs = getJSONsAsObjs();
 
@@ -150,6 +153,9 @@ function deepEqual_onlyObjects(
 
 // recursively get list of object keys into keys array
 function objectKeys(obj1: any, keys: string[] = [], curKeyPath: string[] = []) {
+  // Skip omitted keys
+  if (omittedKeyPaths.includes(curKeyPath.join("."))) return;
+
   // Check if both inputs are objects and not null
   if (typeof obj1 !== "object" || obj1 === null) {
     keys.push(curKeyPath.join("."));

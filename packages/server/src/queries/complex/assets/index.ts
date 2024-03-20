@@ -1,11 +1,8 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
 
@@ -25,6 +22,7 @@ export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
   includePreview: z.boolean().default(false).optional(),
+  categories: z.array(z.string()).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
@@ -37,14 +35,14 @@ const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
 ];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
-export async function getAsset({
+export function getAsset({
   assetLists,
   anyDenom,
 }: {
   assetLists: AssetList[];
   anyDenom: string;
-}): Promise<Asset> {
-  const assets = await getAssets({
+}): Asset {
+  const assets = getAssets({
     assetLists,
     findMinDenomOrSymbol: anyDenom,
     includePreview: true,
@@ -54,33 +52,22 @@ export async function getAsset({
   return asset;
 }
 
-const minimalAssetsCache = new LRUCache<string, CacheEntry>(
-  DEFAULT_LRU_OPTIONS
-);
-/** Cached function that returns minimal asset information. Return values can double as the `Currency` type.
+/** Returns minimal asset information for assets in asset list. Return values can double as the `Currency` type.
  *  Search was added to this function since members of the asset list type are search before mapped
  *  into minimal assets. See `searchableAssetListAssetKeys` for the keys that are searched.
  *
  *  Please avoid changing this function unless absolutely necessary.
  *  Instead, compose this function with other functions to get the data you need.
  *  The goal is to keep this function simple and lightweight. */
-export async function getAssets({
+export function getAssets({
   assetLists,
   ...params
 }: {
   assetLists: AssetList[];
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
-} & AssetFilter): Promise<Asset[]> {
-  // if it's the default asset list, cache it
-  return cachified({
-    cache: minimalAssetsCache,
-    key: JSON.stringify(params),
-    getFreshValue: () => filterAssetList(assetLists, params),
-  });
-
-  // otherwise process the given novel asset list
-  // return filterAssetList(assetLists, params);
+} & AssetFilter): Asset[] {
+  return filterAssetList(assetLists, params);
 }
 
 /**
@@ -91,24 +78,23 @@ export async function getAssets({
  *
  * @returns A promise that resolves to an array of CoinPretty objects. Each CoinPretty object represents an asset that is listed. Unlisted assets are filtered.
  */
-export async function mapRawCoinToPretty(
+export function mapRawCoinToPretty(
   assetLists: AssetList[],
   rawAssets: {
     amount: ConstructorParameters<typeof CoinPretty>[1];
     denom: string;
   }[]
-): Promise<CoinPretty[]> {
-  if (!rawAssets) return [];
-  return await Promise.all(
-    rawAssets.map(({ amount, denom }) =>
-      getAsset({
-        assetLists,
-        anyDenom: denom,
-      })
-        .then((asset) => new CoinPretty(asset, amount))
-        .catch((e) => captureErrorAndReturn(e, undefined))
-    )
-  ).then((assets) => assets.filter((asset): asset is CoinPretty => !!asset));
+): CoinPretty[] {
+  return rawAssets
+    .map(({ amount, denom }) => {
+      try {
+        const asset = getAsset({ assetLists, anyDenom: denom });
+        return new CoinPretty(asset, amount);
+      } catch (e) {
+        return captureErrorAndReturn(e as Error, undefined);
+      }
+    })
+    .filter((asset): asset is CoinPretty => !!asset);
 }
 
 /** Transform given asset list into an array of minimal asset types for user in frontend and apply given filters. */
@@ -156,6 +142,14 @@ function filterAssetList(
   // Filter by only verified
   if (params.onlyVerified) {
     assetListAssets = assetListAssets.filter((asset) => asset.verified);
+  }
+
+  // Filter categories
+  const categories = params.categories;
+  if (categories) {
+    assetListAssets = assetListAssets.filter((asset) =>
+      categories.some((category) => asset.categories.includes(category))
+    );
   }
 
   // Transform into a more compact object

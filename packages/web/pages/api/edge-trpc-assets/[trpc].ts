@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/nextjs";
+import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
@@ -24,9 +24,7 @@ export default async function handler(req: NextRequest) {
     onError:
       process.env.NODE_ENV === "development"
         ? ({ path, error }) => {
-            if (error instanceof Error) {
-              Sentry.captureException(error);
-            }
+            captureError(error);
             console.error(
               `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
             );

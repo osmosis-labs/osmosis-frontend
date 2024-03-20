@@ -86,7 +86,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
   chainList: Chain[];
   assets?: TAsset[];
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  if (!assets) assets = (await getAssets({ ...params })) as TAsset[];
+  if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
   return await Promise.all(
     assets.map((asset) => getMarketAsset({ ...params, asset }))

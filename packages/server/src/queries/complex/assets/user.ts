@@ -2,7 +2,7 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
 
-import { captureErrorAndReturn } from "../../../utils/error";
+import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import { SortDirection } from "../../../utils/sort";
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
@@ -63,7 +63,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>(
 ): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
-  if (!assets) assets = (await getAssets({ ...params })) as TAsset[];
+  if (!assets) assets = getAssets({ ...params }) as TAsset[];
   if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({
@@ -205,7 +205,7 @@ export async function getUserCoinsFromBank(params: {
   });
 
   const eventualShareCoins: Promise<CoinPretty[] | undefined>[] = [];
-  const eventualAvailableCoins: Promise<CoinPretty | undefined>[] = [];
+  const availableCoins: CoinPretty[] = [];
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
@@ -218,20 +218,16 @@ export async function getUserCoinsFromBank(params: {
         }).catch((e) => captureErrorAndReturn(e, undefined))
       );
     } else {
-      eventualAvailableCoins.push(
+      const asset = captureIfError(() =>
         getAsset({ ...params, anyDenom: denom })
-          .then((asset) => new CoinPretty(asset, amount))
-          .catch((e) => captureErrorAndReturn(e, undefined))
       );
+      if (asset) availableCoins.push(new CoinPretty(asset, amount));
     }
   });
 
   const shareCoins = (await Promise.all(eventualShareCoins))
     .filter((coins) => !!coins)
     .flat() as CoinPretty[];
-  const availableCoins = (await Promise.all(eventualAvailableCoins)).filter(
-    (coins) => !!coins
-  ) as CoinPretty[];
 
   return {
     underlyingGammShareCoins: aggregateCoinsByDenom(shareCoins),

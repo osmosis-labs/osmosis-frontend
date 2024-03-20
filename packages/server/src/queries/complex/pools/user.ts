@@ -95,7 +95,7 @@ export async function getUserPools(params: {
         const aggregatedRawCoins = aggregateRawCoinsByDenom(
           positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
         );
-        const coinsToCalculateValue = await mapRawCoinToPretty(
+        const coinsToCalculateValue = mapRawCoinToPretty(
           assetLists,
           aggregatedRawCoins
         );

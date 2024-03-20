@@ -39,6 +39,7 @@ import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
+import { AssetCategoriesSelectors, AssetCategory } from "../assets/categories";
 import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
@@ -53,7 +54,9 @@ type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
+  /** Memoized function for handling deposits from table row. */
   onDeposit: (coinMinimalDenom: string) => void;
+  /** Memoized function for handling withdrawals from table row. */
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { chainStore, accountStore, userSettings } = useStore();
@@ -76,6 +79,24 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const [selectedView, setSelectedView] = useState<"myTokens" | "allTokens">(
     "allTokens"
+  );
+
+  const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>(
+    []
+  );
+  const selectCategory = useCallback(
+    (category: AssetCategory) => {
+      const selected = new Set(selectedCategories);
+      selected.add(category);
+      setSelectedCategories(Array.from(selected));
+    },
+    [selectedCategories]
+  );
+  const unselectCategory = useCallback(
+    (category: AssetCategory) => {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    },
+    [selectedCategories]
   );
 
   const showUnverifiedAssetsSetting =
@@ -107,6 +128,7 @@ export const AssetsInfoTable: FunctionComponent<{
           }
         : undefined,
       onlyPositiveBalances: selectedView === "myTokens",
+      categories: selectedCategories.length ? selectedCategories : undefined,
     },
     {
       enabled: !isLoadingWallet,
@@ -127,9 +149,9 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 
   // Define columns
-  const columnHelper = createColumnHelper<AssetInfo>();
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<AssetInfo>();
+    return [
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
@@ -206,19 +228,17 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      favoritesList,
-      columnHelper,
-      selectedTimeFrame,
-      sortKey,
-      sortDirection,
-      onAddFavoriteDenom,
-      onRemoveFavoriteDenom,
-      onDeposit,
-      onWithdraw,
-    ]
-  );
+    ];
+  }, [
+    favoritesList,
+    selectedTimeFrame,
+    sortKey,
+    sortDirection,
+    onAddFavoriteDenom,
+    onRemoveFavoriteDenom,
+    onDeposit,
+    onWithdraw,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -279,6 +299,13 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <section>
+        <AssetCategoriesSelectors
+          selectedCategories={selectedCategories}
+          onSelectCategory={selectCategory}
+          unselectCategory={unselectCategory}
+        />
+      </section>
       <TableControls
         selectedTimeFrame={selectedTimeFrame}
         setSelectedTimeFrame={setSelectedTimeFrame}

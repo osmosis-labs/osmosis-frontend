@@ -69,9 +69,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
     )
     .flat();
 
-  return await mapRawCoinToPretty(assetLists, positionAssets).then(
-    aggregateCoinsByDenom
-  );
+  return aggregateCoinsByDenom(mapRawCoinToPretty(assetLists, positionAssets));
 }
 
 export type PositionStatus =
@@ -294,10 +292,10 @@ export async function mapGetUserPositionDetails({
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
-      const [baseCoin, quoteCoin] = await mapRawCoinToPretty(
-        params.assetLists,
-        [asset0, asset1]
-      );
+      const [baseCoin, quoteCoin] = mapRawCoinToPretty(params.assetLists, [
+        asset0,
+        asset1,
+      ]);
       if (!baseCoin || !quoteCoin) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
@@ -535,10 +533,10 @@ export async function mapGetUserPositions({
       .map(async (position_) => {
         const { asset0, asset1, position } = position_;
 
-        const [baseCoin, quoteCoin] = await mapRawCoinToPretty(
-          params.assetLists,
-          [asset0, asset1]
-        );
+        const [baseCoin, quoteCoin] = mapRawCoinToPretty(params.assetLists, [
+          asset0,
+          asset1,
+        ]);
         if (!baseCoin || !quoteCoin) {
           throw new Error(
             `Error finding assets for position ${position.position_id}`
@@ -617,28 +615,30 @@ export async function getPositionHistoricalPerformance({
     claimableSpreadRewardCoins,
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
-  ] = await Promise.all([
-    mapRawCoinToPretty(
-      params.assetLists,
-      performance.principal?.assets ?? []
-    ).then(aggregateCoinsByDenom),
-    mapRawCoinToPretty(params.assetLists, [position.asset0, position.asset1]),
-    mapRawCoinToPretty(params.assetLists, position.claimable_incentives).then(
-      aggregateCoinsByDenom
+  ] = [
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(params.assetLists, performance.principal?.assets ?? [])
     ),
-    mapRawCoinToPretty(
-      params.assetLists,
-      position.claimable_spread_rewards
-    ).then(aggregateCoinsByDenom),
-    mapRawCoinToPretty(
-      params.assetLists,
-      performance?.total_incentives_rewards ?? []
-    ).then(aggregateCoinsByDenom),
-    mapRawCoinToPretty(
-      params.assetLists,
-      performance?.total_spread_rewards ?? []
-    ).then(aggregateCoinsByDenom),
-  ]);
+    mapRawCoinToPretty(params.assetLists, [position.asset0, position.asset1]),
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(params.assetLists, position.claimable_incentives)
+    ),
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(params.assetLists, position.claimable_spread_rewards)
+    ),
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(
+        params.assetLists,
+        performance?.total_incentives_rewards ?? []
+      )
+    ),
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(
+        params.assetLists,
+        performance?.total_spread_rewards ?? []
+      )
+    ),
+  ];
 
   if (currentCoins.length !== 2)
     throw new Error("Unexpected number of current position listed coins");

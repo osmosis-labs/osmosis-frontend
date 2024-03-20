@@ -20,15 +20,12 @@ describe("makePoolFromIndexerPool", () => {
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
-      return Promise.resolve(mockAsset);
+      return mockAsset;
     });
   });
 
-  it("should return a valid pool object for a weighted pool", async () => {
-    const result = await makePoolFromIndexerPool(
-      MockAssetLists,
-      weightedPool as any
-    );
+  it("should return a valid pool object for a weighted pool", () => {
+    const result = makePoolFromIndexerPool(MockAssetLists, weightedPool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -38,11 +35,8 @@ describe("makePoolFromIndexerPool", () => {
     expect(result.spreadFactor.toDec().toString()).toBe("0.002000000000000000");
   });
 
-  it("should return a valid pool object for a stable pool", async () => {
-    const result = await makePoolFromIndexerPool(
-      MockAssetLists,
-      stablePool as any
-    );
+  it("should return a valid pool object for a stable pool", () => {
+    const result = makePoolFromIndexerPool(MockAssetLists, stablePool as any);
 
     if (!result) throw new Error("result is undefined");
 
@@ -53,8 +47,8 @@ describe("makePoolFromIndexerPool", () => {
     expect(result.spreadFactor.toDec().toString()).toBe("0.003000000000000000");
   });
 
-  it("should return a valid pool object for a concentrated liquidity pool", async () => {
-    const result = await makePoolFromIndexerPool(
+  it("should return a valid pool object for a concentrated liquidity pool", () => {
+    const result = makePoolFromIndexerPool(
       MockAssetLists,
       concentratedPool as any
     );
@@ -67,8 +61,8 @@ describe("makePoolFromIndexerPool", () => {
     expect(result.spreadFactor.toDec().toString()).toBe("0.002000000000000000");
   });
 
-  it("should return a valid pool object for a cosmwasm transmuter pool", async () => {
-    const result = await makePoolFromIndexerPool(
+  it("should return a valid pool object for a cosmwasm transmuter pool", () => {
+    const result = makePoolFromIndexerPool(
       MockAssetLists,
       cosmwasmTransmuterPool as any
     );
@@ -80,11 +74,8 @@ describe("makePoolFromIndexerPool", () => {
     expect((result.raw as any).code_id).toBe("148");
   });
 
-  it("should return a valid pool object for a cosmwasm pool", async () => {
-    const result = await makePoolFromIndexerPool(
-      MockAssetLists,
-      cosmwasmPool as any
-    );
+  it("should return a valid pool object for a cosmwasm pool", () => {
+    const result = makePoolFromIndexerPool(MockAssetLists, cosmwasmPool as any);
 
     if (!result) throw new Error("result is undefined");
 

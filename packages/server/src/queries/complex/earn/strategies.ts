@@ -17,6 +17,7 @@ import {
 } from "../../../queries/data-services/earn";
 import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { captureIfError } from "../../../utils/error";
 import { type Asset, getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { convertToPricePretty } from "../price";
@@ -125,29 +126,29 @@ export async function getStrategies({
           const { depositDenoms, positionDenoms, rewardDenoms, lockDuration } =
             rawStrategy;
 
-          const depositAssets = await Promise.all(
-            depositDenoms.map((token) =>
-              getAsset({ assetLists, anyDenom: token.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const depositAssets = [];
+          for (const token of depositDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ assetLists, anyDenom: token.coinMinimalDenom })
+            );
+            if (asset) depositAssets.push(asset);
+          }
 
-          const positionAssets = await Promise.all(
-            positionDenoms.map((token) =>
-              getAsset({ assetLists, anyDenom: token.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const positionAssets = [];
+          for (const token of positionDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ assetLists, anyDenom: token.coinMinimalDenom })
+            );
+            if (asset) positionAssets.push(asset);
+          }
 
-          const rewardAssets = await Promise.all(
-            rewardDenoms.map((reward) =>
-              getAsset({ assetLists, anyDenom: reward.coinMinimalDenom }).catch(
-                console.error
-              )
-            )
-          );
+          const rewardAssets = [];
+          for (const reward of rewardDenoms) {
+            const asset = captureIfError(() =>
+              getAsset({ assetLists, anyDenom: reward.coinMinimalDenom })
+            );
+            if (asset) rewardAssets.push(asset);
+          }
 
           aggregatedStrategies.push({
             ...rawStrategy,
