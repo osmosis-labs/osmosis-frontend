@@ -1,5 +1,9 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
+import {
+  Asset as AssetListAsset,
+  AssetCategories,
+  AssetList,
+} from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -22,7 +26,7 @@ export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
   includePreview: z.boolean().default(false).optional(),
-  categories: z.array(z.string()).optional(),
+  categories: z.array(z.enum(AssetCategories)).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;

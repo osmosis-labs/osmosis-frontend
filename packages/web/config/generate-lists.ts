@@ -251,20 +251,6 @@ async function generateAssetListFile({
     .join(" | ")};
   `;
 
-  // create available asset categories array
-  if (!onlyTypes) {
-    const categoriesContent = `    
-      export const AssetCategories = [${Array.from(
-        new Set(assetList.assets.flatMap((asset) => asset.categories))
-      )
-        .map((category) => `"${category}"`)
-        .join(", ")}
-    ] as const;
-    `;
-
-    await generateTsFile(categoriesContent, codegenDir, "asset-categories.ts");
-  }
-
   const success = await generateTsFile(
     content,
     codegenDir,
