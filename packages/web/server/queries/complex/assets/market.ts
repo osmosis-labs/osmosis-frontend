@@ -84,7 +84,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
   assets?: TAsset[];
 } & AssetFilter = {}): Promise<(TAsset & AssetMarketInfo)[]> {
   let { assets } = params;
-  if (!assets) assets = (await getAssets(params)) as TAsset[];
+  if (!assets) assets = getAssets(params) as TAsset[];
 
   return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
 }

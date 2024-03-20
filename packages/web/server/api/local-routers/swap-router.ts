@@ -104,7 +104,7 @@ export const swapRouter = createTRPCRouter({
         );
         const timeMs = Date.now() - startTime;
 
-        const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
+        const tokenOutAsset = getAsset({ anyDenom: tokenOutDenom });
 
         // calculate fiat value of amounts
         // get fiat value
@@ -162,11 +162,10 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
           if (pool_?.codeId) {
             type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
           }
-
-          const inAsset = await getAsset({
+          const inAsset = getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
-          const outAsset = await getAsset({
+          const outAsset = getAsset({
             anyDenom: tokenOutDenoms[index],
           });
 

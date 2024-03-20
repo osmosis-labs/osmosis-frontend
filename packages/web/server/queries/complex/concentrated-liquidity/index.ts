@@ -65,7 +65,7 @@ export async function getUserUnderlyingCoinsFromClPositions({
     )
     .flat();
 
-  return await mapRawCoinToPretty(positionAssets).then(aggregateCoinsByDenom);
+  return aggregateCoinsByDenom(mapRawCoinToPretty(positionAssets));
 }
 
 export type PositionStatus =
@@ -271,7 +271,7 @@ export async function mapGetUserPositionDetails({
     positions.map(async (position_) => {
       const { asset0, asset1, position } = position_;
 
-      const [baseCoin, quoteCoin] = await mapRawCoinToPretty([asset0, asset1]);
+      const [baseCoin, quoteCoin] = mapRawCoinToPretty([asset0, asset1]);
       if (!baseCoin || !quoteCoin) {
         throw new Error(
           `Error finding assets for position ${position.position_id}`
@@ -504,10 +504,7 @@ export async function mapGetUserPositions({
       .map(async (position_) => {
         const { asset0, asset1, position } = position_;
 
-        const [baseCoin, quoteCoin] = await mapRawCoinToPretty([
-          asset0,
-          asset1,
-        ]);
+        const [baseCoin, quoteCoin] = mapRawCoinToPretty([asset0, asset1]);
         if (!baseCoin || !quoteCoin) {
           throw new Error(
             `Error finding assets for position ${position.position_id}`
@@ -584,21 +581,19 @@ export async function getPositionHistoricalPerformance({
     totalIncentiveRewardCoins,
     totalSpreadRewardCoins,
   ] = await Promise.all([
-    mapRawCoinToPretty(performance.principal?.assets ?? []).then(
-      aggregateCoinsByDenom
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(performance.principal?.assets ?? [])
     ),
     mapRawCoinToPretty([position.asset0, position.asset1]),
-    mapRawCoinToPretty(position.claimable_incentives).then(
-      aggregateCoinsByDenom
+    aggregateCoinsByDenom(mapRawCoinToPretty(position.claimable_incentives)),
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(position.claimable_spread_rewards)
     ),
-    mapRawCoinToPretty(position.claimable_spread_rewards).then(
-      aggregateCoinsByDenom
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(performance?.total_incentives_rewards ?? [])
     ),
-    mapRawCoinToPretty(performance?.total_incentives_rewards ?? []).then(
-      aggregateCoinsByDenom
-    ),
-    mapRawCoinToPretty(performance?.total_spread_rewards ?? []).then(
-      aggregateCoinsByDenom
+    aggregateCoinsByDenom(
+      mapRawCoinToPretty(performance?.total_spread_rewards ?? [])
     ),
   ]);
 

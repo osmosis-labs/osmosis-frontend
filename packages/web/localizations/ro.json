@@ -279,6 +279,13 @@
       "title": "Începeți cu {osmosis}",
       "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
       "addFunds": "Adăugați fonduri pentru a începe"
+    },
+    "categories": {
+      "newest": "Cel mai nou",
+      "defi": "DeFi",
+      "stablecoin": "Monede stabile",
+      "meme": "Eu eu",
+      "liquid_staking": "Mărire lichidă"
     }
   },
   "buyTokens": "Cumpărați jetoane",

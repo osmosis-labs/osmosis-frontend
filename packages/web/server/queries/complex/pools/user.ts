@@ -91,9 +91,7 @@ export async function getUserPools(bech32Address: string) {
         const aggregatedRawCoins = aggregateRawCoinsByDenom(
           positions.flatMap(({ asset0, asset1 }) => [asset0, asset1])
         );
-        const coinsToCalculateValue = await mapRawCoinToPretty(
-          aggregatedRawCoins
-        );
+        const coinsToCalculateValue = mapRawCoinToPretty(aggregatedRawCoins);
 
         userValue = new PricePretty(
           DEFAULT_VS_CURRENCY,

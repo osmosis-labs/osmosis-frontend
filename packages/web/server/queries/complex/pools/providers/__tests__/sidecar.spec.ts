@@ -8,7 +8,7 @@ import { rest } from "msw";
 import { SIDECAR_BASE_URL } from "~/server/queries/sidecar";
 import { server } from "~/tests/msw";
 
-import { calcAssetValue, calcSumAssetsValue, getAsset } from "../../../assets";
+import { calcAssetValue, calcSumCoinsValue, getAsset } from "../../../assets";
 import { getPoolsFromSidecar, getPoolTypeFromChainPool } from "../sidecar";
 
 export const mockAsset = {
@@ -24,21 +24,21 @@ export const mockAsset = {
 jest.mock("../../../assets", () => ({
   getAsset: jest.fn(),
   calcAssetValue: jest.fn(),
-  calcSumAssetsValue: jest.fn(),
+  calcSumCoinsValue: jest.fn(),
 }));
 
 describe("getPoolsFromSidecar", () => {
   beforeEach(() => {
     // Mock the getAsset function before calling getPoolsFromSidecar
     (getAsset as jest.Mock).mockImplementation(() => {
-      return Promise.resolve(mockAsset);
+      return mockAsset;
     });
     // Mock the getAsset function before calling getPoolsFromSidecar
     (calcAssetValue as jest.Mock).mockImplementation(() => {
       return Promise.resolve(undefined);
     });
     // Mock the getAsset function before calling getPoolsFromSidecar
-    (calcSumAssetsValue as jest.Mock).mockImplementation(() => {
+    (calcSumCoinsValue as jest.Mock).mockImplementation(() => {
       return Promise.resolve(undefined);
     });
 

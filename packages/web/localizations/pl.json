@@ -279,6 +279,13 @@
       "title": "Zacznij od {osmosis}",
       "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
       "addFunds": "Dodaj środki, aby rozpocząć"
+    },
+    "categories": {
+      "newest": "Najnowsza",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoiny",
+      "meme": "Ja ja",
+      "liquid_staking": "Płynna stawka"
     }
   },
   "buyTokens": "Kup tokeny",

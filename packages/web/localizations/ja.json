@@ -279,6 +279,13 @@
       "title": "{osmosis}を使ってみましょう",
       "description": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
       "addFunds": "開始するには資金を追加してください"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "DeFi",
+      "stablecoin": "ステーブルコイン",
+      "meme": "ミーム",
+      "liquid_staking": "リキッドステーキング"
     }
   },
   "buyTokens": "トークンを購入する",

@@ -81,7 +81,7 @@ export async function calcAssetValue({
   amount: Int | Dec | string;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec> {
-  const asset = await getAsset({ anyDenom });
+  const asset = getAsset({ anyDenom });
 
   const price = await getAssetPrice({
     asset,

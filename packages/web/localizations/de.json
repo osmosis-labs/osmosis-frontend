@@ -279,6 +279,13 @@
       "title": "Beginnen Sie mit {osmosis}",
       "description": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
       "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
+    },
+    "categories": {
+      "newest": "Neueste",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoins",
+      "meme": "Meme",
+      "liquid_staking": "Flüssiges Abstecken"
     }
   },
   "buyTokens": "Kaufen Sie Token",

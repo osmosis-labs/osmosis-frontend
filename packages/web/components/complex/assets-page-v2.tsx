@@ -3,7 +3,7 @@ import classNames from "classnames";
 import type { SeriesPieOptions } from "highcharts";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useCallback, useMemo } from "react";
 
 import { EventName } from "~/config";
 import {
@@ -65,12 +65,18 @@ export const AssetsPageV2: FunctionComponent = () => {
 
       <AssetsInfoTable
         tableTopPadding={heroHeight}
-        onDeposit={(coinMinimalDenom) => {
-          bridgeAsset(coinMinimalDenom, "deposit");
-        }}
-        onWithdraw={(coinMinimalDenom) => {
-          bridgeAsset(coinMinimalDenom, "withdraw");
-        }}
+        onDeposit={useCallback(
+          (coinMinimalDenom) => {
+            bridgeAsset(coinMinimalDenom, "deposit");
+          },
+          [bridgeAsset]
+        )}
+        onWithdraw={useCallback(
+          (coinMinimalDenom) => {
+            bridgeAsset(coinMinimalDenom, "withdraw");
+          },
+          [bridgeAsset]
+        )}
       />
     </main>
   );
@@ -84,7 +90,10 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
 
   return (
     <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
-      <SkeletonLoader className="1.5lg:w-full" isLoaded={!isWalletLoading}>
+      <SkeletonLoader
+        className="rounded-5xl 1.5lg:w-full"
+        isLoaded={!isWalletLoading}
+      >
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <UserAssetsBreakdown userOsmoAddress={wallet.address} />
         ) : (

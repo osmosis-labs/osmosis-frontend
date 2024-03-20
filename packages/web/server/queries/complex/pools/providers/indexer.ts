@@ -75,9 +75,9 @@ export async function getPoolsFromIndexer({
         },
         { offset: 0, limit: Number(numPools.num_pools) }
       );
-      return (await Promise.all(pools.map(makePoolFromIndexerPool))).filter(
-        (pool): pool is Pool => !!pool
-      );
+      return pools
+        .map(makePoolFromIndexerPool)
+        .filter((pool): pool is Pool => !!pool);
     },
   }).then((pools) =>
     pools.filter((pool): pool is Pool =>
@@ -360,9 +360,9 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
   };
 }
 
-export async function makePoolFromIndexerPool(
+export function makePoolFromIndexerPool(
   filteredPool: FilteredPoolsResponse["pools"][number]
-): Promise<Pool | undefined> {
+): Pool | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
@@ -399,10 +399,15 @@ export async function makePoolFromIndexerPool(
     const token0 = filteredPool.pool_tokens.asset0.denom;
     const token1 = filteredPool.pool_tokens.asset1.denom;
 
-    const token0Asset = await getAsset({ anyDenom: token0 }).catch(() => null);
-    const token1Asset = await getAsset({ anyDenom: token1 }).catch(() => null);
-
-    if (!token0Asset || !token1Asset) return;
+    let token0Asset;
+    let token1Asset;
+    try {
+      token0Asset = getAsset({ anyDenom: token0 });
+      token1Asset = getAsset({ anyDenom: token1 });
+    } catch {
+      // Do nothing as it's expected to get unlisted assets from low liq pools
+      return;
+    }
 
     return {
       id: filteredPool.pool_id.toString(),
@@ -432,10 +437,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -470,10 +472,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -499,10 +498,7 @@ export async function makePoolFromIndexerPool(
     filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
-    const reserveCoins = await getReservesFromPoolTokens(
-      filteredPool.pool_tokens
-    );
-
+    const reserveCoins = getReservesFromPoolTokens(filteredPool.pool_tokens);
     if (!reserveCoins) return;
 
     return {
@@ -528,14 +524,16 @@ export async function makePoolFromIndexerPool(
 }
 
 /** Get's reserves from asset list and returns them as CoinPretty objects, or undefined if an asset is not listed. */
-async function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
-  const coins = await Promise.all(
-    poolTokens.map(makeCoinFromToken).map(async (coin) => {
-      const asset = await getAsset({ anyDenom: coin.denom }).catch(() => null);
-      if (!asset) return;
+function getReservesFromPoolTokens(poolTokens: PoolToken[]) {
+  const coins = poolTokens.map(makeCoinFromToken).map((coin) => {
+    try {
+      const asset = getAsset({ anyDenom: coin.denom });
       return new CoinPretty(asset, coin.amount);
-    })
-  );
+    } catch {
+      // Do nothing as it's expected to get unlisted assets from low liq pools
+    }
+  });
+
   if (coins.some((asset) => !asset)) return;
   else return coins as CoinPretty[];
 }
