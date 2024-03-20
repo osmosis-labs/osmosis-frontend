@@ -1,7 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { SIDECAR_BASE_URL } from "~/env";
-
+import { SIDECAR_BASE_URL } from "../../env";
 import {
   ConcentratedPoolRawResponse,
   CosmwasmPoolRawResponse,
