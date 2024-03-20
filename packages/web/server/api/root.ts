@@ -20,19 +20,13 @@ export const edgeRouter = createTRPCRouter({
 
 /**
  * This section includes tRPC functions that execute on the client-side.
- * Caution: Ensure no sensitive data is exposed through these functions.
- */
+ * Caution: Ensure no sensitive data is exposed through these functions. */
 export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
 });
 
-/**
- * This is the primary lambda router for our server.
- *
- * All routers added in /api/routers should be manually added here.
- */
-
+/** This is the primary lambda router for our server. */
 export const appRouter = createTRPCRouter({
   bridgeTransfer: bridgeTransferRouter,
   edge: edgeRouter,
