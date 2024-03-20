@@ -3,24 +3,26 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import {
+  AssetLists,
+  ChainList,
+  getAssetPrice,
+  getTimeoutHeight,
+} from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getAssetPrice } from "~/server/queries/complex/assets/price";
-import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
-import { getKeyByValue } from "~/utils/object";
 
 import { BridgeQuoteError } from "../errors";
 import {

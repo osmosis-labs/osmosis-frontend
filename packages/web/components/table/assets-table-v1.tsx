@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { AssetLists, ChainList } from "@osmosis-labs/server";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -23,8 +24,6 @@ import { ShowMoreButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { initialAssetsSort } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {

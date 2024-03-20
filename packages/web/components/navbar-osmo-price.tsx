@@ -1,3 +1,4 @@
+import { AssetLists } from "@osmosis-labs/server";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -9,7 +10,6 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
-import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";

@@ -9,6 +9,7 @@ import {
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
+import { AssetLists, ChainList } from "@osmosis-labs/server";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -36,8 +37,6 @@ import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import YourBalance from "~/components/your-balance/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,

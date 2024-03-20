@@ -1,5 +1,11 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import {
+  AssetLists,
+  ChainList,
+  CoingeckoCoin,
+  TokenCMSData,
+} from "@osmosis-labs/server";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
@@ -9,12 +15,8 @@ import ClipboardButton from "~/components/buttons/clipboard-button";
 import Markdown from "~/components/markdown";
 import { LinkIconButton } from "~/components/ui/button";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
-import { CoingeckoCoin } from "~/server/queries/coingecko/coin";
-import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 

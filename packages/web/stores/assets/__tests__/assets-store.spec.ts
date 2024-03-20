@@ -3,6 +3,7 @@ import {
   CosmwasmQueries,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import { AssetLists, ChainList } from "@osmosis-labs/server";
 import {
   AccountStore,
   ChainStore,
@@ -14,8 +15,6 @@ import {
   BlacklistedPoolIds,
   TransmuterPoolCodeIds,
 } from "~/config/feature-flag";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import { ObservableAssets } from "~/stores/assets/assets-store";
 import { mockChainInfos, mockIbcAssets } from "~/stores/assets/test-mock-data";
 import { makeLocalStorageKVStore } from "~/stores/kv-store";

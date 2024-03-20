@@ -12,7 +12,7 @@
     ]
   },
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --concurrency 11",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",

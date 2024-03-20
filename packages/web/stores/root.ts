@@ -3,6 +3,7 @@ import {
   CosmwasmQueries,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import { AssetLists, ChainList } from "@osmosis-labs/server";
 import {
   AccountStore,
   ChainStore,
@@ -33,8 +34,6 @@ import {
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
