@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
+import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -8,6 +9,8 @@ import {
   queryCoingeckoSearch,
   querySimplePrice,
 } from "~/server/queries/coingecko";
+import { queryMarketChart } from "~/server/queries/coingecko/market-chart";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { EdgeDataLoader } from "~/utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
@@ -89,5 +92,69 @@ export async function searchCoinGeckoCoinId({ symbol }: { symbol: string }) {
               symbol_?.toLowerCase() === symbol.toLowerCase()
           )?.api_symbol
       ),
+  });
+}
+
+interface GetCoinGeckoCoinMarketChartProps {
+  id: string;
+  timeFrame:
+    | string
+    | {
+        from: number;
+        to: number;
+      };
+  vsCurrency?: string;
+}
+
+/** Cached CoinGecko ID for needs of price function. */
+export async function getCoinGeckoCoinMarketChart(
+  props: GetCoinGeckoCoinMarketChartProps
+) {
+  const { vsCurrency = DEFAULT_VS_CURRENCY.currency, timeFrame, id } = props;
+
+  let from: dayjs.Dayjs | undefined = dayjs(new Date());
+  const to = dayjs(new Date());
+
+  if (typeof timeFrame === "string") {
+    /**
+     * We set the range of data to be displayed by type
+     */
+    switch (timeFrame) {
+      case "1H":
+        from = from.subtract(1, "hour");
+        break;
+      case "1D":
+        from = from.subtract(1, "day");
+        break;
+      case "1W":
+        from = from.subtract(1, "week");
+        break;
+      case "1M":
+        from = from.subtract(1, "month");
+        break;
+      case "1Y":
+        from = from.subtract(1, "year");
+        break;
+      case "ALL":
+        from = undefined;
+        break;
+    }
+  }
+
+  const fromTimestamp =
+    typeof timeFrame === "string" ? from?.unix() ?? 0 : timeFrame.from;
+  const toTimestamp = typeof timeFrame === "string" ? to?.unix() : timeFrame.to;
+
+  return cachified({
+    cache: coinGeckoCache,
+    key: `coingecko-coin-market-chart-${id}-${from?.unix()}-${to.unix()}-${vsCurrency}`,
+    ttl: 1,
+    getFreshValue: async () =>
+      queryMarketChart({
+        id,
+        vsCurrency,
+        to: toTimestamp,
+        from: fromTimestamp,
+      }),
   });
 }

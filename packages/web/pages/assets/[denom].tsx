@@ -106,7 +106,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
     const assetInfoConfig = useAssetInfoConfig(
       router.query.denom as string,
-      imperatorDenom
+      imperatorDenom,
+      coingeckoCoin?.id
     );
 
     useAmplitudeAnalytics({
@@ -465,17 +466,17 @@ const useNumTicks = () => {
     }
 
     switch (assetInfoConfig.historicalRange) {
-      case "7d":
+      case "1W":
         ticks = isMobile ? 1 : 8;
         break;
-      case "1mo":
+      case "1M":
         ticks = isMobile ? 2 : 6;
         break;
-      case "1d":
+      case "1D":
         ticks = isMobile ? 3 : 10;
         break;
-      case "1y":
-      case "all":
+      case "1Y":
+      case "ALL":
         ticks = isMobile ? 4 : 6;
         break;
     }

@@ -319,34 +319,34 @@ export const PriceChartHeader: FunctionComponent<{
           >
             <ChartButton
               label={t("tokenInfos.chart.xHour", { h: "1" })}
-              onClick={() => setHistoricalRange("1h")}
-              selected={historicalRange === "1h"}
+              onClick={() => setHistoricalRange("1H")}
+              selected={historicalRange === "1H"}
             />
             <ChartButton
               label={t("tokenInfos.chart.xDay", { d: "1" })}
-              onClick={() => setHistoricalRange("1d")}
-              selected={historicalRange === "1d"}
+              onClick={() => setHistoricalRange("1D")}
+              selected={historicalRange === "1D"}
             />
             <ChartButton
               label={t("tokenInfos.chart.xDay", { d: "7" })}
-              onClick={() => setHistoricalRange("7d")}
-              selected={historicalRange === "7d"}
+              onClick={() => setHistoricalRange("1W")}
+              selected={historicalRange === "1W"}
             />
             <ChartButton
               label={t("tokenInfos.chart.xDay", { d: "30" })}
-              onClick={() => setHistoricalRange("1mo")}
-              selected={historicalRange === "1mo"}
+              onClick={() => setHistoricalRange("1M")}
+              selected={historicalRange === "1M"}
             />
             <ChartButton
               label={t("tokenInfos.chart.xYear", { y: "1" })}
-              onClick={() => setHistoricalRange("1y")}
-              selected={historicalRange === "1y"}
+              onClick={() => setHistoricalRange("1Y")}
+              selected={historicalRange === "1Y"}
             />
             {showAllRange ? (
               <ChartButton
                 label={t("tokenInfos.chart.all", { y: "1" })}
-                onClick={() => setHistoricalRange("all")}
-                selected={historicalRange === "all"}
+                onClick={() => setHistoricalRange("ALL")}
+                selected={historicalRange === "ALL"}
               />
             ) : (
               false

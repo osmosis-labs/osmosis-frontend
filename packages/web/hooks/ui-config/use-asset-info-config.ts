@@ -1,4 +1,5 @@
 import { PricePretty } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useMemo } from "react";
 
@@ -8,7 +9,8 @@ import { api } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
   denom: string,
-  queryDenom: string | null
+  queryDenom: string | null,
+  coingeckoId?: string
 ) => {
   const config = useMemo(() => new ObservableAssetInfoConfig(), []);
 
@@ -17,27 +19,27 @@ export const useAssetInfoConfig = (
     let numRecentFrames: number | undefined = undefined;
 
     switch (config.historicalRange) {
-      case "1h":
+      case "1H":
         frame = 5;
         numRecentFrames = 12;
         break;
-      case "1d":
+      case "1D":
         frame = 5;
         numRecentFrames = 288;
         break;
-      case "7d":
+      case "1W":
         frame = 120;
         numRecentFrames = 168;
         break;
-      case "1mo":
+      case "1M":
         frame = 1440;
         numRecentFrames = 30;
         break;
-      case "1y":
+      case "1Y":
         frame = 1440;
         numRecentFrames = 365;
         break;
-      case "all":
+      case "ALL":
         frame = 43800;
         break;
     }
@@ -48,41 +50,104 @@ export const useAssetInfoConfig = (
     };
   }, [config.historicalRange]);
 
-  const {
-    data: historicalPriceData,
-    isLoading,
-    isError,
-  } = api.edge.assets.getAssetHistoricalPrice.useQuery(
-    {
-      coinDenom: denom ?? queryDenom,
-      timeFrame: {
-        custom: customTimeFrame,
-      },
-    },
-    {
-      enabled: Boolean(denom ?? queryDenom),
-      trpc: {
-        context: {
-          skipBatch: true,
+  if (!coingeckoId) {
+    const {
+      data: historicalPriceData,
+      isLoading,
+      isError,
+    } = api.edge.assets.getAssetHistoricalPrice.useQuery(
+      {
+        coinDenom: denom ?? queryDenom,
+        timeFrame: {
+          custom: customTimeFrame,
         },
       },
-    }
-  );
+      {
+        enabled: Boolean(denom ?? queryDenom),
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
-  if (historicalPriceData) config.setHistoricalData(historicalPriceData);
-  config.setIsHistoricalDataLoading(isLoading);
-  config.setHistoricalDataError(isError);
+    if (historicalPriceData) config.setHistoricalData(historicalPriceData);
+    config.setIsHistoricalDataLoading(isLoading);
+    config.setHistoricalDataError(isError);
+  } else {
+    const {
+      data: historicalPriceData,
+      isLoading,
+      isError,
+    } = api.edge.assets.getCoingeckoAssetHistoricalPrice.useQuery(
+      {
+        id: coingeckoId,
+        timeFrame: config.historicalRange,
+      },
+      {
+        select(data) {
+          const historicalData = data?.prices.map(([timestamp, price]) => ({
+            time: timestamp / 1000,
+            close: price,
+            high: price,
+            low: price,
+            open: price,
+            volume: 0,
+          }));
+
+          if (config.historicalRange === "ALL") {
+            return historicalData;
+          }
+
+          let min = dayjs(new Date());
+          const max = dayjs(Date.now());
+          const maxTime = max.unix();
+
+          switch (config.historicalRange) {
+            case "1H":
+              min = min.subtract(1, "hour");
+              break;
+            case "1D":
+              min = min.subtract(1, "day");
+              break;
+            case "1W":
+              min = min.subtract(1, "week");
+              break;
+            case "1M":
+              min = min.subtract(1, "month");
+              break;
+            case "1Y":
+              min = min.subtract(1, "year");
+              break;
+          }
+
+          const minTime = min.unix();
+
+          console.log(minTime, maxTime, historicalData);
+
+          return historicalData?.filter(
+            (price) => price.time <= maxTime && price.time >= minTime
+          );
+        },
+      }
+    );
+
+    if (historicalPriceData) config.setHistoricalData(historicalPriceData);
+    config.setIsHistoricalDataLoading(isLoading);
+    config.setHistoricalDataError(isError);
+  }
 
   return config;
 };
 
 export const AvailablePriceRanges = [
-  "1h",
-  "1d",
-  "7d",
-  "1mo",
-  "1y",
-  "all",
+  "1H",
+  "1D",
+  "1W",
+  "1M",
+  "1Y",
+  "ALL",
 ] as const;
 
 export type PriceRange = (typeof AvailablePriceRanges)[number];
@@ -97,7 +162,7 @@ export interface ChartTick {
 
 export class ObservableAssetInfoConfig {
   @observable
-  protected _historicalRange: PriceRange = "7d";
+  protected _historicalRange: PriceRange = "1W";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
