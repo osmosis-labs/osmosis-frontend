@@ -1,7 +1,6 @@
+import { getActiveGauges } from "@osmosis-labs/server";
 import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-import { getActiveGauges } from "~/server/queries/complex/pools/incentives";
 
 type ExternalIncentiveGaugesResponse = {
   data: Gauge[];

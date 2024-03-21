@@ -26,7 +26,7 @@ import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import { AppRouter } from "~/server/api/root";
+import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 

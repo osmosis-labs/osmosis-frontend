@@ -5,11 +5,12 @@ import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { mockFlags } from "jest-launchdarkly-mock";
 import { ReactNode } from "react";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import SuperJSON from "superjson";
 
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
-import { AppRouter } from "~/server/api/root";
+import { AppRouter } from "~/server/api/root-router";
 
 export const trpcReact = createTRPCReact<AppRouter>();
 

@@ -1,4 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { type EarnStrategy } from "@osmosis-labs/server";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -13,7 +14,6 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { type EarnStrategy } from "~/server/queries/numia/earn";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 

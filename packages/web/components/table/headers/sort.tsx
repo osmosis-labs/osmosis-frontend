@@ -1,9 +1,9 @@
+import { SortDirection } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable } from "~/components/types";
-import type { SortDirection } from "~/utils/sort";
 
 type SortHeaderProps<TSortKey extends string | undefined> = PropsWithChildren<{
   label: string;
