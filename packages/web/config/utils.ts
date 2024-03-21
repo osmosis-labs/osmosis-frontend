@@ -109,8 +109,6 @@ export function getKeplrCompatibleChain({
     : chain.chain_id;
   const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
-  console.log(OSMOSIS_CHAIN_ID_OVERWRITE, chainId);
-
   if (!assetList && environment === "mainnet") {
     throw new Error(
       `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
