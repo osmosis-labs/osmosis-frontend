@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/core";
 
 import { captureError, captureErrorAndReturn, captureIfError } from "../error";
 
