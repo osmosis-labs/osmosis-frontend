@@ -14,12 +14,7 @@ import {
   OfflineDirectSigner,
   Registry,
 } from "@cosmjs/proto-signing";
-import {
-  AminoTypes,
-  BroadcastTxError,
-  SignerData,
-  SigningStargateClient,
-} from "@cosmjs/stargate";
+import { AminoTypes, BroadcastTxError, SignerData } from "@cosmjs/stargate";
 import {
   MainWalletBase,
   SignOptions,
@@ -133,7 +128,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     ...cosmosProtoRegistry,
     ...ibcProtoRegistry,
     ...osmosisProtoRegistry,
-  ]) as unknown as SigningStargateClient["registry"];
+  ]);
 
   private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
