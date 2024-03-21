@@ -194,12 +194,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
+      this.walletManagerAssets,
       wallets,
       logger,
       true,
       true,
       false,
-      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -933,7 +933,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          signDoc,
+          {
+            ...signDoc,
+            accountNumber: Long.fromString(signDoc.accountNumber.toString()),
+          },
           signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
