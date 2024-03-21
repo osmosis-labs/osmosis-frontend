@@ -1,7 +1,7 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import type { TokenHistoricalPrice } from "~/server/queries/imperator";
@@ -13,6 +13,15 @@ export const useAssetInfoConfig = (
   coingeckoId?: string
 ) => {
   const config = useMemo(() => new ObservableAssetInfoConfig(), []);
+
+  useEffect(
+    () => () => {
+      if (process.env.NODE_ENV === "production") {
+        config.dispose();
+      }
+    },
+    [config]
+  );
 
   const customTimeFrame = useMemo(() => {
     let frame = 60;
@@ -124,11 +133,15 @@ export const useAssetInfoConfig = (
 
           const minTime = min.unix();
 
-          console.log(minTime, maxTime, historicalData);
-
           return historicalData?.filter(
             (price) => price.time <= maxTime && price.time >= minTime
           );
+        },
+        enabled: Boolean(coingeckoId),
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
         },
       }
     );
