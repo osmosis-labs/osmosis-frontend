@@ -1,3 +1,4 @@
+import { EarnStrategy } from "@osmosis-labs/server";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,7 +12,6 @@ import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
 import { getDefaultFiltersState } from "~/components/earn/table/utils";
 import { useWindowSize } from "~/hooks/window/use-window-size";
-import { EarnStrategy } from "~/server/queries/numia/earn";
 
 export const useStrategyTableConfig = (
   data: EarnStrategy[],

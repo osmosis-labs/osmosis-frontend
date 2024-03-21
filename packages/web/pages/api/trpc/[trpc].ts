@@ -1,7 +1,7 @@
 import { captureError } from "@osmosis-labs/server";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 
-import { appRouter } from "~/server/api/root";
+import { appRouter } from "~/server/api/root-router";
 import { createNextTrpcContext } from "~/server/api/trpc";
 
 // export API handler

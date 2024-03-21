@@ -1,4 +1,5 @@
 import { IntPretty } from "@keplr-wallet/unit";
+import type { Pool } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -6,7 +7,6 @@ import { useState } from "react";
 import { useMeasure } from "react-use";
 
 import { useTranslation } from "~/hooks";
-import type { Pool } from "~/server/queries/complex/pools";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";

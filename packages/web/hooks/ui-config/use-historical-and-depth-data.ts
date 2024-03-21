@@ -7,6 +7,12 @@ import {
   minSpotPrice,
   priceToTick,
 } from "@osmosis-labs/math";
+import type {
+  ConcentratedPoolRawResponse,
+  Pool,
+  TimeDuration,
+  TokenPairHistoricalPrice,
+} from "@osmosis-labs/server";
 import {
   ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryLiquidityPerTickRange,
@@ -17,12 +23,6 @@ import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useEffect, useState } from "react";
 import { DeepReadonly } from "utility-types";
 
-import type { Pool } from "~/server/queries/complex/pools";
-import type {
-  TimeDuration,
-  TokenPairHistoricalPrice,
-} from "~/server/queries/imperator";
-import type { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 

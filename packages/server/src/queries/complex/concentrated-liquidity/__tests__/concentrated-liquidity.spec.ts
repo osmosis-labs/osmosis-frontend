@@ -82,7 +82,7 @@ cases(
         },
         new Dec(19238477906381960)
       ),
-      expected: "1.350204826151546502",
+      expected: "1.350204826151546518",
     },
     {
       name: "should return correct price for given sqrtPrice and assets - case 2",
@@ -100,7 +100,7 @@ cases(
         },
         new Dec(0)
       ),
-      expected: "0.154453312560591832",
+      expected: "0.154453312560591808",
     },
   ]
 );

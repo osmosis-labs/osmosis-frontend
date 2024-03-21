@@ -326,6 +326,7 @@ export function getChainList({
         const isOsmosis =
           chain.chain_name === "osmosis" ||
           chain.chain_name === "osmosistestnet";
+
         const keplrChain = getKeplrCompatibleChain({
           chain,
           assetLists,

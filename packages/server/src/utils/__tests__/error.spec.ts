@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/core";
 
 import { captureError, captureErrorAndReturn, captureIfError } from "../error";
 
-jest.mock("@sentry/nextjs");
+jest.mock("@sentry/core");
 
 describe("captureErrorAndReturn", () => {
   it("should capture the error and return the provided value", () => {

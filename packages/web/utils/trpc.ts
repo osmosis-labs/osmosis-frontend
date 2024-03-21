@@ -5,7 +5,7 @@ import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { type AppRouter, appRouter } from "~/server/api/root";
+import { type AppRouter, appRouter } from "~/server/api/root-router";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,

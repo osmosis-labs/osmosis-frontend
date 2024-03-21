@@ -1,22 +1,11 @@
 import {
-  assetsRouter,
   concentratedLiquidityRouter,
   createTRPCRouter,
-  earnRouter,
-  poolsRouter,
-  stakingRouter,
   swapRouter,
 } from "@osmosis-labs/server";
 
+import { edgeRouter } from "~/server/api/edge-router";
 import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
-
-/** Contains tRPC functions running on Vercel's edge network. */
-export const edgeRouter = createTRPCRouter({
-  assets: assetsRouter,
-  pools: poolsRouter,
-  staking: stakingRouter,
-  earn: earnRouter,
-});
 
 /**
  * This section includes tRPC functions that execute on the client-side.

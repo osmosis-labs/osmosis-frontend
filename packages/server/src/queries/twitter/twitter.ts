@@ -1,5 +1,5 @@
+import { apiClient } from "@osmosis-labs/utils";
 import { createClient, VercelKV } from "@vercel/kv";
-import axios from "axios";
 import { Cache, CacheEntry, cachified } from "cachified";
 
 import {
@@ -8,13 +8,6 @@ import {
   TWITTER_API_ACCESS_TOKEN,
   TWITTER_API_URL,
 } from "../../env";
-
-const twitterApi = axios.create({
-  baseURL: TWITTER_API_URL,
-  headers: {
-    Authorization: `Bearer ${TWITTER_API_ACCESS_TOKEN}`,
-  },
-});
 
 interface RawUser {
   id: string;
@@ -108,16 +101,24 @@ export class Twitter {
    * @returns An array of tweet's objects
    */
   private async internalGetUserTweets(userId: string) {
-    const {
-      data: {
-        data: tweets,
-        includes: { users, media },
-      },
-    } = await twitterApi.get(
+    const url = new URL(
       `/tweets/search/recent?query=${encodeURIComponent(
         `from:${userId}`
-      )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`
+      )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`,
+      TWITTER_API_URL
     );
+
+    const {
+      data: tweets,
+      includes: { users, media },
+    } = await apiClient<{
+      data: RawTweet[];
+      includes: { users: RawUser[]; media: RawMedia[] };
+    }>(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${TWITTER_API_ACCESS_TOKEN}`,
+      },
+    });
 
     this.rawTweets = tweets;
     this.rawUsers = users;

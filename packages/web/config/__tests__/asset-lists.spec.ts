@@ -2,9 +2,14 @@
  * @jest-environment node
  */
 
+/**
+ * All function import the utils module asynchronously, in order to
+ * mock the environment variables imports. They have to be modified before the
+ * module is imported.
+ */
+
 import { AssetLists } from "../mock-asset-lists";
 import { MockChains } from "../mock-chains";
-import { getChainList, getKeplrCompatibleChain } from "../utils";
 
 beforeAll(() => {
   jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -16,9 +21,13 @@ afterAll(() => {
 });
 
 describe("getKeplrCompatibleChain", () => {
-  it("should return undefined if assetList is not found and environment is testnet", () => {
+  it("should return undefined if assetList is not found and environment is testnet", async () => {
     const assetLists: any[] = [];
     const environment = "testnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[0],
@@ -29,9 +38,13 @@ describe("getKeplrCompatibleChain", () => {
     expect(result).toBeUndefined();
   });
 
-  it("should return error if assetList is not found and environment is mainnet", () => {
+  it("should return error if assetList is not found and environment is mainnet", async () => {
     const assetLists: any[] = [];
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     expect(() =>
       getKeplrCompatibleChain({
@@ -42,8 +55,12 @@ describe("getKeplrCompatibleChain", () => {
     ).toThrow(`Failed to find currencies for ${MockChains[0].chain_name}`);
   });
 
-  it("should return a valid ChainInfoWithExplorer object when assetList is found", () => {
+  it("should return a valid ChainInfoWithExplorer object when assetList is found", async () => {
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[0],
@@ -328,8 +345,12 @@ describe("getKeplrCompatibleChain", () => {
     `);
   });
 
-  it("should return a valid ChainInfoWithExplorer with all the necessary cw20 tokens properties", () => {
+  it("should return a valid ChainInfoWithExplorer with all the necessary cw20 tokens properties", async () => {
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[2],
@@ -961,8 +982,12 @@ describe("getKeplrCompatibleChain", () => {
     `);
   });
 
-  it("should return asset within currencies even if the display and denom unit denom differ", () => {
+  it("should return asset within currencies even if the display and denom unit denom differ", async () => {
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[3], // Injective
@@ -1078,8 +1103,12 @@ describe("getKeplrCompatibleChain", () => {
     `);
   });
 
-  it("should return a valid ChainInfoWithExplorer with all the necessary secret20 tokens properties", () => {
+  it("should return a valid ChainInfoWithExplorer with all the necessary secret20 tokens properties", async () => {
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[4],
@@ -1256,8 +1285,12 @@ describe("getKeplrCompatibleChain", () => {
     `);
   });
 
-  it("should return a valid ChainInfoWithExplorer with pegMechanism if it's available", () => {
+  it("should return a valid ChainInfoWithExplorer with pegMechanism if it's available", async () => {
     const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
 
     const result = getKeplrCompatibleChain({
       chain: MockChains[5],
@@ -1690,10 +1723,13 @@ describe("getChainList", () => {
     jest.resetModules();
   });
 
-  it("should return the correct chain information when OSMOSIS_CHAIN_ID_OVERWRITE is not set", () => {
+  it("should return the correct chain information when OSMOSIS_CHAIN_ID_OVERWRITE is not set", async () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to undefined
     delete process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE;
 
+    const getChainList = await import("../utils").then(
+      (module) => module.getChainList
+    );
     const result = getChainList({
       assetLists: AssetLists,
       chains: MockChains,
@@ -1707,7 +1743,7 @@ describe("getChainList", () => {
     expect(result[0]?.bech32_prefix).toBe("osmo");
   });
 
-  it("should return the correct chain information when OSMOSIS_CHAIN_ID_OVERWRITE is set", () => {
+  it("should return the correct chain information when OSMOSIS_CHAIN_ID_OVERWRITE is set", async () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to a custom value
     process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE = "custom-chain-id";
 
@@ -1715,6 +1751,10 @@ describe("getChainList", () => {
       { ...AssetLists[0], chain_id: "custom-chain-id" },
       ...AssetLists.slice(1),
     ];
+
+    const getChainList = await import("../utils").then(
+      (module) => module.getChainList
+    );
 
     const result = getChainList({
       assetLists: assetLists,

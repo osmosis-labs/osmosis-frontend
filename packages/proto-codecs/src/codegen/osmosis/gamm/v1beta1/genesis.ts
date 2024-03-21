@@ -40,7 +40,7 @@ export interface ParamsProtoMsg {
 }
 /** Params holds parameters for the incentives module */
 export interface ParamsAmino {
-  pool_creation_fee: CoinAmino[];
+  pool_creation_fee?: CoinAmino[];
 }
 export interface ParamsAminoMsg {
   type: "osmosis/gamm/params";
@@ -73,9 +73,9 @@ export type GenesisStateEncoded = Omit<GenesisState, "pools"> & {
 };
 /** GenesisState defines the gamm module's genesis state. */
 export interface GenesisStateAmino {
-  pools: AnyAmino[];
+  pools?: AnyAmino[];
   /** will be renamed to next_pool_id in an upcoming version */
-  next_pool_number: string;
+  next_pool_number?: string;
   params?: ParamsAmino;
   migration_records?: MigrationRecordsAmino;
 }
@@ -137,11 +137,10 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      poolCreationFee: Array.isArray(object?.pool_creation_fee)
-        ? object.pool_creation_fee.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseParams();
+    message.poolCreationFee =
+      object.pool_creation_fee?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
@@ -150,7 +149,7 @@ export const Params = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.pool_creation_fee = [];
+      obj.pool_creation_fee = message.poolCreationFee;
     }
     return obj;
   },
@@ -216,7 +215,7 @@ export const GenesisState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push(Any(reader) as Any);
+          message.pools.push(Any.decode(reader, reader.uint32()) as Any);
           break;
         case 2:
           message.nextPoolNumber = reader.uint64();
@@ -255,16 +254,26 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      pools: Array.isArray(object?.pools)
-        ? object.pools.map((e: any) => PoolI_FromAmino(e))
-        : [],
-      nextPoolNumber: BigInt(object.next_pool_number),
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      migrationRecords: object?.migration_records
-        ? MigrationRecords.fromAmino(object.migration_records)
-        : undefined,
-    };
+    const message = createBaseGenesisState();
+    message.pools = object.pools?.map((e) => PoolI_FromAmino(e)) || [];
+    if (
+      object.next_pool_number !== undefined &&
+      object.next_pool_number !== null
+    ) {
+      message.nextPoolNumber = BigInt(object.next_pool_number);
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    if (
+      object.migration_records !== undefined &&
+      object.migration_records !== null
+    ) {
+      message.migrationRecords = MigrationRecords.fromAmino(
+        object.migration_records
+      );
+    }
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
@@ -273,11 +282,12 @@ export const GenesisState = {
         e ? PoolI_ToAmino(e as Any) : undefined
       );
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
-    obj.next_pool_number = message.nextPoolNumber
-      ? message.nextPoolNumber.toString()
-      : undefined;
+    obj.next_pool_number =
+      message.nextPoolNumber !== BigInt(0)
+        ? message.nextPoolNumber.toString()
+        : undefined;
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     obj.migration_records = message.migrationRecords
       ? MigrationRecords.toAmino(message.migrationRecords)
@@ -311,21 +321,21 @@ export const PoolI_InterfaceDecoder = (
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32(), true);
+  const data = Any.decode(reader, reader.uint32());
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value, undefined, true);
+      return Pool1.decode(data.value);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value, undefined, true);
+      return CosmWasmPool.decode(data.value);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
+      return Pool2.decode(data.value);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool3.decode(data.value, undefined, true);
+      return Pool3.decode(data.value);
     default:
       return data;
   }
 };
-export const PoolI_FromAmino = (content: AnyAmino) => {
+export const PoolI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "osmosis/concentratedliquidity/pool":
       return Any.fromPartial({

@@ -16,7 +16,7 @@
   ],
   "license": "Apache-2.0",
   "sideEffects": [
-    "src/utils/superjson.ts"
+    "./build/utils/superjson.js"
   ],
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",

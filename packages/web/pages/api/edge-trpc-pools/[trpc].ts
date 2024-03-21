@@ -2,7 +2,7 @@ import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
-import { edgeRouter } from "~/server/api/root";
+import { edgeRouter } from "~/server/api/edge-router";
 import { createEdgeTrpcContext } from "~/server/api/trpc";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 

@@ -22,7 +22,7 @@ export interface SendAuthorizationProtoMsg {
  * Since: cosmos-sdk 0.43
  */
 export interface SendAuthorizationAmino {
-  spend_limit: CoinAmino[];
+  spend_limit?: CoinAmino[];
 }
 export interface SendAuthorizationAminoMsg {
   type: "cosmos-sdk/SendAuthorization";
@@ -80,11 +80,10 @@ export const SendAuthorization = {
     return message;
   },
   fromAmino(object: SendAuthorizationAmino): SendAuthorization {
-    return {
-      spendLimit: Array.isArray(object?.spend_limit)
-        ? object.spend_limit.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseSendAuthorization();
+    message.spendLimit =
+      object.spend_limit?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: SendAuthorization): SendAuthorizationAmino {
     const obj: any = {};
@@ -93,7 +92,7 @@ export const SendAuthorization = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.spend_limit = [];
+      obj.spend_limit = message.spendLimit;
     }
     return obj;
   },

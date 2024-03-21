@@ -194,12 +194,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.walletManagerAssets,
       wallets,
       logger,
       true,
       true,
       false,
+      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -272,7 +272,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const walletRepo = this.walletManager.walletRepos.find(
       (repo) =>
         repo.chainName === chainNameOrId ||
-        repo.chainRecord.chain.chain_id === chainNameOrId
+        repo.chainRecord.chain?.chain_id === chainNameOrId
     );
 
     if (!walletRepo) {

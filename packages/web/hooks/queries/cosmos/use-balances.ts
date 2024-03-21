@@ -1,6 +1,8 @@
 import { queryBalances } from "@osmosis-labs/server";
 import { QueryClient, useQuery, UseQueryOptions } from "@tanstack/react-query";
 
+import { ChainList } from "~/config/generated/chain-list";
+
 type ResponseData = Awaited<ReturnType<typeof queryBalances>>;
 
 function getQueryKey(address: string): string[] {
@@ -16,7 +18,7 @@ export const useBalances = ({
 }) => {
   return useQuery(
     getQueryKey(address),
-    () => queryBalances({ bech32Address: address }),
+    () => queryBalances({ bech32Address: address, chainList: ChainList }),
     {
       enabled: Boolean(address) && typeof address === "string",
       ...queryOptions,
