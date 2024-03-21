@@ -286,7 +286,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      }).catch((e) => captureErrorAndReturn(e, []))
+      })
     ),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
@@ -310,7 +310,7 @@ export const assetsRouter = createTRPCRouter({
       getCoinGeckoCoinMarketChart({
         id,
         timeFrame: typeof timeFrame === "string" ? timeFrame : timeFrame.custom,
-      }).catch((e) => captureErrorAndReturn(e, undefined))
+      })
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
