@@ -1616,9 +1616,9 @@
     readonly-date "^1.0.0"
 
 "@cosmjs/encoding@^0.32.1":
-  version "0.32.1"
-  resolved "https://registry.yarnpkg.com/@cosmjs/encoding/-/encoding-0.32.1.tgz#1755c96e063bebef07a3f2d32971e90fb9ea4e3a"
-  integrity sha512-x60Lfds+Eq42rVV29NaoIAson3kBhATBI3zPp7X3GJTryBc5HFHQ6L/976tE1WB2DrvkfUdWS3ayCMVOY/qm1g==
+  version "0.32.3"
+  resolved "https://registry.yarnpkg.com/@cosmjs/encoding/-/encoding-0.32.3.tgz#e245ff511fe4a0df7ba427b5187aab69e3468e5b"
+  integrity sha512-p4KF7hhv8jBQX3MkB3Defuhz/W0l3PwWVYU2vkVuBJ13bJcXyhU9nJjiMkaIv+XP+W2QgRceqNNgFUC5chNR7w==
   dependencies:
     base64-js "^1.3.0"
     bech32 "^1.1.4"
@@ -2282,9 +2282,9 @@
     "@cosmos-kit/keplr-mobile" "^2.4.3"
 
 "@cosmos-kit/leap-extension@^2.5.3":
-  version "2.7.9"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-2.7.9.tgz#f0d05b9adc89963a31996852d9426e4b47d38492"
-  integrity sha512-+F764htkzaHz/MRQOZf/iO72NmquGLU9l+nec+HlInooJ3EZianrP/3H61PVlbjdQ3RrHRFznn4FNapOVnqXCw==
+  version "2.7.10"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-2.7.10.tgz#ff109ead4358f9cbe0b5a727733689d2bea3a60a"
+  integrity sha512-vVMkF+64oMFLbrw244AxoUR4vrFSKlOHhFHw7wOEHfeTSdvX4mcCsU8CC1LtVV5Bc0msVdkNWVbE04VEump8rg==
   dependencies:
     "@chain-registry/keplr" "1.28.0"
     "@cosmos-kit/core" "^2.8.9"
@@ -2300,9 +2300,9 @@
     "@metamask/providers" "^11.1.1"
 
 "@cosmos-kit/leap-mobile@^2.4.3":
-  version "2.6.9"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-mobile/-/leap-mobile-2.6.9.tgz#c772988732c9fa92ecbc52b82671e47baa0ab76e"
-  integrity sha512-ecyPcfeBSI8PiXbAMG9t9HLTJw7G3C3y6sZpVdJAOp0dOPbLLiHd3782veC0ts3Sps7Z148lSKkpIeRfdfRS4Q==
+  version "2.6.10"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-mobile/-/leap-mobile-2.6.10.tgz#f7fdc404c41f61d8e8d6a4e70f77c71e5dcca31d"
+  integrity sha512-IpKThc3BMM6X/ItXK0kuEnaN/0397aCXNbRmx4mWnxQgFljEo+XncoOs8VZcf6q89Td+GOAvuMQ5djDKXNR4Ew==
   dependencies:
     "@chain-registry/keplr" "1.28.0"
     "@cosmos-kit/core" "^2.8.9"
@@ -2384,11 +2384,11 @@
     events "3.3.0"
 
 "@cosmos-kit/xdefi-extension@^2.5.4":
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/xdefi-extension/-/xdefi-extension-2.5.4.tgz#ce40dd87ba03b518e1596a96ec05c7f9a397a328"
-  integrity sha512-BKwfJat2uzSn3z871a4Kf3tqpqmxiLqioPeIoFYGZnJ8RncIZEGMDvxZ8wRnJ5VAAa23NSIs0bTbTdFKnQFxSQ==
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/xdefi-extension/-/xdefi-extension-2.6.9.tgz#d3a9938a8b907cd5ac86966fad636b9568ce13b6"
+  integrity sha512-TenOQOzCiYjQ+LaEkgTnwynRy7T09WK6e7FvsWFcF9HSduJvc4pUuy7Bd/oHfyMiNgeq6ccWxgkFGUh74qkAuw==
   dependencies:
-    "@cosmos-kit/core" "^2.7.2"
+    "@cosmos-kit/core" "^2.8.9"
 
 "@cosmos-kit/xdefi@2.4.4":
   version "2.4.4"
@@ -4195,7 +4195,7 @@
 
 "@keplr-wallet/wc-client@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
-  resolved "https://registry.npmjs.org/@keplr-wallet/wc-client/-/wc-client-0.10.24-ibc.go.v7.hot.fix.tgz"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-client/-/wc-client-0.10.24-ibc.go.v7.hot.fix.tgz#eeb2e36451e637147e9dd261ba31adcb58d0c0b0"
   integrity sha512-Yksp0qdVWD2KbXlhKTIjn5CsBeDYUsC0MrpR1EzSe15bjnIEtcdRAg9/3kraJq3IlfJqLkp9bTIbOP3FpHQsFw==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"

@@ -50,7 +50,9 @@ export const WalletRegistry: RegistryWallet[] = [
     logo: "/wallets/trust.png",
     mobileDisabled: false,
     lazyInstall: () =>
-      import("@cosmos-kit/trust-mobile").then((m) => m.TrustMobileWallet),
+      import("~/integrations/trust-walletconnect").then(
+        (m) => m.TrustMobileWallet
+      ),
     supportsChain: async (chainId) => {
       const trustMobileAvailableChains: MainnetChainIds[] = [
         "agoric-3",
