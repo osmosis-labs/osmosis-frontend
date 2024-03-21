@@ -177,7 +177,7 @@ async function fetchAndProcessAllPools({
   return cachified({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
-    ttl: 1000 * 30, // 30 seconds
+    ttl: 1000 * 5, // 5 seconds
     async getFreshValue() {
       const poolManagerParamsPromise = getPoolmanagerParams(chainList);
       const numPoolsPromise = getNumPools(chainList);
