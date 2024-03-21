@@ -16,11 +16,11 @@ export interface MsgCreateConcentratedPoolProtoMsg {
 }
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPoolAmino {
-  sender: string;
-  denom0: string;
-  denom1: string;
-  tick_spacing: string;
-  spread_factor: string;
+  sender?: string;
+  denom0?: string;
+  denom1?: string;
+  tick_spacing?: string;
+  spread_factor?: string;
 }
 export interface MsgCreateConcentratedPoolAminoMsg {
   type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool";
@@ -44,7 +44,7 @@ export interface MsgCreateConcentratedPoolResponseProtoMsg {
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateConcentratedPoolResponseAmino {
-  pool_id: string;
+  pool_id?: string;
 }
 export interface MsgCreateConcentratedPoolResponseAminoMsg {
   type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool-response";
@@ -140,23 +140,35 @@ export const MsgCreateConcentratedPool = {
     return message;
   },
   fromAmino(object: MsgCreateConcentratedPoolAmino): MsgCreateConcentratedPool {
-    return {
-      sender: object.sender,
-      denom0: object.denom0,
-      denom1: object.denom1,
-      tickSpacing: BigInt(object.tick_spacing),
-      spreadFactor: object.spread_factor,
-    };
+    const message = createBaseMsgCreateConcentratedPool();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.denom0 !== undefined && object.denom0 !== null) {
+      message.denom0 = object.denom0;
+    }
+    if (object.denom1 !== undefined && object.denom1 !== null) {
+      message.denom1 = object.denom1;
+    }
+    if (object.tick_spacing !== undefined && object.tick_spacing !== null) {
+      message.tickSpacing = BigInt(object.tick_spacing);
+    }
+    if (object.spread_factor !== undefined && object.spread_factor !== null) {
+      message.spreadFactor = object.spread_factor;
+    }
+    return message;
   },
   toAmino(message: MsgCreateConcentratedPool): MsgCreateConcentratedPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.denom0 = message.denom0;
-    obj.denom1 = message.denom1;
-    obj.tick_spacing = message.tickSpacing
-      ? message.tickSpacing.toString()
-      : undefined;
-    obj.spread_factor = message.spreadFactor;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.denom0 = message.denom0 === "" ? undefined : message.denom0;
+    obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
+    obj.tick_spacing =
+      message.tickSpacing !== BigInt(0)
+        ? message.tickSpacing.toString()
+        : undefined;
+    obj.spread_factor =
+      message.spreadFactor === "" ? undefined : message.spreadFactor;
     return obj;
   },
   fromAminoMsg(
@@ -241,15 +253,18 @@ export const MsgCreateConcentratedPoolResponse = {
   fromAmino(
     object: MsgCreateConcentratedPoolResponseAmino
   ): MsgCreateConcentratedPoolResponse {
-    return {
-      poolId: BigInt(object.pool_id),
-    };
+    const message = createBaseMsgCreateConcentratedPoolResponse();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(
     message: MsgCreateConcentratedPoolResponse
   ): MsgCreateConcentratedPoolResponseAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(

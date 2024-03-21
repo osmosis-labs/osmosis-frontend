@@ -1,3 +1,4 @@
+import { timeout } from "@osmosis-labs/server";
 import { parseObjectValues } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -10,7 +11,6 @@ import {
   BridgeQuote,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
-import timeout from "~/utils/async";
 import { ErrorTypes } from "~/utils/error-types";
 
 const lruCache = new LRUCache<string, CacheEntry>({

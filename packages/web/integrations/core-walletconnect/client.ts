@@ -34,7 +34,6 @@ import {
 } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 import EventEmitter from "events";
-import Long from "long";
 
 import {
   WCAccount,
@@ -693,7 +692,7 @@ export class WCClient implements WalletClient {
     return {
       signed: {
         chainId: signed.chainId,
-        accountNumber: Long.fromString(signed.accountNumber, false),
+        accountNumber: BigInt(signed.accountNumber),
         authInfoBytes: new Uint8Array(
           Buffer.from(signed.authInfoBytes, this.wcEncoding)
         ),

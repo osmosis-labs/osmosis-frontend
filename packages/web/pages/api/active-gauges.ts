@@ -2,6 +2,8 @@ import { getActiveGauges } from "@osmosis-labs/server";
 import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { ChainList } from "~/config/generated/chain-list";
+
 type ExternalIncentiveGaugesResponse = {
   data: Gauge[];
 };
@@ -14,7 +16,7 @@ export default async function activeGauges(
   _req: NextApiRequest,
   res: NextApiResponse<ExternalIncentiveGaugesResponse>
 ) {
-  const gauges = await getActiveGauges();
+  const gauges = await getActiveGauges({ chainList: ChainList });
 
   res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate"); // 15 minute cache
   res.status(200).json({
