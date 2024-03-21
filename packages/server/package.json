@@ -2,7 +2,18 @@
   "name": "@osmosis-labs/server",
   "version": "1.0.0",
   "main": "build/index.js",
-  "license": "Apache-2.0",
+  "author": "osmosis-labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis",
+    "server"
+  ],
   "sideEffects": [
     "src/utils/superjson.ts"
   ],
