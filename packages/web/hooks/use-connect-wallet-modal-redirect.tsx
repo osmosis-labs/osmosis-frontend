@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { t } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
@@ -68,7 +68,6 @@ export function useConnectWalletModalRedirect(
         >
           <h6 className="flex items-center gap-3">
             <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
-
             {connectWalletMessage}
           </h6>
         </Button>

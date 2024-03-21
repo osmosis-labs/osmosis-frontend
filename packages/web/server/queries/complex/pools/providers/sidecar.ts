@@ -5,12 +5,12 @@ import { LRUCache } from "lru-cache";
 import { IS_TESTNET } from "~/config/env";
 import { PoolRawResponse } from "~/server/queries/osmosis";
 import { queryPools } from "~/server/queries/sidecar";
-import timeout, { AsyncTimeoutError } from "~/utils/async";
+import timeout from "~/utils/async";
 import { DEFAULT_LRU_OPTIONS } from "~/utils/cache";
 
-import { calcSumAssetsValue, getAsset } from "../../assets";
+import { calcSumCoinsValue, getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
-import { AstroportPclPoolCodeIds, TransmuterPoolCodeIds } from "../env";
+import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
@@ -33,52 +33,47 @@ export function getPoolsFromSidecar({
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
-      const reserveCoins = await Promise.all(
-        sidecarPools.map((sidecarPool) =>
-          timeout(
-            () => getListedReservesFromSidecarPool(sidecarPool),
-            9_000, // 9 seconds
-            "getListedReservesFromSidecarPool"
-          )().catch((e) => {
-            if (e instanceof AsyncTimeoutError) {
-              console.error(
-                `Timeout while fetching reserves for pool ${getPoolIdFromChainPool(
-                  sidecarPool.chain_model
-                )}`
-              );
-            }
-            return null;
-          })
-        )
-      );
-      const totalFiatLockedValues = await Promise.all(
-        reserveCoins.map((reserve) =>
-          reserve
-            ? timeout(
-                () => calcTotalFiatValueLockedFromReserve(reserve),
-                15_000, // 15 seconds
-                "sidecarCalcTotalFiatValueLockedFromReserve"
-              )()
-            : null
-        )
-      );
+      const reserveCoins = sidecarPools.map((sidecarPool) => {
+        try {
+          return getListedReservesFromSidecarPool(sidecarPool);
+        } catch {
+          // Do nothing since low liq pools often contain unlisted tokens
+        }
+      });
+      const totalFiatLockedValues: (PricePretty | undefined)[] =
+        await Promise.all(
+          reserveCoins.map((reserve) =>
+            reserve
+              ? timeout(
+                  () =>
+                    calcSumCoinsValue(reserve).then(
+                      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+                    ),
+                  15_000, // 15 seconds
+                  "getPoolsFromSidecar:calcSumCoinsValue"
+                )()
+              : Promise.resolve(undefined)
+          )
+        );
 
-      const pools = await Promise.all(
-        sidecarPools.map((sidecarPool, index) =>
-          makePoolFromSidecarPool({
+      return sidecarPools
+        .map((sidecarPool, index) => {
+          if (reserveCoins[index] === undefined) return;
+          if (totalFiatLockedValues[index] === undefined) return;
+
+          return makePoolFromSidecarPool({
             sidecarPool,
-            totalFiatValueLocked: totalFiatLockedValues[index],
-            reserveCoins: reserveCoins[index],
-          })
-        )
-      );
-      return pools.filter(Boolean) as Pool[];
+            totalFiatValueLocked: totalFiatLockedValues[index] as PricePretty,
+            reserveCoins: reserveCoins[index] as CoinPretty[],
+          });
+        })
+        .filter(Boolean) as Pool[];
     },
   });
 }
 
 /** Converts a single SQS pool model response to the standard and more useful Pool type. */
-async function makePoolFromSidecarPool({
+function makePoolFromSidecarPool({
   sidecarPool,
   reserveCoins,
   totalFiatValueLocked,
@@ -86,7 +81,7 @@ async function makePoolFromSidecarPool({
   sidecarPool: SidecarPool;
   reserveCoins: CoinPretty[] | null;
   totalFiatValueLocked: PricePretty | null;
-}): Promise<Pool | undefined> {
+}): Pool | undefined {
   // contains unlisted or invalid assets
   // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
   // to ease integrations.
@@ -123,35 +118,26 @@ export function getPoolTypeFromChainPool(
   if ("scaling_factors" in chain_model) return "stable";
   if ("current_sqrt_price" in chain_model) return "concentrated";
   if ("code_id" in chain_model) {
-    if (TransmuterPoolCodeIds.includes(chain_model.code_id.toString()))
-      return "cosmwasm-transmuter";
-    if (AstroportPclPoolCodeIds.includes(chain_model.code_id.toString()))
-      return "cosmwasm-astroport-pcl";
-    else return "cosmwasm";
+    return getCosmwasmPoolTypeFromCodeId(chain_model.code_id.toString());
   }
   throw new Error("Unknown pool type: " + JSON.stringify(chain_model));
 }
 
-/** @throws if an asset is not in asset list */
-export async function getListedReservesFromSidecarPool(
+/** @throws if an asset is not in asset list or balances are invalid. */
+export function getListedReservesFromSidecarPool(
   sidecarPool: SidecarPool
-): Promise<CoinPretty[]> {
+): CoinPretty[] {
   const poolDenoms = getPoolDenomsFromSidecarPool(sidecarPool);
-  const listedBalances = await Promise.all(
-    poolDenoms.map(async (denom) => {
-      const asset = await getAsset({ anyDenom: denom }).catch(() => null);
-      // not listed
-      if (!asset) throw new Error("Asset not listed: " + denom);
+  const listedBalances = poolDenoms.map((denom) => {
+    const asset = getAsset({ anyDenom: denom });
+    const amount = sidecarPool.balances.find(
+      (balance) => balance.denom === denom
+    )?.amount;
+    // no balance
+    if (!amount) throw new Error("No balance for asset: " + denom);
 
-      const amount = sidecarPool.balances.find(
-        (balance) => balance.denom === denom
-      )?.amount;
-      // no balance
-      if (!amount) throw new Error("No balance for asset: " + denom);
-
-      return new CoinPretty(asset, amount);
-    })
-  );
+    return new CoinPretty(asset, amount);
+  });
 
   return listedBalances as CoinPretty[];
 }
@@ -210,15 +196,4 @@ function makePoolRawResponseFromChainPool(
     pool_id: chainPool.pool_id?.toString(),
     code_id: chainPool.code_id?.toString(),
   } as PoolRawResponse;
-}
-
-function calcTotalFiatValueLockedFromReserve(reserve: CoinPretty[]) {
-  const assets = reserve.map((coin) => ({
-    anyDenom: coin.currency.coinMinimalDenom,
-    amount: coin.toCoin().amount,
-  }));
-
-  return calcSumAssetsValue({ assets }).then(
-    (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-  );
 }

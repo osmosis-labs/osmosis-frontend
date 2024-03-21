@@ -541,7 +541,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F183C0BB962D2F57C957E0B134CFA0AC9D6F755C02DE9DC2A59089BA23009DEC3&token1=factory%2Finj1xtel2knkt8hmc9dnzpjz6kdmacgcfmlv5f308w%2Fninja",
   },
   DYM: {
-    depositUrlOverride: "https://portal.dymension.xyz/ibc",
+    depositUrlOverride:
+      "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
   },
   "injective.GLTO": {
     depositUrlOverride:
@@ -572,9 +573,17 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=humans_1089-1&chainTo=osmosis-1&token0=aheart&token1=ibc%2F35CECC330D11DD00FACB555D07687631E0BC7D226260CC5F015F6D7980819533",
   },
+  "XRP.core": {
+    depositUrlOverride: "https://sologenic.org/coreum-bridge",
+    withdrawUrlOverride: "https://sologenic.org/coreum-bridge",
+  },
   AIOZ: {
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=aioz_168-1&chainTo=osmosis-1&token0=attoaioz&token1=ibc%2FBB0AFE2AFBD6E883690DAE4B9168EAC2B306BCC9C9292DACBB4152BBB08DB25F",
+  },
+  BSKT: {
+    depositUrlOverride: "https://www.bskt.fi/wormhole",
+    withdrawUrlOverride: "https://www.bskt.fi/wormhole",
   },
 };
 

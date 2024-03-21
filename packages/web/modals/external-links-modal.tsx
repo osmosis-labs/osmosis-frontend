@@ -1,11 +1,10 @@
 import { FunctionComponent } from "react";
 import { useState } from "react";
 
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
-
-import { Button } from "../components/buttons";
 
 const DoNotShowAgainExcludedUrlsKey = "do-not-show-again-excluded-urls";
 type DoNotShowAgainExcludedUrls = Record<string, boolean>;
@@ -92,17 +91,13 @@ export const ExternalLinkModal: FunctionComponent<
 
         <div className="flex w-full justify-between gap-4">
           <Button
-            mode="secondary"
+            variant="outline"
             className="flex-1"
             onClick={modalBaseProps.onRequestClose}
           >
             {t("app.banner.backToOsmosis")}
           </Button>
-          <Button
-            mode="primary"
-            className="flex-1"
-            onClick={modalBaseProps.onRequestClose}
-          >
+          <Button className="flex-1" onClick={modalBaseProps.onRequestClose}>
             <a
               href={url}
               target="_blank"

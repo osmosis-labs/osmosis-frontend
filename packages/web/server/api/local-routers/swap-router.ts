@@ -1,10 +1,4 @@
-import {
-  CoinPretty,
-  Dec,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
@@ -21,6 +15,8 @@ import {
   getAssetPrice,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
+import { Pool } from "~/server/queries/complex/pools";
+import { getCosmwasmPoolTypeFromCodeId } from "~/server/queries/complex/pools/env";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
 import { captureErrorAndReturn } from "~/utils/error";
 
@@ -108,7 +104,7 @@ export const swapRouter = createTRPCRouter({
         );
         const timeMs = Date.now() - startTime;
 
-        const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
+        const tokenOutAsset = getAsset({ anyDenom: tokenOutDenom });
 
         // calculate fiat value of amounts
         // get fiat value
@@ -160,20 +156,24 @@ async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
     split.map(async (existingSplit) => {
       const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
       const poolsWithInfos = await Promise.all(
-        pools.map(async (pool, index) => {
-          const inAsset = await getAsset({
+        pools.map(async (pool_, index) => {
+          let type: Pool["type"] = pool_.type as Pool["type"];
+
+          if (pool_?.codeId) {
+            type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
+          }
+          const inAsset = getAsset({
             anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
           });
-          const outAsset = await getAsset({
+          const outAsset = getAsset({
             anyDenom: tokenOutDenoms[index],
           });
 
           return {
-            id: pool.id,
-            spreadFactor: new RatePretty(
-              pool.swapFee ? pool.swapFee : new Dec(0)
-            ),
-            type: pool.type,
+            id: pool_.id,
+            type,
+            spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
+            dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
             inCurrency: inAsset,
             outCurrency: outAsset,
           };

@@ -8,8 +8,19 @@ import { CustomClasses } from "~/components/types";
 export const Tooltip: FunctionComponent<
   TooltipProps &
     CustomClasses &
-    Omit<TippyProps, "content"> & { rootClassNames?: string }
-> = ({ content, trigger, children, className, rootClassNames, ...props }) => (
+    Omit<TippyProps, "content"> & {
+      rootClassNames?: string;
+      enablePropagation?: boolean;
+    }
+> = ({
+  content,
+  trigger,
+  children,
+  className,
+  rootClassNames,
+  enablePropagation,
+  ...props
+}) => (
   <Tippy
     className={classNames(
       "body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5",
@@ -21,7 +32,7 @@ export const Tooltip: FunctionComponent<
   >
     <div
       className={classNames("flex cursor-pointer align-middle", className)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={enablePropagation ? undefined : (e) => e.stopPropagation()}
     >
       {children}
     </div>

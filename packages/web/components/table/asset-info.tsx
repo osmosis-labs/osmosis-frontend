@@ -9,6 +9,8 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -18,9 +20,11 @@ import {
 } from "react";
 
 import {
+  Breakpoint,
   useTranslation,
   useUserFavoriteAssetDenoms,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
@@ -35,6 +39,7 @@ import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
+import { AssetCategoriesSelectors, AssetCategory } from "../assets/categories";
 import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
@@ -43,18 +48,22 @@ import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
+  RouterOutputs["edge"]["assets"]["getUserMarketAssets"]["items"][number];
 type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
+  /** Memoized function for handling deposits from table row. */
   onDeposit: (coinMinimalDenom: string) => void;
+  /** Memoized function for handling withdrawals from table row. */
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { chainStore, accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
+  const { width } = useWindowSize();
+  const router = useRouter();
 
   // State
   const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
@@ -72,6 +81,24 @@ export const AssetsInfoTable: FunctionComponent<{
     "allTokens"
   );
 
+  const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>(
+    []
+  );
+  const selectCategory = useCallback(
+    (category: AssetCategory) => {
+      const selected = new Set(selectedCategories);
+      selected.add(category);
+      setSelectedCategories(Array.from(selected));
+    },
+    [selectedCategories]
+  );
+  const unselectCategory = useCallback(
+    (category: AssetCategory) => {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    },
+    [selectedCategories]
+  );
+
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
   const showUnverifiedAssets =
@@ -86,7 +113,7 @@ export const AssetsInfoTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getMarketAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserMarketAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
@@ -101,6 +128,7 @@ export const AssetsInfoTable: FunctionComponent<{
           }
         : undefined,
       onlyPositiveBalances: selectedView === "myTokens",
+      categories: selectedCategories.length ? selectedCategories : undefined,
     },
     {
       enabled: !isLoadingWallet,
@@ -121,9 +149,9 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 
   // Define columns
-  const columnHelper = createColumnHelper<AssetInfo>();
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<AssetInfo>();
+    return [
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
@@ -200,23 +228,31 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-    ],
-    [
-      favoritesList,
-      columnHelper,
-      selectedTimeFrame,
-      sortKey,
-      sortDirection,
-      onAddFavoriteDenom,
-      onRemoveFavoriteDenom,
-      onDeposit,
-      onWithdraw,
-    ]
-  );
+    ];
+  }, [
+    favoritesList,
+    selectedTimeFrame,
+    sortKey,
+    sortDirection,
+    onAddFavoriteDenom,
+    onRemoveFavoriteDenom,
+    onDeposit,
+    onWithdraw,
+  ]);
+
+  /** Columns collapsed for screen size responsiveness. */
+  const collapsedColumns = useMemo(() => {
+    const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
+    if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
+    if (width < Breakpoint.lg) collapsedColIds.push("price");
+    if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
+  }, [columns, width]);
 
   const table = useReactTable({
     data: assetsData,
-    columns,
+    columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
     manualPagination: true,
@@ -263,6 +299,13 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <section>
+        <AssetCategoriesSelectors
+          selectedCategories={selectedCategories}
+          onSelectCategory={selectCategory}
+          unselectCategory={unselectCategory}
+        />
+      </section>
       <TableControls
         selectedTimeFrame={selectedTimeFrame}
         setSelectedTimeFrame={setSelectedTimeFrame}
@@ -295,7 +338,7 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {isLoading && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -304,20 +347,34 @@ export const AssetsInfoTable: FunctionComponent<{
             <tr
               className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
               key={rows[virtualRow.index].id}
+              onClick={() =>
+                router.push(
+                  `/assets/${rows[virtualRow.index].original.coinDenom}`
+                )
+              }
             >
               {rows[virtualRow.index].getVisibleCells().map((cell) => (
                 <td
                   className="transition-colors duration-200 ease-in-out"
                   key={cell.id}
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <Link
+                    href={`/assets/${
+                      rows[virtualRow.index].original.coinDenom
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                    prefetch={false}
+                    passHref
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Link>
                 </td>
               ))}
             </tr>
           ))}
           {isFetchingNextPage && (
             <tr>
-              <td className="!text-center" colSpan={columns.length}>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
                 <Spinner />
               </td>
             </tr>
@@ -350,7 +407,7 @@ const AssetCell: AssetInfoCellComponent<{
   onRemoveFavorite,
 }) => (
   <div
-    className={classNames("group flex items-center gap-2", {
+    className={classNames("group flex items-center gap-2 md:gap-1", {
       "opacity-40": !isVerified,
     })}
   >
@@ -358,7 +415,7 @@ const AssetCell: AssetInfoCellComponent<{
       <Icon
         id="star"
         className={classNames(
-          "text-osmoverse-600 transition-opacity group-hover:opacity-100",
+          "text-osmoverse-600 transition-opacity group-hover:opacity-100 md:hidden",
           isFavorite ? "text-wosmongton-400" : "opacity-0"
         )}
         onClick={(event) => {
@@ -372,7 +429,7 @@ const AssetCell: AssetInfoCellComponent<{
         width={24}
       />
     </div>
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 md:gap-2">
       <div className="h-10 w-10">
         {coinImageUrl && (
           <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
@@ -382,7 +439,7 @@ const AssetCell: AssetInfoCellComponent<{
         <div className="flex">
           <span className="text-white-high">{coinDenom}</span>
         </div>
-        <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
+        <span className="md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
           {coinName}
         </span>
       </div>
@@ -439,8 +496,7 @@ const SparklineChartCell: AssetInfoCellComponent<{
     [recentPrices]
   );
 
-  if (!recentPriceCloses || recentPriceCloses.length === 0)
-    return <div className="w-20" />;
+  if (recentPriceCloses.length === 0) return <div className="w-20" />;
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
@@ -505,16 +561,22 @@ export const AssetActionsCell: AssetInfoCellComponent<{
 }) => (
   <div className="flex items-center gap-2">
     <button
-      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onDeposit(coinMinimalDenom)}
+      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+      onClick={(e) => {
+        e.preventDefault();
+        onDeposit(coinMinimalDenom);
+      }}
     >
-      <Icon className="m-auto" id="deposit" width={16} height={16} />
+      <Icon className="m-auto" id="down-arrow-thin" width={24} height={24} />
     </button>
     <button
-      className="h-8 w-8 rounded-full bg-osmoverse-860 p-1"
-      onClick={() => onWithdraw(coinMinimalDenom)}
+      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+      onClick={(e) => {
+        e.preventDefault();
+        onWithdraw(coinMinimalDenom);
+      }}
     >
-      <Icon className="m-auto" id="withdraw" width={16} height={16} />
+      <Icon className="m-auto" id="up-arrow-thin" width={24} height={24} />
     </button>
   </div>
 );
@@ -533,6 +595,7 @@ const TableControls: FunctionComponent<{
   setSelectedView,
 }) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
 
@@ -540,17 +603,32 @@ const TableControls: FunctionComponent<{
   // Only on debounced search query input
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
+  const tokensOptions = useConst([
+    { id: "myTokens", display: "My Tokens" },
+    { id: "allTokens", display: "All Tokens" },
+  ]);
+
   return (
-    <div className="flex h-12 w-full items-center gap-5">
+    <div className="flex h-12 w-full items-center gap-5 md:h-fit md:flex-col md:justify-end">
       <div className="flex h-12 w-full gap-3">
-        <SearchBox
-          className="!w-full"
-          currentValue={searchInput}
-          onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
-        />
+        {isMobile ? (
+          <MenuToggle
+            options={tokensOptions}
+            selectedOptionId={selectedView as string}
+            onSelect={(optionId) =>
+              setSelectedView(optionId as "myTokens" | "allTokens")
+            }
+          />
+        ) : (
+          <SearchBox
+            className="!w-full"
+            currentValue={searchInput}
+            onInput={setSearchInput}
+            placeholder={t("assets.table.search")}
+          />
+        )}
         <SelectMenu
-          classes={useConst({ container: "h-full" })}
+          classes={useConst({ container: "h-full 1.5lg:hidden" })}
           options={useConst([
             { id: "1H", display: "1H" },
             { id: "1D", display: "1D" },
@@ -565,16 +643,22 @@ const TableControls: FunctionComponent<{
           )}
         />
       </div>
-      <MenuToggle
-        options={useConst([
-          { id: "myTokens", display: "My Tokens" },
-          { id: "allTokens", display: "All Tokens" },
-        ])}
-        selectedOptionId={selectedView as string}
-        onSelect={(optionId) =>
-          setSelectedView(optionId as "myTokens" | "allTokens")
-        }
-      />
+      {isMobile ? (
+        <SearchBox
+          className="!w-full"
+          currentValue={searchInput}
+          onInput={setSearchInput}
+          placeholder={t("assets.table.search")}
+        />
+      ) : (
+        <MenuToggle
+          options={tokensOptions}
+          selectedOptionId={selectedView as string}
+          onSelect={(optionId) =>
+            setSelectedView(optionId as "myTokens" | "allTokens")
+          }
+        />
+      )}
     </div>
   );
 };

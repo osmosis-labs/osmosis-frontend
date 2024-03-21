@@ -176,6 +176,7 @@
       "titleWithdraw": "轉出到"
     },
     "stakedAssets": "已質押的OSMO",
+    "pooledAssets": "匯集",
     "table": {
       "columns": {
         "assetChain": "資產 / 鏈",
@@ -203,6 +204,7 @@
       "activate": "啟用"
     },
     "totalAssets": "總資產",
+    "totalBalance": "總餘額",
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
@@ -272,6 +274,18 @@
       "activate": "啟動未驗證資產",
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
+    },
+    "getStarted": {
+      "title": "開始使用{osmosis}",
+      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
+      "addFunds": "增加資金即可開始"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "去中心化金融",
+      "stablecoin": "穩定幣",
+      "meme": "迷因",
+      "liquid_staking": "流動質押"
     }
   },
   "buyTokens": "購買代幣",
@@ -350,7 +364,8 @@
     "sequenceNumber": "您的並發事務過多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
     "invalidAmounts": "金額無效",
-    "txTimedOutError": "交易超時。請重試。"
+    "txTimedOutError": "交易超時。請重試。",
+    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -596,7 +611,6 @@
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "isAPRTooHighTooltip": "此驗證器收取了異常高的傭金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
       "step1": {
@@ -693,7 +707,8 @@
     "promo": {
       "newOpportunity": "新的賺錢機會",
       "discoverSuperchargedPools": "探索增壓泳池"
-    }
+    },
+    "dynamicSpreadFactor": "動態的"
   },
   "walletSelect": {
     "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
@@ -815,6 +830,7 @@
     "allocation": "分配",
     "tokensCount": "{number}標記",
     "strategiesCount": "{number}策略",
+    "oneStrategy": "1 策略",
     "value": "價值",
     "method": "方法",
     "platform": "平台",
@@ -832,8 +848,7 @@
     "allMethods": "所有方法",
     "platforms": "平台",
     "allPlatforms": "所有平台",
-    "lockingDuration": "鎖定時間",
-    "specialTokens": "特殊代幣",
+    "allCategories": "所有類別",
     "filters": "過濾器",
     "resetFilters": "重置過濾器",
     "saveFilters": "保存過濾器",
@@ -851,8 +866,19 @@
       "single": "單身的",
       "multi": "多"
     },
-    "totalValueInvested": "投資總額",
-    "lookBelow": "請參閱下文並找到最適合您的策略"
+    "totalValueInvested": "總價值",
+    "lookBelow": "請參閱下文並找到最適合您的策略",
+    "startEarning": "發現策略",
+    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下眾多策略之一讓您的資產發揮作用。",
+    "loadingStrategies": "載入策略...",
+    "sorryErrorOccurred": "抱歉，發生錯誤。",
+    "sorryNoResults": "沒有找到策略。",
+    "tryChangingFilters": "嘗試更換過濾器",
+    "retry": "重試",
+    "manage": "管理",
+    "noLock": "無鎖",
+    "riskDisclaimer": "風險是根據策略及其基礎資產的一組組合標準來計算的。",
+    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。"
   },
   "disclaimer": "免責聲明",
   "unstableAssetsWarning": {

@@ -176,6 +176,7 @@
       "titleWithdraw": "に撤退する"
     },
     "stakedAssets": "ステークされたOSMO",
+    "pooledAssets": "プールされた",
     "table": {
       "columns": {
         "assetChain": "アセット/チェーン",
@@ -203,6 +204,7 @@
       "activate": "活性化"
     },
     "totalAssets": "総資産",
+    "totalBalance": "総合収支",
     "transfer": {
       "availableMobile": "利用可能",
       "availableOn": "{network}で利用可能",
@@ -272,6 +274,18 @@
       "activate": "未検証のアセットをアクティブ化する",
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
+    },
+    "getStarted": {
+      "title": "{osmosis}を使ってみましょう",
+      "description": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
+      "addFunds": "開始するには資金を追加してください"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "DeFi",
+      "stablecoin": "ステーブルコイン",
+      "meme": "ミーム",
+      "liquid_staking": "リキッドステーキング"
     }
   },
   "buyTokens": "トークンを購入する",
@@ -350,7 +364,8 @@
     "sequenceNumber": "同時トランザクションが多すぎます。前の tx がチェーンに到達した後に再送信してみてください。 (シーケンス: {sequence}",
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です",
-    "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。"
+    "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
+    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -596,7 +611,6 @@
     "unbondingPeriodTooltip": "ロックされたトークンにより、ブロックチェーンの安定性が向上します。トークンのステークを解除すると、指定された解除期間後にトークンが利用可能になります。",
     "estimatedEarningsTooltip": "これらの収益は現在のステーキング APR に基づいて計算されますが、変更される可能性があります。",
     "collectRewardsTooltipDisabled": "報酬が少なすぎるため収集できません。未請求の残高{collectRewardsMinimumOsmo} OSMO の最小しきい値に達してからもう一度お試しください。",
-    "isAPRTooHighTooltip": "このバリデーターは異常に高い手数料を取ります。別のバリデーターを選択することを検討してください。",
     "isVotingPowerTooHighTooltip": "これは、高い投票力を持つトップ 10 のバリデーターです。分散化を促進するために、別のバリデータを選択することを検討してください。",
     "learnMore": {
       "step1": {
@@ -693,7 +707,8 @@
     "promo": {
       "newOpportunity": "{denom}で獲得する新たな機会",
       "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    }
+    },
+    "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",
@@ -815,6 +830,7 @@
     "allocation": "割り当て",
     "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
+    "oneStrategy": "1 戦略",
     "value": "価値",
     "method": "方法",
     "platform": "プラットホーム",
@@ -832,8 +848,7 @@
     "allMethods": "すべてのメソッド",
     "platforms": "プラットフォーム",
     "allPlatforms": "すべてのプラットフォーム",
-    "lockingDuration": "ロック期間",
-    "specialTokens": "特別なトークン",
+    "allCategories": "すべてのカテゴリ",
     "filters": "フィルター",
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターの保存",
@@ -851,8 +866,19 @@
       "single": "シングル",
       "multi": "マルチ"
     },
-    "totalValueInvested": "投資総額",
-    "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください"
+    "totalValueInvested": "総価値",
+    "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください",
+    "startEarning": "戦略を発見する",
+    "startEarningDescription": "収益の可能性を最大限に引き出します。以下の多くの戦略の 1 つを通じて、資産を活用してください。",
+    "loadingStrategies": "戦略を読み込んでいます...",
+    "sorryErrorOccurred": "申し訳ありませんが、エラーが発生しました。",
+    "sorryNoResults": "戦略が見つかりませんでした。",
+    "tryChangingFilters": "フィルターを変更してみる",
+    "retry": "リトライ",
+    "manage": "管理",
+    "noLock": "ロックなし",
+    "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。",
+    "strategyGeoblocked": "申し訳ございませんが、この戦略はお住まいの国ではご利用いただけません。"
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {

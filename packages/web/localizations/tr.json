@@ -176,6 +176,7 @@
       "titleWithdraw": "Adrese çek"
     },
     "stakedAssets": "Stake Edilmiş OSMO",
+    "pooledAssets": "havuzlanmış",
     "table": {
       "columns": {
         "assetChain": "Varlık / Ağ",
@@ -203,6 +204,7 @@
       "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
+    "totalBalance": "Toplam bakiye",
     "transfer": {
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
@@ -272,6 +274,18 @@
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
+    },
+    "getStarted": {
+      "title": "{osmosis} ile başlayın",
+      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
+      "addFunds": "Başlamak için para ekleyin"
+    },
+    "categories": {
+      "newest": "En yeni",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoin'ler",
+      "meme": "meme",
+      "liquid_staking": "Sıvı esnetme"
     }
   },
   "buyTokens": "jeton satın al",
@@ -350,7 +364,8 @@
     "sequenceNumber": "Çok fazla eş zamanlı işleminiz var! Önceki gönderiminiz zincire ulaştıktan sonra yeniden göndermeyi deneyin. (Sıra: {sequence} )",
     "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
     "invalidAmounts": "Geçersiz tutarlar",
-    "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz."
+    "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
+    "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -596,7 +611,6 @@
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
     "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
-    "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
     "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
     "learnMore": {
       "step1": {
@@ -693,7 +707,8 @@
     "promo": {
       "newOpportunity": "Kazanmak için yeni fırsat",
       "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
-    }
+    },
+    "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
     "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
@@ -815,6 +830,7 @@
     "allocation": "Paylaştırma",
     "tokensCount": "{number} jeton",
     "strategiesCount": "{number} stratejiler",
+    "oneStrategy": "1 strateji",
     "value": "Değer",
     "method": "Yöntem",
     "platform": "platformu",
@@ -832,8 +848,7 @@
     "allMethods": "Tüm Yöntemler",
     "platforms": "Platformlar",
     "allPlatforms": "Tüm Platformlar",
-    "lockingDuration": "Kilitleme Süresi",
-    "specialTokens": "Özel Jetonlar",
+    "allCategories": "Tüm Kategoriler",
     "filters": "Filtreler",
     "resetFilters": "Filtreleri Sıfırla",
     "saveFilters": "Filtreleri Kaydet",
@@ -851,8 +866,19 @@
       "single": "Bekar",
       "multi": "Çok"
     },
-    "totalValueInvested": "Yatırılan Toplam Değer",
-    "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun"
+    "totalValueInvested": "Toplam değer",
+    "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
+    "startEarning": "Stratejileri keşfedin",
+    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiden birini kullanarak uygulamaya koyun.",
+    "loadingStrategies": "Stratejiler yükleniyor...",
+    "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
+    "sorryNoResults": "Hiçbir strateji bulunamadı.",
+    "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
+    "retry": "Yeniden dene",
+    "manage": "Üstesinden gelmek",
+    "noLock": "Kilit yok",
+    "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
+    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor."
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {

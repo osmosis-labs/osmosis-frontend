@@ -3,7 +3,7 @@ import { AssetList } from "@osmosis-labs/types";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { aggregateCoinsByDenom } from "~/utils/coin";
-import { captureErrorAndReturn } from "~/utils/error";
+import { captureErrorAndReturn, captureIfError } from "~/utils/error";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
@@ -62,7 +62,7 @@ export async function mapGetUserAssetCoins<TAsset extends Asset>({
 } & AssetFilter = {}): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
-  if (!assets) assets = (await getAssets(params)) as TAsset[];
+  if (!assets) assets = getAssets(params) as TAsset[];
   if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
@@ -193,7 +193,7 @@ export async function getUserCoinsFromBank({
   const { balances } = await queryBalances({ bech32Address: userOsmoAddress });
 
   const eventualShareCoins: Promise<CoinPretty[] | undefined>[] = [];
-  const eventualAvailableCoins: Promise<CoinPretty | undefined>[] = [];
+  const availableCoins: CoinPretty[] = [];
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
@@ -205,20 +205,14 @@ export async function getUserCoinsFromBank({
         }).catch((e) => captureErrorAndReturn(e, undefined))
       );
     } else {
-      eventualAvailableCoins.push(
-        getAsset({ anyDenom: denom })
-          .then((asset) => new CoinPretty(asset, amount))
-          .catch((e) => captureErrorAndReturn(e, undefined))
-      );
+      const asset = captureIfError(() => getAsset({ anyDenom: denom }));
+      if (asset) availableCoins.push(new CoinPretty(asset, amount));
     }
   });
 
   const shareCoins = (await Promise.all(eventualShareCoins))
     .filter((coins) => !!coins)
     .flat() as CoinPretty[];
-  const availableCoins = (await Promise.all(eventualAvailableCoins)).filter(
-    (coins) => !!coins
-  ) as CoinPretty[];
 
   return {
     underlyingGammShareCoins: aggregateCoinsByDenom(shareCoins),
@@ -226,7 +220,7 @@ export async function getUserCoinsFromBank({
   };
 }
 
-/** Lists all of a user's assets contained within locks.
+/** Lists all of a user's assets contained within locks. Locked or unlocking.
  *  NOTE: only considers locked GAMM shares. */
 export async function getUserShareUnderlyingCoinsFromLocks({
   userOsmoAddress,

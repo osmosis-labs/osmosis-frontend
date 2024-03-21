@@ -1,22 +1,11 @@
-import { FilterFn } from "@tanstack/react-table";
+import { RatePretty } from "@keplr-wallet/unit";
+import { FilterFn, SortingFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
-import { Strategy } from "~/components/earn/table/types/strategy";
+import { EarnStrategy, StrategyCMSData } from "~/server/queries/numia/earn";
 
-export const strictEqualFilter: FilterFn<Strategy> = (
-  row,
-  colID,
-  _filterValue
-) => {
-  const filterValue = _filterValue.value;
-  if (filterValue === "") {
-    return true;
-  }
-  return row.getValue(colID) === filterValue;
-};
-
-export const arrLengthEquals: FilterFn<Strategy> = (
+export const arrLengthEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
@@ -33,12 +22,44 @@ export const arrLengthEquals: FilterFn<Strategy> = (
   }
 };
 
-export const listOptionValueEquals: FilterFn<Strategy> = (
+export const lockDurationFilter: FilterFn<EarnStrategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const hasLockDuration = row.getValue(colID) as boolean;
+
+  switch (filterValue) {
+    case "lock":
+      return hasLockDuration;
+    case "nolock":
+      return !hasLockDuration;
+    default:
+      return true;
+  }
+};
+
+export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
 ) => {
   const value = row.getValue(colID) as string;
+  const inputFilter = filterValue as ListOption<string>;
+
+  if (inputFilter.value === "") {
+    return true;
+  }
+
+  return inputFilter.value === value;
+};
+
+export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const values = row.getValue(colID) as string[];
   const inputFilter = filterValue as ListOption<string>[];
 
   // If the passed filter is empty, show all strategies
@@ -46,13 +67,10 @@ export const listOptionValueEquals: FilterFn<Strategy> = (
     return true;
   }
 
-  // this checks if in the passed filter contains the value present in the strategy
-  const filterResult = inputFilter.filter((option) => option.value === value);
-
-  return filterResult.length > 0;
+  return inputFilter.every((f) => values.includes(f.label));
 };
 
-export const boolEqualsString: FilterFn<Strategy> = (
+export const boolEqualsString: FilterFn<EarnStrategy> = (
   row,
   colID,
   filterValue
@@ -70,35 +88,41 @@ export const boolEqualsString: FilterFn<Strategy> = (
   }
 };
 
-export const boolEquals: FilterFn<Strategy> = (row, colID, filterValue) => {
-  const hasLockingDuration = row.getValue(colID) as boolean;
-  const inputFilter = filterValue as boolean;
+export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
+  const valueA: RatePretty | undefined = rowA.getValue(colId);
+  const valueB: RatePretty | undefined = rowB.getValue(colId);
 
-  if (!inputFilter) {
-    return true;
-  } else if (inputFilter === hasLockingDuration) {
-    return true;
-  }
+  if (!valueA || !valueB) return -1;
 
-  return false;
+  const rowAConvertedValue = Number(
+    (rowA.getValue(colId) as RatePretty).toDec().toString()
+  );
+  const rowBConvertedValue = Number(
+    (rowB.getValue(colId) as RatePretty).toDec().toString()
+  );
+
+  if (rowAConvertedValue === rowBConvertedValue) return 0;
+  /**
+   * We can also write it as a === b ? 0 : a < b ? -1 : 1
+   * but I prefer using guard clauses as written above.
+   */
+  return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
-      return "strategyMethod_id";
-    case "platform":
-      return "platform_id";
+      return "type";
     case "rewardType":
-      return "reward";
+      return "rewardAssets";
     case "search":
-      return "strategyName";
-    case "noLockingDuration":
+      return "name";
+    case "lockDurationType":
       return "hasLockingDuration";
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "chainType";
+      return "tags";
     default:
       return k;
   }
@@ -109,3 +133,26 @@ export const getDefaultFiltersState = (filters: Filters) =>
     id: _getKey(key as keyof Filters),
     value,
   }));
+
+export const getListOptions = <T>(
+  strategies: StrategyCMSData[],
+  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type">,
+  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "category">,
+  allLabel: string
+) => {
+  const uniqueOptionsMap = new Map<string, ListOption<T>>();
+
+  strategies.forEach((strategy) => {
+    const value = strategy[valueAccessor] as unknown as T;
+    const label = strategy[labelAccessor];
+    const uniqueKey = `${label}-${String(value)}`;
+
+    if (!uniqueOptionsMap.has(uniqueKey)) {
+      uniqueOptionsMap.set(uniqueKey, { label, value });
+    }
+  });
+
+  uniqueOptionsMap.set("all", { value: "" as unknown as T, label: allLabel });
+
+  return Array.from(uniqueOptionsMap.values());
+};

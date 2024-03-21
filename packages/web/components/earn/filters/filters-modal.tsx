@@ -2,18 +2,15 @@ import { ReactNode } from "react";
 import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import {
   ListOption,
-  Platform,
   StrategyButtonResponsibility,
-  StrategyMethod,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
-import { Switch } from "~/components/ui/switch";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -24,10 +21,12 @@ interface StrategiesFilter extends ListOption<string> {
 const FiltersModal = (
   props: ModalBaseProps & {
     rewardTypes: ListOption<string>[];
-    strategies: ListOption<StrategyMethod>[];
-    platforms: ListOption<Platform>[];
+    lockDurationTypes: ListOption<string>[];
+    strategies: ListOption<string>[];
+    platforms: ListOption<string>[];
     strategiesFilters: StrategiesFilter[];
     tokenFilterOptions: ListOption<string>[];
+    isMyAllSwitchDisabled?: boolean;
   }
 ) => {
   const { filters, setFilter, resetFilters } = useContext(FilterContext);
@@ -37,7 +36,7 @@ const FiltersModal = (
     tokenHolder,
     strategyMethod,
     platform,
-    noLockingDuration,
+    lockDurationType,
     rewardType,
     specialTokens,
   } = filters!;
@@ -66,15 +65,13 @@ const FiltersModal = (
         />
       </div>
       <div className="mt-20 flex flex-col gap-10">
-        <div className="flex items-center justify-between gap-7">
-          <span className="font-subtitle1 font-bold">
-            {t("earnPage.lockingDuration")}
-          </span>
-          <Switch
-            checked={noLockingDuration}
-            onCheckedChange={(value) => setFilter("noLockingDuration", value)}
-          />
-        </div>
+        <RadioWithOptions
+          mode="secondary"
+          onChange={(value) => setFilter("lockDurationType", value)}
+          options={props.lockDurationTypes}
+          value={lockDurationType}
+          variant="small"
+        />
         <RadioWithOptions
           mode="secondary"
           variant="small"
@@ -83,7 +80,7 @@ const FiltersModal = (
           options={props.rewardTypes}
         />
         <div className="flex flex-col gap-4">
-          <DropdownWithLabel<StrategyMethod>
+          <DropdownWithLabel<string>
             label={t("earnPage.strategyMethod")}
             allLabel={t("earnPage.allMethods")}
             options={props.strategies}
@@ -91,7 +88,7 @@ const FiltersModal = (
             onChange={(value) => setFilter("strategyMethod", value)}
             buttonClassName="flex-1"
           />
-          <DropdownWithLabel<Platform>
+          <DropdownWithLabel<string>
             label={t("earnPage.platforms")}
             allLabel={t("earnPage.allPlatforms")}
             options={props.platforms}
@@ -100,7 +97,7 @@ const FiltersModal = (
             buttonClassName="flex-1"
           />
           <DropdownWithMultiSelect
-            label={t("earnPage.specialTokens")}
+            label={t("earnPage.allCategories")}
             options={props.strategiesFilters}
             stateValues={specialTokens}
             toggleFn={({ label, value }) =>
@@ -113,6 +110,7 @@ const FiltersModal = (
           />
         </div>
         <RadioWithOptions
+          disabled={props.isMyAllSwitchDisabled}
           mode="primary"
           variant="large"
           value={tokenHolder}
@@ -120,11 +118,7 @@ const FiltersModal = (
           options={props.tokenFilterOptions}
         />
       </div>
-      <Button
-        onClick={props.onRequestClose}
-        mode={"primary"}
-        className="mt-[70px] max-h-11"
-      >
+      <Button onClick={props.onRequestClose} className="mt-16 max-h-11">
         {t("earnPage.saveFilters")}
       </Button>
     </ModalBase>

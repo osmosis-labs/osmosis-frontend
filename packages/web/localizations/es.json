@@ -176,6 +176,7 @@
       "titleWithdraw": "Retirar a"
     },
     "stakedAssets": "OSMO Abonado",
+    "pooledAssets": "agrupado",
     "table": {
       "columns": {
         "assetChain": "Activo / cadena",
@@ -203,6 +204,7 @@
       "activate": "Activar"
     },
     "totalAssets": "Los activos totales",
+    "totalBalance": "Balance total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
@@ -272,6 +274,18 @@
       "activate": "Activar activos no verificados",
       "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
+    },
+    "getStarted": {
+      "title": "Comience con {osmosis}",
+      "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
+      "addFunds": "Agregue fondos para comenzar"
+    },
+    "categories": {
+      "newest": "El más nuevo",
+      "defi": "DeFi",
+      "stablecoin": "Monedas estables",
+      "meme": "meme",
+      "liquid_staking": "Estaca liquida"
     }
   },
   "buyTokens": "Comprar fichas",
@@ -350,7 +364,8 @@
     "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
     "invalidAmounts": "Montos no válidos",
-    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo."
+    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -596,7 +611,6 @@
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
       "step1": {
@@ -693,7 +707,8 @@
     "promo": {
       "newOpportunity": "Nueva oportunidad de ganar con",
       "discoverSuperchargedPools": "Descubre piscinas sobrealimentadas"
-    }
+    },
+    "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
@@ -815,6 +830,7 @@
     "allocation": "Asignación",
     "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estrategias",
+    "oneStrategy": "1 estrategia",
     "value": "Valor",
     "method": "Método",
     "platform": "Plataforma",
@@ -829,11 +845,10 @@
     "days": "días",
     "risk": "Riesgo",
     "strategyMethod": "Método de estrategia",
-    "allMethods": "Todo el método",
+    "allMethods": "Todos los métodos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
-    "lockingDuration": "Duración del bloqueo",
-    "specialTokens": "Fichas especiales",
+    "allCategories": "todas las categorias",
     "filters": "Filtros",
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
@@ -851,8 +866,19 @@
       "single": "Soltero",
       "multi": "Multi"
     },
-    "totalValueInvested": "Valor total invertido",
-    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted"
+    "totalValueInvested": "Valor total",
+    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
+    "startEarning": "Descubre estrategias",
+    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante una de las muchas estrategias siguientes.",
+    "loadingStrategies": "Cargando estrategias...",
+    "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
+    "sorryNoResults": "No se encontraron estrategias.",
+    "tryChangingFilters": "Prueba a cambiar filtros",
+    "retry": "Rever",
+    "manage": "Administrar",
+    "noLock": "Sin bloqueo",
+    "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
+    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país."
   },
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {

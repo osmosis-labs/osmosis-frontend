@@ -23,6 +23,7 @@ import {
 } from "~/server/queries/imperator";
 import { TimeDuration } from "~/server/queries/imperator";
 import { compareDec, compareMemberDefinition } from "~/utils/compare";
+import { captureErrorAndReturn } from "~/utils/error";
 import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCachePaginatedItems } from "../pagination";
@@ -42,7 +43,7 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+      const asset = getAsset({ anyDenom: findMinDenomOrSymbol });
 
       return await getUserAssetCoin({
         asset,
@@ -60,6 +61,7 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           onlyVerified,
           includePreview,
+          categories,
         },
       }) =>
         maybeCachePaginatedItems({
@@ -70,8 +72,15 @@ export const assetsRouter = createTRPCRouter({
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
+              categories,
             }),
-          cacheKey: JSON.stringify({ search, userOsmoAddress, onlyVerified }),
+          cacheKey: JSON.stringify({
+            search,
+            userOsmoAddress,
+            onlyVerified,
+            includePreview,
+            categories,
+          }),
           cursor,
           limit,
         })
@@ -89,6 +98,25 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
+  getAssetWithPrice: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenom: z.string(),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenom } }) => {
+      const [asset, price] = await Promise.all([
+        getAsset({ anyDenom: coinMinimalDenom }),
+        getAssetPrice({
+          asset: { coinMinimalDenom },
+        }),
+      ]);
+
+      return {
+        ...asset,
+        currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
+      };
+    }),
   getMarketAsset: publicProcedure
     .input(
       z
@@ -98,7 +126,7 @@ export const assetsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
-      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
+      const asset = getAsset({ anyDenom: findMinDenomOrSymbol });
 
       const userAsset = await getUserAssetCoin({ asset, userOsmoAddress });
       const userMarketAsset = await getMarketAsset({
@@ -110,14 +138,12 @@ export const assetsRouter = createTRPCRouter({
         ...userMarketAsset,
       };
     }),
-  getMarketAssets: publicProcedure
+  getUserMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
           /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
-          /** List of asset list categories to filter results by. */
-          assetCategoriesFilter: z.array(z.string()).optional(),
           sort: createSortSchema([
             "currentPrice",
             "marketCap",
@@ -136,6 +162,7 @@ export const assetsRouter = createTRPCRouter({
           preferredDenoms,
           sort: sortInput,
           onlyPositiveBalances,
+          categories,
           cursor,
           limit,
           includePreview,
@@ -150,6 +177,7 @@ export const assetsRouter = createTRPCRouter({
               search,
               onlyVerified,
               includePreview,
+              categories,
             });
 
             assets = await mapGetUserAssetCoins({
@@ -223,6 +251,7 @@ export const assetsRouter = createTRPCRouter({
             preferredDenoms,
             sort: sortInput,
             onlyPositiveBalances,
+            categories,
             includePreview,
           }),
           cursor,
@@ -260,7 +289,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      })
+      }).catch((e) => captureErrorAndReturn(e, []))
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
@@ -287,6 +316,8 @@ export const assetsRouter = createTRPCRouter({
           quoteCoinMinimalDenom,
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
-        })
+        }).catch((e) =>
+          captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
+        )
     ),
 });
