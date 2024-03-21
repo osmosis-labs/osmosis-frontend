@@ -808,22 +808,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBodyBytes =
-      wallet?.signingStargateOptions?.registry?.encodeTxBody({
-        messages: signed.msgs.map((msg) => {
-          const res: any =
-            wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
-          // Include the 'memo' field again because the 'registry' omits it
-          if (msg.value.memo) {
-            res.value.memo = msg.value.memo;
-          }
-          return res;
-        }),
-        memo: signed.memo,
-        timeoutHeight: BigInt(
-          signDoc.timeout_height ?? timeoutHeightDisabledStr
-        ),
-      });
+    const signedTxBodyBytes = this.registry?.encodeTxBody({
+      messages: signed.msgs.map((msg) => {
+        const res: any =
+          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+        // Include the 'memo' field again because the 'registry' omits it
+        if (msg.value.memo) {
+          res.value.memo = msg.value.memo;
+        }
+        return res;
+      }),
+      memo: signed.memo,
+      timeoutHeight: BigInt(signDoc.timeout_height ?? timeoutHeightDisabledStr),
+    });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
     const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
@@ -911,9 +908,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo,
       },
     };
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      txBodyEncodeObject
-    ) as Uint8Array;
+    const txBodyBytes = this.registry?.encode(txBodyEncodeObject) as Uint8Array;
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
