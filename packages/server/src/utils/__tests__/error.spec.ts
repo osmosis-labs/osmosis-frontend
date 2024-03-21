@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { captureError, captureErrorAndReturn, captureIfError } from "../error";
 
-jest.mock("@sentry/nextjs");
+jest.mock("@sentry/core");
 
 describe("captureErrorAndReturn", () => {
   it("should capture the error and return the provided value", () => {
