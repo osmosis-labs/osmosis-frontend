@@ -392,6 +392,8 @@
   },
   "menu": {
     "assets": "Activos",
+    "portfolio": "portafolio",
+    "discover": "Descubrir",
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
@@ -774,6 +776,14 @@
     "assets": {
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
+    "discover": {
+      "title": "Descubra los activos de ósmosis",
+      "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
+    "portfolio": {
+      "title": "Portafolio de Ósmosis",
+      "description": "Vea sus activos en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",

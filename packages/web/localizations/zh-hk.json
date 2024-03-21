@@ -392,6 +392,8 @@
   },
   "menu": {
     "assets": "資產",
+    "portfolio": "資料夾",
+    "discover": "發現",
     "help": "支持",
     "info": "統計數據",
     "pools": "流動性池",
@@ -774,6 +776,14 @@
     "assets": {
       "title": "滲透資產",
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
+    },
+    "discover": {
+      "title": "發現滲透資產",
+      "description": "瀏覽 Osmosis 上的所有可用資產 - 領先的去中心化 Cosmos 交易所"
+    },
+    "portfolio": {
+      "title": "滲透產品組合",
+      "description": "在 Osmosis 上查看您的資產 - 領先的去中心化 Cosmos 交易所"
     },
     "disclaimer": {
       "title": "滲透免責聲明",

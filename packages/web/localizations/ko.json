@@ -392,6 +392,8 @@
   },
   "menu": {
     "assets": "자산",
+    "portfolio": "포트폴리오",
+    "discover": "발견하다",
     "help": "헬프데스크",
     "info": "정보",
     "pools": "풀",
@@ -774,6 +776,14 @@
     "assets": {
       "title": "오스모시스 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
+    },
+    "discover": {
+      "title": "삼투 자산을 찾아보세요",
+      "description": "선도적인 탈중앙화 코스모스 거래소인 Osmosis에서 이용 가능한 모든 자산을 찾아보세요."
+    },
+    "portfolio": {
+      "title": "삼투 포트폴리오",
+      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
     },
     "disclaimer": {
       "title": "오스모시스 면책 조항",

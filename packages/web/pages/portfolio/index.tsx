@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { useEffect } from "react";
 
-import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
+import { PortfolioPage } from "~/components/complex/portfolio-page";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 
-const Assets: NextPage = () => {
+const Portfolio: NextPage = () => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
@@ -14,10 +14,10 @@ const Assets: NextPage = () => {
   useEffect(() => {
     if (
       featureFlags._isInitialized &&
-      featureFlags.portfolioAndDiscoverPages &&
+      !featureFlags.portfolioAndDiscoverPages &&
       router.isReady
     ) {
-      router.push("/portfolio");
+      router.push("/assets");
     }
   }, [
     featureFlags._isInitialized,
@@ -28,8 +28,8 @@ const Assets: NextPage = () => {
   if (!featureFlags._isInitialized) {
     return (
       <NextSeo
-        title={t("seo.assets.title")}
-        description={t("seo.assets.description")}
+        title={t("seo.portfolio.title")}
+        description={t("seo.portfolio.description")}
       />
     );
   }
@@ -37,12 +37,12 @@ const Assets: NextPage = () => {
   return (
     <>
       <NextSeo
-        title={t("seo.assets.title")}
-        description={t("seo.assets.description")}
+        title={t("seo.portfolio.title")}
+        description={t("seo.portfolio.description")}
       />
-      <AssetsPageV1 />
+      <PortfolioPage />
     </>
   );
 };
 
-export default Assets;
+export default Portfolio;
