@@ -34,6 +34,7 @@
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
+    "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@sentry/core": "^7.107.0",
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
