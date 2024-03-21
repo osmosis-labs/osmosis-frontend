@@ -232,7 +232,10 @@ export class ObservableAssetInfoConfig {
 
   @computed
   get historicalChartUnavailable(): boolean {
-    return this._historicalDataError;
+    return (
+      this._historicalDataError ||
+      (!this.isHistoricalDataLoading && this.historicalChartData.length === 0)
+    );
   }
 
   @computed

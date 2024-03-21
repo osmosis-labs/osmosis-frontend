@@ -362,7 +362,7 @@ export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="gap m-auto flex items-center gap-2">
+    <div className="gap m-auto flex items-center gap-2 px-8 md:px-6">
       <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
       <span className="subtitle1 text-osmoverse-400">
         {t("errors.chartUnavailable")}

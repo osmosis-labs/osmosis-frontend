@@ -286,7 +286,7 @@ export const assetsRouter = createTRPCRouter({
               timeFrame: TimeFrame;
               numRecentFrames?: number;
             })),
-      })
+      }).catch((e) => captureErrorAndReturn(e, []))
     ),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
