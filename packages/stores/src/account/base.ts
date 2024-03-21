@@ -23,7 +23,6 @@ import {
 } from "@cosmjs/stargate";
 import {
   MainWalletBase,
-  SignOptions,
   WalletConnectOptions,
   WalletManager,
   WalletStatus,
@@ -32,7 +31,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import {
   ChainedFunctionifyTuple,
@@ -86,6 +84,7 @@ import {
   DeliverTxResponse,
   OneClickTradingInfo,
   RegistryWallet,
+  SignOptions,
   TxEvent,
   TxEvents,
 } from "./types";
@@ -518,7 +517,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
     fee?: TxFee,
-    signOptions?: KeplrSignOptions,
+    signOptions?: SignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -573,19 +572,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      const oneClickTradingInfo = await this.getOneClickTradingInfo();
-      const shouldBeSignedWithOneClickTrading =
-        await this.shouldBeSignedWithOneClickTrading({ messages: msgs });
-      const oneClickExtensionOptions = [
-        {
-          typeUrl: "/osmosis.authenticator.TxExtension",
-          value: TxExtension.encode({
-            selectedAuthenticators: [
-              Number(oneClickTradingInfo?.authenticatorId),
-            ],
-          }).finish(),
-        },
-      ];
+      if (typeof signOptions?.useOneClickTrading === "undefined") {
+        signOptions = {
+          ...signOptions,
+          useOneClickTrading: await this.shouldBeSignedWithOneClickTrading({
+            messages: msgs,
+          }),
+        };
+      }
 
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
@@ -593,10 +587,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           wallet,
           messages: msgs,
           initialFee: fee ?? { amount: [] },
-          nonCriticalExtensionOptions:
-            shouldBeSignedWithOneClickTrading && oneClickTradingInfo
-              ? oneClickExtensionOptions
-              : undefined,
+          nonCriticalExtensionOptions: signOptions.useOneClickTrading
+            ? await this.getOneClickTradingExtensionOptions({
+                oneClickTradingInfo: await this.getOneClickTradingInfo(),
+              })
+            : undefined,
           memo,
           signOptions: mergedSignOptions,
         });
@@ -787,8 +782,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const shouldBeSignedWithOneClickTrading =
-      await this.shouldBeSignedWithOneClickTrading({ messages });
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     const isWithinNetworkFeeLimit =
@@ -800,7 +793,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
 
     if (
-      shouldBeSignedWithOneClickTrading &&
+      signOptions?.useOneClickTrading &&
       /**
        * Should not surpass network fee limit.
        */
@@ -817,7 +810,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (
-      shouldBeSignedWithOneClickTrading &&
+      signOptions?.useOneClickTrading &&
       !isWithinNetworkFeeLimit &&
       this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit
     ) {
@@ -1772,6 +1765,27 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     return isAllowedMessageType;
+  }
+
+  /**
+   * Generates the extension options for one-click trading transactions.
+   */
+  async getOneClickTradingExtensionOptions({
+    oneClickTradingInfo,
+  }: {
+    oneClickTradingInfo: OneClickTradingInfo | undefined;
+  }) {
+    if (!oneClickTradingInfo) return undefined;
+    return [
+      {
+        typeUrl: "/osmosis.authenticator.TxExtension",
+        value: TxExtension.encode({
+          selectedAuthenticators: [
+            Number(oneClickTradingInfo?.authenticatorId),
+          ],
+        }).finish(),
+      },
+    ];
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {

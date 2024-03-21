@@ -200,14 +200,14 @@ const OneClickTradingSettings = ({
   const isDisabled =
     !transaction1CTParams?.isOneClickEnabled || isSendingTx || isLoading;
 
-  const spendLimitDisplay =
-    transaction1CTParams?.spendLimit &&
-    amountSpentData?.amountSpent &&
-    isOneClickTradingEnabled
+  const remainingSpendLimit =
+    initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
       ? `${formatSpendLimit(
-          transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
-        )} / ${formatSpendLimit(transaction1CTParams.spendLimit)}`
-      : formatSpendLimit(transaction1CTParams?.spendLimit);
+          initialTransaction1CTParams.spendLimit.sub(
+            amountSpentData.amountSpent
+          )
+        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+      : undefined;
 
   return (
     <>
@@ -330,7 +330,15 @@ const OneClickTradingSettings = ({
                         )}
                         disabled={isDisabled}
                       >
-                        <p>{spendLimitDisplay} </p>
+                        <p>
+                          {remainingSpendLimit &&
+                          isOneClickTradingEnabled &&
+                          !changes.includes("spendLimit")
+                            ? remainingSpendLimit
+                            : formatSpendLimit(
+                                transaction1CTParams?.spendLimit
+                              )}
+                        </p>
                         <Icon
                           id="chevron-right"
                           width={18}
@@ -507,7 +515,7 @@ const OneClickTradingSettings = ({
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                   subtitle={
-                    isOneClickTradingEnabled ? spendLimitDisplay : undefined
+                    isOneClickTradingEnabled ? remainingSpendLimit : undefined
                   }
                 />
               </div>

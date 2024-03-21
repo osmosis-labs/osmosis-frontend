@@ -28,9 +28,18 @@ async function estimateTxFeesQueryFn({
 }) {
   if (!messages) throw new Error("No messages");
 
+  const shouldBeSignedWithOneClickTrading =
+    await accountStore.shouldBeSignedWithOneClickTrading({ messages });
+  const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+
   const { amount, gas: gasLimit } = await accountStore.estimateFee({
     wallet,
     messages: messages!,
+    nonCriticalExtensionOptions: shouldBeSignedWithOneClickTrading
+      ? await accountStore.getOneClickTradingExtensionOptions({
+          oneClickTradingInfo,
+        })
+      : undefined,
     signOptions: {
       ...wallet.walletInfo?.signOptions,
       preferNoSetFee: true, // this will automatically calculate the amount as well.
