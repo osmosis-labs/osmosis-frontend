@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/core";
 
 export function captureErrorAndReturn<TReturn>(e: Error, returnValue: TReturn) {
   captureError(e);
