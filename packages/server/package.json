@@ -15,7 +15,7 @@
     "server"
   ],
   "sideEffects": [
-    "src/utils/superjson.ts"
+    "./build/utils/superjson.js"
   ],
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
