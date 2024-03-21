@@ -466,17 +466,17 @@ const useNumTicks = () => {
     }
 
     switch (assetInfoConfig.historicalRange) {
-      case "1W":
+      case "7d":
         ticks = isMobile ? 1 : 8;
         break;
-      case "1M":
+      case "1mo":
         ticks = isMobile ? 2 : 6;
         break;
-      case "1D":
+      case "1d":
         ticks = isMobile ? 3 : 10;
         break;
-      case "1Y":
-      case "ALL":
+      case "1y":
+      case "all":
         ticks = isMobile ? 4 : 6;
         break;
     }

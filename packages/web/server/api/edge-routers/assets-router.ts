@@ -302,7 +302,7 @@ export const assetsRouter = createTRPCRouter({
               to: z.number().int().min(0),
             }),
           }),
-          z.enum(["1H", "1D", "1W", "1M", "1Y", "ALL"]),
+          z.enum(["1h", "1d", "7d", "1mo", "1y", "all"]),
         ]),
       })
     )

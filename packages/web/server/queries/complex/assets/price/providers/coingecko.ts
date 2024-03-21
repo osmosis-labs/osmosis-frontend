@@ -120,22 +120,22 @@ export async function getCoinGeckoCoinMarketChart(
      * We set the range of data to be displayed by type
      */
     switch (timeFrame) {
-      case "1H":
+      case "1h":
         from = from.subtract(1, "hour");
         break;
-      case "1D":
+      case "1d":
         from = from.subtract(1, "day");
         break;
-      case "1W":
+      case "7d":
         from = from.subtract(1, "week");
         break;
-      case "1M":
+      case "1mo":
         from = from.subtract(1, "month");
         break;
-      case "1Y":
+      case "1y":
         from = from.subtract(1, "year");
         break;
-      case "ALL":
+      case "all":
         from = undefined;
         break;
     }

@@ -28,27 +28,27 @@ export const useAssetInfoConfig = (
     let numRecentFrames: number | undefined = undefined;
 
     switch (config.historicalRange) {
-      case "1H":
+      case "1h":
         frame = 5;
         numRecentFrames = 12;
         break;
-      case "1D":
+      case "1d":
         frame = 5;
         numRecentFrames = 288;
         break;
-      case "1W":
+      case "7d":
         frame = 120;
         numRecentFrames = 168;
         break;
-      case "1M":
+      case "1mo":
         frame = 1440;
         numRecentFrames = 30;
         break;
-      case "1Y":
+      case "1y":
         frame = 1440;
         numRecentFrames = 365;
         break;
-      case "ALL":
+      case "all":
         frame = 43800;
         break;
     }
@@ -105,7 +105,7 @@ export const useAssetInfoConfig = (
             volume: 0,
           }));
 
-          if (config.historicalRange === "ALL") {
+          if (config.historicalRange === "all") {
             return historicalData;
           }
 
@@ -114,19 +114,19 @@ export const useAssetInfoConfig = (
           const maxTime = max.unix();
 
           switch (config.historicalRange) {
-            case "1H":
+            case "1h":
               min = min.subtract(1, "hour");
               break;
-            case "1D":
+            case "1d":
               min = min.subtract(1, "day");
               break;
-            case "1W":
+            case "7d":
               min = min.subtract(1, "week");
               break;
-            case "1M":
+            case "1mo":
               min = min.subtract(1, "month");
               break;
-            case "1Y":
+            case "1y":
               min = min.subtract(1, "year");
               break;
           }
@@ -155,12 +155,12 @@ export const useAssetInfoConfig = (
 };
 
 export const AvailablePriceRanges = [
-  "1H",
-  "1D",
-  "1W",
-  "1M",
-  "1Y",
-  "ALL",
+  "1h",
+  "1d",
+  "7d",
+  "1mo",
+  "1y",
+  "all",
 ] as const;
 
 export type PriceRange = (typeof AvailablePriceRanges)[number];
@@ -175,7 +175,7 @@ export interface ChartTick {
 
 export class ObservableAssetInfoConfig {
   @observable
-  protected _historicalRange: PriceRange = "1W";
+  protected _historicalRange: PriceRange = "7d";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
