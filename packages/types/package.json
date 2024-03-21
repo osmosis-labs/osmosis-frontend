@@ -13,6 +13,7 @@
   "keywords": [
     "osmosis"
   ],
+  "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
     "build": "tsc",
