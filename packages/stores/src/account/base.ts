@@ -820,7 +820,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           return res;
         }),
         memo: signed.memo,
-        timeoutHeight: Long.fromString(
+        timeoutHeight: BigInt(
           signDoc.timeout_height ?? timeoutHeightDisabledStr
         ),
       });
