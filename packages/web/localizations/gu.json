@@ -484,6 +484,7 @@
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "editSessionButton": "ફેરફારો સંગ્રહ",
       "endingSession": "સત્ર સમાપ્ત",
+      "feeToDisable": "1-ક્લિક ટ્રેડિંગને અક્ષમ કરવા માટે ફી:",
       "spendLimitScreen": {
         "spendLimitDescription": "1-ક્લિક ટ્રેડિંગ સત્ર સમયગાળામાં તમે ખર્ચ કરી શકો તે મહત્તમ રકમ સેટ કરો.",
         "fixedAmount": "નિશ્ચિત રકમ",

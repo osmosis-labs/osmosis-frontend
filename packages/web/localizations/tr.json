@@ -484,6 +484,7 @@
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",
       "endingSession": "Oturumu sonlandır",
+      "feeToDisable": "Tek Tıkla Ticareti devre dışı bırakma ücreti:",
       "spendLimitScreen": {
         "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
         "fixedAmount": "Sabit miktar",

@@ -484,6 +484,7 @@
       "startButton": "开始一键交易",
       "editSessionButton": "保存更改",
       "endingSession": "结束会议",
+      "feeToDisable": "禁用一键交易的费用：",
       "spendLimitScreen": {
         "spendLimitDescription": "设置您在一键交易会话期间可以花费的最大金额。",
         "fixedAmount": "固定值",

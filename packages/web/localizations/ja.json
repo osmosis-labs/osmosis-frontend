@@ -484,6 +484,7 @@
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
+      "feeToDisable": "1-Click 取引を無効にする料金:",
       "spendLimitScreen": {
         "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
         "fixedAmount": "定額",

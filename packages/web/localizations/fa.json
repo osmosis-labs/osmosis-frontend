@@ -484,6 +484,7 @@
       "startButton": "شروع تجارت با 1 کلیک",
       "editSessionButton": "ذخیره تغییرات",
       "endingSession": "پایان جلسه",
+      "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
       "spendLimitScreen": {
         "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
         "fixedAmount": "مقدار ثابت",

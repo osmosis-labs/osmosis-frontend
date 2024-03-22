@@ -1,3 +1,5 @@
+import { PricePretty } from "@keplr-wallet/unit";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -12,6 +14,7 @@ import React, {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getResetPeriodTranslationKey,
@@ -25,10 +28,17 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { useDisclosure, useTranslation } from "~/hooks";
+import {
+  useDisclosure,
+  useOneClickTradingSession,
+  useTranslation,
+} from "~/hooks";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
+import { api } from "~/utils/trpc";
 
 type Classes = "root";
 
@@ -94,6 +104,12 @@ export function compare1CTTransactionParams({
   return Array.from(changes);
 }
 
+function formatSpendLimit(spendLimit: PricePretty | undefined) {
+  return `${spendLimit?.symbol}${trimPlaceholderZeros(
+    spendLimit?.toDec().toString(2) ?? ""
+  )} ${spendLimit?.fiatCurrency.currency.toUpperCase()}`;
+}
+
 const OneClickTradingSettings = ({
   classes,
   onGoBack,
@@ -114,6 +130,35 @@ const OneClickTradingSettings = ({
   >([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
+
+  const { chainStore } = useStore();
+
+  const { isOneClickTradingEnabled, oneClickTradingInfo } =
+    useOneClickTradingSession();
+  const { data: amountSpentData } =
+    api.local.oneClickTrading.getAmountSpent.useQuery(
+      {
+        authenticatorId: oneClickTradingInfo?.authenticatorId!,
+        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress!,
+      },
+      {
+        enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+      }
+    );
+
+  const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
+    useEstimateTxFees({
+      messages: oneClickTradingInfo
+        ? [
+            makeRemoveAuthenticatorMsg({
+              id: BigInt(oneClickTradingInfo.authenticatorId),
+              sender: oneClickTradingInfo.userOsmoAddress,
+            }),
+          ]
+        : [],
+      chainId: chainStore.osmosis.chainId,
+      enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+    });
 
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
@@ -154,6 +199,15 @@ const OneClickTradingSettings = ({
 
   const isDisabled =
     !transaction1CTParams?.isOneClickEnabled || isSendingTx || isLoading;
+
+  const spendLimitDisplay =
+    transaction1CTParams?.spendLimit &&
+    amountSpentData?.amountSpent &&
+    isOneClickTradingEnabled
+      ? `${formatSpendLimit(
+          transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
+        )} / ${formatSpendLimit(transaction1CTParams.spendLimit)}`
+      : formatSpendLimit(transaction1CTParams?.spendLimit);
 
   return (
     <>
@@ -276,15 +330,7 @@ const OneClickTradingSettings = ({
                         )}
                         disabled={isDisabled}
                       >
-                        <p>
-                          {transaction1CTParams?.spendLimit?.symbol}
-                          {trimPlaceholderZeros(
-                            transaction1CTParams?.spendLimit
-                              .toDec()
-                              .toString(2) ?? ""
-                          )}{" "}
-                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
-                        </p>
+                        <p>{spendLimitDisplay} </p>
                         <Icon
                           id="chevron-right"
                           width={18}
@@ -429,6 +475,24 @@ const OneClickTradingSettings = ({
                       </Button>
                     </div>
                   )}
+
+                {isOneClickTradingEnabled &&
+                  (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
+                    <SkeletonLoader
+                      className="self-center"
+                      isLoaded={!isLoadingEstimateRemoveTx}
+                    >
+                      <p className="text-caption font-caption text-osmoverse-300">
+                        {t("oneClickTrading.settings.feeToDisable")} ~
+                        {estimateRemoveTxData?.gasAmount.toString() ??
+                          "0.000000 OSMO"}{" "}
+                        (
+                        {estimateRemoveTxData?.gasUsdValueToPay.toString() ??
+                          "(< $0.00)"}
+                        )
+                      </p>
+                    </SkeletonLoader>
+                  )}
               </div>
             </Screen>
 
@@ -442,6 +506,9 @@ const OneClickTradingSettings = ({
                 <SpendLimitScreen
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
+                  subtitle={
+                    isOneClickTradingEnabled ? spendLimitDisplay : undefined
+                  }
                 />
               </div>
             </Screen>

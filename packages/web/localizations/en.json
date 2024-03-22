@@ -484,6 +484,7 @@
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
       "endingSession": "Ending session",
+      "feeToDisable": "Fee to disable 1-Click Trading:",
       "spendLimitScreen": {
         "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
         "fixedAmount": "Fixed amount",

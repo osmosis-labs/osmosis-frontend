@@ -1,11 +1,15 @@
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
 import { humanizeTime } from "~/utils/date";
 
-export const OneClickTradingRemainingTime = () => {
+export const OneClickTradingRemainingTime: FunctionComponent<{
+  className?: string;
+  expiredElement?: React.ReactNode;
+}> = ({ className, expiredElement }) => {
   const { oneClickTradingInfo, isOneClickTradingExpired } =
     useOneClickTradingSession();
   const { t } = useTranslation();
@@ -38,16 +42,21 @@ export const OneClickTradingRemainingTime = () => {
     return () => clearInterval(intervalId);
   }, [oneClickTradingInfo]);
 
-  if (isOneClickTradingExpired)
+  if (isOneClickTradingExpired) {
     return (
-      <p className="body1 text-rust-200">
-        {t("oneClickTrading.profile.sessionExpired")}
-      </p>
+      <>
+        {expiredElement ?? (
+          <p className="body1 text-rust-200">
+            {t("oneClickTrading.profile.sessionExpired")}
+          </p>
+        )}
+      </>
     );
+  }
   if (!humanizedTime) return null;
 
   return (
-    <p className="body1 text-wosmongton-200">
+    <p className={classNames("body1 text-wosmongton-200", className)}>
       {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
       {t("remaining")}
     </p>

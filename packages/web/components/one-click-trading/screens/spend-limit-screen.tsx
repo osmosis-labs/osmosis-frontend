@@ -1,6 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isNil, isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
 
@@ -39,11 +39,14 @@ const shareOfBalanceOptions: ShareOfBalanceOption[] = [
 ];
 
 type SpendLimitViews = "fixed-amount" | "share-of-balance";
-interface SpendLimitScreenProps extends OneClickTradingBaseScreenProps {}
+interface SpendLimitScreenProps extends OneClickTradingBaseScreenProps {
+  subtitle?: string;
+}
 
 export const SpendLimitScreen = ({
   transaction1CTParams,
   setTransaction1CTParams,
+  subtitle,
 }: SpendLimitScreenProps) => {
   const { t } = useTranslation();
   const { accountStore, chainStore } = useStore();
@@ -132,9 +135,14 @@ export const SpendLimitScreen = ({
         className="absolute top-7 left-7"
       />
       <div className="flex flex-col items-center gap-6 px-16 ">
-        <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-          {t("oneClickTrading.settings.spendLimitTitle")}
-        </h1>
+        <div>
+          <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
+            {t("oneClickTrading.settings.spendLimitTitle")}
+          </h1>
+          {!isNil(subtitle) && (
+            <p className="text-body2 text-osmoverse-300">{subtitle}</p>
+          )}
+        </div>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.spendLimitScreen.spendLimitDescription")}
         </p>

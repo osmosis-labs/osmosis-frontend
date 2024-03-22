@@ -145,9 +145,9 @@ export async function getAuthenticatorIdFromTx({
   userOsmoAddress: string;
   publicKey: string;
   fallbackGetAuthenticatorId: (
-    input: RouterInputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+    input: RouterInputs["local"]["oneClickTrading"]["getSessionAuthenticator"]
   ) => Promise<
-    RouterOutputs["edge"]["oneClickTrading"]["getSessionAuthenticator"]
+    RouterOutputs["local"]["oneClickTrading"]["getSessionAuthenticator"]
   >;
 }) {
   let authenticatorId: string | undefined = events
@@ -274,7 +274,7 @@ export const useCreateOneClickTradingSession = ({
         authenticators: ParsedAuthenticator[];
       try {
         ({ accountPubKey, shouldAddFirstAuthenticator, authenticators } =
-          await apiUtils.edge.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
+          await apiUtils.local.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
             { userOsmoAddress: walletRepo.current.address! }
           ));
       } catch (error) {
@@ -401,7 +401,7 @@ export const useCreateOneClickTradingSession = ({
         events: tx.events,
         userOsmoAddress: walletRepo.current.address!,
         fallbackGetAuthenticatorId:
-          apiUtils.edge.oneClickTrading.getSessionAuthenticator.fetch,
+          apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
         publicKey,
       });
 

@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/ui/button";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStack } from "~/hooks/use-stack";
 import { createContext } from "~/utils/react-context";
@@ -153,7 +153,6 @@ export const ScreenGoBackButton = ({
       )}
       icon={<Icon id="chevron-left" width={16} height={16} />}
       aria-label="Go Back"
-      mode="unstyled"
     />
   );
 };
