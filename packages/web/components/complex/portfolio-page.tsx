@@ -2,9 +2,9 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import type { SeriesPieOptions } from "highcharts";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo } from "react";
 
+import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { EventName } from "~/config";
 import {
   Breakpoint,
@@ -24,7 +24,6 @@ import { api } from "~/utils/trpc";
 
 import { PieChart } from "../chart";
 import SkeletonLoader from "../loaders/skeleton-loader";
-import { AssetsInfoTable } from "../table/asset-info";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
 
@@ -63,7 +62,7 @@ export const PortfolioPage: FunctionComponent = () => {
         <AssetsOverview />
       </section>
 
-      <AssetsInfoTable
+      <AssetBalancesTable
         tableTopPadding={heroHeight}
         onDeposit={useCallback(
           (coinMinimalDenom) => {
@@ -89,7 +88,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   return (
-    <div className="relative flex h-48 w-full place-content-between items-center rounded-5xl bg-osmoverse-800">
+    <div className="relative flex h-48 w-full place-content-between items-center">
       <SkeletonLoader
         className="rounded-5xl 1.5lg:w-full"
         isLoaded={!isWalletLoading}
@@ -100,15 +99,6 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
           <GetStartedWithOsmosis />
         )}
       </SkeletonLoader>
-
-      <div className="absolute right-3 bottom-0 overflow-clip align-baseline 1.5lg:hidden">
-        <Image
-          alt="vials"
-          src="/images/osmosis-home-fg.png"
-          height={320}
-          width={320}
-        />
-      </div>
     </div>
   );
 });
