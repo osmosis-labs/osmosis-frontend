@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { base64FromBytes, bytesFromBase64 } from "../../../../helpers";
 /** MsgCreateClient defines a message to create an IBC client */
 export interface MsgCreateClient {
   /** light client state */
@@ -27,7 +28,7 @@ export interface MsgCreateClientAmino {
    */
   consensus_state?: AnyAmino;
   /** signer address */
-  signer: string;
+  signer?: string;
 }
 export interface MsgCreateClientAminoMsg {
   type: "cosmos-sdk/MsgCreateClient";
@@ -75,11 +76,11 @@ export interface MsgUpdateClientProtoMsg {
  */
 export interface MsgUpdateClientAmino {
   /** client unique identifier */
-  client_id: string;
+  client_id?: string;
   /** client message to update the light client */
   client_message?: AnyAmino;
   /** signer address */
-  signer: string;
+  signer?: string;
 }
 export interface MsgUpdateClientAminoMsg {
   type: "cosmos-sdk/MsgUpdateClient";
@@ -139,7 +140,7 @@ export interface MsgUpgradeClientProtoMsg {
  */
 export interface MsgUpgradeClientAmino {
   /** client unique identifier */
-  client_id: string;
+  client_id?: string;
   /** upgraded client state */
   client_state?: AnyAmino;
   /**
@@ -148,11 +149,11 @@ export interface MsgUpgradeClientAmino {
    */
   consensus_state?: AnyAmino;
   /** proof that old chain committed to new client */
-  proof_upgrade_client: Uint8Array;
+  proof_upgrade_client?: string;
   /** proof that old chain committed to new consensus state */
-  proof_upgrade_consensus_state: Uint8Array;
+  proof_upgrade_consensus_state?: string;
   /** signer address */
-  signer: string;
+  signer?: string;
 }
 export interface MsgUpgradeClientAminoMsg {
   type: "cosmos-sdk/MsgUpgradeClient";
@@ -212,13 +213,13 @@ export interface MsgSubmitMisbehaviourProtoMsg {
 export interface MsgSubmitMisbehaviourAmino {
   /** client unique identifier */
   /** @deprecated */
-  client_id: string;
+  client_id?: string;
   /** misbehaviour used for freezing the light client */
   /** @deprecated */
   misbehaviour?: AnyAmino;
   /** signer address */
   /** @deprecated */
-  signer: string;
+  signer?: string;
 }
 export interface MsgSubmitMisbehaviourAminoMsg {
   type: "cosmos-sdk/MsgSubmitMisbehaviour";
@@ -322,15 +323,20 @@ export const MsgCreateClient = {
     return message;
   },
   fromAmino(object: MsgCreateClientAmino): MsgCreateClient {
-    return {
-      clientState: object?.client_state
-        ? Any.fromAmino(object.client_state)
-        : undefined,
-      consensusState: object?.consensus_state
-        ? Any.fromAmino(object.consensus_state)
-        : undefined,
-      signer: object.signer,
-    };
+    const message = createBaseMsgCreateClient();
+    if (object.client_state !== undefined && object.client_state !== null) {
+      message.clientState = Any.fromAmino(object.client_state);
+    }
+    if (
+      object.consensus_state !== undefined &&
+      object.consensus_state !== null
+    ) {
+      message.consensusState = Any.fromAmino(object.consensus_state);
+    }
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
+    }
+    return message;
   },
   toAmino(message: MsgCreateClient): MsgCreateClientAmino {
     const obj: any = {};
@@ -340,7 +346,7 @@ export const MsgCreateClient = {
     obj.consensus_state = message.consensusState
       ? Any.toAmino(message.consensusState)
       : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgCreateClientAminoMsg): MsgCreateClient {
@@ -399,7 +405,8 @@ export const MsgCreateClientResponse = {
     return message;
   },
   fromAmino(_: MsgCreateClientResponseAmino): MsgCreateClientResponse {
-    return {};
+    const message = createBaseMsgCreateClientResponse();
+    return message;
   },
   toAmino(_: MsgCreateClientResponse): MsgCreateClientResponseAmino {
     const obj: any = {};
@@ -494,21 +501,25 @@ export const MsgUpdateClient = {
     return message;
   },
   fromAmino(object: MsgUpdateClientAmino): MsgUpdateClient {
-    return {
-      clientId: object.client_id,
-      clientMessage: object?.client_message
-        ? Any.fromAmino(object.client_message)
-        : undefined,
-      signer: object.signer,
-    };
+    const message = createBaseMsgUpdateClient();
+    if (object.client_id !== undefined && object.client_id !== null) {
+      message.clientId = object.client_id;
+    }
+    if (object.client_message !== undefined && object.client_message !== null) {
+      message.clientMessage = Any.fromAmino(object.client_message);
+    }
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
+    }
+    return message;
   },
   toAmino(message: MsgUpdateClient): MsgUpdateClientAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.client_message = message.clientMessage
       ? Any.toAmino(message.clientMessage)
       : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateClientAminoMsg): MsgUpdateClient {
@@ -567,7 +578,8 @@ export const MsgUpdateClientResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateClientResponseAmino): MsgUpdateClientResponse {
-    return {};
+    const message = createBaseMsgUpdateClientResponse();
+    return message;
   },
   toAmino(_: MsgUpdateClientResponse): MsgUpdateClientResponseAmino {
     const obj: any = {};
@@ -690,31 +702,54 @@ export const MsgUpgradeClient = {
     return message;
   },
   fromAmino(object: MsgUpgradeClientAmino): MsgUpgradeClient {
-    return {
-      clientId: object.client_id,
-      clientState: object?.client_state
-        ? Any.fromAmino(object.client_state)
-        : undefined,
-      consensusState: object?.consensus_state
-        ? Any.fromAmino(object.consensus_state)
-        : undefined,
-      proofUpgradeClient: object.proof_upgrade_client,
-      proofUpgradeConsensusState: object.proof_upgrade_consensus_state,
-      signer: object.signer,
-    };
+    const message = createBaseMsgUpgradeClient();
+    if (object.client_id !== undefined && object.client_id !== null) {
+      message.clientId = object.client_id;
+    }
+    if (object.client_state !== undefined && object.client_state !== null) {
+      message.clientState = Any.fromAmino(object.client_state);
+    }
+    if (
+      object.consensus_state !== undefined &&
+      object.consensus_state !== null
+    ) {
+      message.consensusState = Any.fromAmino(object.consensus_state);
+    }
+    if (
+      object.proof_upgrade_client !== undefined &&
+      object.proof_upgrade_client !== null
+    ) {
+      message.proofUpgradeClient = bytesFromBase64(object.proof_upgrade_client);
+    }
+    if (
+      object.proof_upgrade_consensus_state !== undefined &&
+      object.proof_upgrade_consensus_state !== null
+    ) {
+      message.proofUpgradeConsensusState = bytesFromBase64(
+        object.proof_upgrade_consensus_state
+      );
+    }
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
+    }
+    return message;
   },
   toAmino(message: MsgUpgradeClient): MsgUpgradeClientAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.client_state = message.clientState
       ? Any.toAmino(message.clientState)
       : undefined;
     obj.consensus_state = message.consensusState
       ? Any.toAmino(message.consensusState)
       : undefined;
-    obj.proof_upgrade_client = message.proofUpgradeClient;
-    obj.proof_upgrade_consensus_state = message.proofUpgradeConsensusState;
-    obj.signer = message.signer;
+    obj.proof_upgrade_client = message.proofUpgradeClient
+      ? base64FromBytes(message.proofUpgradeClient)
+      : undefined;
+    obj.proof_upgrade_consensus_state = message.proofUpgradeConsensusState
+      ? base64FromBytes(message.proofUpgradeConsensusState)
+      : undefined;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgUpgradeClientAminoMsg): MsgUpgradeClient {
@@ -773,7 +808,8 @@ export const MsgUpgradeClientResponse = {
     return message;
   },
   fromAmino(_: MsgUpgradeClientResponseAmino): MsgUpgradeClientResponse {
-    return {};
+    const message = createBaseMsgUpgradeClientResponse();
+    return message;
   },
   toAmino(_: MsgUpgradeClientResponse): MsgUpgradeClientResponseAmino {
     const obj: any = {};
@@ -871,21 +907,25 @@ export const MsgSubmitMisbehaviour = {
     return message;
   },
   fromAmino(object: MsgSubmitMisbehaviourAmino): MsgSubmitMisbehaviour {
-    return {
-      clientId: object.client_id,
-      misbehaviour: object?.misbehaviour
-        ? Any.fromAmino(object.misbehaviour)
-        : undefined,
-      signer: object.signer,
-    };
+    const message = createBaseMsgSubmitMisbehaviour();
+    if (object.client_id !== undefined && object.client_id !== null) {
+      message.clientId = object.client_id;
+    }
+    if (object.misbehaviour !== undefined && object.misbehaviour !== null) {
+      message.misbehaviour = Any.fromAmino(object.misbehaviour);
+    }
+    if (object.signer !== undefined && object.signer !== null) {
+      message.signer = object.signer;
+    }
+    return message;
   },
   toAmino(message: MsgSubmitMisbehaviour): MsgSubmitMisbehaviourAmino {
     const obj: any = {};
-    obj.client_id = message.clientId;
+    obj.client_id = message.clientId === "" ? undefined : message.clientId;
     obj.misbehaviour = message.misbehaviour
       ? Any.toAmino(message.misbehaviour)
       : undefined;
-    obj.signer = message.signer;
+    obj.signer = message.signer === "" ? undefined : message.signer;
     return obj;
   },
   fromAminoMsg(object: MsgSubmitMisbehaviourAminoMsg): MsgSubmitMisbehaviour {
@@ -948,7 +988,8 @@ export const MsgSubmitMisbehaviourResponse = {
   fromAmino(
     _: MsgSubmitMisbehaviourResponseAmino
   ): MsgSubmitMisbehaviourResponse {
-    return {};
+    const message = createBaseMsgSubmitMisbehaviourResponse();
+    return message;
   },
   toAmino(
     _: MsgSubmitMisbehaviourResponse

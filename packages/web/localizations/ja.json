@@ -279,6 +279,13 @@
       "title": "{osmosis}を使ってみましょう",
       "description": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
       "addFunds": "開始するには資金を追加してください"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "DeFi",
+      "stablecoin": "ステーブルコイン",
+      "meme": "ミーム",
+      "liquid_staking": "リキッドステーキング"
     }
   },
   "buyTokens": "トークンを購入する",
@@ -604,7 +611,6 @@
     "unbondingPeriodTooltip": "ロックされたトークンにより、ブロックチェーンの安定性が向上します。トークンのステークを解除すると、指定された解除期間後にトークンが利用可能になります。",
     "estimatedEarningsTooltip": "これらの収益は現在のステーキング APR に基づいて計算されますが、変更される可能性があります。",
     "collectRewardsTooltipDisabled": "報酬が少なすぎるため収集できません。未請求の残高{collectRewardsMinimumOsmo} OSMO の最小しきい値に達してからもう一度お試しください。",
-    "isAPRTooHighTooltip": "このバリデーターは異常に高い手数料を取ります。別のバリデーターを選択することを検討してください。",
     "isVotingPowerTooHighTooltip": "これは、高い投票力を持つトップ 10 のバリデーターです。分散化を促進するために、別のバリデータを選択することを検討してください。",
     "learnMore": {
       "step1": {

@@ -1,3 +1,4 @@
+import { EarnStrategy } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import Image from "next/image";
@@ -22,7 +23,6 @@ import {
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
-import { EarnStrategy } from "~/server/queries/numia/earn";
 import { formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<EarnStrategy>();

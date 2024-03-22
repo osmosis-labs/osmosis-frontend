@@ -5,6 +5,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+import type { Asset, RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
@@ -12,6 +13,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
+import { sum } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
@@ -24,11 +26,8 @@ import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { RouterKey } from "~/server/api/local-routers/swap-router";
-import type { AppRouter } from "~/server/api/root";
-import type { Asset } from "~/server/queries/complex/assets";
+import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { sum } from "~/utils/math";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -135,7 +134,13 @@ export function useSwap({
     let error = quoteError;
 
     // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
+    if (
+      (quote &&
+        !quote.inOutSpotPrice &&
+        !quote.amount.toDec().isPositive() &&
+        !error) ||
+      (!quote && spotPriceQuoteError)
+    )
       error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
@@ -759,7 +764,7 @@ function makeRouterErrorFromTrpcError(
     }
   | undefined {
   if (isNil(error)) return;
-  const tprcShapeMsg = error?.shape?.message;
+  const tprcShapeMsg = error?.message;
 
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };

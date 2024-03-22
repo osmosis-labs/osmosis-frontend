@@ -1,5 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { formatICNSName } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -25,7 +26,6 @@ import { useWindowSize } from "~/hooks";
 import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
 import { WalletDisplay } from "~/integrations/wallets";
 import { useStore } from "~/stores";
-import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 

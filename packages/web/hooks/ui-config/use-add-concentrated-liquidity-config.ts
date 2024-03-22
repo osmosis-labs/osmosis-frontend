@@ -24,6 +24,7 @@ import {
   roundPriceToNearestTick,
   roundToNearestDivisible,
 } from "@osmosis-labs/math";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import {
   FakeFeeConfig,
   IPriceStore,
@@ -35,8 +36,6 @@ import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { Pool } from "~/server/queries/complex/pools";
-import type { ConcentratedPoolRawResponse } from "~/server/queries/osmosis";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -61,7 +60,13 @@ export function useAddConcentratedLiquidityConfig(
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
-  const { data: pool } = api.edge.pools.getPool.useQuery({ poolId });
+  const { data: pool, isFetched: isPoolFetched } =
+    api.edge.pools.getPool.useQuery(
+      { poolId },
+      {
+        refetchInterval: 5_000, // 5 seconds
+      }
+    );
 
   const [config] = useState(
     () =>
@@ -110,7 +115,7 @@ export function useAddConcentratedLiquidityConfig(
           pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
         timeDuration: "7d",
       },
-      { enabled: Boolean(pool) }
+      { enabled: isPoolFetched }
     );
   if (historicalPriceData)
     config.setHistoricalPriceMinMax(
@@ -141,33 +146,9 @@ export function useAddConcentratedLiquidityConfig(
             baseDepositValue = baseCoin;
           }
 
-          await priceStore.waitResponse();
-          const fiat = priceStore.getFiatCurrency(
-            priceStore.defaultVsCurrency
-          )!;
-          const value0 = baseDepositValue
-            ? priceStore.calculatePrice(
-                new CoinPretty(
-                  config.baseDepositAmountIn.sendCurrency,
-                  baseDepositValue.amount
-                )
-              )
-            : new PricePretty(fiat, 0);
-          const value1 = quoteDepositValue
-            ? priceStore.calculatePrice(
-                new CoinPretty(
-                  config.quoteDepositAmountIn.sendCurrency,
-                  quoteDepositValue.amount
-                )
-              )
-            : new PricePretty(fiat, 0);
-          const totalValue = Number(
-            value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
-          );
           const baseEvent = {
             isSingleAsset:
               !Boolean(baseDepositValue) || !Boolean(quoteDepositValue),
-            liquidityUSD: totalValue,
             volatilityType: config.currentStrategy ?? "",
             poolId,
             rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
@@ -211,7 +192,6 @@ export function useAddConcentratedLiquidityConfig(
     [
       poolId,
       account?.osmosis,
-      priceStore,
       osmosisQueries.queryLiquiditiesPerTickRange,
       config.baseDepositAmountIn.sendCurrency,
       config.baseDepositAmountIn.amount,

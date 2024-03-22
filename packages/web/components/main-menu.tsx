@@ -1,4 +1,6 @@
 import { Popover } from "@headlessui/react";
+import { runIfFn } from "@osmosis-labs/utils";
+import { isFunction } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +11,10 @@ import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { isFunction } from "~/utils/assertion";
-import { MaybeRenderProp, runIfFn } from "~/utils/function";
+
+export type MaybeRenderProp<P> =
+  | React.ReactNode
+  | ((props: P) => React.ReactNode);
 
 export const MainMenu: FunctionComponent<{
   onClickItem?: () => void;

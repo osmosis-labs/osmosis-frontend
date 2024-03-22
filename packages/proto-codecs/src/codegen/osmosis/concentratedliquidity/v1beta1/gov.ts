@@ -22,9 +22,9 @@ export interface CreateConcentratedLiquidityPoolsProposalProtoMsg {
  * passes, the pools are created via pool manager module account.
  */
 export interface CreateConcentratedLiquidityPoolsProposalAmino {
-  title: string;
-  description: string;
-  pool_records: PoolRecordAmino[];
+  title?: string;
+  description?: string;
+  pool_records?: PoolRecordAmino[];
 }
 export interface CreateConcentratedLiquidityPoolsProposalAminoMsg {
   type: "osmosis/concentratedliquidity/create-concentrated-liquidity-pools-proposal";
@@ -62,9 +62,9 @@ export interface TickSpacingDecreaseProposalProtoMsg {
  * spacing.
  */
 export interface TickSpacingDecreaseProposalAmino {
-  title: string;
-  description: string;
-  pool_id_to_tick_spacing_records: PoolIdToTickSpacingRecordAmino[];
+  title?: string;
+  description?: string;
+  pool_id_to_tick_spacing_records?: PoolIdToTickSpacingRecordAmino[];
 }
 export interface TickSpacingDecreaseProposalAminoMsg {
   type: "osmosis/concentratedliquidity/tick-spacing-decrease-proposal";
@@ -98,8 +98,8 @@ export interface PoolIdToTickSpacingRecordProtoMsg {
  * spacing pair.
  */
 export interface PoolIdToTickSpacingRecordAmino {
-  pool_id: string;
-  new_tick_spacing: string;
+  pool_id?: string;
+  new_tick_spacing?: string;
 }
 export interface PoolIdToTickSpacingRecordAminoMsg {
   type: "osmosis/concentratedliquidity/pool-id-to-tick-spacing-record";
@@ -124,10 +124,10 @@ export interface PoolRecordProtoMsg {
   value: Uint8Array;
 }
 export interface PoolRecordAmino {
-  denom0: string;
-  denom1: string;
-  tick_spacing: string;
-  spread_factor: string;
+  denom0?: string;
+  denom1?: string;
+  tick_spacing?: string;
+  spread_factor?: string;
 }
 export interface PoolRecordAminoMsg {
   type: "osmosis/concentratedliquidity/pool-record";
@@ -204,26 +204,30 @@ export const CreateConcentratedLiquidityPoolsProposal = {
   fromAmino(
     object: CreateConcentratedLiquidityPoolsProposalAmino
   ): CreateConcentratedLiquidityPoolsProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      poolRecords: Array.isArray(object?.pool_records)
-        ? object.pool_records.map((e: any) => PoolRecord.fromAmino(e))
-        : [],
-    };
+    const message = createBaseCreateConcentratedLiquidityPoolsProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    message.poolRecords =
+      object.pool_records?.map((e) => PoolRecord.fromAmino(e)) || [];
+    return message;
   },
   toAmino(
     message: CreateConcentratedLiquidityPoolsProposal
   ): CreateConcentratedLiquidityPoolsProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description =
+      message.description === "" ? undefined : message.description;
     if (message.poolRecords) {
       obj.pool_records = message.poolRecords.map((e) =>
         e ? PoolRecord.toAmino(e) : undefined
       );
     } else {
-      obj.pool_records = [];
+      obj.pool_records = message.poolRecords;
     }
     return obj;
   },
@@ -326,31 +330,33 @@ export const TickSpacingDecreaseProposal = {
   fromAmino(
     object: TickSpacingDecreaseProposalAmino
   ): TickSpacingDecreaseProposal {
-    return {
-      title: object.title,
-      description: object.description,
-      poolIdToTickSpacingRecords: Array.isArray(
-        object?.pool_id_to_tick_spacing_records
-      )
-        ? object.pool_id_to_tick_spacing_records.map((e: any) =>
-            PoolIdToTickSpacingRecord.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseTickSpacingDecreaseProposal();
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title;
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    }
+    message.poolIdToTickSpacingRecords =
+      object.pool_id_to_tick_spacing_records?.map((e) =>
+        PoolIdToTickSpacingRecord.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(
     message: TickSpacingDecreaseProposal
   ): TickSpacingDecreaseProposalAmino {
     const obj: any = {};
-    obj.title = message.title;
-    obj.description = message.description;
+    obj.title = message.title === "" ? undefined : message.title;
+    obj.description =
+      message.description === "" ? undefined : message.description;
     if (message.poolIdToTickSpacingRecords) {
       obj.pool_id_to_tick_spacing_records =
         message.poolIdToTickSpacingRecords.map((e) =>
           e ? PoolIdToTickSpacingRecord.toAmino(e) : undefined
         );
     } else {
-      obj.pool_id_to_tick_spacing_records = [];
+      obj.pool_id_to_tick_spacing_records = message.poolIdToTickSpacingRecords;
     }
     return obj;
   },
@@ -444,17 +450,26 @@ export const PoolIdToTickSpacingRecord = {
     return message;
   },
   fromAmino(object: PoolIdToTickSpacingRecordAmino): PoolIdToTickSpacingRecord {
-    return {
-      poolId: BigInt(object.pool_id),
-      newTickSpacing: BigInt(object.new_tick_spacing),
-    };
+    const message = createBasePoolIdToTickSpacingRecord();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (
+      object.new_tick_spacing !== undefined &&
+      object.new_tick_spacing !== null
+    ) {
+      message.newTickSpacing = BigInt(object.new_tick_spacing);
+    }
+    return message;
   },
   toAmino(message: PoolIdToTickSpacingRecord): PoolIdToTickSpacingRecordAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.new_tick_spacing = message.newTickSpacing
-      ? message.newTickSpacing.toString()
-      : undefined;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.new_tick_spacing =
+      message.newTickSpacing !== BigInt(0)
+        ? message.newTickSpacing.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -560,21 +575,31 @@ export const PoolRecord = {
     return message;
   },
   fromAmino(object: PoolRecordAmino): PoolRecord {
-    return {
-      denom0: object.denom0,
-      denom1: object.denom1,
-      tickSpacing: BigInt(object.tick_spacing),
-      spreadFactor: object.spread_factor,
-    };
+    const message = createBasePoolRecord();
+    if (object.denom0 !== undefined && object.denom0 !== null) {
+      message.denom0 = object.denom0;
+    }
+    if (object.denom1 !== undefined && object.denom1 !== null) {
+      message.denom1 = object.denom1;
+    }
+    if (object.tick_spacing !== undefined && object.tick_spacing !== null) {
+      message.tickSpacing = BigInt(object.tick_spacing);
+    }
+    if (object.spread_factor !== undefined && object.spread_factor !== null) {
+      message.spreadFactor = object.spread_factor;
+    }
+    return message;
   },
   toAmino(message: PoolRecord): PoolRecordAmino {
     const obj: any = {};
-    obj.denom0 = message.denom0;
-    obj.denom1 = message.denom1;
-    obj.tick_spacing = message.tickSpacing
-      ? message.tickSpacing.toString()
-      : undefined;
-    obj.spread_factor = message.spreadFactor;
+    obj.denom0 = message.denom0 === "" ? undefined : message.denom0;
+    obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
+    obj.tick_spacing =
+      message.tickSpacing !== BigInt(0)
+        ? message.tickSpacing.toString()
+        : undefined;
+    obj.spread_factor =
+      message.spreadFactor === "" ? undefined : message.spreadFactor;
     return obj;
   },
   fromAminoMsg(object: PoolRecordAminoMsg): PoolRecord {

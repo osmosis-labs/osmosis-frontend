@@ -1,4 +1,14 @@
 import { Dec } from "@keplr-wallet/unit";
+import {
+  CoingeckoCoin,
+  getTokenInfo,
+  ImperatorToken,
+  queryAllTokens,
+  queryCoingeckoCoin,
+  RichTweet,
+  TokenCMSData,
+  Twitter,
+} from "@osmosis-labs/server";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
@@ -36,17 +46,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
-import {
-  CoingeckoCoin,
-  queryCoingeckoCoin,
-} from "~/server/queries/coingecko/coin";
-import {
-  getTokenInfo,
-  RichTweet,
-  TokenCMSData,
-  Twitter,
-} from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/imperator";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";

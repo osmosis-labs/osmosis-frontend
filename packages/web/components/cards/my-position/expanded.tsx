@@ -1,4 +1,9 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import type {
+  PositionHistoricalPerformance,
+  UserPosition,
+  UserPositionDetails,
+} from "@osmosis-labs/server";
 import classNames from "classnames";
 import moment from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -34,11 +39,6 @@ import { useConst } from "~/hooks/use-const";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import type {
-  PositionHistoricalPerformance,
-  UserPosition,
-  UserPositionDetails,
-} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";

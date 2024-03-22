@@ -1,7 +1,8 @@
 import { PoolRaw } from "@osmosis-labs/pools/build/types";
+import { queryPaginatedPools } from "@osmosis-labs/server";
+import { isNumeric } from "@osmosis-labs/utils";
 
-import { queryPaginatedPools } from "~/server/queries/complex/pools/providers/indexer";
-import { isNumeric } from "~/utils/assertion";
+import { ChainList } from "~/config/generated/chain-list";
 
 type Response = {
   pool: PoolRaw;
@@ -15,7 +16,10 @@ export default async function pools(req: Request) {
     return new Response("Invalid pool id", { status: 400 });
 
   try {
-    const { status, pools } = await queryPaginatedPools({ poolId });
+    const { status, pools } = await queryPaginatedPools({
+      chainList: ChainList,
+      poolId,
+    });
     if (pools && pools.length === 1) {
       const response: Response = { pool: pools[0] };
       return new Response(JSON.stringify(response), { status });
