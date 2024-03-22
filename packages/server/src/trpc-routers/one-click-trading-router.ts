@@ -69,7 +69,10 @@ export const oneClickTradingRouter = createTRPCRouter({
     .input(z.object({ userOsmoAddress: z.string() }))
     .query(async ({ input, ctx }) => {
       const [cosmosAccount, authenticators] = await Promise.all([
-        queryCosmosAccount({ address: input.userOsmoAddress }),
+        queryCosmosAccount({
+          address: input.userOsmoAddress,
+          chainList: ctx.chainList,
+        }),
         getAuthenticators({
           userOsmoAddress: input.userOsmoAddress,
           chainList: ctx.chainList,

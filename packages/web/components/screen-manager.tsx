@@ -1,3 +1,4 @@
+import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useCallback, useMemo } from "react";
 
@@ -5,7 +6,6 @@ import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStack } from "~/hooks/use-stack";
-import { runIfFn } from "~/utils/function";
 import { createContext } from "~/utils/react-context";
 
 export interface ScreenManagerState {

@@ -1,4 +1,5 @@
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import React, {
@@ -27,7 +28,6 @@ import { Switch } from "~/components/ui/switch";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { formatPretty } from "~/utils/formatter";
-import { noop, runIfFn } from "~/utils/function";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 type Classes = "root";

@@ -1,3 +1,4 @@
+import { MockChains } from "../../__tests__/mock-chains";
 import { getSessionAuthenticator } from "../authenticators";
 
 jest.mock("../authenticators", () => ({
@@ -36,6 +37,7 @@ describe("getSessionAuthenticator", () => {
   it("should return undefined if authenticatorId and publicKey are empty", async () => {
     const result = await getSessionAuthenticator({
       userOsmoAddress: "address",
+      chainList: MockChains,
     });
     expect(result).toBeUndefined();
   });
@@ -45,6 +47,7 @@ describe("getSessionAuthenticator", () => {
       userOsmoAddress: "address",
       authenticatorId: "1",
       getAuthenticatorsFn: async () => mockAuthenticators as any,
+      chainList: MockChains,
     });
     expect(result).toEqual(mockAuthenticators[0]);
   });
@@ -54,6 +57,7 @@ describe("getSessionAuthenticator", () => {
       userOsmoAddress: "address",
       publicKey: "publicKey2",
       getAuthenticatorsFn: async () => mockAuthenticators as any,
+      chainList: MockChains,
     });
     expect(result).toEqual(mockAuthenticators[1]);
   });
@@ -63,6 +67,7 @@ describe("getSessionAuthenticator", () => {
       userOsmoAddress: "address",
       publicKey: "nonExistingPublicKey",
       getAuthenticatorsFn: async () => mockAuthenticators as any,
+      chainList: MockChains,
     });
     expect(result).toBeUndefined();
   });

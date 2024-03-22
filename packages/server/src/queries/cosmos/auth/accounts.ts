@@ -1,6 +1,4 @@
-import { apiClient } from "@osmosis-labs/utils";
-
-import { ChainList } from "~/config/generated/chain-list";
+import { createNodeQuery } from "../../base-utils";
 
 interface CosmosAccount {
   "@type": "/cosmos.auth.v1beta1.BaseAccount";
@@ -19,10 +17,9 @@ interface CosmosAccount {
   sequence: string;
 }
 
-export async function queryCosmosAccount({ address }: { address: string }) {
-  const url = new URL(
-    `cosmos/auth/v1beta1/accounts/${address}`,
-    ChainList[0].apis.rest[0].address
-  );
-  return await apiClient<{ account: CosmosAccount }>(url.toString());
-}
+export const queryCosmosAccount = createNodeQuery<
+  { account: CosmosAccount },
+  { address: string }
+>({
+  path: ({ address }) => `cosmos/auth/v1beta1/accounts/${address}`,
+});

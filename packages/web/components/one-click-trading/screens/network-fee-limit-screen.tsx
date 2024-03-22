@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { DefaultGasPriceStep } from "@osmosis-labs/utils";
+import { DefaultGasPriceStep, isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
 
@@ -10,7 +10,6 @@ import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/s
 import { ScreenGoBackButton } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { arrayOfLength } from "~/utils/array";
-import { isNumeric } from "~/utils/assertion";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
 
