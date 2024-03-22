@@ -1,10 +1,12 @@
 import { PricePretty } from "@keplr-wallet/unit";
+import {
+  DEFAULT_VS_CURRENCY,
+  type TokenHistoricalPrice,
+} from "@osmosis-labs/server";
 import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useEffect, useMemo } from "react";
 
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import type { TokenHistoricalPrice } from "~/server/queries/imperator";
 import { api } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
