@@ -15,6 +15,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
+import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -52,17 +53,40 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      isLoading,
+      loadingText,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={classNames(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+        disabled={isLoading || props.disabled}
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-2">
+            <Spinner />
+            {loadingText && <span>{loadingText}</span>}
+          </div>
+        ) : (
+          props.children
+        )}
+      </Comp>
     );
   }
 );
@@ -210,5 +234,45 @@ export const ChartButton: FunctionComponent<{
 };
 
 ChartButton.displayName = "ChartButton";
+
+/**
+ * Renders an icon within a button.
+ */
+export const IconButton = forwardRef<
+  HTMLButtonElement,
+  {
+    icon?: ReactNode;
+    "aria-label": string;
+  } & React.ComponentProps<typeof Button>
+>((props, ref) => {
+  const {
+    icon,
+    children,
+    variant = "ghost",
+    size = "icon",
+    "aria-label": ariaLabel,
+    ...rest
+  } = props;
+
+  const element = icon || children;
+  const _children = isValidElement(element)
+    ? cloneElement(element as any, {
+        "aria-hidden": true,
+        focusable: false,
+      })
+    : null;
+
+  return (
+    <Button
+      ref={ref}
+      variant={variant}
+      size={size}
+      aria-label={ariaLabel}
+      {...rest}
+    >
+      {_children}
+    </Button>
+  );
+});
 
 export { ArrowButton, Button, buttonVariants, LinkIconButton, ShowMoreButton };

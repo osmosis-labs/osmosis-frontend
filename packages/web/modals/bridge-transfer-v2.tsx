@@ -986,8 +986,8 @@ export const TransferContent: FunctionComponent<
       if (typeof msg === "string") {
         displayToast(
           {
-            message: "transactionFailed",
-            caption: msg,
+            titleTranslationKey: "transactionFailed",
+            captionTranslationKey: msg,
           },
           ToastType.ERROR
         );

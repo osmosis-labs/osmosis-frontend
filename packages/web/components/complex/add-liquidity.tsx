@@ -152,7 +152,7 @@ const AmountInput: FunctionComponent<{
     }
   };
 
-  const inputAmountValue = useCoinFiatValue(
+  const { fiatValue: inputAmountValue } = useCoinFiatValue(
     useMemo(
       () =>
         new CoinPretty(

@@ -32,7 +32,9 @@ export const PreTransferModal: FunctionComponent<
     onDeposit,
   } = props;
   const { t } = useTranslation();
-  const tokenValue = useCoinFiatValue(selectedToken.balance);
+
+  const { fiatValue: tokenValue } = useCoinFiatValue(selectedToken.balance);
+
   const isEthAsset = selectedToken.originBridgeInfo?.bridge === "axelar";
   return (
     <ModalBase

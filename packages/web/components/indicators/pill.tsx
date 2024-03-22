@@ -8,7 +8,7 @@ export const Pill: FC<{
 }> = ({ children, className, animate }) => (
   <div
     className={classNames(
-      "flex w-16 items-center justify-center rounded-full bg-gradient-positive px-1 uppercase text-black",
+      "flex w-fit items-center justify-center rounded-full bg-gradient-positive px-1 font-semibold uppercase text-black",
       animate && "animate-[scaleFadeIn_0.3s] ease-in-out",
       className
     )}

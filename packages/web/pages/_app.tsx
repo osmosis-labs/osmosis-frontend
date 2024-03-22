@@ -26,6 +26,7 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
+import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
@@ -40,6 +41,7 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
+import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
@@ -84,6 +86,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 backgroundColor: "#2d2755",
               }}
               transition={Bounce}
+              newestOnTop
             />
             <MainLayoutWrapper>
               <ErrorBoundary fallback={ErrorFallback}>
@@ -297,6 +300,12 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
+      {flags.oneClickTrading && (
+        <>
+          <OneClickTradingIntroModal />
+          <OneClickFloatingBanner />
+        </>
+      )}
     </MainLayout>
   );
 });

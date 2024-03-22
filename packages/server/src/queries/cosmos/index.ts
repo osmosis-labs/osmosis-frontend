@@ -1,3 +1,4 @@
+export * from "./auth";
 export * from "./bank";
 export * from "./distribution";
 export * from "./mint";

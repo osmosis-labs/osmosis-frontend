@@ -27,6 +27,7 @@ const includedPackages: AvailablePackages[] = [
   "osmosis.concentratedliquidity.v1beta1",
   "osmosis.cosmwasmpool.v1beta1",
   "osmosis.poolmanager.v1beta1",
+  "osmosis.authenticator",
   "osmosis.superfluid.v1beta1",
   "osmosis.superfluid",
   "osmosis.accum.v1beta1",

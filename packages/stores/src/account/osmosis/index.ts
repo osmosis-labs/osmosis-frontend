@@ -1,4 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { SignOptions } from "@cosmos-kit/core";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
@@ -2061,6 +2062,149 @@ export class OsmosisAccountImpl {
       this.chainId,
       "withdrawDelegationRewardsAndSendDelegateToValidatorSet",
       [withdrawDelegationRewardsMsg, delegateToValidatorSetMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendAddOrRemoveAuthenticatorsMsg({
+    addAuthenticators,
+    removeAuthenticators,
+    memo = "",
+    onFulfill,
+    onBroadcasted,
+    signOptions,
+  }: {
+    addAuthenticators: { type: string; data: Uint8Array }[];
+    removeAuthenticators: bigint[];
+    memo?: string;
+    onFulfill?: (tx: DeliverTxResponse) => void;
+    onBroadcasted?: () => void;
+    signOptions?: SignOptions;
+  }) {
+    const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
+      this.msgOpts.addAuthenticator.messageComposer({
+        type: authenticator.type,
+        data: authenticator.data,
+        sender: this.address,
+      })
+    );
+    const removeAuthenticatorMsgs = removeAuthenticators.map((id) =>
+      this.msgOpts.removeAuthenticator.messageComposer({
+        id,
+        sender: this.address,
+      })
+    );
+    const msgs = [...removeAuthenticatorMsgs, ...addAuthenticatorMsgs];
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "addOrRemoveAuthenticators",
+      msgs,
+      memo,
+      undefined,
+      signOptions,
+      {
+        onBroadcasted,
+        onFulfill: (tx) => {
+          if (!tx.code) {
+            // Refresh the balances
+            const queries = this.queriesStore.get(this.chainId);
+
+            queries.queryBalances
+              .getQueryBech32Address(this.address)
+              .balances.forEach((balance) => balance.waitFreshResponse());
+
+            queries.cosmos.queryDelegations
+              .getQueryBech32Address(this.address)
+              .waitFreshResponse();
+
+            queries.cosmos.queryRewards
+              .getQueryBech32Address(this.address)
+              .waitFreshResponse();
+          }
+          onFulfill?.(tx);
+        },
+      }
+    );
+  }
+  async sendAddAuthenticatorsMsg(
+    authenticators: { type: string; data: any }[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const addAuthenticatorMsgs = authenticators.map((authenticator) =>
+      this.msgOpts.addAuthenticator.messageComposer({
+        type: authenticator.type,
+        data: authenticator.data,
+        sender: this.address,
+      })
+    );
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "addAuthenticator",
+      addAuthenticatorMsgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendRemoveAuthenticatorMsg(
+    id: bigint,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const removeAuthenticatorMsg =
+      this.msgOpts.removeAuthenticator.messageComposer({
+        id: id,
+        sender: this.address,
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "removeAuthenticator",
+      [removeAuthenticatorMsg],
       memo,
       undefined,
       undefined,

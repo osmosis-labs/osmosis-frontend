@@ -18,6 +18,10 @@ import {
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
+import {
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
+} from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
@@ -40,7 +44,6 @@ import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar
 import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
 import { ObservableAssets } from "~/stores/assets";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -181,6 +184,7 @@ export class RootStore {
           },
         },
         preTxEvents: {
+          ...txEvents,
           onBroadcastFailed: (string, e) => {
             txEvents?.onBroadcastFailed?.(string, e);
             return toastOnBroadcastFailed((chainId) =>

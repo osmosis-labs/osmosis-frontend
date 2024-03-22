@@ -4029,6 +4029,20 @@
     elliptic "^6.5.3"
     sha.js "^2.4.11"
 
+"@keplr-wallet/crypto@0.12.48":
+  version "0.12.48"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.48.tgz#e5ff03195ff8a33213158f4ef72ffcfeaf75fb42"
+  integrity sha512-0DozLjqkv0WYZf0RohXdG/QKaZYsRB3AD+djzEzKVp6QvuXqyJJ3wfcAAisoRxeXlsUCrVRbabiXC2Ljp3DjUA==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
 "@keplr-wallet/ens@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/ens/-/ens-0.10.24-ibc.go.v7.hot.fix.tgz"
@@ -4046,7 +4060,7 @@
   resolved "https://registry.npmjs.org/@keplr-wallet/popup/-/popup-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-Q/teyV6vdmpH3SySGd1xrNc/mVGK/tCP5vFEG2I3Y4FDCSV1yD7vcVgUy+tN19Z8EM3goR57V2QlarSOidtdjQ==
 
-"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.12.12":
+"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.12.12", "@keplr-wallet/proto-types@^0.12.43":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/proto-types/-/proto-types-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-fLUJEtDadYJIMBzhMSZpEDTvXqk8wW68TwnUCRAcAooEQEtXPwY5gfo3hcekQEiCYtIu8XqzJ9fg01rp2Z4d3w==
@@ -9438,15 +9452,15 @@ clsx@2.0.0:
   resolved "https://registry.npmjs.org/clsx/-/clsx-2.0.0.tgz#12658f3fd98fafe62075595a5c30e43d18f3d00b"
   integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
 
-clsx@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/clsx/-/clsx-1.1.1.tgz"
-  integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
-
 clsx@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.2.1.tgz"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
+
+clsx@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.0.tgz#e851283bcb5c80ee7608db18487433f7b23f77cb"
+  integrity sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==
 
 cmd-shim@^4.1.0:
   version "4.1.0"
@@ -17335,12 +17349,12 @@ react-router@^5.1.2:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-toastify@^7.0.4:
-  version "7.0.4"
-  resolved "https://registry.npmjs.org/react-toastify/-/react-toastify-7.0.4.tgz"
-  integrity sha512-Rol7+Cn39hZp5hQ/k6CbMNE2CKYV9E5OQdC/hBLtIQU2xz7DdAm7xil4NITQTHR6zEbE5RVFbpgSwTD7xRGLeQ==
+react-toastify@^10.0.4:
+  version "10.0.4"
+  resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-10.0.4.tgz#6ecdbbf923a07fc45850e69b0566efc7bf733283"
+  integrity sha512-etR3RgueY8pe88SA67wLm8rJmL1h+CLqUGHuAoNsseW35oTGJEri6eBTyaXnFKNQ80v/eO10hBYLgz036XRGgA==
   dependencies:
-    clsx "^1.1.1"
+    clsx "^2.1.0"
 
 react-universal-interface@^0.6.2:
   version "0.6.2"

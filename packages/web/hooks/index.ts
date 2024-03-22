@@ -1,5 +1,6 @@
 export * from "./data";
 export * from "./language";
+export * from "./one-click-trading";
 export * from "./staking/use-get-apr";
 export * from "./ui-config";
 export * from "./use-amplitude-analytics";

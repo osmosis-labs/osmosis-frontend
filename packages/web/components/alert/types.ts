@@ -1,8 +1,11 @@
-import { MultiLanguageT } from "~/hooks";
+import { ReactNode } from "react";
+
+import { MultiLanguageT, TranslationPath } from "~/hooks";
 
 export interface Alert {
-  message: string;
-  caption?: Parameters<MultiLanguageT> | string;
+  titleTranslationKey: TranslationPath;
+  captionTranslationKey?: Parameters<MultiLanguageT> | TranslationPath;
+  captionElement?: ReactNode;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;
 }
@@ -11,4 +14,5 @@ export const enum ToastType {
   SUCCESS,
   ERROR,
   LOADING,
+  ONE_CLICK_TRADING,
 }

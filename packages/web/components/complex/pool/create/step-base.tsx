@@ -77,8 +77,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           <div>{children}</div>
           {step === 1 && (
             <Info
-              message={t("pools.createPool.infoMessage")}
-              caption={t("pools.createPool.infoCaption")}
+              titleTranslationKey={t("pools.createPool.infoMessage")}
+              captionTranslationKey={t("pools.createPool.infoCaption")}
               data={POOL_CREATION_FEE}
               isMobile={isMobile}
             />

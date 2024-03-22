@@ -1,5 +1,11 @@
 import { AminoMsg, StdFee } from "@cosmjs/amino";
 import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
+import {
+  Currency,
+  OneClickTradingHumanizedSessionPeriod,
+  OneClickTradingResetPeriods,
+  OneClickTradingTimeLimit,
+} from "@osmosis-labs/types";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
 
@@ -15,13 +21,14 @@ export type TxEvent = {
 
 export interface DeliverTxResponse {
   readonly height?: number;
-  /** Error code. The transaction suceeded if code is 0. */
+  /** Error code. The transaction succeeded if code is 0. */
   readonly code: number;
   readonly transactionHash: string;
   readonly rawLog?: string;
   readonly data?: readonly MsgData[];
   readonly gasUsed: string;
   readonly gasWanted: string;
+  readonly events?: readonly TxEvent[];
 }
 
 export type RegistryWallet = Omit<Wallet, "logo"> & {
@@ -81,11 +88,43 @@ export interface TxEvents {
   onBroadcastFailed?: (string: string, e?: Error) => void;
   onBroadcasted?: (string: string, txHash: Uint8Array) => void;
   onFulfill?: (string: string, tx: any) => void;
+  onExceeds1CTNetworkFeeLimit?: (params: {
+    // Continue with a wallet like Keplr.
+    continueTx: () => void;
+    // User will update his params so we cancel the transaction
+    finish: () => void;
+  }) => void;
+}
+
+export interface OneClickTradingInfo {
+  readonly authenticatorId: string;
+  readonly publicKey: string;
+  readonly privateKey: string;
+  readonly userOsmoAddress: string;
+
+  networkFeeLimit: Currency & {
+    amount: string;
+  };
+
+  spendLimit: {
+    decimals: number;
+    amount: string;
+  };
+
+  // Period to reset the spend limit quota.
+  readonly resetPeriod: OneClickTradingResetPeriods;
+
+  // Time limit for the session to be considered valid.
+  readonly sessionPeriod: OneClickTradingTimeLimit;
+  readonly humanizedSessionPeriod: OneClickTradingHumanizedSessionPeriod;
+  readonly sessionStartedAtUnix: number;
+  readonly allowedMessages: string[];
+  readonly hasSeenExpiryToast: boolean;
 }
 
 /**
  * The document to be signed
- * Referenced from CosmjsL
+ * Referenced from Cosmjs
  * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
  *
  * We copied it over to work around dependency updates.
@@ -99,14 +138,3 @@ export interface StdSignDoc {
   readonly memo: string;
   readonly timeout_height?: string;
 }
-
-// The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
-// timeout and mempool eviction.
-const defaultTimeoutHeightOffset = 30;
-
-export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
-  process.env.TIMEOUT_HEIGHT_OFFSET
-    ? process.env.TIMEOUT_HEIGHT_OFFSET
-    : defaultTimeoutHeightOffset
-);
