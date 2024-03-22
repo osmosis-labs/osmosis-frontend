@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   AssetList,
   Chain,
@@ -14,6 +14,8 @@ import {
   getAuthenticators,
   getSessionAuthenticator,
 } from "../queries/complex/authenticators";
+import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
+import { queryAuthenticatorSpendLimit } from "../queries/osmosis/authenticators";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const oneClickTradingRouter = createTRPCRouter({
@@ -29,7 +31,10 @@ export const oneClickTradingRouter = createTRPCRouter({
       }
     > => {
       const [networkFeeLimitStep, usdcAsset] = await Promise.all([
-        getNetworkFeeLimitStep(ctx),
+        getNetworkFeeLimitStep({
+          assetLists: ctx.assetLists,
+          chainList: ctx.chainList,
+        }),
         getAsset({ anyDenom: "usdc", assetLists: ctx.assetLists }),
       ]);
 
@@ -45,10 +50,15 @@ export const oneClickTradingRouter = createTRPCRouter({
     }
   ),
   getNetworkFeeLimitStep: publicProcedure.query(async ({ ctx }) =>
-    getNetworkFeeLimitStep(ctx)
+    getNetworkFeeLimitStep({
+      chainList: ctx.chainList,
+      assetLists: ctx.assetLists,
+    })
   ),
   getSessionAuthenticator: publicProcedure
-    .input(z.object({ userOsmoAddress: z.string(), publicKey: z.string() }))
+    .input(
+      UserOsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
+    )
     .query(async ({ input, ctx }) => {
       const sessionAuthenticator = await getSessionAuthenticator({
         userOsmoAddress: input.userOsmoAddress,
@@ -66,7 +76,7 @@ export const oneClickTradingRouter = createTRPCRouter({
       return sessionAuthenticator;
     }),
   getAccountPubKeyAndAuthenticators: publicProcedure
-    .input(z.object({ userOsmoAddress: z.string() }))
+    .input(UserOsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
       const [cosmosAccount, authenticators] = await Promise.all([
         queryCosmosAccount({
@@ -83,6 +93,31 @@ export const oneClickTradingRouter = createTRPCRouter({
         accountPubKey: cosmosAccount.account.pub_key.key,
         authenticators,
         shouldAddFirstAuthenticator: authenticators.length === 0,
+      };
+    }),
+  getAmountSpent: publicProcedure
+    .input(
+      UserOsmoAddressSchema.required().and(
+        z.object({ authenticatorId: z.string() })
+      )
+    )
+    .query(async ({ input: { userOsmoAddress, authenticatorId }, ctx }) => {
+      const [spendLimit, usdcAsset] = await Promise.all([
+        queryAuthenticatorSpendLimit({
+          address: userOsmoAddress,
+          authenticatorId,
+          chainList: ctx.chainList,
+        }),
+        getAsset({ anyDenom: "usdc", assetLists: ctx.assetLists }),
+      ]);
+
+      return {
+        amountSpent: new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          new Dec(spendLimit.data.spending.value_spent_in_period).quo(
+            DecUtils.getTenExponentN(usdcAsset.coinDecimals)
+          )
+        ),
       };
     }),
 });

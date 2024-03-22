@@ -1,6 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isNil, isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
 

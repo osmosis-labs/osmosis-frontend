@@ -14,7 +14,7 @@ import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
 export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
-  oneClickTradingRouter: oneClickTradingRouter,
+  oneClickTrading: oneClickTradingRouter,
 });
 
 /** This is the primary lambda router for our server. */
