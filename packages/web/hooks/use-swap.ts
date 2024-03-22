@@ -135,7 +135,13 @@ export function useSwap({
     let error = quoteError;
 
     // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
+    if (
+      (quote &&
+        !quote.inOutSpotPrice &&
+        !quote.amount.toDec().isPositive() &&
+        !error) ||
+      (!quote && spotPriceQuoteError)
+    )
       error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
@@ -759,7 +765,7 @@ function makeRouterErrorFromTrpcError(
     }
   | undefined {
   if (isNil(error)) return;
-  const tprcShapeMsg = error?.shape?.message;
+  const tprcShapeMsg = error?.message;
 
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
