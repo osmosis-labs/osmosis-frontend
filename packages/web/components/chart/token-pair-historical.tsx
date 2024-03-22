@@ -239,6 +239,7 @@ export const PriceChartHeader: FunctionComponent<{
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
   decimal: number;
+  formatOpts?: Partial<Intl.NumberFormatOptions>;
   fiatSymbol?: string;
   baseDenom?: string;
   quoteDenom?: string;
@@ -258,6 +259,7 @@ export const PriceChartHeader: FunctionComponent<{
     baseDenom,
     quoteDenom,
     hoverPrice,
+    formatOpts,
     decimal,
     hideButtons,
     classes,
@@ -289,6 +291,7 @@ export const PriceChartHeader: FunctionComponent<{
             {formatPretty(new Dec(hoverPrice), {
               maxDecimals: decimal,
               notation: "compact",
+              ...formatOpts,
             }) || ""}
           </h4>
           {baseDenom && quoteDenom ? (

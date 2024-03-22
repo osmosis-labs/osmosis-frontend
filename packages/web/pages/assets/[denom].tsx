@@ -432,6 +432,10 @@ const TokenChartHeader = observer(() => {
     <header>
       <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
         <PriceChartHeader
+          formatOpts={{
+            notation: "standard",
+            maximumSignificantDigits: 5,
+          }}
           decimal={maxDecimals}
           showAllRange
           hoverPrice={Number(
