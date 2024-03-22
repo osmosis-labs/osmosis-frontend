@@ -1,4 +1,5 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { TokenCMSData } from "@osmosis-labs/server";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -28,7 +29,6 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
-import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";

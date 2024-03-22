@@ -1,10 +1,8 @@
+import { AssetCategories, Category } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { AssetCategories } from "~/config/generated/asset-categories";
 import { useTranslation } from "~/hooks";
-
-export type AssetCategory = (typeof AssetCategories)[number];
 
 const categoryAssetSampleImages = {
   defi: [
@@ -30,9 +28,9 @@ const categoryAssetSampleImages = {
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
-  selectedCategories: AssetCategory[];
-  onSelectCategory: (category: AssetCategory) => void;
-  unselectCategory: (category: AssetCategory) => void;
+  selectedCategories: Category[];
+  onSelectCategory: (category: Category) => void;
+  unselectCategory: (category: Category) => void;
 }> = ({ selectedCategories, onSelectCategory, unselectCategory }) => {
   const { t } = useTranslation();
 

@@ -18,7 +18,7 @@ export interface InstantiateMsgAmino {
    * pool_asset_denoms is the list of asset denoms that are initialized
    * at pool creation time.
    */
-  pool_asset_denoms: string[];
+  pool_asset_denoms?: string[];
 }
 export interface InstantiateMsgAminoMsg {
   type: "osmosis/cosmwasmpool/instantiate-msg";
@@ -68,18 +68,16 @@ export const InstantiateMsg = {
     return message;
   },
   fromAmino(object: InstantiateMsgAmino): InstantiateMsg {
-    return {
-      poolAssetDenoms: Array.isArray(object?.pool_asset_denoms)
-        ? object.pool_asset_denoms.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseInstantiateMsg();
+    message.poolAssetDenoms = object.pool_asset_denoms?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: InstantiateMsg): InstantiateMsgAmino {
     const obj: any = {};
     if (message.poolAssetDenoms) {
       obj.pool_asset_denoms = message.poolAssetDenoms.map((e) => e);
     } else {
-      obj.pool_asset_denoms = [];
+      obj.pool_asset_denoms = message.poolAssetDenoms;
     }
     return obj;
   },

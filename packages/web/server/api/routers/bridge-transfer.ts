@@ -1,3 +1,8 @@
+import {
+  createTRPCRouter,
+  publicProcedure,
+  timeout,
+} from "@osmosis-labs/server";
 import { TRPCError } from "@trpc/server";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -14,8 +19,6 @@ import {
   getBridgeQuoteSchema,
 } from "~/integrations/bridges/types";
 import { Errors } from "~/server/api/errors";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import timeout from "~/utils/async";
 import { ErrorTypes } from "~/utils/error-types";
 
 const lruCache = new LRUCache<string, CacheEntry>({

@@ -1,7 +1,6 @@
+import { Search } from "@osmosis-labs/server";
 import { useCallback, useMemo } from "react";
 import { useState } from "react";
-
-import type { Search } from "~/utils/search";
 
 import { useDebouncedState } from "../use-debounced-state";
 

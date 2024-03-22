@@ -45,8 +45,8 @@ export interface IncentiveRecordProtoMsg {
  */
 export interface IncentiveRecordAmino {
   /** incentive_id is the id uniquely identifying this incentive record. */
-  incentive_id: string;
-  pool_id: string;
+  incentive_id?: string;
+  pool_id?: string;
   /** incentive record body holds necessary */
   incentive_record_body?: IncentiveRecordBodyAmino;
   /**
@@ -96,7 +96,7 @@ export interface IncentiveRecordBodyAmino {
   /** remaining_coin is the total amount of incentives to be distributed */
   remaining_coin?: DecCoinAmino;
   /** emission_rate is the incentive emission rate per second */
-  emission_rate: string;
+  emission_rate?: string;
   /** start_time is the time when the incentive starts distributing */
   start_time?: string;
 }
@@ -196,23 +196,34 @@ export const IncentiveRecord = {
     return message;
   },
   fromAmino(object: IncentiveRecordAmino): IncentiveRecord {
-    return {
-      incentiveId: BigInt(object.incentive_id),
-      poolId: BigInt(object.pool_id),
-      incentiveRecordBody: object?.incentive_record_body
-        ? IncentiveRecordBody.fromAmino(object.incentive_record_body)
-        : undefined,
-      minUptime: object?.min_uptime
-        ? Duration.fromAmino(object.min_uptime)
-        : undefined,
-    };
+    const message = createBaseIncentiveRecord();
+    if (object.incentive_id !== undefined && object.incentive_id !== null) {
+      message.incentiveId = BigInt(object.incentive_id);
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (
+      object.incentive_record_body !== undefined &&
+      object.incentive_record_body !== null
+    ) {
+      message.incentiveRecordBody = IncentiveRecordBody.fromAmino(
+        object.incentive_record_body
+      );
+    }
+    if (object.min_uptime !== undefined && object.min_uptime !== null) {
+      message.minUptime = Duration.fromAmino(object.min_uptime);
+    }
+    return message;
   },
   toAmino(message: IncentiveRecord): IncentiveRecordAmino {
     const obj: any = {};
-    obj.incentive_id = message.incentiveId
-      ? message.incentiveId.toString()
-      : undefined;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.incentive_id =
+      message.incentiveId !== BigInt(0)
+        ? message.incentiveId.toString()
+        : undefined;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     obj.incentive_record_body = message.incentiveRecordBody
       ? IncentiveRecordBody.toAmino(message.incentiveRecordBody)
       : undefined;
@@ -315,22 +326,25 @@ export const IncentiveRecordBody = {
     return message;
   },
   fromAmino(object: IncentiveRecordBodyAmino): IncentiveRecordBody {
-    return {
-      remainingCoin: object?.remaining_coin
-        ? DecCoin.fromAmino(object.remaining_coin)
-        : undefined,
-      emissionRate: object.emission_rate,
-      startTime: object?.start_time
-        ? fromTimestamp(Timestamp.fromAmino(object.start_time))
-        : undefined,
-    };
+    const message = createBaseIncentiveRecordBody();
+    if (object.remaining_coin !== undefined && object.remaining_coin !== null) {
+      message.remainingCoin = DecCoin.fromAmino(object.remaining_coin);
+    }
+    if (object.emission_rate !== undefined && object.emission_rate !== null) {
+      message.emissionRate = object.emission_rate;
+    }
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.startTime = fromTimestamp(Timestamp.fromAmino(object.start_time));
+    }
+    return message;
   },
   toAmino(message: IncentiveRecordBody): IncentiveRecordBodyAmino {
     const obj: any = {};
     obj.remaining_coin = message.remainingCoin
       ? DecCoin.toAmino(message.remainingCoin)
       : undefined;
-    obj.emission_rate = message.emissionRate;
+    obj.emission_rate =
+      message.emissionRate === "" ? undefined : message.emissionRate;
     obj.start_time = message.startTime
       ? Timestamp.toAmino(toTimestamp(message.startTime))
       : undefined;

@@ -1,3 +1,4 @@
+import type { SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -21,7 +22,6 @@ import { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useCallback } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";

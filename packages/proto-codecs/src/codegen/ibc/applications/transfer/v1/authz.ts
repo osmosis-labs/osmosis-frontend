@@ -23,13 +23,13 @@ export interface AllocationProtoMsg {
 /** Allocation defines the spend limit for a particular port and channel */
 export interface AllocationAmino {
   /** the port on which the packet will be sent */
-  source_port: string;
+  source_port?: string;
   /** the channel by which the packet will be sent */
-  source_channel: string;
+  source_channel?: string;
   /** spend limitation on the channel */
-  spend_limit: CoinAmino[];
+  spend_limit?: CoinAmino[];
   /** allow list of receivers, an empty allow list permits any receiver address */
-  allow_list: string[];
+  allow_list?: string[];
 }
 export interface AllocationAminoMsg {
   type: "cosmos-sdk/Allocation";
@@ -61,7 +61,7 @@ export interface TransferAuthorizationProtoMsg {
  */
 export interface TransferAuthorizationAmino {
   /** port and channel amounts */
-  allocations: AllocationAmino[];
+  allocations?: AllocationAmino[];
 }
 export interface TransferAuthorizationAminoMsg {
   type: "cosmos-sdk/TransferAuthorization";
@@ -140,32 +140,35 @@ export const Allocation = {
     return message;
   },
   fromAmino(object: AllocationAmino): Allocation {
-    return {
-      sourcePort: object.source_port,
-      sourceChannel: object.source_channel,
-      spendLimit: Array.isArray(object?.spend_limit)
-        ? object.spend_limit.map((e: any) => Coin.fromAmino(e))
-        : [],
-      allowList: Array.isArray(object?.allow_list)
-        ? object.allow_list.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseAllocation();
+    if (object.source_port !== undefined && object.source_port !== null) {
+      message.sourcePort = object.source_port;
+    }
+    if (object.source_channel !== undefined && object.source_channel !== null) {
+      message.sourceChannel = object.source_channel;
+    }
+    message.spendLimit =
+      object.spend_limit?.map((e) => Coin.fromAmino(e)) || [];
+    message.allowList = object.allow_list?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: Allocation): AllocationAmino {
     const obj: any = {};
-    obj.source_port = message.sourcePort;
-    obj.source_channel = message.sourceChannel;
+    obj.source_port =
+      message.sourcePort === "" ? undefined : message.sourcePort;
+    obj.source_channel =
+      message.sourceChannel === "" ? undefined : message.sourceChannel;
     if (message.spendLimit) {
       obj.spend_limit = message.spendLimit.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.spend_limit = [];
+      obj.spend_limit = message.spendLimit;
     }
     if (message.allowList) {
       obj.allow_list = message.allowList.map((e) => e);
     } else {
-      obj.allow_list = [];
+      obj.allow_list = message.allowList;
     }
     return obj;
   },
@@ -236,11 +239,10 @@ export const TransferAuthorization = {
     return message;
   },
   fromAmino(object: TransferAuthorizationAmino): TransferAuthorization {
-    return {
-      allocations: Array.isArray(object?.allocations)
-        ? object.allocations.map((e: any) => Allocation.fromAmino(e))
-        : [],
-    };
+    const message = createBaseTransferAuthorization();
+    message.allocations =
+      object.allocations?.map((e) => Allocation.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: TransferAuthorization): TransferAuthorizationAmino {
     const obj: any = {};
@@ -249,7 +251,7 @@ export const TransferAuthorization = {
         e ? Allocation.toAmino(e) : undefined
       );
     } else {
-      obj.allocations = [];
+      obj.allocations = message.allocations;
     }
     return obj;
   },

@@ -23,14 +23,14 @@ export interface ParamsAmino {
    * code_ide_whitelist contains the list of code ids that are allowed to be
    * instantiated.
    */
-  code_id_whitelist: string[];
+  code_id_whitelist?: string[];
   /**
    * pool_migration_limit is the maximum number of pools that can be migrated
    * at once via governance proposal. This is to have a constant bound on the
    * number of pools that can be migrated at once and remove the possibility
    * of an unlikely scenario of causing a chain halt due to a large migration.
    */
-  pool_migration_limit: string;
+  pool_migration_limit?: string;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/cosmwasmpool/params";
@@ -102,23 +102,28 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      codeIdWhitelist: Array.isArray(object?.code_id_whitelist)
-        ? object.code_id_whitelist.map((e: any) => BigInt(e))
-        : [],
-      poolMigrationLimit: BigInt(object.pool_migration_limit),
-    };
+    const message = createBaseParams();
+    message.codeIdWhitelist =
+      object.code_id_whitelist?.map((e) => BigInt(e)) || [];
+    if (
+      object.pool_migration_limit !== undefined &&
+      object.pool_migration_limit !== null
+    ) {
+      message.poolMigrationLimit = BigInt(object.pool_migration_limit);
+    }
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
     if (message.codeIdWhitelist) {
       obj.code_id_whitelist = message.codeIdWhitelist.map((e) => e.toString());
     } else {
-      obj.code_id_whitelist = [];
+      obj.code_id_whitelist = message.codeIdWhitelist;
     }
-    obj.pool_migration_limit = message.poolMigrationLimit
-      ? message.poolMigrationLimit.toString()
-      : undefined;
+    obj.pool_migration_limit =
+      message.poolMigrationLimit !== BigInt(0)
+        ? message.poolMigrationLimit.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
