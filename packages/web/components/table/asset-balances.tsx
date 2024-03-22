@@ -1,3 +1,8 @@
+import type {
+  CommonPriceChartTimeFrame,
+  Search,
+  SortDirection,
+} from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -29,13 +34,10 @@ import {
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
-import type { Search } from "~/utils/search";
-import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
