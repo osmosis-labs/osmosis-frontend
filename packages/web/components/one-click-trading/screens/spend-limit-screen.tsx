@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { isNil } from "@osmosis-labs/utils";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useState } from "react";
 
@@ -14,9 +15,7 @@ import {
 } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
-import { isNumeric } from "~/utils/assertion";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 

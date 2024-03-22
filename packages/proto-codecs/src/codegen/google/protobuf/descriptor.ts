@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../binary";
-import { isSet } from "../../helpers";
+import { base64FromBytes, bytesFromBase64 } from "../../helpers";
 export enum FieldDescriptorProto_Type {
   /**
    * TYPE_DOUBLE - 0 is reserved for errors.
@@ -393,7 +393,7 @@ export interface FileDescriptorSetProtoMsg {
  * files it parses.
  */
 export interface FileDescriptorSetAmino {
-  file: FileDescriptorProtoAmino[];
+  file?: FileDescriptorProtoAmino[];
 }
 export interface FileDescriptorSetAminoMsg {
   type: "/google.protobuf.FileDescriptorSet";
@@ -446,22 +446,22 @@ export interface FileDescriptorProtoProtoMsg {
 /** Describes a complete .proto file. */
 export interface FileDescriptorProtoAmino {
   /** file name, relative to root of source tree */
-  name: string;
-  package: string;
+  name?: string;
+  package?: string;
   /** Names of files imported by this file. */
-  dependency: string[];
+  dependency?: string[];
   /** Indexes of the public imported files in the dependency list above. */
-  public_dependency: number[];
+  public_dependency?: number[];
   /**
    * Indexes of the weak imported files in the dependency list.
    * For Google-internal migration only. Do not use.
    */
-  weak_dependency: number[];
+  weak_dependency?: number[];
   /** All top-level definitions in this file. */
-  message_type: DescriptorProtoAmino[];
-  enum_type: EnumDescriptorProtoAmino[];
-  service: ServiceDescriptorProtoAmino[];
-  extension: FieldDescriptorProtoAmino[];
+  message_type?: DescriptorProtoAmino[];
+  enum_type?: EnumDescriptorProtoAmino[];
+  service?: ServiceDescriptorProtoAmino[];
+  extension?: FieldDescriptorProtoAmino[];
   options?: FileOptionsAmino;
   /**
    * This field contains optional information about the original source code.
@@ -474,7 +474,7 @@ export interface FileDescriptorProtoAmino {
    * The syntax of the proto file.
    * The supported values are "proto2" and "proto3".
    */
-  syntax: string;
+  syntax?: string;
 }
 export interface FileDescriptorProtoAminoMsg {
   type: "/google.protobuf.FileDescriptorProto";
@@ -518,20 +518,20 @@ export interface DescriptorProtoProtoMsg {
 }
 /** Describes a message type. */
 export interface DescriptorProtoAmino {
-  name: string;
-  field: FieldDescriptorProtoAmino[];
-  extension: FieldDescriptorProtoAmino[];
-  nested_type: DescriptorProtoAmino[];
-  enum_type: EnumDescriptorProtoAmino[];
-  extension_range: DescriptorProto_ExtensionRangeAmino[];
-  oneof_decl: OneofDescriptorProtoAmino[];
+  name?: string;
+  field?: FieldDescriptorProtoAmino[];
+  extension?: FieldDescriptorProtoAmino[];
+  nested_type?: DescriptorProtoAmino[];
+  enum_type?: EnumDescriptorProtoAmino[];
+  extension_range?: DescriptorProto_ExtensionRangeAmino[];
+  oneof_decl?: OneofDescriptorProtoAmino[];
   options?: MessageOptionsAmino;
-  reserved_range: DescriptorProto_ReservedRangeAmino[];
+  reserved_range?: DescriptorProto_ReservedRangeAmino[];
   /**
    * Reserved field names, which may not be used by fields in the same message.
    * A given name may only be reserved once.
    */
-  reserved_name: string[];
+  reserved_name?: string[];
 }
 export interface DescriptorProtoAminoMsg {
   type: "/google.protobuf.DescriptorProto";
@@ -563,9 +563,9 @@ export interface DescriptorProto_ExtensionRangeProtoMsg {
 }
 export interface DescriptorProto_ExtensionRangeAmino {
   /** Inclusive. */
-  start: number;
+  start?: number;
   /** Exclusive. */
-  end: number;
+  end?: number;
   options?: ExtensionRangeOptionsAmino;
 }
 export interface DescriptorProto_ExtensionRangeAminoMsg {
@@ -599,9 +599,9 @@ export interface DescriptorProto_ReservedRangeProtoMsg {
  */
 export interface DescriptorProto_ReservedRangeAmino {
   /** Inclusive. */
-  start: number;
+  start?: number;
   /** Exclusive. */
-  end: number;
+  end?: number;
 }
 export interface DescriptorProto_ReservedRangeAminoMsg {
   type: "/google.protobuf.ReservedRange";
@@ -626,7 +626,7 @@ export interface ExtensionRangeOptionsProtoMsg {
 }
 export interface ExtensionRangeOptionsAmino {
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface ExtensionRangeOptionsAminoMsg {
   type: "/google.protobuf.ExtensionRangeOptions";
@@ -686,14 +686,14 @@ export interface FieldDescriptorProtoProtoMsg {
 }
 /** Describes a field within a message. */
 export interface FieldDescriptorProtoAmino {
-  name: string;
-  number: number;
-  label: FieldDescriptorProto_Label;
+  name?: string;
+  number?: number;
+  label?: FieldDescriptorProto_Label;
   /**
    * If type_name is set, this need not be set.  If both this and type_name
    * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
    */
-  type: FieldDescriptorProto_Type;
+  type?: FieldDescriptorProto_Type;
   /**
    * For message and enum types, this is the name of the type.  If the name
    * starts with a '.', it is fully-qualified.  Otherwise, C++-like scoping
@@ -701,12 +701,12 @@ export interface FieldDescriptorProtoAmino {
    * message are searched, then within the parent, on up to the root
    * namespace).
    */
-  type_name: string;
+  type_name?: string;
   /**
    * For extensions, this is the name of the type being extended.  It is
    * resolved in the same manner as type_name.
    */
-  extendee: string;
+  extendee?: string;
   /**
    * For numeric types, contains the original text representation of the value.
    * For booleans, "true" or "false".
@@ -714,19 +714,19 @@ export interface FieldDescriptorProtoAmino {
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
    * TODO(kenton):  Base-64 encode?
    */
-  default_value: string;
+  default_value?: string;
   /**
    * If set, gives the index of a oneof in the containing type's oneof_decl
    * list.  This field is a member of that oneof.
    */
-  oneof_index: number;
+  oneof_index?: number;
   /**
    * JSON name of this field. The value is set by protocol compiler. If the
    * user has set a "json_name" option on this field, that option's value
    * will be used. Otherwise, it's deduced from the field's name by converting
    * it to camelCase.
    */
-  json_name: string;
+  json_name?: string;
   options?: FieldOptionsAmino;
 }
 export interface FieldDescriptorProtoAminoMsg {
@@ -757,7 +757,7 @@ export interface OneofDescriptorProtoProtoMsg {
 }
 /** Describes a oneof. */
 export interface OneofDescriptorProtoAmino {
-  name: string;
+  name?: string;
   options?: OneofOptionsAmino;
 }
 export interface OneofDescriptorProtoAminoMsg {
@@ -792,20 +792,20 @@ export interface EnumDescriptorProtoProtoMsg {
 }
 /** Describes an enum type. */
 export interface EnumDescriptorProtoAmino {
-  name: string;
-  value: EnumValueDescriptorProtoAmino[];
+  name?: string;
+  value?: EnumValueDescriptorProtoAmino[];
   options?: EnumOptionsAmino;
   /**
    * Range of reserved numeric values. Reserved numeric values may not be used
    * by enum values in the same enum declaration. Reserved ranges may not
    * overlap.
    */
-  reserved_range: EnumDescriptorProto_EnumReservedRangeAmino[];
+  reserved_range?: EnumDescriptorProto_EnumReservedRangeAmino[];
   /**
    * Reserved enum value names, which may not be reused. A given name may only
    * be reserved once.
    */
-  reserved_name: string[];
+  reserved_name?: string[];
 }
 export interface EnumDescriptorProtoAminoMsg {
   type: "/google.protobuf.EnumDescriptorProto";
@@ -847,9 +847,9 @@ export interface EnumDescriptorProto_EnumReservedRangeProtoMsg {
  */
 export interface EnumDescriptorProto_EnumReservedRangeAmino {
   /** Inclusive. */
-  start: number;
+  start?: number;
   /** Inclusive. */
-  end: number;
+  end?: number;
 }
 export interface EnumDescriptorProto_EnumReservedRangeAminoMsg {
   type: "/google.protobuf.EnumReservedRange";
@@ -879,8 +879,8 @@ export interface EnumValueDescriptorProtoProtoMsg {
 }
 /** Describes a value within an enum. */
 export interface EnumValueDescriptorProtoAmino {
-  name: string;
-  number: number;
+  name?: string;
+  number?: number;
   options?: EnumValueOptionsAmino;
 }
 export interface EnumValueDescriptorProtoAminoMsg {
@@ -905,8 +905,8 @@ export interface ServiceDescriptorProtoProtoMsg {
 }
 /** Describes a service. */
 export interface ServiceDescriptorProtoAmino {
-  name: string;
-  method: MethodDescriptorProtoAmino[];
+  name?: string;
+  method?: MethodDescriptorProtoAmino[];
   options?: ServiceOptionsAmino;
 }
 export interface ServiceDescriptorProtoAminoMsg {
@@ -940,18 +940,18 @@ export interface MethodDescriptorProtoProtoMsg {
 }
 /** Describes a method of a service. */
 export interface MethodDescriptorProtoAmino {
-  name: string;
+  name?: string;
   /**
    * Input and output type names.  These are resolved in the same way as
    * FieldDescriptorProto.type_name, but must refer to a message type.
    */
-  input_type: string;
-  output_type: string;
+  input_type?: string;
+  output_type?: string;
   options?: MethodOptionsAmino;
   /** Identifies if client streams multiple client messages */
-  client_streaming: boolean;
+  client_streaming?: boolean;
   /** Identifies if server streams multiple server messages */
-  server_streaming: boolean;
+  server_streaming?: boolean;
 }
 export interface MethodDescriptorProtoAminoMsg {
   type: "/google.protobuf.MethodDescriptorProto";
@@ -1094,7 +1094,7 @@ export interface FileOptionsAmino {
    * inappropriate because proto packages do not normally start with backwards
    * domain names.
    */
-  java_package: string;
+  java_package?: string;
   /**
    * If set, all the classes from the .proto file are wrapped in a single
    * outer class with the given name.  This applies to both Proto1
@@ -1102,7 +1102,7 @@ export interface FileOptionsAmino {
    * a .proto always translates to a single class, but you may want to
    * explicitly choose the class name).
    */
-  java_outer_classname: string;
+  java_outer_classname?: string;
   /**
    * If set true, then the Java code generator will generate a separate .java
    * file for each top-level message, enum, and service defined in the .proto
@@ -1111,10 +1111,10 @@ export interface FileOptionsAmino {
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
-  java_multiple_files: boolean;
+  java_multiple_files?: boolean;
   /** This option does nothing. */
   /** @deprecated */
-  java_generate_equals_and_hash: boolean;
+  java_generate_equals_and_hash?: boolean;
   /**
    * If set true, then the Java2 code generator will generate code that
    * throws an exception whenever an attempt is made to assign a non-UTF-8
@@ -1123,8 +1123,8 @@ export interface FileOptionsAmino {
    * However, an extension field still accepts non-UTF-8 byte sequences.
    * This option has no effect on when used with the lite runtime.
    */
-  java_string_check_utf8: boolean;
-  optimize_for: FileOptions_OptimizeMode;
+  java_string_check_utf8?: boolean;
+  optimize_for?: FileOptions_OptimizeMode;
   /**
    * Sets the Go package where structs generated from this .proto will be
    * placed. If omitted, the Go package will be derived from the following:
@@ -1132,7 +1132,7 @@ export interface FileOptionsAmino {
    *   - Otherwise, the package statement in the .proto file, if present.
    *   - Otherwise, the basename of the .proto file, without extension.
    */
-  go_package: string;
+  go_package?: string;
   /**
    * Should generic services be generated in each language?  "Generic" services
    * are not specific to any particular RPC system.  They are generated by the
@@ -1145,64 +1145,64 @@ export interface FileOptionsAmino {
    * these default to false.  Old code which depends on generic services should
    * explicitly set them to true.
    */
-  cc_generic_services: boolean;
-  java_generic_services: boolean;
-  py_generic_services: boolean;
-  php_generic_services: boolean;
+  cc_generic_services?: boolean;
+  java_generic_services?: boolean;
+  py_generic_services?: boolean;
+  php_generic_services?: boolean;
   /**
    * Is this file deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
    * for everything in the file, or it will be completely ignored; in the very
    * least, this is a formalization for deprecating files.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /**
    * Enables the use of arenas for the proto messages in this file. This applies
    * only to generated classes for C++.
    */
-  cc_enable_arenas: boolean;
+  cc_enable_arenas?: boolean;
   /**
    * Sets the objective c class prefix which is prepended to all objective c
    * generated classes from this .proto. There is no default.
    */
-  objc_class_prefix: string;
+  objc_class_prefix?: string;
   /** Namespace for generated classes; defaults to the package. */
-  csharp_namespace: string;
+  csharp_namespace?: string;
   /**
    * By default Swift generators will take the proto package and CamelCase it
    * replacing '.' with underscore and use that to prefix the types/symbols
    * defined. When this options is provided, they will use this value instead
    * to prefix the types/symbols defined.
    */
-  swift_prefix: string;
+  swift_prefix?: string;
   /**
    * Sets the php class prefix which is prepended to all php generated classes
    * from this .proto. Default is empty.
    */
-  php_class_prefix: string;
+  php_class_prefix?: string;
   /**
    * Use this option to change the namespace of php generated classes. Default
    * is empty. When this option is empty, the package name will be used for
    * determining the namespace.
    */
-  php_namespace: string;
+  php_namespace?: string;
   /**
    * Use this option to change the namespace of php generated metadata classes.
    * Default is empty. When this option is empty, the proto file name will be
    * used for determining the namespace.
    */
-  php_metadata_namespace: string;
+  php_metadata_namespace?: string;
   /**
    * Use this option to change the package of ruby generated classes. Default
    * is empty. When this option is not set, the package name will be used for
    * determining the ruby package.
    */
-  ruby_package: string;
+  ruby_package?: string;
   /**
    * The parser stores options it doesn't recognize here.
    * See the documentation for the "Options" section above.
    */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface FileOptionsAminoMsg {
   type: "/google.protobuf.FileOptions";
@@ -1319,20 +1319,20 @@ export interface MessageOptionsAmino {
    * Because this is an option, the above two restrictions are not enforced by
    * the protocol compiler.
    */
-  message_set_wire_format: boolean;
+  message_set_wire_format?: boolean;
   /**
    * Disables the generation of the standard "descriptor()" accessor, which can
    * conflict with a field of the same name.  This is meant to make migration
    * from proto1 easier; new code should avoid fields named "descriptor".
    */
-  no_standard_descriptor_accessor: boolean;
+  no_standard_descriptor_accessor?: boolean;
   /**
    * Is this message deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
    * for the message, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating messages.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /**
    * Whether the message is an automatically generated map entry type for the
    * maps field.
@@ -1356,9 +1356,9 @@ export interface MessageOptionsAmino {
    * instead. The option should only be implicitly set by the proto compiler
    * parser.
    */
-  map_entry: boolean;
+  map_entry?: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface MessageOptionsAminoMsg {
   type: "/google.protobuf.MessageOptions";
@@ -1455,7 +1455,7 @@ export interface FieldOptionsAmino {
    * options below.  This option is not yet implemented in the open source
    * release -- sorry, we'll try to include it in a future version!
    */
-  ctype: FieldOptions_CType;
+  ctype?: FieldOptions_CType;
   /**
    * The packed option can be enabled for repeated primitive fields to enable
    * a more efficient representation on the wire. Rather than repeatedly
@@ -1463,7 +1463,7 @@ export interface FieldOptionsAmino {
    * a single length-delimited blob. In proto3, only explicit setting it to
    * false will avoid using packed encoding.
    */
-  packed: boolean;
+  packed?: boolean;
   /**
    * The jstype option determines the JavaScript type used for values of the
    * field.  The option is permitted only for 64 bit integral and fixed types
@@ -1477,7 +1477,7 @@ export interface FieldOptionsAmino {
    * This option is an enum to permit additional types to be added, e.g.
    * goog.math.Integer.
    */
-  jstype: FieldOptions_JSType;
+  jstype?: FieldOptions_JSType;
   /**
    * Should this field be parsed lazily?  Lazy applies only to message-type
    * fields.  It means that when the outer message is initially parsed, the
@@ -1508,18 +1508,18 @@ export interface FieldOptionsAmino {
    * check its required fields, regardless of whether or not the message has
    * been parsed.
    */
-  lazy: boolean;
+  lazy?: boolean;
   /**
    * Is this field deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /** For Google-internal migration only. Do not use. */
-  weak: boolean;
+  weak?: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface FieldOptionsAminoMsg {
   type: "/google.protobuf.FieldOptions";
@@ -1544,7 +1544,7 @@ export interface OneofOptionsProtoMsg {
 }
 export interface OneofOptionsAmino {
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface OneofOptionsAminoMsg {
   type: "/google.protobuf.OneofOptions";
@@ -1578,16 +1578,16 @@ export interface EnumOptionsAmino {
    * Set this option to true to allow mapping different tag names to the same
    * value.
    */
-  allow_alias: boolean;
+  allow_alias?: boolean;
   /**
    * Is this enum deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
    * for the enum, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating enums.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface EnumOptionsAminoMsg {
   type: "/google.protobuf.EnumOptions";
@@ -1620,9 +1620,9 @@ export interface EnumValueOptionsAmino {
    * for the enum value, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating enum values.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface EnumValueOptionsAminoMsg {
   type: "/google.protobuf.EnumValueOptions";
@@ -1654,9 +1654,9 @@ export interface ServiceOptionsAmino {
    * for the service, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating services.
    */
-  deprecated: boolean;
+  deprecated?: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface ServiceOptionsAminoMsg {
   type: "/google.protobuf.ServiceOptions";
@@ -1689,10 +1689,10 @@ export interface MethodOptionsAmino {
    * for the method, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating methods.
    */
-  deprecated: boolean;
-  idempotency_level: MethodOptions_IdempotencyLevel;
+  deprecated?: boolean;
+  idempotency_level?: MethodOptions_IdempotencyLevel;
   /** The parser stores options it doesn't recognize here. See above. */
-  uninterpreted_option: UninterpretedOptionAmino[];
+  uninterpreted_option?: UninterpretedOptionAmino[];
 }
 export interface MethodOptionsAminoMsg {
   type: "/google.protobuf.MethodOptions";
@@ -1737,17 +1737,17 @@ export interface UninterpretedOptionProtoMsg {
  * in them.
  */
 export interface UninterpretedOptionAmino {
-  name: UninterpretedOption_NamePartAmino[];
+  name?: UninterpretedOption_NamePartAmino[];
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
    */
-  identifier_value: string;
-  positive_int_value: string;
-  negative_int_value: string;
-  double_value: number;
-  string_value: Uint8Array;
-  aggregate_value: string;
+  identifier_value?: string;
+  positive_int_value?: string;
+  negative_int_value?: string;
+  double_value?: number;
+  string_value?: string;
+  aggregate_value?: string;
 }
 export interface UninterpretedOptionAminoMsg {
   type: "/google.protobuf.UninterpretedOption";
@@ -1793,8 +1793,8 @@ export interface UninterpretedOption_NamePartProtoMsg {
  * "foo.(bar.baz).qux".
  */
 export interface UninterpretedOption_NamePartAmino {
-  name_part: string;
-  is_extension: boolean;
+  name_part?: string;
+  is_extension?: boolean;
 }
 export interface UninterpretedOption_NamePartAminoMsg {
   type: "/google.protobuf.NamePart";
@@ -1917,7 +1917,7 @@ export interface SourceCodeInfoAmino {
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
    */
-  location: SourceCodeInfo_LocationAmino[];
+  location?: SourceCodeInfo_LocationAmino[];
 }
 export interface SourceCodeInfoAminoMsg {
   type: "/google.protobuf.SourceCodeInfo";
@@ -2048,7 +2048,7 @@ export interface SourceCodeInfo_LocationAmino {
    * this path refers to the whole field declaration (from the beginning
    * of the label to the terminating semicolon).
    */
-  path: number[];
+  path?: number[];
   /**
    * Always has exactly three or four elements: start line, start column,
    * end line (optional, otherwise assumed same as start line), end column.
@@ -2056,7 +2056,7 @@ export interface SourceCodeInfo_LocationAmino {
    * and column numbers are zero-based -- typically you will want to add
    * 1 to each before displaying to a user.
    */
-  span: number[];
+  span?: number[];
   /**
    * If this SourceCodeInfo represents a complete declaration, these are any
    * comments appearing before and after the declaration which appear to be
@@ -2106,9 +2106,9 @@ export interface SourceCodeInfo_LocationAmino {
    *
    *   // ignored detached comments.
    */
-  leading_comments: string;
-  trailing_comments: string;
-  leading_detached_comments: string[];
+  leading_comments?: string;
+  trailing_comments?: string;
+  leading_detached_comments?: string[];
 }
 export interface SourceCodeInfo_LocationAminoMsg {
   type: "/google.protobuf.Location";
@@ -2147,7 +2147,7 @@ export interface GeneratedCodeInfoAmino {
    * An Annotation connects some span of text in generated code to an element
    * of its generating .proto file.
    */
-  annotation: GeneratedCodeInfo_AnnotationAmino[];
+  annotation?: GeneratedCodeInfo_AnnotationAmino[];
 }
 export interface GeneratedCodeInfoAminoMsg {
   type: "/google.protobuf.GeneratedCodeInfo";
@@ -2190,20 +2190,20 @@ export interface GeneratedCodeInfo_AnnotationAmino {
    * Identifies the element in the original source .proto file. This field
    * is formatted the same as SourceCodeInfo.Location.path.
    */
-  path: number[];
+  path?: number[];
   /** Identifies the filesystem path to the original source .proto. */
-  source_file: string;
+  source_file?: string;
   /**
    * Identifies the starting offset in bytes in the generated code
    * that relates to the identified object.
    */
-  begin: number;
+  begin?: number;
   /**
    * Identifies the ending offset in bytes in the generated code that
    * relates to the identified offset. The end offset should be one past
    * the last relevant byte (so the length of the text = end - begin).
    */
-  end: number;
+  end?: number;
 }
 export interface GeneratedCodeInfo_AnnotationAminoMsg {
   type: "/google.protobuf.Annotation";
@@ -2258,11 +2258,10 @@ export const FileDescriptorSet = {
     return message;
   },
   fromAmino(object: FileDescriptorSetAmino): FileDescriptorSet {
-    return {
-      file: Array.isArray(object?.file)
-        ? object.file.map((e: any) => FileDescriptorProto.fromAmino(e))
-        : [],
-    };
+    const message = createBaseFileDescriptorSet();
+    message.file =
+      object.file?.map((e) => FileDescriptorProto.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: FileDescriptorSet): FileDescriptorSetAmino {
     const obj: any = {};
@@ -2271,7 +2270,7 @@ export const FileDescriptorSet = {
         e ? FileDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.file = [];
+      obj.file = message.file;
     }
     return obj;
   },
@@ -2464,85 +2463,86 @@ export const FileDescriptorProto = {
     return message;
   },
   fromAmino(object: FileDescriptorProtoAmino): FileDescriptorProto {
-    return {
-      name: object.name,
-      package: object.package,
-      dependency: Array.isArray(object?.dependency)
-        ? object.dependency.map((e: any) => e)
-        : [],
-      publicDependency: Array.isArray(object?.public_dependency)
-        ? object.public_dependency.map((e: any) => e)
-        : [],
-      weakDependency: Array.isArray(object?.weak_dependency)
-        ? object.weak_dependency.map((e: any) => e)
-        : [],
-      messageType: Array.isArray(object?.message_type)
-        ? object.message_type.map((e: any) => DescriptorProto.fromAmino(e))
-        : [],
-      enumType: Array.isArray(object?.enum_type)
-        ? object.enum_type.map((e: any) => EnumDescriptorProto.fromAmino(e))
-        : [],
-      service: Array.isArray(object?.service)
-        ? object.service.map((e: any) => ServiceDescriptorProto.fromAmino(e))
-        : [],
-      extension: Array.isArray(object?.extension)
-        ? object.extension.map((e: any) => FieldDescriptorProto.fromAmino(e))
-        : [],
-      options: object?.options
-        ? FileOptions.fromAmino(object.options)
-        : undefined,
-      sourceCodeInfo: object?.source_code_info
-        ? SourceCodeInfo.fromAmino(object.source_code_info)
-        : undefined,
-      syntax: object.syntax,
-    };
+    const message = createBaseFileDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.package !== undefined && object.package !== null) {
+      message.package = object.package;
+    }
+    message.dependency = object.dependency?.map((e) => e) || [];
+    message.publicDependency = object.public_dependency?.map((e) => e) || [];
+    message.weakDependency = object.weak_dependency?.map((e) => e) || [];
+    message.messageType =
+      object.message_type?.map((e) => DescriptorProto.fromAmino(e)) || [];
+    message.enumType =
+      object.enum_type?.map((e) => EnumDescriptorProto.fromAmino(e)) || [];
+    message.service =
+      object.service?.map((e) => ServiceDescriptorProto.fromAmino(e)) || [];
+    message.extension =
+      object.extension?.map((e) => FieldDescriptorProto.fromAmino(e)) || [];
+    if (object.options !== undefined && object.options !== null) {
+      message.options = FileOptions.fromAmino(object.options);
+    }
+    if (
+      object.source_code_info !== undefined &&
+      object.source_code_info !== null
+    ) {
+      message.sourceCodeInfo = SourceCodeInfo.fromAmino(
+        object.source_code_info
+      );
+    }
+    if (object.syntax !== undefined && object.syntax !== null) {
+      message.syntax = object.syntax;
+    }
+    return message;
   },
   toAmino(message: FileDescriptorProto): FileDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.package = message.package;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.package = message.package === "" ? undefined : message.package;
     if (message.dependency) {
       obj.dependency = message.dependency.map((e) => e);
     } else {
-      obj.dependency = [];
+      obj.dependency = message.dependency;
     }
     if (message.publicDependency) {
       obj.public_dependency = message.publicDependency.map((e) => e);
     } else {
-      obj.public_dependency = [];
+      obj.public_dependency = message.publicDependency;
     }
     if (message.weakDependency) {
       obj.weak_dependency = message.weakDependency.map((e) => e);
     } else {
-      obj.weak_dependency = [];
+      obj.weak_dependency = message.weakDependency;
     }
     if (message.messageType) {
       obj.message_type = message.messageType.map((e) =>
         e ? DescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.message_type = [];
+      obj.message_type = message.messageType;
     }
     if (message.enumType) {
       obj.enum_type = message.enumType.map((e) =>
         e ? EnumDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.enum_type = [];
+      obj.enum_type = message.enumType;
     }
     if (message.service) {
       obj.service = message.service.map((e) =>
         e ? ServiceDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.service = [];
+      obj.service = message.service;
     }
     if (message.extension) {
       obj.extension = message.extension.map((e) =>
         e ? FieldDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.extension = [];
+      obj.extension = message.extension;
     }
     obj.options = message.options
       ? FileOptions.toAmino(message.options)
@@ -2550,7 +2550,7 @@ export const FileDescriptorProto = {
     obj.source_code_info = message.sourceCodeInfo
       ? SourceCodeInfo.toAmino(message.sourceCodeInfo)
       : undefined;
-    obj.syntax = message.syntax;
+    obj.syntax = message.syntax === "" ? undefined : message.syntax;
     return obj;
   },
   fromAminoMsg(object: FileDescriptorProtoAminoMsg): FileDescriptorProto {
@@ -2715,85 +2715,78 @@ export const DescriptorProto = {
     return message;
   },
   fromAmino(object: DescriptorProtoAmino): DescriptorProto {
-    return {
-      name: object.name,
-      field: Array.isArray(object?.field)
-        ? object.field.map((e: any) => FieldDescriptorProto.fromAmino(e))
-        : [],
-      extension: Array.isArray(object?.extension)
-        ? object.extension.map((e: any) => FieldDescriptorProto.fromAmino(e))
-        : [],
-      nestedType: Array.isArray(object?.nested_type)
-        ? object.nested_type.map((e: any) => DescriptorProto.fromAmino(e))
-        : [],
-      enumType: Array.isArray(object?.enum_type)
-        ? object.enum_type.map((e: any) => EnumDescriptorProto.fromAmino(e))
-        : [],
-      extensionRange: Array.isArray(object?.extension_range)
-        ? object.extension_range.map((e: any) =>
-            DescriptorProto_ExtensionRange.fromAmino(e)
-          )
-        : [],
-      oneofDecl: Array.isArray(object?.oneof_decl)
-        ? object.oneof_decl.map((e: any) => OneofDescriptorProto.fromAmino(e))
-        : [],
-      options: object?.options
-        ? MessageOptions.fromAmino(object.options)
-        : undefined,
-      reservedRange: Array.isArray(object?.reserved_range)
-        ? object.reserved_range.map((e: any) =>
-            DescriptorProto_ReservedRange.fromAmino(e)
-          )
-        : [],
-      reservedName: Array.isArray(object?.reserved_name)
-        ? object.reserved_name.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    message.field =
+      object.field?.map((e) => FieldDescriptorProto.fromAmino(e)) || [];
+    message.extension =
+      object.extension?.map((e) => FieldDescriptorProto.fromAmino(e)) || [];
+    message.nestedType =
+      object.nested_type?.map((e) => DescriptorProto.fromAmino(e)) || [];
+    message.enumType =
+      object.enum_type?.map((e) => EnumDescriptorProto.fromAmino(e)) || [];
+    message.extensionRange =
+      object.extension_range?.map((e) =>
+        DescriptorProto_ExtensionRange.fromAmino(e)
+      ) || [];
+    message.oneofDecl =
+      object.oneof_decl?.map((e) => OneofDescriptorProto.fromAmino(e)) || [];
+    if (object.options !== undefined && object.options !== null) {
+      message.options = MessageOptions.fromAmino(object.options);
+    }
+    message.reservedRange =
+      object.reserved_range?.map((e) =>
+        DescriptorProto_ReservedRange.fromAmino(e)
+      ) || [];
+    message.reservedName = object.reserved_name?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: DescriptorProto): DescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     if (message.field) {
       obj.field = message.field.map((e) =>
         e ? FieldDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.field = [];
+      obj.field = message.field;
     }
     if (message.extension) {
       obj.extension = message.extension.map((e) =>
         e ? FieldDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.extension = [];
+      obj.extension = message.extension;
     }
     if (message.nestedType) {
       obj.nested_type = message.nestedType.map((e) =>
         e ? DescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.nested_type = [];
+      obj.nested_type = message.nestedType;
     }
     if (message.enumType) {
       obj.enum_type = message.enumType.map((e) =>
         e ? EnumDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.enum_type = [];
+      obj.enum_type = message.enumType;
     }
     if (message.extensionRange) {
       obj.extension_range = message.extensionRange.map((e) =>
         e ? DescriptorProto_ExtensionRange.toAmino(e) : undefined
       );
     } else {
-      obj.extension_range = [];
+      obj.extension_range = message.extensionRange;
     }
     if (message.oneofDecl) {
       obj.oneof_decl = message.oneofDecl.map((e) =>
         e ? OneofDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.oneof_decl = [];
+      obj.oneof_decl = message.oneofDecl;
     }
     obj.options = message.options
       ? MessageOptions.toAmino(message.options)
@@ -2803,12 +2796,12 @@ export const DescriptorProto = {
         e ? DescriptorProto_ReservedRange.toAmino(e) : undefined
       );
     } else {
-      obj.reserved_range = [];
+      obj.reserved_range = message.reservedRange;
     }
     if (message.reservedName) {
       obj.reserved_name = message.reservedName.map((e) => e);
     } else {
-      obj.reserved_name = [];
+      obj.reserved_name = message.reservedName;
     }
     return obj;
   },
@@ -2900,20 +2893,24 @@ export const DescriptorProto_ExtensionRange = {
   fromAmino(
     object: DescriptorProto_ExtensionRangeAmino
   ): DescriptorProto_ExtensionRange {
-    return {
-      start: object.start,
-      end: object.end,
-      options: object?.options
-        ? ExtensionRangeOptions.fromAmino(object.options)
-        : undefined,
-    };
+    const message = createBaseDescriptorProto_ExtensionRange();
+    if (object.start !== undefined && object.start !== null) {
+      message.start = object.start;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = object.end;
+    }
+    if (object.options !== undefined && object.options !== null) {
+      message.options = ExtensionRangeOptions.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(
     message: DescriptorProto_ExtensionRange
   ): DescriptorProto_ExtensionRangeAmino {
     const obj: any = {};
-    obj.start = message.start;
-    obj.end = message.end;
+    obj.start = message.start === 0 ? undefined : message.start;
+    obj.end = message.end === 0 ? undefined : message.end;
     obj.options = message.options
       ? ExtensionRangeOptions.toAmino(message.options)
       : undefined;
@@ -2996,17 +2993,21 @@ export const DescriptorProto_ReservedRange = {
   fromAmino(
     object: DescriptorProto_ReservedRangeAmino
   ): DescriptorProto_ReservedRange {
-    return {
-      start: object.start,
-      end: object.end,
-    };
+    const message = createBaseDescriptorProto_ReservedRange();
+    if (object.start !== undefined && object.start !== null) {
+      message.start = object.start;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = object.end;
+    }
+    return message;
   },
   toAmino(
     message: DescriptorProto_ReservedRange
   ): DescriptorProto_ReservedRangeAmino {
     const obj: any = {};
-    obj.start = message.start;
-    obj.end = message.end;
+    obj.start = message.start === 0 ? undefined : message.start;
+    obj.end = message.end === 0 ? undefined : message.end;
     return obj;
   },
   fromAminoMsg(
@@ -3079,13 +3080,12 @@ export const ExtensionRangeOptions = {
     return message;
   },
   fromAmino(object: ExtensionRangeOptionsAmino): ExtensionRangeOptions {
-    return {
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseExtensionRangeOptions();
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: ExtensionRangeOptions): ExtensionRangeOptionsAmino {
     const obj: any = {};
@@ -3094,7 +3094,7 @@ export const ExtensionRangeOptions = {
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -3232,36 +3232,51 @@ export const FieldDescriptorProto = {
     return message;
   },
   fromAmino(object: FieldDescriptorProtoAmino): FieldDescriptorProto {
-    return {
-      name: object.name,
-      number: object.number,
-      label: isSet(object.label)
-        ? fieldDescriptorProto_LabelFromJSON(object.label)
-        : -1,
-      type: isSet(object.type)
-        ? fieldDescriptorProto_TypeFromJSON(object.type)
-        : -1,
-      typeName: object.type_name,
-      extendee: object.extendee,
-      defaultValue: object.default_value,
-      oneofIndex: object.oneof_index,
-      jsonName: object.json_name,
-      options: object?.options
-        ? FieldOptions.fromAmino(object.options)
-        : undefined,
-    };
+    const message = createBaseFieldDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.number !== undefined && object.number !== null) {
+      message.number = object.number;
+    }
+    if (object.label !== undefined && object.label !== null) {
+      message.label = object.label;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
+    }
+    if (object.type_name !== undefined && object.type_name !== null) {
+      message.typeName = object.type_name;
+    }
+    if (object.extendee !== undefined && object.extendee !== null) {
+      message.extendee = object.extendee;
+    }
+    if (object.default_value !== undefined && object.default_value !== null) {
+      message.defaultValue = object.default_value;
+    }
+    if (object.oneof_index !== undefined && object.oneof_index !== null) {
+      message.oneofIndex = object.oneof_index;
+    }
+    if (object.json_name !== undefined && object.json_name !== null) {
+      message.jsonName = object.json_name;
+    }
+    if (object.options !== undefined && object.options !== null) {
+      message.options = FieldOptions.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(message: FieldDescriptorProto): FieldDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.number = message.number;
-    obj.label = message.label;
-    obj.type = message.type;
-    obj.type_name = message.typeName;
-    obj.extendee = message.extendee;
-    obj.default_value = message.defaultValue;
-    obj.oneof_index = message.oneofIndex;
-    obj.json_name = message.jsonName;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.number = message.number === 0 ? undefined : message.number;
+    obj.label = message.label === 1 ? undefined : message.label;
+    obj.type = message.type === 1 ? undefined : message.type;
+    obj.type_name = message.typeName === "" ? undefined : message.typeName;
+    obj.extendee = message.extendee === "" ? undefined : message.extendee;
+    obj.default_value =
+      message.defaultValue === "" ? undefined : message.defaultValue;
+    obj.oneof_index = message.oneofIndex === 0 ? undefined : message.oneofIndex;
+    obj.json_name = message.jsonName === "" ? undefined : message.jsonName;
     obj.options = message.options
       ? FieldOptions.toAmino(message.options)
       : undefined;
@@ -3337,16 +3352,18 @@ export const OneofDescriptorProto = {
     return message;
   },
   fromAmino(object: OneofDescriptorProtoAmino): OneofDescriptorProto {
-    return {
-      name: object.name,
-      options: object?.options
-        ? OneofOptions.fromAmino(object.options)
-        : undefined,
-    };
+    const message = createBaseOneofDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.options !== undefined && object.options !== null) {
+      message.options = OneofOptions.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(message: OneofDescriptorProto): OneofDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     obj.options = message.options
       ? OneofOptions.toAmino(message.options)
       : undefined;
@@ -3460,33 +3477,31 @@ export const EnumDescriptorProto = {
     return message;
   },
   fromAmino(object: EnumDescriptorProtoAmino): EnumDescriptorProto {
-    return {
-      name: object.name,
-      value: Array.isArray(object?.value)
-        ? object.value.map((e: any) => EnumValueDescriptorProto.fromAmino(e))
-        : [],
-      options: object?.options
-        ? EnumOptions.fromAmino(object.options)
-        : undefined,
-      reservedRange: Array.isArray(object?.reserved_range)
-        ? object.reserved_range.map((e: any) =>
-            EnumDescriptorProto_EnumReservedRange.fromAmino(e)
-          )
-        : [],
-      reservedName: Array.isArray(object?.reserved_name)
-        ? object.reserved_name.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseEnumDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    message.value =
+      object.value?.map((e) => EnumValueDescriptorProto.fromAmino(e)) || [];
+    if (object.options !== undefined && object.options !== null) {
+      message.options = EnumOptions.fromAmino(object.options);
+    }
+    message.reservedRange =
+      object.reserved_range?.map((e) =>
+        EnumDescriptorProto_EnumReservedRange.fromAmino(e)
+      ) || [];
+    message.reservedName = object.reserved_name?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: EnumDescriptorProto): EnumDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     if (message.value) {
       obj.value = message.value.map((e) =>
         e ? EnumValueDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.value = [];
+      obj.value = message.value;
     }
     obj.options = message.options
       ? EnumOptions.toAmino(message.options)
@@ -3496,12 +3511,12 @@ export const EnumDescriptorProto = {
         e ? EnumDescriptorProto_EnumReservedRange.toAmino(e) : undefined
       );
     } else {
-      obj.reserved_range = [];
+      obj.reserved_range = message.reservedRange;
     }
     if (message.reservedName) {
       obj.reserved_name = message.reservedName.map((e) => e);
     } else {
-      obj.reserved_name = [];
+      obj.reserved_name = message.reservedName;
     }
     return obj;
   },
@@ -3576,17 +3591,21 @@ export const EnumDescriptorProto_EnumReservedRange = {
   fromAmino(
     object: EnumDescriptorProto_EnumReservedRangeAmino
   ): EnumDescriptorProto_EnumReservedRange {
-    return {
-      start: object.start,
-      end: object.end,
-    };
+    const message = createBaseEnumDescriptorProto_EnumReservedRange();
+    if (object.start !== undefined && object.start !== null) {
+      message.start = object.start;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = object.end;
+    }
+    return message;
   },
   toAmino(
     message: EnumDescriptorProto_EnumReservedRange
   ): EnumDescriptorProto_EnumReservedRangeAmino {
     const obj: any = {};
-    obj.start = message.start;
-    obj.end = message.end;
+    obj.start = message.start === 0 ? undefined : message.start;
+    obj.end = message.end === 0 ? undefined : message.end;
     return obj;
   },
   fromAminoMsg(
@@ -3678,18 +3697,22 @@ export const EnumValueDescriptorProto = {
     return message;
   },
   fromAmino(object: EnumValueDescriptorProtoAmino): EnumValueDescriptorProto {
-    return {
-      name: object.name,
-      number: object.number,
-      options: object?.options
-        ? EnumValueOptions.fromAmino(object.options)
-        : undefined,
-    };
+    const message = createBaseEnumValueDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.number !== undefined && object.number !== null) {
+      message.number = object.number;
+    }
+    if (object.options !== undefined && object.options !== null) {
+      message.options = EnumValueOptions.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(message: EnumValueDescriptorProto): EnumValueDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.number = message.number;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.number = message.number === 0 ? undefined : message.number;
     obj.options = message.options
       ? EnumValueOptions.toAmino(message.options)
       : undefined;
@@ -3782,25 +3805,26 @@ export const ServiceDescriptorProto = {
     return message;
   },
   fromAmino(object: ServiceDescriptorProtoAmino): ServiceDescriptorProto {
-    return {
-      name: object.name,
-      method: Array.isArray(object?.method)
-        ? object.method.map((e: any) => MethodDescriptorProto.fromAmino(e))
-        : [],
-      options: object?.options
-        ? ServiceOptions.fromAmino(object.options)
-        : undefined,
-    };
+    const message = createBaseServiceDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    message.method =
+      object.method?.map((e) => MethodDescriptorProto.fromAmino(e)) || [];
+    if (object.options !== undefined && object.options !== null) {
+      message.options = ServiceOptions.fromAmino(object.options);
+    }
+    return message;
   },
   toAmino(message: ServiceDescriptorProto): ServiceDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
+    obj.name = message.name === "" ? undefined : message.name;
     if (message.method) {
       obj.method = message.method.map((e) =>
         e ? MethodDescriptorProto.toAmino(e) : undefined
       );
     } else {
-      obj.method = [];
+      obj.method = message.method;
     }
     obj.options = message.options
       ? ServiceOptions.toAmino(message.options)
@@ -3911,27 +3935,46 @@ export const MethodDescriptorProto = {
     return message;
   },
   fromAmino(object: MethodDescriptorProtoAmino): MethodDescriptorProto {
-    return {
-      name: object.name,
-      inputType: object.input_type,
-      outputType: object.output_type,
-      options: object?.options
-        ? MethodOptions.fromAmino(object.options)
-        : undefined,
-      clientStreaming: object.client_streaming,
-      serverStreaming: object.server_streaming,
-    };
+    const message = createBaseMethodDescriptorProto();
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    }
+    if (object.input_type !== undefined && object.input_type !== null) {
+      message.inputType = object.input_type;
+    }
+    if (object.output_type !== undefined && object.output_type !== null) {
+      message.outputType = object.output_type;
+    }
+    if (object.options !== undefined && object.options !== null) {
+      message.options = MethodOptions.fromAmino(object.options);
+    }
+    if (
+      object.client_streaming !== undefined &&
+      object.client_streaming !== null
+    ) {
+      message.clientStreaming = object.client_streaming;
+    }
+    if (
+      object.server_streaming !== undefined &&
+      object.server_streaming !== null
+    ) {
+      message.serverStreaming = object.server_streaming;
+    }
+    return message;
   },
   toAmino(message: MethodDescriptorProto): MethodDescriptorProtoAmino {
     const obj: any = {};
-    obj.name = message.name;
-    obj.input_type = message.inputType;
-    obj.output_type = message.outputType;
+    obj.name = message.name === "" ? undefined : message.name;
+    obj.input_type = message.inputType === "" ? undefined : message.inputType;
+    obj.output_type =
+      message.outputType === "" ? undefined : message.outputType;
     obj.options = message.options
       ? MethodOptions.toAmino(message.options)
       : undefined;
-    obj.client_streaming = message.clientStreaming;
-    obj.server_streaming = message.serverStreaming;
+    obj.client_streaming =
+      message.clientStreaming === false ? undefined : message.clientStreaming;
+    obj.server_streaming =
+      message.serverStreaming === false ? undefined : message.serverStreaming;
     return obj;
   },
   fromAminoMsg(object: MethodDescriptorProtoAminoMsg): MethodDescriptorProto {
@@ -4156,64 +4199,177 @@ export const FileOptions = {
     return message;
   },
   fromAmino(object: FileOptionsAmino): FileOptions {
-    return {
-      javaPackage: object.java_package,
-      javaOuterClassname: object.java_outer_classname,
-      javaMultipleFiles: object.java_multiple_files,
-      javaGenerateEqualsAndHash: object.java_generate_equals_and_hash,
-      javaStringCheckUtf8: object.java_string_check_utf8,
-      optimizeFor: isSet(object.optimize_for)
-        ? fileOptions_OptimizeModeFromJSON(object.optimize_for)
-        : -1,
-      goPackage: object.go_package,
-      ccGenericServices: object.cc_generic_services,
-      javaGenericServices: object.java_generic_services,
-      pyGenericServices: object.py_generic_services,
-      phpGenericServices: object.php_generic_services,
-      deprecated: object.deprecated,
-      ccEnableArenas: object.cc_enable_arenas,
-      objcClassPrefix: object.objc_class_prefix,
-      csharpNamespace: object.csharp_namespace,
-      swiftPrefix: object.swift_prefix,
-      phpClassPrefix: object.php_class_prefix,
-      phpNamespace: object.php_namespace,
-      phpMetadataNamespace: object.php_metadata_namespace,
-      rubyPackage: object.ruby_package,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseFileOptions();
+    if (object.java_package !== undefined && object.java_package !== null) {
+      message.javaPackage = object.java_package;
+    }
+    if (
+      object.java_outer_classname !== undefined &&
+      object.java_outer_classname !== null
+    ) {
+      message.javaOuterClassname = object.java_outer_classname;
+    }
+    if (
+      object.java_multiple_files !== undefined &&
+      object.java_multiple_files !== null
+    ) {
+      message.javaMultipleFiles = object.java_multiple_files;
+    }
+    if (
+      object.java_generate_equals_and_hash !== undefined &&
+      object.java_generate_equals_and_hash !== null
+    ) {
+      message.javaGenerateEqualsAndHash = object.java_generate_equals_and_hash;
+    }
+    if (
+      object.java_string_check_utf8 !== undefined &&
+      object.java_string_check_utf8 !== null
+    ) {
+      message.javaStringCheckUtf8 = object.java_string_check_utf8;
+    }
+    if (object.optimize_for !== undefined && object.optimize_for !== null) {
+      message.optimizeFor = object.optimize_for;
+    }
+    if (object.go_package !== undefined && object.go_package !== null) {
+      message.goPackage = object.go_package;
+    }
+    if (
+      object.cc_generic_services !== undefined &&
+      object.cc_generic_services !== null
+    ) {
+      message.ccGenericServices = object.cc_generic_services;
+    }
+    if (
+      object.java_generic_services !== undefined &&
+      object.java_generic_services !== null
+    ) {
+      message.javaGenericServices = object.java_generic_services;
+    }
+    if (
+      object.py_generic_services !== undefined &&
+      object.py_generic_services !== null
+    ) {
+      message.pyGenericServices = object.py_generic_services;
+    }
+    if (
+      object.php_generic_services !== undefined &&
+      object.php_generic_services !== null
+    ) {
+      message.phpGenericServices = object.php_generic_services;
+    }
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    if (
+      object.cc_enable_arenas !== undefined &&
+      object.cc_enable_arenas !== null
+    ) {
+      message.ccEnableArenas = object.cc_enable_arenas;
+    }
+    if (
+      object.objc_class_prefix !== undefined &&
+      object.objc_class_prefix !== null
+    ) {
+      message.objcClassPrefix = object.objc_class_prefix;
+    }
+    if (
+      object.csharp_namespace !== undefined &&
+      object.csharp_namespace !== null
+    ) {
+      message.csharpNamespace = object.csharp_namespace;
+    }
+    if (object.swift_prefix !== undefined && object.swift_prefix !== null) {
+      message.swiftPrefix = object.swift_prefix;
+    }
+    if (
+      object.php_class_prefix !== undefined &&
+      object.php_class_prefix !== null
+    ) {
+      message.phpClassPrefix = object.php_class_prefix;
+    }
+    if (object.php_namespace !== undefined && object.php_namespace !== null) {
+      message.phpNamespace = object.php_namespace;
+    }
+    if (
+      object.php_metadata_namespace !== undefined &&
+      object.php_metadata_namespace !== null
+    ) {
+      message.phpMetadataNamespace = object.php_metadata_namespace;
+    }
+    if (object.ruby_package !== undefined && object.ruby_package !== null) {
+      message.rubyPackage = object.ruby_package;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: FileOptions): FileOptionsAmino {
     const obj: any = {};
-    obj.java_package = message.javaPackage;
-    obj.java_outer_classname = message.javaOuterClassname;
-    obj.java_multiple_files = message.javaMultipleFiles;
-    obj.java_generate_equals_and_hash = message.javaGenerateEqualsAndHash;
-    obj.java_string_check_utf8 = message.javaStringCheckUtf8;
-    obj.optimize_for = message.optimizeFor;
-    obj.go_package = message.goPackage;
-    obj.cc_generic_services = message.ccGenericServices;
-    obj.java_generic_services = message.javaGenericServices;
-    obj.py_generic_services = message.pyGenericServices;
-    obj.php_generic_services = message.phpGenericServices;
-    obj.deprecated = message.deprecated;
-    obj.cc_enable_arenas = message.ccEnableArenas;
-    obj.objc_class_prefix = message.objcClassPrefix;
-    obj.csharp_namespace = message.csharpNamespace;
-    obj.swift_prefix = message.swiftPrefix;
-    obj.php_class_prefix = message.phpClassPrefix;
-    obj.php_namespace = message.phpNamespace;
-    obj.php_metadata_namespace = message.phpMetadataNamespace;
-    obj.ruby_package = message.rubyPackage;
+    obj.java_package =
+      message.javaPackage === "" ? undefined : message.javaPackage;
+    obj.java_outer_classname =
+      message.javaOuterClassname === ""
+        ? undefined
+        : message.javaOuterClassname;
+    obj.java_multiple_files =
+      message.javaMultipleFiles === false
+        ? undefined
+        : message.javaMultipleFiles;
+    obj.java_generate_equals_and_hash =
+      message.javaGenerateEqualsAndHash === false
+        ? undefined
+        : message.javaGenerateEqualsAndHash;
+    obj.java_string_check_utf8 =
+      message.javaStringCheckUtf8 === false
+        ? undefined
+        : message.javaStringCheckUtf8;
+    obj.optimize_for =
+      message.optimizeFor === 1 ? undefined : message.optimizeFor;
+    obj.go_package = message.goPackage === "" ? undefined : message.goPackage;
+    obj.cc_generic_services =
+      message.ccGenericServices === false
+        ? undefined
+        : message.ccGenericServices;
+    obj.java_generic_services =
+      message.javaGenericServices === false
+        ? undefined
+        : message.javaGenericServices;
+    obj.py_generic_services =
+      message.pyGenericServices === false
+        ? undefined
+        : message.pyGenericServices;
+    obj.php_generic_services =
+      message.phpGenericServices === false
+        ? undefined
+        : message.phpGenericServices;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
+    obj.cc_enable_arenas =
+      message.ccEnableArenas === false ? undefined : message.ccEnableArenas;
+    obj.objc_class_prefix =
+      message.objcClassPrefix === "" ? undefined : message.objcClassPrefix;
+    obj.csharp_namespace =
+      message.csharpNamespace === "" ? undefined : message.csharpNamespace;
+    obj.swift_prefix =
+      message.swiftPrefix === "" ? undefined : message.swiftPrefix;
+    obj.php_class_prefix =
+      message.phpClassPrefix === "" ? undefined : message.phpClassPrefix;
+    obj.php_namespace =
+      message.phpNamespace === "" ? undefined : message.phpNamespace;
+    obj.php_metadata_namespace =
+      message.phpMetadataNamespace === ""
+        ? undefined
+        : message.phpMetadataNamespace;
+    obj.ruby_package =
+      message.rubyPackage === "" ? undefined : message.rubyPackage;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4311,30 +4467,51 @@ export const MessageOptions = {
     return message;
   },
   fromAmino(object: MessageOptionsAmino): MessageOptions {
-    return {
-      messageSetWireFormat: object.message_set_wire_format,
-      noStandardDescriptorAccessor: object.no_standard_descriptor_accessor,
-      deprecated: object.deprecated,
-      mapEntry: object.map_entry,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseMessageOptions();
+    if (
+      object.message_set_wire_format !== undefined &&
+      object.message_set_wire_format !== null
+    ) {
+      message.messageSetWireFormat = object.message_set_wire_format;
+    }
+    if (
+      object.no_standard_descriptor_accessor !== undefined &&
+      object.no_standard_descriptor_accessor !== null
+    ) {
+      message.noStandardDescriptorAccessor =
+        object.no_standard_descriptor_accessor;
+    }
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    if (object.map_entry !== undefined && object.map_entry !== null) {
+      message.mapEntry = object.map_entry;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: MessageOptions): MessageOptionsAmino {
     const obj: any = {};
-    obj.message_set_wire_format = message.messageSetWireFormat;
-    obj.no_standard_descriptor_accessor = message.noStandardDescriptorAccessor;
-    obj.deprecated = message.deprecated;
-    obj.map_entry = message.mapEntry;
+    obj.message_set_wire_format =
+      message.messageSetWireFormat === false
+        ? undefined
+        : message.messageSetWireFormat;
+    obj.no_standard_descriptor_accessor =
+      message.noStandardDescriptorAccessor === false
+        ? undefined
+        : message.noStandardDescriptorAccessor;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
+    obj.map_entry = message.mapEntry === false ? undefined : message.mapEntry;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4447,38 +4624,46 @@ export const FieldOptions = {
     return message;
   },
   fromAmino(object: FieldOptionsAmino): FieldOptions {
-    return {
-      ctype: isSet(object.ctype)
-        ? fieldOptions_CTypeFromJSON(object.ctype)
-        : -1,
-      packed: object.packed,
-      jstype: isSet(object.jstype)
-        ? fieldOptions_JSTypeFromJSON(object.jstype)
-        : -1,
-      lazy: object.lazy,
-      deprecated: object.deprecated,
-      weak: object.weak,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseFieldOptions();
+    if (object.ctype !== undefined && object.ctype !== null) {
+      message.ctype = object.ctype;
+    }
+    if (object.packed !== undefined && object.packed !== null) {
+      message.packed = object.packed;
+    }
+    if (object.jstype !== undefined && object.jstype !== null) {
+      message.jstype = object.jstype;
+    }
+    if (object.lazy !== undefined && object.lazy !== null) {
+      message.lazy = object.lazy;
+    }
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    if (object.weak !== undefined && object.weak !== null) {
+      message.weak = object.weak;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: FieldOptions): FieldOptionsAmino {
     const obj: any = {};
-    obj.ctype = message.ctype;
-    obj.packed = message.packed;
-    obj.jstype = message.jstype;
-    obj.lazy = message.lazy;
-    obj.deprecated = message.deprecated;
-    obj.weak = message.weak;
+    obj.ctype = message.ctype === 1 ? undefined : message.ctype;
+    obj.packed = message.packed === false ? undefined : message.packed;
+    obj.jstype = message.jstype === 1 ? undefined : message.jstype;
+    obj.lazy = message.lazy === false ? undefined : message.lazy;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
+    obj.weak = message.weak === false ? undefined : message.weak;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4543,13 +4728,12 @@ export const OneofOptions = {
     return message;
   },
   fromAmino(object: OneofOptionsAmino): OneofOptions {
-    return {
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseOneofOptions();
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: OneofOptions): OneofOptionsAmino {
     const obj: any = {};
@@ -4558,7 +4742,7 @@ export const OneofOptions = {
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4639,26 +4823,31 @@ export const EnumOptions = {
     return message;
   },
   fromAmino(object: EnumOptionsAmino): EnumOptions {
-    return {
-      allowAlias: object.allow_alias,
-      deprecated: object.deprecated,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseEnumOptions();
+    if (object.allow_alias !== undefined && object.allow_alias !== null) {
+      message.allowAlias = object.allow_alias;
+    }
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: EnumOptions): EnumOptionsAmino {
     const obj: any = {};
-    obj.allow_alias = message.allowAlias;
-    obj.deprecated = message.deprecated;
+    obj.allow_alias =
+      message.allowAlias === false ? undefined : message.allowAlias;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4731,24 +4920,26 @@ export const EnumValueOptions = {
     return message;
   },
   fromAmino(object: EnumValueOptionsAmino): EnumValueOptions {
-    return {
-      deprecated: object.deprecated,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseEnumValueOptions();
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: EnumValueOptions): EnumValueOptionsAmino {
     const obj: any = {};
-    obj.deprecated = message.deprecated;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4821,24 +5012,26 @@ export const ServiceOptions = {
     return message;
   },
   fromAmino(object: ServiceOptionsAmino): ServiceOptions {
-    return {
-      deprecated: object.deprecated,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseServiceOptions();
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: ServiceOptions): ServiceOptionsAmino {
     const obj: any = {};
-    obj.deprecated = message.deprecated;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -4919,28 +5112,34 @@ export const MethodOptions = {
     return message;
   },
   fromAmino(object: MethodOptionsAmino): MethodOptions {
-    return {
-      deprecated: object.deprecated,
-      idempotencyLevel: isSet(object.idempotency_level)
-        ? methodOptions_IdempotencyLevelFromJSON(object.idempotency_level)
-        : -1,
-      uninterpretedOption: Array.isArray(object?.uninterpreted_option)
-        ? object.uninterpreted_option.map((e: any) =>
-            UninterpretedOption.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseMethodOptions();
+    if (object.deprecated !== undefined && object.deprecated !== null) {
+      message.deprecated = object.deprecated;
+    }
+    if (
+      object.idempotency_level !== undefined &&
+      object.idempotency_level !== null
+    ) {
+      message.idempotencyLevel = object.idempotency_level;
+    }
+    message.uninterpretedOption =
+      object.uninterpreted_option?.map((e) =>
+        UninterpretedOption.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: MethodOptions): MethodOptionsAmino {
     const obj: any = {};
-    obj.deprecated = message.deprecated;
-    obj.idempotency_level = message.idempotencyLevel;
+    obj.deprecated =
+      message.deprecated === false ? undefined : message.deprecated;
+    obj.idempotency_level =
+      message.idempotencyLevel === 1 ? undefined : message.idempotencyLevel;
     if (message.uninterpretedOption) {
       obj.uninterpreted_option = message.uninterpretedOption.map((e) =>
         e ? UninterpretedOption.toAmino(e) : undefined
       );
     } else {
-      obj.uninterpreted_option = [];
+      obj.uninterpreted_option = message.uninterpretedOption;
     }
     return obj;
   },
@@ -5064,17 +5263,40 @@ export const UninterpretedOption = {
     return message;
   },
   fromAmino(object: UninterpretedOptionAmino): UninterpretedOption {
-    return {
-      name: Array.isArray(object?.name)
-        ? object.name.map((e: any) => UninterpretedOption_NamePart.fromAmino(e))
-        : [],
-      identifierValue: object.identifier_value,
-      positiveIntValue: BigInt(object.positive_int_value),
-      negativeIntValue: BigInt(object.negative_int_value),
-      doubleValue: object.double_value,
-      stringValue: object.string_value,
-      aggregateValue: object.aggregate_value,
-    };
+    const message = createBaseUninterpretedOption();
+    message.name =
+      object.name?.map((e) => UninterpretedOption_NamePart.fromAmino(e)) || [];
+    if (
+      object.identifier_value !== undefined &&
+      object.identifier_value !== null
+    ) {
+      message.identifierValue = object.identifier_value;
+    }
+    if (
+      object.positive_int_value !== undefined &&
+      object.positive_int_value !== null
+    ) {
+      message.positiveIntValue = BigInt(object.positive_int_value);
+    }
+    if (
+      object.negative_int_value !== undefined &&
+      object.negative_int_value !== null
+    ) {
+      message.negativeIntValue = BigInt(object.negative_int_value);
+    }
+    if (object.double_value !== undefined && object.double_value !== null) {
+      message.doubleValue = object.double_value;
+    }
+    if (object.string_value !== undefined && object.string_value !== null) {
+      message.stringValue = bytesFromBase64(object.string_value);
+    }
+    if (
+      object.aggregate_value !== undefined &&
+      object.aggregate_value !== null
+    ) {
+      message.aggregateValue = object.aggregate_value;
+    }
+    return message;
   },
   toAmino(message: UninterpretedOption): UninterpretedOptionAmino {
     const obj: any = {};
@@ -5083,18 +5305,25 @@ export const UninterpretedOption = {
         e ? UninterpretedOption_NamePart.toAmino(e) : undefined
       );
     } else {
-      obj.name = [];
+      obj.name = message.name;
     }
-    obj.identifier_value = message.identifierValue;
-    obj.positive_int_value = message.positiveIntValue
-      ? message.positiveIntValue.toString()
+    obj.identifier_value =
+      message.identifierValue === "" ? undefined : message.identifierValue;
+    obj.positive_int_value =
+      message.positiveIntValue !== BigInt(0)
+        ? message.positiveIntValue.toString()
+        : undefined;
+    obj.negative_int_value =
+      message.negativeIntValue !== BigInt(0)
+        ? message.negativeIntValue.toString()
+        : undefined;
+    obj.double_value =
+      message.doubleValue === 0 ? undefined : message.doubleValue;
+    obj.string_value = message.stringValue
+      ? base64FromBytes(message.stringValue)
       : undefined;
-    obj.negative_int_value = message.negativeIntValue
-      ? message.negativeIntValue.toString()
-      : undefined;
-    obj.double_value = message.doubleValue;
-    obj.string_value = message.stringValue;
-    obj.aggregate_value = message.aggregateValue;
+    obj.aggregate_value =
+      message.aggregateValue === "" ? undefined : message.aggregateValue;
     return obj;
   },
   fromAminoMsg(object: UninterpretedOptionAminoMsg): UninterpretedOption {
@@ -5168,17 +5397,22 @@ export const UninterpretedOption_NamePart = {
   fromAmino(
     object: UninterpretedOption_NamePartAmino
   ): UninterpretedOption_NamePart {
-    return {
-      namePart: object.name_part,
-      isExtension: object.is_extension,
-    };
+    const message = createBaseUninterpretedOption_NamePart();
+    if (object.name_part !== undefined && object.name_part !== null) {
+      message.namePart = object.name_part;
+    }
+    if (object.is_extension !== undefined && object.is_extension !== null) {
+      message.isExtension = object.is_extension;
+    }
+    return message;
   },
   toAmino(
     message: UninterpretedOption_NamePart
   ): UninterpretedOption_NamePartAmino {
     const obj: any = {};
-    obj.name_part = message.namePart;
-    obj.is_extension = message.isExtension;
+    obj.name_part = message.namePart === "" ? undefined : message.namePart;
+    obj.is_extension =
+      message.isExtension === false ? undefined : message.isExtension;
     return obj;
   },
   fromAminoMsg(
@@ -5246,11 +5480,10 @@ export const SourceCodeInfo = {
     return message;
   },
   fromAmino(object: SourceCodeInfoAmino): SourceCodeInfo {
-    return {
-      location: Array.isArray(object?.location)
-        ? object.location.map((e: any) => SourceCodeInfo_Location.fromAmino(e))
-        : [],
-    };
+    const message = createBaseSourceCodeInfo();
+    message.location =
+      object.location?.map((e) => SourceCodeInfo_Location.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: SourceCodeInfo): SourceCodeInfoAmino {
     const obj: any = {};
@@ -5259,7 +5492,7 @@ export const SourceCodeInfo = {
         e ? SourceCodeInfo_Location.toAmino(e) : undefined
       );
     } else {
-      obj.location = [];
+      obj.location = message.location;
     }
     return obj;
   },
@@ -5375,36 +5608,47 @@ export const SourceCodeInfo_Location = {
     return message;
   },
   fromAmino(object: SourceCodeInfo_LocationAmino): SourceCodeInfo_Location {
-    return {
-      path: Array.isArray(object?.path) ? object.path.map((e: any) => e) : [],
-      span: Array.isArray(object?.span) ? object.span.map((e: any) => e) : [],
-      leadingComments: object.leading_comments,
-      trailingComments: object.trailing_comments,
-      leadingDetachedComments: Array.isArray(object?.leading_detached_comments)
-        ? object.leading_detached_comments.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseSourceCodeInfo_Location();
+    message.path = object.path?.map((e) => e) || [];
+    message.span = object.span?.map((e) => e) || [];
+    if (
+      object.leading_comments !== undefined &&
+      object.leading_comments !== null
+    ) {
+      message.leadingComments = object.leading_comments;
+    }
+    if (
+      object.trailing_comments !== undefined &&
+      object.trailing_comments !== null
+    ) {
+      message.trailingComments = object.trailing_comments;
+    }
+    message.leadingDetachedComments =
+      object.leading_detached_comments?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: SourceCodeInfo_Location): SourceCodeInfo_LocationAmino {
     const obj: any = {};
     if (message.path) {
       obj.path = message.path.map((e) => e);
     } else {
-      obj.path = [];
+      obj.path = message.path;
     }
     if (message.span) {
       obj.span = message.span.map((e) => e);
     } else {
-      obj.span = [];
+      obj.span = message.span;
     }
-    obj.leading_comments = message.leadingComments;
-    obj.trailing_comments = message.trailingComments;
+    obj.leading_comments =
+      message.leadingComments === "" ? undefined : message.leadingComments;
+    obj.trailing_comments =
+      message.trailingComments === "" ? undefined : message.trailingComments;
     if (message.leadingDetachedComments) {
       obj.leading_detached_comments = message.leadingDetachedComments.map(
         (e) => e
       );
     } else {
-      obj.leading_detached_comments = [];
+      obj.leading_detached_comments = message.leadingDetachedComments;
     }
     return obj;
   },
@@ -5478,13 +5722,12 @@ export const GeneratedCodeInfo = {
     return message;
   },
   fromAmino(object: GeneratedCodeInfoAmino): GeneratedCodeInfo {
-    return {
-      annotation: Array.isArray(object?.annotation)
-        ? object.annotation.map((e: any) =>
-            GeneratedCodeInfo_Annotation.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseGeneratedCodeInfo();
+    message.annotation =
+      object.annotation?.map((e) =>
+        GeneratedCodeInfo_Annotation.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: GeneratedCodeInfo): GeneratedCodeInfoAmino {
     const obj: any = {};
@@ -5493,7 +5736,7 @@ export const GeneratedCodeInfo = {
         e ? GeneratedCodeInfo_Annotation.toAmino(e) : undefined
       );
     } else {
-      obj.annotation = [];
+      obj.annotation = message.annotation;
     }
     return obj;
   },
@@ -5593,12 +5836,18 @@ export const GeneratedCodeInfo_Annotation = {
   fromAmino(
     object: GeneratedCodeInfo_AnnotationAmino
   ): GeneratedCodeInfo_Annotation {
-    return {
-      path: Array.isArray(object?.path) ? object.path.map((e: any) => e) : [],
-      sourceFile: object.source_file,
-      begin: object.begin,
-      end: object.end,
-    };
+    const message = createBaseGeneratedCodeInfo_Annotation();
+    message.path = object.path?.map((e) => e) || [];
+    if (object.source_file !== undefined && object.source_file !== null) {
+      message.sourceFile = object.source_file;
+    }
+    if (object.begin !== undefined && object.begin !== null) {
+      message.begin = object.begin;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = object.end;
+    }
+    return message;
   },
   toAmino(
     message: GeneratedCodeInfo_Annotation
@@ -5607,11 +5856,12 @@ export const GeneratedCodeInfo_Annotation = {
     if (message.path) {
       obj.path = message.path.map((e) => e);
     } else {
-      obj.path = [];
+      obj.path = message.path;
     }
-    obj.source_file = message.sourceFile;
-    obj.begin = message.begin;
-    obj.end = message.end;
+    obj.source_file =
+      message.sourceFile === "" ? undefined : message.sourceFile;
+    obj.begin = message.begin === 0 ? undefined : message.begin;
+    obj.end = message.end === 0 ? undefined : message.end;
     return obj;
   },
   fromAminoMsg(

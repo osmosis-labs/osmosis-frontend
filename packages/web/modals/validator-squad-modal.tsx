@@ -5,6 +5,7 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import { normalizeUrl, truncateString } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -40,10 +41,9 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { normalizeUrl, truncateString } from "~/utils/string";
 
 const CONSTANTS = {
-  HIGH_APR: "0.3",
+  HIGH_APR: "0.2",
   HIGH_VOTING_POWER: "0.015",
 };
 
@@ -74,7 +74,6 @@ export type Validator = {
   website: string | undefined;
   imageUrl: string;
   operatorAddress: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
 };
 
@@ -85,7 +84,6 @@ export type FormattedValidator = {
   formattedCommissions: string;
   formattedWebsite: string;
   website: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
   operatorAddress: string;
 };
@@ -212,6 +210,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const data = useMemo(() => {
         return validators
           .filter(({ description }) => Boolean(description.moniker))
+          .filter((validator) => {
+            const commissions = getCommissions(validator);
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            return !isAPRTooHigh; // don't include validators where commissions >20%
+          })
           .map((validator) => {
             const votingPower = getVotingPower(validator);
             const myStake = getMyStake(validator);
@@ -222,7 +225,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             const commissions = getCommissions(validator);
             const formattedCommissions = getFormattedCommissions(commissions);
 
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
             const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
             const website = validator?.description?.website || "";
@@ -240,7 +242,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               formattedCommissions,
               formattedWebsite,
               website,
-              isAPRTooHigh,
               isVotingPowerTooHigh,
               operatorAddress,
             };
@@ -375,15 +376,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 ) => {
                   const formattedCommissions =
                     props.row.original.formattedCommissions;
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                   return (
-                    <div
-                      className={classNames(
-                        "text-right",
-                        isAPRTooHigh ? "text-rust-200" : "text-white"
-                      )}
-                    >
+                    <div className="text-white text-right">
                       {formattedCommissions}
                     </div>
                   );
@@ -399,20 +394,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const isVotingPowerTooHigh =
                     props.row.original.isVotingPowerTooHigh;
 
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
-
                   return (
                     <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("stake.isAPRTooHighTooltip")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {!isAPRTooHigh && isVotingPowerTooHigh && (
+                      {isVotingPowerTooHigh && (
                         <Tooltip
                           content={t("stake.isVotingPowerTooHighTooltip")}
                         >

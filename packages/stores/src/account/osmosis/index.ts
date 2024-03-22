@@ -583,12 +583,10 @@ export class OsmosisAccountImpl {
     superfluidValidatorAddress?: string,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = "5",
+    maxSlippage = "15",
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    if (poolId === "1247" || poolId === "1248") maxSlippage = "15";
-
     const queries = this.queries;
 
     const queryPool = queries.queryPools.getPool(poolId);
@@ -844,7 +842,7 @@ export class OsmosisAccountImpl {
       denom: string;
       amount: string;
     },
-    maxSlippage = DEFAULT_SLIPPAGE,
+    maxSlippage = "20",
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {

@@ -1,10 +1,10 @@
 import { Menu } from "@headlessui/react";
+import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { Checkbox } from "~/components/ui/checkbox";
 import { useWindowSize } from "~/hooks";
-import { noop } from "~/utils/function";
 
 import { Icon } from "../assets";
 import { MenuSelectProps } from "./types";

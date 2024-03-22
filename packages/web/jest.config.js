@@ -23,8 +23,7 @@ const config = {
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
-  testEnvironment: "jest-environment-jsdom",
-  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
+  testEnvironment: "<rootDir>/jsdom-extended.js",
 };
 
 module.exports = async () => ({

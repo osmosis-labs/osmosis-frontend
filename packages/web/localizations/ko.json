@@ -279,6 +279,13 @@
       "title": "{osmosis} 시작하기",
       "description": "몇 단계만 거치면 지갑을 연결하고 자금을 조달하여 거래를 시작할 수 있습니다.",
       "addFunds": "시작하려면 자금을 추가하세요."
+    },
+    "categories": {
+      "newest": "최신",
+      "defi": "디파이",
+      "stablecoin": "스테이블코인",
+      "meme": "나 나",
+      "liquid_staking": "리퀴드 스테이킹"
     }
   },
   "buyTokens": "토큰 구매",
@@ -703,7 +710,6 @@
     "unbondingPeriodTooltip": "락업된 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
-    "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
     "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
     "learnMore": {
       "step1": {

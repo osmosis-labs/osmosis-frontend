@@ -195,7 +195,7 @@ export const WalletSelectModal: FunctionComponent<
 
   const current = walletRepoProp?.current;
   const walletStatus = current?.walletStatus;
-  const chainName = walletRepoProp?.chainRecord.chain.chain_name;
+  const chainName = walletRepoProp?.chainRecord.chain?.chain_name!;
 
   useEffect(() => {
     if (isOpen) {

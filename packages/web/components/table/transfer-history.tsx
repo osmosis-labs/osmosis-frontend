@@ -5,6 +5,7 @@ import {
   IBCTransferHistoryStatus,
   TxReason,
 } from "@osmosis-labs/stores";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -16,7 +17,6 @@ import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { GetTransferStatusParams } from "~/integrations/bridges/types";
 import { useStore } from "~/stores";
-import { truncateString } from "~/utils/string";
 
 type History = {
   txHash: string;

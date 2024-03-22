@@ -1,11 +1,11 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import type { UserPosition } from "@osmosis-labs/server";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 
 export function useRemoveConcentratedLiquidityConfig(

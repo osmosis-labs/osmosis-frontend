@@ -13,7 +13,7 @@ export interface TrackedVolumeProtoMsg {
   value: Uint8Array;
 }
 export interface TrackedVolumeAmino {
-  amount: CoinAmino[];
+  amount?: CoinAmino[];
 }
 export interface TrackedVolumeAminoMsg {
   type: "osmosis/poolmanager/tracked-volume";
@@ -62,18 +62,16 @@ export const TrackedVolume = {
     return message;
   },
   fromAmino(object: TrackedVolumeAmino): TrackedVolume {
-    return {
-      amount: Array.isArray(object?.amount)
-        ? object.amount.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseTrackedVolume();
+    message.amount = object.amount?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: TrackedVolume): TrackedVolumeAmino {
     const obj: any = {};
     if (message.amount) {
       obj.amount = message.amount.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
