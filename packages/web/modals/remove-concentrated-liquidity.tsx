@@ -1,4 +1,10 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import type {
+  PositionHistoricalPerformance,
+  UserPosition,
+  UserPositionDetails,
+} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -13,12 +19,6 @@ import { useConnectWalletModalRedirect } from "~/hooks";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import type {
-  PositionHistoricalPerformance,
-  UserPosition,
-  UserPositionDetails,
-} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 

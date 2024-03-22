@@ -1,3 +1,4 @@
+import { getDeepValue } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { memo } from "react";
@@ -6,7 +7,6 @@ import { Icon } from "~/components/assets";
 import { Step, Stepper } from "~/components/stepper/index";
 import { useTranslation } from "~/hooks";
 import { SwapAdBannerResponse } from "~/pages";
-import { getDeepValue } from "~/utils/object";
 
 type Ad = SwapAdBannerResponse["banners"][number];
 interface AdBannerProps {

@@ -1,7 +1,7 @@
+import { getKeyByValue } from "@osmosis-labs/utils";
 import { numberToHex } from "web3-utils";
 
 import { ChainNames, SendFn } from "~/integrations/ethereum/types";
-import { getKeyByValue } from "~/utils/object";
 import type { EthereumProvider } from "~/window";
 
 export function switchToChain(

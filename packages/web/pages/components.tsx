@@ -1,4 +1,5 @@
 import { RatePretty } from "@keplr-wallet/unit";
+import type { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
@@ -53,7 +54,6 @@ import { Slider as SliderShadcn } from "~/components/ui/slider";
 import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { useConst } from "~/hooks/use-const";
-import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 
 const Card: React.FC<{
   title: string;

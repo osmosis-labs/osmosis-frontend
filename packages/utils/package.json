@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "build/index.js",
   "license": "Apache-2.0",
+  "sideEffects": false,
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
     "build": "tsc",
@@ -13,10 +14,13 @@
     "prepare": "yarn build"
   },
   "dependencies": {
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
     "sha.js": "^2.4.11"
   },
   "devDependencies": {
+    "@types/jest-in-case": "^1.0.6",
+    "jest-in-case": "^1.0.2",
     "jest-environment-jsdom": "^29.5.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0"

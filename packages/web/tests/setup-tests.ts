@@ -1,8 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import "@testing-library/jest-dom";
-import "whatwg-fetch";
 
-import { server } from "./msw";
+import { server } from "~/tests/msw";
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());

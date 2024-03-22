@@ -1,8 +1,8 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useMemo } from "react";
 
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 
 export function useCoinFiatValue(
   coin?: CoinPretty,

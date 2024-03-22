@@ -279,6 +279,13 @@
       "title": "Începeți cu {osmosis}",
       "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
       "addFunds": "Adăugați fonduri pentru a începe"
+    },
+    "categories": {
+      "newest": "Cel mai nou",
+      "defi": "DeFi",
+      "stablecoin": "Monede stabile",
+      "meme": "Eu eu",
+      "liquid_staking": "Mărire lichidă"
     }
   },
   "buyTokens": "Cumpărați jetoane",
@@ -702,7 +709,6 @@
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
       "step1": {

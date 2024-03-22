@@ -1,5 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
   AccountStoreWallet,
@@ -10,9 +11,7 @@ import {
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
-import { superjson } from "~/utils/superjson";
 import { api } from "~/utils/trpc";
 
 async function estimateTxFeesQueryFn({

@@ -279,6 +279,13 @@
       "title": "開始使用{osmosis}",
       "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
       "addFunds": "增加資金即可開始"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "去中心化金融",
+      "stablecoin": "穩定幣",
+      "meme": "迷因",
+      "liquid_staking": "流動質押"
     }
   },
   "buyTokens": "購買代幣",
@@ -702,7 +709,6 @@
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "isAPRTooHighTooltip": "此驗證器收取了異常高的傭金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
       "step1": {

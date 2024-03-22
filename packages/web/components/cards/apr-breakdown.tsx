@@ -1,17 +1,23 @@
 import { RatePretty } from "@keplr-wallet/unit";
+import type { PoolIncentives } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { ExcludedExternalBoostPools } from "~/config";
+import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "~/config";
 import { useTranslation } from "~/hooks";
-import type { PoolIncentives } from "~/server/queries/complex/pools/incentives";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
 import { Icon } from "../assets";
 import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 import { CustomClasses } from "../types";
+
+/**
+ * Pools that are excluded from showing external boost incentives APRs.
+ */
+const ExcludedExternalBoostPools: string[] =
+  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
 
 /** @deprecated uses Mobx query stores, do not use */
 export const AprBreakdownLegacy: FunctionComponent<

@@ -3,7 +3,16 @@
   "version": "0.10.24-ibc.go.v7.hot.fix",
   "main": "build/index.js",
   "author": "chainapsis",
-  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis"
+  ],
   "private": false,
   "publishConfig": {
     "access": "public"

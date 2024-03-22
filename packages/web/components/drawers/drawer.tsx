@@ -1,4 +1,5 @@
 import { Disclosure, Transition } from "@headlessui/react";
+import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import FocusTrap from "focus-trap-react";
 import {
@@ -11,7 +12,6 @@ import {
 } from "react";
 
 import { useControllableState } from "~/hooks/use-controllable-state";
-import { runIfFn } from "~/utils/function";
 import { createContext } from "~/utils/react-context";
 
 interface DrawerContext {

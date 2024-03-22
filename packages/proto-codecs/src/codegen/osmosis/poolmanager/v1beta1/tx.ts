@@ -34,10 +34,10 @@ export interface MsgSwapExactAmountInProtoMsg {
 }
 /** ===================== MsgSwapExactAmountIn */
 export interface MsgSwapExactAmountInAmino {
-  sender: string;
-  routes: SwapAmountInRouteAmino[];
+  sender?: string;
+  routes?: SwapAmountInRouteAmino[];
   token_in?: CoinAmino;
-  token_out_min_amount: string;
+  token_out_min_amount?: string;
 }
 export interface MsgSwapExactAmountInAminoMsg {
   type: "osmosis/poolmanager/swap-exact-amount-in";
@@ -58,7 +58,7 @@ export interface MsgSwapExactAmountInResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSwapExactAmountInResponseAmino {
-  token_out_amount: string;
+  token_out_amount?: string;
 }
 export interface MsgSwapExactAmountInResponseAminoMsg {
   type: "osmosis/poolmanager/swap-exact-amount-in-response";
@@ -80,10 +80,10 @@ export interface MsgSplitRouteSwapExactAmountInProtoMsg {
 }
 /** ===================== MsgSplitRouteSwapExactAmountIn */
 export interface MsgSplitRouteSwapExactAmountInAmino {
-  sender: string;
-  routes: SwapAmountInSplitRouteAmino[];
-  token_in_denom: string;
-  token_out_min_amount: string;
+  sender?: string;
+  routes?: SwapAmountInSplitRouteAmino[];
+  token_in_denom?: string;
+  token_out_min_amount?: string;
 }
 export interface MsgSplitRouteSwapExactAmountInAminoMsg {
   type: "osmosis/poolmanager/split-amount-in";
@@ -104,7 +104,7 @@ export interface MsgSplitRouteSwapExactAmountInResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSplitRouteSwapExactAmountInResponseAmino {
-  token_out_amount: string;
+  token_out_amount?: string;
 }
 export interface MsgSplitRouteSwapExactAmountInResponseAminoMsg {
   type: "osmosis/poolmanager/split-route-swap-exact-amount-in-response";
@@ -126,9 +126,9 @@ export interface MsgSwapExactAmountOutProtoMsg {
 }
 /** ===================== MsgSwapExactAmountOut */
 export interface MsgSwapExactAmountOutAmino {
-  sender: string;
-  routes: SwapAmountOutRouteAmino[];
-  token_in_max_amount: string;
+  sender?: string;
+  routes?: SwapAmountOutRouteAmino[];
+  token_in_max_amount?: string;
   token_out?: CoinAmino;
 }
 export interface MsgSwapExactAmountOutAminoMsg {
@@ -150,7 +150,7 @@ export interface MsgSwapExactAmountOutResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSwapExactAmountOutResponseAmino {
-  token_in_amount: string;
+  token_in_amount?: string;
 }
 export interface MsgSwapExactAmountOutResponseAminoMsg {
   type: "osmosis/poolmanager/swap-exact-amount-out-response";
@@ -172,10 +172,10 @@ export interface MsgSplitRouteSwapExactAmountOutProtoMsg {
 }
 /** ===================== MsgSplitRouteSwapExactAmountOut */
 export interface MsgSplitRouteSwapExactAmountOutAmino {
-  sender: string;
-  routes: SwapAmountOutSplitRouteAmino[];
-  token_out_denom: string;
-  token_in_max_amount: string;
+  sender?: string;
+  routes?: SwapAmountOutSplitRouteAmino[];
+  token_out_denom?: string;
+  token_in_max_amount?: string;
 }
 export interface MsgSplitRouteSwapExactAmountOutAminoMsg {
   type: "osmosis/poolmanager/split-amount-out";
@@ -196,7 +196,7 @@ export interface MsgSplitRouteSwapExactAmountOutResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSplitRouteSwapExactAmountOutResponseAmino {
-  token_in_amount: string;
+  token_in_amount?: string;
 }
 export interface MsgSplitRouteSwapExactAmountOutResponseAminoMsg {
   type: "osmosis/poolmanager/split-route-swap-exact-amount-out-response";
@@ -216,8 +216,8 @@ export interface MsgSetDenomPairTakerFeeProtoMsg {
 }
 /** ===================== MsgSetDenomPairTakerFee */
 export interface MsgSetDenomPairTakerFeeAmino {
-  sender: string;
-  denom_pair_taker_fee: DenomPairTakerFeeAmino[];
+  sender?: string;
+  denom_pair_taker_fee?: DenomPairTakerFeeAmino[];
 }
 export interface MsgSetDenomPairTakerFeeAminoMsg {
   type: "osmosis/poolmanager/set-denom-pair-taker-fee";
@@ -236,7 +236,7 @@ export interface MsgSetDenomPairTakerFeeResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSetDenomPairTakerFeeResponseAmino {
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgSetDenomPairTakerFeeResponseAminoMsg {
   type: "osmosis/poolmanager/set-denom-pair-taker-fee-response";
@@ -263,9 +263,9 @@ export interface DenomPairTakerFeeAmino {
    * denom0 and denom1 get automatically lexigographically sorted
    * when being stored, so the order of input here does not matter.
    */
-  denom0: string;
-  denom1: string;
-  taker_fee: string;
+  denom0?: string;
+  denom1?: string;
+  taker_fee?: string;
 }
 export interface DenomPairTakerFeeAminoMsg {
   type: "osmosis/poolmanager/denom-pair-taker-fee";
@@ -349,27 +349,36 @@ export const MsgSwapExactAmountIn = {
     return message;
   },
   fromAmino(object: MsgSwapExactAmountInAmino): MsgSwapExactAmountIn {
-    return {
-      sender: object.sender,
-      routes: Array.isArray(object?.routes)
-        ? object.routes.map((e: any) => SwapAmountInRoute.fromAmino(e))
-        : [],
-      tokenIn: object?.token_in ? Coin.fromAmino(object.token_in) : undefined,
-      tokenOutMinAmount: object.token_out_min_amount,
-    };
+    const message = createBaseMsgSwapExactAmountIn();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.routes =
+      object.routes?.map((e) => SwapAmountInRoute.fromAmino(e)) || [];
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = Coin.fromAmino(object.token_in);
+    }
+    if (
+      object.token_out_min_amount !== undefined &&
+      object.token_out_min_amount !== null
+    ) {
+      message.tokenOutMinAmount = object.token_out_min_amount;
+    }
+    return message;
   },
   toAmino(message: MsgSwapExactAmountIn): MsgSwapExactAmountInAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map((e) =>
         e ? SwapAmountInRoute.toAmino(e) : undefined
       );
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
     obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn) : undefined;
-    obj.token_out_min_amount = message.tokenOutMinAmount;
+    obj.token_out_min_amount =
+      message.tokenOutMinAmount === "" ? undefined : message.tokenOutMinAmount;
     return obj;
   },
   fromAminoMsg(object: MsgSwapExactAmountInAminoMsg): MsgSwapExactAmountIn {
@@ -441,15 +450,21 @@ export const MsgSwapExactAmountInResponse = {
   fromAmino(
     object: MsgSwapExactAmountInResponseAmino
   ): MsgSwapExactAmountInResponse {
-    return {
-      tokenOutAmount: object.token_out_amount,
-    };
+    const message = createBaseMsgSwapExactAmountInResponse();
+    if (
+      object.token_out_amount !== undefined &&
+      object.token_out_amount !== null
+    ) {
+      message.tokenOutAmount = object.token_out_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSwapExactAmountInResponse
   ): MsgSwapExactAmountInResponseAmino {
     const obj: any = {};
-    obj.token_out_amount = message.tokenOutAmount;
+    obj.token_out_amount =
+      message.tokenOutAmount === "" ? undefined : message.tokenOutAmount;
     return obj;
   },
   fromAminoMsg(
@@ -556,29 +571,39 @@ export const MsgSplitRouteSwapExactAmountIn = {
   fromAmino(
     object: MsgSplitRouteSwapExactAmountInAmino
   ): MsgSplitRouteSwapExactAmountIn {
-    return {
-      sender: object.sender,
-      routes: Array.isArray(object?.routes)
-        ? object.routes.map((e: any) => SwapAmountInSplitRoute.fromAmino(e))
-        : [],
-      tokenInDenom: object.token_in_denom,
-      tokenOutMinAmount: object.token_out_min_amount,
-    };
+    const message = createBaseMsgSplitRouteSwapExactAmountIn();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.routes =
+      object.routes?.map((e) => SwapAmountInSplitRoute.fromAmino(e)) || [];
+    if (object.token_in_denom !== undefined && object.token_in_denom !== null) {
+      message.tokenInDenom = object.token_in_denom;
+    }
+    if (
+      object.token_out_min_amount !== undefined &&
+      object.token_out_min_amount !== null
+    ) {
+      message.tokenOutMinAmount = object.token_out_min_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSplitRouteSwapExactAmountIn
   ): MsgSplitRouteSwapExactAmountInAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map((e) =>
         e ? SwapAmountInSplitRoute.toAmino(e) : undefined
       );
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.token_in_denom = message.tokenInDenom;
-    obj.token_out_min_amount = message.tokenOutMinAmount;
+    obj.token_in_denom =
+      message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.token_out_min_amount =
+      message.tokenOutMinAmount === "" ? undefined : message.tokenOutMinAmount;
     return obj;
   },
   fromAminoMsg(
@@ -659,15 +684,21 @@ export const MsgSplitRouteSwapExactAmountInResponse = {
   fromAmino(
     object: MsgSplitRouteSwapExactAmountInResponseAmino
   ): MsgSplitRouteSwapExactAmountInResponse {
-    return {
-      tokenOutAmount: object.token_out_amount,
-    };
+    const message = createBaseMsgSplitRouteSwapExactAmountInResponse();
+    if (
+      object.token_out_amount !== undefined &&
+      object.token_out_amount !== null
+    ) {
+      message.tokenOutAmount = object.token_out_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSplitRouteSwapExactAmountInResponse
   ): MsgSplitRouteSwapExactAmountInResponseAmino {
     const obj: any = {};
-    obj.token_out_amount = message.tokenOutAmount;
+    obj.token_out_amount =
+      message.tokenOutAmount === "" ? undefined : message.tokenOutAmount;
     return obj;
   },
   fromAminoMsg(
@@ -774,28 +805,35 @@ export const MsgSwapExactAmountOut = {
     return message;
   },
   fromAmino(object: MsgSwapExactAmountOutAmino): MsgSwapExactAmountOut {
-    return {
-      sender: object.sender,
-      routes: Array.isArray(object?.routes)
-        ? object.routes.map((e: any) => SwapAmountOutRoute.fromAmino(e))
-        : [],
-      tokenInMaxAmount: object.token_in_max_amount,
-      tokenOut: object?.token_out
-        ? Coin.fromAmino(object.token_out)
-        : undefined,
-    };
+    const message = createBaseMsgSwapExactAmountOut();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.routes =
+      object.routes?.map((e) => SwapAmountOutRoute.fromAmino(e)) || [];
+    if (
+      object.token_in_max_amount !== undefined &&
+      object.token_in_max_amount !== null
+    ) {
+      message.tokenInMaxAmount = object.token_in_max_amount;
+    }
+    if (object.token_out !== undefined && object.token_out !== null) {
+      message.tokenOut = Coin.fromAmino(object.token_out);
+    }
+    return message;
   },
   toAmino(message: MsgSwapExactAmountOut): MsgSwapExactAmountOutAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map((e) =>
         e ? SwapAmountOutRoute.toAmino(e) : undefined
       );
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.token_in_max_amount = message.tokenInMaxAmount;
+    obj.token_in_max_amount =
+      message.tokenInMaxAmount === "" ? undefined : message.tokenInMaxAmount;
     obj.token_out = message.tokenOut
       ? Coin.toAmino(message.tokenOut)
       : undefined;
@@ -870,15 +908,21 @@ export const MsgSwapExactAmountOutResponse = {
   fromAmino(
     object: MsgSwapExactAmountOutResponseAmino
   ): MsgSwapExactAmountOutResponse {
-    return {
-      tokenInAmount: object.token_in_amount,
-    };
+    const message = createBaseMsgSwapExactAmountOutResponse();
+    if (
+      object.token_in_amount !== undefined &&
+      object.token_in_amount !== null
+    ) {
+      message.tokenInAmount = object.token_in_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSwapExactAmountOutResponse
   ): MsgSwapExactAmountOutResponseAmino {
     const obj: any = {};
-    obj.token_in_amount = message.tokenInAmount;
+    obj.token_in_amount =
+      message.tokenInAmount === "" ? undefined : message.tokenInAmount;
     return obj;
   },
   fromAminoMsg(
@@ -985,29 +1029,42 @@ export const MsgSplitRouteSwapExactAmountOut = {
   fromAmino(
     object: MsgSplitRouteSwapExactAmountOutAmino
   ): MsgSplitRouteSwapExactAmountOut {
-    return {
-      sender: object.sender,
-      routes: Array.isArray(object?.routes)
-        ? object.routes.map((e: any) => SwapAmountOutSplitRoute.fromAmino(e))
-        : [],
-      tokenOutDenom: object.token_out_denom,
-      tokenInMaxAmount: object.token_in_max_amount,
-    };
+    const message = createBaseMsgSplitRouteSwapExactAmountOut();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.routes =
+      object.routes?.map((e) => SwapAmountOutSplitRoute.fromAmino(e)) || [];
+    if (
+      object.token_out_denom !== undefined &&
+      object.token_out_denom !== null
+    ) {
+      message.tokenOutDenom = object.token_out_denom;
+    }
+    if (
+      object.token_in_max_amount !== undefined &&
+      object.token_in_max_amount !== null
+    ) {
+      message.tokenInMaxAmount = object.token_in_max_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSplitRouteSwapExactAmountOut
   ): MsgSplitRouteSwapExactAmountOutAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.routes) {
       obj.routes = message.routes.map((e) =>
         e ? SwapAmountOutSplitRoute.toAmino(e) : undefined
       );
     } else {
-      obj.routes = [];
+      obj.routes = message.routes;
     }
-    obj.token_out_denom = message.tokenOutDenom;
-    obj.token_in_max_amount = message.tokenInMaxAmount;
+    obj.token_out_denom =
+      message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
+    obj.token_in_max_amount =
+      message.tokenInMaxAmount === "" ? undefined : message.tokenInMaxAmount;
     return obj;
   },
   fromAminoMsg(
@@ -1088,15 +1145,21 @@ export const MsgSplitRouteSwapExactAmountOutResponse = {
   fromAmino(
     object: MsgSplitRouteSwapExactAmountOutResponseAmino
   ): MsgSplitRouteSwapExactAmountOutResponse {
-    return {
-      tokenInAmount: object.token_in_amount,
-    };
+    const message = createBaseMsgSplitRouteSwapExactAmountOutResponse();
+    if (
+      object.token_in_amount !== undefined &&
+      object.token_in_amount !== null
+    ) {
+      message.tokenInAmount = object.token_in_amount;
+    }
+    return message;
   },
   toAmino(
     message: MsgSplitRouteSwapExactAmountOutResponse
   ): MsgSplitRouteSwapExactAmountOutResponseAmino {
     const obj: any = {};
-    obj.token_in_amount = message.tokenInAmount;
+    obj.token_in_amount =
+      message.tokenInAmount === "" ? undefined : message.tokenInAmount;
     return obj;
   },
   fromAminoMsg(
@@ -1187,24 +1250,24 @@ export const MsgSetDenomPairTakerFee = {
     return message;
   },
   fromAmino(object: MsgSetDenomPairTakerFeeAmino): MsgSetDenomPairTakerFee {
-    return {
-      sender: object.sender,
-      denomPairTakerFee: Array.isArray(object?.denom_pair_taker_fee)
-        ? object.denom_pair_taker_fee.map((e: any) =>
-            DenomPairTakerFee.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseMsgSetDenomPairTakerFee();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.denomPairTakerFee =
+      object.denom_pair_taker_fee?.map((e) => DenomPairTakerFee.fromAmino(e)) ||
+      [];
+    return message;
   },
   toAmino(message: MsgSetDenomPairTakerFee): MsgSetDenomPairTakerFeeAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.denomPairTakerFee) {
       obj.denom_pair_taker_fee = message.denomPairTakerFee.map((e) =>
         e ? DenomPairTakerFee.toAmino(e) : undefined
       );
     } else {
-      obj.denom_pair_taker_fee = [];
+      obj.denom_pair_taker_fee = message.denomPairTakerFee;
     }
     return obj;
   },
@@ -1285,15 +1348,17 @@ export const MsgSetDenomPairTakerFeeResponse = {
   fromAmino(
     object: MsgSetDenomPairTakerFeeResponseAmino
   ): MsgSetDenomPairTakerFeeResponse {
-    return {
-      success: object.success,
-    };
+    const message = createBaseMsgSetDenomPairTakerFeeResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(
     message: MsgSetDenomPairTakerFeeResponse
   ): MsgSetDenomPairTakerFeeResponseAmino {
     const obj: any = {};
-    obj.success = message.success;
+    obj.success = message.success === false ? undefined : message.success;
     return obj;
   },
   fromAminoMsg(
@@ -1387,17 +1452,23 @@ export const DenomPairTakerFee = {
     return message;
   },
   fromAmino(object: DenomPairTakerFeeAmino): DenomPairTakerFee {
-    return {
-      denom0: object.denom0,
-      denom1: object.denom1,
-      takerFee: object.taker_fee,
-    };
+    const message = createBaseDenomPairTakerFee();
+    if (object.denom0 !== undefined && object.denom0 !== null) {
+      message.denom0 = object.denom0;
+    }
+    if (object.denom1 !== undefined && object.denom1 !== null) {
+      message.denom1 = object.denom1;
+    }
+    if (object.taker_fee !== undefined && object.taker_fee !== null) {
+      message.takerFee = object.taker_fee;
+    }
+    return message;
   },
   toAmino(message: DenomPairTakerFee): DenomPairTakerFeeAmino {
     const obj: any = {};
-    obj.denom0 = message.denom0;
-    obj.denom1 = message.denom1;
-    obj.taker_fee = message.takerFee;
+    obj.denom0 = message.denom0 === "" ? undefined : message.denom0;
+    obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
+    obj.taker_fee = message.takerFee === "" ? undefined : message.takerFee;
     return obj;
   },
   fromAminoMsg(object: DenomPairTakerFeeAminoMsg): DenomPairTakerFee {

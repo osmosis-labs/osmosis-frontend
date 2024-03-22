@@ -969,70 +969,18 @@ export const MockAssetList: AssetList[] = [
         },
         coingeckoId: "osmosis",
         price: {
-          poolId: "1263",
+          poolId: "1077",
           denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
         },
         categories: ["defi"],
         transferMethods: [],
         counterparty: [],
         name: "Osmosis",
-        description:
-          "The native token of Osmosis\n\nOsmosis (OSMO) is the premier DEX and cross-chain DeFi hub within the Cosmos ecosystem, a network of over 50 sovereign, interoperable blockchains seamlessly connected through the Inter-Blockchain Communication Protocol (IBC). Pioneering in its approach, Osmosis offers a dynamic trading and liquidity provision experience, integrating non-IBC assets from other ecosystems, including Ethereum, Solana, Avalanche, and Polkadot. Initially adopting Balancer-style pools, Osmosis now also features a concentrated liquidity model that is orders of magnitude more capital efficient, meaning that significantly less liquidity is required to handle the same amount of trading volume with minimal slippage.\n\nAs a true appchain, Osmosis has greater control over the full blockchain stack than traditional smart contract DEXs, which must follow the code of the parent chain that it is built on. This fine-grained control has enabled, for example, the development of Superfluid Staking, an extension of Proof of Stake that allows assets at the application layer to be staked to secure the chain. The customizability of appchains also allows implementing features like the Protocol Revenue module, which enables Osmosis to conduct on-chain arbitrage on behalf of OSMO stakers, balancing prices across pools while generating real yield revenue from this volume. Additionally, as a sovereign appchain, Osmosis governance can vote on upgrades to the protocol. One example of this was the introduction of a Taker Fee, which switched on the collection of exchange fees to generate diverse yield from Osmosis volume and distribute it to OSMO stakers.\n\nOsmosis is bringing the full centralized exchange experience to the decentralized world by building a cross-chain native DEX and trading suite that connects all chains over IBC, including Ethereum and Bitcoin. To reach this goal, Osmosis hosts an ever-expanding suite of DeFi applications aimed at providing a one-stop experience that includes lending, credit, margin, DeFi strategy vaults, power perps, fiat on-ramps, NFTs, stablecoins, and more — all of the functionalities that centralized exchange offer and more, in the trust-minimized environment of decentralized finance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/osmosiszone",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/osmo.svg",
       },
       {
@@ -1054,61 +1002,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Ion DAO",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/_IONDAO",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/ion.svg",
       },
       {
@@ -1132,59 +1029,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "IBC Index",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/ibcx.svg",
       },
       {
@@ -1207,59 +1055,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Staked IBCX",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/stibcx.svg",
       },
       {
@@ -1281,59 +1080,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "ERIS Amplified OSMO",
-        description: "ERIS liquid staked OSMO",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/amposmo.png",
       },
       {
@@ -1358,59 +1108,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "CDT Stablecoin",
-        description: "Membrane's CDP-style stablecoin called CDT",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/cdt.svg",
       },
       {
@@ -1433,59 +1134,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Membrane",
-        description: "Membrane's protocol token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/mbrn.svg",
       },
       {
@@ -1507,59 +1159,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "OSMO Squared",
-        description: "Margined Power Token sqOSMO",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqosmo.svg",
       },
       {
@@ -1582,59 +1185,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "ATOM Squared",
-        description: "Margined Power Token sqATOM",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqatom.svg",
       },
       {
@@ -1652,59 +1206,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "BTC Squared",
-        description: "Margined Power Token sqBTC",
         verified: true,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqbtc.svg",
       },
       {
@@ -1728,59 +1233,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Levana",
-        description: "Levana native token",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/lvn.svg",
       },
       {
@@ -1805,58 +1261,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "milkTIA",
-        description: "MilkyWay's liquid staked TIA",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "celestia",
-            sourceDenom: "utia",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-        ],
         relative_image_url: "/tokens/generated/milktia.svg",
       },
       {
@@ -1872,9 +1280,8 @@ export const MockAssetList: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
         },
         price: {
-          poolId: "1436",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1434",
+          denom: "uosmo",
         },
         categories: ["meme"],
         transferMethods: [],
@@ -1905,55 +1312,11 @@ export const MockAssetList: AssetList[] = [
         ],
         variantGroupKey: "BTC",
         name: "Wrapped Bitcoin",
-        description: "",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-29T09:57:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "wbtc-satoshi",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "nomic",
-            sourceDenom: "usat",
-          },
-          {
-            chainName: "gravitybridge",
-            sourceDenom: "ugraviton",
-          },
-          {
-            chainName: "axelar",
-            sourceDenom: "uaxl",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-        ],
         relative_image_url: "/tokens/generated/wbtc.svg",
       },
       {
@@ -1975,61 +1338,11 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "WOSMO",
-        description:
-          "The first native memecoin on Osmosis. Crafted by the deftest of hands in the lab of lunacy. It's scientifically anarchic, professionally foolish, and your ticket to the madhouse.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-22T15:42:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/wosmo.png",
       },
       {
@@ -2052,60 +1365,11 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "TIA Squared",
-        description: "Margined Power Token sqTIA",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-19T15:51:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/sqtia.svg",
       },
       {
@@ -2123,60 +1387,10 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "RAPTR",
-        description:
-          "Rapture insurance is the first ever P2P insurance platform on $OSMO. Get rewarded to take care of peoples loved ones after the Rapture.",
         verified: false,
         unstable: false,
         disabled: false,
         preview: true,
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/raptr.png",
       },
       {
@@ -2198,8 +1412,6 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "BADKID",
-        description:
-          "A clan of 11y bad kids crafting chaos on the Cosmos eco. One bad memecoin to rule them all  $BADKID. Airdropped to Badkids NFT holders and $STARS stakers. It's so bad, your wallet's throwing a tantrum for it.",
         verified: false,
         unstable: false,
         disabled: false,
@@ -2207,54 +1419,6 @@ export const MockAssetList: AssetList[] = [
         tooltipMessage:
           "This asset is NOT affiliated with the Bad Kids NFT collection.",
         listingDate: "2024-02-13T21:32:00.000Z",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
         relative_image_url: "/tokens/generated/badkid.png",
       },
       {
@@ -2272,60 +1436,11 @@ export const MockAssetList: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Sail",
-        description: "Sail DAO Token",
         verified: false,
         unstable: false,
         disabled: false,
-        preview: true,
-        twitterURL: "https://twitter.com/Sail_DAO_",
-        relatedAssets: [
-          {
-            chainName: "osmosis",
-            sourceDenom: "uosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom: "uion",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stuosmo",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqosmo",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          },
-          {
-            chainName: "osmosis",
-            sourceDenom:
-              "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          },
-        ],
+        preview: false,
+        listingDate: "2024-03-14T22:20:00.000Z",
         relative_image_url: "/tokens/generated/sail.png",
       },
     ],
@@ -2347,7 +1462,7 @@ export const MockAssetList: AssetList[] = [
         },
         coingeckoId: "cosmos",
         price: {
-          poolId: "1135",
+          poolId: "1400",
           denom: "uosmo",
         },
         categories: ["defi"],
@@ -2385,55 +1500,10 @@ export const MockAssetList: AssetList[] = [
         ],
         variantGroupKey: "ATOM",
         name: "Cosmos Hub",
-        description:
-          "The native staking and governance token of the Cosmos Hub.\n\nIn a nutshell, Cosmos Hub bills itself as a project that solves some of the hardest problems facing the blockchain industry. It aims to offer an antidote to slow, expensive, unscalable and environmentally harmful proof-of-work protocols, like those used by Bitcoin, by offering an ecosystem of connected blockchains.\n\nThe project’s other goals include making blockchain technology less complex and difficult for developers thanks to a modular framework that demystifies decentralized apps. Last but not least, an Inter-blockchain Communication protocol makes it easier for blockchain networks to communicate with each other — preventing fragmentation in the industry.\n\nCosmos Hub's origins can be dated back to 2014, when Tendermint, a core contributor to the network, was founded. In 2016, a white paper for Cosmos was published — and a token sale was held the following year. ATOM tokens are earned through a hybrid proof-of-stake algorithm, and they help to keep the Cosmos Hub, the project’s flagship blockchain, secure. This cryptocurrency also has a role in the network’s governance.",
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        twitterURL: "https://twitter.com/cosmoshub",
-        relatedAssets: [
-          {
-            chainName: "stride",
-            sourceDenom: "stuatom",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "stk/uatom",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqatom",
-          },
-          {
-            chainName: "stafihub",
-            sourceDenom: "uratom",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "ustrd",
-          },
-          {
-            chainName: "persistence",
-            sourceDenom: "uxprt",
-          },
-          {
-            chainName: "quicksilver",
-            sourceDenom: "uqck",
-          },
-          {
-            chainName: "stafihub",
-            sourceDenom: "ufis",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stustars",
-          },
-          {
-            chainName: "stride",
-            sourceDenom: "stujuno",
-          },
-        ],
         relative_image_url: "/tokens/generated/atom.svg",
       },
     ],

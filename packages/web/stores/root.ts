@@ -32,6 +32,7 @@ import {
 import {
   BlacklistedPoolIds,
   INDEXER_DATA_URL,
+  IS_TESTNET,
   TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
@@ -54,7 +55,6 @@ import {
   UserSettings,
 } from "~/stores/user-settings";
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
