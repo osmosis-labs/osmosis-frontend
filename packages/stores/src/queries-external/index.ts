@@ -1,6 +1,5 @@
 export * from "./active-gauges";
 export * from "./base";
-export * from "./coingecko-market-charts";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./numia";
