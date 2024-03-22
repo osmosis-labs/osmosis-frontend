@@ -1,4 +1,4 @@
-import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "./env";
+import { IS_TESTNET } from "./env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -34,12 +34,6 @@ export const RecommendedSwapDenoms = [
   "WBTC",
   "ETH",
 ];
-
-/**
- * Pools that are excluded from showing external boost incentives APRs.
- */
-export const ExcludedExternalBoostPools: string[] =
-  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   // #560 (UST/OSMO)

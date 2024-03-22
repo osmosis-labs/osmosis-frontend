@@ -1,6 +1,5 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "~/utils/superjson";
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";

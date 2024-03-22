@@ -72,7 +72,8 @@ export const Empty = {
     return message;
   },
   fromAmino(_: EmptyAmino): Empty {
-    return {};
+    const message = createBaseEmpty();
+    return message;
   },
   toAmino(_: Empty): EmptyAmino {
     const obj: any = {};

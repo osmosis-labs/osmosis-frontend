@@ -10,5 +10,6 @@
     ["classes\\=([^;]*);", "'([^']*)'"],
     ["classes\\=([^;]*);", "\"([^\"]*)\""],
     ["classes\\=([^;]*);", "\\`([^\\`]*)\\`"]
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

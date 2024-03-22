@@ -25,9 +25,9 @@ export interface CalcOutAmtGivenInAmino {
   /** token_in is the token to be sent to the pool. */
   token_in?: CoinAmino;
   /** token_out_denom is the token denom to be received from the pool. */
-  token_out_denom: string;
+  token_out_denom?: string;
   /** swap_fee is the swap fee for this swap estimate. */
-  swap_fee: string;
+  swap_fee?: string;
 }
 export interface CalcOutAmtGivenInAminoMsg {
   type: "osmosis/cosmwasmpool/calc-out-amt-given-in";
@@ -101,9 +101,9 @@ export interface CalcInAmtGivenOutAmino {
   /** token_out is the token out to be receoved from the pool. */
   token_out?: CoinAmino;
   /** token_in_denom is the token denom to be sentt to the pool. */
-  token_in_denom: string;
+  token_in_denom?: string;
   /** swap_fee is the swap fee for this swap estimate. */
-  swap_fee: string;
+  swap_fee?: string;
 }
 export interface CalcInAmtGivenOutAminoMsg {
   type: "osmosis/cosmwasmpool/calc-in-amt-given-out";
@@ -220,17 +220,27 @@ export const CalcOutAmtGivenIn = {
     return message;
   },
   fromAmino(object: CalcOutAmtGivenInAmino): CalcOutAmtGivenIn {
-    return {
-      tokenIn: object?.token_in ? Coin.fromAmino(object.token_in) : undefined,
-      tokenOutDenom: object.token_out_denom,
-      swapFee: object.swap_fee,
-    };
+    const message = createBaseCalcOutAmtGivenIn();
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = Coin.fromAmino(object.token_in);
+    }
+    if (
+      object.token_out_denom !== undefined &&
+      object.token_out_denom !== null
+    ) {
+      message.tokenOutDenom = object.token_out_denom;
+    }
+    if (object.swap_fee !== undefined && object.swap_fee !== null) {
+      message.swapFee = object.swap_fee;
+    }
+    return message;
   },
   toAmino(message: CalcOutAmtGivenIn): CalcOutAmtGivenInAmino {
     const obj: any = {};
     obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn) : undefined;
-    obj.token_out_denom = message.tokenOutDenom;
-    obj.swap_fee = message.swapFee;
+    obj.token_out_denom =
+      message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
+    obj.swap_fee = message.swapFee === "" ? undefined : message.swapFee;
     return obj;
   },
   fromAminoMsg(object: CalcOutAmtGivenInAminoMsg): CalcOutAmtGivenIn {
@@ -310,11 +320,16 @@ export const CalcOutAmtGivenInRequest = {
     return message;
   },
   fromAmino(object: CalcOutAmtGivenInRequestAmino): CalcOutAmtGivenInRequest {
-    return {
-      calcOutAmtGivenIn: object?.calc_out_amt_given_in
-        ? CalcOutAmtGivenIn.fromAmino(object.calc_out_amt_given_in)
-        : undefined,
-    };
+    const message = createBaseCalcOutAmtGivenInRequest();
+    if (
+      object.calc_out_amt_given_in !== undefined &&
+      object.calc_out_amt_given_in !== null
+    ) {
+      message.calcOutAmtGivenIn = CalcOutAmtGivenIn.fromAmino(
+        object.calc_out_amt_given_in
+      );
+    }
+    return message;
   },
   toAmino(message: CalcOutAmtGivenInRequest): CalcOutAmtGivenInRequestAmino {
     const obj: any = {};
@@ -401,11 +416,11 @@ export const CalcOutAmtGivenInResponse = {
     return message;
   },
   fromAmino(object: CalcOutAmtGivenInResponseAmino): CalcOutAmtGivenInResponse {
-    return {
-      tokenOut: object?.token_out
-        ? Coin.fromAmino(object.token_out)
-        : undefined,
-    };
+    const message = createBaseCalcOutAmtGivenInResponse();
+    if (object.token_out !== undefined && object.token_out !== null) {
+      message.tokenOut = Coin.fromAmino(object.token_out);
+    }
+    return message;
   },
   toAmino(message: CalcOutAmtGivenInResponse): CalcOutAmtGivenInResponseAmino {
     const obj: any = {};
@@ -505,21 +520,26 @@ export const CalcInAmtGivenOut = {
     return message;
   },
   fromAmino(object: CalcInAmtGivenOutAmino): CalcInAmtGivenOut {
-    return {
-      tokenOut: object?.token_out
-        ? Coin.fromAmino(object.token_out)
-        : undefined,
-      tokenInDenom: object.token_in_denom,
-      swapFee: object.swap_fee,
-    };
+    const message = createBaseCalcInAmtGivenOut();
+    if (object.token_out !== undefined && object.token_out !== null) {
+      message.tokenOut = Coin.fromAmino(object.token_out);
+    }
+    if (object.token_in_denom !== undefined && object.token_in_denom !== null) {
+      message.tokenInDenom = object.token_in_denom;
+    }
+    if (object.swap_fee !== undefined && object.swap_fee !== null) {
+      message.swapFee = object.swap_fee;
+    }
+    return message;
   },
   toAmino(message: CalcInAmtGivenOut): CalcInAmtGivenOutAmino {
     const obj: any = {};
     obj.token_out = message.tokenOut
       ? Coin.toAmino(message.tokenOut)
       : undefined;
-    obj.token_in_denom = message.tokenInDenom;
-    obj.swap_fee = message.swapFee;
+    obj.token_in_denom =
+      message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.swap_fee = message.swapFee === "" ? undefined : message.swapFee;
     return obj;
   },
   fromAminoMsg(object: CalcInAmtGivenOutAminoMsg): CalcInAmtGivenOut {
@@ -599,11 +619,16 @@ export const CalcInAmtGivenOutRequest = {
     return message;
   },
   fromAmino(object: CalcInAmtGivenOutRequestAmino): CalcInAmtGivenOutRequest {
-    return {
-      calcInAmtGivenOut: object?.calc_in_amt_given_out
-        ? CalcInAmtGivenOut.fromAmino(object.calc_in_amt_given_out)
-        : undefined,
-    };
+    const message = createBaseCalcInAmtGivenOutRequest();
+    if (
+      object.calc_in_amt_given_out !== undefined &&
+      object.calc_in_amt_given_out !== null
+    ) {
+      message.calcInAmtGivenOut = CalcInAmtGivenOut.fromAmino(
+        object.calc_in_amt_given_out
+      );
+    }
+    return message;
   },
   toAmino(message: CalcInAmtGivenOutRequest): CalcInAmtGivenOutRequestAmino {
     const obj: any = {};
@@ -690,9 +715,11 @@ export const CalcInAmtGivenOutResponse = {
     return message;
   },
   fromAmino(object: CalcInAmtGivenOutResponseAmino): CalcInAmtGivenOutResponse {
-    return {
-      tokenIn: object?.token_in ? Coin.fromAmino(object.token_in) : undefined,
-    };
+    const message = createBaseCalcInAmtGivenOutResponse();
+    if (object.token_in !== undefined && object.token_in !== null) {
+      message.tokenIn = Coin.fromAmino(object.token_in);
+    }
+    return message;
   },
   toAmino(message: CalcInAmtGivenOutResponse): CalcInAmtGivenOutResponseAmino {
     const obj: any = {};

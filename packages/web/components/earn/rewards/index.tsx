@@ -1,12 +1,12 @@
 import { sleep } from "@axelar-network/axelarjs-sdk";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
+import { EarnStrategy } from "@osmosis-labs/server";
 import { useCallback } from "react";
 
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";

@@ -1,12 +1,14 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import {
+  DEFAULT_VS_CURRENCY,
+  type EarnStrategy,
+  getDailyApr,
+} from "@osmosis-labs/server";
 import { apiClient } from "@osmosis-labs/utils";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { LevanaGeoBlockedResponse } from "~/pages/_app";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import { getDailyApr } from "~/server/queries/complex/earn/strategies";
-import type { EarnStrategy } from "~/server/queries/numia/earn";
 import { api } from "~/utils/trpc";
 
 const useGetEarnStrategies = (

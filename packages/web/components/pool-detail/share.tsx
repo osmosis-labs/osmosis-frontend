@@ -5,6 +5,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import type { Pool } from "@osmosis-labs/server";
 import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
@@ -34,7 +35,6 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
-import type { Pool } from "~/server/queries/complex/pools";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";

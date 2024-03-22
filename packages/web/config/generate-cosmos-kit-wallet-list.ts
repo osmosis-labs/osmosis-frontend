@@ -8,11 +8,10 @@ import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
+import { isFunction } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
-
-import { isFunction } from "~/utils/assertion";
 
 const CosmosKitWalletList = [
   keplrExtensionInfo,

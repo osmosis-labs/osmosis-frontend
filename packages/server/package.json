@@ -1,0 +1,60 @@
+{
+  "name": "@osmosis-labs/server",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis",
+    "server"
+  ],
+  "license": "Apache-2.0",
+  "sideEffects": [
+    "./build/utils/superjson.js"
+  ],
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/math": "^5.1.0",
+    "@osmosis-labs/pools": "^5.1.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0",
+    "@sentry/core": "^7.107.0",
+    "@trpc/client": "^10.45.1",
+    "@trpc/server": "^10.45.1",
+    "@vercel/kv": "^0.2.3",
+    "axios": "^0.27.2",
+    "cachified": "^3.5.4",
+    "dataloader": "^2.2.2",
+    "dayjs": "^1.10.7",
+    "fuse.js": "^6.5.3",
+    "lru-cache": "^10.0.1",
+    "superjson": "^2.2.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/jest-in-case": "^1.0.6",
+    "jest-in-case": "^1.0.2"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  }
+}

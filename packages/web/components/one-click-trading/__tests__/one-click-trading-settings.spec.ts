@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
-
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 
 import { compare1CTTransactionParams } from "../one-click-trading-settings";
 

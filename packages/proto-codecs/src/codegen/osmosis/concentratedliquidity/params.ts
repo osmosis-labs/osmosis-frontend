@@ -64,8 +64,8 @@ export interface ParamsAmino {
    * example, an authorized_tick_spacing of [1, 10, 30] allows for pools
    * to be created with tick spacing of 1, 10, or 30.
    */
-  authorized_tick_spacing: string[];
-  authorized_spread_factors: string[];
+  authorized_tick_spacing?: string[];
+  authorized_spread_factors?: string[];
   /**
    * balancer_shares_reward_discount is the rate by which incentives flowing
    * from CL to Balancer pools will be discounted to encourage LPs to migrate.
@@ -74,7 +74,7 @@ export interface ParamsAmino {
    * This field can range from (0,1]. If set to 1, it indicates that all
    * incentives stay at cl pool.
    */
-  balancer_shares_reward_discount: string;
+  balancer_shares_reward_discount?: string;
   /**
    * authorized_quote_denoms is a list of quote denoms that can be used as
    * token1 when creating a pool. We limit the quote assets to a small set for
@@ -84,8 +84,8 @@ export interface ParamsAmino {
    * desirable property in terms of UX as to allow users to set limit orders at
    * prices in terms of token1 (quote asset) that are easy to reason about.
    */
-  authorized_quote_denoms: string[];
-  authorized_uptimes: DurationAmino[];
+  authorized_quote_denoms?: string[];
+  authorized_uptimes?: DurationAmino[];
   /**
    * is_permissionless_pool_creation_enabled is a boolean that determines if
    * concentrated liquidity pools can be created via message. At launch,
@@ -93,15 +93,15 @@ export interface ParamsAmino {
    * allowing permissionless pool creation by switching this flag to true
    * with a governance proposal.
    */
-  is_permissionless_pool_creation_enabled: boolean;
+  is_permissionless_pool_creation_enabled?: boolean;
   /**
    * unrestricted_pool_creator_whitelist is a list of addresses that are
    * allowed to bypass restrictions on permissionless supercharged pool
    * creation, like pool_creation_enabled, restricted quote assets, no
    * double creation of pools, etc.
    */
-  unrestricted_pool_creator_whitelist: string[];
-  hook_gas_limit: string;
+  unrestricted_pool_creator_whitelist?: string[];
+  hook_gas_limit?: string;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/concentratedliquidity/params";
@@ -244,29 +244,35 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      authorizedTickSpacing: Array.isArray(object?.authorized_tick_spacing)
-        ? object.authorized_tick_spacing.map((e: any) => BigInt(e))
-        : [],
-      authorizedSpreadFactors: Array.isArray(object?.authorized_spread_factors)
-        ? object.authorized_spread_factors.map((e: any) => e)
-        : [],
-      balancerSharesRewardDiscount: object.balancer_shares_reward_discount,
-      authorizedQuoteDenoms: Array.isArray(object?.authorized_quote_denoms)
-        ? object.authorized_quote_denoms.map((e: any) => e)
-        : [],
-      authorizedUptimes: Array.isArray(object?.authorized_uptimes)
-        ? object.authorized_uptimes.map((e: any) => Duration.fromAmino(e))
-        : [],
-      isPermissionlessPoolCreationEnabled:
-        object.is_permissionless_pool_creation_enabled,
-      unrestrictedPoolCreatorWhitelist: Array.isArray(
-        object?.unrestricted_pool_creator_whitelist
-      )
-        ? object.unrestricted_pool_creator_whitelist.map((e: any) => e)
-        : [],
-      hookGasLimit: BigInt(object.hook_gas_limit),
-    };
+    const message = createBaseParams();
+    message.authorizedTickSpacing =
+      object.authorized_tick_spacing?.map((e) => BigInt(e)) || [];
+    message.authorizedSpreadFactors =
+      object.authorized_spread_factors?.map((e) => e) || [];
+    if (
+      object.balancer_shares_reward_discount !== undefined &&
+      object.balancer_shares_reward_discount !== null
+    ) {
+      message.balancerSharesRewardDiscount =
+        object.balancer_shares_reward_discount;
+    }
+    message.authorizedQuoteDenoms =
+      object.authorized_quote_denoms?.map((e) => e) || [];
+    message.authorizedUptimes =
+      object.authorized_uptimes?.map((e) => Duration.fromAmino(e)) || [];
+    if (
+      object.is_permissionless_pool_creation_enabled !== undefined &&
+      object.is_permissionless_pool_creation_enabled !== null
+    ) {
+      message.isPermissionlessPoolCreationEnabled =
+        object.is_permissionless_pool_creation_enabled;
+    }
+    message.unrestrictedPoolCreatorWhitelist =
+      object.unrestricted_pool_creator_whitelist?.map((e) => e) || [];
+    if (object.hook_gas_limit !== undefined && object.hook_gas_limit !== null) {
+      message.hookGasLimit = BigInt(object.hook_gas_limit);
+    }
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
@@ -275,39 +281,46 @@ export const Params = {
         e.toString()
       );
     } else {
-      obj.authorized_tick_spacing = [];
+      obj.authorized_tick_spacing = message.authorizedTickSpacing;
     }
     if (message.authorizedSpreadFactors) {
       obj.authorized_spread_factors = message.authorizedSpreadFactors.map(
         (e) => e
       );
     } else {
-      obj.authorized_spread_factors = [];
+      obj.authorized_spread_factors = message.authorizedSpreadFactors;
     }
-    obj.balancer_shares_reward_discount = message.balancerSharesRewardDiscount;
+    obj.balancer_shares_reward_discount =
+      message.balancerSharesRewardDiscount === ""
+        ? undefined
+        : message.balancerSharesRewardDiscount;
     if (message.authorizedQuoteDenoms) {
       obj.authorized_quote_denoms = message.authorizedQuoteDenoms.map((e) => e);
     } else {
-      obj.authorized_quote_denoms = [];
+      obj.authorized_quote_denoms = message.authorizedQuoteDenoms;
     }
     if (message.authorizedUptimes) {
       obj.authorized_uptimes = message.authorizedUptimes.map((e) =>
         e ? Duration.toAmino(e) : undefined
       );
     } else {
-      obj.authorized_uptimes = [];
+      obj.authorized_uptimes = message.authorizedUptimes;
     }
     obj.is_permissionless_pool_creation_enabled =
-      message.isPermissionlessPoolCreationEnabled;
+      message.isPermissionlessPoolCreationEnabled === false
+        ? undefined
+        : message.isPermissionlessPoolCreationEnabled;
     if (message.unrestrictedPoolCreatorWhitelist) {
       obj.unrestricted_pool_creator_whitelist =
         message.unrestrictedPoolCreatorWhitelist.map((e) => e);
     } else {
-      obj.unrestricted_pool_creator_whitelist = [];
+      obj.unrestricted_pool_creator_whitelist =
+        message.unrestrictedPoolCreatorWhitelist;
     }
-    obj.hook_gas_limit = message.hookGasLimit
-      ? message.hookGasLimit.toString()
-      : undefined;
+    obj.hook_gas_limit =
+      message.hookGasLimit !== BigInt(0)
+        ? message.hookGasLimit.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

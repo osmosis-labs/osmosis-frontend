@@ -1,6 +1,7 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import React, {
@@ -36,7 +37,6 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { noop, runIfFn } from "~/utils/function";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 

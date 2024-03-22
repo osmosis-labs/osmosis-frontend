@@ -279,6 +279,13 @@
       "title": "Comece com {osmosis}",
       "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
       "addFunds": "Adicione fundos para começar"
+    },
+    "categories": {
+      "newest": "O mais novo",
+      "defi": "DeFi",
+      "stablecoin": "Moedas estáveis",
+      "meme": "Memes",
+      "liquid_staking": "Estaqueamento líquido"
     }
   },
   "buyTokens": "Comprar tokens",
@@ -703,7 +710,6 @@
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
     "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
     "learnMore": {
       "step1": {

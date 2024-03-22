@@ -1,9 +1,9 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { useCallback, useEffect, useState } from "react";
 
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { api } from "~/utils/trpc";
 
 export function getParametersFromOneClickTradingInfo({
