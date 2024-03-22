@@ -5,7 +5,6 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import type { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import {
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
@@ -364,7 +363,10 @@ function floatNumberToStringInt(number: number, exponent: number): string {
     .toString();
 }
 
-function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
+function makeCoinFromToken(poolToken: PoolToken): {
+  denom: string;
+  amount: string;
+} {
   return {
     denom: poolToken.denom,
     amount: floatNumberToStringInt(poolToken.amount, poolToken.exponent),
