@@ -1,5 +1,9 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
+import { queryOsmosisCMS } from "@osmosis-labs/server";
+import { getDeepValue } from "@osmosis-labs/utils";
+import { formatICNSName, getShortAddress } from "@osmosis-labs/utils";
+import { noop } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -33,12 +37,8 @@ import {
   handleExternalLink,
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
-import { queryOsmosisCMS } from "~/server/queries/osmosis/cms/query-osmosis-cms";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { noop } from "~/utils/function";
-import { getDeepValue } from "~/utils/object";
-import { formatICNSName, getShortAddress } from "~/utils/string";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 

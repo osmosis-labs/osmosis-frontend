@@ -1,3 +1,9 @@
+import type {
+  CommonPriceChartTimeFrame,
+  Search,
+  SortDirection,
+} from "@osmosis-labs/server";
+import { Category } from "@osmosis-labs/types";
 import {
   CellContext,
   createColumnHelper,
@@ -29,17 +35,14 @@ import {
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { CommonPriceChartTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
-import type { Search } from "~/utils/search";
-import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
-import { AssetCategoriesSelectors, AssetCategory } from "../assets/categories";
+import { AssetCategoriesSelectors } from "../assets/categories";
 import { Sparkline } from "../chart/sparkline";
 import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
@@ -81,11 +84,9 @@ export const AssetsInfoTable: FunctionComponent<{
     "allTokens"
   );
 
-  const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>(
-    []
-  );
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const selectCategory = useCallback(
-    (category: AssetCategory) => {
+    (category: Category) => {
       const selected = new Set(selectedCategories);
       selected.add(category);
       setSelectedCategories(Array.from(selected));
@@ -93,7 +94,7 @@ export const AssetsInfoTable: FunctionComponent<{
     [selectedCategories]
   );
   const unselectCategory = useCallback(
-    (category: AssetCategory) => {
+    (category: Category) => {
       setSelectedCategories(selectedCategories.filter((c) => c !== category));
     },
     [selectedCategories]

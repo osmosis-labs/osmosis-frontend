@@ -2,6 +2,7 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -49,7 +50,6 @@ import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
-import { getKeyByValue } from "~/utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
 /**

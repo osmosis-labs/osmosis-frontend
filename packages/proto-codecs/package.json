@@ -42,21 +42,20 @@
     ]
   },
   "devDependencies": {
-    "@cosmology/proto-parser": "^1.0.11",
-    "@cosmology/telescope": "^1.0.17",
+    "@cosmology/proto-parser": "^1.5.0",
+    "@cosmology/telescope": "^1.5.1",
     "@types/node": "^18.16.3",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
     "tsx": "^4.6.2"
   },
   "dependencies": {
-    "@cosmjs/amino": "0.29.0",
-    "@cosmjs/encoding": "0.29.0",
-    "@cosmjs/math": "0.31.0",
-    "@cosmjs/proto-signing": "0.29.0",
-    "@cosmjs/stargate": "0.29.0",
-    "@cosmjs/tendermint-rpc": "0.29.0",
-    "long": "^5.2.0",
+    "@cosmjs/amino": "0.32.3",
+    "@cosmjs/encoding": "0.32.3",
+    "@cosmjs/math": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
+    "@cosmjs/stargate": "0.32.3",
+    "@cosmjs/tendermint-rpc": "0.32.3",
     "protobufjs": "^6.11.2"
   }
 }

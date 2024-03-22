@@ -15,5 +15,4 @@ export * from "./feature-flag";
 export * from "./env";
 export * from "./ibc-overrides";
 export * from "./initial-assets-sort";
-export * from "./osmosis-repos";
 export * from "./user-analytics-v2";

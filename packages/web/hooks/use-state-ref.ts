@@ -1,6 +1,5 @@
+import { isFunction } from "@osmosis-labs/utils";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
-
-import { isFunction } from "~/utils/assertion";
 
 type ReadOnlyRefObject<T> = {
   readonly current: T;

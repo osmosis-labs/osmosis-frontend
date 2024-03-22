@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import type { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
@@ -12,7 +13,6 @@ import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import type { BondDuration } from "~/server/queries/complex/pools/bonding";
 import { formatPretty } from "~/utils/formatter";
 
 export const BondCard: FunctionComponent<

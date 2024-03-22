@@ -1,9 +1,9 @@
+import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
-import { edgeRouter } from "~/server/api/edge-routers/edge-router";
-import { createEdgeTRPCContext } from "~/server/api/trpc";
-import { captureError } from "~/utils/error";
+import { edgeRouter } from "~/server/api/edge-router";
+import { createEdgeTrpcContext } from "~/server/api/trpc";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
 // We're using the edge-runtime
@@ -16,7 +16,7 @@ export default async function handler(req: NextRequest) {
     endpoint: constructEdgeUrlPathname("main"),
     router: edgeRouter,
     req,
-    createContext: createEdgeTRPCContext,
+    createContext: createEdgeTrpcContext,
     onError:
       process.env.NODE_ENV === "development"
         ? ({ path, error }) => {

@@ -1,9 +1,9 @@
 import { RatePretty } from "@keplr-wallet/unit";
+import { EarnStrategy, StrategyCMSData } from "@osmosis-labs/server";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
-import { EarnStrategy, StrategyCMSData } from "~/server/queries/numia/earn";
 
 export const arrLengthEquals: FilterFn<EarnStrategy> = (
   row,

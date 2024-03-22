@@ -542,8 +542,14 @@ export class WCClient implements WalletClient {
         if (this.redirect) this.openApp();
         return [await this.getAccount(chainId)];
       },
-      signDirect: (signerAddress: string, signDoc: DirectSignDoc) =>
-        this.signDirect(chainId, signerAddress, signDoc),
+      signDirect: (
+        signerAddress: string,
+        signDoc: Parameters<OfflineDirectSigner["signDirect"]>[1]
+      ) =>
+        this.signDirect(chainId, signerAddress, {
+          ...signDoc,
+          accountNumber: Long.fromString(signDoc.accountNumber.toString()),
+        }),
     } as OfflineDirectSigner;
   }
 
@@ -693,7 +699,7 @@ export class WCClient implements WalletClient {
     return {
       signed: {
         chainId: signed.chainId,
-        accountNumber: Long.fromString(signed.accountNumber, false),
+        accountNumber: BigInt(signed.accountNumber),
         authInfoBytes: new Uint8Array(
           Buffer.from(signed.authInfoBytes, this.wcEncoding)
         ),
