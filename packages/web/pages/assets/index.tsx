@@ -1,29 +1,13 @@
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { useEffect } from "react";
 
 import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
+import { AssetsPageV2 } from "~/components/complex/assets-page-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 
 const Assets: NextPage = () => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (
-      featureFlags._isInitialized &&
-      featureFlags.portfolioAndDiscoverPages &&
-      router.isReady
-    ) {
-      router.push("/portfolio");
-    }
-  }, [
-    featureFlags._isInitialized,
-    featureFlags.portfolioAndDiscoverPages,
-    router,
-  ]);
 
   if (!featureFlags._isInitialized) {
     return (
@@ -40,7 +24,11 @@ const Assets: NextPage = () => {
         title={t("seo.assets.title")}
         description={t("seo.assets.description")}
       />
-      <AssetsPageV1 />
+      {featureFlags.portfolioPageAndNewAssetsPage ? (
+        <AssetsPageV2 />
+      ) : (
+        <AssetsPageV1 />
+      )}
     </>
   );
 };

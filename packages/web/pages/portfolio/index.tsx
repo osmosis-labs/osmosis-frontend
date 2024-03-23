@@ -14,14 +14,14 @@ const Portfolio: NextPage = () => {
   useEffect(() => {
     if (
       featureFlags._isInitialized &&
-      !featureFlags.portfolioAndDiscoverPages &&
+      !featureFlags.portfolioPageAndNewAssetsPage &&
       router.isReady
     ) {
       router.push("/assets");
     }
   }, [
     featureFlags._isInitialized,
-    featureFlags.portfolioAndDiscoverPages,
+    featureFlags.portfolioPageAndNewAssetsPage,
     router,
   ]);
 

@@ -393,7 +393,6 @@
   "menu": {
     "assets": "Ativos",
     "portfolio": "Portfólio",
-    "discover": "Descobrir",
     "help": "Apoiar",
     "info": "Status",
     "pools": "Piscinas",
@@ -776,10 +775,6 @@
     "assets": {
       "title": "Ativos de Osmose",
       "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
-    },
-    "discover": {
-      "title": "Descubra ativos de osmose",
-      "description": "Navegue por todos os ativos disponíveis no Osmosis - a bolsa descentralizada líder do Cosmos"
     },
     "portfolio": {
       "title": "Portfólio de Osmose",

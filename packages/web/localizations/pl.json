@@ -393,7 +393,6 @@
   "menu": {
     "assets": "Środki",
     "portfolio": "Teczka",
-    "discover": "Odkryć",
     "help": "Wsparcie",
     "info": "Statystyki",
     "pools": "Pule",
@@ -776,10 +775,6 @@
     "assets": {
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
-    "discover": {
-      "title": "Odkryj aktywa osmozy",
-      "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
     },
     "portfolio": {
       "title": "Portfolio osmozy",

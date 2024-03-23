@@ -200,7 +200,7 @@ const MainLayoutWrapper: FunctionComponent<{
             selectionTest: /\/earn/,
           }
         : null,
-      ...(flags.portfolioAndDiscoverPages
+      ...(flags.portfolioPageAndNewAssetsPage
         ? [
             {
               label: t("menu.portfolio"),
@@ -209,10 +209,10 @@ const MainLayoutWrapper: FunctionComponent<{
               selectionTest: /\/portfolio/,
             },
             {
-              label: t("menu.discover"),
-              link: "/discover",
-              icon: <Icon id="trade" className="h-5 w-5" />,
-              selectionTest: /\/discover/,
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+              selectionTest: /\/assets/,
             },
           ]
         : [
@@ -267,7 +267,7 @@ const MainLayoutWrapper: FunctionComponent<{
     error,
     flags.earnPage,
     flags.staking,
-    flags.portfolioAndDiscoverPages,
+    flags.portfolioPageAndNewAssetsPage,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
     t,

@@ -23,7 +23,7 @@ export type AvailableFlags =
   | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
-  | "portfolioAndDiscoverPages";
+  | "portfolioPageAndNewAssetsPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -48,7 +48,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   tfmProTradingNavbarButton: true,
   positionRoi: true,
   swapToolSimulateFee: false,
-  portfolioAndDiscoverPages: false,
+  portfolioPageAndNewAssetsPage: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };

@@ -393,7 +393,6 @@
   "menu": {
     "assets": "資産",
     "portfolio": "ポートフォリオ",
-    "discover": "発見する",
     "help": "サポートラボ",
     "info": "統計",
     "pools": "プール",
@@ -775,10 +774,6 @@
     },
     "assets": {
       "title": "浸透アセット",
-      "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
-    },
-    "discover": {
-      "title": "Osmosis アセットを発見する",
       "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
     },
     "portfolio": {

@@ -28,7 +28,7 @@ import { AssetsInfoTable } from "../table/asset-info";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
 
-export const DiscoverPage: FunctionComponent = () => {
+export const AssetsPageV2: FunctionComponent = () => {
   const { t } = useTranslation();
   const { startBridge, bridgeAsset } = useBridge();
   const { logEvent } = useAmplitudeAnalytics({

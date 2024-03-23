@@ -393,7 +393,6 @@
   "menu": {
     "assets": "Assets",
     "portfolio": "Portfolio",
-    "discover": "Discover",
     "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
@@ -775,10 +774,6 @@
     },
     "assets": {
       "title": "Osmosis Assets",
-      "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
-    },
-    "discover": {
-      "title": "Discover Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
     "portfolio": {

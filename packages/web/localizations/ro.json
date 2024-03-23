@@ -393,7 +393,6 @@
   "menu": {
     "assets": "Active",
     "portfolio": "Portofoliu",
-    "discover": "Descoperi",
     "help": "A sustine",
     "info": "Statistici",
     "pools": "Pool-uri",
@@ -775,10 +774,6 @@
     },
     "assets": {
       "title": "Active de osmoză",
-      "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "discover": {
-      "title": "Descoperiți activele de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
     "portfolio": {
