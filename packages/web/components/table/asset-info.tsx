@@ -42,10 +42,10 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { AssetCategoriesSelectors } from "../assets/categories";
-import { Sparkline } from "../chart/sparkline";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
+import { PriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -162,6 +162,7 @@ export const AssetsInfoTable: FunctionComponent<{
         id: "price",
         header: () => (
           <SortHeader
+            className="mx-auto"
             label={`Price (${selectedTimeFrame})`}
             sortKey="currentPrice"
             currentSortKey={sortKey}
@@ -170,13 +171,12 @@ export const AssetsInfoTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: PriceCell,
-      }),
-      columnHelper.accessor((row) => row, {
-        id: "priceChart",
-        header: "",
         cell: (cell) => (
-          <SparklineChartCell {...cell} timeFrame={selectedTimeFrame} />
+          <PriceCell
+            coinDenom={cell.row.original.coinDenom}
+            priceChange24h={cell.row.original.priceChange24h}
+            timeFrame={selectedTimeFrame}
+          />
         ),
       }),
       columnHelper.accessor((row) => row, {
@@ -285,7 +285,7 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <section>
+      <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategories={selectedCategories}
           onSelectCategory={selectCategory}
@@ -431,80 +431,6 @@ const AssetCell: AssetCellComponent<{
   </div>
 );
 
-const PriceCell: AssetCellComponent = ({
-  row: {
-    original: { currentPrice, priceChange24h },
-  },
-}) => (
-  <div className="flex flex-col">
-    {currentPrice && (
-      <span className="subtitle1">{currentPrice?.toString()}</span>
-    )}
-    {priceChange24h && (
-      <span
-        className={classNames("caption", {
-          "text-bullish-400":
-            priceChange24h && priceChange24h.toDec().isPositive(),
-          "text-ammelia-400":
-            priceChange24h && priceChange24h.toDec().isNegative(),
-        })}
-      >
-        {priceChange24h && priceChange24h.toDec().isPositive() ? "+" : null}
-        {priceChange24h.maxDecimals(1).toString()}
-      </span>
-    )}
-  </div>
-);
-
-const SparklineChartCell: AssetCellComponent<{
-  timeFrame: CommonPriceChartTimeFrame;
-}> = ({
-  row: {
-    original: { coinDenom, priceChange24h },
-  },
-  timeFrame,
-}) => {
-  const { data: recentPrices } =
-    api.edge.assets.getAssetHistoricalPrice.useQuery(
-      {
-        coinDenom,
-        timeFrame,
-      },
-      {
-        staleTime: 1000 * 30, // 30 secs
-      }
-    );
-
-  const recentPriceCloses = useMemo(
-    () => (recentPrices ? recentPrices.map((p) => p.close) : []),
-    [recentPrices]
-  );
-
-  if (recentPriceCloses.length === 0) return <div className="w-20" />;
-
-  const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
-  const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
-
-  let color: string;
-  if (isBullish) {
-    color = theme.colors.bullish[400];
-  } else if (isBearish) {
-    color = theme.colors.ammelia[400];
-  } else {
-    color = theme.colors.wosmongton[200];
-  }
-
-  return (
-    <Sparkline
-      width={80}
-      height={50}
-      lineWidth={2}
-      data={recentPriceCloses}
-      color={color}
-    />
-  );
-};
-
 const MarketCapCell: AssetCellComponent = ({
   row: {
     original: { marketCap, marketCapRank },
@@ -559,7 +485,7 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
+    <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
       <SearchBox
         currentValue={searchInput}
         onInput={setSearchInput}

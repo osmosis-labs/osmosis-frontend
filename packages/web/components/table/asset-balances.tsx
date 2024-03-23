@@ -1,4 +1,3 @@
-import { RatePretty } from "@keplr-wallet/unit";
 import type { Search, SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
@@ -31,9 +30,9 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
-import { Sparkline } from "../chart/sparkline";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
+import { PriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -147,7 +146,13 @@ export const AssetBalancesTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: Price24hCell,
+        cell: (cell) => (
+          <PriceCell
+            coinDenom={cell.row.original.coinDenom}
+            priceChange24h={cell.row.original.priceChange24h}
+            timeFrame="1D"
+          />
+        ),
       }),
       columnHelper.accessor((row) => row, {
         id: "balance",
@@ -381,89 +386,6 @@ const AssetCell: AssetCellComponent<{
   </div>
 );
 
-const Price24hCell: AssetCellComponent = ({
-  row: {
-    original: { coinDenom, priceChange24h },
-  },
-}) => {
-  const { data: recentPrices } =
-    api.edge.assets.getAssetHistoricalPrice.useQuery(
-      {
-        coinDenom,
-        timeFrame: "1D",
-      },
-      {
-        staleTime: 1000 * 30, // 30 secs
-      }
-    );
-
-  const recentPriceCloses = useMemo(
-    () => (recentPrices ? recentPrices.map((p) => p.close) : []),
-    [recentPrices]
-  );
-
-  if (recentPriceCloses.length === 0) return <div className="w-20" />;
-
-  const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
-  const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
-
-  let color: string;
-  if (isBullish) {
-    color = theme.colors.bullish[400];
-  } else if (isBearish) {
-    color = theme.colors.ammelia[400];
-  } else {
-    color = theme.colors.wosmongton[200];
-  }
-
-  // remove negative symbol since we're using arrows
-  if (isBearish)
-    priceChange24h = priceChange24h
-      ? priceChange24h.mul(new RatePretty(-1))
-      : undefined;
-
-  return (
-    <div className="flex items-center gap-4">
-      <Sparkline
-        width={80}
-        height={50}
-        lineWidth={2}
-        data={recentPriceCloses}
-        color={color}
-      />
-      {priceChange24h && (
-        <div className="flex items-center gap-1">
-          {isBullish && (
-            <Icon
-              className="text-bullish-400"
-              id="bullish-arrow"
-              height={9}
-              width={9}
-            />
-          )}
-          {isBearish && (
-            <Icon
-              className="text-ammelia-400"
-              id="bearish-arrow"
-              height={9}
-              width={9}
-            />
-          )}
-          <span
-            className={classNames("caption", {
-              "text-bullish-400": isBullish,
-              "text-ammelia-400": isBearish,
-              "text-wosmongton-200": !isBullish && !isBearish,
-            })}
-          >
-            {priceChange24h.maxDecimals(1).toString()}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const BalanceCell: AssetCellComponent = ({
   row: {
     original: { amount, usdValue },
@@ -525,9 +447,9 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="flex h-12 w-full items-center gap-5 md:h-fit md:flex-col md:justify-end">
+    <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
+      <h5>Your assets</h5>
       <SearchBox
-        className="!w-full"
         currentValue={searchInput}
         onInput={setSearchInput}
         placeholder={t("assets.table.search")}
