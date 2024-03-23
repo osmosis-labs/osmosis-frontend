@@ -28,7 +28,7 @@ import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
@@ -38,7 +38,11 @@ import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getUserBridgeAssets"]["items"][number];
-type SortKey = "priceChange24h" | "usdValue" | undefined;
+type SortKey =
+  | NonNullable<
+      RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
+    >["keyPath"]
+  | undefined;
 
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -51,7 +55,7 @@ export const AssetBalancesTable: FunctionComponent<{
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
-  const { width } = useWindowSize();
+  const { width, isMobile } = useWindowSize();
   const router = useRouter();
 
   // State
@@ -203,7 +207,11 @@ export const AssetBalancesTable: FunctionComponent<{
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
   const topOffset =
-    Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
+    Number(
+      isMobile
+        ? theme.extend.height["navbar-mobile"].replace("px", "")
+        : theme.extend.height.navbar.replace("px", "")
+    ) + tableTopPadding;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({

@@ -29,7 +29,6 @@ import {
   Breakpoint,
   useTranslation,
   useUserFavoriteAssetDenoms,
-  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
@@ -39,33 +38,30 @@ import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { Sparkline } from "../chart/sparkline";
-import { MenuToggle } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getUserMarketAssets"]["items"][number];
-type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
+  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
+type SortKey =
+  | NonNullable<
+      RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+    >["keyPath"]
+  | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-  /** Memoized function for handling deposits from table row. */
-  onDeposit: (coinMinimalDenom: string) => void;
-  /** Memoized function for handling withdrawals from table row. */
-  onWithdraw: (coinMinimalDenom: string) => void;
-}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
-  const { chainStore, accountStore, userSettings } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-  const { width } = useWindowSize();
+}> = observer(({ tableTopPadding = 0 }) => {
+  const { userSettings } = useStore();
+  const { width, isMobile } = useWindowSize();
   const router = useRouter();
 
   // State
@@ -79,10 +75,6 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const [sortKey, setSortKey] = useState<SortKey>();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  const [selectedView, setSelectedView] = useState<"myTokens" | "allTokens">(
-    "allTokens"
-  );
 
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const selectCategory = useCallback(
@@ -114,11 +106,10 @@ export const AssetsInfoTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getUserMarketAssets.useInfiniteQuery(
+  } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
-      userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
-      limit: 20,
+      limit: 50,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
@@ -128,11 +119,9 @@ export const AssetsInfoTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
-      onlyPositiveBalances: selectedView === "myTokens",
       categories: selectedCategories.length ? selectedCategories : undefined,
     },
     {
-      enabled: !isLoadingWallet,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
 
@@ -205,29 +194,23 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: MarketCapCell,
       }),
       columnHelper.accessor((row) => row, {
-        id: "balance",
+        id: "volume24h",
         header: () => (
           <SortHeader
-            label="Balance"
-            sortKey="usdValue"
+            label="Volume (24h)"
+            sortKey="volume24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
             setSortKey={setSortKey}
           />
         ),
-        cell: BalanceCell,
+        cell: Volume24hCell,
       }),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => (
-          <AssetActionsCell
-            {...cell}
-            onDeposit={onDeposit}
-            onWithdraw={onWithdraw}
-          />
-        ),
+        cell: (cell) => <AssetActionsCell {...cell} onBuy={() => {}} />,
       }),
     ];
   }, [
@@ -237,8 +220,6 @@ export const AssetsInfoTable: FunctionComponent<{
     sortDirection,
     onAddFavoriteDenom,
     onRemoveFavoriteDenom,
-    onDeposit,
-    onWithdraw,
   ]);
 
   /** Columns collapsed for screen size responsiveness. */
@@ -265,7 +246,11 @@ export const AssetsInfoTable: FunctionComponent<{
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
   const topOffset =
-    Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
+    Number(
+      isMobile
+        ? theme.extend.height["navbar-mobile"].replace("px", "")
+        : theme.extend.height.navbar.replace("px", "")
+    ) + tableTopPadding;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
@@ -311,8 +296,6 @@ export const AssetsInfoTable: FunctionComponent<{
         selectedTimeFrame={selectedTimeFrame}
         setSelectedTimeFrame={setSelectedTimeFrame}
         setSearchQuery={setSearchQuery}
-        selectedView={selectedView}
-        setSelectedView={setSelectedView}
       />
       <table className="w-full">
         <thead>
@@ -535,68 +518,40 @@ const MarketCapCell: AssetInfoCellComponent = ({
   </div>
 );
 
-const BalanceCell: AssetInfoCellComponent = ({
+const Volume24hCell: AssetInfoCellComponent = ({
   row: {
-    original: { amount, usdValue },
+    original: { volume24h },
   },
 }) => (
-  <div className="ml-auto flex w-28 flex-col">
-    <span className="subtitle1">
-      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
-    </span>
-    {usdValue && (
-      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
-    )}
+  <div className="ml-auto flex w-20 flex-col text-right">
+    {volume24h && <span className="subtitle1">{formatPretty(volume24h)}</span>}
   </div>
 );
 
 export const AssetActionsCell: AssetInfoCellComponent<{
-  onDeposit: (coinMinimalDenom: string) => void;
-  onWithdraw: (coinMinimalDenom: string) => void;
+  onBuy: (coinMinimalDenom: string) => void;
 }> = ({
   row: {
     original: { coinMinimalDenom },
   },
-  onDeposit,
-  onWithdraw,
+  onBuy,
 }) => (
-  <div className="flex items-center gap-2">
-    <button
-      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onDeposit(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="down-arrow-thin" width={24} height={24} />
-    </button>
-    <button
-      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onWithdraw(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="up-arrow-thin" width={24} height={24} />
-    </button>
-  </div>
+  <button
+    onClick={(e) => {
+      e.preventDefault();
+      onBuy(coinMinimalDenom);
+    }}
+  >
+    <span className="text-wosmongton-200">Buy</span>
+  </button>
 );
 
 const TableControls: FunctionComponent<{
   selectedTimeFrame: CommonPriceChartTimeFrame;
   setSelectedTimeFrame: (timeFrame: CommonPriceChartTimeFrame) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-  selectedView: "myTokens" | "allTokens";
-  setSelectedView: (view: "myTokens" | "allTokens") => void;
-}> = ({
-  selectedTimeFrame,
-  setSelectedTimeFrame,
-  setSearchQuery,
-  selectedView,
-  setSelectedView,
-}) => {
+}> = ({ selectedTimeFrame, setSelectedTimeFrame, setSearchQuery }) => {
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
 
@@ -604,62 +559,27 @@ const TableControls: FunctionComponent<{
   // Only on debounced search query input
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
-  const tokensOptions = useConst([
-    { id: "myTokens", display: "My Tokens" },
-    { id: "allTokens", display: "All Tokens" },
-  ]);
-
   return (
-    <div className="flex h-12 w-full items-center gap-5 md:h-fit md:flex-col md:justify-end">
-      <div className="flex h-12 w-full gap-3">
-        {isMobile ? (
-          <MenuToggle
-            options={tokensOptions}
-            selectedOptionId={selectedView as string}
-            onSelect={(optionId) =>
-              setSelectedView(optionId as "myTokens" | "allTokens")
-            }
-          />
-        ) : (
-          <SearchBox
-            className="!w-full"
-            currentValue={searchInput}
-            onInput={setSearchInput}
-            placeholder={t("assets.table.search")}
-          />
+    <div className="flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
+      <SearchBox
+        currentValue={searchInput}
+        onInput={setSearchInput}
+        placeholder={t("assets.table.search")}
+      />
+      <SelectMenu
+        classes={useConst({ container: "h-full 1.5lg:hidden" })}
+        options={useConst([
+          { id: "1H", display: "1H" },
+          { id: "1D", display: "1D" },
+          { id: "1W", display: "1W" },
+          { id: "1M", display: "1M" },
+        ] as { id: CommonPriceChartTimeFrame; display: string }[])}
+        defaultSelectedOptionId={selectedTimeFrame}
+        onSelect={useCallback(
+          (id: string) => setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
+          [setSelectedTimeFrame]
         )}
-        <SelectMenu
-          classes={useConst({ container: "h-full 1.5lg:hidden" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-            [setSelectedTimeFrame]
-          )}
-        />
-      </div>
-      {isMobile ? (
-        <SearchBox
-          className="!w-full"
-          currentValue={searchInput}
-          onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
-        />
-      ) : (
-        <MenuToggle
-          options={tokensOptions}
-          selectedOptionId={selectedView as string}
-          onSelect={(optionId) =>
-            setSelectedView(optionId as "myTokens" | "allTokens")
-          }
-        />
-      )}
+      />
     </div>
   );
 };

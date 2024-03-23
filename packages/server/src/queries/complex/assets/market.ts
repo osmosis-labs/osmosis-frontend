@@ -21,6 +21,7 @@ export type AssetMarketInfo = Partial<{
   marketCapRank: number;
   currentPrice: PricePretty;
   priceChange24h: RatePretty;
+  volume24h: PricePretty;
 }>;
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -66,6 +67,7 @@ export async function getMarketAsset<TAsset extends Asset>({
           : undefined,
         marketCapRank,
         priceChange24h: assetMarketActivity?.price24hChange,
+        volume24h: assetMarketActivity?.volume24h,
       };
     },
   });
@@ -189,17 +191,20 @@ type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;
 /** Converts raw token data to useful types where applicable. */
 function makeMarketActivityFromTokenData(tokenData: TokenData) {
   return {
-    price: tokenData.price ? new Dec(tokenData.price) : undefined,
+    price:
+      tokenData.price !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.price)
+        : undefined,
     denom: tokenData.denom,
     symbol: tokenData.symbol,
-    liquidity: new Dec(tokenData.liquidity),
+    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity),
     liquidity24hChange:
       tokenData.liquidity_24h_change !== null
         ? new RatePretty(
             new Dec(tokenData.liquidity_24h_change).quo(new Dec(100))
           )
         : undefined,
-    volume24h: new Dec(tokenData.volume_24h),
+    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h),
     volume24hChange:
       tokenData.volume_24h_change !== null
         ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
