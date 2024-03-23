@@ -1,6 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
-import { PoolType } from "src/types";
+
+import { PoolType } from "../types";
 
 export interface ResultPool {
   id: string;
@@ -9,6 +10,9 @@ export interface ResultPool {
   type?: PoolType;
   inCurrency?: Currency;
   outCurrency?: Currency;
+
+  /** Code ID if Cosmwasm pool. */
+  codeId?: string;
 }
 
 /** Single route through pools. */

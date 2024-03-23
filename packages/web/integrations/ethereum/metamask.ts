@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import { EventEmitter } from "eventemitter3";
 import {
   action,
@@ -19,7 +20,6 @@ import {
 import { pollTransactionReceipt } from "~/integrations/ethereum/queries";
 import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
 import { WalletDisplay, WalletKey } from "~/integrations/wallets";
-import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";

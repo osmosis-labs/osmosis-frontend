@@ -1,3 +1,4 @@
+import { RichTweet } from "@osmosis-labs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -5,7 +6,6 @@ import React, { FunctionComponent } from "react";
 
 import { EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { RichTweet } from "~/server/queries/external/twitter";
 
 interface TwitterSectionProps {
   tweets: RichTweet[];

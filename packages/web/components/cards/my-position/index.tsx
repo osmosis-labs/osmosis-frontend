@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import type { UserPosition } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
@@ -10,7 +11,6 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import type { UserPosition } from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";

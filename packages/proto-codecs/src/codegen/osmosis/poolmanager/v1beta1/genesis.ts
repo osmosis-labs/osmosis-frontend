@@ -40,7 +40,7 @@ export interface ParamsProtoMsg {
 }
 /** Params holds parameters for the poolmanager module */
 export interface ParamsAmino {
-  pool_creation_fee: CoinAmino[];
+  pool_creation_fee?: CoinAmino[];
   /** taker_fee_params is the container of taker fee parameters. */
   taker_fee_params?: TakerFeeParamsAmino;
   /**
@@ -53,7 +53,7 @@ export interface ParamsAmino {
    * orders at prices in terms of token1 (quote asset) that are easy to reason
    * about.
    */
-  authorized_quote_denoms: string[];
+  authorized_quote_denoms?: string[];
 }
 export interface ParamsAminoMsg {
   type: "osmosis/poolmanager/params";
@@ -85,15 +85,15 @@ export interface GenesisStateProtoMsg {
 /** GenesisState defines the poolmanager module's genesis state. */
 export interface GenesisStateAmino {
   /** the next_pool_id */
-  next_pool_id: string;
+  next_pool_id?: string;
   /** params is the container of poolmanager parameters. */
   params?: ParamsAmino;
   /** pool_routes is the container of the mappings from pool id to pool type. */
-  pool_routes: ModuleRouteAmino[];
+  pool_routes?: ModuleRouteAmino[];
   /** KVStore state */
   taker_fees_tracker?: TakerFeesTrackerAmino;
-  pool_volumes: PoolVolumeAmino[];
-  denom_pair_taker_fee_store: DenomPairTakerFeeAmino[];
+  pool_volumes?: PoolVolumeAmino[];
+  denom_pair_taker_fee_store?: DenomPairTakerFeeAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/poolmanager/genesis-state";
@@ -170,7 +170,7 @@ export interface TakerFeeParamsAmino {
    * default_taker_fee is the fee used when creating a new pool that doesn't
    * fall under a custom pool taker fee or stableswap taker fee category.
    */
-  default_taker_fee: string;
+  default_taker_fee?: string;
   /**
    * osmo_taker_fee_distribution defines the distribution of taker fees
    * generated in OSMO. As of this writing, it has two catagories:
@@ -198,13 +198,13 @@ export interface TakerFeeParamsAmino {
    * and remove custom taker fees for denom pairs, but with the normal
    * governance delay.
    */
-  admin_addresses: string[];
+  admin_addresses?: string[];
   /**
    * community_pool_denom_to_swap_non_whitelisted_assets_to is the denom that
    * non-whitelisted taker fees will be swapped to before being sent to
    * the community pool.
    */
-  community_pool_denom_to_swap_non_whitelisted_assets_to: string;
+  community_pool_denom_to_swap_non_whitelisted_assets_to?: string;
   /**
    * reduced_fee_whitelist is a list of addresses that are
    * allowed to pay a reduce taker fee when performing a swap
@@ -214,7 +214,7 @@ export interface TakerFeeParamsAmino {
    * Initially, the taker fee is allowed to be bypassed completely. However
    * In the future, we will charge a reduced taker fee instead of no fee at all.
    */
-  reduced_fee_whitelist: string[];
+  reduced_fee_whitelist?: string[];
 }
 export interface TakerFeeParamsAminoMsg {
   type: "osmosis/poolmanager/taker-fee-params";
@@ -246,8 +246,8 @@ export interface TakerFeeDistributionPercentageProtoMsg {
  * gets distributed to the available categories.
  */
 export interface TakerFeeDistributionPercentageAmino {
-  staking_rewards: string;
-  community_pool: string;
+  staking_rewards?: string;
+  community_pool?: string;
 }
 export interface TakerFeeDistributionPercentageAminoMsg {
   type: "osmosis/poolmanager/taker-fee-distribution-percentage";
@@ -271,9 +271,9 @@ export interface TakerFeesTrackerProtoMsg {
   value: Uint8Array;
 }
 export interface TakerFeesTrackerAmino {
-  taker_fees_to_stakers: CoinAmino[];
-  taker_fees_to_community_pool: CoinAmino[];
-  height_accounting_starts_from: string;
+  taker_fees_to_stakers?: CoinAmino[];
+  taker_fees_to_community_pool?: CoinAmino[];
+  height_accounting_starts_from?: string;
 }
 export interface TakerFeesTrackerAminoMsg {
   type: "osmosis/poolmanager/taker-fees-tracker";
@@ -304,9 +304,9 @@ export interface PoolVolumeProtoMsg {
  */
 export interface PoolVolumeAmino {
   /** pool_id is the id of the pool. */
-  pool_id: string;
+  pool_id?: string;
   /** pool_volume is the cumulative volume of the pool. */
-  pool_volume: CoinAmino[];
+  pool_volume?: CoinAmino[];
 }
 export interface PoolVolumeAminoMsg {
   type: "osmosis/poolmanager/pool-volume";
@@ -387,17 +387,20 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      poolCreationFee: Array.isArray(object?.pool_creation_fee)
-        ? object.pool_creation_fee.map((e: any) => Coin.fromAmino(e))
-        : [],
-      takerFeeParams: object?.taker_fee_params
-        ? TakerFeeParams.fromAmino(object.taker_fee_params)
-        : undefined,
-      authorizedQuoteDenoms: Array.isArray(object?.authorized_quote_denoms)
-        ? object.authorized_quote_denoms.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseParams();
+    message.poolCreationFee =
+      object.pool_creation_fee?.map((e) => Coin.fromAmino(e)) || [];
+    if (
+      object.taker_fee_params !== undefined &&
+      object.taker_fee_params !== null
+    ) {
+      message.takerFeeParams = TakerFeeParams.fromAmino(
+        object.taker_fee_params
+      );
+    }
+    message.authorizedQuoteDenoms =
+      object.authorized_quote_denoms?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
@@ -406,7 +409,7 @@ export const Params = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.pool_creation_fee = [];
+      obj.pool_creation_fee = message.poolCreationFee;
     }
     obj.taker_fee_params = message.takerFeeParams
       ? TakerFeeParams.toAmino(message.takerFeeParams)
@@ -414,7 +417,7 @@ export const Params = {
     if (message.authorizedQuoteDenoms) {
       obj.authorized_quote_denoms = message.authorizedQuoteDenoms.map((e) => e);
     } else {
-      obj.authorized_quote_denoms = [];
+      obj.authorized_quote_denoms = message.authorizedQuoteDenoms;
     }
     return obj;
   },
@@ -542,37 +545,44 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      nextPoolId: BigInt(object.next_pool_id),
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      poolRoutes: Array.isArray(object?.pool_routes)
-        ? object.pool_routes.map((e: any) => ModuleRoute.fromAmino(e))
-        : [],
-      takerFeesTracker: object?.taker_fees_tracker
-        ? TakerFeesTracker.fromAmino(object.taker_fees_tracker)
-        : undefined,
-      poolVolumes: Array.isArray(object?.pool_volumes)
-        ? object.pool_volumes.map((e: any) => PoolVolume.fromAmino(e))
-        : [],
-      denomPairTakerFeeStore: Array.isArray(object?.denom_pair_taker_fee_store)
-        ? object.denom_pair_taker_fee_store.map((e: any) =>
-            DenomPairTakerFee.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseGenesisState();
+    if (object.next_pool_id !== undefined && object.next_pool_id !== null) {
+      message.nextPoolId = BigInt(object.next_pool_id);
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.poolRoutes =
+      object.pool_routes?.map((e) => ModuleRoute.fromAmino(e)) || [];
+    if (
+      object.taker_fees_tracker !== undefined &&
+      object.taker_fees_tracker !== null
+    ) {
+      message.takerFeesTracker = TakerFeesTracker.fromAmino(
+        object.taker_fees_tracker
+      );
+    }
+    message.poolVolumes =
+      object.pool_volumes?.map((e) => PoolVolume.fromAmino(e)) || [];
+    message.denomPairTakerFeeStore =
+      object.denom_pair_taker_fee_store?.map((e) =>
+        DenomPairTakerFee.fromAmino(e)
+      ) || [];
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
-    obj.next_pool_id = message.nextPoolId
-      ? message.nextPoolId.toString()
-      : undefined;
+    obj.next_pool_id =
+      message.nextPoolId !== BigInt(0)
+        ? message.nextPoolId.toString()
+        : undefined;
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     if (message.poolRoutes) {
       obj.pool_routes = message.poolRoutes.map((e) =>
         e ? ModuleRoute.toAmino(e) : undefined
       );
     } else {
-      obj.pool_routes = [];
+      obj.pool_routes = message.poolRoutes;
     }
     obj.taker_fees_tracker = message.takerFeesTracker
       ? TakerFeesTracker.toAmino(message.takerFeesTracker)
@@ -582,14 +592,14 @@ export const GenesisState = {
         e ? PoolVolume.toAmino(e) : undefined
       );
     } else {
-      obj.pool_volumes = [];
+      obj.pool_volumes = message.poolVolumes;
     }
     if (message.denomPairTakerFeeStore) {
       obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore.map((e) =>
         e ? DenomPairTakerFee.toAmino(e) : undefined
       );
     } else {
-      obj.denom_pair_taker_fee_store = [];
+      obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore;
     }
     return obj;
   },
@@ -725,31 +735,48 @@ export const TakerFeeParams = {
     return message;
   },
   fromAmino(object: TakerFeeParamsAmino): TakerFeeParams {
-    return {
-      defaultTakerFee: object.default_taker_fee,
-      osmoTakerFeeDistribution: object?.osmo_taker_fee_distribution
-        ? TakerFeeDistributionPercentage.fromAmino(
-            object.osmo_taker_fee_distribution
-          )
-        : undefined,
-      nonOsmoTakerFeeDistribution: object?.non_osmo_taker_fee_distribution
-        ? TakerFeeDistributionPercentage.fromAmino(
-            object.non_osmo_taker_fee_distribution
-          )
-        : undefined,
-      adminAddresses: Array.isArray(object?.admin_addresses)
-        ? object.admin_addresses.map((e: any) => e)
-        : [],
-      communityPoolDenomToSwapNonWhitelistedAssetsTo:
-        object.community_pool_denom_to_swap_non_whitelisted_assets_to,
-      reducedFeeWhitelist: Array.isArray(object?.reduced_fee_whitelist)
-        ? object.reduced_fee_whitelist.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseTakerFeeParams();
+    if (
+      object.default_taker_fee !== undefined &&
+      object.default_taker_fee !== null
+    ) {
+      message.defaultTakerFee = object.default_taker_fee;
+    }
+    if (
+      object.osmo_taker_fee_distribution !== undefined &&
+      object.osmo_taker_fee_distribution !== null
+    ) {
+      message.osmoTakerFeeDistribution =
+        TakerFeeDistributionPercentage.fromAmino(
+          object.osmo_taker_fee_distribution
+        );
+    }
+    if (
+      object.non_osmo_taker_fee_distribution !== undefined &&
+      object.non_osmo_taker_fee_distribution !== null
+    ) {
+      message.nonOsmoTakerFeeDistribution =
+        TakerFeeDistributionPercentage.fromAmino(
+          object.non_osmo_taker_fee_distribution
+        );
+    }
+    message.adminAddresses = object.admin_addresses?.map((e) => e) || [];
+    if (
+      object.community_pool_denom_to_swap_non_whitelisted_assets_to !==
+        undefined &&
+      object.community_pool_denom_to_swap_non_whitelisted_assets_to !== null
+    ) {
+      message.communityPoolDenomToSwapNonWhitelistedAssetsTo =
+        object.community_pool_denom_to_swap_non_whitelisted_assets_to;
+    }
+    message.reducedFeeWhitelist =
+      object.reduced_fee_whitelist?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: TakerFeeParams): TakerFeeParamsAmino {
     const obj: any = {};
-    obj.default_taker_fee = message.defaultTakerFee;
+    obj.default_taker_fee =
+      message.defaultTakerFee === "" ? undefined : message.defaultTakerFee;
     obj.osmo_taker_fee_distribution = message.osmoTakerFeeDistribution
       ? TakerFeeDistributionPercentage.toAmino(message.osmoTakerFeeDistribution)
       : undefined;
@@ -761,14 +788,16 @@ export const TakerFeeParams = {
     if (message.adminAddresses) {
       obj.admin_addresses = message.adminAddresses.map((e) => e);
     } else {
-      obj.admin_addresses = [];
+      obj.admin_addresses = message.adminAddresses;
     }
     obj.community_pool_denom_to_swap_non_whitelisted_assets_to =
-      message.communityPoolDenomToSwapNonWhitelistedAssetsTo;
+      message.communityPoolDenomToSwapNonWhitelistedAssetsTo === ""
+        ? undefined
+        : message.communityPoolDenomToSwapNonWhitelistedAssetsTo;
     if (message.reducedFeeWhitelist) {
       obj.reduced_fee_whitelist = message.reducedFeeWhitelist.map((e) => e);
     } else {
-      obj.reduced_fee_whitelist = [];
+      obj.reduced_fee_whitelist = message.reducedFeeWhitelist;
     }
     return obj;
   },
@@ -859,17 +888,26 @@ export const TakerFeeDistributionPercentage = {
   fromAmino(
     object: TakerFeeDistributionPercentageAmino
   ): TakerFeeDistributionPercentage {
-    return {
-      stakingRewards: object.staking_rewards,
-      communityPool: object.community_pool,
-    };
+    const message = createBaseTakerFeeDistributionPercentage();
+    if (
+      object.staking_rewards !== undefined &&
+      object.staking_rewards !== null
+    ) {
+      message.stakingRewards = object.staking_rewards;
+    }
+    if (object.community_pool !== undefined && object.community_pool !== null) {
+      message.communityPool = object.community_pool;
+    }
+    return message;
   },
   toAmino(
     message: TakerFeeDistributionPercentage
   ): TakerFeeDistributionPercentageAmino {
     const obj: any = {};
-    obj.staking_rewards = message.stakingRewards;
-    obj.community_pool = message.communityPool;
+    obj.staking_rewards =
+      message.stakingRewards === "" ? undefined : message.stakingRewards;
+    obj.community_pool =
+      message.communityPool === "" ? undefined : message.communityPool;
     return obj;
   },
   fromAminoMsg(
@@ -966,17 +1004,20 @@ export const TakerFeesTracker = {
     return message;
   },
   fromAmino(object: TakerFeesTrackerAmino): TakerFeesTracker {
-    return {
-      takerFeesToStakers: Array.isArray(object?.taker_fees_to_stakers)
-        ? object.taker_fees_to_stakers.map((e: any) => Coin.fromAmino(e))
-        : [],
-      takerFeesToCommunityPool: Array.isArray(
-        object?.taker_fees_to_community_pool
-      )
-        ? object.taker_fees_to_community_pool.map((e: any) => Coin.fromAmino(e))
-        : [],
-      heightAccountingStartsFrom: BigInt(object.height_accounting_starts_from),
-    };
+    const message = createBaseTakerFeesTracker();
+    message.takerFeesToStakers =
+      object.taker_fees_to_stakers?.map((e) => Coin.fromAmino(e)) || [];
+    message.takerFeesToCommunityPool =
+      object.taker_fees_to_community_pool?.map((e) => Coin.fromAmino(e)) || [];
+    if (
+      object.height_accounting_starts_from !== undefined &&
+      object.height_accounting_starts_from !== null
+    ) {
+      message.heightAccountingStartsFrom = BigInt(
+        object.height_accounting_starts_from
+      );
+    }
+    return message;
   },
   toAmino(message: TakerFeesTracker): TakerFeesTrackerAmino {
     const obj: any = {};
@@ -985,18 +1026,19 @@ export const TakerFeesTracker = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.taker_fees_to_stakers = [];
+      obj.taker_fees_to_stakers = message.takerFeesToStakers;
     }
     if (message.takerFeesToCommunityPool) {
       obj.taker_fees_to_community_pool = message.takerFeesToCommunityPool.map(
         (e) => (e ? Coin.toAmino(e) : undefined)
       );
     } else {
-      obj.taker_fees_to_community_pool = [];
+      obj.taker_fees_to_community_pool = message.takerFeesToCommunityPool;
     }
-    obj.height_accounting_starts_from = message.heightAccountingStartsFrom
-      ? message.heightAccountingStartsFrom.toString()
-      : undefined;
+    obj.height_accounting_starts_from =
+      message.heightAccountingStartsFrom !== BigInt(0)
+        ? message.heightAccountingStartsFrom.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(object: TakerFeesTrackerAminoMsg): TakerFeesTracker {
@@ -1073,22 +1115,24 @@ export const PoolVolume = {
     return message;
   },
   fromAmino(object: PoolVolumeAmino): PoolVolume {
-    return {
-      poolId: BigInt(object.pool_id),
-      poolVolume: Array.isArray(object?.pool_volume)
-        ? object.pool_volume.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBasePoolVolume();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    message.poolVolume =
+      object.pool_volume?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: PoolVolume): PoolVolumeAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     if (message.poolVolume) {
       obj.pool_volume = message.poolVolume.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.pool_volume = [];
+      obj.pool_volume = message.poolVolume;
     }
     return obj;
   },

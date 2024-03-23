@@ -2,21 +2,24 @@ import type { Chain as ChainType } from "@osmosis-labs/types";
 
 export function getChain<Chain extends ChainType>({
   chainId,
+  chainName,
   destinationAddress,
   chainList,
 }: {
   chainId?: string;
+  chainName?: string;
   destinationAddress?: string;
   chainList: Chain[];
 }): Chain | undefined {
-  if (!chainId && !destinationAddress) {
-    throw new Error("Missing chainId or destinationAddress");
+  if (!chainId && !destinationAddress && !chainName) {
+    throw new Error("Missing chainId, chainName or destinationAddress");
   }
 
   return chainList.find((chain) => {
     return (
       destinationAddress?.startsWith(chain.bech32_config.bech32PrefixAccAddr) ||
-      chain.chain_id === chainId
+      chain.chain_id === chainId ||
+      chain.chain_name === chainName
     );
   });
 }

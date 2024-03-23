@@ -1,3 +1,4 @@
+import { EarnStrategy } from "@osmosis-labs/server";
 import { flexRender, useReactTable } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
@@ -8,7 +9,6 @@ import { useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { useTranslation } from "~/hooks";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
-import { EarnStrategy } from "~/server/queries/numia/earn";
 import { theme } from "~/tailwind.config";
 
 interface StrategiesTableProps {

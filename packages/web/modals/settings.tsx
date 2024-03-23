@@ -1,3 +1,4 @@
+import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { Fragment, FunctionComponent } from "react";
@@ -6,7 +7,6 @@ import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
-import { noop } from "~/utils/function";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {

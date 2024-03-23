@@ -21,9 +21,9 @@ export interface MsgSendProtoMsg {
 }
 /** MsgSend represents a message to send coins from one account to another. */
 export interface MsgSendAmino {
-  from_address: string;
-  to_address: string;
-  amount: CoinAmino[];
+  from_address?: string;
+  to_address?: string;
+  amount?: CoinAmino[];
 }
 export interface MsgSendAminoMsg {
   type: "cosmos-sdk/MsgSend";
@@ -60,8 +60,8 @@ export interface MsgMultiSendProtoMsg {
 }
 /** MsgMultiSend represents an arbitrary multi-in, multi-out send message. */
 export interface MsgMultiSendAmino {
-  inputs: InputAmino[];
-  outputs: OutputAmino[];
+  inputs?: InputAmino[];
+  outputs?: OutputAmino[];
 }
 export interface MsgMultiSendAminoMsg {
   type: "cosmos-sdk/MsgMultiSend";
@@ -142,22 +142,25 @@ export const MsgSend = {
     return message;
   },
   fromAmino(object: MsgSendAmino): MsgSend {
-    return {
-      fromAddress: object.from_address,
-      toAddress: object.to_address,
-      amount: Array.isArray(object?.amount)
-        ? object.amount.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseMsgSend();
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.fromAddress = object.from_address;
+    }
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.toAddress = object.to_address;
+    }
+    message.amount = object.amount?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgSend): MsgSendAmino {
     const obj: any = {};
-    obj.from_address = message.fromAddress;
-    obj.to_address = message.toAddress;
+    obj.from_address =
+      message.fromAddress === "" ? undefined : message.fromAddress;
+    obj.to_address = message.toAddress === "" ? undefined : message.toAddress;
     if (message.amount) {
       obj.amount = message.amount.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.amount = [];
+      obj.amount = message.amount;
     }
     return obj;
   },
@@ -214,7 +217,8 @@ export const MsgSendResponse = {
     return message;
   },
   fromAmino(_: MsgSendResponseAmino): MsgSendResponse {
-    return {};
+    const message = createBaseMsgSendResponse();
+    return message;
   },
   toAmino(_: MsgSendResponse): MsgSendResponseAmino {
     const obj: any = {};
@@ -290,14 +294,10 @@ export const MsgMultiSend = {
     return message;
   },
   fromAmino(object: MsgMultiSendAmino): MsgMultiSend {
-    return {
-      inputs: Array.isArray(object?.inputs)
-        ? object.inputs.map((e: any) => Input.fromAmino(e))
-        : [],
-      outputs: Array.isArray(object?.outputs)
-        ? object.outputs.map((e: any) => Output.fromAmino(e))
-        : [],
-    };
+    const message = createBaseMsgMultiSend();
+    message.inputs = object.inputs?.map((e) => Input.fromAmino(e)) || [];
+    message.outputs = object.outputs?.map((e) => Output.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgMultiSend): MsgMultiSendAmino {
     const obj: any = {};
@@ -306,14 +306,14 @@ export const MsgMultiSend = {
         e ? Input.toAmino(e) : undefined
       );
     } else {
-      obj.inputs = [];
+      obj.inputs = message.inputs;
     }
     if (message.outputs) {
       obj.outputs = message.outputs.map((e) =>
         e ? Output.toAmino(e) : undefined
       );
     } else {
-      obj.outputs = [];
+      obj.outputs = message.outputs;
     }
     return obj;
   },
@@ -373,7 +373,8 @@ export const MsgMultiSendResponse = {
     return message;
   },
   fromAmino(_: MsgMultiSendResponseAmino): MsgMultiSendResponse {
-    return {};
+    const message = createBaseMsgMultiSendResponse();
+    return message;
   },
   toAmino(_: MsgMultiSendResponse): MsgMultiSendResponseAmino {
     const obj: any = {};

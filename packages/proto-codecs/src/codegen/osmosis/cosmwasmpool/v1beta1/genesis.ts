@@ -44,7 +44,7 @@ export type GenesisStateEncoded = Omit<GenesisState, "pools"> & {
 export interface GenesisStateAmino {
   /** params is the container of cosmwasmpool parameters. */
   params?: ParamsAmino;
-  pools: AnyAmino[];
+  pools?: AnyAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/cosmwasmpool/genesis-state";
@@ -93,7 +93,7 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.pools.push(Any(reader) as Any);
+          message.pools.push(Any.decode(reader, reader.uint32()) as Any);
           break;
         default:
           reader.skipType(tag & 7);
@@ -112,12 +112,12 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      pools: Array.isArray(object?.pools)
-        ? object.pools.map((e: any) => PoolI_FromAmino(e))
-        : [],
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.pools = object.pools?.map((e) => PoolI_FromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
@@ -127,7 +127,7 @@ export const GenesisState = {
         e ? PoolI_ToAmino(e as Any) : undefined
       );
     } else {
-      obj.pools = [];
+      obj.pools = message.pools;
     }
     return obj;
   },
@@ -158,21 +158,21 @@ export const PoolI_InterfaceDecoder = (
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32(), true);
+  const data = Any.decode(reader, reader.uint32());
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value, undefined, true);
+      return Pool1.decode(data.value);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value, undefined, true);
+      return CosmWasmPool.decode(data.value);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool2.decode(data.value, undefined, true);
+      return Pool2.decode(data.value);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool3.decode(data.value, undefined, true);
+      return Pool3.decode(data.value);
     default:
       return data;
   }
 };
-export const PoolI_FromAmino = (content: AnyAmino) => {
+export const PoolI_FromAmino = (content: AnyAmino): Any => {
   switch (content.type) {
     case "osmosis/concentratedliquidity/pool":
       return Any.fromPartial({

@@ -123,7 +123,13 @@ export interface Price {
   denom: string;
 }
 
-export type Category = "stablecoin" | "defi" | "meme" | "liquid_staking";
+export const AssetCategories = [
+  "stablecoin",
+  "defi",
+  "meme",
+  "liquid_staking",
+] as const;
+export type Category = (typeof AssetCategories)[number];
 
 export interface Asset {
   chainName: string;
@@ -137,19 +143,8 @@ export interface Asset {
   logoURIs: LogoURIs;
   coingeckoId?: string;
 
-  // likely to be removed
-  /** @deprecated */
-  description?: string;
-  /** @deprecated */
-  twitterURL?: string;
-  /** @deprecated */
-  relatedAssets?: {
-    chainName: string;
-    sourceDenom: string;
-  }[];
-  /** @deprecated */
   tooltipMessage?: string;
-  /** @deprecated */
+
   sortWith?: {
     chainName: string;
     sourceDenom: string;

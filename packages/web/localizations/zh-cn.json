@@ -279,6 +279,13 @@
       "title": "开始使用{osmosis}",
       "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
       "addFunds": "添加资金即可开始"
+    },
+    "categories": {
+      "newest": "最新",
+      "defi": "去中心化金融",
+      "stablecoin": "稳定币",
+      "meme": "模因",
+      "liquid_staking": "流动质押"
     }
   },
   "buyTokens": "购买代币",
@@ -357,7 +364,8 @@
     "sequenceNumber": "您的并发事务太多！在您之前的交易到达链上后尝试重新发送。 (序列: {sequence} )",
     "swapSlippage": "由于滑点，兑换{coinDenom}失败。尝试增加滑动容差。",
     "invalidAmounts": "金额无效",
-    "txTimedOutError": "交易超时。请重试。"
+    "txTimedOutError": "交易超时。请重试。",
+    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -603,7 +611,6 @@
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
     "estimatedEarningsTooltip": "这些收益是根据当前质押年利率计算的，可能会发生变化。",
     "collectRewardsTooltipDisabled": "您的奖励太少，无法领取，请在您的无人认领余额达到{collectRewardsMinimumOsmo} OSMO 的最低阈值后重试。",
-    "isAPRTooHighTooltip": "该验证器收取异常高的佣金。考虑选择不同的验证器。",
     "isVotingPowerTooHighTooltip": "这是具有高投票权的前 10 名验证者。考虑选择不同的验证器来帮助促进去中心化。",
     "learnMore": {
       "step1": {
@@ -700,7 +707,8 @@
     "promo": {
       "newOpportunity": "新的赚钱机会",
       "discoverSuperchargedPools": "探索增压泳池"
-    }
+    },
+    "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",

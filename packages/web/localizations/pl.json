@@ -279,6 +279,13 @@
       "title": "Zacznij od {osmosis}",
       "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
       "addFunds": "Dodaj środki, aby rozpocząć"
+    },
+    "categories": {
+      "newest": "Najnowsza",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoiny",
+      "meme": "Ja ja",
+      "liquid_staking": "Płynna stawka"
     }
   },
   "buyTokens": "Kup tokeny",
@@ -357,7 +364,8 @@
     "sequenceNumber": "Masz zbyt wiele jednoczesnych transakcji! Spróbuj wysłać ponownie, gdy poprzednia wiadomość trafi do łańcucha. (Sekwencja: {sequence} )",
     "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
     "invalidAmounts": "Nieprawidłowe kwoty",
-    "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie."
+    "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
+    "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -603,7 +611,6 @@
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
     "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
     "learnMore": {
       "step1": {
@@ -700,7 +707,8 @@
     "promo": {
       "newOpportunity": "Nowa możliwość zarabiania dzięki",
       "discoverSuperchargedPools": "Odkryj baseny Supercharged"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
     "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",

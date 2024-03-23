@@ -24,10 +24,22 @@ export function useUserFavoriteAssetDenoms() {
     [favoritesList, setFavoritesList]
   );
 
+  const toggleFavoriteDenom = useCallback(
+    (denom: string) => {
+      if (favoritesList.includes(denom)) {
+        onRemoveFavoriteDenom(denom);
+      } else {
+        onAddFavoriteDenom(denom);
+      }
+    },
+    [favoritesList, onRemoveFavoriteDenom, onAddFavoriteDenom]
+  );
+
   return {
     favoritesList,
     onAddFavoriteDenom,
     onRemoveFavoriteDenom,
+    toggleFavoriteDenom,
     setFavoritesList,
   };
 }

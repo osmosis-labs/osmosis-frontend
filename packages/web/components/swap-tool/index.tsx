@@ -1,6 +1,14 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { ellipsisText } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
@@ -35,10 +43,8 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-import { ellipsisText } from "~/utils/string";
 
 export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */
@@ -210,6 +216,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       : showPriceImpactWarning
       ? t("swap.buttonError")
       : t("swap.button");
+
+    // Only display network fee if it's greater than 0.01 USD
+    const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
+      .toDec()
+      .gte(new Dec(0.01));
 
     return (
       <>
@@ -640,7 +651,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                Boolean(swapState.spotPriceQuote)
+                !swapState.isSpotPriceQuoteLoading
               }
             >
               {/* TODO - move this custom button to our own button component */}
@@ -672,13 +683,27 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   </span>{" "}
                   {`≈ ${
-                    swapState.spotPriceQuote?.amount && swapState.toAsset
-                      ? formatPretty(swapState.spotPriceQuote.amount, {
-                          maxDecimals: Math.min(
-                            swapState.toAsset.coinDecimals,
-                            8
-                          ),
-                        })
+                    swapState.toAsset
+                      ? formatPretty(
+                          (swapState.quote?.inOutSpotPrice
+                            ? new CoinPretty(
+                                swapState.toAsset,
+                                swapState.quote.inOutSpotPrice.mul(
+                                  DecUtils.getTenExponentN(
+                                    swapState.toAsset.coinDecimals
+                                  )
+                                )
+                              )
+                            : null) ??
+                            swapState.spotPriceQuote?.amount ??
+                            new Dec(0),
+                          {
+                            maxDecimals: Math.min(
+                              swapState.toAsset.coinDecimals,
+                              8
+                            ),
+                          }
+                        )
                       : "0"
                   }`}
                 </span>
@@ -753,6 +778,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                 {(swapState.networkFee || swapState.isLoadingNetworkFee) &&
                 featureFlags.swapToolSimulateFee &&
+                isNetworkFeeApplicable &&
                 !swapState.error ? (
                   <div className="flex items-center justify-between">
                     <span className="caption">{t("swap.networkFee")}</span>
@@ -769,7 +795,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 {((swapState.quote?.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
                   (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
-                  featureFlags.swapToolSimulateFee && (
+                  featureFlags.swapToolSimulateFee &&
+                  isNetworkFeeApplicable && (
                     <div className="flex justify-between">
                       <span className="caption">{t("swap.totalFee")}</span>
                       <span className="caption text-osmoverse-200">

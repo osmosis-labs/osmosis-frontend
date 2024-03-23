@@ -5,6 +5,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+import type { Asset, RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
@@ -12,6 +13,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
+import { sum } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
@@ -24,11 +26,8 @@ import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import type { RouterKey } from "~/server/api/local-routers/swap-router";
-import type { AppRouter } from "~/server/api/root";
-import type { Asset } from "~/server/queries/complex/assets";
+import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { sum } from "~/utils/math";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -123,7 +122,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
     },
-    isToFromAssets
+    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -135,7 +134,13 @@ export function useSwap({
     let error = quoteError;
 
     // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
+    if (
+      (quote &&
+        !quote.inOutSpotPrice &&
+        !quote.amount.toDec().isPositive() &&
+        !error) ||
+      (!quote && spotPriceQuoteError)
+    )
       error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
@@ -285,10 +290,6 @@ export function useSwap({
       messages,
       enabled: featureFlags.swapToolSimulateFee,
     });
-  const { data: userOsmoCoin } = api.edge.assets.getUserAsset.useQuery(
-    { findMinDenomOrSymbol: "OSMO", userOsmoAddress: account?.address },
-    { enabled: Boolean(account?.address) && featureFlags.swapToolSimulateFee }
-  );
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -311,11 +312,7 @@ export function useSwap({
         const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
         const fee: (SignOptions & { fee: TxFee }) | undefined =
-          featureFlags.swapToolSimulateFee &&
-          networkFee &&
-          // Do not manually set the simulated fee if the user does not have enough OSMO
-          // TODO: Support other fee tokens
-          userOsmoCoin?.amount?.toDec().gte(networkFee.gasAmount.toDec())
+          featureFlags.swapToolSimulateFee && networkFee
             ? {
                 preferNoSetFee: true,
                 fee: {
@@ -379,11 +376,11 @@ export function useSwap({
       }),
     [
       account,
-      getSwapTxParameters,
       inAmountInput,
       networkFee,
       queryClient,
-      userOsmoCoin?.amount,
+      featureFlags.swapToolSimulateFee,
+      getSwapTxParameters,
     ]
   );
 
@@ -767,7 +764,7 @@ function makeRouterErrorFromTrpcError(
     }
   | undefined {
   if (isNil(error)) return;
-  const tprcShapeMsg = error?.shape?.message;
+  const tprcShapeMsg = error?.message;
 
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };

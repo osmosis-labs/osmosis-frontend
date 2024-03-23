@@ -1,4 +1,5 @@
 import type {
+  AssetList,
   Chain,
   ChainInfo,
   ChainInfoWithExplorer,
@@ -948,5 +949,563 @@ export const mockIbcAssets: ConstructorParameters<
     disabled: false,
     preview: false,
     relative_image_url: "/tokens/generated/pstake.svg",
+  },
+];
+
+export const MockAssetList: AssetList[] = [
+  {
+    chain_name: "osmosis",
+    chain_id: "osmosis-1",
+    assets: [
+      {
+        chainName: "osmosis",
+        sourceDenom: "uosmo",
+        coinMinimalDenom: "uosmo",
+        symbol: "OSMO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+        },
+        coingeckoId: "osmosis",
+        price: {
+          poolId: "1077",
+          denom:
+            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Osmosis",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/osmo.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom: "uion",
+        coinMinimalDenom: "uion",
+        symbol: "ION",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ion.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ion.svg",
+        },
+        coingeckoId: "ion",
+        price: {
+          poolId: "2",
+          denom: "uosmo",
+        },
+        categories: [],
+        transferMethods: [],
+        counterparty: [],
+        name: "Ion DAO",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/ion.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+        coinMinimalDenom:
+          "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+        symbol: "IBCX",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ibcx.svg",
+        },
+        coingeckoId: "ibc-index",
+        price: {
+          poolId: "1254",
+          denom:
+            "ibc/D3B574938631B0A1BA704879020C696E514CFADAA7643CDE4BD5EB010BDE327B",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "IBC Index",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/ibcx.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+        coinMinimalDenom:
+          "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+        symbol: "stIBCX",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/stibcx.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/stibcx.svg",
+        },
+        price: {
+          poolId: "1107",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Staked IBCX",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/stibcx.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+        coinMinimalDenom:
+          "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+        symbol: "ampOSMO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/amposmo.png",
+        },
+        price: {
+          poolId: "1067",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "ERIS Amplified OSMO",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/amposmo.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+        symbol: "CDT",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/CDT.svg",
+        },
+        coingeckoId: "collateralized-debt-token",
+        price: {
+          poolId: "1268",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["stablecoin", "defi"],
+        pegMechanism: "collateralized",
+        transferMethods: [],
+        counterparty: [],
+        name: "CDT Stablecoin",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/cdt.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        symbol: "MBRN",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/MBRN.svg",
+        },
+        coingeckoId: "membrane",
+        price: {
+          poolId: "1225",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Membrane",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/mbrn.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        symbol: "sqOSMO",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sqosmo.svg",
+        },
+        price: {
+          poolId: "1267",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "OSMO Squared",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/sqosmo.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
+        symbol: "sqATOM",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sqatom.svg",
+        },
+        price: {
+          poolId: "1299",
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "ATOM Squared",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/sqatom.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
+        symbol: "sqBTC",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sqbtc.svg",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "BTC Squared",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/sqbtc.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1mlng7pz4pnyxtpq0akfwall37czyk9lukaucsrn30ameplhhshtqdvfm5c/ulvn",
+        coinMinimalDenom:
+          "factory/osmo1mlng7pz4pnyxtpq0akfwall37czyk9lukaucsrn30ameplhhshtqdvfm5c/ulvn",
+        symbol: "LVN",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/levana.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/levana.svg",
+        },
+        coingeckoId: "levana-protocol",
+        price: {
+          poolId: "1325",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Levana",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/lvn.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+        coinMinimalDenom:
+          "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+        symbol: "milkTIA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/milktia.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/milktia.svg",
+        },
+        coingeckoId: "milkyway-staked-tia",
+        price: {
+          poolId: "1335",
+          denom:
+            "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+        },
+        categories: ["liquid_staking", "defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "milkTIA",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/milktia.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
+        coinMinimalDenom:
+          "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
+        symbol: "WBTC",
+        decimals: 8,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
+        },
+        price: {
+          poolId: "1434",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+            symbol: "WBTC",
+            decimals: 8,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
+            },
+          },
+          {
+            chainName: "bitcoin",
+            sourceDenom: "sat",
+            chainType: "non-cosmos",
+            symbol: "BTC",
+            decimals: 8,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/bitcoin/images/btc.png",
+            },
+          },
+        ],
+        variantGroupKey: "BTC",
+        name: "Wrapped Bitcoin",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-01-29T09:57:00.000Z",
+        relative_image_url: "/tokens/generated/wbtc.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
+        coinMinimalDenom:
+          "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
+        symbol: "WOSMO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/wosmo.png",
+        },
+        price: {
+          poolId: "1408",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "WOSMO",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-01-22T15:42:00.000Z",
+        relative_image_url: "/tokens/generated/wosmo.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqtia",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqtia",
+        symbol: "sqTIA",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sqtia.svg",
+        },
+        price: {
+          poolId: "1378",
+          denom:
+            "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+        },
+        categories: ["defi"],
+        transferMethods: [],
+        counterparty: [],
+        name: "TIA Squared",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-01-19T15:51:00.000Z",
+        relative_image_url: "/tokens/generated/sqtia.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1279xudevmf5cw83vkhglct7jededp86k90k2le/RAPTR",
+        coinMinimalDenom:
+          "factory/osmo1279xudevmf5cw83vkhglct7jededp86k90k2le/RAPTR",
+        symbol: "RAPTR",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/RAPTR.png",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "RAPTR",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/raptr.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo10n8rv8npx870l69248hnp6djy6pll2yuzzn9x8/BADKID",
+        coinMinimalDenom:
+          "factory/osmo10n8rv8npx870l69248hnp6djy6pll2yuzzn9x8/BADKID",
+        symbol: "BADKID",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/badkid.png",
+        },
+        price: {
+          poolId: "1470",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "BADKID",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        tooltipMessage:
+          "This asset is NOT affiliated with the Bad Kids NFT collection.",
+        listingDate: "2024-02-13T21:32:00.000Z",
+        relative_image_url: "/tokens/generated/badkid.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+        coinMinimalDenom:
+          "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+        symbol: "SAIL",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sail.png",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Sail",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-14T22:20:00.000Z",
+        relative_image_url: "/tokens/generated/sail.png",
+      },
+    ],
+  },
+  {
+    chain_name: "cosmoshub",
+    chain_id: "cosmoshub-4",
+    assets: [
+      {
+        chainName: "cosmoshub",
+        sourceDenom: "uatom",
+        coinMinimalDenom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        symbol: "ATOM",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.svg",
+        },
+        coingeckoId: "cosmos",
+        price: {
+          poolId: "1400",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "cosmoshub",
+              chainId: "cosmoshub-4",
+              sourceDenom: "uatom",
+              port: "transfer",
+              channelId: "channel-141",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-0",
+              path: "transfer/channel-0/uatom",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "cosmoshub",
+            sourceDenom: "uatom",
+            chainType: "cosmos",
+            chainId: "cosmoshub-4",
+            symbol: "ATOM",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.svg",
+            },
+          },
+        ],
+        variantGroupKey: "ATOM",
+        name: "Cosmos Hub",
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        relative_image_url: "/tokens/generated/atom.svg",
+      },
+    ],
   },
 ];

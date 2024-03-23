@@ -279,6 +279,13 @@
       "title": "Commencez avec {osmosis}",
       "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
       "addFunds": "Ajoutez des fonds pour commencer"
+    },
+    "categories": {
+      "newest": "Le plus récent",
+      "defi": "DéFi",
+      "stablecoin": "Pièces stables",
+      "meme": "Mème",
+      "liquid_staking": "Jalonnement liquide"
     }
   },
   "buyTokens": "Acheter jetons",
@@ -357,7 +364,8 @@
     "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
     "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
     "invalidAmounts": "Montant(s) invalide(s)",
-    "txTimedOutError": "La transaction a expiré. Veuillez réessayer."
+    "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
+    "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -603,7 +611,6 @@
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
     "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
-    "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
       "step1": {
@@ -700,7 +707,8 @@
     "promo": {
       "newOpportunity": "Nouvelle opportunité de gagner avec",
       "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamique"
   },
   "walletSelect": {
     "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",

@@ -19,6 +19,9 @@ const regexInvalidClPositionAmounts =
 const regexFailedSwapSlippage =
   /failed to execute message; message index: \d+: (.*?) token is lesser than min amount: calculated amount is lesser than min amount: invalid request/;
 
+const regexInsufficientFeeError =
+  /Insufficient balance for transaction fees. Please add funds to continue./;
+
 /** Uses regex matching to map less readable chain errors to a less technical user-friendly string.
  *  @param message Error message from chain.
  *  @param currencies Currencies used to map to human-readable coin denoms (e.g. ATOM)
@@ -88,6 +91,11 @@ export function prettifyTxError(
           message = `${actualMessage.trim()} (at msg ${failedAt})`;
         }
       }
+    }
+
+    const matchInsufficientFeeError = message.match(regexInsufficientFeeError);
+    if (matchInsufficientFeeError) {
+      return ["errors.insufficientFee"];
     }
 
     const currencyMap: Record<string, AppCurrency> = {};

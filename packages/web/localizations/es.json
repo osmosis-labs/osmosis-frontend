@@ -279,6 +279,13 @@
       "title": "Comience con {osmosis}",
       "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
       "addFunds": "Agregue fondos para comenzar"
+    },
+    "categories": {
+      "newest": "El más nuevo",
+      "defi": "DeFi",
+      "stablecoin": "Monedas estables",
+      "meme": "meme",
+      "liquid_staking": "Estaca liquida"
     }
   },
   "buyTokens": "Comprar fichas",
@@ -357,7 +364,8 @@
     "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
     "invalidAmounts": "Montos no válidos",
-    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo."
+    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -603,7 +611,6 @@
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
       "step1": {
@@ -700,7 +707,8 @@
     "promo": {
       "newOpportunity": "Nueva oportunidad de ganar con",
       "discoverSuperchargedPools": "Descubre piscinas sobrealimentadas"
-    }
+    },
+    "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",

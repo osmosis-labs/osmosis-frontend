@@ -279,6 +279,13 @@
       "title": "Get started with {osmosis}",
       "description": "Connect and fund your wallet to start trading in just a few steps.",
       "addFunds": "Add funds to get started"
+    },
+    "categories": {
+      "newest": "Newest",
+      "defi": "DeFi",
+      "stablecoin": "Stablecoins",
+      "meme": "Meme",
+      "liquid_staking": "Liquid staking"
     }
   },
   "buyTokens": "Buy tokens",
@@ -357,7 +364,8 @@
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
     "invalidAmounts": "Invalid amount(s)",
-    "txTimedOutError": "Transaction timed out. Please retry."
+    "txTimedOutError": "Transaction timed out. Please retry.",
+    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -603,7 +611,6 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
       "step1": {
@@ -700,7 +707,8 @@
     "promo": {
       "newOpportunity": "New opportunity to earn with {denom}",
       "discoverSuperchargedPools": "Discover Supercharged Pools"
-    }
+    },
+    "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",

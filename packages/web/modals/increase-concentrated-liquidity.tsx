@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -20,10 +21,6 @@ import {
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import type {
-  UserPosition,
-  UserPositionDetails,
-} from "~/server/queries/complex/concentrated-liquidity";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 

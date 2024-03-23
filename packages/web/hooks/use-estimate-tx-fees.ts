@@ -1,5 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
   AccountStoreWallet,
@@ -10,9 +11,7 @@ import {
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { useStore } from "~/stores";
-import { superjson } from "~/utils/superjson";
 import { api } from "~/utils/trpc";
 
 async function estimateTxFeesQueryFn({
@@ -28,34 +27,34 @@ async function estimateTxFeesQueryFn({
 }) {
   if (!messages) throw new Error("No messages");
 
-  const [{ amount, gas: gasLimit }, osmoAssetWithPrice] = await Promise.all([
-    accountStore.estimateFee({
-      wallet,
-      messages: messages!,
-      signOptions: {
-        ...wallet.walletInfo?.signOptions,
-        preferNoSetFee: true, // this will automatically calculate the amount as well.
-      },
-    }),
-    apiUtils.edge.assets.getMarketAsset.fetch({
-      findMinDenomOrSymbol: "OSMO",
-    }),
-  ]);
+  const { amount, gas: gasLimit } = await accountStore.estimateFee({
+    wallet,
+    messages: messages!,
+    signOptions: {
+      ...wallet.walletInfo?.signOptions,
+      preferNoSetFee: true, // this will automatically calculate the amount as well.
+    },
+  });
 
   const coin = amount[0];
-  if (!coin || !osmoAssetWithPrice?.currentPrice) {
+
+  const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
+    coinMinimalDenom: coin.denom,
+  });
+
+  if (!coin || !asset?.currentPrice) {
     throw new Error("Failed to estimate fees");
   }
 
   const coinAmountDec = new Dec(coin.amount);
   const usdValue = coinAmountDec
-    .quo(DecUtils.getTenExponentN(osmoAssetWithPrice.coinDecimals))
-    .mul(osmoAssetWithPrice.currentPrice.toDec());
+    .quo(DecUtils.getTenExponentN(asset.coinDecimals))
+    .mul(asset.currentPrice.toDec());
   const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
 
   return {
     gasUsdValueToPay,
-    gasAmount: new CoinPretty(osmoAssetWithPrice, coinAmountDec),
+    gasAmount: new CoinPretty(asset, coinAmountDec),
     gasLimit,
     amount,
   };

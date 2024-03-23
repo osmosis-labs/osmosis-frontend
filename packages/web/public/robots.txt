@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://app.osmosis.zone
+
+# Sitemaps
+Sitemap: https://app.osmosis.zone/sitemap.xml

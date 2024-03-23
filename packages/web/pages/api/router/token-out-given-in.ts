@@ -1,8 +1,9 @@
 import { Int } from "@keplr-wallet/unit";
 import { Route, SplitTokenInQuote } from "@osmosis-labs/pools";
+import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "@osmosis-labs/server";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { routeTokenOutGivenIn as _routeTokenOutGivenIn } from "~/server/queries/complex/pools/route-token-out-given-in";
+import { ChainList } from "~/config/generated/chain-list";
 
 type Response = {
   amount: string;
@@ -44,6 +45,7 @@ export default async function routeTokenOutGivenIn(
   // get quote
   try {
     const { quote, candidateRoutes } = await _routeTokenOutGivenIn({
+      chainList: ChainList,
       token: { denom: tokenInDenom, amount: new Int(tokenInAmount) },
       tokenOutDenom,
     });
