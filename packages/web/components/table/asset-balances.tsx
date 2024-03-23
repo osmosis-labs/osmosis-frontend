@@ -36,7 +36,7 @@ import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
-type AssetInfo =
+type AssetRow =
   RouterOutputs["edge"]["assets"]["getUserBridgeAssets"]["items"][number];
 type SortKey =
   | NonNullable<
@@ -116,7 +116,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
   // Define columns
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<AssetInfo>();
+    const columnHelper = createColumnHelper<AssetRow>();
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
@@ -324,11 +324,11 @@ export const AssetBalancesTable: FunctionComponent<{
   );
 });
 
-type AssetInfoCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetInfo, AssetInfo> & TProps
+type AssetCellComponent<TProps = {}> = FunctionComponent<
+  CellContext<AssetRow, AssetRow> & TProps
 >;
 
-const AssetCell: AssetInfoCellComponent<{
+const AssetCell: AssetCellComponent<{
   isFavorite: boolean;
   onSetFavorite: () => void;
   onRemoveFavorite: () => void;
@@ -381,7 +381,7 @@ const AssetCell: AssetInfoCellComponent<{
   </div>
 );
 
-const Price24hCell: AssetInfoCellComponent = ({
+const Price24hCell: AssetCellComponent = ({
   row: {
     original: { coinDenom, priceChange24h },
   },
@@ -464,7 +464,7 @@ const Price24hCell: AssetInfoCellComponent = ({
   );
 };
 
-const BalanceCell: AssetInfoCellComponent = ({
+const BalanceCell: AssetCellComponent = ({
   row: {
     original: { amount, usdValue },
   },
@@ -479,12 +479,12 @@ const BalanceCell: AssetInfoCellComponent = ({
   </div>
 );
 
-export const AssetActionsCell: AssetInfoCellComponent<{
+export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = ({
   row: {
-    original: { coinMinimalDenom },
+    original: { coinMinimalDenom, amount },
   },
   onDeposit,
   onWithdraw,
@@ -497,17 +497,19 @@ export const AssetActionsCell: AssetInfoCellComponent<{
         onDeposit(coinMinimalDenom);
       }}
     >
-      <Icon className="m-auto" id="down-arrow-thin" width={24} height={24} />
+      <Icon className="m-auto" id="deposit" width={24} height={24} />
     </button>
-    <button
-      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onWithdraw(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="up-arrow-thin" width={24} height={24} />
-    </button>
+    {amount?.toDec().isPositive() && (
+      <button
+        className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+        onClick={(e) => {
+          e.preventDefault();
+          onWithdraw(coinMinimalDenom);
+        }}
+      >
+        <Icon className="m-auto" id="withdraw" width={24} height={24} />
+      </button>
+    )}
   </div>
 );
 

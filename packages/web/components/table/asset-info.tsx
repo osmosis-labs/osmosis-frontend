@@ -48,7 +48,7 @@ import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
-type AssetInfo =
+type AssetRow =
   RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
 type SortKey =
   | NonNullable<
@@ -140,7 +140,7 @@ export const AssetsInfoTable: FunctionComponent<{
 
   // Define columns
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<AssetInfo>();
+    const columnHelper = createColumnHelper<AssetRow>();
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
@@ -374,11 +374,11 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 });
 
-type AssetInfoCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetInfo, AssetInfo> & TProps
+type AssetCellComponent<TProps = {}> = FunctionComponent<
+  CellContext<AssetRow, AssetRow> & TProps
 >;
 
-const AssetCell: AssetInfoCellComponent<{
+const AssetCell: AssetCellComponent<{
   isFavorite: boolean;
   onSetFavorite: () => void;
   onRemoveFavorite: () => void;
@@ -431,7 +431,7 @@ const AssetCell: AssetInfoCellComponent<{
   </div>
 );
 
-const PriceCell: AssetInfoCellComponent = ({
+const PriceCell: AssetCellComponent = ({
   row: {
     original: { currentPrice, priceChange24h },
   },
@@ -456,7 +456,7 @@ const PriceCell: AssetInfoCellComponent = ({
   </div>
 );
 
-const SparklineChartCell: AssetInfoCellComponent<{
+const SparklineChartCell: AssetCellComponent<{
   timeFrame: CommonPriceChartTimeFrame;
 }> = ({
   row: {
@@ -505,7 +505,7 @@ const SparklineChartCell: AssetInfoCellComponent<{
   );
 };
 
-const MarketCapCell: AssetInfoCellComponent = ({
+const MarketCapCell: AssetCellComponent = ({
   row: {
     original: { marketCap, marketCapRank },
   },
@@ -518,17 +518,16 @@ const MarketCapCell: AssetInfoCellComponent = ({
   </div>
 );
 
-const Volume24hCell: AssetInfoCellComponent = ({
+const Volume24hCell: AssetCellComponent = ({
   row: {
     original: { volume24h },
   },
-}) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {volume24h && <span className="subtitle1">{formatPretty(volume24h)}</span>}
-  </div>
-);
+}) =>
+  volume24h ? (
+    <span className="subtitle1">{formatPretty(volume24h)}</span>
+  ) : null;
 
-export const AssetActionsCell: AssetInfoCellComponent<{
+export const AssetActionsCell: AssetCellComponent<{
   onBuy: (coinMinimalDenom: string) => void;
 }> = ({
   row: {
