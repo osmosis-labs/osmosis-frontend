@@ -5,13 +5,14 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
+  getAssetMarketActivity,
   getAssetPrice,
+  getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetCoin,
   getUserAssetsBreakdown,
+  mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
-  mapGetUserAssetCoins,
 } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
@@ -28,9 +29,8 @@ import { maybeCachePaginatedItems } from "../utils/pagination";
 import { createSortSchema, sort } from "../utils/sort";
 import { InfiniteQuerySchema } from "../utils/zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
-  AssetFilterSchema
-).merge(UserOsmoAddressSchema);
+const GetInfiniteAssetsInputSchema =
+  InfiniteQuerySchema.merge(AssetFilterSchema);
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -48,7 +48,7 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        return await getUserAssetCoin({
+        return await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
@@ -56,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema)
+    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
     .query(
       async ({
         input: {
@@ -72,7 +72,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
-            mapGetUserAssetCoins({
+            mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -141,7 +141,7 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        const userAsset = await getUserAssetCoin({
+        const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
@@ -159,7 +159,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserMarketAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
         z.object({
           /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
@@ -201,7 +201,7 @@ export const assetsRouter = createTRPCRouter({
               categories,
             });
 
-            assets = await mapGetUserAssetCoins({
+            assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               assets,
               userOsmoAddress,
@@ -273,6 +273,110 @@ export const assetsRouter = createTRPCRouter({
             preferredDenoms,
             sort: sortInput,
             onlyPositiveBalances,
+            categories,
+            includePreview,
+          }),
+          cursor,
+          limit,
+        })
+    ),
+  getUserBridgeAssets: publicProcedure
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
+          preferredDenoms: z.array(z.string()).optional(),
+          sort: createSortSchema([
+            "priceChange24h",
+            "usdValue",
+          ] as const).optional(),
+        })
+      )
+    )
+    .query(
+      ({
+        input: {
+          search,
+          onlyVerified,
+          userOsmoAddress,
+          preferredDenoms,
+          sort: sortInput,
+          categories,
+          cursor,
+          limit,
+          includePreview,
+        },
+        ctx,
+      }) =>
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            const isDefaultSort = !sortInput && !search;
+
+            let assets = await mapGetAssetsWithUserBalances({
+              ...ctx,
+              search,
+              categories,
+              userOsmoAddress,
+              includePreview,
+              sortFiatValueDirection: isDefaultSort
+                ? "desc"
+                : !search && sortInput && sortInput.keyPath === "usdValue"
+                ? sortInput.direction
+                : undefined,
+            });
+
+            // Filter out assets with zero balance if not searching
+            if (!search) {
+              assets = assets.filter((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
+            }
+
+            if (isDefaultSort) {
+              assets = assets.sort((assetA, assetB) => {
+                const isAPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetA.coinDenom) ||
+                    preferredDenoms.includes(assetA.coinMinimalDenom));
+                const isBPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetB.coinDenom) ||
+                    preferredDenoms.includes(assetB.coinMinimalDenom));
+
+                if (isAPreferred && !isBPreferred) return -1;
+                if (!isAPreferred && isBPreferred) return 1;
+
+                return 0;
+              });
+            }
+
+            let priceAssets = await Promise.all(
+              assets.map(async (asset) => ({
+                ...asset,
+                priceChange24h: (
+                  await getAssetMarketActivity({
+                    coinDenom: asset.coinDenom,
+                  })
+                )?.price24hChange,
+              }))
+            );
+
+            if (sortInput && sortInput.keyPath !== "usdValue") {
+              priceAssets = sort(
+                priceAssets,
+                sortInput.keyPath,
+                sortInput.direction
+              );
+            }
+
+            return priceAssets;
+          },
+          cacheKey: JSON.stringify({
+            search,
+            onlyVerified,
+            userOsmoAddress,
+            preferredDenoms,
+            sort: sortInput,
             categories,
             includePreview,
           }),

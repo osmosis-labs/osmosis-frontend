@@ -31,6 +31,16 @@ cases(
       b: { toDec: () => new Dec(10) },
       expected: 1,
     },
+    "should correctly handle nil values: 1": {
+      a: null,
+      b: { toDec: () => new Dec(10) },
+      expected: 1,
+    },
+    "should correctly handle nil values: 2": {
+      a: 2,
+      b: undefined,
+      expected: -1,
+    },
   }
 );
 

@@ -253,7 +253,7 @@ export const ProfileModal: FunctionComponent<
 
             <Link
               href={
-                featureFlags.portfolioAndDiscoverPages
+                featureFlags.portfolioPageAndNewAssetsPage
                   ? "/portfolio"
                   : "/assets"
               }

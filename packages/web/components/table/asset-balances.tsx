@@ -1,8 +1,5 @@
-import type {
-  CommonPriceChartTimeFrame,
-  Search,
-  SortDirection,
-} from "@osmosis-labs/server";
+import { RatePretty } from "@keplr-wallet/unit";
+import type { Search, SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -16,13 +13,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import {
   Breakpoint,
@@ -32,7 +23,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
-import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -42,14 +32,13 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
-import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { SortHeader } from "./headers/sort";
 
 type AssetInfo =
-  RouterOutputs["edge"]["assets"]["getUserMarketAssets"]["items"][number];
-type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
+  RouterOutputs["edge"]["assets"]["getUserBridgeAssets"]["items"][number];
+type SortKey = "priceChange24h" | "usdValue" | undefined;
 
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -71,9 +60,6 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
-
   const [sortKey, setSortKey] = useState<SortKey>();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -91,7 +77,7 @@ export const AssetBalancesTable: FunctionComponent<{
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getUserMarketAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
@@ -105,7 +91,6 @@ export const AssetBalancesTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
-      onlyPositiveBalances: true,
     },
     {
       enabled: !isLoadingWallet,
@@ -149,36 +134,16 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "price",
         header: () => (
           <SortHeader
-            label={`Price (${selectedTimeFrame})`}
-            sortKey="currentPrice"
+            className="mx-auto"
+            label="24h change"
+            sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
             setSortKey={setSortKey}
           />
         ),
-        cell: PriceCell,
-      }),
-      columnHelper.accessor((row) => row, {
-        id: "priceChart",
-        header: "",
-        cell: (cell) => (
-          <SparklineChartCell {...cell} timeFrame={selectedTimeFrame} />
-        ),
-      }),
-      columnHelper.accessor((row) => row, {
-        id: "marketCap",
-        header: () => (
-          <SortHeader
-            label="Market Cap"
-            sortKey="marketCap"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: MarketCapCell,
+        cell: Price24hCell,
       }),
       columnHelper.accessor((row) => row, {
         id: "balance",
@@ -208,7 +173,6 @@ export const AssetBalancesTable: FunctionComponent<{
     ];
   }, [
     favoritesList,
-    selectedTimeFrame,
     sortKey,
     sortDirection,
     onAddFavoriteDenom,
@@ -220,8 +184,6 @@ export const AssetBalancesTable: FunctionComponent<{
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
-    if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
     if (width < Breakpoint.lg) collapsedColIds.push("price");
     if (width < Breakpoint.md) collapsedColIds.push("assetActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
@@ -276,11 +238,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <TableControls
-        selectedTimeFrame={selectedTimeFrame}
-        setSelectedTimeFrame={setSelectedTimeFrame}
-        setSearchQuery={setSearchQuery}
-      />
+      <TableControls setSearchQuery={setSearchQuery} />
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -415,44 +373,16 @@ const AssetCell: AssetInfoCellComponent<{
   </div>
 );
 
-const PriceCell: AssetInfoCellComponent = ({
-  row: {
-    original: { currentPrice, priceChange24h },
-  },
-}) => (
-  <div className="flex flex-col">
-    {currentPrice && (
-      <span className="subtitle1">{currentPrice?.toString()}</span>
-    )}
-    {priceChange24h && (
-      <span
-        className={classNames("caption", {
-          "text-bullish-400":
-            priceChange24h && priceChange24h.toDec().isPositive(),
-          "text-ammelia-400":
-            priceChange24h && priceChange24h.toDec().isNegative(),
-        })}
-      >
-        {priceChange24h && priceChange24h.toDec().isPositive() ? "+" : null}
-        {priceChange24h.maxDecimals(1).toString()}
-      </span>
-    )}
-  </div>
-);
-
-const SparklineChartCell: AssetInfoCellComponent<{
-  timeFrame: CommonPriceChartTimeFrame;
-}> = ({
+const Price24hCell: AssetInfoCellComponent = ({
   row: {
     original: { coinDenom, priceChange24h },
   },
-  timeFrame,
 }) => {
   const { data: recentPrices } =
     api.edge.assets.getAssetHistoricalPrice.useQuery(
       {
         coinDenom,
-        timeFrame,
+        timeFrame: "1D",
       },
       {
         staleTime: 1000 * 30, // 30 secs
@@ -478,29 +408,53 @@ const SparklineChartCell: AssetInfoCellComponent<{
     color = theme.colors.wosmongton[200];
   }
 
+  // remove negative symbol since we're using arrows
+  if (isBearish)
+    priceChange24h = priceChange24h
+      ? priceChange24h.mul(new RatePretty(-1))
+      : undefined;
+
   return (
-    <Sparkline
-      width={80}
-      height={50}
-      lineWidth={2}
-      data={recentPriceCloses}
-      color={color}
-    />
+    <div className="flex items-center gap-4">
+      <Sparkline
+        width={80}
+        height={50}
+        lineWidth={2}
+        data={recentPriceCloses}
+        color={color}
+      />
+      {priceChange24h && (
+        <div className="flex items-center gap-1">
+          {isBullish && (
+            <Icon
+              className="text-bullish-400"
+              id="bullish-arrow"
+              height={9}
+              width={9}
+            />
+          )}
+          {isBearish && (
+            <Icon
+              className="text-ammelia-400"
+              id="bearish-arrow"
+              height={9}
+              width={9}
+            />
+          )}
+          <span
+            className={classNames("caption", {
+              "text-bullish-400": isBullish,
+              "text-ammelia-400": isBearish,
+              "text-wosmongton-200": !isBullish && !isBearish,
+            })}
+          >
+            {priceChange24h.maxDecimals(1).toString()}
+          </span>
+        </div>
+      )}
+    </div>
   );
 };
-
-const MarketCapCell: AssetInfoCellComponent = ({
-  row: {
-    original: { marketCap, marketCapRank },
-  },
-}) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span className="subtitle1">{formatPretty(marketCap)}</span>}
-    {marketCapRank && (
-      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
-    )}
-  </div>
-);
 
 const BalanceCell: AssetInfoCellComponent = ({
   row: {
@@ -550,10 +504,8 @@ export const AssetActionsCell: AssetInfoCellComponent<{
 );
 
 const TableControls: FunctionComponent<{
-  selectedTimeFrame: CommonPriceChartTimeFrame;
-  setSelectedTimeFrame: (timeFrame: CommonPriceChartTimeFrame) => void;
   setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ selectedTimeFrame, setSelectedTimeFrame, setSearchQuery }) => {
+}> = ({ setSearchQuery }) => {
   const { t } = useTranslation();
 
   const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
@@ -569,20 +521,6 @@ const TableControls: FunctionComponent<{
         currentValue={searchInput}
         onInput={setSearchInput}
         placeholder={t("assets.table.search")}
-      />
-      <SelectMenu
-        classes={useConst({ container: "h-full 1.5lg:hidden" })}
-        options={useConst([
-          { id: "1H", display: "1H" },
-          { id: "1D", display: "1D" },
-          { id: "1W", display: "1W" },
-          { id: "1M", display: "1M" },
-        ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-        defaultSelectedOptionId={selectedTimeFrame}
-        onSelect={useCallback(
-          (id: string) => setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-          [setSelectedTimeFrame]
-        )}
       />
     </div>
   );

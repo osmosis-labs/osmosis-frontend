@@ -25,7 +25,7 @@ export function createSortSchema<
   });
 }
 
-/** Sorts a list of items by given sort params - a key and sort direction - into a new array.
+/** Sorts a list of objects by given sort params - a key and sort direction - into a new array.
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
  *  Includes a custom compare function for sorting any other types which will override
  *  default behavior including the sort direction. */
@@ -40,7 +40,7 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
     list.length === 0 ||
     !(keyPath.includes(".")
       ? Boolean(getDeepValue(list[0], keyPath))
-      : keyPath in list[0])
+      : Boolean(list[0][keyPath]))
   ) {
     return list;
   }

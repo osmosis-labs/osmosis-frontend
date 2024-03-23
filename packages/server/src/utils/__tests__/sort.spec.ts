@@ -88,4 +88,33 @@ describe("sort function", () => {
       { name: "Bob", age: { b: 1 } },
     ]);
   });
+
+  it("should NOT sort if the deep keypath is not in list", () => {
+    const list = [
+      { name: "John", age: { b: 20 } },
+      { name: "Alice", age: { b: 34 } },
+      { name: "Bob", age: { b: 1 } },
+    ];
+
+    const result = sort(list, "age.c", "asc");
+    expect(result).toEqual(list);
+  });
+
+  it("should NOT sort if the keypath is not in list", () => {
+    const list = [
+      { name: "John", age: { b: 20 } },
+      { name: "Alice", age: { b: 34 } },
+      { name: "Bob", age: { b: 1 } },
+    ];
+
+    const result = sort(list, "address", "asc");
+    expect(result).toEqual(list);
+  });
+
+  it("should NOT do anything if the list is empty", () => {
+    const list: { a: number }[] = [];
+
+    const result = sort(list, "address", "asc");
+    expect(result).toEqual(list);
+  });
 });
