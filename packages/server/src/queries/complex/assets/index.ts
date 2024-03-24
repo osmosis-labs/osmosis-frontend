@@ -1,14 +1,11 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import {
-  Asset as AssetListAsset,
-  AssetCategories,
-  AssetList,
-} from "@osmosis-labs/types";
+import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
+import { AssetCategories, isAssetInCategories } from "./categories";
 
 /** An asset with minimal data that conforms to `Currency` type. */
 export type Asset = {
@@ -152,7 +149,7 @@ function filterAssetList(
   const categories = params.categories;
   if (categories) {
     assetListAssets = assetListAssets.filter((asset) =>
-      categories.some((category) => asset.categories.includes(category))
+      isAssetInCategories(asset, categories)
     );
   }
 
@@ -160,6 +157,7 @@ function filterAssetList(
   return assetListAssets.map(makeMinimalAsset);
 }
 
+export * from "./categories";
 export * from "./config";
 export * from "./market";
 export * from "./price";
