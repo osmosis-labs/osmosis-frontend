@@ -612,7 +612,7 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  !existingAsset;
+
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 
@@ -622,13 +622,19 @@ function useSwapAsset<TAsset extends Asset>(
         (asset.symbol === minDenomOrSymbol ||
           asset.coinMinimalDenom === minDenomOrSymbol)
     );
-    if (!asset) return;
+    if (!asset) {
+      console.warn(
+        "useSwap: asset not found for in/out swap:",
+        minDenomOrSymbol
+      );
+      return;
+    }
 
     return makeMinimalAsset(asset);
   }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? (asset as TAsset),
+    asset: asset as TAsset,
   };
 }
 
