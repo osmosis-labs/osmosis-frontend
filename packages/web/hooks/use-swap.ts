@@ -122,7 +122,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
     },
-    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
+    isToFromAssets && !Boolean(quote?.inBaseOutQuoteSpotPrice)
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -136,7 +136,7 @@ export function useSwap({
     // only show spot price error if there's no quote
     if (
       (quote &&
-        !quote.inOutSpotPrice &&
+        !quote.inBaseOutQuoteSpotPrice &&
         !quote.amount.toDec().isPositive() &&
         !error) ||
       (!quote && spotPriceQuoteError)
