@@ -914,7 +914,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           typeUrl: "/osmosis.authenticator.TxExtension",
           value: TxExtension.encode({
             selectedAuthenticators: [
-              Number(oneClickTradingInfo.authenticatorId),
+              BigInt(oneClickTradingInfo.authenticatorId),
             ],
           }).finish(),
         },
@@ -1763,7 +1763,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         typeUrl: "/osmosis.authenticator.TxExtension",
         value: TxExtension.encode({
           selectedAuthenticators: [
-            Number(oneClickTradingInfo?.authenticatorId),
+            BigInt(oneClickTradingInfo?.authenticatorId),
           ],
         }).finish(),
       },
