@@ -48,6 +48,13 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/authenticator/tx";
+import {
+  queryBalances,
+  queryFeesBaseDenom,
+  queryFeeTokens,
+  queryFeeTokenSpotPrice,
+  queryOsmosisGasPrice,
+} from "@osmosis-labs/server";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -1322,10 +1329,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Compute the fee amount based on the gas limit and the gas price rather than on the wallet.
        * This is useful for wallets that do not support fee estimation.
        */
-      if (
-        signOptions.preferNoSetFee ||
-        (await this.isOneCLickTradingEnabled())
-      ) {
+      if (signOptions.preferNoSetFee || signOptions.useOneClickTrading) {
         return {
           gas: gasLimit,
           amount: [
@@ -1395,10 +1399,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     gasLimit,
     chainId,
     address,
+    checkOtherFeeTokens = true,
   }: {
     gasLimit: string;
     chainId: string;
     address: string | undefined;
+    checkOtherFeeTokens?: boolean;
   }) {
     const chain = getChain({ chainList: this.chains, chainId });
 
@@ -1420,7 +1426,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         this.getGasPriceByChainId({
           chainId,
         }),
-        this.queryAccountBalance({
+        this.getAccountBalance({
           userOsmoAddress: address,
           chainId,
         }),
@@ -1444,10 +1450,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       !userBalanceForFeeDenom;
 
     /**
-     * If the chain doesn't support the Osmosis chain fee module, check that the user has enough balance
-     * to pay the fee denom, otherwise throw an error.
+     * If the chain doesn't support the Osmosis chain fee module or if checking for other fee tokens is disabled,
+     * and the user's balance is insufficient for the base chain fee, throw an error.
      */
-    if (!chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+    if (
+      (!chainHasOsmosisFeeModule || !checkOtherFeeTokens) &&
+      isUserBalanceInsufficientForBaseChainFee
+    ) {
       console.error(
         `Insufficient balance for the base fee token (${fee.denom}).`
       );
@@ -1461,7 +1470,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * to pay the fee denom, otherwise find another fee token to use.
      */
     if (chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
-      const { feeTokens } = await this.queryFeeTokens({ chainId });
+      const { feeTokens } = await this.getFeeTokens({ chainId });
 
       const feeTokenUserBalances = balances.filter((balance) =>
         feeTokens.includes(balance.denom)
@@ -1534,7 +1543,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     if (chainHasOsmosisFeeModule || chainId === this.osmosisChainId) {
       try {
-        const result = await this.queryOsmosisGasPrice({ chainId });
+        const result = await this.getOsmosisGasPrice({ chainId });
 
         /**
          * The gas amount is multiplied by a specific factor to provide additional
@@ -1570,8 +1579,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * gasPrice = baseFee / spotPrice * 1.01
    *
    * Note: we multiply by 1.01 to provide a buffer for the gas price.
-   *
-   *
    */
   private async getGasPriceByFeeDenom({
     chainId,
@@ -1592,7 +1599,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }): Promise<{ gasPrice: Dec }> {
     const spotPriceDec = new Dec(
       (
-        await this.queryFeeTokenSpotPrice({
+        await this.getFeeTokenSpotPrice({
           chainId: chainId,
           denom: feeDenom,
         })
@@ -1610,8 +1617,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return { gasPrice };
   }
 
-  // TODO: Get this query from the server package once it exists.
-  private async queryAccountBalance({
+  private async getAccountBalance({
     userOsmoAddress,
     chainId,
   }: {
@@ -1624,19 +1630,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       // 5 seconds
       ttl: 5_000,
       getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(chainId).rest;
-
-        if (!restEndpoint)
-          throw new Error(
-            `Rest endpoint for chain ${chainId} is not provided.`
-          );
-
-        const result = await apiClient<{
-          balances: {
-            denom: string;
-            amount: string;
-          }[];
-        }>(`${restEndpoint}/cosmos/bank/v1beta1/balances/${userOsmoAddress}`);
+        const result = await queryBalances({
+          bech32Address: userOsmoAddress,
+          chainList: this.chains,
+          chainId,
+        });
 
         return {
           balances: result.balances,
@@ -1655,8 +1653,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * // Output: { feeTokens: ["ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", ...] }
    * ```
    */
-  // TODO: Get this query from the server package once it exists.
-  private async queryFeeTokens({ chainId }: { chainId: string }) {
+  private async getFeeTokens({ chainId }: { chainId: string }) {
     return cachified({
       key: "fee-tokens",
       cache: this._cache,
@@ -1671,12 +1668,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           );
 
         const [baseFeeToken, { fee_tokens: feeTokens }] = await Promise.all([
-          apiClient<{ base_denom: string }>(
-            `${restEndpoint}/osmosis/txfees/v1beta1/base_denom`
-          ),
-          apiClient<{ fee_tokens: { denom: string; poolID: number }[] }>(
-            `${restEndpoint}/osmosis/txfees/v1beta1/fee_tokens`
-          ),
+          queryFeesBaseDenom({ chainList: this.chains, chainId }),
+          queryFeeTokens({ chainList: this.chains, chainId }),
         ]);
 
         const baseFeeTokenDenom = baseFeeToken.base_denom;
@@ -1689,8 +1682,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  // TODO: Get this query from the server package once it exists.
-  private async queryFeeTokenSpotPrice({
+  private async getFeeTokenSpotPrice({
     denom,
     chainId,
   }: {
@@ -1703,19 +1695,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       // 5 seconds
       ttl: 5_000,
       getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(chainId).rest;
-
-        if (!restEndpoint)
-          throw new Error(
-            `Rest endpoint for chain ${chainId} is not provided.`
-          );
-
-        const result = await apiClient<{
-          pool_id: string;
-          spot_price: string;
-        }>(
-          `${restEndpoint}/osmosis/txfees/v1beta1/spot_price_by_denom?denom=${denom}`
-        );
+        const result = await queryFeeTokenSpotPrice({
+          chainList: this.chains,
+          denom,
+          chainId,
+        });
 
         return {
           spotPrice: result.spot_price,
@@ -1724,18 +1708,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  // TODO: Get this query from the server package once it exists.
-  private async queryOsmosisGasPrice({ chainId }: { chainId: string }) {
+  private async getOsmosisGasPrice({ chainId }: { chainId: string }) {
     return cachified({
       key: "osmosis-gas-price",
       cache: this._cache,
       // 15 minutes
       ttl: 15 * 60 * 1000,
       getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(chainId).rest;
-        const result = await apiClient<{
-          base_fee: string;
-        }>(`${restEndpoint}/osmosis/txfees/v1beta1/cur_eip_base_fee`);
+        const result = await queryOsmosisGasPrice({
+          chainList: this.chains,
+          chainId,
+        });
 
         return {
           baseFee: Number(result.base_fee),

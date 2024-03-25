@@ -1,5 +1,4 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { SignOptions } from "@cosmos-kit/core";
 import { Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
