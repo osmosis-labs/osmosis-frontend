@@ -34,7 +34,6 @@ import { useAmountInput } from "./input/use-amount-input";
 import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
@@ -107,24 +106,6 @@ export function useSwap({
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
 
-  const {
-    data: spotPriceQuote,
-    isLoading: isSpotPriceQuoteLoading,
-    error: spotPriceQuoteError,
-  } = useQueryRouterBestQuote(
-    {
-      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: DecUtils.getTenExponentN(
-        swapAssets.fromAsset?.coinDecimals ?? 0
-      )
-        .truncate()
-        .toString(),
-      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      forcePoolId: forceSwapInPoolId,
-    },
-    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
-  );
-
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
     | NoRouteError
@@ -133,29 +114,13 @@ export function useSwap({
     | undefined = useMemo(() => {
     let error = quoteError;
 
-    // only show spot price error if there's no quote
-    if (
-      (quote &&
-        !quote.inOutSpotPrice &&
-        !quote.amount.toDec().isPositive() &&
-        !error) ||
-      (!quote && spotPriceQuoteError)
-    )
-      error = spotPriceQuoteError;
-
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
-  }, [
-    quoteError,
-    quote,
-    spotPriceQuoteError,
-    inAmountInput.error,
-    inAmountInput.isEmpty,
-  ]);
+  }, [quoteError, inAmountInput.error, inAmountInput.isEmpty]);
 
   const getSwapTxParameters = useCallback(
     ({
@@ -384,23 +349,10 @@ export function useSwap({
     ]
   );
 
-  const positivePrevQuote = usePreviousWhen(
-    quote,
-    useCallback(
-      () => Boolean(quote?.amount.toDec().isPositive()) && !quoteError,
-      [quote, quoteError]
-    )
-  );
-
   return {
     ...swapAssets,
     inAmountInput,
-    quote:
-      isQuoteLoading || inAmountInput.isTyping
-        ? positivePrevQuote
-        : !Boolean(quoteError)
-        ? quote
-        : undefined,
+    quote,
     totalFee: sum([
       quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
@@ -408,13 +360,8 @@ export function useSwap({
     networkFee,
     isLoadingNetworkFee,
     error: precedentError,
-    spotPriceQuote,
-    isSpotPriceQuoteLoading,
-    spotPriceQuoteError,
     isQuoteLoading,
-    /** Spot price or user input quote. */
-    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    isLoading: isQuoteLoading,
     sendTradeTokenInTx,
   };
 }
@@ -612,7 +559,7 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  !existingAsset;
+
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 
@@ -622,13 +569,19 @@ function useSwapAsset<TAsset extends Asset>(
         (asset.symbol === minDenomOrSymbol ||
           asset.coinMinimalDenom === minDenomOrSymbol)
     );
-    if (!asset) return;
+    if (!asset) {
+      console.warn(
+        "useSwap: asset not found for in/out swap:",
+        minDenomOrSymbol
+      );
+      return;
+    }
 
     return makeMinimalAsset(asset);
   }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? (asset as TAsset),
+    asset: asset as TAsset,
   };
 }
 
