@@ -230,20 +230,16 @@ export type UserPositionDetails = Awaited<
 /** Appends user and position details to a given set of positions.
  *  If positions are not provided, they will be fetched with the given user address. */
 export async function mapGetUserPositionDetails({
-  positions: initialPositions,
+  positions,
   userOsmoAddress,
   ...params
 }: {
   chainList: Chain[];
   assetLists: AssetList[];
-  positions?: LiquidityPosition[];
+  positions: LiquidityPosition[];
   userOsmoAddress: string;
 }) {
-  const positionsPromise = initialPositions
-    ? Promise.resolve(initialPositions)
-    : queryAccountPositions({ ...params, bech32Address: userOsmoAddress }).then(
-        ({ positions }) => positions
-      );
+
   const lockableDurationsPromise = getLockableDurations(params);
   const userUnbondingPositionsPromise = getUserUnbondingPositions({
     ...params,
@@ -264,7 +260,6 @@ export async function mapGetUserPositionDetails({
   const superfluidPoolIdsPromise = getSuperfluidPoolIds(params);
 
   const [
-    positions,
     lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
@@ -272,7 +267,6 @@ export async function mapGetUserPositionDetails({
     stakeCurrency,
     superfluidPoolIds,
   ] = await Promise.all([
-    positionsPromise,
     lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
@@ -283,7 +277,7 @@ export async function mapGetUserPositionDetails({
 
   const pools = await getPools({
     ...params,
-    poolIds: positions.map(({ position }) => position.pool_id),
+    poolIds: positions?.map(({ position }) => position.pool_id),
   });
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);
