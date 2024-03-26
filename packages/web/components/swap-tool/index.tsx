@@ -87,6 +87,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       forceSwapInPoolId,
     });
 
+    const swapAssets = swapState.swapAssets;
+
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
     const [
       estimateDetailsContentRef,
@@ -98,14 +100,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     // out amount less slippage calculated from slippage config
     const outAmountLessSlippage = useMemo(
       () =>
-        swapState.quote && swapState.toAsset
+        swapState.quote && swapAssets.toAsset
           ? new IntPretty(
               swapState.quote.amount
                 .toDec()
                 .mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
             )
           : undefined,
-      [swapState.quote, swapState.toAsset, slippageConfig.slippage]
+      [swapState.quote, swapAssets.toAsset, slippageConfig.slippage]
     );
 
     const routesVisDisclosure = useDisclosure();
@@ -163,9 +165,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       if (!swapState.inAmountInput.amount) return;
 
       const baseEvent = {
-        fromToken: swapState.fromAsset?.coinDenom,
+        fromToken: swapAssets.fromAsset?.coinDenom,
         tokenAmount: Number(swapState.inAmountInput.amount),
-        toToken: swapState.toAsset?.coinDenom,
+        toToken: swapAssets.toAsset?.coinDenom,
         isOnHome: !isInModal,
         isMultiHop: swapState.quote?.split.some(
           ({ pools }) => pools.length !== 1
@@ -352,8 +354,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                             logEvent([
                               EventName.Swap.slippageToleranceSet,
                               {
-                                fromToken: swapState.fromAsset?.coinDenom,
-                                toToken: swapState.toAsset?.coinDenom,
+                                fromToken: swapAssets.fromAsset?.coinDenom,
+                                toToken: swapAssets.toAsset?.coinDenom,
                                 isOnHome: !isInModal,
                                 percentage: slippageConfig.slippage.toString(),
                                 page,
@@ -394,8 +396,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     {formatCoinMaxDecimalsByOne(
                       swapState.inAmountInput?.balance,
                       2,
-                      Math.min(swapState.fromAsset?.coinDecimals ?? 0, 8)
-                    ) || "0 " + (swapState.fromAsset?.coinDenom ?? "")}
+                      Math.min(swapAssets.fromAsset?.coinDecimals ?? 0, 8)
+                    ) || "0 " + (swapAssets.fromAsset?.coinDenom ?? "")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -439,7 +441,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <TokenSelectWithDrawer
                   isFromSelect
                   dropdownOpen={showFromTokenSelectDropdown}
-                  swapState={swapState}
+                  swapAssets={swapAssets}
                   setDropdownState={useCallback(
                     (isOpen) => {
                       if (isOpen) {
@@ -452,11 +454,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setFromAssetDenom(tokenDenom);
+                      swapAssets.setFromAssetDenom(tokenDenom);
                       closeTokenSelectDropdowns();
                       fromAmountInputEl.current?.focus();
                     },
-                    [swapState, closeTokenSelectDropdowns]
+                    [swapAssets, closeTokenSelectDropdowns]
                   )}
                 />
                 <div className="flex w-full flex-col items-end">
@@ -511,7 +513,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 if (!isMobile) setHoveringSwitchButton(false);
               }}
               onClick={() => {
-                swapState.switchAssets();
+                swapAssets.switchAssets();
               }}
             >
               <div
@@ -563,13 +565,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <TokenSelectWithDrawer
                   isFromSelect={false}
                   dropdownOpen={showToTokenSelectDropdown}
-                  swapState={swapState}
+                  swapAssets={swapAssets}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setToAssetDenom(tokenDenom);
+                      swapAssets.setToAssetDenom(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [swapState, closeTokenSelectDropdowns]
+                    [swapAssets, closeTokenSelectDropdowns]
                   )}
                   setDropdownState={useCallback(
                     (isOpen) => {
@@ -649,8 +651,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   : 44,
               }}
               isLoaded={
-                Boolean(swapState.toAsset) &&
-                Boolean(swapState.fromAsset) &&
+                Boolean(swapAssets.toAsset) &&
+                Boolean(swapAssets.fromAsset) &&
                 !swapState.isSpotPriceQuoteLoading
               }
             >
@@ -676,21 +678,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   })}
                 >
                   1{" "}
-                  <span title={swapState.fromAsset?.coinDenom}>
+                  <span title={swapAssets.fromAsset?.coinDenom}>
                     {ellipsisText(
-                      swapState.fromAsset?.coinDenom ?? "",
+                      swapAssets.fromAsset?.coinDenom ?? "",
                       isMobile ? 11 : 20
                     )}
                   </span>{" "}
                   {`≈ ${
-                    swapState.toAsset
+                    swapAssets.toAsset
                       ? formatPretty(
                           (swapState.quote?.inOutSpotPrice
                             ? new CoinPretty(
-                                swapState.toAsset,
+                                swapAssets.toAsset,
                                 swapState.quote.inOutSpotPrice.mul(
                                   DecUtils.getTenExponentN(
-                                    swapState.toAsset.coinDecimals
+                                    swapAssets.toAsset.coinDecimals
                                   )
                                 )
                               )
@@ -699,7 +701,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                             new Dec(0),
                           {
                             maxDecimals: Math.min(
-                              swapState.toAsset.coinDecimals,
+                              swapAssets.toAsset.coinDecimals,
                               8
                             ),
                           }
@@ -843,7 +845,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     {outAmountLessSlippage &&
                       swapState.quote?.tokenOutPrice &&
-                      swapState.toAsset && (
+                      swapAssets.toAsset && (
                         <div
                           className={classNames(
                             "caption flex flex-col gap-0.5 text-right text-osmoverse-200"

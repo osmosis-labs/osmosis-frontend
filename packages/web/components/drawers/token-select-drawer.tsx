@@ -17,7 +17,7 @@ import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
-import { SwapState } from "~/hooks/use-swap";
+import { SwapAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
@@ -51,9 +51,9 @@ export const TokenSelectDrawer: FunctionComponent<{
   isOpen: boolean;
   onClose?: () => void;
   onSelect?: (tokenDenom: string) => void;
-  swapState: SwapState;
+  swapAssets: SwapAssets;
 }> = observer(
-  ({ isOpen, swapState, onClose: onCloseProp, onSelect: onSelectProp }) => {
+  ({ isOpen, swapAssets, onClose: onCloseProp, onSelect: onSelectProp }) => {
     const { t } = useTranslation();
     const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
@@ -65,7 +65,7 @@ export const TokenSelectDrawer: FunctionComponent<{
       keyboardSelectedIndexRef,
     ] = useStateRef(0);
 
-    const [assets, setAssets] = useState(swapState.selectableAssets);
+    const [assets, setAssets] = useState(swapAssets.selectableAssets);
     const [isRequestingClose, setIsRequestingClose] = useState(false);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
@@ -80,8 +80,8 @@ export const TokenSelectDrawer: FunctionComponent<{
     // Only update tokens while not requesting to close
     useEffect(() => {
       if (isRequestingClose) return;
-      setAssets(swapState.selectableAssets);
-    }, [isRequestingClose, swapState.selectableAssets]);
+      setAssets(swapAssets.selectableAssets);
+    }, [isRequestingClose, swapAssets.selectableAssets]);
 
     const assetsRef = useLatest(assets);
 
@@ -93,7 +93,7 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const onClose = () => {
       setIsRequestingClose(true);
-      swapState.setAssetsQueryInput("");
+      swapAssets.setAssetsQueryInput("");
       setKeyboardSelectedIndex(0);
       onCloseProp?.();
     };
@@ -107,7 +107,7 @@ export const TokenSelectDrawer: FunctionComponent<{
       let isRecommended = false;
       const selectedAsset =
         assets.find((asset) => asset.coinDenom === coinDenom) ??
-        swapState.recommendedAssets.find((asset) => {
+        swapAssets.recommendedAssets.find((asset) => {
           if (asset.coinDenom === coinDenom) {
             isRecommended = true;
             return true;
@@ -187,7 +187,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     });
 
     const onSearch = (nextValue: string) => {
-      swapState.setAssetsQueryInput(nextValue);
+      swapAssets.setAssetsQueryInput(nextValue);
       setKeyboardSelectedIndex(0);
     };
 
@@ -278,7 +278,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   onMouseDown={onMouseDownQuickSelect}
                   className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
                 >
-                  {swapState.recommendedAssets.map((asset) => {
+                  {swapAssets.recommendedAssets.map((asset) => {
                     const { coinDenom, coinImageUrl } = asset;
 
                     return (
@@ -312,7 +312,7 @@ export const TokenSelectDrawer: FunctionComponent<{
               </div>
             </div>
 
-            {swapState.isLoadingSelectAssets ? (
+            {swapAssets.isLoadingSelectAssets ? (
               <Spinner className="m-auto" />
             ) : (
               <div className="flex flex-col overflow-auto">
@@ -420,10 +420,10 @@ export const TokenSelectDrawer: FunctionComponent<{
                   onVisible={() => {
                     // If this element becomes visible at bottom of list, fetch next page
                     if (
-                      !swapState.isFetchingNextPageAssets &&
-                      swapState.hasNextPageAssets
+                      !swapAssets.isFetchingNextPageAssets &&
+                      swapAssets.hasNextPageAssets
                     ) {
-                      swapState.fetchNextPageAssets();
+                      swapAssets.fetchNextPageAssets();
                     }
                   }}
                 />

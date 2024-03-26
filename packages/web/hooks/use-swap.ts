@@ -39,6 +39,7 @@ import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+export type SwapAssets = ReturnType<typeof useSwapAssets>;
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -393,7 +394,7 @@ export function useSwap({
   );
 
   return {
-    ...swapAssets,
+    swapAssets,
     inAmountInput,
     quote:
       isQuoteLoading || inAmountInput.isTyping

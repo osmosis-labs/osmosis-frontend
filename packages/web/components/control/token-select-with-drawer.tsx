@@ -9,13 +9,13 @@ import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
 import { EventName, SwapPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
-import { SwapState } from "~/hooks/use-swap";
+import { SwapAssets } from "~/hooks/use-swap";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<
   {
     isFromSelect: boolean;
-    swapState: SwapState;
+    swapAssets: SwapAssets;
     dropdownOpen?: boolean;
     canSelectTokens?: boolean;
     page?: SwapPage;
@@ -25,7 +25,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
 > = observer(
   ({
     isFromSelect,
-    swapState,
+    swapAssets,
     dropdownOpen,
     disabled,
     canSelectTokens = true,
@@ -44,11 +44,11 @@ export const TokenSelectWithDrawer: FunctionComponent<
     const setIsSelectOpen =
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
-    const preSortedTokens = swapState.selectableAssets;
+    const preSortedTokens = swapAssets.selectableAssets;
 
     const selectedToken = isFromSelect
-      ? swapState.fromAsset
-      : swapState.toAsset;
+      ? swapAssets.fromAsset
+      : swapAssets.toAsset;
 
     const tokenSelectionAvailable =
       canSelectTokens && preSortedTokens.length > 1;
@@ -124,7 +124,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
         <div className="pt-16">
           <TokenSelectDrawer
             isOpen={isSelectOpen}
-            swapState={swapState}
+            swapAssets={swapAssets}
             onClose={() => setIsSelectOpen(false)}
             onSelect={onSelect}
           />
