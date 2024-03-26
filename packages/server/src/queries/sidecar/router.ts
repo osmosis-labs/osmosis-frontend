@@ -53,7 +53,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         swapFee,
         priceImpactTokenOut: priceImpact,
         tokenInFeeAmount: tokenIn.amount.toDec().mul(swapFee).truncate(),
-        inBaseOutQuoteSpotPrice: new Dec(in_base_out_quote_spot_price),
+        inOutSpotPrice: new Dec(in_base_out_quote_spot_price),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
           pools: pools.map(({ id, spread_factor, type, code_id }) => ({
