@@ -122,7 +122,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
     },
-    isToFromAssets && !Boolean(quote?.inOutSpotPrice)
+    isToFromAssets
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -135,10 +135,7 @@ export function useSwap({
 
     // only show spot price error if there's no quote
     if (
-      (quote &&
-        !quote.inOutSpotPrice &&
-        !quote.amount.toDec().isPositive() &&
-        !error) ||
+      (quote && !quote.amount.toDec().isPositive() && !error) ||
       (!quote && spotPriceQuoteError)
     )
       error = spotPriceQuoteError;
@@ -392,6 +389,34 @@ export function useSwap({
     )
   );
 
+  /** Spot price, current or effective, of the currently selected tokens. */
+  const inBaseOutQuoteSpotPrice = useMemo(() => {
+    // get in/out spot price from quote if user requested a quote
+    if (
+      inAmountInput.amount &&
+      quote &&
+      swapAssets.toAsset &&
+      !inAmountInput.isTyping
+    ) {
+      return new CoinPretty(
+        swapAssets.toAsset,
+        quote.amount
+          .toDec()
+          .quo(inAmountInput.amount.toDec())
+          .mulTruncate(
+            DecUtils.getTenExponentN(swapAssets.toAsset.coinDecimals)
+          )
+      );
+    }
+    return spotPriceQuote?.amount;
+  }, [
+    spotPriceQuote,
+    swapAssets.toAsset,
+    inAmountInput.amount,
+    inAmountInput.isTyping,
+    quote,
+  ]);
+
   return {
     ...swapAssets,
     inAmountInput,
@@ -401,6 +426,7 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
+    inBaseOutQuoteSpotPrice,
     totalFee: sum([
       quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
