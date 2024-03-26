@@ -42,7 +42,11 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useSwap } from "~/hooks/use-swap";
+import {
+  finalizeSwapTxData,
+  useSendSwapTxMutation,
+} from "~/hooks/swap/use-send-swap-tx";
+import { useSwap } from "~/hooks/swap/use-swap";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
@@ -153,60 +157,33 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
 
+    const { mutateAsync: sendSwapTxMutation } = useSendSwapTxMutation();
     // user action
-    const sendSwapTx = () => {
+    const handleSendSwapTx = async () => {
+      debugger;
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
         return onOpenWalletSelect(chainId);
       }
 
-      if (!swapState.inAmountInput.amount) return;
+      // copy the all variables into immutable object for transaction:
+      const payload = await finalizeSwapTxData(swapState, featureFlags);
 
-      const baseEvent = {
-        fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount),
-        toToken: swapState.toAsset?.coinDenom,
-        isOnHome: !isInModal,
-        isMultiHop: swapState.quote?.split.some(
-          ({ pools }) => pools.length !== 1
-        ),
-        isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-      };
-      logEvent([
-        EventName.Swap.swapStarted,
-        {
-          ...baseEvent,
-          quoteTimeMilliseconds: swapState.quote?.timeMs,
-          router: swapState.quote?.name,
-          page,
-        },
-      ]);
-      swapState
-        .sendTradeTokenInTx(slippageConfig.slippage.toDec())
-        .then((result) => {
-          // onFullfill
-          logEvent([
-            EventName.Swap.swapCompleted,
-            {
-              ...baseEvent,
-              isMultiHop: result === "multihop",
-              quoteTimeMilliseconds: swapState.quote?.timeMs,
-              router: swapState.quote?.name,
-              page,
-              valueUsd: Number(
-                swapState.quote?.amountFiatValue?.toString() ?? "0"
-              ),
-            },
-          ]);
-        })
-        .catch((error) => {
-          // failed broadcast txs are handled elsewhere
-          // this is likely a signature rejection
-          console.error("swap error", error);
-        })
-        .finally(() => {
-          onRequestModalClose?.();
-        });
+      if (!payload) return;
+
+      const isOnHome = !isInModal;
+      const slippage = slippageConfig.slippage.clone();
+      const osmosis = account.osmosis;
+
+      await sendSwapTxMutation({
+        ...payload,
+        page,
+        slippage,
+        osmosis,
+        isOnHome,
+      }).finally(() => {
+        onRequestModalClose?.();
+      });
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
@@ -886,7 +863,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
-              onClick={sendSwapTx}
+              onClick={handleSendSwapTx}
             >
               {account?.walletStatus === WalletStatus.Connected ||
               isSwapToolLoading ? (
