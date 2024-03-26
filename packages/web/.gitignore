@@ -42,5 +42,8 @@ yarn-error.log*
 # config files
 generated
 
-# sitemap file
-*.xml
+# Sitemap
+
+robots.txt
+sitemap-*.xml
+sitemap.xml
