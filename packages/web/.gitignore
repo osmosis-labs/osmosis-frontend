@@ -40,9 +40,6 @@ yarn-error.log*
 .sentryclirc
 
 # config files
-<<<<<<< HEAD
-generated
-=======
 generated
 
 # Sitemap
@@ -50,4 +47,3 @@ generated
 robots.txt
 sitemap-*.xml
 sitemap.xml
->>>>>>> 40c8b9612 (Fix: update swap to match SQS return (#2992))
