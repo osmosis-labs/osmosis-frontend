@@ -673,44 +673,42 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     setShowEstimateDetails((show) => !show);
                 }}
               >
-                {swapState.toAsset &&
-                  swapState.quote &&
-                  swapState.quote.inBaseOutQuoteSpotPrice && (
-                    <div>
-                      <span
-                        className={classNames("subtitle2 transition-opacity", {
-                          "text-osmoverse-600": !isQuoteDetailRelevant,
-                          "opacity-50":
-                            swapState.isQuoteLoading ||
-                            swapState.inAmountInput.isTyping,
-                        })}
-                      >
-                        1{" "}
-                        <span title={swapState.fromAsset?.coinDenom}>
-                          {ellipsisText(
-                            swapState.fromAsset?.coinDenom ?? "",
-                            isMobile ? 11 : 20
-                          )}
-                        </span>{" "}
-                        {`≈ ${formatPretty(
-                          new CoinPretty(
-                            swapState.toAsset,
-                            swapState.quote.inBaseOutQuoteSpotPrice.mul(
-                              DecUtils.getTenExponentN(
-                                swapState.fromAsset.coinDecimals
-                              )
+                {swapState.toAsset && isSwapAssetsSpotPriceAvailable && (
+                  <div>
+                    <span
+                      className={classNames("subtitle2 transition-opacity", {
+                        "text-osmoverse-600": !isQuoteDetailRelevant,
+                        "opacity-50":
+                          swapState.isQuoteLoading ||
+                          swapState.inAmountInput.isTyping,
+                      })}
+                    >
+                      1{" "}
+                      <span title={swapState.fromAsset?.coinDenom}>
+                        {ellipsisText(
+                          swapState.fromAsset?.coinDenom ?? "",
+                          isMobile ? 11 : 20
+                        )}
+                      </span>{" "}
+                      {`≈ ${formatPretty(
+                        new CoinPretty(
+                          swapState.toAsset,
+                          swapState.quote.inBaseOutQuoteSpotPrice.mul(
+                            DecUtils.getTenExponentN(
+                              swapState.fromAsset.coinDecimals
                             )
+                          )
+                        ),
+                        {
+                          maxDecimals: Math.min(
+                            swapState.toAsset.coinDecimals,
+                            8
                           ),
-                          {
-                            maxDecimals: Math.min(
-                              swapState.toAsset.coinDecimals,
-                              8
-                            ),
-                          }
-                        )}`}
-                      </span>
-                    </div>
-                  )}
+                        }
+                      )}`}
+                    </span>
+                  </div>
+                )}
                 <div
                   className={classNames(
                     "flex items-center gap-2 transition-opacity",
