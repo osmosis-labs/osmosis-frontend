@@ -390,7 +390,7 @@ export function useSwap({
   );
 
   /** Spot price, current or effective, of the currently selected tokens. */
-  const inBaseOutQuoteInSpotPrice = useMemo(() => {
+  const inBaseOutQuoteSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
     if (
       inAmountInput.amount &&
@@ -426,7 +426,7 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
-    inBaseOutQuoteSpotPrice: inBaseOutQuoteInSpotPrice,
+    inBaseOutQuoteSpotPrice,
     totalFee: sum([
       quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
