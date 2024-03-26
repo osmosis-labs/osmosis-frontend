@@ -10,11 +10,12 @@ import {
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-async function estimateTxFeesQueryFn({
+async function estimateSwapTxFeesQueryFn({
   wallet,
   messages,
   apiUtils,
@@ -60,7 +61,7 @@ async function estimateTxFeesQueryFn({
   };
 }
 
-export function useEstimateTxFees({
+export function useEstimateSwapTxFees({
   messages,
   chainId,
   enabled = true,
@@ -74,11 +75,11 @@ export function useEstimateTxFees({
 
   const wallet = accountStore.getWallet(chainId);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-      return estimateTxFeesQueryFn({
+      return estimateSwapTxFeesQueryFn({
         wallet,
         accountStore,
         messages,
@@ -96,9 +97,28 @@ export function useEstimateTxFees({
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });
+
+  // runs the request once
+  const runEstimateTxFeesOnce = useCallback(
+    async (messages: EncodeObject[]) => {
+      if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
+      return estimateSwapTxFeesQueryFn({
+        wallet,
+        accountStore,
+        messages,
+        apiUtils,
+      });
+    },
+    [accountStore, apiUtils, chainId, wallet]
+  );
+
+  return {
+    runEstimateTxFeesOnce,
+    query,
+  };
 }
 
-export function useEstimateTxFeesMutation() {
+export function useEstimateSwapTxFeesMutation() {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
@@ -113,7 +133,7 @@ export function useEstimateTxFeesMutation() {
       const wallet = accountStore.getWallet(chainId);
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
 
-      return estimateTxFeesQueryFn({
+      return estimateSwapTxFeesQueryFn({
         wallet,
         accountStore,
         messages,
