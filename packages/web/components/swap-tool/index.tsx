@@ -155,6 +155,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // true if the spot price from quote result is available
     const isSwapAssetsSpotPriceAvailable =
+      swapState &&
       !swapState.isQuoteLoading &&
       swapState.quote &&
       swapState.quote.inBaseOutQuoteSpotPrice;
@@ -693,7 +694,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       {`≈ ${formatPretty(
                         new CoinPretty(
                           swapState.toAsset,
-                          swapState.quote.inBaseOutQuoteSpotPrice.mul(
+                          // asserting quote and inBaseOutQuoteSpotPrice is acceptable
+                          // as this is guarded by a isSwapAssetsSpotPriceAvailable check
+                          // that checks for quote and inBaseOutQuoteSpotPrice being available
+                          swapState.quote!.inBaseOutQuoteSpotPrice!.mul(
                             DecUtils.getTenExponentN(
                               swapState.fromAsset.coinDecimals
                             )
