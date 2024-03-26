@@ -115,13 +115,6 @@ export function useSwap({
     | undefined = useMemo(() => {
     let error = quoteError;
 
-<<<<<<< HEAD
-    // only show spot price error if there's no quote
-    if (quote && !quote.amount.toDec().isPositive() && !error)
-      error = spotPriceQuoteError;
-
-=======
->>>>>>> 40c8b9612 (Fix: update swap to match SQS return (#2992))
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
