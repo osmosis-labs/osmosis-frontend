@@ -107,24 +107,6 @@ export function useSwap({
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
 
-  const {
-    data: spotPriceQuote,
-    isLoading: isSpotPriceQuoteLoading,
-    error: spotPriceQuoteError,
-  } = useQueryRouterBestQuote(
-    {
-      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: DecUtils.getTenExponentN(
-        swapAssets.fromAsset?.coinDecimals ?? 0
-      )
-        .truncate()
-        .toString(),
-      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      forcePoolId: forceSwapInPoolId,
-    },
-    isToFromAssets && !Boolean(quote?.inBaseOutQuoteSpotPrice)
-  );
-
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
     | NoRouteError
@@ -133,29 +115,13 @@ export function useSwap({
     | undefined = useMemo(() => {
     let error = quoteError;
 
-    // only show spot price error if there's no quote
-    if (
-      (quote &&
-        !quote.inBaseOutQuoteSpotPrice &&
-        !quote.amount.toDec().isPositive() &&
-        !error) ||
-      (!quote && spotPriceQuoteError)
-    )
-      error = spotPriceQuoteError;
-
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
-  }, [
-    quoteError,
-    quote,
-    spotPriceQuoteError,
-    inAmountInput.error,
-    inAmountInput.isEmpty,
-  ]);
+  }, [quoteError, inAmountInput.error, inAmountInput.isEmpty]);
 
   const getSwapTxParameters = useCallback(
     ({
@@ -395,12 +361,7 @@ export function useSwap({
   return {
     ...swapAssets,
     inAmountInput,
-    quote:
-      isQuoteLoading || inAmountInput.isTyping
-        ? positivePrevQuote
-        : !Boolean(quoteError)
-        ? quote
-        : undefined,
+    quote,
     totalFee: sum([
       quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
@@ -408,13 +369,8 @@ export function useSwap({
     networkFee,
     isLoadingNetworkFee,
     error: precedentError,
-    spotPriceQuote,
-    isSpotPriceQuoteLoading,
-    spotPriceQuoteError,
     isQuoteLoading,
-    /** Spot price or user input quote. */
-    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    isLoading: isQuoteLoading,
     sendTradeTokenInTx,
   };
 }

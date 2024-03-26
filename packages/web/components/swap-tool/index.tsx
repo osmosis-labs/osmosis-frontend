@@ -1,5 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText } from "@osmosis-labs/utils";
@@ -146,6 +152,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
+
+    // true if the spot price from quote result is available
+    const isSwapAssetsSpotPriceAvailable =
+      !swapState.isQuoteLoading &&
+      swapState.quote &&
+      swapState.quote.inBaseOutQuoteSpotPrice;
 
     // user action
     const sendSwapTx = () => {
@@ -645,7 +657,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                !swapState.isSpotPriceQuoteLoading
+                !swapState.isQuoteLoading
               }
             >
               {/* TODO - move this custom button to our own button component */}
@@ -661,42 +673,44 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     setShowEstimateDetails((show) => !show);
                 }}
               >
-                <span
-                  className={classNames("subtitle2 transition-opacity", {
-                    "text-osmoverse-600": !isQuoteDetailRelevant,
-                    "opacity-50":
-                      swapState.isQuoteLoading ||
-                      swapState.inAmountInput.isTyping,
-                  })}
-                >
-                  1{" "}
-                  <span title={swapState.fromAsset?.coinDenom}>
-                    {ellipsisText(
-                      swapState.fromAsset?.coinDenom ?? "",
-                      isMobile ? 11 : 20
-                    )}
-                  </span>{" "}
-                  {`≈ ${
-                    swapState.toAsset
-                      ? formatPretty(
-                          (swapState.quote?.inBaseOutQuoteSpotPrice
-                            ? new CoinPretty(
-                                swapState.toAsset,
-                                swapState.quote.inBaseOutQuoteSpotPrice
+                {swapState.toAsset &&
+                  swapState.quote &&
+                  swapState.quote.inBaseOutQuoteSpotPrice && (
+                    <div>
+                      <span
+                        className={classNames("subtitle2 transition-opacity", {
+                          "text-osmoverse-600": !isQuoteDetailRelevant,
+                          "opacity-50":
+                            swapState.isQuoteLoading ||
+                            swapState.inAmountInput.isTyping,
+                        })}
+                      >
+                        1{" "}
+                        <span title={swapState.fromAsset?.coinDenom}>
+                          {ellipsisText(
+                            swapState.fromAsset?.coinDenom ?? "",
+                            isMobile ? 11 : 20
+                          )}
+                        </span>{" "}
+                        {`≈ ${formatPretty(
+                          new CoinPretty(
+                            swapState.toAsset,
+                            swapState.quote.inBaseOutQuoteSpotPrice.mul(
+                              DecUtils.getTenExponentN(
+                                swapState.fromAsset.coinDecimals
                               )
-                            : null) ??
-                            swapState.spotPriceQuote?.amount ??
-                            new Dec(0),
+                            )
+                          ),
                           {
                             maxDecimals: Math.min(
                               swapState.toAsset.coinDecimals,
                               8
                             ),
                           }
-                        )
-                      : "0"
-                  }`}
-                </span>
+                        )}`}
+                      </span>
+                    </div>
+                  )}
                 <div
                   className={classNames(
                     "flex items-center gap-2 transition-opacity",
@@ -712,16 +726,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       showPriceImpactWarning ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  <Icon
-                    id="chevron-down"
-                    height={isMobile ? 14 : 18}
-                    width={isMobile ? 14 : 18}
-                    className={classNames(
-                      "text-osmoverse-400 transition-all",
-                      showQuoteDetails ? "rotate-180" : "rotate-0",
-                      isQuoteDetailRelevant ? "opacity-100" : "opacity-0"
-                    )}
-                  />
+                  {
+                    // if unavailalble, hide the icon
+                    isSwapAssetsSpotPriceAvailable && (
+                      <Icon
+                        id="chevron-down"
+                        height={isMobile ? 14 : 18}
+                        width={isMobile ? 14 : 18}
+                        className={classNames(
+                          "text-osmoverse-400 transition-all",
+                          showQuoteDetails ? "rotate-180" : "rotate-0",
+                          isQuoteDetailRelevant ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    )
+                  }
                 </div>
               </button>
               <div
