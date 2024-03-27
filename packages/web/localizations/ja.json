@@ -281,7 +281,7 @@
       "addFunds": "開始するには資金を追加してください"
     },
     "categories": {
-      "newest": "最新",
+      "new": "最新",
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",

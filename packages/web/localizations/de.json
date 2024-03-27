@@ -281,7 +281,7 @@
       "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
     },
     "categories": {
-      "newest": "Neueste",
+      "new": "Neueste",
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",

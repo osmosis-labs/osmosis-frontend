@@ -281,7 +281,7 @@
       "addFunds": "Ajoutez des fonds pour commencer"
     },
     "categories": {
-      "newest": "Le plus récent",
+      "new": "Le plus récent",
       "defi": "DéFi",
       "stablecoin": "Pièces stables",
       "meme": "Mème",

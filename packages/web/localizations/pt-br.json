@@ -281,7 +281,7 @@
       "addFunds": "Adicione fundos para começar"
     },
     "categories": {
-      "newest": "O mais novo",
+      "new": "O mais novo",
       "defi": "DeFi",
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
