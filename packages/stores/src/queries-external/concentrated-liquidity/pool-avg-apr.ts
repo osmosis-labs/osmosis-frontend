@@ -3,7 +3,7 @@ import { RatePretty } from "@keplr-wallet/unit";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
+import { NUMIA_INDEXER_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 
 type Response = {
@@ -37,10 +37,7 @@ export class ObservableQueryClPoolAvgApr extends ObservableQueryExternalBase<Res
 }
 
 export class ObservableQueryClPoolAvgAprs extends HasMapStore<ObservableQueryClPoolAvgApr> {
-  constructor(
-    kvStore: KVStore,
-    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
-  ) {
+  constructor(kvStore: KVStore, indexerBaseUrl = NUMIA_INDEXER_BASEURL) {
     super((poolId) => {
       return new ObservableQueryClPoolAvgApr(kvStore, indexerBaseUrl, poolId);
     });

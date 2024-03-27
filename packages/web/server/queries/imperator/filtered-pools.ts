@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 export type PoolToken = {
   name: string;
@@ -81,10 +81,7 @@ export async function queryFilteredPools(
   pagination?: Partial<Pagination>
 ): Promise<FilteredPoolsResponse> {
   // collect params
-  const url = new URL(
-    "/stream/pool/v1/all",
-    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
-  );
+  const url = new URL("/stream/pool/v1/all", NUMIA_INDEXER_BASEURL);
   const queryParams = new URLSearchParams();
   if (filters)
     Object.entries(filters).forEach(([key, value]) => {

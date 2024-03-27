@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 export interface TokenMarketCap {
   /**
@@ -13,7 +13,7 @@ export interface TokenMarketCap {
 
 export async function queryTokenMarketCaps(): Promise<TokenMarketCap[]> {
   // collect params
-  const url = new URL("/tokens/v2/mcap", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  const url = new URL("/tokens/v2/mcap", NUMIA_INDEXER_BASEURL);
 
   return await apiClient<TokenMarketCap[]>(url.toString());
 }

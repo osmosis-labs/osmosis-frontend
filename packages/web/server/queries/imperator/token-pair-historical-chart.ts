@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 export interface TokenPairHistoricalPrice {
   close: number;
@@ -33,7 +33,7 @@ export async function queryTokenPairHistoricalChart(
   // collect params
   const url = new URL(
     `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteCoinMinimalDenom}&asset_out=${baseCoinMinimalDenom}&range=${priceRange}&asset_type=denom`,
-    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+    NUMIA_INDEXER_BASEURL
   );
   try {
     const response = await apiClient<

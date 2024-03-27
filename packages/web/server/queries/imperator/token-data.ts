@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 export interface TokenData {
   price: number;
@@ -23,10 +23,7 @@ export async function queryTokenData({
   coinDenom: string;
 }): Promise<TokenData> {
   // collect params
-  const url = new URL(
-    `/tokens/v2/${coinDenom}`,
-    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
-  );
+  const url = new URL(`/tokens/v2/${coinDenom}`, NUMIA_INDEXER_BASEURL);
 
   // for some reason it returns in an array format, but let's return the first item
   return (await apiClient<TokenData[]>(url.toString()))?.[0];
@@ -34,6 +31,6 @@ export async function queryTokenData({
 
 export async function queryAllTokenData(): Promise<TokenData[]> {
   // collect params
-  const url = new URL("/tokens/v2/all", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  const url = new URL("/tokens/v2/all", NUMIA_INDEXER_BASEURL);
   return await apiClient<TokenData[]>(url.toString());
 }

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
+import { NUMIA_INDEXER_BASEURL } from ".";
 
 export interface PoolFees {
   last_update_at: number;
@@ -15,6 +15,6 @@ export interface PoolFees {
 }
 
 export function queryPoolsFees(): Promise<PoolFees> {
-  const url = new URL("/fees/v1/pools", IMPERATOR_TIMESERIES_DEFAULT_BASEURL);
+  const url = new URL("/fees/v1/pools", NUMIA_INDEXER_BASEURL);
   return apiClient<PoolFees>(url.toString());
 }

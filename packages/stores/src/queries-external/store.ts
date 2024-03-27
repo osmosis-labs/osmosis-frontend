@@ -5,12 +5,7 @@ import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
-import {
-  COINGECKO_API_DEFAULT_BASEURL,
-  IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
-  IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
-  NUMIA_INDEXER_BASEURL,
-} from ".";
+import { COINGECKO_API_DEFAULT_BASEURL, NUMIA_INDEXER_BASEURL } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
 import { ObservableQueryCoingeckoCoinsInfos } from "./coingecko-coin-infos";
@@ -59,8 +54,8 @@ export class QueriesExternalStore {
     observableQueryGuage: ObservableQueryGauges,
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
-    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
-    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL,
+    timeseriesDataBaseUrl = NUMIA_INDEXER_BASEURL,
+    indexerDataBaseUrl = NUMIA_INDEXER_BASEURL,
     coinGeckoApiBaseUrl = COINGECKO_API_DEFAULT_BASEURL
   ) {
     this.queryQuasarVaults = new ObservableQueryQuasarVaultsByPoolsId(kvStore);
