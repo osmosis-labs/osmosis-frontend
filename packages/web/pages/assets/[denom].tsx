@@ -9,7 +9,6 @@ import {
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
-import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
@@ -39,6 +38,7 @@ import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import {
+  ObservableAssetInfoConfig,
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
@@ -102,12 +102,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { t } = useTranslation();
     const language = useCurrentLanguage();
     const router = useRouter();
-    const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
       router.query.denom as string,
-      queriesExternalStore,
-      priceStore,
       imperatorDenom,
       coingeckoCoin?.id
     );
@@ -411,8 +408,10 @@ const Navigation = observer((props: NavigationProps) => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
-      <TokenChartHeader />
+    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 pb-8 md:pb-6">
+      <div className="p-8 pb-0 md:p-6">
+        <TokenChartHeader />
+      </div>
       <TokenChart />
     </section>
   );
@@ -498,11 +497,11 @@ const TokenChart = observer(() => {
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
-      {assetInfoConfig.isHistoricalChartLoading ? (
+      {assetInfoConfig.isHistoricalDataLoading ? (
         <div className="flex h-full flex-col items-center justify-center">
           <Spinner />
         </div>
-      ) : !assetInfoConfig.isHistoricalChartUnavailable ? (
+      ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
           <TokenPairHistoricalChart
             minimal

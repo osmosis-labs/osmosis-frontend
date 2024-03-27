@@ -15,6 +15,7 @@ import {
   mapGetMarketAssets,
 } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
+import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/providers/coingecko";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,
@@ -371,6 +372,30 @@ export const assetsRouter = createTRPCRouter({
               numRecentFrames?: number;
             })),
       }).catch((e) => captureErrorAndReturn(e, []))
+    ),
+  getCoingeckoAssetHistoricalPrice: publicProcedure
+    .input(
+      z.object({
+        /**
+         * Coingecko ID
+         */
+        id: z.string(),
+        timeFrame: z.union([
+          z.object({
+            custom: z.object({
+              from: z.number().int().min(0),
+              to: z.number().int().min(0),
+            }),
+          }),
+          z.enum(["1h", "1d", "7d", "1mo", "1y", "all"]),
+        ]),
+      })
+    )
+    .query(({ input: { id, timeFrame } }) =>
+      getCoinGeckoCoinMarketChart({
+        id,
+        timeFrame: typeof timeFrame === "string" ? timeFrame : timeFrame.custom,
+      })
     ),
   getAssetPairHistoricalPrice: publicProcedure
     .input(
