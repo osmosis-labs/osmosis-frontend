@@ -392,6 +392,7 @@
   },
   "menu": {
     "assets": "Actifs",
+    "portfolio": "Portefeuille",
     "help": "Support",
     "info": "Info",
     "pools": "Bassins",
@@ -774,6 +775,10 @@
     "assets": {
       "title": "Actifs d'osmose",
       "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
+    },
+    "portfolio": {
+      "title": "Portefeuille Osmose",
+      "description": "Consultez vos actifs sur Osmosis - le principal échange décentralisé Cosmos"
     },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",

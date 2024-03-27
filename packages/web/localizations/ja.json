@@ -392,6 +392,7 @@
   },
   "menu": {
     "assets": "資産",
+    "portfolio": "ポートフォリオ",
     "help": "サポートラボ",
     "info": "統計",
     "pools": "プール",
@@ -774,6 +775,10 @@
     "assets": {
       "title": "浸透アセット",
       "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
+    },
+    "portfolio": {
+      "title": "浸透ポートフォリオ",
+      "description": "主要な分散型 Cosmos 取引所である Osmosis で資産を表示します"
     },
     "disclaimer": {
       "title": "浸透に関する免責事項",

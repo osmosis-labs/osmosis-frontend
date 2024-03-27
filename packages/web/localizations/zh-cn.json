@@ -392,6 +392,7 @@
   },
   "menu": {
     "assets": "资产",
+    "portfolio": "文件夹",
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
@@ -774,6 +775,10 @@
     "assets": {
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
+    },
+    "portfolio": {
+      "title": "渗透产品组合",
+      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
     },
     "disclaimer": {
       "title": "渗透免责声明",

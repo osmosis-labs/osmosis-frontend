@@ -5,13 +5,14 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
+  getAssetMarketActivity,
   getAssetPrice,
+  getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetCoin,
   getUserAssetsBreakdown,
+  mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
-  mapGetUserAssetCoins,
 } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/providers/coingecko";
@@ -23,15 +24,13 @@ import {
 } from "../queries/data-services";
 import { TimeDuration } from "../queries/data-services";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { compareDec, compareMemberDefinition } from "../utils/compare";
 import { captureErrorAndReturn } from "../utils/error";
 import { maybeCachePaginatedItems } from "../utils/pagination";
 import { createSortSchema, sort } from "../utils/sort";
 import { InfiniteQuerySchema } from "../utils/zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
-  AssetFilterSchema
-).merge(UserOsmoAddressSchema);
+const GetInfiniteAssetsInputSchema =
+  InfiniteQuerySchema.merge(AssetFilterSchema);
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -49,7 +48,7 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        return await getUserAssetCoin({
+        return await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
@@ -57,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema)
+    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
     .query(
       async ({
         input: {
@@ -73,7 +72,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
-            mapGetUserAssetCoins({
+            mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -127,7 +126,7 @@ export const assetsRouter = createTRPCRouter({
         currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
       };
     }),
-  getMarketAsset: publicProcedure
+  getUserMarketAsset: publicProcedure
     .input(
       z
         .object({
@@ -142,7 +141,7 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        const userAsset = await getUserAssetCoin({
+        const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
@@ -158,7 +157,7 @@ export const assetsRouter = createTRPCRouter({
         };
       }
     ),
-  getUserMarketAssets: publicProcedure
+  getMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
@@ -167,9 +166,8 @@ export const assetsRouter = createTRPCRouter({
           sort: createSortSchema([
             "currentPrice",
             "marketCap",
-            "usdValue",
+            "volume24h",
           ] as const).optional(),
-          onlyPositiveBalances: z.boolean().default(false).optional(),
         })
       )
     )
@@ -178,10 +176,8 @@ export const assetsRouter = createTRPCRouter({
         input: {
           search,
           onlyVerified,
-          userOsmoAddress,
           preferredDenoms,
           sort: sortInput,
-          onlyPositiveBalances,
           categories,
           cursor,
           limit,
@@ -193,32 +189,13 @@ export const assetsRouter = createTRPCRouter({
           getFreshItems: async () => {
             const isDefaultSort = !sortInput && !search;
 
-            let assets;
-            assets = await mapGetMarketAssets({
+            let assets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
               includePreview,
               categories,
             });
-
-            assets = await mapGetUserAssetCoins({
-              ...ctx,
-              assets,
-              userOsmoAddress,
-              includePreview,
-              sortFiatValueDirection: isDefaultSort
-                ? "desc"
-                : !search && sortInput && sortInput.keyPath === "usdValue"
-                ? sortInput.direction
-                : undefined,
-            });
-
-            if (onlyPositiveBalances) {
-              assets = assets.filter((asset) =>
-                asset.amount?.toDec().isPositive()
-              );
-            }
 
             // Default sort (no sort provided):
             //  1. preferred denoms (from `preferredDenoms`)
@@ -238,29 +215,11 @@ export const assetsRouter = createTRPCRouter({
                 if (isAPreferred && !isBPreferred) return -1;
                 if (!isAPreferred && isBPreferred) return 1;
 
-                // Sort by market cap as long as there's no user fiat balance
-                // Assets with fiat balances will remain sorted as they are
-                if (!assetA.usdValue && !assetB.usdValue) {
-                  const marketCapDefinedCompare = compareMemberDefinition(
-                    assetA,
-                    assetB,
-                    "marketCap"
-                  );
-                  if (marketCapDefinedCompare) return marketCapDefinedCompare;
-
-                  if (assetA.marketCap && assetB.marketCap) {
-                    const marketCapCompare = compareDec(
-                      assetA.marketCap.toDec(),
-                      assetB.marketCap.toDec()
-                    );
-                    if (marketCapCompare) return marketCapCompare;
-                  }
-                }
                 return 0;
               });
             }
 
-            if (sortInput && sortInput.keyPath !== "usdValue") {
+            if (sortInput) {
               assets = sort(assets, sortInput.keyPath, sortInput.direction);
             }
 
@@ -270,10 +229,112 @@ export const assetsRouter = createTRPCRouter({
           cacheKey: JSON.stringify({
             search,
             onlyVerified,
+            preferredDenoms,
+            sort: sortInput,
+            categories,
+            includePreview,
+          }),
+          cursor,
+          limit,
+        })
+    ),
+  getUserBridgeAssets: publicProcedure
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
+          preferredDenoms: z.array(z.string()).optional(),
+          sort: createSortSchema([
+            "priceChange24h",
+            "usdValue",
+          ] as const).optional(),
+        })
+      )
+    )
+    .query(
+      ({
+        input: {
+          search,
+          onlyVerified,
+          userOsmoAddress,
+          preferredDenoms,
+          sort: sortInput,
+          categories,
+          cursor,
+          limit,
+          includePreview,
+        },
+        ctx,
+      }) =>
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            const isDefaultSort = !sortInput && !search;
+
+            let assets = await mapGetAssetsWithUserBalances({
+              ...ctx,
+              search,
+              categories,
+              userOsmoAddress,
+              includePreview,
+              sortFiatValueDirection: isDefaultSort
+                ? "desc"
+                : !search && sortInput && sortInput.keyPath === "usdValue"
+                ? sortInput.direction
+                : undefined,
+            });
+
+            // Filter out assets with zero balance if not searching
+            if (!search) {
+              assets = assets.filter((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
+            }
+
+            if (isDefaultSort) {
+              assets = assets.sort((assetA, assetB) => {
+                const isAPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetA.coinDenom) ||
+                    preferredDenoms.includes(assetA.coinMinimalDenom));
+                const isBPreferred =
+                  preferredDenoms &&
+                  (preferredDenoms.includes(assetB.coinDenom) ||
+                    preferredDenoms.includes(assetB.coinMinimalDenom));
+
+                if (isAPreferred && !isBPreferred) return -1;
+                if (!isAPreferred && isBPreferred) return 1;
+
+                return 0;
+              });
+            }
+
+            let priceAssets = await Promise.all(
+              assets.map(async (asset) => ({
+                ...asset,
+                priceChange24h: (
+                  await getAssetMarketActivity({
+                    coinDenom: asset.coinDenom,
+                  })
+                )?.price24hChange,
+              }))
+            );
+
+            if (sortInput && sortInput.keyPath !== "usdValue") {
+              priceAssets = sort(
+                priceAssets,
+                sortInput.keyPath,
+                sortInput.direction
+              );
+            }
+
+            return priceAssets;
+          },
+          cacheKey: JSON.stringify({
+            search,
+            onlyVerified,
             userOsmoAddress,
             preferredDenoms,
             sort: sortInput,
-            onlyPositiveBalances,
             categories,
             includePreview,
           }),

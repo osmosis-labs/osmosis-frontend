@@ -392,6 +392,7 @@
   },
   "menu": {
     "assets": "Varlıklar",
+    "portfolio": "Portföy",
     "help": "Destek",
     "info": "Bilgi",
     "pools": "Havuzlar",
@@ -774,6 +775,10 @@
     "assets": {
       "title": "Osmoz Varlıkları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
+    },
+    "portfolio": {
+      "title": "Osmoz Portföyü",
+      "description": "Varlıklarınızı önde gelen merkezi olmayan Cosmos borsası Osmosis'te görüntüleyin"
     },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",

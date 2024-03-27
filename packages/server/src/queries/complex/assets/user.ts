@@ -26,7 +26,8 @@ export type MaybeUserAssetCoin = Partial<{
   usdValue: PricePretty;
 }>;
 
-export async function getUserAssetCoin<TAsset extends Asset>({
+/** Given an asset, appends the user's balance if applicable. */
+export async function getAssetWithUserBalance<TAsset extends Asset>({
   assetLists,
   chainList,
   asset,
@@ -39,7 +40,7 @@ export async function getUserAssetCoin<TAsset extends Asset>({
 }): Promise<TAsset & MaybeUserAssetCoin> {
   if (!userOsmoAddress) return asset;
 
-  const userAssets = await mapGetUserAssetCoins({
+  const userAssets = await mapGetAssetsWithUserBalances({
     assetLists,
     chainList,
     assets: [asset],
@@ -52,7 +53,7 @@ export async function getUserAssetCoin<TAsset extends Asset>({
 /** Maps user coin data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
-export async function mapGetUserAssetCoins<TAsset extends Asset>(
+export async function mapGetAssetsWithUserBalances<TAsset extends Asset>(
   params: {
     assetLists: AssetList[];
     chainList: Chain[];

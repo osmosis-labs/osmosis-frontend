@@ -392,6 +392,7 @@
   },
   "menu": {
     "assets": "Vermögenswerte",
+    "portfolio": "Portfolio",
     "help": "Support-Labor",
     "info": "Statistiken",
     "pools": "Pools",
@@ -774,6 +775,10 @@
     "assets": {
       "title": "Osmose-Vermögenswerte",
       "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
+    },
+    "portfolio": {
+      "title": "Osmose-Portfolio",
+      "description": "Sehen Sie sich Ihr Vermögen auf Osmosis an – der führenden dezentralen Cosmos-Börse"
     },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",

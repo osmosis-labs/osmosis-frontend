@@ -10,8 +10,7 @@ const storeContext = React.createContext<RootStore | null>(null);
 function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAsset.invalidate();
   apiUtils.edge.assets.getUserAssets.invalidate();
-  apiUtils.edge.assets.getMarketAsset.invalidate();
-  apiUtils.edge.assets.getUserMarketAssets.invalidate();
+  apiUtils.edge.assets.getUserMarketAsset.invalidate();
   apiUtils.edge.assets.getUserAssetsBreakdown.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
 }
