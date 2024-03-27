@@ -80,12 +80,12 @@ export const finalizeSwapTxData = async (
 
   let amountAdjustedForFees = false;
   // update a threshhold for calculating furhter the estimate, maybe from preferences max gas fees
-  let local_networkFee =
+  let localNetworkFee =
     featureFlags.swapToolSimulateFee && networkFee ? networkFee : undefined;
   // if the amount left in balance is below AMOUNT_LEFT_THRESHOLD, subtract the gas estimates from the amount to transfer, and set amountAdjustedForFees flag.
   if (amountLeft.lt(AMOUNT_LEFT_THRESHOLD)) {
-    local_networkFee =
-      local_networkFee || (await runEstimateTxFeesOnce(messages));
+    localNetworkFee =
+      localNetworkFee || (await runEstimateTxFeesOnce(messages));
     const adjustment = local_networkFee!.gasAmount;
     coinAmount = coinAmount.sub(adjustment);
     amountAdjustedForFees = true;
