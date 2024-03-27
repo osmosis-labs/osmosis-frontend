@@ -1,32 +1,26 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-var-requires
-const nextJest = require("next/jest");
-// eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-var-requires
-const { pathsToModuleNameMapper } = require("ts-jest");
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { compilerOptions } = require("./tsconfig");
-
-config = {
+module.exports = {
   preset: "ts-jest",
   roots: ["<rootDir>/src/"],
   testMatch: ["**/__tests__/?(*.)+(spec|test).[jt]s?(x)"],
   testTimeout: 100000,
+  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
   moduleNameMapper: {
-    // Resolve absolute imports
-    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-};
-
-module.exports = async () => ({
-    // ...(await createJestConfig(config)()),
-    ...config,
-    testEnvironment: "node",
-    // transformIgnorePatterns: [
-    //     "node_modules/(?!superjson/.*)",
-    // ],
-
-    transform: {
-        '^.+\\.ts?$': 'ts-jest',
+  transform: {
+    "^.+\\.(js|jsx)?$": [
+      "babel-jest",
+      { configFile: "../../babel.config.json" },
+    ],
+    "^.+\\.(ts|tsx)?$": [
+      "ts-jest",
+      {
+        useESM: true,
       },
-      transformIgnorePatterns: ['<rootDir>/node_modules/']
-  });
+    ],
+  },
+  watchPlugins: [
+    "jest-watch-typeahead/filename",
+    "jest-watch-typeahead/testname",
+  ],
+};
