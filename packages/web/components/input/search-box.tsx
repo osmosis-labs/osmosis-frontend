@@ -7,14 +7,13 @@ import {
   forwardRef,
   useCallback,
   useMemo,
-  useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 
 const searchBoxClasses = cva(
-  "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 relative transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",
+  "flex flex-nowrap items-center justify-between gap-2 rounded-full bg-osmoverse-850 relative transition-colors [&_input]:placeholder:text-osmoverse-400 [&_input]:placeholder:font-medium",
   {
     variants: {
       /**
@@ -37,7 +36,7 @@ const searchBoxClasses = cva(
       },
     },
     defaultVariants: {
-      size: "medium",
+      size: "small",
     },
   }
 );
@@ -77,8 +76,6 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     },
     ref
   ) {
-    const [isFocused, setIsFocused] = useState(false);
-
     const _onInput = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => onInput(e.target.value),
       [onInput]
@@ -95,13 +92,12 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           searchBoxClasses({ size }),
           {
             "opacity-50": disabled,
-            "border border-osmoverse-200": isFocused,
           },
           className
         )}
       >
-        <div className="h-4 w-4 shrink-0 text-osmoverse-300">
-          <Icon id="search" height={16} width={16} />
+        <div className="h-3 w-3 shrink-0 text-osmoverse-400">
+          <Icon id="search" height={12} width={12} />
         </div>
         <label className="shrink grow">
           <input
@@ -114,12 +110,10 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
             placeholder={placeholder}
             autoComplete="off"
             onFocus={(e: any) => {
-              setIsFocused(true);
               onFocusChange?.(true);
               onFocus?.(e);
             }}
             onBlur={() => {
-              setIsFocused(false);
               onFocusChange?.(false);
             }}
             onInput={_debouncedOnInput}
