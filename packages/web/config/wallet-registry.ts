@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { DownloadInfo } from "@cosmos-kit/core";
 import {
   RegistryWallet,
   WalletConnectionInProgressError,
@@ -9,6 +10,88 @@ import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const WalletRegistry: RegistryWallet[] = [
   {
+    ...CosmosKitWalletList["trust-extension"],
+    logo: "/wallets/trust.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+    windowPropertyName: "trustwallet",
+    async supportsChain(chainId) {
+      const trustAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "stride-1",
+        "neutron-1",
+        "axelar-dojo-1",
+        "laozi-mainnet",
+        "columbus-5",
+        "phoenix-1",
+        "phoenix-1",
+        "evmos_9001-2",
+        "injective-1",
+        "stargaze-1",
+        "crypto-org-chain-mainnet-1",
+        "kava_2222-10",
+      ];
+      return trustAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    downloads: [
+      {
+        icon: "/wallets/trust.png",
+        link: "https://trustwallet.com/download",
+      },
+    ] as DownloadInfo[],
+    mode: "extension", // Add mode property with correct value
+  },
+  {
+    ...CosmosKitWalletList["trust-mobile"],
+    logo: "/wallets/trust.png",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("~/integrations/trust-walletconnect").then(
+        (m) => m.TrustMobileWallet
+      ),
+    supportsChain: async (chainId) => {
+      const trustMobileAvailableChains: MainnetChainIds[] = [
+        "agoric-3",
+        "akashnet-2",
+        "mantle-1",
+        "axelar-dojo-1",
+        "carbon-1",
+        "celestia",
+        "chihuahua-1",
+        "cosmoshub-4",
+        "mainnet-3",
+        "dydx-mainnet-1",
+        "emoney-3",
+        "evmos_9001-2",
+        "injective-1",
+        "irishub-1",
+        "juno-1",
+        "kava_2222-10",
+        "likecoin-mainnet-2",
+        "mars-1",
+        "neutron-1",
+        "osmosis-1",
+        "secret-4",
+        "pacific-1",
+        "sentinelhub-2",
+        "stargaze-1",
+        "iov-mainnet-ibc",
+        "stride-1",
+        "phoenix-1",
+      ];
+
+      return trustMobileAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    mode: "wallet-connect",
+  },
+  {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
     logo: "/wallets/keplr.svg",
@@ -18,6 +101,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
@@ -72,6 +156,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["leap-cosmos-mobile"],
@@ -165,6 +250,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
     governanceUrl: "https://cosmos.leapwallet.io/gov",
     features: ["notifications"],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["xdefi-extension"],
@@ -187,6 +273,7 @@ export const WalletRegistry: RegistryWallet[] = [
         .catch(() => false);
     },
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["station-extension"],
@@ -213,6 +300,7 @@ export const WalletRegistry: RegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+    mode: "extension",
   },
   {
     ...CosmosKitWalletList["okxwallet-extension"],
@@ -284,5 +372,6 @@ export const WalletRegistry: RegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+    mode: "extension",
   },
 ];

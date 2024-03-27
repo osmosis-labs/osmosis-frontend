@@ -7,6 +7,8 @@ import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
+import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
+import { trustMobileInfo } from "@cosmos-kit/trust-mobile";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 import * as fs from "fs";
@@ -20,6 +22,8 @@ const CosmosKitWalletList = [
   leapMobileInfo,
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
+  trustExtensionInfo,
+  trustMobileInfo,
   xdefiExtensionInfo,
   stationExtensionInfo,
 ];
@@ -78,7 +82,7 @@ async function generateCosmosKitWalletList() {
     w.logo = ""; // We'll override the logos in wallet-registry.ts
     acc[w.name] = w;
     return acc;
-  }, {} as Record<string, Wallet>);
+  }, {} as Record<string, Wallet | any>);
 
   const content = `
       import {Wallet} from "@cosmos-kit/core"
