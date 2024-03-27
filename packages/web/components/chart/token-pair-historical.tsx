@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { PriceRange } from "@osmosis-labs/stores";
 import { curveNatural } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
@@ -19,11 +18,11 @@ import {
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, memo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
@@ -49,19 +48,19 @@ const TokenPairHistoricalChart: FunctionComponent<{
    */
   showTooltip?: boolean;
   fiatSymbol?: string;
-}> = ({
-  data,
-  annotations,
-  domain,
-  onPointerHover,
-  onPointerOut,
-  showGradient = true,
-  minimal = false,
-  xNumTicks = 4,
-  showTooltip = false,
-  fiatSymbol,
-}) => {
-  return (
+}> = memo(
+  ({
+    data,
+    annotations,
+    domain,
+    onPointerHover,
+    onPointerOut,
+    showGradient = true,
+    minimal = false,
+    xNumTicks = 4,
+    showTooltip = false,
+    fiatSymbol,
+  }) => (
     <ParentSize
       className={`flex-shrink-1 flex-1 ${
         !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
@@ -184,22 +183,21 @@ const TokenPairHistoricalChart: FunctionComponent<{
             </Annotation>
           ))}
           <Tooltip
-            snapTooltipToDatumX
-            snapTooltipToDatumY
             detectBounds
             showDatumGlyph
-            glyphStyle={{
-              strokeWidth: 0,
-              fill: theme.colors.wosmongton["200"],
-            }}
             horizontalCrosshairStyle={{
-              strokeWidth: 1,
-              stroke: "#ffffff",
+              strokeWidth: 2,
+              strokeDasharray: "5 5",
+              opacity: 0.17,
+              stroke: theme.colors.osmoverse[300],
             }}
             verticalCrosshairStyle={{
-              strokeWidth: 1,
-              stroke: "#ffffff",
+              strokeWidth: 2,
+              strokeDasharray: "5 5",
+              opacity: 0.17,
+              stroke: theme.colors.osmoverse[300],
             }}
+            showVerticalCrosshair={true}
             renderTooltip={({ tooltipData }: any) => {
               const close = tooltipData?.nearestDatum?.datum?.close;
               const time = tooltipData?.nearestDatum?.datum?.time;
@@ -209,7 +207,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
                 const date = dayjs(time).format("MMM Do, hh:mma");
 
                 return (
-                  <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
+                  <div className="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     <h6 className="text-h6 font-semibold text-white-full">
                       {fiatSymbol}
                       {formatPretty(new Dec(close), {
@@ -231,8 +229,8 @@ const TokenPairHistoricalChart: FunctionComponent<{
         </XYChart>
       )}
     </ParentSize>
-  );
-};
+  )
+);
 
 export default TokenPairHistoricalChart;
 
@@ -364,7 +362,7 @@ export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="gap m-auto flex items-center gap-2">
+    <div className="gap m-auto flex items-center gap-2 px-8 md:px-6">
       <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
       <span className="subtitle1 text-osmoverse-400">
         {t("errors.chartUnavailable")}

@@ -62,7 +62,6 @@ export type SplitTokenInQuote = Quote & {
   /** In amount after fees paid are subtracted. */
   tokenInFeeAmount?: Int;
   swapFee?: Dec;
-  inOutSpotPrice?: Dec;
 };
 
 export type Logger = {

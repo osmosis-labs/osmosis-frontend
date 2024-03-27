@@ -1,5 +1,6 @@
 export * from "./coin";
 export * from "./list";
+export * from "./market-chart";
 export * from "./price";
 export * from "./search";
 
