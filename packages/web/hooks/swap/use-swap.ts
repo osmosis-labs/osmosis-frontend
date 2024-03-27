@@ -10,10 +10,10 @@ import { TRPCClientError } from "@trpc/react-query";
 import { useCallback, useMemo } from "react";
 
 import { useAmountInput } from "~/hooks/input/use-amount-input";
-import { useEstimateSwapTxFees } from "~/hooks/swap/use-estimate-swap-tx-fees";
 import { useSwapAssets } from "~/hooks/swap/use-swap-assets";
 import { useQueryRouterBestQuote } from "~/hooks/swap/use-swap-query-router-best-quote";
 import { useSwapTxParameters } from "~/hooks/swap/use-swap-tx-parameters";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { AppRouter } from "~/server/api/root-router";
@@ -148,7 +148,7 @@ export function useSwap({
   const {
     runEstimateTxFeesOnce,
     query: { data: networkFee, isLoading: isLoadingNetworkFee },
-  } = useEstimateSwapTxFees({
+  } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: swapTxParameters?.messages,
     enabled: featureFlags.swapToolSimulateFee,

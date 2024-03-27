@@ -15,7 +15,7 @@ import { useCallback } from "react";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-async function estimateSwapTxFeesQueryFn({
+async function estimateTxFeesQueryFn({
   wallet,
   messages,
   apiUtils,
@@ -61,7 +61,7 @@ async function estimateSwapTxFeesQueryFn({
   };
 }
 
-export function useEstimateSwapTxFees({
+export function useEstimateTxFees({
   messages,
   chainId,
   enabled = true,
@@ -76,10 +76,10 @@ export function useEstimateSwapTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const query = useQuery({
-    queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
+    queryKey: ["simulate-any-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-      return estimateSwapTxFeesQueryFn({
+      return estimateTxFeesQueryFn({
         wallet,
         accountStore,
         messages,
@@ -102,7 +102,7 @@ export function useEstimateSwapTxFees({
   const runEstimateTxFeesOnce = useCallback(
     async (messages: EncodeObject[]) => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-      return estimateSwapTxFeesQueryFn({
+      return estimateTxFeesQueryFn({
         wallet,
         accountStore,
         messages,
@@ -133,7 +133,7 @@ export function useEstimateSwapTxFeesMutation() {
       const wallet = accountStore.getWallet(chainId);
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
 
-      return estimateSwapTxFeesQueryFn({
+      return estimateTxFeesQueryFn({
         wallet,
         accountStore,
         messages,
