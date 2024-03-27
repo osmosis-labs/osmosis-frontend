@@ -174,12 +174,21 @@ export function useSwap({
   return {
     ...swapAssets,
     inAmountInput,
-    quote:
-      isQuoteLoading || inAmountInput.isTyping
-        ? positivePrevQuote
-        : !Boolean(quoteError)
-        ? quote
-        : undefined,
+    quote: useMemo(
+      () =>
+        isQuoteLoading || inAmountInput.isTyping
+          ? positivePrevQuote
+          : !Boolean(quoteError)
+          ? quote
+          : undefined,
+      [
+        inAmountInput.isTyping,
+        isQuoteLoading,
+        positivePrevQuote,
+        quote,
+        quoteError,
+      ]
+    ),
     totalFee,
     networkFee,
     isLoadingNetworkFee,
