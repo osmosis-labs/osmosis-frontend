@@ -147,40 +147,43 @@ export const useSendSwapTxMutation = () => {
     }: SwapTransactionData) => {
       logEvent([EventName.Swap.swapStarted, baseEvent]);
 
-      let result: "multiroute" | "multihop" | "exact-in" | undefined =
-        undefined;
-      if (routes.length === 1) {
-        const { pools } = routes[0];
-        osmosis.sendSwapExactAmountInMsg(
-          pools,
-          tokenIn,
-          tokenOutMinAmount,
-          undefined,
-          fee,
-          () => {
-            result = pools.length === 1 ? "exact-in" : "multihop";
+      const tx = await new Promise<"multiroute" | "multihop" | "exact-in">(
+        (resolve, reject) => {
+          undefined;
+          if (routes.length === 1) {
+            const { pools } = routes[0];
+            osmosis.sendSwapExactAmountInMsg(
+              pools,
+              tokenIn,
+              tokenOutMinAmount,
+              undefined,
+              fee,
+              () => {
+                resolve(pools.length === 1 ? "exact-in" : "multihop");
+              }
+            );
+          } else if (routes.length > 1) {
+            osmosis.sendSplitRouteSwapExactAmountInMsg(
+              routes,
+              tokenIn,
+              tokenOutMinAmount,
+              undefined,
+              fee,
+              () => {
+                resolve("multiroute");
+              }
+            );
+          } else {
+            reject(new Error("No routes given"));
           }
-        );
-      } else if (routes.length > 1) {
-        osmosis.sendSplitRouteSwapExactAmountInMsg(
-          routes,
-          tokenIn,
-          tokenOutMinAmount,
-          undefined,
-          fee,
-          () => {
-            result = "multiroute";
-          }
-        );
-      } else {
-        throw new Error("No routes given");
-      }
+        }
+      );
 
       logEvent([
         EventName.Swap.swapCompleted,
         {
           ...baseEvent,
-          isMultiHop: result === "multihop",
+          isMultiHop: tx === "multihop",
           quoteTimeMilliseconds: baseEvent.quoteTimeMilliseconds,
           router: baseEvent.router,
           page,
