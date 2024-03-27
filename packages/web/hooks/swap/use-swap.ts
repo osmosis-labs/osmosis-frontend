@@ -162,6 +162,15 @@ export function useSwap({
     )
   );
 
+  const totalFee = useMemo(
+    () =>
+      sum([
+        quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+        networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+      ]),
+    [networkFee?.gasUsdValueToPay, quote?.tokenInFeeAmountFiatValue]
+  );
+
   return {
     ...swapAssets,
     inAmountInput,
@@ -171,10 +180,7 @@ export function useSwap({
         : !Boolean(quoteError)
         ? quote
         : undefined,
-    totalFee: sum([
-      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
-      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
-    ]),
+    totalFee,
     networkFee,
     isLoadingNetworkFee,
     error: precedentError,
