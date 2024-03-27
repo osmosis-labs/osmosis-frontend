@@ -11,8 +11,10 @@ import {
 } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import dayjs, { isDuration } from "dayjs";
-import { Duration } from "dayjs/plugin/duration";
+import duration, { type Duration } from "dayjs/plugin/duration";
 import superjson from "superjson";
+
+dayjs.extend(duration);
 
 // https://github.com/blitz-js/superjson
 

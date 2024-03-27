@@ -1,4 +1,6 @@
 import type { AssetList } from "@osmosis-labs/types";
+/** WARNING: updating this list will likely require updates to tests, which make
+  assumptions about these assets. */
 export const AssetLists: AssetList[] = [
   {
     chain_name: "osmosis",

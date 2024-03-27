@@ -1,10 +1,23 @@
-import { AssetCategories, Category } from "@osmosis-labs/types";
+import { AssetCategories, Category, isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
 const categoryAssetSampleImages = {
+  new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
+    if (
+      asset.verified &&
+      !asset.preview &&
+      asset.listingDate &&
+      isAssetNew(asset.listingDate) &&
+      acc.length < 3
+    ) {
+      acc.push(asset.relative_image_url);
+    }
+    return acc;
+  }, [] as string[]),
   defi: [
     "/tokens/generated/osmo.svg",
     "/tokens/generated/ion.svg",
