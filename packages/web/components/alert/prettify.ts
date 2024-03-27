@@ -24,6 +24,17 @@ const regexInsufficientFeeError =
 
 const regexRejectedTx = /Request rejected/;
 
+const regexOverspendError =
+  /Spend limit error: Overspend: remaining q(?:uo|ou)ta (\d+), requested (\d+)/;
+
+export function isOverspendErrorMessage({
+  message,
+}: {
+  message: string;
+}): boolean {
+  return regexOverspendError.test(message);
+}
+
 export function isRejectedTxErrorMessage({
   message,
 }: {

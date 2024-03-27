@@ -580,22 +580,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      if (typeof signOptions?.useOneClickTrading === "undefined") {
-        signOptions = {
-          ...signOptions,
-          useOneClickTrading: await this.shouldBeSignedWithOneClickTrading({
-            messages: msgs,
-          }),
-        };
-      }
-
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
         usedFee = await this.estimateFee({
           wallet,
           messages: msgs,
           initialFee: fee ?? { amount: [] },
-          nonCriticalExtensionOptions: signOptions.useOneClickTrading
+          nonCriticalExtensionOptions: signOptions?.useOneClickTrading
             ? await this.getOneClickTradingExtensionOptions({
                 oneClickTradingInfo: await this.getOneClickTradingInfo(),
               })

@@ -8,10 +8,10 @@ import {
 } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText } from "@osmosis-labs/utils";
+import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
@@ -43,6 +43,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
@@ -76,6 +77,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
+    const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
 
     const account = accountStore.getWallet(chainId);
 
@@ -211,11 +213,34 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
-    const buttonText = swapState.error
-      ? t(...tError(swapState.error))
-      : showPriceImpactWarning
-      ? t("swap.buttonError")
-      : t("swap.button");
+    let buttonText: string;
+    if (swapState.error) {
+      buttonText = t(...tError(swapState.error));
+    } else if (showPriceImpactWarning) {
+      buttonText = t("swap.buttonError");
+    } else if (swapState.hasOverSpendLimitError) {
+      buttonText = t("swap.continueAnyway");
+    } else {
+      buttonText = t("swap.button");
+    }
+
+    let warningText: string | ReactNode;
+    if (swapState.hasOverSpendLimitError) {
+      warningText = (
+        <span>
+          This swap exceeds your remaining spend limit for 1-Click Trading.{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            Increase spend limit
+          </Button>
+        </span>
+      );
+    }
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
@@ -876,6 +901,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </div>
             </SkeletonLoader>
           </div>
+          {!isNil(warningText) && (
+            <div className="body2 flex items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500">
+              {warningText}
+            </div>
+          )}
           {swapButton ?? (
             <Button
               disabled={

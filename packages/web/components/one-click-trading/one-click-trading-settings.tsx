@@ -107,7 +107,7 @@ export function compare1CTTransactionParams({
 function formatSpendLimit(spendLimit: PricePretty | undefined) {
   return `${spendLimit?.symbol}${trimPlaceholderZeros(
     spendLimit?.toDec().toString(2) ?? ""
-  )} ${spendLimit?.fiatCurrency.currency.toUpperCase()}`;
+  )}`;
 }
 
 const OneClickTradingSettings = ({
@@ -337,7 +337,8 @@ const OneClickTradingSettings = ({
                             ? remainingSpendLimit
                             : formatSpendLimit(
                                 transaction1CTParams?.spendLimit
-                              )}
+                              )}{" "}
+                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -487,7 +488,7 @@ const OneClickTradingSettings = ({
                 {isOneClickTradingEnabled &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <SkeletonLoader
-                      className="self-center"
+                      className="h-5 self-center"
                       isLoaded={!isLoadingEstimateRemoveTx}
                     >
                       <p className="text-caption font-caption text-osmoverse-300">
@@ -515,7 +516,9 @@ const OneClickTradingSettings = ({
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                   subtitle={
-                    isOneClickTradingEnabled ? remainingSpendLimit : undefined
+                    isOneClickTradingEnabled
+                      ? `${remainingSpendLimit} ${t("remaining")}`
+                      : undefined
                   }
                 />
               </div>

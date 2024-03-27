@@ -1,4 +1,4 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
+import { Coin, EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
@@ -7,9 +7,11 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
+  SignOptions,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -19,21 +21,24 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   accountStore,
+  signOptions,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[] | undefined;
   apiUtils: ReturnType<typeof api.useUtils>;
+  signOptions?: SignOptions;
 }) {
   if (!messages) throw new Error("No messages");
 
   const shouldBeSignedWithOneClickTrading =
-    await accountStore.shouldBeSignedWithOneClickTrading({ messages });
+    signOptions?.useOneClickTrading &&
+    (await accountStore.shouldBeSignedWithOneClickTrading({ messages }));
   const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
 
   const { amount, gas: gasLimit } = await accountStore.estimateFee({
     wallet,
-    messages: messages!,
+    messages,
     nonCriticalExtensionOptions: shouldBeSignedWithOneClickTrading
       ? await accountStore.getOneClickTradingExtensionOptions({
           oneClickTradingInfo,
@@ -41,6 +46,7 @@ async function estimateTxFeesQueryFn({
       : undefined,
     signOptions: {
       ...wallet.walletInfo?.signOptions,
+      ...signOptions,
       preferNoSetFee: true, // this will automatically calculate the amount as well.
     },
   });
@@ -72,18 +78,35 @@ async function estimateTxFeesQueryFn({
 export function useEstimateTxFees({
   messages,
   chainId,
-  enabled = true,
+  signOptions,
+  enabled: enabledParam = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
   enabled?: boolean;
+  signOptions?: SignOptions;
 }) {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
   const wallet = accountStore.getWallet(chainId);
 
-  return useQuery({
+  const enabled =
+    enabledParam &&
+    !isNil(messages) &&
+    Array.isArray(messages) &&
+    messages.length > 0 &&
+    wallet?.address !== undefined &&
+    typeof wallet?.address === "string";
+  const query = useQuery<
+    {
+      gasUsdValueToPay: PricePretty;
+      gasAmount: CoinPretty;
+      gasLimit: string;
+      amount: readonly Coin[];
+    },
+    Error
+  >({
     queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
@@ -92,19 +115,26 @@ export function useEstimateTxFees({
         accountStore,
         messages,
         apiUtils,
+        signOptions,
       });
     },
     staleTime: 3_000, // 3 seconds
     cacheTime: 3_000, // 3 seconds
     retry: false,
-    enabled:
-      enabled &&
-      !isNil(messages) &&
-      Array.isArray(messages) &&
-      messages.length > 0 &&
-      wallet?.address !== undefined &&
-      typeof wallet?.address === "string",
+    enabled,
   });
+
+  const [previousError, setPreviousError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (query.data) return setPreviousError(null);
+    if (query.error) return setPreviousError(query.error);
+  }, [query.data, query.error]);
+
+  return {
+    ...query,
+    previousError,
+  };
 }
 
 export function useEstimateTxFeesMutation() {
