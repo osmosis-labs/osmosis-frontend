@@ -86,16 +86,16 @@ export const finalizeSwapTxData = async (
   if (amountLeft.lt(AMOUNT_LEFT_THRESHOLD)) {
     localNetworkFee =
       localNetworkFee || (await runEstimateTxFeesOnce(messages));
-    const adjustment = local_networkFee!.gasAmount;
+    const adjustment = localNetworkFee!.gasAmount;
     coinAmount = coinAmount.sub(adjustment);
     amountAdjustedForFees = true;
   }
 
-  const fee = local_networkFee && {
+  const fee = localNetworkFee && {
     preferNoSetFee: true,
     fee: {
-      gas: local_networkFee.gasLimit,
-      amount: local_networkFee.amount,
+      gas: localNetworkFee.gasLimit,
+      amount: localNetworkFee.amount,
     },
   };
 
