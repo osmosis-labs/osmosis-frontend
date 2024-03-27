@@ -76,6 +76,9 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
+    oneClickTrading:
+      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+      launchdarklyFlags.oneClickTrading,
     _isInitialized:
       process.env.NODE_ENV === "development" &&
       !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID

@@ -11,8 +11,8 @@ export interface ParamsProtoMsg {
 }
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
-  maximum_unauthenticated_gas: string;
-  are_smart_accounts_active: boolean;
+  maximum_unauthenticated_gas?: string;
+  are_smart_accounts_active?: boolean;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/authenticator/params";
@@ -75,17 +75,33 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      maximumUnauthenticatedGas: BigInt(object.maximum_unauthenticated_gas),
-      areSmartAccountsActive: object.are_smart_accounts_active,
-    };
+    const message = createBaseParams();
+    if (
+      object.maximum_unauthenticated_gas !== undefined &&
+      object.maximum_unauthenticated_gas !== null
+    ) {
+      message.maximumUnauthenticatedGas = BigInt(
+        object.maximum_unauthenticated_gas
+      );
+    }
+    if (
+      object.are_smart_accounts_active !== undefined &&
+      object.are_smart_accounts_active !== null
+    ) {
+      message.areSmartAccountsActive = object.are_smart_accounts_active;
+    }
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
-    obj.maximum_unauthenticated_gas = message.maximumUnauthenticatedGas
-      ? message.maximumUnauthenticatedGas.toString()
-      : undefined;
-    obj.are_smart_accounts_active = message.areSmartAccountsActive;
+    obj.maximum_unauthenticated_gas =
+      message.maximumUnauthenticatedGas !== BigInt(0)
+        ? message.maximumUnauthenticatedGas.toString()
+        : undefined;
+    obj.are_smart_accounts_active =
+      message.areSmartAccountsActive === false
+        ? undefined
+        : message.areSmartAccountsActive;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

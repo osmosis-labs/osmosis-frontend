@@ -1,5 +1,9 @@
 import { AminoMsg, StdFee } from "@cosmjs/amino";
-import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
+import {
+  ChainWalletBase,
+  SignOptions as CosmoskitSignOptions,
+  Wallet,
+} from "@cosmos-kit/core";
 import {
   Currency,
   OneClickTradingHumanizedSessionPeriod,
@@ -137,4 +141,8 @@ export interface StdSignDoc {
   readonly msgs: readonly AminoMsg[];
   readonly memo: string;
   readonly timeout_height?: string;
+}
+
+export interface SignOptions extends CosmoskitSignOptions {
+  useOneClickTrading?: boolean;
 }

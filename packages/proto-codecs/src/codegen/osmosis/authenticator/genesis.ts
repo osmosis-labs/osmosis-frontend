@@ -32,13 +32,13 @@ export interface AuthenticatorDataProtoMsg {
  */
 export interface AuthenticatorDataAmino {
   /** address is an account address, one address can have many authenticators */
-  address: string;
+  address?: string;
   /**
    * authenticators are the account's authenticators, these can be multiple
    * types including SignatureVerificationAuthenticator, AllOfAuthenticators and
    * CosmWasmAuthenticators.
    */
-  authenticators: AccountAuthenticatorAmino[];
+  authenticators?: AccountAuthenticatorAmino[];
 }
 export interface AuthenticatorDataAminoMsg {
   type: "osmosis/authenticator/authenticator-data";
@@ -74,12 +74,12 @@ export interface GenesisStateAmino {
   /** params define the parameters for the authenticator module. */
   params?: ParamsAmino;
   /** next_authenticator_id is the next available authenticator ID. */
-  next_authenticator_id: string;
+  next_authenticator_id?: string;
   /**
    * authenticator_data contains the data for multiple accounts, each with their
    * authenticators.
    */
-  authenticator_data: AuthenticatorDataAmino[];
+  authenticator_data?: AuthenticatorDataAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/authenticator/genesis-state";
@@ -143,24 +143,24 @@ export const AuthenticatorData = {
     return message;
   },
   fromAmino(object: AuthenticatorDataAmino): AuthenticatorData {
-    return {
-      address: object.address,
-      authenticators: Array.isArray(object?.authenticators)
-        ? object.authenticators.map((e: any) =>
-            AccountAuthenticator.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseAuthenticatorData();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    message.authenticators =
+      object.authenticators?.map((e) => AccountAuthenticator.fromAmino(e)) ||
+      [];
+    return message;
   },
   toAmino(message: AuthenticatorData): AuthenticatorDataAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.authenticators) {
       obj.authenticators = message.authenticators.map((e) =>
         e ? AccountAuthenticator.toAmino(e) : undefined
       );
     } else {
-      obj.authenticators = [];
+      obj.authenticators = message.authenticators;
     }
     return obj;
   },
@@ -253,28 +253,34 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      nextAuthenticatorId: BigInt(object.next_authenticator_id),
-      authenticatorData: Array.isArray(object?.authenticator_data)
-        ? object.authenticator_data.map((e: any) =>
-            AuthenticatorData.fromAmino(e)
-          )
-        : [],
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    if (
+      object.next_authenticator_id !== undefined &&
+      object.next_authenticator_id !== null
+    ) {
+      message.nextAuthenticatorId = BigInt(object.next_authenticator_id);
+    }
+    message.authenticatorData =
+      object.authenticator_data?.map((e) => AuthenticatorData.fromAmino(e)) ||
+      [];
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
-    obj.next_authenticator_id = message.nextAuthenticatorId
-      ? message.nextAuthenticatorId.toString()
-      : undefined;
+    obj.next_authenticator_id =
+      message.nextAuthenticatorId !== BigInt(0)
+        ? message.nextAuthenticatorId.toString()
+        : undefined;
     if (message.authenticatorData) {
       obj.authenticator_data = message.authenticatorData.map((e) =>
         e ? AuthenticatorData.toAmino(e) : undefined
       );
     } else {
-      obj.authenticator_data = [];
+      obj.authenticator_data = message.authenticatorData;
     }
     return obj;
   },

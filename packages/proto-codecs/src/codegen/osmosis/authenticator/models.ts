@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { base64FromBytes, bytesFromBase64 } from "../../helpers";
 /**
  * AccountAuthenticator represents a foundational model for all authenticators.
  * It provides extensibility by allowing concrete types to interpret and
@@ -33,20 +34,20 @@ export interface AccountAuthenticatorProtoMsg {
  */
 export interface AccountAuthenticatorAmino {
   /** ID uniquely identifies the authenticator instance. */
-  id: string;
+  id?: string;
   /**
    * Type specifies the category of the AccountAuthenticator.
    * This type information is essential for differentiating authenticators
    * and ensuring precise data retrieval from the storage layer.
    */
-  type: string;
+  type?: string;
   /**
    * Data is a versatile field used in conjunction with the specific type of
    * account authenticator to facilitate complex authentication processes.
    * The interpretation of this field is overloaded, enabling multiple
    * authenticators to utilize it for their respective purposes.
    */
-  data: Uint8Array;
+  data?: string;
 }
 export interface AccountAuthenticatorAminoMsg {
   type: "osmosis/authenticator/account-authenticator";
@@ -124,17 +125,23 @@ export const AccountAuthenticator = {
     return message;
   },
   fromAmino(object: AccountAuthenticatorAmino): AccountAuthenticator {
-    return {
-      id: BigInt(object.id),
-      type: object.type,
-      data: object.data,
-    };
+    const message = createBaseAccountAuthenticator();
+    if (object.id !== undefined && object.id !== null) {
+      message.id = BigInt(object.id);
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: AccountAuthenticator): AccountAuthenticatorAmino {
     const obj: any = {};
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.type = message.type;
-    obj.data = message.data;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.type = message.type === "" ? undefined : message.type;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: AccountAuthenticatorAminoMsg): AccountAuthenticator {

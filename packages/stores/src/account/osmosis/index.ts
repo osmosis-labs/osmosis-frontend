@@ -1,6 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { SignOptions } from "@cosmos-kit/core";
-import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
@@ -22,7 +21,7 @@ import {
 } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
-import { DeliverTxResponse } from "../types";
+import { DeliverTxResponse, SignOptions } from "../types";
 import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 
@@ -1091,7 +1090,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency },
     tokenOutMinAmount: string,
     memo: string = "",
-    signOptions?: KeplrSignOptions & { fee?: TxFee },
+    signOptions?: SignOptions & { fee?: TxFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
@@ -1163,7 +1162,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     tokenOutMinAmount: string,
     memo: string = "",
-    signOptions?: KeplrSignOptions & { fee?: TxFee },
+    signOptions?: SignOptions & { fee?: TxFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.swapExactAmountIn.messageComposer({
@@ -1228,7 +1227,7 @@ export class OsmosisAccountImpl {
     tokenOut: { currency: Currency; amount: string },
     tokenInMaxAmount: string,
     memo: string = "",
-    signOptions?: KeplrSignOptions,
+    signOptions?: SignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(

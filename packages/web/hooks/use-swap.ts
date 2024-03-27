@@ -1,4 +1,3 @@
-import { SignOptions } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -9,6 +8,7 @@ import type { Asset, RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
+  SignOptions,
   TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
@@ -22,8 +22,10 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
+import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -73,6 +75,7 @@ export function useSwap({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -237,7 +240,7 @@ export function useSwap({
   );
 
   const messages = useMemo(() => {
-    if (!account?.address) return undefined;
+    if (!account?.address || !quote) return undefined;
 
     let txParams: ReturnType<typeof getSwapTxParameters>;
 
@@ -280,93 +283,132 @@ export function useSwap({
             userOsmoAddress: account.address,
           }),
     ];
+  }, [
+    account?.address,
+    getSwapTxParameters,
+    inAmountInput.amount,
+    precedentError,
+    quote,
+  ]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getSwapTxParameters, quote, inAmountInput, account, swapAssets]);
+  const {
+    data: networkFee,
+    previousError: estimateTxPreviousError,
+    isLoading: isLoadingNetworkFee,
+  } = useEstimateTxFees({
+    chainId: chainStore.osmosis.chainId,
+    messages,
+    enabled: featureFlags.swapToolSimulateFee,
+    signOptions: {
+      useOneClickTrading: featureFlags.oneClickTrading,
+    },
+  });
 
-  const { data: networkFee, isLoading: isLoadingNetworkFee } =
-    useEstimateTxFees({
-      chainId: chainStore.osmosis.chainId,
-      messages,
-      enabled: featureFlags.swapToolSimulateFee,
+  const hasOverSpendLimitError = useMemo(() => {
+    if (
+      !estimateTxPreviousError?.message ||
+      !isOneClickTradingEnabled ||
+      inAmountInput.isEmpty
+    ) {
+      return false;
+    }
+    return isOverspendErrorMessage({
+      message: estimateTxPreviousError?.message,
     });
+  }, [
+    estimateTxPreviousError?.message,
+    inAmountInput.isEmpty,
+    isOneClickTradingEnabled,
+  ]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     (maxSlippage: Dec) =>
-      new Promise<"multiroute" | "multihop" | "exact-in">((resolve, reject) => {
-        if (!account) return reject("No account");
+      new Promise<"multiroute" | "multihop" | "exact-in">(
+        async (resolve, reject) => {
+          if (!account) return reject("No account");
 
-        let txParams: ReturnType<typeof getSwapTxParameters>;
+          let txParams: ReturnType<typeof getSwapTxParameters>;
 
-        try {
-          txParams = getSwapTxParameters({
-            coinAmount: inAmountInput.amount,
-            maxSlippage,
-          });
-        } catch (e) {
-          const error = e as Error;
-          return reject(error.message);
-        }
-
-        const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-        const fee: (SignOptions & { fee: TxFee }) | undefined =
-          featureFlags.swapToolSimulateFee && networkFee
-            ? {
-                preferNoSetFee: true,
-                fee: {
-                  gas: networkFee.gasLimit,
-                  amount: networkFee.amount,
-                },
-              }
-            : undefined;
-
-        /**
-         * Send messages to account
-         */
-        if (routes.length === 1) {
-          const { pools } = routes[0];
-          account.osmosis
-            .sendSwapExactAmountInMsg(
-              pools,
-              tokenIn,
-              tokenOutMinAmount,
-              undefined,
-              fee,
-              () => {
-                resolve(pools.length === 1 ? "exact-in" : "multihop");
-              }
-            )
-            .catch((reason) => {
-              reject(reason);
-            })
-            .finally(() => {
-              inAmountInput.reset();
+          try {
+            txParams = getSwapTxParameters({
+              coinAmount: inAmountInput.amount,
+              maxSlippage,
             });
-          return pools.length === 1 ? "exact-in" : "multihop";
-        } else if (routes.length > 1) {
-          account.osmosis
-            .sendSplitRouteSwapExactAmountInMsg(
-              routes,
-              tokenIn,
-              tokenOutMinAmount,
-              undefined,
-              fee,
-              () => {
-                resolve("multiroute");
-              }
-            )
-            .catch((reason) => {
-              reject(reason);
-            })
-            .finally(() => {
-              inAmountInput.reset();
-            });
-        } else {
-          reject("No routes given");
+          } catch (e) {
+            const error = e as Error;
+            return reject(error.message);
+          }
+
+          const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+          const shouldBeSignedWithOneClickTrading = !isNil(messages)
+            ? featureFlags.swapToolSimulateFee &&
+              featureFlags.oneClickTrading &&
+              (await accountStore.shouldBeSignedWithOneClickTrading({
+                messages,
+              })) &&
+              !hasOverSpendLimitError
+            : false;
+          const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
+            useOneClickTrading: shouldBeSignedWithOneClickTrading,
+            ...(featureFlags.swapToolSimulateFee && networkFee
+              ? {
+                  preferNoSetFee: true,
+                  fee: {
+                    gas: networkFee.gasLimit,
+                    amount: networkFee.amount,
+                  },
+                }
+              : {}),
+          };
+
+          /**
+           * Send messages to account
+           */
+          if (routes.length === 1) {
+            const { pools } = routes[0];
+            account.osmosis
+              .sendSwapExactAmountInMsg(
+                pools,
+                tokenIn,
+                tokenOutMinAmount,
+                undefined,
+                signOptions,
+                () => {
+                  resolve(pools.length === 1 ? "exact-in" : "multihop");
+                }
+              )
+              .catch((reason) => {
+                reject(reason);
+              })
+              .finally(() => {
+                inAmountInput.reset();
+              });
+            return pools.length === 1 ? "exact-in" : "multihop";
+          } else if (routes.length > 1) {
+            account.osmosis
+              .sendSplitRouteSwapExactAmountInMsg(
+                routes,
+                tokenIn,
+                tokenOutMinAmount,
+                undefined,
+                signOptions,
+                () => {
+                  resolve("multiroute");
+                }
+              )
+              .catch((reason) => {
+                reject(reason);
+              })
+              .finally(() => {
+                inAmountInput.reset();
+              });
+          } else {
+            reject("No routes given");
+          }
         }
-      }).finally(() => {
+      ).finally(() => {
         // TODO: Move this logic to osmosis account store
         // But for now we will invalidate query data here.
         if (!account?.address) return;
@@ -376,11 +418,15 @@ export function useSwap({
       }),
     [
       account,
-      inAmountInput,
-      networkFee,
-      queryClient,
+      messages,
+      featureFlags.oneClickTrading,
       featureFlags.swapToolSimulateFee,
+      accountStore,
+      hasOverSpendLimitError,
+      networkFee,
       getSwapTxParameters,
+      inAmountInput,
+      queryClient,
     ]
   );
 
@@ -411,11 +457,16 @@ export function useSwap({
     spotPriceQuote,
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
-    isQuoteLoading,
+    isQuoteLoading: isOneClickTradingEnabled
+      ? isQuoteLoading || isLoadingNetworkFee
+      : isQuoteLoading,
     /** Spot price or user input quote. */
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    isLoading: isOneClickTradingEnabled
+      ? isQuoteLoading || isSpotPriceQuoteLoading || isLoadingNetworkFee
+      : isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
+    hasOverSpendLimitError,
   };
 }
 

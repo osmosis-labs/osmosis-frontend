@@ -797,6 +797,7 @@
     "priceImpact": "Price Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
+    "continueAnyway": "Continue Anyway",
     "settings": {
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",

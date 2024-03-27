@@ -67,6 +67,7 @@
     "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
+    "@osmosis-labs/server": "^1.0.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.5.2",

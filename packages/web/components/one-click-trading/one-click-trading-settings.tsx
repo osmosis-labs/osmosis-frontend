@@ -107,7 +107,7 @@ export function compare1CTTransactionParams({
 function formatSpendLimit(spendLimit: PricePretty | undefined) {
   return `${spendLimit?.symbol}${trimPlaceholderZeros(
     spendLimit?.toDec().toString(2) ?? ""
-  )} ${spendLimit?.fiatCurrency.currency.toUpperCase()}`;
+  )}`;
 }
 
 const OneClickTradingSettings = ({
@@ -200,14 +200,14 @@ const OneClickTradingSettings = ({
   const isDisabled =
     !transaction1CTParams?.isOneClickEnabled || isSendingTx || isLoading;
 
-  const spendLimitDisplay =
-    transaction1CTParams?.spendLimit &&
-    amountSpentData?.amountSpent &&
-    isOneClickTradingEnabled
+  const remainingSpendLimit =
+    initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
       ? `${formatSpendLimit(
-          transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
-        )} / ${formatSpendLimit(transaction1CTParams.spendLimit)}`
-      : formatSpendLimit(transaction1CTParams?.spendLimit);
+          initialTransaction1CTParams.spendLimit.sub(
+            amountSpentData.amountSpent
+          )
+        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+      : undefined;
 
   return (
     <>
@@ -330,7 +330,16 @@ const OneClickTradingSettings = ({
                         )}
                         disabled={isDisabled}
                       >
-                        <p>{spendLimitDisplay} </p>
+                        <p>
+                          {remainingSpendLimit &&
+                          isOneClickTradingEnabled &&
+                          !changes.includes("spendLimit")
+                            ? remainingSpendLimit
+                            : formatSpendLimit(
+                                transaction1CTParams?.spendLimit
+                              )}{" "}
+                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
+                        </p>
                         <Icon
                           id="chevron-right"
                           width={18}
@@ -479,7 +488,7 @@ const OneClickTradingSettings = ({
                 {isOneClickTradingEnabled &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <SkeletonLoader
-                      className="self-center"
+                      className="h-5 self-center"
                       isLoaded={!isLoadingEstimateRemoveTx}
                     >
                       <p className="text-caption font-caption text-osmoverse-300">
@@ -507,7 +516,9 @@ const OneClickTradingSettings = ({
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                   subtitle={
-                    isOneClickTradingEnabled ? spendLimitDisplay : undefined
+                    isOneClickTradingEnabled
+                      ? `${remainingSpendLimit} ${t("remaining")}`
+                      : undefined
                   }
                 />
               </div>

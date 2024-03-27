@@ -32,7 +32,10 @@ export const queryAuthenticatorSpendLimit = createNodeQuery<
 >({
   path: ({ address, authenticatorId }) => {
     const msg = JSON.stringify({
-      spending: { account: address, authenticator_id: `${authenticatorId}.1` },
+      spending: {
+        account: address,
+        authenticator_id: `${authenticatorId}.1`,
+      },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");
 

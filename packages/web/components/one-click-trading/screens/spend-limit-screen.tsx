@@ -140,7 +140,9 @@ export const SpendLimitScreen = ({
             {t("oneClickTrading.settings.spendLimitTitle")}
           </h1>
           {!isNil(subtitle) && (
-            <p className="text-body2 text-osmoverse-300">{subtitle}</p>
+            <p className="text-center text-body2 text-osmoverse-300">
+              {subtitle}
+            </p>
           )}
         </div>
         <p className="text-center text-body2 font-body2 text-osmoverse-200">
