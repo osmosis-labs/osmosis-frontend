@@ -1,7 +1,6 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
-import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -17,6 +16,7 @@ import {
 } from "../../../queries/data-services/earn";
 import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import dayjs from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
 import { type Asset, getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";

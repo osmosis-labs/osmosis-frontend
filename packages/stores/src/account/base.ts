@@ -992,6 +992,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Failed to retrieve account from signer");
     }
 
+    if (memo === "") {
+      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "FE";
+    } else {
+      // Otherwise, tack on "FE" to the end of the memo.
+      memo += " \nFE";
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -1123,6 +1132,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
+
+    if (memo === "") {
+      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "FE";
+    } else {
+      // Otherwise, tack on "FE" to the end of the memo.
+      memo += " \nFE";
+    }
+
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {

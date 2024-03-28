@@ -32,7 +32,7 @@ yarn start
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
-Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
+Make sure [node](https://nodejs.org/en/) = 20 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
 
 1. Install deps
 

@@ -281,7 +281,7 @@
       "addFunds": "增加資金即可開始"
     },
     "categories": {
-      "newest": "最新",
+      "new": "最新",
       "defi": "去中心化金融",
       "stablecoin": "穩定幣",
       "meme": "迷因",
