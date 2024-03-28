@@ -152,7 +152,9 @@ export const getListOptions = <T>(
     }
   });
 
-  uniqueOptionsMap.set("all", { value: "" as unknown as T, label: allLabel });
+  const uniqueOptions = Array.from(uniqueOptionsMap.values());
 
-  return Array.from(uniqueOptionsMap.values());
+  uniqueOptions.unshift({ value: "" as unknown as T, label: allLabel });
+
+  return uniqueOptions;
 };
