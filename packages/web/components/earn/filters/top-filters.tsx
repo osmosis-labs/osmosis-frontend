@@ -119,7 +119,7 @@ export const TopFilters = ({
       getListOptions<string>(
         cmsData?.strategies ?? [],
         "type",
-        "category",
+        "type",
         t("earnPage.rewardTypes.all")
       ),
     [cmsData, t]

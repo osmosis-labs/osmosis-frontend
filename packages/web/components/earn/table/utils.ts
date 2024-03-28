@@ -122,7 +122,7 @@ export const _getKey = (k: keyof Filters) => {
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "tags";
+      return "categories";
     default:
       return k;
   }
@@ -136,8 +136,8 @@ export const getDefaultFiltersState = (filters: Filters) =>
 
 export const getListOptions = <T>(
   strategies: StrategyCMSData[],
-  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type">,
-  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "category">,
+  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
+  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
   allLabel: string
 ) => {
   const uniqueOptionsMap = new Map<string, ListOption<T>>();

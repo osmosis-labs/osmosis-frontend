@@ -30,6 +30,9 @@ const columnHelper = createColumnHelper<EarnStrategy>();
 export const ColumnCellHeader = ({
   className,
   tKey,
+  /**
+   * Translation Key
+   */
   tooltipDescription,
   tooltipClassname,
 }: PropsWithChildren<{
@@ -50,7 +53,7 @@ export const ColumnCellHeader = ({
           body={
             tooltipDescription && (
               <p className="text-caption text-osmoverse-300">
-                {tooltipDescription}
+                {t(tooltipDescription)}
               </p>
             )
           }
@@ -118,7 +121,7 @@ export const tableColumns = [
   columnHelper.accessor("tvl.tvlUsd", {
     header: () => (
       <ColumnCellHeader
-        tooltipDescription="Description of TVL"
+        tooltipDescription={"earnPage.tooltips.tvl.description"}
         tKey={"pools.TVL"}
       />
     ),
@@ -126,18 +129,33 @@ export const tableColumns = [
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("annualPercentages.apy", {
-    header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.apr.description"}
+        tKey={"earnPage.apy"}
+      />
+    ),
     cell: APYCell,
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("daily", {
-    header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.daily.description"}
+        tKey={"earnPage.daily"}
+      />
+    ),
     // use the same logic as the APY cell
     cell: APYCell,
     sortingFn: sortDecValues,
   }),
   columnHelper.accessor("rewardAssets", {
-    header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.reward.description"}
+        tKey={"earnPage.reward"}
+      />
+    ),
     cell: (item) => (
       <div className="relative flex items-center justify-end">
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
@@ -211,7 +229,7 @@ export const tableColumns = [
     filterFn: lockDurationFilter,
     enableHiding: true,
   }),
-  columnHelper.accessor("tags", {
+  columnHelper.accessor("categories", {
     filterFn: multiListOptionValueEquals,
     enableHiding: true,
   }),
