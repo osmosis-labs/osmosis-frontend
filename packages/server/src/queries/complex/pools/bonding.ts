@@ -1,8 +1,8 @@
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import dayjs from "dayjs";
-import { Duration } from "dayjs/plugin/duration";
+import type { Duration } from "dayjs/plugin/duration";
 
+import dayjs from "../../../utils/dayjs";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { querySyntheticLockupsByLockId } from "../../osmosis/lockup";
 import {

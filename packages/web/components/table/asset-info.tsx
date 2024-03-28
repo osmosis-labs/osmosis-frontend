@@ -1,9 +1,9 @@
 import type {
+  Category,
   CommonPriceChartTimeFrame,
   Search,
   SortDirection,
 } from "@osmosis-labs/server";
-import { Category } from "@osmosis-labs/types";
 import {
   CellContext,
   createColumnHelper,

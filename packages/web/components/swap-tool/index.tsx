@@ -1,11 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-} from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText } from "@osmosis-labs/utils";
@@ -685,18 +679,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   {`≈ ${
                     swapState.toAsset
                       ? formatPretty(
-                          (swapState.quote?.inOutSpotPrice
-                            ? new CoinPretty(
-                                swapState.toAsset,
-                                swapState.quote.inOutSpotPrice.mul(
-                                  DecUtils.getTenExponentN(
-                                    swapState.toAsset.coinDecimals
-                                  )
-                                )
-                              )
-                            : null) ??
-                            swapState.spotPriceQuote?.amount ??
-                            new Dec(0),
+                          swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
                           {
                             maxDecimals: Math.min(
                               swapState.toAsset.coinDecimals,
