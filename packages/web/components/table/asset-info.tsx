@@ -50,11 +50,9 @@ import { SortHeader } from "./headers/sort";
 
 type AssetRow =
   RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
-type SortKey =
-  | NonNullable<
-      RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
-    >["keyPath"]
-  | undefined;
+type SortKey = NonNullable<
+  RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+>["keyPath"];
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -73,7 +71,10 @@ export const AssetsInfoTable: FunctionComponent<{
   const [selectedTimeFrame, setSelectedTimeFrame] =
     useState<CommonPriceChartTimeFrame>("1D");
 
-  const [sortKey, setSortKey] = useState<SortKey>();
+  const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
+  const setSortKey = useCallback((key: SortKey | undefined) => {
+    if (key !== undefined) setSortKey_(key);
+  }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const [selectedCategory, setCategory] = useState<Category | undefined>();
@@ -214,6 +215,7 @@ export const AssetsInfoTable: FunctionComponent<{
     selectedTimeFrame,
     sortKey,
     sortDirection,
+    setSortKey,
     onAddFavoriteDenom,
     onRemoveFavoriteDenom,
   ]);
