@@ -76,20 +76,16 @@ export const AssetsInfoTable: FunctionComponent<{
   const [sortKey, setSortKey] = useState<SortKey>();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
-  const selectCategory = useCallback(
-    (category: Category) => {
-      const selected = new Set(selectedCategories);
-      selected.add(category);
-      setSelectedCategories(Array.from(selected));
-    },
-    [selectedCategories]
-  );
-  const unselectCategory = useCallback(
-    (category: Category) => {
-      setSelectedCategories(selectedCategories.filter((c) => c !== category));
-    },
-    [selectedCategories]
+  const [selectedCategory, setCategory] = useState<Category | undefined>();
+  const selectCategory = useCallback((category: Category) => {
+    setCategory(category);
+  }, []);
+  const unselectCategory = useCallback(() => {
+    setCategory(undefined);
+  }, []);
+  const categories = useMemo(
+    () => (selectedCategory ? [selectedCategory] : undefined),
+    [selectedCategory]
   );
 
   const showUnverifiedAssetsSetting =
@@ -119,7 +115,7 @@ export const AssetsInfoTable: FunctionComponent<{
             direction: sortDirection,
           }
         : undefined,
-      categories: selectedCategories.length ? selectedCategories : undefined,
+      categories,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -287,7 +283,7 @@ export const AssetsInfoTable: FunctionComponent<{
     <div className="w-full">
       <section className="mb-4">
         <AssetCategoriesSelectors
-          selectedCategories={selectedCategories}
+          selectedCategory={selectedCategory}
           onSelectCategory={selectCategory}
           unselectCategory={unselectCategory}
         />
