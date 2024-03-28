@@ -281,7 +281,7 @@
       "addFunds": "Başlamak için para ekleyin"
     },
     "categories": {
-      "newest": "En yeni",
+      "new": "En yeni",
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",

@@ -281,7 +281,7 @@
       "addFunds": "Add funds to get started"
     },
     "categories": {
-      "newest": "Newest",
+      "new": "Newest",
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",
