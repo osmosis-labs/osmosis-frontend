@@ -1,3 +1,4 @@
+import { WalletRepo } from "@cosmos-kit/core";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
@@ -121,7 +122,9 @@ export const WalletSelectProvider: FunctionComponent = observer(
       <WalletSelectInnerProvider value={context}>
         {Boolean(chainName) && (
           <WalletSelectModal
-            walletRepo={accountStore.getWalletRepo(chainName!)}
+            walletRepo={
+              accountStore.getWalletRepo(chainName!) as WalletRepo | any
+            }
             onConnect={() => {
               setUserAmplitudeProperties();
             }}

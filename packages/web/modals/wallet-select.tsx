@@ -185,7 +185,7 @@ export const WalletSelectModal: FunctionComponent<
     if (!isWalletInstalled && "lazyInstall" in wallet) {
       setLazyWalletInfo(wallet);
       setModalView("connecting");
-
+      
       // wallet is now walletInfo
       const walletInfo = wallet;
       const WalletClass = await wallet.lazyInstall();
@@ -196,7 +196,7 @@ export const WalletSelectModal: FunctionComponent<
       await walletManager.onMounted().catch(handleConnectError);
       setLazyWalletInfo(undefined);
 
-      walletRepo = walletManager.getWalletRepo(chainName);
+      walletRepo = walletManager.getWalletRepo(chainName) as WalletRepo | any;
     } else {
       walletRepo = walletRepoProp;
     }
