@@ -24,7 +24,7 @@ import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { FormatOptions, formatPretty } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
 const TokenPairHistoricalChart: FunctionComponent<{
@@ -241,6 +241,10 @@ const TokenPairHistoricalChart: FunctionComponent<{
                         maxDecimals,
                         notation: "standard",
                         maximumSignificantDigits,
+                        minimumSignificantDigits: maximumSignificantDigits,
+                        minimumFractionDigits: 4,
+                        maximumFractionDigits: 4,
+                        disabledTrimZeros: true,
                       }) || ""}
                     </h6>
 
@@ -267,7 +271,7 @@ export const PriceChartHeader: FunctionComponent<{
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
   decimal: number;
-  formatOpts?: Partial<Intl.NumberFormatOptions>;
+  formatOpts?: FormatOptions;
   fiatSymbol?: string;
   baseDenom?: string;
   quoteDenom?: string;

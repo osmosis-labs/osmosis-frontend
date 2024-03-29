@@ -458,6 +458,10 @@ const TokenChartHeader = observer(() => {
           formatOpts={{
             notation: "standard",
             maximumSignificantDigits,
+            minimumSignificantDigits: maximumSignificantDigits,
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4,
+            disabledTrimZeros: true,
           }}
           decimal={maxDecimals}
           showAllRange
