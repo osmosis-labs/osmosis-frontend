@@ -203,8 +203,35 @@ const TokenPairHistoricalChart: FunctionComponent<{
               const time = tooltipData?.nearestDatum?.datum?.time;
 
               if (showTooltip && time && close) {
-                const maxDecimals = Math.max(getDecimalCount(close), 2);
                 const date = dayjs(time).format("MMM Do, hh:mma");
+                const minimumDecimals = 2;
+                const maxDecimals = Math.max(
+                  getDecimalCount(close),
+                  minimumDecimals
+                );
+
+                const closeDec = new Dec(close);
+
+                /**
+                 * We need to know how long the integer part of the number is in order to calculate then how many decimal places.
+                 */
+                const integerPartLength =
+                  closeDec.truncate().toString().length ?? 0;
+
+                /**
+                 * If a number is less then $1000, we only show 4 significant digits, examples:
+                 *  OSMO: $1.612
+                 *  AXL: $0.9032
+                 *  STARS: $0.03673
+                 *  HUAHUA: $0.00001231
+                 *
+                 * If a number is greater or equal to $1000, we show a dynamic significant digits based on it's integer part, examples:
+                 * BTC: $47,334.21
+                 * ETH: $3,441.15
+                 */
+                const maximumSignificantDigits = closeDec.lt(new Dec(1000))
+                  ? 4
+                  : integerPartLength + 2;
 
                 return (
                   <div className="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
@@ -212,7 +239,8 @@ const TokenPairHistoricalChart: FunctionComponent<{
                       {fiatSymbol}
                       {formatPretty(new Dec(close), {
                         maxDecimals,
-                        notation: "compact",
+                        notation: "standard",
+                        maximumSignificantDigits,
                       }) || ""}
                     </h6>
 
