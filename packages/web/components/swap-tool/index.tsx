@@ -381,7 +381,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     size="sm"
                     className={classNames(
                       "text-wosmongton-300",
-                      swapState.inAmountInput.fraction === 0.5
+                      swapState.fractionButtonState.isHalf
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
@@ -389,7 +389,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       !swapState.inAmountInput.balance ||
                       swapState.inAmountInput.balance.toDec().isZero()
                     }
-                    onClick={() => swapState.inAmountInput.toggleHalf()}
+                    onClick={() => swapState.fractionButtonState.toggleHalf()}
                   >
                     {t("swap.HALF")}
                   </Button>
@@ -398,7 +398,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     size="sm"
                     className={classNames(
                       "text-wosmongton-300",
-                      swapState.inAmountInput.fraction === 1
+                      swapState.fractionButtonState.isMax
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
@@ -406,7 +406,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       !swapState.inAmountInput.balance ||
                       swapState.inAmountInput.balance.toDec().isZero()
                     }
-                    onClick={() => swapState.inAmountInput.toggleMax()}
+                    onClick={() => swapState.fractionButtonState.toggleMax()}
                   >
                     {t("swap.MAX")}
                   </Button>

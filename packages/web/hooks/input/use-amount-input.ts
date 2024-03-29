@@ -10,6 +10,7 @@ import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 
+import { FractionButtonState } from "~/hooks/swap/use-fraction-buttons-state";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
@@ -18,7 +19,11 @@ import { useBalances } from "../queries/cosmos/use-balances";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user's currency balance as input. Includes support for debounce on input. */
-export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
+export function useAmountInput(
+  currency: Currency | undefined,
+  inputDebounceMs = 500,
+  fractionState: FractionButtonState
+) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -35,7 +40,6 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   // manage amounts, with ability to set fraction of the amount
   // `inputAmount` is the raw string input that includes decimals
   const [inputAmount, _setAmount] = useState("");
-  const [fraction, setFraction] = useState<number | null>(null);
   const setAmount = useCallback(
     (amount: string) => {
       // check validity of raw input
@@ -45,19 +49,17 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
         amount = "0" + amount;
       }
 
-      if (fraction != null) {
-        setFraction(null);
-      }
+      fractionState.reset();
       _setAmount(amount);
     },
-    [fraction]
+    [fractionState]
   );
 
   // clear fraction when user changes currency
   // and user has no balance
   useEffect(() => {
-    if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
-  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+    if (isBalancesFetched && !rawCurrencyBalance) fractionState.reset();
+  }, [isBalancesFetched, rawCurrencyBalance, currency, fractionState]);
 
   /** Amount derived from user input or from a fraction of the user's balance. */
   const amount = useMemo(() => {
@@ -70,26 +72,26 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
           ? new Int(0)
           : new Dec(inputAmount).mul(decimalMultiplication).truncate();
 
-      if (fraction != null && rawCurrencyBalance) {
+      if (!!fractionState.value && rawCurrencyBalance) {
         amountInt = new Dec(rawCurrencyBalance)
-          .mul(new Dec(fraction))
+          .mul(new Dec(fractionState.value))
           .truncate();
       }
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [currency, inputAmount, rawCurrencyBalance, fraction]);
+  }, [currency, fractionState.value, inputAmount, rawCurrencyBalance]);
 
   const inputAmountWithFraction = useMemo(
     () =>
-      fraction != null && amount
+      fractionState.value && amount
         ? new IntPretty(amount)
             .inequalitySymbol(false)
             .locale(false)
             .trim(true)
             .toString()
         : inputAmount,
-    [fraction, amount, inputAmount]
+    [fractionState, amount, inputAmount]
   );
 
   // generate debounced quote from user inputs
@@ -123,8 +125,8 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
 
   const reset = useCallback(() => {
     setAmount("");
-    setFraction(null);
-  }, [setAmount]);
+    fractionState.reset();
+  }, [fractionState, setAmount]);
 
   return {
     inputAmount: inputAmountWithFraction,
@@ -136,19 +138,9 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     amount,
     balance,
     fiatValue,
-    fraction,
     isEmpty: inputAmountWithFraction === "",
     error,
     setAmount,
-    setFraction,
-    toggleMax: useCallback(
-      () => setFraction(fraction === 1 ? null : 1),
-      [fraction]
-    ),
-    toggleHalf: useCallback(
-      () => setFraction(fraction === 0.5 ? null : 0.5),
-      [fraction]
-    ),
     reset,
   };
 }

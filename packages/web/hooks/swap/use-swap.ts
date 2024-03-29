@@ -10,6 +10,7 @@ import { TRPCClientError } from "@trpc/react-query";
 import { useCallback, useMemo } from "react";
 
 import { useAmountInput } from "~/hooks/input/use-amount-input";
+import { useFractionButtonState } from "~/hooks/swap/use-fraction-buttons-state";
 import { useSwapAssets } from "~/hooks/swap/use-swap-assets";
 import { useQueryRouterBestQuote } from "~/hooks/swap/use-swap-query-router-best-quote";
 import { useSwapTxParameters } from "~/hooks/swap/use-swap-tx-parameters";
@@ -61,7 +62,12 @@ export function useSwap({
     useOtherCurrencies,
   });
 
-  const inAmountInput = useAmountInput(swapAssets.fromAsset);
+  const fractionButtonState = useFractionButtonState();
+  const inAmountInput = useAmountInput(
+    swapAssets.fromAsset,
+    500,
+    fractionButtonState
+  );
 
   // load flags
   const isToFromAssets =
@@ -189,6 +195,7 @@ export function useSwap({
         quoteError,
       ]
     ),
+    fractionButtonState,
     totalFee,
     networkFee,
     isLoadingNetworkFee,
