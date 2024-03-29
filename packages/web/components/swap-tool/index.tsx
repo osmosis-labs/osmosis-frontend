@@ -230,7 +230,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     if (swapState.hasOverSpendLimitError) {
       warningText = (
         <span>
-          This swap exceeds your remaining spend limit for 1-Click Trading.{" "}
+          {t("swap.warning.exceedsSpendLimit")}{" "}
           <Button
             variant="link"
             className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
@@ -238,14 +238,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               setIs1CTIntroModalScreen("settings-no-back-button");
             }}
           >
-            Increase spend limit
+            {t("swap.warning.increaseSpendLimit")}
           </Button>
         </span>
       );
     } else if (swapState.hasExceededOneClickTradingGasLimit) {
       warningText = (
         <span>
-          This swap exceeds your network fee limit for 1-Click Trading.{" "}
+          {t("swap.warning.exceedsNetworkFeeLimit")}{" "}
           <Button
             variant="link"
             className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
@@ -253,7 +253,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               setIs1CTIntroModalScreen("settings-no-back-button");
             }}
           >
-            Increase fee limit
+            {t("swap.warning.increaseNetworkFeeLimit")}
           </Button>
         </span>
       );

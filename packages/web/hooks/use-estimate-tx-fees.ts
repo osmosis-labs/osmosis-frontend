@@ -120,7 +120,6 @@ export function useEstimateTxFees({
       messages.length > 0 &&
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
-    retryOnMount: false,
   });
 }
 
