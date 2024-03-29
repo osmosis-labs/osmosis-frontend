@@ -28,7 +28,12 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {
+  useFeatureFlags,
+  useOneClickTradingSession,
+  usePreviousWhen,
+  useTranslation,
+} from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -72,8 +77,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useWalletSelect();
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+    const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
     const account = accountStore.getWallet(chainId);
+    const slippageConfig = useSlippageConfig();
 
     const swapState = useSwap({
       initialFromDenom: sendTokenDenom,
@@ -81,6 +88,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
       forceSwapInPoolId,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -88,8 +96,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       estimateDetailsContentRef,
       { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
     ] = useMeasure<HTMLDivElement>();
-
-    const slippageConfig = useSlippageConfig();
 
     // out amount less slippage calculated from slippage config
     const outAmountLessSlippage = useMemo(
@@ -178,7 +184,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         },
       ]);
       swapState
-        .sendTradeTokenInTx(slippageConfig.slippage.toDec())
+        .sendTradeTokenInTx()
         .then((result) => {
           // onFullfill
           logEvent([
@@ -212,7 +218,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t(...tError(swapState.error));
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
-    } else if (swapState.hasOverSpendLimitError) {
+    } else if (
+      swapState.hasOverSpendLimitError ||
+      swapState.hasExceededOneClickTradingGasLimit
+    ) {
       buttonText = t("swap.continueAnyway");
     } else {
       buttonText = t("swap.button");
@@ -234,7 +243,26 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           </Button>
         </span>
       );
+    } else if (swapState.hasExceededOneClickTradingGasLimit) {
+      warningText = (
+        <span>
+          This swap exceeds your network fee limit for 1-Click Trading.{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            Increase fee limit
+          </Button>
+        </span>
+      );
     }
+    const previousWarningText = usePreviousWhen(
+      warningText,
+      () => !!warningText
+    );
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
@@ -885,7 +913,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             </SkeletonLoader>
           </div>
           {!isNil(warningText) && (
-            <div className="body2 flex items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500">
+            <div
+              className={classNames(
+                "body2 flex items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500",
+                swapState.isLoadingNetworkFee && "animate-pulse"
+              )}
+            >
               {warningText}
             </div>
           )}
@@ -894,6 +927,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               disabled={
                 isWalletLoading ||
                 swapState.isQuoteLoading ||
+                (isOneClickTradingEnabled && swapState.isLoadingNetworkFee) ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||

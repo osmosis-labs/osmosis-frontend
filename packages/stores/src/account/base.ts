@@ -135,7 +135,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   useOneClickTrading = false;
 
-  @observable
+  @observable.ref
   oneClickTradingInfo: OneClickTradingInfo | null = null;
 
   @observable
@@ -1347,6 +1347,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
               gasLimit,
               chainId: wallet.chainId,
               address: wallet.address,
+              checkOtherFeeTokens: signOptions.useOneClickTrading
+                ? false
+                : true,
             }),
           ],
         };
@@ -1789,19 +1792,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
     const nextValue = data ?? null;
 
-    /**
-     * For some reason decorating this method with @action doesn't work when called
-     * from walletAccountSet.disconnect. So, we use runInAction instead.
-     */
-    runInAction(() => {
-      this.oneClickTradingInfo = nextValue;
-      this.hasUsedOneClickTrading = true;
-    });
     await this._kvStore.set<boolean>(
       HasUsedOneClickTradingLocalStorageKey,
       true
     );
-    return this._kvStore.set(OneClickTradingLocalStorageKey, nextValue);
+    await this._kvStore.set(OneClickTradingLocalStorageKey, nextValue);
+
+    /**
+     * For some reason decorating this method with @action doesn't work when called
+     * from walletAccountSet.disconnect. So, we use runInAction instead.
+     */
+    return runInAction(() => {
+      this.oneClickTradingInfo = nextValue;
+      this.hasUsedOneClickTrading = true;
+    });
   }
 
   async isOneCLickTradingEnabled(): Promise<boolean> {

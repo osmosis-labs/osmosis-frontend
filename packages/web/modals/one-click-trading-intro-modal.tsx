@@ -8,7 +8,9 @@ import { createGlobalState, useMount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
+import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { Button } from "~/components/buttons";
+import { Spinner } from "~/components/loaders";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
 import { Screen, ScreenManager } from "~/components/screen-manager";
@@ -30,7 +32,7 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
 
 const OneClickTradingIntroModal = observer(() => {
   const { accountStore } = useStore();
-  const { oneClickTradingInfo, isOneClickTradingEnabled } =
+  const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
 
   const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
@@ -121,7 +123,11 @@ const OneClickTradingIntroModal = observer(() => {
             show1CTEditParams ? "px-8" : "mx-auto max-w-[31rem]"
           )}
         >
-          {!!currentScreen && (
+          {isLoadingInfo || !currentScreen ? (
+            <div className="flex h-[90vh] max-h-[480px] w-full flex-col items-center justify-center">
+              <Spinner />
+            </div>
+          ) : (
             <IntroModal1CTScreens
               oneClickTradingInfo={oneClickTradingInfo}
               isOneClickTradingEnabled={isOneClickTradingEnabled}
@@ -218,9 +224,14 @@ const IntroModal1CTScreens = observer(
                   onSuccess: () => {
                     accountStore.setOneClickTradingInfo(undefined);
                   },
-                  onError: () => {
+                  onError: (e) => {
+                    const error = e as Error;
                     rollback();
-                    displayErrorRemovingSessionToast();
+                    if (
+                      !isRejectedTxErrorMessage({ message: error?.message })
+                    ) {
+                      displayErrorRemovingSessionToast();
+                    }
                   },
                 }
               );

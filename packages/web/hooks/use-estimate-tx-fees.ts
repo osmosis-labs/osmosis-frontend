@@ -11,7 +11,6 @@ import {
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -79,7 +78,7 @@ export function useEstimateTxFees({
   messages,
   chainId,
   signOptions,
-  enabled: enabledParam = true,
+  enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
@@ -91,14 +90,7 @@ export function useEstimateTxFees({
 
   const wallet = accountStore.getWallet(chainId);
 
-  const enabled =
-    enabledParam &&
-    !isNil(messages) &&
-    Array.isArray(messages) &&
-    messages.length > 0 &&
-    wallet?.address !== undefined &&
-    typeof wallet?.address === "string";
-  const query = useQuery<
+  return useQuery<
     {
       gasUsdValueToPay: PricePretty;
       gasAmount: CoinPretty;
@@ -121,20 +113,15 @@ export function useEstimateTxFees({
     staleTime: 3_000, // 3 seconds
     cacheTime: 3_000, // 3 seconds
     retry: false,
-    enabled,
+    enabled:
+      enabled &&
+      !isNil(messages) &&
+      Array.isArray(messages) &&
+      messages.length > 0 &&
+      wallet?.address !== undefined &&
+      typeof wallet?.address === "string",
+    retryOnMount: false,
   });
-
-  const [previousError, setPreviousError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (query.data) return setPreviousError(null);
-    if (query.error) return setPreviousError(query.error);
-  }, [query.data, query.error]);
-
-  return {
-    ...query,
-    previousError,
-  };
 }
 
 export function useEstimateTxFeesMutation() {

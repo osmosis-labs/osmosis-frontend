@@ -27,7 +27,7 @@ export const useOneClickTradingSession = ({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
 
-  const { value } = useAsync(async () => {
+  const { value, loading } = useAsync(async () => {
     const defaultReturn = {
       info: undefined,
       isEnabled: false,
@@ -102,5 +102,6 @@ export const useOneClickTradingSession = ({
     isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
     getTimeRemaining,
     getTotalSessionTime,
+    isLoadingInfo: loading,
   };
 };

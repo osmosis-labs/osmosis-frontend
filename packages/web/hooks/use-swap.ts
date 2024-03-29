@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -30,7 +30,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { api, RouterInputs } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useBalances } from "./queries/cosmos/use-balances";
@@ -54,6 +54,7 @@ type SwapOptions = {
   /** Set to the pool ID that the user must swap in. `initialFromDenom` and `initialToDenom`
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
+  maxSlippage: Dec | undefined;
 };
 
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
@@ -64,18 +65,22 @@ type SwapOptions = {
  *  * Paginated swappable assets, with user balances if wallet connected
  *  * Assets search query
  *  * Debounced quote fetching from user input */
-export function useSwap({
-  initialFromDenom = "ATOM",
-  initialToDenom = "OSMO",
-  useQueryParams = true,
-  useOtherCurrencies = true,
-  forceSwapInPoolId,
-}: SwapOptions = {}) {
+export function useSwap(
+  {
+    initialFromDenom = "ATOM",
+    initialToDenom = "OSMO",
+    useQueryParams = true,
+    useOtherCurrencies = true,
+    forceSwapInPoolId,
+    maxSlippage,
+  }: SwapOptions = { maxSlippage: undefined }
+) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
-  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+  const { isOneClickTradingEnabled, oneClickTradingInfo } =
+    useOneClickTradingSession();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -99,10 +104,11 @@ export function useSwap({
     error: quoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
-      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       forcePoolId: forceSwapInPoolId,
+      maxSlippage,
     },
     canLoadQuote
   );
@@ -116,14 +122,15 @@ export function useSwap({
     error: spotPriceQuoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
+      tokenIn: swapAssets.fromAsset,
       tokenInAmount: DecUtils.getTenExponentN(
         swapAssets.fromAsset?.coinDecimals ?? 0
       )
         .truncate()
         .toString(),
-      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      tokenOut: swapAssets.toAsset,
       forcePoolId: forceSwapInPoolId,
+      maxSlippage,
     },
     isToFromAssets
   );
@@ -157,180 +164,89 @@ export function useSwap({
     inAmountInput.isEmpty,
   ]);
 
-  const getSwapTxParameters = useCallback(
-    ({
-      coinAmount,
-      maxSlippage,
-    }: {
-      coinAmount: CoinPretty | undefined;
-      maxSlippage: Dec;
-    }) => {
-      if (!quote) {
-        throw new Error(
-          "User input should be disabled if no route is found or is being generated"
-        );
-      }
-
-      if (!coinAmount) throw new Error("No input");
-      if (!account) throw new Error("No account");
-      if (!swapAssets.fromAsset) throw new Error("No from asset");
-      if (!swapAssets.toAsset) throw new Error("No to asset");
-
-      /**
-       * Prepare swap data
-       */
-
-      type Pool = {
-        id: string;
-        tokenOutDenom: string;
-      };
-      type Route = {
-        pools: Pool[];
-        tokenInAmount: string;
-      };
-
-      const routes: Route[] = [];
-
-      for (const route of quote.split) {
-        const pools: Pool[] = [];
-
-        for (let i = 0; i < route.pools.length; i++) {
-          const pool = route.pools[i];
-
-          pools.push({
-            id: pool.id,
-            tokenOutDenom: route.tokenOutDenoms[i],
-          });
-        }
-
-        routes.push({
-          pools: pools,
-          tokenInAmount: route.initialAmount.toString(),
-        });
-      }
-
-      /** In amount converted to integer (remove decimals) */
-      const tokenIn = {
-        currency: swapAssets.fromAsset as Currency,
-        amount: coinAmount.toCoin().amount,
-      };
-
-      /** Out amount with slippage included */
-      const tokenOutMinAmount = quote.amount
-        .toDec()
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(
-            swapAssets.toAsset.coinDecimals
-          )
-        )
-        .mul(new Dec(1).sub(maxSlippage))
-        .truncate()
-        .toString();
-
-      return {
-        routes,
-        tokenIn,
-        tokenOutMinAmount,
-      };
-    },
-    [quote, account, swapAssets]
-  );
-
-  const messages = useMemo(() => {
-    if (!account?.address || !quote) return undefined;
-
-    let txParams: ReturnType<typeof getSwapTxParameters>;
-
-    try {
-      txParams = getSwapTxParameters({
-        coinAmount: inAmountInput.amount,
-        maxSlippage: new Dec(0.95),
-      });
-    } catch {
-      return undefined;
-    }
-
-    const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-    const { pools } = routes[0];
-
-    if (routes.length < 1) {
-      throw new Error("Routes are empty");
-    }
-
-    /**
-     * Do not send transaction if there is an error since it will fail anyway.
-     */
-    if (precedentError) {
-      return undefined;
-    }
-
-    return [
-      routes.length === 1
-        ? makeSwapExactAmountInMsg({
-            pools,
-            tokenIn,
-            tokenOutMinAmount,
-            userOsmoAddress: account.address,
-          })
-        : makeSplitRoutesSwapExactAmountInMsg({
-            routes,
-            tokenIn,
-            tokenOutMinAmount,
-            userOsmoAddress: account.address,
-          }),
-    ];
-  }, [
-    account?.address,
-    getSwapTxParameters,
-    inAmountInput.amount,
-    precedentError,
-    quote,
-  ]);
-
+  // TODO: Handle Simulate Errors in 1CT
   const {
     data: networkFee,
-    previousError: estimateTxPreviousError,
+    error: estimateTxError,
     isLoading: isLoadingNetworkFee,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages,
-    enabled: featureFlags.swapToolSimulateFee,
+    messages: quote?.messages,
+    enabled:
+      !inAmountInput.isEmpty &&
+      !precedentError &&
+      featureFlags.swapToolSimulateFee,
     signOptions: {
-      useOneClickTrading: featureFlags.oneClickTrading,
+      useOneClickTrading: isOneClickTradingEnabled,
     },
   });
 
-  const hasOverSpendLimitError = useMemo(() => {
+  const hasExceededOneClickTradingGasLimit = useMemo(() => {
     if (
-      !estimateTxPreviousError?.message ||
       !isOneClickTradingEnabled ||
+      !oneClickTradingInfo ||
       inAmountInput.isEmpty
     ) {
       return false;
     }
-    return isOverspendErrorMessage({
-      message: estimateTxPreviousError?.message,
-    });
+
+    const networkFeeLimit = new CoinPretty(
+      oneClickTradingInfo.networkFeeLimit,
+      oneClickTradingInfo.networkFeeLimit.amount
+    );
+
+    if (
+      networkFee?.gasAmount.denom === networkFeeLimit.denom &&
+      networkFee?.gasAmount.toDec().gt(networkFeeLimit.toDec())
+    ) {
+      return true;
+    }
+
+    return false;
   }, [
-    estimateTxPreviousError?.message,
+    inAmountInput.isEmpty,
+    isOneClickTradingEnabled,
+    networkFee,
+    oneClickTradingInfo,
+  ]);
+
+  const hasOverSpendLimitError = useMemo(() => {
+    if (
+      !estimateTxError?.message ||
+      !isOneClickTradingEnabled ||
+      inAmountInput.isEmpty ||
+      inAmountInput.inputAmount == "0" ||
+      !isOverspendErrorMessage({ message: estimateTxError?.message })
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [
+    estimateTxError,
+    inAmountInput.inputAmount,
     inAmountInput.isEmpty,
     isOneClickTradingEnabled,
   ]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
-    (maxSlippage: Dec) =>
+    () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
+          if (!maxSlippage) return reject("No max slippage");
+          if (!inAmountInput.amount) return reject("No input amount");
           if (!account) return reject("No account");
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
 
           try {
             txParams = getSwapTxParameters({
-              coinAmount: inAmountInput.amount,
+              coinAmount: inAmountInput.amount.toCoin().amount,
               maxSlippage,
+              fromAsset: swapAssets.fromAsset,
+              toAsset: swapAssets.toAsset,
+              quote,
             });
           } catch (e) {
             const error = e as Error;
@@ -339,13 +255,13 @@ export function useSwap({
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
-          const shouldBeSignedWithOneClickTrading = !isNil(messages)
-            ? featureFlags.swapToolSimulateFee &&
-              featureFlags.oneClickTrading &&
+          const shouldBeSignedWithOneClickTrading = !isNil(quote?.messages)
+            ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages,
+                messages: quote.messages,
               })) &&
-              !hasOverSpendLimitError
+              !hasOverSpendLimitError &&
+              !hasExceededOneClickTradingGasLimit
             : false;
           const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
             useOneClickTrading: shouldBeSignedWithOneClickTrading,
@@ -414,15 +330,18 @@ export function useSwap({
         inAmountInput.reset();
       }),
     [
+      maxSlippage,
+      inAmountInput,
       account,
-      messages,
-      featureFlags.oneClickTrading,
-      featureFlags.swapToolSimulateFee,
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      quote,
+      isOneClickTradingEnabled,
       accountStore,
       hasOverSpendLimitError,
+      hasExceededOneClickTradingGasLimit,
+      featureFlags.swapToolSimulateFee,
       networkFee,
-      getSwapTxParameters,
-      inAmountInput,
       queryClient,
     ]
   );
@@ -483,16 +402,12 @@ export function useSwap({
     spotPriceQuote,
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
-    isQuoteLoading: isOneClickTradingEnabled
-      ? isQuoteLoading || isLoadingNetworkFee
-      : isQuoteLoading,
+    isQuoteLoading,
     /** Spot price or user input quote. */
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
-    isLoading: isOneClickTradingEnabled
-      ? isQuoteLoading || isSpotPriceQuoteLoading || isLoadingNetworkFee
-      : isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
+    hasExceededOneClickTradingGasLimit,
   };
 }
 
@@ -709,18 +624,185 @@ function useSwapAsset<TAsset extends Asset>(
   };
 }
 
+function getSwapTxParameters({
+  coinAmount,
+  maxSlippage,
+  quote,
+  fromAsset,
+  toAsset,
+}: {
+  coinAmount: string;
+  maxSlippage: Dec;
+  quote:
+    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
+    | undefined;
+  fromAsset: Asset &
+    Partial<{
+      amount: CoinPretty;
+      usdValue: PricePretty;
+    }>;
+  toAsset: Asset &
+    Partial<{
+      amount: CoinPretty;
+      usdValue: PricePretty;
+    }>;
+}) {
+  if (!quote) {
+    throw new Error(
+      "User input should be disabled if no route is found or is being generated"
+    );
+  }
+  if (!coinAmount) throw new Error("No input");
+  if (!fromAsset) throw new Error("No from asset");
+  if (!toAsset) throw new Error("No to asset");
+
+  /**
+   * Prepare swap data
+   */
+
+  type Pool = {
+    id: string;
+    tokenOutDenom: string;
+  };
+  type Route = {
+    pools: Pool[];
+    tokenInAmount: string;
+  };
+
+  const routes: Route[] = [];
+
+  for (const route of quote.split) {
+    const pools: Pool[] = [];
+
+    for (let i = 0; i < route.pools.length; i++) {
+      const pool = route.pools[i];
+
+      pools.push({
+        id: pool.id,
+        tokenOutDenom: route.tokenOutDenoms[i],
+      });
+    }
+
+    routes.push({
+      pools: pools,
+      tokenInAmount: route.initialAmount.toString(),
+    });
+  }
+
+  /** In amount converted to integer (remove decimals) */
+  const tokenIn = {
+    currency: fromAsset as Currency,
+    amount: coinAmount,
+  };
+
+  /** Out amount with slippage included */
+  const tokenOutMinAmount = quote.amount
+    .toDec()
+    .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
+    .mul(new Dec(1).sub(maxSlippage))
+    .truncate()
+    .toString();
+
+  return {
+    routes,
+    tokenIn,
+    tokenOutMinAmount,
+  };
+}
+
+function getSwapMessages({
+  coinAmount,
+  maxSlippage,
+  quote,
+  fromAsset,
+  toAsset,
+  userOsmoAddress,
+}: {
+  coinAmount: string;
+  maxSlippage: Dec | undefined;
+  quote:
+    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
+    | undefined;
+  fromAsset: Asset &
+    Partial<{
+      amount: CoinPretty;
+      usdValue: PricePretty;
+    }>;
+  toAsset: Asset &
+    Partial<{
+      amount: CoinPretty;
+      usdValue: PricePretty;
+    }>;
+  userOsmoAddress: string | undefined;
+}) {
+  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
+
+  let txParams: ReturnType<typeof getSwapTxParameters>;
+
+  try {
+    txParams = getSwapTxParameters({
+      coinAmount,
+      maxSlippage,
+      fromAsset,
+      toAsset,
+      quote,
+    });
+  } catch {
+    return undefined;
+  }
+
+  const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+  const { pools } = routes[0];
+
+  if (routes.length < 1) {
+    throw new Error("Routes are empty");
+  }
+
+  return [
+    routes.length === 1
+      ? makeSwapExactAmountInMsg({
+          pools,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress,
+        })
+      : makeSplitRoutesSwapExactAmountInMsg({
+          routes,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress,
+        }),
+  ];
+}
+
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
-    "preferredRouter"
-  >,
+    "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
+  > & {
+    tokenIn: Asset &
+      Partial<{
+        amount: CoinPretty;
+        usdValue: PricePretty;
+      }>;
+    tokenOut: Asset &
+      Partial<{
+        amount: CoinPretty;
+        usdValue: PricePretty;
+      }>;
+    maxSlippage: Dec | undefined;
+  },
   enabled: boolean,
   routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
 ) {
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
+
   const availableRouterKeys: RouterKey[] = useMemo(
     () =>
       !featureFlags._isInitialized
@@ -748,11 +830,28 @@ function useQueryRouterBestQuote(
     availableRouterKeys.map((key) =>
       t.local.quoteRouter.routeTokenOutGivenIn(
         {
-          ...input,
+          tokenInAmount: input.tokenInAmount,
+          tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+          tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+          forcePoolId: input.forcePoolId,
           preferredRouter: key,
         },
         {
           enabled: enabled && Boolean(availableRouterKeys.length),
+
+          select: (quote) => {
+            return {
+              ...quote,
+              messages: getSwapMessages({
+                quote,
+                toAsset: input.tokenOut,
+                fromAsset: input.tokenIn,
+                maxSlippage: input.maxSlippage,
+                coinAmount: input.tokenInAmount,
+                userOsmoAddress: account?.address,
+              }),
+            };
+          },
 
           // quotes should not be considered fresh for long, otherwise
           // the gas simulation will fail due to slippage and the user would see errors
