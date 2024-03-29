@@ -832,53 +832,71 @@
     "strategiesCount": "{number} strategies",
     "oneStrategy": "1 strategy",
     "value": "Value",
-    "method": "Method",
+    "method": "Type",
     "platform": "Platform",
     "scrollToSeeMore": "scroll to see more",
     "discoverStrategies": "Discover Strategies",
     "myStrategies": "My Strategies",
-    "strategyPlatform": "Strategy / Platform",
-    "apy": "APY",
+    "strategyPlatform": "Strategy",
+    "apy": "APR",
     "daily": "Daily",
     "reward": "Reward",
     "lock": "Lock",
     "days": "days",
     "risk": "Risk",
     "strategyMethod": "Strategy Method",
-    "allMethods": "All Methods",
+    "allMethods": "All types",
     "platforms": "Platforms",
-    "allPlatforms": "All Platforms",
-    "allCategories": "All Categories",
+    "allPlatforms": "All platforms",
+    "allCategories": "All categories",
     "filters": "Filters",
-    "resetFilters": "Reset Filters",
-    "saveFilters": "Save Filters",
+    "resetFilters": "Reset filters",
+    "saveFilters": "Save filters",
     "rewards": "Rewards",
     "estimatedInYearlyRewards": "Estimated in yearly rewards",
     "availableToClaim": "available to claim",
     "claimAllRewards": "Claim all rewards",
     "join": "Join",
     "tokenFilterOptions": {
-      "my": "My Tokens",
-      "all": "All Tokens"
+      "my": "My assets",
+      "all": "All assets"
     },
     "rewardTypes": {
       "all": "All",
       "single": "Single",
       "multi": "Multi"
     },
-    "totalValueInvested": "Total Value",
+    "totalValueInvested": "Total value",
     "lookBelow": "Look below and find best strategies for you",
     "startEarning": "Discover strategies",
-    "startEarningDescription": "Unlock your full earning potential. Put your assets to work through one of the many strategies below.",
+    "startEarningDescription": "Unlock your full earning potential. Put your assets to work through the many strategies below.",
     "loadingStrategies": "Loading strategies...",
     "sorryErrorOccurred": "Sorry, an error occured.",
+    "sorryNoResultsWithAssets": "No strategies found associated with your assets.",
     "sorryNoResults": "No strategies found.",
     "tryChangingFilters": "Try changing filters",
     "retry": "Retry",
     "manage": "Manage",
     "noLock": "No Lock",
     "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
-    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country."
+    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country.",
+    "tooltips": {
+      "apr": {
+        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy. Be advised, a strategy's APR is subject to change based on participation and performance."
+      },
+      "daily": {
+        "description": "Daily percentage return from a strategy – like APR but on a daily basis rather than annual. Be advised, a strategy's daily return rate is subject to change based on participation and performance."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."
+      },
+      "reward": {
+        "description": "The assets you'll earn in rewards, provided from strategy operations and/or incentives."
+      },
+      "lock": {
+        "description": "The period of time your position will be locked before you can exit (i.e. withdraw your assets) a strategy. Be advised, in some strategies, you will not earn rewards during the unlocking period."
+      }
+    }
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

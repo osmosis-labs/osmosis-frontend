@@ -832,34 +832,34 @@
     "strategiesCount": "{number} stratejiler",
     "oneStrategy": "1 strateji",
     "value": "Değer",
-    "method": "Yöntem",
+    "method": "Tip",
     "platform": "platformu",
     "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
     "myStrategies": "Stratejilerim",
-    "strategyPlatform": "Strateji / Platform",
-    "apy": "APY",
+    "strategyPlatform": "Strateji",
+    "apy": "Nisan",
     "daily": "Günlük",
     "reward": "Ödül",
     "lock": "Kilit",
     "days": "günler",
     "risk": "Risk",
     "strategyMethod": "Strateji Yöntemi",
-    "allMethods": "Tüm Yöntemler",
+    "allMethods": "Her türlü",
     "platforms": "Platformlar",
-    "allPlatforms": "Tüm Platformlar",
+    "allPlatforms": "Tüm platformlar",
     "allCategories": "Tüm Kategoriler",
     "filters": "Filtreler",
-    "resetFilters": "Filtreleri Sıfırla",
-    "saveFilters": "Filtreleri Kaydet",
+    "resetFilters": "Filtreleri sıfırla",
+    "saveFilters": "Filtreleri kaydet",
     "rewards": "Ödüller",
     "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
     "availableToClaim": "talep edilebilir",
     "claimAllRewards": "Tüm ödülleri talep edin",
     "join": "Katılmak",
     "tokenFilterOptions": {
-      "my": "Jetonlarım",
-      "all": "Tüm Jetonlar"
+      "my": "Varlıklarım",
+      "all": "Tüm varlıklar"
     },
     "rewardTypes": {
       "all": "Tüm",
@@ -869,16 +869,34 @@
     "totalValueInvested": "Toplam değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
     "startEarning": "Stratejileri keşfedin",
-    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiden birini kullanarak uygulamaya koyun.",
+    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiyle uygulamaya koyun.",
     "loadingStrategies": "Stratejiler yükleniyor...",
     "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
+    "sorryNoResultsWithAssets": "Öğelerinizle ilişkili strateji bulunamadı.",
     "sorryNoResults": "Hiçbir strateji bulunamadı.",
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
     "retry": "Yeniden dene",
     "manage": "Üstesinden gelmek",
     "noLock": "Kilit yok",
     "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
-    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor."
+    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
+    "tooltips": {
+      "apr": {
+        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder. Bir stratejinin APR'sinin katılım ve performansa bağlı olarak değişebileceğini unutmayın."
+      },
+      "daily": {
+        "description": "APR gibi bir stratejiden günlük yüzde getiri, ancak yıllık yerine günlük bazda. Bir stratejinin günlük getiri oranının katılım ve performansa bağlı olarak değişebileceğini unutmayın."
+      },
+      "tvl": {
+        "description": "Kilitli Toplam Değer (TVL), stratejiye yatırılan varlıkların ABD Doları cinsinden toplam değerini ifade eder."
+      },
+      "reward": {
+        "description": "Strateji operasyonlarından ve/veya teşviklerden sağlanan, ödüller olarak kazanacağınız varlıklar."
+      },
+      "lock": {
+        "description": "Bir stratejiden çıkabilmeniz (yani varlıklarınızı çekebilmeniz) için pozisyonunuzun kilitleneceği süre. Bazı stratejilerde kilit açma süresi boyunca ödül kazanamayacağınızı unutmayın."
+      }
+    }
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {

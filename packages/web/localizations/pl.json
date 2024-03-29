@@ -832,20 +832,20 @@
     "strategiesCount": "Strategie {number}",
     "oneStrategy": "1 strategia",
     "value": "Wartość",
-    "method": "metoda",
+    "method": "Typ",
     "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
     "myStrategies": "Moje strategie",
-    "strategyPlatform": "Strategia/platforma",
-    "apy": "RRSO",
+    "strategyPlatform": "Strategia",
+    "apy": "KWIECIEŃ",
     "daily": "Codziennie",
     "reward": "Nagroda",
     "lock": "Zamek",
     "days": "dni",
     "risk": "Ryzyko",
     "strategyMethod": "Metoda strategii",
-    "allMethods": "Wszystkie metody",
+    "allMethods": "Wszystkie typy",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
     "allCategories": "Wszystkie kategorie",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
     "tokenFilterOptions": {
-      "my": "Moje tokeny",
-      "all": "Wszystkie tokeny"
+      "my": "Moje aktywa",
+      "all": "Wszystkie aktywa"
     },
     "rewardTypes": {
       "all": "Wszystko",
@@ -869,16 +869,34 @@
     "totalValueInvested": "Całkowita wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
     "startEarning": "Odkryj strategie",
-    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z jednej z wielu poniższych strategii.",
+    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z wielu poniższych strategii.",
     "loadingStrategies": "Ładowanie strategii...",
     "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",
+    "sorryNoResultsWithAssets": "Nie znaleziono strategii powiązanych z Twoimi zasobami.",
     "sorryNoResults": "Nie znaleziono strategii.",
     "tryChangingFilters": "Spróbuj zmienić filtry",
     "retry": "Spróbować ponownie",
     "manage": "Zarządzać",
     "noLock": "Brak blokady",
     "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
-    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju."
+    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
+    "tooltips": {
+      "apr": {
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Należy pamiętać, że RRSO strategii może ulec zmianie w zależności od udziału i wyników."
+      },
+      "daily": {
+        "description": "Dzienny procentowy zwrot ze strategii – taki jak RRSO, ale dzienny, a nie roczny. Należy pamiętać, że dzienna stopa zwrotu strategii może się zmieniać w zależności od uczestnictwa i wyników."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."
+      },
+      "reward": {
+        "description": "Aktywa, które zdobędziesz w formie nagród, zapewnianych w ramach działań strategicznych i/lub zachęt."
+      },
+      "lock": {
+        "description": "Okres, przez który Twoja pozycja będzie zablokowana, zanim będziesz mógł zakończyć strategię (tzn. wycofać swoje aktywa). Pamiętaj, że w przypadku niektórych strategii nie będziesz zdobywać nagród w okresie odblokowywania."
+      }
+    }
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {

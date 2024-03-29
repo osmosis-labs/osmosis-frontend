@@ -832,20 +832,20 @@
     "strategiesCount": "{number} Strategien",
     "oneStrategy": "1 Strategie",
     "value": "Wert",
-    "method": "Methode",
+    "method": "Typ",
     "platform": "Plattform",
     "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
     "myStrategies": "Meine Strategien",
-    "strategyPlatform": "Strategie / Plattform",
-    "apy": "APY",
+    "strategyPlatform": "Strategie",
+    "apy": "APR",
     "daily": "Täglich",
     "reward": "Belohnen",
     "lock": "Sperren",
     "days": "Tage",
     "risk": "Risiko",
     "strategyMethod": "Strategiemethode",
-    "allMethods": "Alle Methoden",
+    "allMethods": "Alle Arten",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
     "allCategories": "Alle Kategorien",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
-      "my": "Meine Token",
-      "all": "Alle Token"
+      "my": "Mein Vermögen",
+      "all": "Alle Vermögenswerte"
     },
     "rewardTypes": {
       "all": "Alle",
@@ -869,16 +869,34 @@
     "totalValueInvested": "Gesamtwert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
     "startEarning": "Entdecken Sie Strategien",
-    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mit einer der vielen unten aufgeführten Strategien.",
+    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
     "loadingStrategies": "Lade Strategien...",
-    "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
+    "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",
+    "sorryNoResultsWithAssets": "Es wurden keine mit Ihren Vermögenswerten verknüpften Strategien gefunden.",
     "sorryNoResults": "Keine Strategien gefunden.",
     "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
     "retry": "Wiederholen",
     "manage": "Verwalten",
     "noLock": "Kein Schloss",
     "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
-    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
+    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
+    "tooltips": {
+      "apr": {
+        "description": "Der jährliche Prozentsatz (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Beachten Sie, dass sich der effektive Jahreszins einer Strategie je nach Teilnahme und Leistung ändern kann."
+      },
+      "daily": {
+        "description": "Täglicher prozentualer Ertrag aus einer Strategie – wie APR, aber auf täglicher Basis statt jährlich. Bitte beachten Sie, dass sich der tägliche Ertrag einer Strategie je nach Beteiligung und Leistung ändern kann."
+      },
+      "tvl": {
+        "description": "Der Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
+      },
+      "reward": {
+        "description": "Die Vermögenswerte, die Sie in Form von Belohnungen verdienen, die durch Strategieoperationen und/oder Anreize bereitgestellt werden."
+      },
+      "lock": {
+        "description": "Der Zeitraum, für den Ihre Position gesperrt wird, bevor Sie aus einer Strategie aussteigen (d. h. Ihr Vermögen abheben) können. Beachten Sie, dass Sie bei einigen Strategien während des Freischaltzeitraums keine Belohnungen erhalten."
+      }
+    }
   },
   "disclaimer": "Haftungsausschluss",
   "unstableAssetsWarning": {

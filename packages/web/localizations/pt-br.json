@@ -832,23 +832,23 @@
     "strategiesCount": "{number} estratégias",
     "oneStrategy": "1 estratégia",
     "value": "Valor",
-    "method": "Método",
+    "method": "Tipo",
     "platform": "Plataforma",
     "scrollToSeeMore": "role para ver mais",
     "discoverStrategies": "Descubra estratégias",
     "myStrategies": "Minhas estratégias",
-    "strategyPlatform": "Estratégia/Plataforma",
-    "apy": "APY",
+    "strategyPlatform": "Estratégia",
+    "apy": "ABRIL",
     "daily": "Diário",
     "reward": "Recompensa",
     "lock": "Trancar",
     "days": "dias",
     "risk": "Risco",
     "strategyMethod": "Método de Estratégia",
-    "allMethods": "Todos os métodos",
+    "allMethods": "Todos os tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas as plataformas",
-    "allCategories": "todas as categorias",
+    "allCategories": "Todas as categorias",
     "filters": "Filtros",
     "resetFilters": "Redefinir filtros",
     "saveFilters": "Salvar filtros",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Reivindique todas as recompensas",
     "join": "Juntar",
     "tokenFilterOptions": {
-      "my": "Meus tokens",
-      "all": "Todos os tokens"
+      "my": "Meus ativos",
+      "all": "Todos os ativos"
     },
     "rewardTypes": {
       "all": "Todos",
@@ -869,16 +869,34 @@
     "totalValueInvested": "Valor total",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
     "startEarning": "Descubra estratégias",
-    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio de uma das muitas estratégias abaixo.",
+    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio das diversas estratégias abaixo.",
     "loadingStrategies": "Carregando estratégias...",
     "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
+    "sorryNoResultsWithAssets": "Nenhuma estratégia encontrada associada aos seus recursos.",
     "sorryNoResults": "Nenhuma estratégia encontrada.",
     "tryChangingFilters": "Tente alterar os filtros",
     "retry": "Tentar novamente",
     "manage": "Gerenciar",
     "noLock": "Não feche",
     "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
-    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
+    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
+    "tooltips": {
+      "apr": {
+        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Esteja ciente de que a TAEG de uma estratégia está sujeita a alterações com base na participação e no desempenho."
+      },
+      "daily": {
+        "description": "Retorno percentual diário de uma estratégia – como APR, mas diariamente, em vez de anual. Esteja ciente de que a taxa de retorno diária de uma estratégia está sujeita a alterações com base na participação e no desempenho."
+      },
+      "tvl": {
+        "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."
+      },
+      "reward": {
+        "description": "Os ativos que você ganhará em recompensas, provenientes de operações estratégicas e/ou incentivos."
+      },
+      "lock": {
+        "description": "O período de tempo em que sua posição ficará bloqueada antes que você possa sair (ou seja, retirar seus ativos) de uma estratégia. Esteja ciente de que em algumas estratégias você não ganhará recompensas durante o período de desbloqueio."
+      }
+    }
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {

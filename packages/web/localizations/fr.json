@@ -832,23 +832,23 @@
     "strategiesCount": "Stratégies {number}",
     "oneStrategy": "1 stratégie",
     "value": "Valeur",
-    "method": "Méthode",
+    "method": "Taper",
     "platform": "Plate-forme",
     "scrollToSeeMore": "faites défiler pour en voir plus",
     "discoverStrategies": "Découvrez les stratégies",
     "myStrategies": "Mes stratégies",
-    "strategyPlatform": "Stratégie / Plateforme",
-    "apy": "APY",
+    "strategyPlatform": "Stratégie",
+    "apy": "AVR",
     "daily": "Tous les jours",
     "reward": "Récompense",
     "lock": "Verrouillage",
     "days": "jours",
     "risk": "Risque",
     "strategyMethod": "Méthode stratégique",
-    "allMethods": "Toutes les méthodes",
+    "allMethods": "Tous les types",
     "platforms": "Plateformes",
     "allPlatforms": "Toutes les plateformes",
-    "allCategories": "toutes catégories",
+    "allCategories": "Toutes catégories",
     "filters": "Filtres",
     "resetFilters": "Réinitialiser les filtres",
     "saveFilters": "Enregistrer les filtres",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Réclamez toutes les récompenses",
     "join": "Rejoindre",
     "tokenFilterOptions": {
-      "my": "Mes jetons",
-      "all": "Tous les jetons"
+      "my": "Mes atouts",
+      "all": "Tous les actifs"
     },
     "rewardTypes": {
       "all": "Tous",
@@ -869,16 +869,34 @@
     "totalValueInvested": "Valeur totale",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous",
     "startEarning": "Découvrez les stratégies",
-    "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce à l’une des nombreuses stratégies ci-dessous.",
+    "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce aux nombreuses stratégies ci-dessous.",
     "loadingStrategies": "Chargement des stratégies...",
     "sorryErrorOccurred": "Désolé, une erreur s'est produite.",
+    "sorryNoResultsWithAssets": "Aucune stratégie trouvée associée à vos actifs.",
     "sorryNoResults": "Aucune stratégie trouvée.",
     "tryChangingFilters": "Essayez de changer les filtres",
     "retry": "Recommencez",
     "manage": "Gérer",
     "noLock": "Aucun verrou",
     "riskDisclaimer": "Le risque est calculé avec un ensemble combiné de critères concernant une stratégie et ses actifs sous-jacents.",
-    "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays."
+    "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays.",
+    "tooltips": {
+      "apr": {
+        "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie. Soyez informé que le TAEG d'une stratégie est susceptible de changer en fonction de la participation et de la performance."
+      },
+      "daily": {
+        "description": "Pourcentage de rendement quotidien d'une stratégie – comme le TAEG mais sur une base quotidienne plutôt qu'annuelle. Attention, le taux de rendement quotidien d'une stratégie est susceptible de changer en fonction de la participation et de la performance."
+      },
+      "tvl": {
+        "description": "La valeur totale verrouillée (TVL) fait référence à la valeur totale en dollars américains des actifs déposés dans la stratégie."
+      },
+      "reward": {
+        "description": "Les actifs que vous gagnerez en récompenses, fournies par des opérations stratégiques et/ou des incitations."
+      },
+      "lock": {
+        "description": "La période pendant laquelle votre position sera verrouillée avant que vous puissiez quitter (c'est-à-dire retirer vos actifs) une stratégie. Attention, dans certaines stratégies, vous ne gagnerez pas de récompenses pendant la période de déverrouillage."
+      }
+    }
   },
   "disclaimer": "Clause de non-responsabilité",
   "unstableAssetsWarning": {

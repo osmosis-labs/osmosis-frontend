@@ -832,20 +832,20 @@
     "strategiesCount": "{number} 전략",
     "oneStrategy": "전략 1개",
     "value": "값",
-    "method": "방법",
+    "method": "유형",
     "platform": "플랫폼",
-    "scrollToSeeMore": "더 보려면 스크롤하세요.",
+    "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
     "myStrategies": "내 전략",
-    "strategyPlatform": "전략/플랫폼",
-    "apy": "APY",
+    "strategyPlatform": "전략",
+    "apy": "4월",
     "daily": "일일",
     "reward": "보상",
     "lock": "잠그다",
     "days": "날",
     "risk": "위험",
     "strategyMethod": "전략 방법",
-    "allMethods": "모든 방법",
+    "allMethods": "모든 유형",
     "platforms": "플랫폼",
     "allPlatforms": "모든 플랫폼",
     "allCategories": "모든 카테고리",
@@ -858,8 +858,8 @@
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
     "tokenFilterOptions": {
-      "my": "내 토큰",
-      "all": "모든 토큰"
+      "my": "내 자산",
+      "all": "모든 자산"
     },
     "rewardTypes": {
       "all": "모두",
@@ -869,16 +869,34 @@
     "totalValueInvested": "총 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요.",
     "startEarning": "전략 발견",
-    "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략 중 하나를 통해 자산을 활용해 보세요.",
+    "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략을 통해 자산을 활용해 보세요.",
     "loadingStrategies": "전략 로드 중...",
     "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",
+    "sorryNoResultsWithAssets": "귀하의 자산과 관련된 전략을 찾을 수 없습니다.",
     "sorryNoResults": "전략을 찾을 수 없습니다.",
     "tryChangingFilters": "필터를 바꿔보세요",
     "retry": "다시 해 보다",
     "manage": "관리하다",
     "noLock": "잠금 없음",
     "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다.",
-    "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다."
+    "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다.",
+    "tooltips": {
+      "apr": {
+        "description": "연간 백분율(APR)은 전략의 연간 백분율 수익률을 나타냅니다. 전략의 APR은 참여와 성과에 따라 변경될 수 있습니다."
+      },
+      "daily": {
+        "description": "전략의 일일 백분율 수익률 - APR과 비슷하지만 연간이 아닌 일일 기준입니다. 전략의 일일 수익률은 참여도와 성과에 따라 변경될 수 있습니다."
+      },
+      "tvl": {
+        "description": "TVL(Total Value Locked)은 전략에 예치된 자산의 총 미국 달러 가치를 나타냅니다."
+      },
+      "reward": {
+        "description": "전략 운영 및/또는 인센티브를 통해 제공되는 보상으로 얻을 수 있는 자산입니다."
+      },
+      "lock": {
+        "description": "전략을 종료(예: 자산 인출)하기 전에 포지션이 잠기는 기간입니다. 일부 전략에서는 잠금 해제 기간 동안 보상을 받을 수 없다는 점에 유의하세요."
+      }
+    }
   },
   "disclaimer": "부인 성명",
   "unstableAssetsWarning": {
