@@ -1398,6 +1398,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param {string} params.gasLimit - The gas limit for the transaction.
    * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
    * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
+   * @param {boolean} params.checkOtherFeeTokens - If true, the function will attempt to find an alternative fee token if the user doesn't have enough balance for the primary fee token.
    * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
    *
    * @example
