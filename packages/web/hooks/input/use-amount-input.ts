@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
@@ -67,16 +67,14 @@ export function useAmountInput(
       const decimalMultiplication = DecUtils.getTenExponentN(
         currency.coinDecimals
       );
-      let amountInt =
-        inputAmount === ""
-          ? new Int(0)
-          : new Dec(inputAmount).mul(decimalMultiplication).truncate();
+      const amountInt = (
+        fractionState.value && rawCurrencyBalance
+          ? new Dec(rawCurrencyBalance).mul(new Dec(fractionState.value))
+          : new Dec(inputAmount === "" ? 0 : inputAmount).mul(
+              decimalMultiplication
+            )
+      ).truncate();
 
-      if (!!fractionState.value && rawCurrencyBalance) {
-        amountInt = new Dec(rawCurrencyBalance)
-          .mul(new Dec(fractionState.value))
-          .truncate();
-      }
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
