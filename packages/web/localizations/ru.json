@@ -451,6 +451,8 @@
       "oneClickTradingActive": "Торговля в 1 клик активна",
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
+      "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
+      "pleaseTryAgainLater": "Пожалуйста, повторите попытку позже",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "enableOneClickTrading": "Включить торговлю в 1 клик",
       "increaseFeeLimit": "Увеличить лимит комиссии сети",
@@ -797,6 +799,13 @@
     "priceImpact": "Влияние на цену",
     "routerTooltipFee": "Платеж",
     "routerTooltipSpreadFactor": "Фактор распространения",
+    "continueAnyway": "Продолжай в любом случае",
+    "warning": {
+      "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",
+      "exceedsNetworkFeeLimit": "Этот своп превышает лимит комиссии вашей сети для торговли в один клик.",
+      "increaseSpendLimit": "Увеличить лимит расходов",
+      "increaseNetworkFeeLimit": "Увеличить лимит комиссии сети"
+    },
     "settings": {
       "slippage": "Допуск проскальзывания",
       "slippageInfo": "Ваша транзакция будет отменена, если цена изменится в неблагоприятную сторону более чем на этот процент.",

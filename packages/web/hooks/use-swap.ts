@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -164,7 +165,6 @@ export function useSwap(
     inAmountInput.isEmpty,
   ]);
 
-  // TODO: Handle Simulate Errors in 1CT
   const {
     data: networkFee,
     error: estimateTxError,
@@ -255,14 +255,36 @@ export function useSwap(
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
-          const shouldBeSignedWithOneClickTrading = !isNil(quote?.messages)
+          const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
                 messages: quote.messages,
-              })) &&
-              !hasOverSpendLimitError &&
-              !hasExceededOneClickTradingGasLimit
+              }))
             : false;
+
+          const shouldBeSignedWithOneClickTrading =
+            messageCanBeSignedWithOneClickTrading &&
+            !hasOverSpendLimitError &&
+            !hasExceededOneClickTradingGasLimit &&
+            !estimateTxError;
+
+          if (
+            messageCanBeSignedWithOneClickTrading &&
+            !hasOverSpendLimitError &&
+            !hasExceededOneClickTradingGasLimit &&
+            estimateTxError
+          ) {
+            displayToast(
+              {
+                titleTranslationKey:
+                  "oneClickTrading.toast.currentlyUnavailable",
+                captionTranslationKey:
+                  "oneClickTrading.toast.pleaseTryAgainLater",
+              },
+              ToastType.ONE_CLICK_TRADING
+            );
+          }
+
           const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
             useOneClickTrading: shouldBeSignedWithOneClickTrading,
             ...(featureFlags.swapToolSimulateFee && networkFee
@@ -408,6 +430,7 @@ export function useSwap(
     sendTradeTokenInTx,
     hasOverSpendLimitError,
     hasExceededOneClickTradingGasLimit,
+    estimateTxError,
   };
 }
 

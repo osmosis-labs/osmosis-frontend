@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-클릭 거래 활성화",
       "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
+      "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
+      "pleaseTryAgainLater": "나중에 다시 시도 해주십시오",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
       "enableOneClickTrading": "1-클릭 거래 활성화",
       "increaseFeeLimit": "네트워크 수수료 한도 인상",
@@ -797,6 +799,13 @@
     "priceImpact": "가격 변동",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
+    "continueAnyway": "계속 진행",
+    "warning": {
+      "exceedsSpendLimit": "이 교환은 1-클릭 거래에 대한 남은 지출 한도를 초과합니다.",
+      "exceedsNetworkFeeLimit": "이 스왑은 1-클릭 거래에 대한 네트워크 수수료 한도를 초과합니다.",
+      "increaseSpendLimit": "지출 한도 늘리기",
+      "increaseNetworkFeeLimit": "네트워크 수수료 한도 인상"
+    },
     "settings": {
       "slippage": "슬리피지 허용치",
       "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다.",

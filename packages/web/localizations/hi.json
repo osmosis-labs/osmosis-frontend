@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
       "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
+      "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
+      "pleaseTryAgainLater": "कृपया बाद में पुन: प्रयास करें",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
       "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
       "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
@@ -797,6 +799,13 @@
     "priceImpact": "मूल्य प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
+    "continueAnyway": "फिर भी जारी रखें",
+    "warning": {
+      "exceedsSpendLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी शेष खर्च सीमा से अधिक है।",
+      "exceedsNetworkFeeLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी नेटवर्क शुल्क सीमा से अधिक है।",
+      "increaseSpendLimit": "खर्च सीमा बढ़ाएँ",
+      "increaseNetworkFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ"
+    },
     "settings": {
       "slippage": "फिसलन सहनशीलता",
       "slippageInfo": "यदि कीमत में इस प्रतिशत से अधिक प्रतिकूल परिवर्तन होता है तो आपका लेनदेन वापस कर दिया जाएगा।",

@@ -451,6 +451,8 @@
       "oneClickTradingActive": "Negociação em 1 Clique ativa",
       "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
+      "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
+      "pleaseTryAgainLater": "Por favor, tente novamente mais tarde",
       "networkFeeTooHigh": "Taxa de rede muito alta",
       "enableOneClickTrading": "Habilite a negociação em 1 clique",
       "increaseFeeLimit": "Aumentar o limite de taxa de rede",
@@ -797,6 +799,13 @@
     "priceImpact": "Impacto sobre o preço",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Fator de propagação",
+    "continueAnyway": "Continue de qualquer maneira",
+    "warning": {
+      "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
+      "exceedsNetworkFeeLimit": "Esta troca excede o limite de taxa de rede para negociação com 1 clique.",
+      "increaseSpendLimit": "Aumentar o limite de gastos",
+      "increaseNetworkFeeLimit": "Aumentar o limite de taxa de rede"
+    },
     "settings": {
       "slippage": "Tolerância de spread",
       "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",

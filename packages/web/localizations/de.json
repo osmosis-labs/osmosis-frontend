@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-Click-Handel aktiv",
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
+      "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
+      "pleaseTryAgainLater": "Bitte versuchen Sie es später noch einmal",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
       "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
@@ -797,6 +799,13 @@
     "priceImpact": "Preisauswirkungen",
     "routerTooltipFee": "Gebühr",
     "routerTooltipSpreadFactor": "Spread-Faktor",
+    "continueAnyway": "Mache trotzdem weiter",
+    "warning": {
+      "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
+      "exceedsNetworkFeeLimit": "Dieser Swap überschreitet Ihr Netzwerkgebührenlimit für 1-Click-Handel.",
+      "increaseSpendLimit": "Ausgabenlimit erhöhen",
+      "increaseNetworkFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit"
+    },
     "settings": {
       "slippage": "Rutschtoleranz",
       "slippageInfo": "Ihre Transaktion wird rückgängig gemacht, wenn sich der Preis um mehr als diesen Prozentsatz ungünstig ändert.",

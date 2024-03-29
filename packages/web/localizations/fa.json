@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
       "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
+      "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
+      "pleaseTryAgainLater": "لطفاً بعداً دوباره امتحان کنید",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
       "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
       "increaseFeeLimit": "افزایش سقف هزینه شبکه",
@@ -797,6 +799,13 @@
     "priceImpact": "تاثیر قیمت",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
+    "continueAnyway": "ادامه دادن به هر طریق",
+    "warning": {
+      "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
+      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
+      "increaseSpendLimit": "افزایش سقف هزینه",
+      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+    },
     "settings": {
       "slippage": "تغیرات قابل قبول",
       "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",

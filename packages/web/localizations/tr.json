@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
       "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
+      "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
+      "pleaseTryAgainLater": "Lütfen daha sonra tekrar deneyiniz",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
       "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
       "increaseFeeLimit": "Ağ ücreti sınırını artırın",
@@ -797,6 +799,13 @@
     "priceImpact": "Fiyata Etki",
     "routerTooltipFee": "Ücret",
     "routerTooltipSpreadFactor": "Yayılma Faktörü",
+    "continueAnyway": "Her halükarda devam et",
+    "warning": {
+      "exceedsSpendLimit": "Bu takas, Tek Tıklamayla Ticaret için kalan harcama limitinizi aşıyor.",
+      "exceedsNetworkFeeLimit": "Bu takas, Tek Tıklamayla Ticaret için ağ ücreti limitinizi aşıyor.",
+      "increaseSpendLimit": "Harcama sınırını artırın",
+      "increaseNetworkFeeLimit": "Ağ ücreti sınırını artırın"
+    },
     "settings": {
       "slippage": "Slipaj toleransı",
       "slippageInfo": "Fiyatta belirttiğiniz yüzdenin üzerinde artış olursa işleminiz iptal olacaktır.",

@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-Click取引が有効です",
       "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
+      "currentlyUnavailable": "1クリック取引は現在利用できません",
+      "pleaseTryAgainLater": "後でもう一度試してください",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
       "enableOneClickTrading": "1-Click取引を有効にする",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
@@ -797,6 +799,13 @@
     "priceImpact": "価格への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
+    "continueAnyway": "とにかく続けます",
+    "warning": {
+      "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
+      "exceedsNetworkFeeLimit": "このスワップは、1 クリック取引のネットワーク手数料制限を超えています。",
+      "increaseSpendLimit": "支出制限を増やす",
+      "increaseNetworkFeeLimit": "ネットワーク料金の上限を引き上げる"
+    },
     "settings": {
       "slippage": "滑り許容差",
       "slippageInfo": "価格がこのパーセンテージを超えて不利に変化した場合、トランザクションは元に戻ります。",

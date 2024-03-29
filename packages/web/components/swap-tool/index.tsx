@@ -31,7 +31,6 @@ import { EventName, SwapPage } from "~/config";
 import {
   useFeatureFlags,
   useOneClickTradingSession,
-  usePreviousWhen,
   useTranslation,
 } from "~/hooks";
 import {
@@ -259,10 +258,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         </span>
       );
     }
-    const previousWarningText = usePreviousWhen(
-      warningText,
-      () => !!warningText
-    );
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
@@ -927,12 +922,23 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               disabled={
                 isWalletLoading ||
                 swapState.isQuoteLoading ||
-                (isOneClickTradingEnabled && swapState.isLoadingNetworkFee) ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
+              isLoading={
+                /**
+                 * While 1-Click is enabled, display a loading spinner when simulation
+                 * is in progress since we don't have a wallet to compute the fee for
+                 * us. We need the network fee to be calculated before we can proceed
+                 * with the trade.
+                 */
+                isOneClickTradingEnabled &&
+                swapState.isLoadingNetworkFee &&
+                !swapState.inAmountInput.isEmpty
+              }
+              loadingText={buttonText}
               onClick={sendSwapTx}
             >
               {account?.walletStatus === WalletStatus.Connected ||
