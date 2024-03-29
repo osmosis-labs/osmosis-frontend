@@ -75,7 +75,7 @@ export const finalizeSwapTxData = async (
   let coinAmount = inAmountInput.amount;
 
   let amountAdjustedForFees = new Dec(0);
-  debugger;
+
   // if the amount left in balance is below AMOUNT_LEFT_THRESHOLD, subtract the gas estimates from the amount to transfer, and set amountAdjustedForFees flag.
   if (
     networkFee?.gasAmount &&
