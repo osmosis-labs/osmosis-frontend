@@ -177,7 +177,12 @@ export const tableColumns = [
     enableSorting: false,
   }),
   columnHelper.accessor("lockDuration", {
-    header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.lock.description"}
+        tKey={"earnPage.lock"}
+      />
+    ),
     cell: LockCell,
   }),
   columnHelper.accessor("riskLevel", {
