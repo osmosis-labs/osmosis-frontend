@@ -10,7 +10,6 @@ import {
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -75,7 +74,7 @@ export function useEstimateTxFees({
 
   const wallet = accountStore.getWallet(chainId);
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ["simulate-any-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
@@ -97,25 +96,6 @@ export function useEstimateTxFees({
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });
-
-  // runs the request once
-  const runEstimateTxFeesOnce = useCallback(
-    async (messages: EncodeObject[]) => {
-      if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-      return estimateTxFeesQueryFn({
-        wallet,
-        accountStore,
-        messages,
-        apiUtils,
-      });
-    },
-    [accountStore, apiUtils, chainId, wallet]
-  );
-
-  return {
-    runEstimateTxFeesOnce,
-    query,
-  };
 }
 
 export function useEstimateSwapTxFeesMutation() {

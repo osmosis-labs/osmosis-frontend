@@ -151,14 +151,12 @@ export function useSwap({
     inAmountInput.amount
   );
 
-  const {
-    runEstimateTxFeesOnce,
-    query: { data: networkFee, isLoading: isLoadingNetworkFee },
-  } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
-    messages: swapTxParameters?.messages,
-    enabled: featureFlags.swapToolSimulateFee,
-  });
+  const { data: networkFee, isLoading: isLoadingNetworkFee } =
+    useEstimateTxFees({
+      chainId: chainStore.osmosis.chainId,
+      messages: swapTxParameters?.messages,
+      enabled: featureFlags.swapToolSimulateFee,
+    });
 
   const positivePrevQuote = usePreviousWhen(
     quote,
@@ -208,7 +206,6 @@ export function useSwap({
     isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     isLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     swapTxParameters,
-    runEstimateTxFeesOnce,
   };
 }
 
