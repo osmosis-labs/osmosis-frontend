@@ -145,6 +145,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: [],
+    mode: "wallet-connect",
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -238,6 +239,7 @@ export const WalletRegistry: RegistryWallet[] = [
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: [],
+    mode: "wallet-connect",
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],

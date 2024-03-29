@@ -31,7 +31,7 @@
     "@cosmjs/encoding": "^0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
     "@cosmjs/stargate": "0.32.3",
-    "@cosmos-kit/core": "2.7.2",
+    "@cosmos-kit/core": "2.8.9",
     "@cosmos-kit/trust": "2.6.0",
     "@cosmos-kit/trust-extension": "2.5.9",
     "@cosmos-kit/trust-mobile": "2.5.9",

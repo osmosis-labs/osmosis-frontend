@@ -2245,18 +2245,7 @@
     events "3.3.0"
     uuid "^9.0.1"
 
-"@cosmos-kit/core@^2.7.8":
-  version "2.7.8"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.8.tgz#f7b3dee1ed6d95e6813de571162f0c498ec31f49"
-  integrity sha512-la1bVFNaIvIpqFRHtWDYBf95B9j+8mQ4CC2JyEt6bONzEg+27KHQ8xmOpf9fhLC9Tc4/c4LBc0yvcvsd7T13yw==
-  dependencies:
-    "@chain-registry/types" "0.17.0"
-    "@walletconnect/types" "2.10.4"
-    bowser "2.11.0"
-    events "3.3.0"
-    uuid "^9.0.1"
-
-"@cosmos-kit/core@^2.8.9":
+"@cosmos-kit/core@2.8.9", "@cosmos-kit/core@^2.8.9":
   version "2.8.9"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.8.9.tgz#3e6b40fa14c5d143065d3ec6a894e386f95ea4ad"
   integrity sha512-e0Fqbut9mqHlFS6QnLSbU8AFYPtXUcKVaMJsL1dKbfTotACsECgnAs4gzXaTFo3sTwEJrNZ6cq86qvqV85X6uw==
@@ -2270,6 +2259,17 @@
     "@walletconnect/types" "2.11.0"
     bowser "2.11.0"
     cosmjs-types "^0.9.0"
+    events "3.3.0"
+    uuid "^9.0.1"
+
+"@cosmos-kit/core@^2.7.8":
+  version "2.7.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.8.tgz#f7b3dee1ed6d95e6813de571162f0c498ec31f49"
+  integrity sha512-la1bVFNaIvIpqFRHtWDYBf95B9j+8mQ4CC2JyEt6bONzEg+27KHQ8xmOpf9fhLC9Tc4/c4LBc0yvcvsd7T13yw==
+  dependencies:
+    "@chain-registry/types" "0.17.0"
+    "@walletconnect/types" "2.10.4"
+    bowser "2.11.0"
     events "3.3.0"
     uuid "^9.0.1"
 

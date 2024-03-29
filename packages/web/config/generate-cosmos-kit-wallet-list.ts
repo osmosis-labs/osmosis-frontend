@@ -82,7 +82,7 @@ async function generateCosmosKitWalletList() {
     w.logo = ""; // We'll override the logos in wallet-registry.ts
     acc[w.name] = w;
     return acc;
-  }, {} as Record<string, Wallet | any>);
+  }, {} as Record<string, Wallet>);
 
   const content = `
       import {Wallet} from "@cosmos-kit/core"
