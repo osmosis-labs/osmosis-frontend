@@ -160,7 +160,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { mutateAsync: sendSwapTxMutation } = useSendSwapTxMutation();
     // user action
     const handleSendSwapTx = async () => {
-      debugger;
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
         return onOpenWalletSelect(chainId);
