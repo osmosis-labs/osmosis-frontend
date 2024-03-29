@@ -18,10 +18,10 @@ export function useFractionButtonState() {
       setFraction(undefined);
     },
     toggleHalf() {
-      setFraction((current) => (!current ? 0.5 : undefined));
+      setFraction((current) => (current === 0.5 ? undefined : 0.5));
     },
     toggleMax() {
-      setFraction((current) => (!current ? 1 : undefined));
+      setFraction((current) => (current === 1.0 ? undefined : 1.0));
     },
   };
 }
