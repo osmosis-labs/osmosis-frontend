@@ -1,7 +1,6 @@
 import { Listbox, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { ReactNode } from "react";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { ListOption } from "~/components/earn/table/types/filters";

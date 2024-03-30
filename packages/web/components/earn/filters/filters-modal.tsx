@@ -5,10 +5,7 @@ import { Icon } from "~/components/assets";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
-import {
-  ListOption,
-  StrategyButtonResponsibility,
-} from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
@@ -103,7 +100,7 @@ const FiltersModal = (
             toggleFn={({ label, value }) =>
               setFilter("specialTokens", {
                 label,
-                value: value as StrategyButtonResponsibility,
+                value,
               })
             }
             containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"

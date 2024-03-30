@@ -8,10 +8,7 @@ import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import FiltersModal from "~/components/earn/filters/filters-modal";
-import {
-  ListOption,
-  StrategyButtonResponsibility,
-} from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
@@ -20,38 +17,6 @@ import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
-
-const strategiesFilters = [
-  {
-    label: "Stablecoins",
-    value: "stablecoins",
-    icon: <Icon id="stablecoins" />,
-  },
-  {
-    label: "Correlated",
-    value: "correlated",
-    icon: (
-      <Image
-        src="/icons/correlated.svg"
-        alt="Correlated icon"
-        width={28}
-        height={28}
-      />
-    ),
-  },
-  {
-    label: "Blue Chip",
-    value: "bluechip",
-    icon: (
-      <Image
-        src="/icons/blue-chip.svg"
-        alt="Bluechip icon"
-        width={28}
-        height={28}
-      />
-    ),
-  },
-];
 
 export const TopFilters = ({
   tokenHolderSwitchDisabled,
@@ -136,6 +101,24 @@ export const TopFilters = ({
     [cmsData, t]
   );
 
+  const categories = useMemo(
+    () =>
+      cmsData?.categories.map((category) => ({
+        label: category.name,
+        value: category.name,
+        icon: (
+          <Image
+            src={category.iconURL}
+            alt={category.name}
+            width={28}
+            height={28}
+          />
+        ),
+        tooltip: category.description,
+      })) ?? [],
+    [cmsData]
+  );
+
   const {
     tokenHolder,
     strategyMethod,
@@ -189,13 +172,13 @@ export const TopFilters = ({
           size={"full"}
         />
         <div className="flex 2xl:hidden">
-          {strategiesFilters.map((props) => {
+          {categories.map((props) => {
             return (
               <StrategyButton
-                onChange={(e) =>
+                onChange={(value) =>
                   setFilter("specialTokens", {
                     label: props.label,
-                    value: e as StrategyButtonResponsibility,
+                    value,
                   })
                 }
                 isOn={
@@ -212,12 +195,12 @@ export const TopFilters = ({
         </div>
         <DropdownWithMultiSelect
           label={t("earnPage.allCategories")}
-          options={strategiesFilters}
+          options={categories}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
-              value: value as StrategyButtonResponsibility,
+              value,
             })
           }
           containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
@@ -273,12 +256,12 @@ export const TopFilters = ({
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
           label={t("earnPage.allCategories")}
-          options={strategiesFilters}
+          options={categories}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
-              value: value as StrategyButtonResponsibility,
+              value,
             })
           }
           containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
@@ -311,7 +294,7 @@ export const TopFilters = ({
         rewardTypes={rewardTypes}
         lockDurationTypes={lockDurationTypes}
         strategies={strategies}
-        strategiesFilters={strategiesFilters}
+        strategiesFilters={categories}
         tokenFilterOptions={tokenFilterOptions}
         isMyAllSwitchDisabled={tokenHolderSwitchDisabled}
       />

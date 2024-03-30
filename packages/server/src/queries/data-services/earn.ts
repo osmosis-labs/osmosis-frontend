@@ -108,6 +108,12 @@ export interface RawStrategyCMSData {
   categories: string[];
 }
 
+export interface StategyCMSCategory {
+  name: string;
+  description: string;
+  iconURL: string;
+}
+
 /**
  * Processed response data from the GitHub CMS.
  */
