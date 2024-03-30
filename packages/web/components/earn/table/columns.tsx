@@ -106,6 +106,7 @@ export const tableColumns = [
     header: () => (
       <ColumnCellHeader
         tooltipClassname="!justify-start"
+        tooltipDescription={"earnPage.tooltips.strategy.description"}
         tKey={"earnPage.strategyPlatform"}
       />
     ),
@@ -189,6 +190,7 @@ export const tableColumns = [
     header: () => (
       <ColumnCellHeader
         tKey={"earnPage.risk"}
+        tooltipDescription={"earnPage.tooltips.risk.description"}
         tooltipClassname="!justify-center"
       />
     ),

@@ -882,19 +882,25 @@
     "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
     "tooltips": {
       "apr": {
-        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Należy pamiętać, że RRSO strategii może ulec zmianie w zależności od udziału i wyników."
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
       },
       "daily": {
-        "description": "Dzienny procentowy zwrot ze strategii – taki jak RRSO, ale dzienny, a nie roczny. Należy pamiętać, że dzienna stopa zwrotu strategii może się zmieniać w zależności od uczestnictwa i wyników."
+        "description": "Dzienny procentowy zwrot strategii - podobny do RRSO, ale odzwierciedlający dzienny zwrot, a nie roczny. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."
       },
       "reward": {
-        "description": "Aktywa, które zdobędziesz w formie nagród, zapewnianych w ramach działań strategicznych i/lub zachęt."
+        "description": "Rodzaj aktywów uzyskanych dzięki operacjom i/lub zachętom w ramach strategii."
       },
       "lock": {
-        "description": "Okres, przez który Twoja pozycja będzie zablokowana, zanim będziesz mógł zakończyć strategię (tzn. wycofać swoje aktywa). Pamiętaj, że w przypadku niektórych strategii nie będziesz zdobywać nagród w okresie odblokowywania."
+        "description": "Okres czasu, przez jaki pozycja jest zablokowana, zanim będzie można ją opuścić (tj. zanim będzie można wycofać zdeponowane aktywa) ze strategii. Uwaga: w przypadku niektórych strategii nagrody mogą nie zostać zdobyte w okresie odblokowania."
+      },
+      "strategy": {
+        "description": "Na Osmosis dostępne są różnego rodzaju możliwości zarobku, hostowane przez różne platformy. Dostęp do strategii wymaga zdeponowania określonych aktywów."
+      },
+      "risk": {
+        "description": "Ocena ryzyka obejmuje rozważenie kombinacji kryteriów związanych ze strategią i jej aktywami bazowymi."
       }
     }
   },

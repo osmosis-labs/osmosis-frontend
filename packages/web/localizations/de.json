@@ -882,19 +882,25 @@
     "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
     "tooltips": {
       "apr": {
-        "description": "Der jährliche Prozentsatz (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Beachten Sie, dass sich der effektive Jahreszins einer Strategie je nach Teilnahme und Leistung ändern kann."
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
       },
       "daily": {
-        "description": "Täglicher prozentualer Ertrag aus einer Strategie – wie APR, aber auf täglicher Basis statt jährlich. Bitte beachten Sie, dass sich der tägliche Ertrag einer Strategie je nach Beteiligung und Leistung ändern kann."
+        "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
       },
       "tvl": {
-        "description": "Der Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
+        "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
       },
       "reward": {
-        "description": "Die Vermögenswerte, die Sie in Form von Belohnungen verdienen, die durch Strategieoperationen und/oder Anreize bereitgestellt werden."
+        "description": "Die Art der Vermögenswerte, die durch die Operationen und/oder Anreize der Strategie erzielt werden."
       },
       "lock": {
-        "description": "Der Zeitraum, für den Ihre Position gesperrt wird, bevor Sie aus einer Strategie aussteigen (d. h. Ihr Vermögen abheben) können. Beachten Sie, dass Sie bei einigen Strategien während des Freischaltzeitraums keine Belohnungen erhalten."
+        "description": "Der Zeitraum, in dem eine Position gesperrt ist, bevor sie aus der Strategie verlassen werden kann (d. h. bevor die hinterlegten Vermögenswerte abgehoben werden können). Hinweis: Bei einigen Strategien können während des Entsperrungszeitraums möglicherweise keine Belohnungen verdient werden."
+      },
+      "strategy": {
+        "description": "Auf Osmosis sind Verdienstmöglichkeiten verschiedener Art verfügbar, die von verschiedenen Plattformen gehostet werden. Der Zugriff auf eine Strategie erfordert die Hinterlegung bestimmter Vermögenswerte."
+      },
+      "risk": {
+        "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
       }
     }
   },

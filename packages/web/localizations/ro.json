@@ -882,19 +882,25 @@
     "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
     "tooltips": {
       "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Fiți atenți, APR-ul unei strategii poate fi modificat în funcție de participare și performanță."
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
       },
       "daily": {
-        "description": "Rentabilitatea procentuală zilnică dintr-o strategie – cum ar fi DAE, dar mai degrabă zilnic decât anual. Fiți atenți, rata zilnică de rentabilitate a unei strategii poate fi modificată în funcție de participare și performanță."
+        "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
       },
       "tvl": {
         "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
       },
       "reward": {
-        "description": "Activele pe care le veți câștiga în recompense, oferite din operațiuni de strategie și/sau stimulente."
+        "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
       },
       "lock": {
-        "description": "Perioada de timp în care poziția dvs. va fi blocată înainte de a putea părăsi (adică să vă retrageți activele) dintr-o strategie. Fiți atenți, în unele strategii, nu veți câștiga recompense în perioada de deblocare."
+        "description": "Perioada de timp în care o poziție este blocată înainte ca aceasta să poată fi ieșită (adică înainte ca activele depozitate să poată fi retrase) din strategie. Notă: în unele strategii, recompensele pot să nu fie câștigate în perioada de deblocare."
+      },
+      "strategy": {
+        "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."
+      },
+      "risk": {
+        "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
       }
     }
   },

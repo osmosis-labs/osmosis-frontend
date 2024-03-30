@@ -882,19 +882,25 @@
     "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
     "tooltips": {
       "apr": {
-        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Tenga en cuenta que la APR de una estrategia está sujeta a cambios según la participación y el desempeño."
+        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
       },
       "daily": {
-        "description": "Rendimiento porcentual diario de una estrategia, como la APR, pero diaria en lugar de anual. Tenga en cuenta que la tasa de retorno diaria de una estrategia está sujeta a cambios según la participación y el desempeño."
+        "description": "Retorno porcentual diario de una estrategia, similar a la APR, pero que refleja el rendimiento diario en lugar de anual. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
       },
       "tvl": {
         "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
       },
       "reward": {
-        "description": "Los activos que ganarás en recompensas, proporcionadas por operaciones estratégicas y/o incentivos."
+        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
       },
       "lock": {
-        "description": "El período de tiempo que su posición estará bloqueada antes de que pueda salir (es decir, retirar sus activos) de una estrategia. Tenga en cuenta que, en algunas estrategias, no obtendrá recompensas durante el período de desbloqueo."
+        "description": "El período de tiempo que una posición está bloqueada antes de que se pueda salir de ella (es decir, antes de que se puedan retirar los activos depositados) de la estrategia. Nota: En algunas estrategias, es posible que no se obtengan recompensas durante el período de desbloqueo."
+      },
+      "strategy": {
+        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
+      },
+      "risk": {
+        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
       }
     }
   },
