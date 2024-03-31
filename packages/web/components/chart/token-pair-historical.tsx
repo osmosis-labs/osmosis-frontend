@@ -219,17 +219,17 @@ const TokenPairHistoricalChart: FunctionComponent<{
                   closeDec.truncate().toString().length ?? 0;
 
                 /**
-                 * If a number is less then $1000, we only show 4 significant digits, examples:
+                 * If a number is less then $100, we only show 4 significant digits, examples:
                  *  OSMO: $1.612
                  *  AXL: $0.9032
                  *  STARS: $0.03673
                  *  HUAHUA: $0.00001231
                  *
-                 * If a number is greater or equal to $1000, we show a dynamic significant digits based on it's integer part, examples:
+                 * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
                  * BTC: $47,334.21
                  * ETH: $3,441.15
                  */
-                const maximumSignificantDigits = closeDec.lt(new Dec(1000))
+                const maximumSignificantDigits = closeDec.lt(new Dec(100))
                   ? 4
                   : integerPartLength + 2;
 
