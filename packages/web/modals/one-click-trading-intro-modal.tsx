@@ -31,7 +31,8 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
 );
 
 const OneClickTradingIntroModal = observer(() => {
-  const { accountStore } = useStore();
+  const { accountStore, chainStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
 
@@ -67,7 +68,11 @@ const OneClickTradingIntroModal = observer(() => {
 
   const on1CTSessionExpire = useCallback(
     ({ oneClickTradingInfo }: { oneClickTradingInfo: OneClickTradingInfo }) => {
-      if (oneClickTradingInfo.hasSeenExpiryToast) return;
+      if (
+        oneClickTradingInfo.hasSeenExpiryToast ||
+        account?.address !== oneClickTradingInfo?.userOsmoAddress
+      )
+        return;
 
       accountStore.setOneClickTradingInfo({
         ...oneClickTradingInfo,
@@ -76,7 +81,7 @@ const OneClickTradingIntroModal = observer(() => {
 
       displayExpiredToast();
     },
-    [accountStore, displayExpiredToast]
+    [account?.address, accountStore, displayExpiredToast]
   );
 
   /**
