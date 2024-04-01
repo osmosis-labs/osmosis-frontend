@@ -181,6 +181,20 @@ export const Transactions: React.FC = () => {
       </div>
       <TransactionRow status="Success" />
       <TransactionRow status="Success" />
+
+      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+        <div className="text-osmoverse-300">February 8</div>
+        <hr className="text-osmoverse-700" />
+      </div>
+      <TransactionRow status="Failure" />
+      <TransactionRow status="Failure" />
+
+      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+        <div className="text-osmoverse-300">December 29, 2023</div>
+        <hr className="text-osmoverse-700" />
+      </div>
+      <TransactionRow status="Success" />
+      <TransactionRow status="Success" />
     </main>
   );
 };
