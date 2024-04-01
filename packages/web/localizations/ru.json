@@ -470,6 +470,11 @@
       "defaultParameters": "На этом устройстве функция «1-Click Trading» будет активна в течение 1 часа с лимитом расходов в 5,000 долларов США.",
       "changeButton": "Изменять"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Торгуйте быстрее и проще",
+      "startOneClickTradingNow": "Начните торговлю в 1 клик прямо сейчас",
+      "iconAlt": "Маленький логотип «1-Click Trading»"
+    },
     "floatingBanner": {
       "newPill": "Новый",
       "title": "Торговля в 1 клик",

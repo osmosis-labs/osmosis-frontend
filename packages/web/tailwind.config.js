@@ -62,6 +62,7 @@ module.exports = {
       ammelia: {
         400: "#D779CF",
         600: "#CA2EBD",
+        900: "#87087C",
       },
       rust: {
         200: "#F8C2B0",

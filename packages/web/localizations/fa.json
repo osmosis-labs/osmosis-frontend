@@ -470,6 +470,11 @@
       "defaultParameters": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
       "changeButton": "تغییر دادن"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "تجارت سریعتر و آسان تر",
+      "startOneClickTradingNow": "اکنون تجارت 1-کلیک کنید",
+      "iconAlt": "1-روی نماد تجاری کوچک کلیک کنید"
+    },
     "floatingBanner": {
       "newPill": "جدید",
       "title": "1- روی تجارت کلیک کنید",

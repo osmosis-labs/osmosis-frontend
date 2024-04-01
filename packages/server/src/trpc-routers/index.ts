@@ -1,4 +1,5 @@
 export * from "./assets-router";
+export * from "./cms-router";
 export * from "./concentrated-liquidity-router";
 export * from "./earn-router";
 export * from "./one-click-trading-router";

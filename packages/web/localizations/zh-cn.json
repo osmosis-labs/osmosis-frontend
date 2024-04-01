@@ -470,6 +470,11 @@
       "defaultParameters": "一键交易将在此设备上激活 1 小时，支出限额为 5,000 美元",
       "changeButton": "改变"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "交易更快捷、更轻松",
+      "startOneClickTradingNow": "立即开始一键交易",
+      "iconAlt": "一键交易小徽标"
+    },
     "floatingBanner": {
       "newPill": "新的",
       "title": "一键交易",

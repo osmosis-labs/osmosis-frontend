@@ -470,6 +470,11 @@
       "defaultParameters": "Tek Tıklamayla Ticaret bu cihazda 1 saat boyunca 5.000 ABD Doları harcama sınırıyla etkin olacak",
       "changeButton": "Değiştirmek"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Daha hızlı ve daha kolay ticaret yapın",
+      "startOneClickTradingNow": "Şimdi Tek Tıkla Ticarete Başlayın",
+      "iconAlt": "Tek Tıklamayla Ticaret Küçük Logosu"
+    },
     "floatingBanner": {
       "newPill": "Yeni",
       "title": "Tek Tıklamayla Ticaret",

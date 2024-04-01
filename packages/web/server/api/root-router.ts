@@ -1,4 +1,5 @@
 import {
+  cmsRouter,
   concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
@@ -15,9 +16,9 @@ export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
   oneClickTrading: oneClickTradingRouter,
+  cms: cmsRouter,
 });
 
-/** This is the primary lambda router for our server. */
 export const appRouter = createTRPCRouter({
   bridgeTransfer: bridgeTransferRouter,
   edge: edgeRouter,
