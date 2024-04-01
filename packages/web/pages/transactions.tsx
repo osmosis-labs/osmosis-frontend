@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
@@ -6,21 +7,23 @@ import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { useNavBar } from "~/hooks";
 import { theme } from "~/tailwind.config";
+
+type Status = "Pending" | "Success" | "Failure";
 interface TransactionRowProps {
-  status: "Pending" | "Success" | "Failure";
+  status: Status;
 }
 
 const TransactionRow = ({ status }: TransactionRowProps) => {
   return (
     <div className="w-container m-4 flex h-12 justify-between">
       <TransactionStatus status={status} />
-      <TransactionDetails />
+      <TransactionDetails status={status} />
     </div>
   );
 };
 
 interface TransactionStatusProps {
-  status: "Pending" | "Success" | "Failure";
+  status: Status;
 }
 
 const TransactionStatus = ({ status }: TransactionStatusProps) => {
@@ -36,7 +39,12 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
       )}
       {status === "Failure" && (
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
-          <Icon id="alert-circle" color={theme.colors.rust[500]} />
+          <Icon
+            width={24}
+            height={24}
+            id="alert-circle"
+            color={theme.colors.rust[400]}
+          />
         </div>
       )}
 
@@ -49,7 +57,23 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
   );
 };
 
-const TransactionDetails = () => {
+interface TransactionDetailsProps {
+  status: Status;
+}
+
+const TransactionDetails = ({ status }: TransactionDetailsProps) => {
+  const getFromTextStyle = () => {
+    if (status === "Pending") return "text-osmoverse-400";
+    if (status === "Success") return "text-osmoverse-100";
+    if (status === "Failure") return "text-rust-400";
+  };
+
+  const getToTextStyle = () => {
+    if (status === "Pending") return "text-osmoverse-400";
+    if (status === "Success") return "text-bullish-400";
+    if (status === "Failure") return "text-rust-400";
+  };
+
   return (
     <div className="flex gap-4">
       <Image
@@ -58,9 +82,11 @@ const TransactionDetails = () => {
         height={32}
         width={32}
       />
-      <div className="flex flex-col text-right text-osmoverse-400">
-        <div className="text-subtitle1">- $100.00</div>
-        <div className="text-body2">10 OSMO</div>
+      <div className="flex flex-col text-right ">
+        <div className={classNames("text-subtitle1", getFromTextStyle())}>
+          - $100.00
+        </div>
+        <div className="text-body2 text-osmoverse-400">10 OSMO</div>
       </div>
       <Image
         alt="right"
@@ -76,7 +102,9 @@ const TransactionDetails = () => {
         width={32}
       />
       <div className="flex flex-col text-right text-osmoverse-400">
-        <div className="text-subtitle1">+ $100.00</div>
+        <div className={classNames("text-subtitle1", getToTextStyle())}>
+          + $100.00
+        </div>
         <div className="text-body2">100 USDC</div>
       </div>
     </div>
