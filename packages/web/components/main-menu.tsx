@@ -114,7 +114,7 @@ const MenuLink: FunctionComponent<{
       })}
     >
       <div
-        className={showMore ? undefined : "flex h-12 items-center px-4 py-3"}
+        className={showMore ? undefined : "flex h-12 items-center px-3 py-3"}
         onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
         onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
         onClick={onClickLink}
@@ -141,7 +141,7 @@ const MorePopover: FunctionComponent<{
           >
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
-          <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+          <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
             {secondaryMenus.map((menu: MainLayoutMenu) => {
               const { link, selectionTest, secondaryLogo, showMore } = menu;
               return (
