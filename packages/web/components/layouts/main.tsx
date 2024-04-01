@@ -36,7 +36,7 @@ export const MainLayout: FunctionComponent<{
           <OsmosisFullLogo onClick={() => router.push("/")} />
         </div>
       )}
-      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col bg-osmoverse-850 px-2 py-6 md:hidden">
+      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-850 px-2 py-6 md:hidden">
         {showBlockLogo && (
           <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
             <OsmosisFullLogo onClick={() => router.push("/")} />
