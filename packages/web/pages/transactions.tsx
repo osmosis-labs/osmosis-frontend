@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import LinkButton from "~/components/buttons/link-button";
+import { Button } from "~/components/ui/button";
 import { useNavBar } from "~/hooks";
 
 export const Transactions: React.FC = () => {
@@ -26,7 +27,27 @@ export const Transactions: React.FC = () => {
     ctas: [],
   });
 
-  return <div>Hello World</div>;
+  return (
+    <main className="flex px-8">
+      <div className="flex w-full justify-between pt-8 pb-4">
+        <h1 className="text-h3 font-h3"> Hello World</h1>
+        <div className="flex gap-3">
+          <Button
+            // TODO update with new variant
+            size="md"
+          >
+            Explorer &#x2197;
+          </Button>
+          <Button
+            // TODO update with new variant
+            size="md"
+          >
+            Tax Reports &#x2197;
+          </Button>
+        </div>
+      </div>
+    </main>
+  );
 };
 
 export default Transactions;
