@@ -1,6 +1,6 @@
 import { ChainRecord, Wallet } from "@cosmos-kit/core";
 
-import { ChainWC } from "~/integrations/core-walletconnect";
+import { ChainWC } from "~/integrations/trust-walletconnect-core";
 
 import { TrustClient } from "./client";
 

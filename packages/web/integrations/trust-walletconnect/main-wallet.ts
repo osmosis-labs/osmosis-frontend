@@ -1,6 +1,6 @@
 import { EndpointOptions, Wallet } from "@cosmos-kit/core";
 
-import { WCWallet } from "~/integrations/core-walletconnect";
+import { WCWallet } from "~/integrations/trust-walletconnect-core";
 
 import { ChainTrustMobile } from "./chain-wallet";
 import { TrustClient } from "./client";
