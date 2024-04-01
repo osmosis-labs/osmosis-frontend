@@ -303,7 +303,7 @@ export const TopFilters = ({
           {t("earnPage.riskDisclaimer")}
         </span>
         <Link
-          href={cmsData?.riskReportUrl ?? "#"}
+          href="https://docs.osmosis.zone/overview/integrate/earn-risk"
           target="_blank"
           className="caption inline-flex items-center gap-1 text-wosmongton-300"
         >
