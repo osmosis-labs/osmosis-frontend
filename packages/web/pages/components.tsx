@@ -359,8 +359,8 @@ const Buttons = () => {
           Click
         </Button>
       </Component>
-      <Component title="Secondary">
-        <Button onClick={() => console.log("clicked")} variant="secondary">
+      <Component title="Success">
+        <Button onClick={() => console.log("clicked")} variant="success">
           Click
         </Button>
       </Component>

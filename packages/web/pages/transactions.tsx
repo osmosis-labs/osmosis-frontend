@@ -2,6 +2,7 @@ import classNames from "classnames";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
@@ -77,7 +78,7 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
   return (
     <div className="flex gap-4">
       <Image
-        alt="USDC"
+        alt="OSMO"
         src="/tokens/generated/osmo.svg"
         height={32}
         width={32}
@@ -135,66 +136,120 @@ export const Transactions: React.FC = () => {
   });
 
   return (
-    <main className="flex flex-col px-8">
-      <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3 font-h3">Transactions</h1>
-        <div className="flex gap-3">
-          <Button
-            // TODO update with new variant
-            size="md"
-          >
-            Explorer &#x2197;
-          </Button>
-          <Button
-            // TODO update with new variant
-            size="md"
-          >
-            Tax Reports &#x2197;
-          </Button>
+    <main className="flex gap-8 px-8">
+      <div className="flex w-full flex-col">
+        <div className="flex w-full justify-between pt-8 pb-4">
+          <h1 className="text-h3 font-h3">Transactions</h1>
+          <div className="flex gap-3">
+            <Button variant="secondary" size="md">
+              Explorer &#x2197;
+            </Button>
+            <Button variant="secondary" size="md">
+              Tax Reports &#x2197;
+            </Button>
+          </div>
         </div>
+
+        {/* TODO - parse by date, into groups */}
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">Pending</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Pending" />
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">Earlier Today</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Success" />
+        <TransactionRow status="Failure" />
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">Yesterday</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Success" />
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">March 11</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Success" />
+        <TransactionRow status="Success" />
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">February 8</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Failure" />
+        <TransactionRow status="Failure" />
+
+        <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+          <div className="text-osmoverse-300">December 29, 2023</div>
+          <hr className="text-osmoverse-700" />
+        </div>
+        <TransactionRow status="Success" />
+        <TransactionRow status="Success" />
       </div>
 
-      {/* TODO - parse by date, into groups */}
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Pending</div>
-        <hr className="text-osmoverse-700" />
+      <div className="flex w-[432px] flex-col border-l-[1px] border-osmoverse-700">
+        <div className="py-4 pl-4">
+          <IconButton
+            aria-label="Close"
+            mode="unstyled"
+            size="unstyled"
+            className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
+            icon={<Icon id="close" width={32} height={32} />}
+            //   onClick={onRequestClose}
+          />
+        </div>
+        <div className="flex flex-col items-center gap-4 pt-2 pb-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
+            <Icon id="swap" width={24} height={24} aria-label="swap icon" />
+          </div>
+          <div className="text-h5">Swapped</div>
+          <div className="text-body1 text-osmoverse-300">
+            March 14, 2024, 13:01
+          </div>
+        </div>
+        {/* <div className="flex flex-col">
+          <div>
+            <Image
+              alt="OSMO"
+              src="/tokens/generated/osmo.svg"
+              height={32}
+              width={32}
+            />
+            <div>
+              <div>Sold</div>
+              <div>OSMO</div>
+            </div>
+            <div>
+              <div>$100.00</div>
+              <div>10</div>
+            </div>
+          </div>
+          <div>
+            <Image
+              alt="down"
+              src="/icons/arrow-right.svg"
+              width={24}
+              height={24}
+              className="rotate-90 text-osmoverse-600"
+            />
+          </div>
+          <div>
+            {" "}
+            <Image
+              alt="USDC"
+              src="/tokens/generated/usdc.svg"
+              height={32}
+              width={32}
+            />
+          </div>
+        </div> */}
       </div>
-      <TransactionRow status="Pending" />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Earlier Today</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Failure" />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Yesterday</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">March 11</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Success" />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">February 8</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Failure" />
-      <TransactionRow status="Failure" />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">December 29, 2023</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Success" />
     </main>
   );
 };
