@@ -13,9 +13,12 @@ import { getNumberMagnitude, toScientificNotation } from "~/utils/number";
 type CustomFormatOpts = {
   maxDecimals: number;
   scientificMagnitudeThreshold: number;
+  disabledTrimZeros?: boolean;
 };
 
-type FormatOptions = Partial<Intl.NumberFormatOptions & CustomFormatOpts>;
+export type FormatOptions = Partial<
+  Intl.NumberFormatOptions & CustomFormatOpts
+>;
 
 type FormatOptionsWithDefaults = Partial<Intl.NumberFormatOptions> &
   CustomFormatOpts;
@@ -78,10 +81,24 @@ function decFormatter(
     .toString();
   let num = Number(numStr);
   num = isNaN(num) ? 0 : num;
+
   if (hasIntlFormatOptions(opts)) {
     const formatter = new Intl.NumberFormat("en-US", options);
+
+    if (opts.disabledTrimZeros) {
+      return formatter.format(num);
+    }
+
     return trimZerosFromEnd(formatter.format(num));
   } else {
+    if (opts.disabledTrimZeros) {
+      return new IntPretty(dec)
+        .maxDecimals(opts.maxDecimals)
+        .locale(false)
+        .shrink(true)
+        .toString();
+    }
+
     return trimZerosFromEnd(
       new IntPretty(dec)
         .maxDecimals(opts.maxDecimals)
