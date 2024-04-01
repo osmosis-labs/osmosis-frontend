@@ -86,6 +86,7 @@ const SwapAdsBanner = () => {
 
   const banners: Ad[] = flags.oneClickTrading
     ? [
+        // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
         {
           name: "one-click-trading",
           headerOrTranslationKey: t(
