@@ -204,51 +204,55 @@ export const Transactions: React.FC = () => {
             //   onClick={onRequestClose}
           />
         </div>
-        <div className="flex flex-col items-center gap-4 pt-2 pb-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
-            <Icon id="swap" width={24} height={24} aria-label="swap icon" />
+        <div className="flex flex-col px-4">
+          <div className="flex flex-col items-center gap-4 pt-2 pb-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
+              <Icon id="swap" width={24} height={24} aria-label="swap icon" />
+            </div>
+            <div className="flex flex-col items-center justify-center gap-2 text-center">
+              <div className="text-h5">Swapped</div>
+              <div className="text-body1 text-osmoverse-300">
+                March 14, 2024, 13:01
+              </div>
+            </div>
           </div>
-          <div className="text-h5">Swapped</div>
-          <div className="text-body1 text-osmoverse-300">
-            March 14, 2024, 13:01
+          <div className="flex flex-col rounded-2xl border-[1px] border-osmoverse-700 p-2">
+            <div>
+              <Image
+                alt="OSMO"
+                src="/tokens/generated/osmo.svg"
+                height={32}
+                width={32}
+              />
+              <div>
+                <div>Sold</div>
+                <div>OSMO</div>
+              </div>
+              <div>
+                <div>$100.00</div>
+                <div>10</div>
+              </div>
+            </div>
+            <div>
+              <Image
+                alt="down"
+                src="/icons/arrow-right.svg"
+                width={24}
+                height={24}
+                className="rotate-90 text-osmoverse-600"
+              />
+            </div>
+            <div>
+              {" "}
+              <Image
+                alt="USDC"
+                src="/tokens/generated/usdc.svg"
+                height={32}
+                width={32}
+              />
+            </div>
           </div>
         </div>
-        {/* <div className="flex flex-col">
-          <div>
-            <Image
-              alt="OSMO"
-              src="/tokens/generated/osmo.svg"
-              height={32}
-              width={32}
-            />
-            <div>
-              <div>Sold</div>
-              <div>OSMO</div>
-            </div>
-            <div>
-              <div>$100.00</div>
-              <div>10</div>
-            </div>
-          </div>
-          <div>
-            <Image
-              alt="down"
-              src="/icons/arrow-right.svg"
-              width={24}
-              height={24}
-              className="rotate-90 text-osmoverse-600"
-            />
-          </div>
-          <div>
-            {" "}
-            <Image
-              alt="USDC"
-              src="/tokens/generated/usdc.svg"
-              height={32}
-              width={32}
-            />
-          </div>
-        </div> */}
       </div>
     </main>
   );
