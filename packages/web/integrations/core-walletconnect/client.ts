@@ -547,9 +547,7 @@ export class WCClient implements WalletClient {
       ) =>
         this.signDirect(chainId, signerAddress, {
           ...signDoc,
-          accountNumber: signDoc.accountNumber
-            ? BigInt(signDoc.accountNumber)
-            : null,
+          accountNumber: BigInt(signDoc.accountNumber.toString()),
         }),
     } as OfflineDirectSigner;
   }
