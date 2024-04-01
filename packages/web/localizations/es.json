@@ -832,23 +832,23 @@
     "strategiesCount": "{number} estrategias",
     "oneStrategy": "1 estrategia",
     "value": "Valor",
-    "method": "Método",
+    "method": "Tipo",
     "platform": "Plataforma",
-    "scrollToSeeMore": "desplácese para ver más",
+    "scrollToSeeMore": "desplázate para ver más",
     "discoverStrategies": "Descubra estrategias",
     "myStrategies": "Mis estrategias",
-    "strategyPlatform": "Estrategia / Plataforma",
-    "apy": "APY",
+    "strategyPlatform": "Estrategia",
+    "apy": "ABR",
     "daily": "A diario",
     "reward": "Premio",
     "lock": "Cerrar",
     "days": "días",
     "risk": "Riesgo",
     "strategyMethod": "Método de estrategia",
-    "allMethods": "Todos los métodos",
+    "allMethods": "Todos los tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
-    "allCategories": "todas las categorias",
+    "allCategories": "Todas las categorias",
     "filters": "Filtros",
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
     "tokenFilterOptions": {
-      "my": "Mis fichas",
-      "all": "Todas las fichas"
+      "my": "Mis activos",
+      "all": "Todos los activos"
     },
     "rewardTypes": {
       "all": "Todo",
@@ -869,16 +869,40 @@
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
     "startEarning": "Descubre estrategias",
-    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante una de las muchas estrategias siguientes.",
+    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
     "loadingStrategies": "Cargando estrategias...",
     "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
+    "sorryNoResultsWithAssets": "No se encontraron estrategias asociadas con sus activos.",
     "sorryNoResults": "No se encontraron estrategias.",
     "tryChangingFilters": "Prueba a cambiar filtros",
     "retry": "Rever",
     "manage": "Administrar",
     "noLock": "Sin bloqueo",
     "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
-    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país."
+    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
+    "tooltips": {
+      "apr": {
+        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
+      },
+      "daily": {
+        "description": "Retorno porcentual diario de una estrategia, similar a la APR, pero que refleja el rendimiento diario en lugar de anual. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
+      },
+      "tvl": {
+        "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
+      },
+      "reward": {
+        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
+      },
+      "lock": {
+        "description": "El período de tiempo que una posición está bloqueada antes de que se pueda salir de ella (es decir, antes de que se puedan retirar los activos depositados) de la estrategia. Nota: En algunas estrategias, es posible que no se obtengan recompensas durante el período de desbloqueo."
+      },
+      "strategy": {
+        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
+      },
+      "risk": {
+        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
+      }
+    }
   },
   "disclaimer": "Descargo de responsabilidad",
   "unstableAssetsWarning": {

@@ -38,13 +38,13 @@ export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
       </p>
       <div className="flex items-center gap-2">
         <small className="text-left text-sm font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
-          {item.row.original.platform}
+          {item.row.original.platform} · {item.row.original.type}
         </small>
-        <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
+        {/*  <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
           <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm font-subtitle1 leading-6 1.5xs:text-xs">
             {item.row.original.category}
           </span>
-        </div>
+        </div> */}
       </div>
     </>
   );

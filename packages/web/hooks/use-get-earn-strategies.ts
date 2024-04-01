@@ -211,6 +211,7 @@ const useGetEarnStrategies = (
   return {
     strategies,
     ...additionalBalanceData,
+    holdenDenoms,
     areBalancesLoading,
     areStrategiesLoading,
     isAssetsBreakdownLoading,

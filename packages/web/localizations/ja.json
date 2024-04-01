@@ -830,36 +830,36 @@
     "allocation": "割り当て",
     "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
-    "oneStrategy": "1 戦略",
+    "oneStrategy": "1つの戦略",
     "value": "価値",
-    "method": "方法",
+    "method": "タイプ",
     "platform": "プラットホーム",
     "scrollToSeeMore": "スクロールしてさらに見る",
     "discoverStrategies": "戦略を発見する",
     "myStrategies": "私の戦略",
-    "strategyPlatform": "戦略・プラットフォーム",
-    "apy": "エイピー",
+    "strategyPlatform": "戦略",
+    "apy": "4月",
     "daily": "毎日",
     "reward": "褒美",
     "lock": "ロック",
     "days": "日々",
     "risk": "危険",
     "strategyMethod": "戦略手法",
-    "allMethods": "すべてのメソッド",
+    "allMethods": "いろんなタイプ",
     "platforms": "プラットフォーム",
     "allPlatforms": "すべてのプラットフォーム",
     "allCategories": "すべてのカテゴリ",
     "filters": "フィルター",
     "resetFilters": "フィルターをリセットする",
-    "saveFilters": "フィルターの保存",
+    "saveFilters": "フィルターを保存する",
     "rewards": "報酬",
     "estimatedInYearlyRewards": "年間報酬で見積もる",
     "availableToClaim": "請求可能",
-    "claimAllRewards": "すべての報酬を受け取りましょう",
+    "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
     "tokenFilterOptions": {
-      "my": "私のトークン",
-      "all": "すべてのトークン"
+      "my": "私の資産",
+      "all": "すべての資産"
     },
     "rewardTypes": {
       "all": "全て",
@@ -869,16 +869,40 @@
     "totalValueInvested": "総価値",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください",
     "startEarning": "戦略を発見する",
-    "startEarningDescription": "収益の可能性を最大限に引き出します。以下の多くの戦略の 1 つを通じて、資産を活用してください。",
+    "startEarningDescription": "収益の可能性を最大限に引き出します。以下の多くの戦略を通じて資産を活用してください。",
     "loadingStrategies": "戦略を読み込んでいます...",
-    "sorryErrorOccurred": "申し訳ありませんが、エラーが発生しました。",
+    "sorryErrorOccurred": "申し訳ございません。エラーが発生しました。",
+    "sorryNoResultsWithAssets": "資産に関連付けられた戦略が見つかりません。",
     "sorryNoResults": "戦略が見つかりませんでした。",
     "tryChangingFilters": "フィルターを変更してみる",
     "retry": "リトライ",
     "manage": "管理",
     "noLock": "ロックなし",
     "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。",
-    "strategyGeoblocked": "申し訳ございませんが、この戦略はお住まいの国ではご利用いただけません。"
+    "strategyGeoblocked": "申し訳ございませんが、この戦略はお住まいの国ではご利用いただけません。",
+    "tooltips": {
+      "apr": {
+        "description": "年間パーセンテージ レート (APR) は、戦略の年率リターンを指します。注: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。"
+      },
+      "daily": {
+        "description": "戦略の毎日のパーセンテージ収益 - APR に似ていますが、年間ではなく毎日の収益を反映します。注: 戦略の収益は、参加とパフォーマンスに基づいて変動する場合があります。"
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) は、ストラテジーに入金された資産の米ドル総額を指します。"
+      },
+      "reward": {
+        "description": "戦略の運用やインセンティブを通じて獲得した資産の種類。"
+      },
+      "lock": {
+        "description": "ポジションが戦略から終了できるようになるまで (つまり、預けられた資産を引き出すことができるようになるまで) にポジションがロックされる期間。注: 一部の戦略では、ロック解除期間中に報酬を獲得できない場合があります。"
+      },
+      "strategy": {
+        "description": "Osmosis では、さまざまなプラットフォームによってホストされているさまざまなタイプの収益機会が利用可能です。戦略にアクセスするには、特定の資産を入金する必要があります。"
+      },
+      "risk": {
+        "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
+      }
+    }
   },
   "disclaimer": "免責事項",
   "unstableAssetsWarning": {
