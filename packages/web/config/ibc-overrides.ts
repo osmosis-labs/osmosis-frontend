@@ -595,7 +595,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3&token1=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56",
     withdrawUrlOverride:
-      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3"
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
   },
 };
 
