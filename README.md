@@ -1,3 +1,5 @@
+<!-- v24 -->
+
 # Osmosis Frontend 👩‍🔬⚗️🧪
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
