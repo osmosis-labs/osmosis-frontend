@@ -21,8 +21,10 @@ Sentry.init({
 
   environment: process.env.NODE_ENV || "development",
 
-  enabled:
-    process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
+  // Temporarily disable due to client-side noise coming from extensions, Cosmos Kit, etc.
+  enabled: false,
+  // enabled:
+  //   process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [

@@ -837,23 +837,23 @@
     "strategiesCount": "Stratégies {number}",
     "oneStrategy": "1 stratégie",
     "value": "Valeur",
-    "method": "Méthode",
+    "method": "Taper",
     "platform": "Plate-forme",
     "scrollToSeeMore": "faites défiler pour en voir plus",
     "discoverStrategies": "Découvrez les stratégies",
-    "myStrategies": "Mes stratégies",
-    "strategyPlatform": "Stratégie / Plateforme",
-    "apy": "APY",
+    "myStrategies": "Vos stratégies",
+    "strategyPlatform": "Stratégie",
+    "apy": "AVR",
     "daily": "Tous les jours",
     "reward": "Récompense",
-    "lock": "Verrouillage",
+    "lock": "Dissocier",
     "days": "jours",
     "risk": "Risque",
-    "strategyMethod": "Méthode stratégique",
-    "allMethods": "Toutes les méthodes",
+    "strategyMethod": "Les types",
+    "allMethods": "Tous les types",
     "platforms": "Plateformes",
     "allPlatforms": "Toutes les plateformes",
-    "allCategories": "toutes catégories",
+    "allCategories": "Toutes catégories",
     "filters": "Filtres",
     "resetFilters": "Réinitialiser les filtres",
     "saveFilters": "Enregistrer les filtres",
@@ -863,8 +863,8 @@
     "claimAllRewards": "Réclamez toutes les récompenses",
     "join": "Rejoindre",
     "tokenFilterOptions": {
-      "my": "Mes jetons",
-      "all": "Tous les jetons"
+      "my": "Vos atouts",
+      "all": "Tous les actifs"
     },
     "rewardTypes": {
       "all": "Tous",
@@ -873,17 +873,41 @@
     },
     "totalValueInvested": "Valeur totale",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous",
-    "startEarning": "Découvrez les stratégies",
-    "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce à l’une des nombreuses stratégies ci-dessous.",
+    "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce aux nombreuses stratégies ci-dessous.",
     "loadingStrategies": "Chargement des stratégies...",
     "sorryErrorOccurred": "Désolé, une erreur s'est produite.",
+    "sorryNoResultsWithAssets": "Aucune stratégie trouvée associée à vos actifs.",
     "sorryNoResults": "Aucune stratégie trouvée.",
     "tryChangingFilters": "Essayez de changer les filtres",
     "retry": "Recommencez",
     "manage": "Gérer",
     "noLock": "Aucun verrou",
     "riskDisclaimer": "Le risque est calculé avec un ensemble combiné de critères concernant une stratégie et ses actifs sous-jacents.",
-    "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays."
+    "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays.",
+    "instantUnbondOnly": "Décollage instantané uniquement",
+    "tooltips": {
+      "apr": {
+        "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
+      },
+      "daily": {
+        "description": "Pourcentage de rendement quotidien d'une stratégie - semblable au TAEG, mais reflétant le rendement quotidien au lieu du rendement annuel. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
+      },
+      "tvl": {
+        "description": "La valeur totale verrouillée (TVL) fait référence à la valeur totale en dollars américains des actifs déposés dans la stratégie."
+      },
+      "reward": {
+        "description": "Le type d'actifs gagnés grâce aux opérations et/ou aux incitations de la stratégie."
+      },
+      "lock": {
+        "description": "La période pendant laquelle une position est verrouillée avant de pouvoir être sortie (c'est-à-dire avant que les actifs déposés puissent être retirés) de la stratégie. Remarque : Dans certaines stratégies, les récompenses peuvent ne pas être gagnées pendant la période de déverrouillage."
+      },
+      "strategy": {
+        "description": "Des opportunités de gains de différents types, hébergées par diverses plateformes, sont disponibles sur Osmosis. Accéder à une stratégie nécessite le dépôt d’actifs spécifiques."
+      },
+      "risk": {
+        "description": "L'évaluation des risques consiste à considérer une combinaison de critères liés à une stratégie et à ses actifs sous-jacents."
+      }
+    }
   },
   "disclaimer": "Clause de non-responsabilité",
   "unstableAssetsWarning": {

@@ -837,23 +837,23 @@
     "strategiesCount": "{number} strategii",
     "oneStrategy": "1 strategie",
     "value": "Valoare",
-    "method": "Metodă",
+    "method": "Tip",
     "platform": "Platformă",
     "scrollToSeeMore": "derulați pentru a vedea mai multe",
-    "discoverStrategies": "Descoperiți strategiile",
-    "myStrategies": "Strategiile mele",
-    "strategyPlatform": "Strategie / Platformă",
-    "apy": "APY",
+    "discoverStrategies": "Descoperiți strategii",
+    "myStrategies": "Strategiile tale",
+    "strategyPlatform": "Strategie",
+    "apy": "APRILIE",
     "daily": "Zilnic",
     "reward": "Răsplată",
-    "lock": "Lacăt",
+    "lock": "Dezlegați",
     "days": "zile",
     "risk": "Risc",
-    "strategyMethod": "Metoda Strategiei",
-    "allMethods": "Toate Metodele",
+    "strategyMethod": "Tipuri",
+    "allMethods": "Toate tipurile",
     "platforms": "Platforme",
     "allPlatforms": "Toate platformele",
-    "allCategories": "toate categoriile",
+    "allCategories": "Toate categoriile",
     "filters": "Filtre",
     "resetFilters": "Resetați filtrele",
     "saveFilters": "Salvați filtrele",
@@ -863,8 +863,8 @@
     "claimAllRewards": "Revendicați toate recompensele",
     "join": "A te alatura",
     "tokenFilterOptions": {
-      "my": "Jetoanele mele",
-      "all": "Toate jetoanele"
+      "my": "Activele tale",
+      "all": "Toate activele"
     },
     "rewardTypes": {
       "all": "Toate",
@@ -873,17 +873,41 @@
     },
     "totalValueInvested": "Valoarea totală",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine",
-    "startEarning": "Descoperiți strategii",
-    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru printr-una dintre numeroasele strategii de mai jos.",
+    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru prin numeroasele strategii de mai jos.",
     "loadingStrategies": "Se încarcă strategiile...",
     "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
+    "sorryNoResultsWithAssets": "Nu s-au găsit strategii asociate cu activele dvs.",
     "sorryNoResults": "Nu s-au găsit strategii.",
     "tryChangingFilters": "Încercați să schimbați filtrele",
     "retry": "Reîncercați",
     "manage": "Administra",
     "noLock": "Fără blocare",
     "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
-    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs."
+    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
+    "instantUnbondOnly": "Dezlegarea instantanee numai",
+    "tooltips": {
+      "apr": {
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+      },
+      "daily": {
+        "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+      },
+      "tvl": {
+        "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
+      },
+      "reward": {
+        "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
+      },
+      "lock": {
+        "description": "Perioada de timp în care o poziție este blocată înainte ca aceasta să poată fi ieșită (adică înainte ca activele depozitate să poată fi retrase) din strategie. Notă: în unele strategii, recompensele pot să nu fie câștigate în perioada de deblocare."
+      },
+      "strategy": {
+        "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."
+      },
+      "risk": {
+        "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
+      }
+    }
   },
   "disclaimer": "Disclaimer",
   "unstableAssetsWarning": {

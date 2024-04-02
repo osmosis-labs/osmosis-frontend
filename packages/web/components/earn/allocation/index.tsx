@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
 
-import { MOCK_tokenRows } from "~/components/earn/_mock-data";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
 import useScrollMeasure from "~/hooks/use-scroll-measure";
@@ -78,7 +77,7 @@ export const EarnAllocation = () => {
             }
           )}
         >
-          {MOCK_tokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
+          {/*  {MOCK_tokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
             <div
               key={`${name} ${i} stat row`}
               className="flex items-center justify-between"
@@ -98,7 +97,7 @@ export const EarnAllocation = () => {
                 <div className="h-8 w-8 rounded-full bg-wosmongton-500" />
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
         <small
           className={classNames(

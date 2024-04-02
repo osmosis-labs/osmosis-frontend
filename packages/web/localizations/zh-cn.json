@@ -835,22 +835,22 @@
     "allocation": "分配",
     "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
-    "oneStrategy": "1 策略",
+    "oneStrategy": "1 个策略",
     "value": "价值",
-    "method": "方法",
+    "method": "类型",
     "platform": "平台",
     "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
-    "myStrategies": "我的策略",
-    "strategyPlatform": "策略/平台",
-    "apy": "平均年产量",
+    "myStrategies": "你的策略",
+    "strategyPlatform": "战略",
+    "apy": "年利率",
     "daily": "日常的",
     "reward": "报酬",
-    "lock": "锁",
+    "lock": "解绑",
     "days": "天",
     "risk": "风险",
-    "strategyMethod": "策略方法",
-    "allMethods": "所有方法",
+    "strategyMethod": "类型",
+    "allMethods": "所有类型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
     "allCategories": "所有类别",
@@ -863,8 +863,8 @@
     "claimAllRewards": "领取所有奖励",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的代币",
-      "all": "所有代币"
+      "my": "您的资产",
+      "all": "所有资产"
     },
     "rewardTypes": {
       "all": "全部",
@@ -873,17 +873,41 @@
     },
     "totalValueInvested": "总价值",
     "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarning": "发现策略",
-    "startEarningDescription": "释放您的全部赚钱潜力。通过以下众多策略之一让您的资产发挥作用。",
+    "startEarningDescription": "释放您的全部赚钱潜力。通过以下多种策略让您的资产发挥作用。",
     "loadingStrategies": "加载策略...",
     "sorryErrorOccurred": "抱歉，发生错误。",
-    "sorryNoResults": "没有找到策略。",
+    "sorryNoResultsWithAssets": "未找到与您的资产相关的策略。",
+    "sorryNoResults": "未找到任何策略。",
     "tryChangingFilters": "尝试更换过滤器",
     "retry": "重试",
     "manage": "管理",
     "noLock": "无锁",
     "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
-    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。"
+    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。",
+    "instantUnbondOnly": "仅限即时解绑",
+    "tooltips": {
+      "apr": {
+        "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
+      },
+      "daily": {
+        "description": "策略的每日百分比回报 - 类似于 APR，但反映的是每日回报而非年度回报。注意：策略的回报可能会根据参与度和表现而波动。"
+      },
+      "tvl": {
+        "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"
+      },
+      "reward": {
+        "description": "通过该策略的运营和/或激励措施获得的资产类型。"
+      },
+      "lock": {
+        "description": "仓位在从策略中退出之前（即存入的资产可以提取之前）被锁定的时间段。注意：在某些策略中，解锁期间可能无法获得奖励。"
+      },
+      "strategy": {
+        "description": "Osmosis 上提供由各种平台托管的各种类型的赚钱机会。访问策略需要存入特定资产。"
+      },
+      "risk": {
+        "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
+      }
+    }
   },
   "disclaimer": "免责声明",
   "unstableAssetsWarning": {
