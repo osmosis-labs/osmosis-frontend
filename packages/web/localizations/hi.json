@@ -836,7 +836,7 @@
     "platform": "प्लैटफ़ॉर्म",
     "scrollToSeeMore": "और अधिक देखने के लिए स्क्रॉल करें",
     "discoverStrategies": "रणनीतियों की खोज करें",
-    "myStrategies": "मेरी रणनीतियाँ",
+    "myStrategies": "आपकी रणनीतियाँ",
     "strategyPlatform": "रणनीति",
     "apy": "अप्रैल",
     "daily": "दैनिक",
@@ -844,7 +844,7 @@
     "lock": "ताला",
     "days": "दिन",
     "risk": "जोखिम",
-    "strategyMethod": "रणनीति विधि",
+    "strategyMethod": "प्रकार",
     "allMethods": "सभी प्रकार के",
     "platforms": "प्लेटफार्म",
     "allPlatforms": "सभी प्लेटफार्म",
@@ -858,7 +858,7 @@
     "claimAllRewards": "सभी पुरस्कारों का दावा करें",
     "join": "जोड़ना",
     "tokenFilterOptions": {
-      "my": "मेरी संपत्ति",
+      "my": "आपकी संपत्ति",
       "all": "सारी संपत्ति"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "कुल मूल्य",
     "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें",
-    "startEarning": "रणनीतियों की खोज करें",
     "startEarningDescription": "अपनी पूरी कमाई क्षमता को अनलॉक करें। नीचे दी गई कई रणनीतियों के माध्यम से अपनी संपत्ति को काम में लगाएं।",
     "loadingStrategies": "रणनीतियाँ लोड हो रही हैं...",
     "sorryErrorOccurred": "क्षमा करें, एक त्रुटि उत्पन्न हुई.",

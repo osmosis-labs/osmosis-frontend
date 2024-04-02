@@ -836,7 +836,7 @@
     "platform": "플랫폼",
     "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
-    "myStrategies": "내 전략",
+    "myStrategies": "귀하의 전략",
     "strategyPlatform": "전략",
     "apy": "4월",
     "daily": "일일",
@@ -844,7 +844,7 @@
     "lock": "잠그다",
     "days": "날",
     "risk": "위험",
-    "strategyMethod": "전략 방법",
+    "strategyMethod": "유형",
     "allMethods": "모든 유형",
     "platforms": "플랫폼",
     "allPlatforms": "모든 플랫폼",
@@ -858,7 +858,7 @@
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
     "tokenFilterOptions": {
-      "my": "내 자산",
+      "my": "귀하의 자산",
       "all": "모든 자산"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "총 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요.",
-    "startEarning": "전략 발견",
     "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략을 통해 자산을 활용해 보세요.",
     "loadingStrategies": "전략 로드 중...",
     "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",

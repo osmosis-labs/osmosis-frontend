@@ -836,7 +836,7 @@
     "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
-    "myStrategies": "Moje strategie",
+    "myStrategies": "Twoje strategie",
     "strategyPlatform": "Strategia",
     "apy": "KWIECIEŃ",
     "daily": "Codziennie",
@@ -844,7 +844,7 @@
     "lock": "Zamek",
     "days": "dni",
     "risk": "Ryzyko",
-    "strategyMethod": "Metoda strategii",
+    "strategyMethod": "Typy",
     "allMethods": "Wszystkie typy",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
     "tokenFilterOptions": {
-      "my": "Moje aktywa",
+      "my": "Twoje aktywa",
       "all": "Wszystkie aktywa"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Całkowita wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
-    "startEarning": "Odkryj strategie",
     "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z wielu poniższych strategii.",
     "loadingStrategies": "Ładowanie strategii...",
     "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",

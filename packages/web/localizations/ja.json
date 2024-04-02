@@ -836,7 +836,7 @@
     "platform": "プラットホーム",
     "scrollToSeeMore": "スクロールしてさらに見る",
     "discoverStrategies": "戦略を発見する",
-    "myStrategies": "私の戦略",
+    "myStrategies": "あなたの戦略",
     "strategyPlatform": "戦略",
     "apy": "4月",
     "daily": "毎日",
@@ -844,7 +844,7 @@
     "lock": "ロック",
     "days": "日々",
     "risk": "危険",
-    "strategyMethod": "戦略手法",
+    "strategyMethod": "種類",
     "allMethods": "いろんなタイプ",
     "platforms": "プラットフォーム",
     "allPlatforms": "すべてのプラットフォーム",
@@ -858,7 +858,7 @@
     "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
     "tokenFilterOptions": {
-      "my": "私の資産",
+      "my": "あなたの資産",
       "all": "すべての資産"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "総価値",
     "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください",
-    "startEarning": "戦略を発見する",
     "startEarningDescription": "収益の可能性を最大限に引き出します。以下の多くの戦略を通じて資産を活用してください。",
     "loadingStrategies": "戦略を読み込んでいます...",
     "sorryErrorOccurred": "申し訳ございません。エラーが発生しました。",

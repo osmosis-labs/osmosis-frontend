@@ -836,7 +836,7 @@
     "platform": "Plattform",
     "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
-    "myStrategies": "Meine Strategien",
+    "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",
     "apy": "APR",
     "daily": "Täglich",
@@ -844,7 +844,7 @@
     "lock": "Sperren",
     "days": "Tage",
     "risk": "Risiko",
-    "strategyMethod": "Strategiemethode",
+    "strategyMethod": "Typen",
     "allMethods": "Alle Arten",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
-      "my": "Mein Vermögen",
+      "my": "Ihr Vermögen",
       "all": "Alle Vermögenswerte"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Gesamtwert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarning": "Entdecken Sie Strategien",
     "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
     "loadingStrategies": "Lade Strategien...",
     "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",

@@ -836,7 +836,7 @@
     "platform": "平台",
     "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
-    "myStrategies": "我的策略",
+    "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
     "daily": "日常的",
@@ -844,7 +844,7 @@
     "lock": "锁",
     "days": "天",
     "risk": "风险",
-    "strategyMethod": "策略方法",
+    "strategyMethod": "类型",
     "allMethods": "所有类型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
@@ -858,7 +858,7 @@
     "claimAllRewards": "领取所有奖励",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的资产",
+      "my": "您的资产",
       "all": "所有资产"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "总价值",
     "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarning": "探索策略",
     "startEarningDescription": "释放您的全部赚钱潜力。通过以下多种策略让您的资产发挥作用。",
     "loadingStrategies": "加载策略...",
     "sorryErrorOccurred": "抱歉，发生错误。",

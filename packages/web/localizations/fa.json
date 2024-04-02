@@ -836,7 +836,7 @@
     "platform": "سکو",
     "scrollToSeeMore": "برای دیدن بیشتر ورق بزنید",
     "discoverStrategies": "استراتژی ها را کشف کنید",
-    "myStrategies": "استراتژی های من",
+    "myStrategies": "استراتژی های شما",
     "strategyPlatform": "استراتژی",
     "apy": "آوریل",
     "daily": "روزانه",
@@ -844,7 +844,7 @@
     "lock": "قفل کردن",
     "days": "روزها",
     "risk": "خطر",
-    "strategyMethod": "روش استراتژی",
+    "strategyMethod": "انواع",
     "allMethods": "همه انواع",
     "platforms": "بستر، زمینه",
     "allPlatforms": "همه پلتفرم ها",
@@ -858,7 +858,7 @@
     "claimAllRewards": "تمام جوایز را مطالبه کنید",
     "join": "پیوستن",
     "tokenFilterOptions": {
-      "my": "دارایی های من",
+      "my": "دارایی های شما",
       "all": "تمام دارایی ها"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "ارزش کل",
     "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید",
-    "startEarning": "استراتژی ها را کشف کنید",
     "startEarningDescription": "پتانسیل کسب درآمد کامل خود را باز کنید. دارایی های خود را از طریق بسیاری از استراتژی های زیر به کار بگیرید.",
     "loadingStrategies": "بارگیری استراتژی‌ها...",
     "sorryErrorOccurred": "با عرض پوزش، خطایی رخ داده است.",
