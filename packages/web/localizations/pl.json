@@ -281,7 +281,7 @@
       "addFunds": "Dodaj środki, aby rozpocząć"
     },
     "categories": {
-      "newest": "Najnowsza",
+      "new": "Najnowsza",
       "defi": "DeFi",
       "stablecoin": "Stablecoiny",
       "meme": "Ja ja",
@@ -832,20 +832,20 @@
     "strategiesCount": "Strategie {number}",
     "oneStrategy": "1 strategia",
     "value": "Wartość",
-    "method": "metoda",
+    "method": "Typ",
     "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
-    "myStrategies": "Moje strategie",
-    "strategyPlatform": "Strategia/platforma",
-    "apy": "RRSO",
+    "myStrategies": "Twoje strategie",
+    "strategyPlatform": "Strategia",
+    "apy": "KWIECIEŃ",
     "daily": "Codziennie",
     "reward": "Nagroda",
-    "lock": "Zamek",
+    "lock": "Rozłącz",
     "days": "dni",
     "risk": "Ryzyko",
-    "strategyMethod": "Metoda strategii",
-    "allMethods": "Wszystkie metody",
+    "strategyMethod": "Typy",
+    "allMethods": "Wszystkie typy",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
     "allCategories": "Wszystkie kategorie",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
     "tokenFilterOptions": {
-      "my": "Moje tokeny",
-      "all": "Wszystkie tokeny"
+      "my": "Twoje aktywa",
+      "all": "Wszystkie aktywa"
     },
     "rewardTypes": {
       "all": "Wszystko",
@@ -868,17 +868,41 @@
     },
     "totalValueInvested": "Całkowita wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
-    "startEarning": "Odkryj strategie",
-    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z jednej z wielu poniższych strategii.",
+    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z wielu poniższych strategii.",
     "loadingStrategies": "Ładowanie strategii...",
     "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",
+    "sorryNoResultsWithAssets": "Nie znaleziono strategii powiązanych z Twoimi zasobami.",
     "sorryNoResults": "Nie znaleziono strategii.",
     "tryChangingFilters": "Spróbuj zmienić filtry",
     "retry": "Spróbować ponownie",
     "manage": "Zarządzać",
     "noLock": "Brak blokady",
     "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
-    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju."
+    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
+    "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
+    "tooltips": {
+      "apr": {
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
+      },
+      "daily": {
+        "description": "Dzienny procentowy zwrot strategii - podobny do RRSO, ale odzwierciedlający dzienny zwrot, a nie roczny. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."
+      },
+      "reward": {
+        "description": "Rodzaj aktywów uzyskanych dzięki operacjom i/lub zachętom w ramach strategii."
+      },
+      "lock": {
+        "description": "Okres czasu, przez jaki pozycja jest zablokowana, zanim będzie można ją opuścić (tj. zanim będzie można wycofać zdeponowane aktywa) ze strategii. Uwaga: w przypadku niektórych strategii nagrody mogą nie zostać zdobyte w okresie odblokowania."
+      },
+      "strategy": {
+        "description": "Na Osmosis dostępne są różnego rodzaju możliwości zarobku, hostowane przez różne platformy. Dostęp do strategii wymaga zdeponowania określonych aktywów."
+      },
+      "risk": {
+        "description": "Ocena ryzyka obejmuje rozważenie kombinacji kryteriów związanych ze strategią i jej aktywami bazowymi."
+      }
+    }
   },
   "disclaimer": "Zastrzeżenie",
   "unstableAssetsWarning": {

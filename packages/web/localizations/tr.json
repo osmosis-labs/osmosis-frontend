@@ -281,7 +281,7 @@
       "addFunds": "Başlamak için para ekleyin"
     },
     "categories": {
-      "newest": "En yeni",
+      "new": "En yeni",
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
@@ -832,34 +832,34 @@
     "strategiesCount": "{number} stratejiler",
     "oneStrategy": "1 strateji",
     "value": "Değer",
-    "method": "Yöntem",
+    "method": "Tip",
     "platform": "platformu",
     "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
-    "myStrategies": "Stratejilerim",
-    "strategyPlatform": "Strateji / Platform",
-    "apy": "APY",
+    "myStrategies": "Stratejileriniz",
+    "strategyPlatform": "Strateji",
+    "apy": "Nisan",
     "daily": "Günlük",
     "reward": "Ödül",
-    "lock": "Kilit",
+    "lock": "Bağlantıyı kaldır",
     "days": "günler",
     "risk": "Risk",
-    "strategyMethod": "Strateji Yöntemi",
-    "allMethods": "Tüm Yöntemler",
+    "strategyMethod": "Türler",
+    "allMethods": "Her türlü",
     "platforms": "Platformlar",
-    "allPlatforms": "Tüm Platformlar",
+    "allPlatforms": "Tüm platformlar",
     "allCategories": "Tüm Kategoriler",
     "filters": "Filtreler",
-    "resetFilters": "Filtreleri Sıfırla",
-    "saveFilters": "Filtreleri Kaydet",
+    "resetFilters": "Filtreleri sıfırla",
+    "saveFilters": "Filtreleri kaydet",
     "rewards": "Ödüller",
     "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
     "availableToClaim": "talep edilebilir",
     "claimAllRewards": "Tüm ödülleri talep edin",
     "join": "Katılmak",
     "tokenFilterOptions": {
-      "my": "Jetonlarım",
-      "all": "Tüm Jetonlar"
+      "my": "Varlıklarınız",
+      "all": "Tüm varlıklar"
     },
     "rewardTypes": {
       "all": "Tüm",
@@ -868,17 +868,41 @@
     },
     "totalValueInvested": "Toplam değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
-    "startEarning": "Stratejileri keşfedin",
-    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiden birini kullanarak uygulamaya koyun.",
+    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiyle uygulamaya koyun.",
     "loadingStrategies": "Stratejiler yükleniyor...",
     "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
+    "sorryNoResultsWithAssets": "Öğelerinizle ilişkili strateji bulunamadı.",
     "sorryNoResults": "Hiçbir strateji bulunamadı.",
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
     "retry": "Yeniden dene",
     "manage": "Üstesinden gelmek",
     "noLock": "Kilit yok",
     "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
-    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor."
+    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
+    "instantUnbondOnly": "Yalnızca anında ayrılma",
+    "tooltips": {
+      "apr": {
+        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."
+      },
+      "daily": {
+        "description": "Bir stratejinin günlük getiri yüzdesi - APR'ye benzer, ancak yıllık getiri yerine günlük getiriyi yansıtır. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."
+      },
+      "tvl": {
+        "description": "Kilitli Toplam Değer (TVL), stratejiye yatırılan varlıkların ABD Doları cinsinden toplam değerini ifade eder."
+      },
+      "reward": {
+        "description": "Stratejinin operasyonları ve/veya teşvikleri aracılığıyla kazanılan varlıkların türü."
+      },
+      "lock": {
+        "description": "Bir pozisyonun stratejiden çıkılmadan önce (yani yatırılan varlıkların geri çekilebilmesinden önce) kilitlendiği süre. Not: Bazı stratejilerde, kilit açma süresi boyunca ödüller kazanılamayabilir."
+      },
+      "strategy": {
+        "description": "Osmosis'te çeşitli platformların barındırdığı çeşitli türlerde kazanç fırsatları mevcuttur. Bir stratejiye erişim belirli varlıkların yatırılmasını gerektirir."
+      },
+      "risk": {
+        "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
+      }
+    }
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "unstableAssetsWarning": {

@@ -281,7 +281,7 @@
       "addFunds": "Adicione fundos para começar"
     },
     "categories": {
-      "newest": "O mais novo",
+      "new": "O mais novo",
       "defi": "DeFi",
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
@@ -832,23 +832,23 @@
     "strategiesCount": "{number} estratégias",
     "oneStrategy": "1 estratégia",
     "value": "Valor",
-    "method": "Método",
+    "method": "Tipo",
     "platform": "Plataforma",
     "scrollToSeeMore": "role para ver mais",
     "discoverStrategies": "Descubra estratégias",
-    "myStrategies": "Minhas estratégias",
-    "strategyPlatform": "Estratégia/Plataforma",
-    "apy": "APY",
+    "myStrategies": "Suas estratégias",
+    "strategyPlatform": "Estratégia",
+    "apy": "ABRIL",
     "daily": "Diário",
     "reward": "Recompensa",
-    "lock": "Trancar",
+    "lock": "Desvincular",
     "days": "dias",
     "risk": "Risco",
-    "strategyMethod": "Método de Estratégia",
-    "allMethods": "Todos os métodos",
+    "strategyMethod": "Tipos",
+    "allMethods": "Todos os tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas as plataformas",
-    "allCategories": "todas as categorias",
+    "allCategories": "Todas as categorias",
     "filters": "Filtros",
     "resetFilters": "Redefinir filtros",
     "saveFilters": "Salvar filtros",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Reivindique todas as recompensas",
     "join": "Juntar",
     "tokenFilterOptions": {
-      "my": "Meus tokens",
-      "all": "Todos os tokens"
+      "my": "Seus ativos",
+      "all": "Todos os ativos"
     },
     "rewardTypes": {
       "all": "Todos",
@@ -868,17 +868,41 @@
     },
     "totalValueInvested": "Valor total",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
-    "startEarning": "Descubra estratégias",
-    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio de uma das muitas estratégias abaixo.",
+    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio das diversas estratégias abaixo.",
     "loadingStrategies": "Carregando estratégias...",
     "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
+    "sorryNoResultsWithAssets": "Nenhuma estratégia encontrada associada aos seus recursos.",
     "sorryNoResults": "Nenhuma estratégia encontrada.",
     "tryChangingFilters": "Tente alterar os filtros",
     "retry": "Tentar novamente",
     "manage": "Gerenciar",
     "noLock": "Não feche",
     "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
-    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
+    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
+    "instantUnbondOnly": "Somente desvinculação instantânea",
+    "tooltips": {
+      "apr": {
+        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
+      },
+      "daily": {
+        "description": "Retorno percentual diário de uma estratégia - semelhante à TAEG, mas refletindo o retorno diário em vez do anual. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
+      },
+      "tvl": {
+        "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."
+      },
+      "reward": {
+        "description": "O tipo de ativos obtidos através das operações e/ou incentivos da estratégia."
+      },
+      "lock": {
+        "description": "O período de tempo que uma posição fica bloqueada antes de poder ser encerrada (ou seja, antes que os ativos depositados possam ser retirados) da estratégia. Observação: em algumas estratégias, as recompensas podem não ser ganhas durante o período de desbloqueio."
+      },
+      "strategy": {
+        "description": "Oportunidades de ganhos de vários tipos, hospedadas em diversas plataformas, estão disponíveis no Osmosis. O acesso a uma estratégia exige o depósito de ativos específicos."
+      },
+      "risk": {
+        "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
+      }
+    }
   },
   "disclaimer": "Isenção de responsabilidade",
   "unstableAssetsWarning": {

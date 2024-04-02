@@ -281,7 +281,7 @@
       "addFunds": "增加資金即可開始"
     },
     "categories": {
-      "newest": "最新",
+      "new": "最新",
       "defi": "去中心化金融",
       "stablecoin": "穩定幣",
       "meme": "迷因",
@@ -832,20 +832,20 @@
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 策略",
     "value": "價值",
-    "method": "方法",
+    "method": "類型",
     "platform": "平台",
     "scrollToSeeMore": "捲動查看更多",
     "discoverStrategies": "發現策略",
-    "myStrategies": "我的策略",
-    "strategyPlatform": "策略/平台",
-    "apy": "平均年產量",
+    "myStrategies": "你的策略",
+    "strategyPlatform": "策略",
+    "apy": "年利率",
     "daily": "日常的",
     "reward": "報酬",
-    "lock": "鎖",
+    "lock": "解綁",
     "days": "天",
     "risk": "風險",
-    "strategyMethod": "策略方法",
-    "allMethods": "所有方法",
+    "strategyMethod": "類型",
+    "allMethods": "所有類型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
     "allCategories": "所有類別",
@@ -858,8 +858,8 @@
     "claimAllRewards": "領取所有獎勵",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的代幣",
-      "all": "所有代幣"
+      "my": "您的資產",
+      "all": "所有資產"
     },
     "rewardTypes": {
       "all": "全部",
@@ -868,17 +868,41 @@
     },
     "totalValueInvested": "總價值",
     "lookBelow": "請參閱下文並找到最適合您的策略",
-    "startEarning": "發現策略",
-    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下眾多策略之一讓您的資產發揮作用。",
+    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下多種策略讓您的資產發揮作用。",
     "loadingStrategies": "載入策略...",
     "sorryErrorOccurred": "抱歉，發生錯誤。",
+    "sorryNoResultsWithAssets": "未找到與您的資產相關的策略。",
     "sorryNoResults": "沒有找到策略。",
     "tryChangingFilters": "嘗試更換過濾器",
     "retry": "重試",
     "manage": "管理",
     "noLock": "無鎖",
     "riskDisclaimer": "風險是根據策略及其基礎資產的一組組合標準來計算的。",
-    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。"
+    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。",
+    "instantUnbondOnly": "僅限即時解綁",
+    "tooltips": {
+      "apr": {
+        "description": "年利率（APR）是指策略的年化百分比回報。注意：策略的報酬可能會根據參與度和表現而波動。"
+      },
+      "daily": {
+        "description": "策略的每日百分比回報 - 類似於年利率，但反映每日回報而不是年度回報。注意：策略的回報可能會根據參與度和表現而波動。"
+      },
+      "tvl": {
+        "description": "鎖定總價值 (TVL) 是指存入策略的資產的美元總價值。"
+      },
+      "reward": {
+        "description": "透過策略的營運和/或激勵措施獲得的資產類型。"
+      },
+      "lock": {
+        "description": "倉位在從策略中退出之前（即存入的資產可以提取之前）被鎖定的時間段。注意：在某些策略中，解鎖期間可能無法獲得獎勵。"
+      },
+      "strategy": {
+        "description": "Osmosis 上提供由各種平台託管的各種類型的賺錢機會。存取策略需要存入特定資產。"
+      },
+      "risk": {
+        "description": "風險評估涉及考慮與策略及其基礎資產相關的標準組合。"
+      }
+    }
   },
   "disclaimer": "免責聲明",
   "unstableAssetsWarning": {

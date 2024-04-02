@@ -585,6 +585,18 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://www.bskt.fi/wormhole",
     withdrawUrlOverride: "https://www.bskt.fi/wormhole",
   },
+  BEAST: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be&token1=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000",
+    withdrawUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000&token1=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+  },
+  SAYVE: {
+    depositUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3&token1=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56",
+    withdrawUrlOverride:
+      "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET

@@ -1,14 +1,14 @@
 import { Listbox, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { ReactNode } from "react";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { ListOption } from "~/components/earn/table/types/filters";
+import { InfoTooltip } from "~/components/tooltip";
 import { Checkbox } from "~/components/ui/checkbox";
 
 interface DropdownWithMultiSelectProps<T> {
-  options: (ListOption<T> & { icon: ReactNode })[];
+  options: (ListOption<T> & { icon: ReactNode; tooltip?: string })[];
   stateValues: ListOption<T>[];
   label: string;
   toggleFn: (options: ListOption<T>) => void;
@@ -76,7 +76,7 @@ export const DropdownWithMultiSelect = <T,>({
                 "absolute inset-x-0 z-40 -mt-1 flex flex-col gap-2 rounded-b-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-4"
               }
             >
-              {options.map(({ icon, label, value }) => (
+              {options.map(({ icon, label, tooltip, value }) => (
                 <Listbox.Option
                   className="relative cursor-default select-none py-3 px-4"
                   key={value as unknown as string}
@@ -86,8 +86,15 @@ export const DropdownWithMultiSelect = <T,>({
                     <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
                       {icon}
                     </div>
-                    <small className="text-base text-osmoverse-200">
+                    <small className="flex items-center gap-4 text-base text-osmoverse-200">
                       {label}
+
+                      {tooltip && (
+                        <InfoTooltip
+                          trigger="mouseenter focus"
+                          content={tooltip}
+                        />
+                      )}
                     </small>
                     <Checkbox
                       className="ml-auto"

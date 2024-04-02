@@ -57,6 +57,7 @@ function Earn() {
     myStrategies,
     totalBalance,
     totalUnclaimedRewards,
+    holdenDenoms,
     areBalancesLoading,
     areStrategiesLoading,
     isAssetsBreakdownLoading,
@@ -70,7 +71,7 @@ function Earn() {
 
   const defaultFilters: Filters = useMemo(
     () => ({
-      tokenHolder: "all",
+      tokenHolder: isWalletConnected && holdenDenoms?.length ? "my" : "all",
       strategyMethod: { label: t("earnPage.rewardTypes.all"), value: "" },
       platform: { label: t("earnPage.rewardTypes.all"), value: "" },
       lockDurationType: "all",
@@ -78,7 +79,7 @@ function Earn() {
       specialTokens: [],
       rewardType: "all",
     }),
-    [t]
+    [holdenDenoms?.length, isWalletConnected, t]
   );
 
   useEffect(() => {
@@ -132,7 +133,6 @@ function Earn() {
         <SkeletonLoader isLoaded={!isWalletLoading}>
           <div className="flex">
             <div className="z-10 mb-5 flex flex-1 flex-col">
-              <h4 className="mb-7">{t("earnPage.startEarning")}</h4>
               <div className="flex flex-row gap-24 xl:flex-col xl:gap-9">
                 <p className="body2 text-osmoverse-200 opacity-50">
                   {t("earnPage.startEarningDescription")}
@@ -179,7 +179,10 @@ function Earn() {
           </Tabs>
         </div> */}
 
-      <FilterProvider defaultFilters={defaultFilters}>
+      <FilterProvider
+        defaultFilters={defaultFilters}
+        key={`filters-${isWalletConnected}-${holdenDenoms?.length}`}
+      >
         <Tabs
           externalControl
           controlledIdx={tabIdx}
@@ -229,6 +232,7 @@ function Earn() {
                 showBalance={false}
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
+                holdenDenoms={holdenDenoms}
                 refetch={refetch}
               />
             </TabPanel>
@@ -241,6 +245,7 @@ function Earn() {
                 showBalance
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
+                holdenDenoms={holdenDenoms}
                 refetch={refetch}
               />
             </TabPanel>

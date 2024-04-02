@@ -1,7 +1,6 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
-import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -11,12 +10,14 @@ import {
   queryStrategyTVL,
   RawStrategyCMSData,
   RawStrategyTVL,
+  StategyCMSCategory,
   StrategyAnnualPercentages,
   StrategyCMSData,
   StrategyTVL,
 } from "../../../queries/data-services/earn";
 import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import dayjs from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
 import { type Asset, getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
@@ -112,11 +113,13 @@ export async function getStrategies({
     key: "earn-strategy-cmsData",
     getFreshValue: async (): Promise<{
       riskReportUrl?: string;
+      categories: StategyCMSCategory[];
       strategies: StrategyCMSData[];
     }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
+          categories: StategyCMSCategory[];
           riskReportUrl: string;
         }>({ filePath: `cms/earn/strategies.json` });
 
@@ -166,6 +169,7 @@ export async function getStrategies({
 
         return {
           riskReportUrl: cmsData.riskReportUrl,
+          categories: cmsData.categories,
           strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {
