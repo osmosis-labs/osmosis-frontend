@@ -161,7 +161,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   return (
     <div className="flex flex-col">
       <ColumnCellCell>
-        {hasLockingDuration ? lockingDuration : "N/A"}
+        {hasLockingDuration ? lockingDuration : "—"}
       </ColumnCellCell>
       {hasLockingDuration && (
         <small className="text-sm font-subtitle2 text-osmoverse-400">
