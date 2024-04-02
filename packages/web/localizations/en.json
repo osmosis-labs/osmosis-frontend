@@ -836,7 +836,7 @@
     "platform": "Platform",
     "scrollToSeeMore": "scroll to see more",
     "discoverStrategies": "Discover Strategies",
-    "myStrategies": "My Strategies",
+    "myStrategies": "Your Strategies",
     "strategyPlatform": "Strategy",
     "apy": "APR",
     "daily": "Daily",
@@ -844,7 +844,7 @@
     "lock": "Unbond",
     "days": "days",
     "risk": "Risk",
-    "strategyMethod": "Strategy Method",
+    "strategyMethod": "Types",
     "allMethods": "All types",
     "platforms": "Platforms",
     "allPlatforms": "All platforms",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Claim all rewards",
     "join": "Join",
     "tokenFilterOptions": {
-      "my": "My assets",
+      "my": "Your assets",
       "all": "All assets"
     },
     "rewardTypes": {
