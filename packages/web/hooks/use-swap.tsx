@@ -280,7 +280,7 @@ export function useSwap(
           ) {
             try {
               const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
-              await new Promise((continueTx, rej) => {
+              await new Promise((continueTx, reject) => {
                 displayToast(
                   {
                     titleTranslationKey:
@@ -304,7 +304,7 @@ export function useSwap(
                   {
                     toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
                     onClose: () => {
-                      rej();
+                      reject();
                     },
                     autoClose: false,
                   }
