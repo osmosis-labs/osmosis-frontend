@@ -15,7 +15,7 @@ import {
   mapGetMarketAssets,
 } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
-import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/providers/coingecko";
+import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,

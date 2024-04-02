@@ -2,6 +2,8 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import dayjs from "../../../../utils/dayjs";
+import { queryMarketChart } from "../../../coingecko";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -10,6 +12,7 @@ import {
   TokenHistoricalPrice,
   TokenPairHistoricalPrice,
 } from "../../../data-services";
+import { DEFAULT_VS_CURRENCY } from "../config";
 
 const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -106,5 +109,69 @@ export function getPoolAssetPairHistoricalPrice({
         min: Math.min(...prices.map((price) => price.close)),
         max: Math.max(...prices.map((price) => price.close)),
       })),
+  });
+}
+
+type CoinGeckoCoinMarketChartParams = {
+  id: string;
+  timeFrame:
+    | string
+    | {
+        from: number;
+        to: number;
+      };
+  vsCurrency?: string;
+};
+
+/** Cached CoinGecko ID for needs of price function. */
+export async function getCoinGeckoCoinMarketChart({
+  vsCurrency = DEFAULT_VS_CURRENCY.currency,
+  timeFrame,
+  id,
+}: CoinGeckoCoinMarketChartParams) {
+  let from: dayjs.Dayjs | undefined = dayjs(new Date());
+  const to = dayjs(new Date());
+
+  if (typeof timeFrame === "string") {
+    /**
+     * We set the range of data to be displayed by type
+     */
+    switch (timeFrame) {
+      case "1h":
+        from = from.subtract(1, "hour");
+        break;
+      case "1d":
+        from = from.subtract(1, "day");
+        break;
+      case "7d":
+        from = from.subtract(1, "week");
+        break;
+      case "1mo":
+        from = from.subtract(1, "month");
+        break;
+      case "1y":
+        from = from.subtract(1, "year");
+        break;
+      case "all":
+        from = undefined;
+        break;
+    }
+  }
+
+  const fromTimestamp =
+    typeof timeFrame === "string" ? from?.unix() ?? 0 : timeFrame.from;
+  const toTimestamp = typeof timeFrame === "string" ? to?.unix() : timeFrame.to;
+
+  return cachified({
+    cache: tokenHistoricalPriceCache,
+    key: `coingecko-coin-market-chart-${id}-${from?.unix()}-${to.unix()}-${vsCurrency}`,
+    ttl: 1000 * 10, // 10 seconds
+    getFreshValue: async () =>
+      queryMarketChart({
+        id,
+        vsCurrency,
+        to: toTimestamp,
+        from: fromTimestamp,
+      }),
   });
 }
