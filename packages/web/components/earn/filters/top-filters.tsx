@@ -68,12 +68,12 @@ export const TopFilters = ({
   const tokenFilterOptions = useMemo(
     () => [
       {
-        value: "all",
-        label: t("earnPage.tokenFilterOptions.all"),
-      },
-      {
         value: "my",
         label: t("earnPage.tokenFilterOptions.my"),
+      },
+      {
+        value: "all",
+        label: t("earnPage.tokenFilterOptions.all"),
       },
     ],
     [t]
