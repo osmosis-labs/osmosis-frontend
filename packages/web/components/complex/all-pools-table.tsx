@@ -672,12 +672,18 @@ function getPoolLink(pool: Pool): string {
   if (pool.type === "cosmwasm-transmuter") {
     return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
   }
+  if (pool.type === "cosmwasm-astroport-pcl") {
+    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+  }
 
   return `/pool/${pool.id}`;
 }
 
 function getPoolTypeTarget(pool: Pool) {
-  if (pool.type === "cosmwasm-transmuter") {
+  if (
+    pool.type === "cosmwasm-transmuter" ||
+    pool.type === "cosmwasm-astroport-pcl"
+  ) {
     return "_blank";
   }
   return "";
