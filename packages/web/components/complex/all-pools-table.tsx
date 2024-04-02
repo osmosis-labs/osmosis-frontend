@@ -680,7 +680,10 @@ function getPoolLink(pool: Pool): string {
 }
 
 function getPoolTypeTarget(pool: Pool) {
-  if (pool.type === "cosmwasm-transmuter") {
+  if (
+    pool.type === "cosmwasm-transmuter" ||
+    pool.type === "cosmwasm-astroport-pcl"
+  ) {
     return "_blank";
   }
   return "";
