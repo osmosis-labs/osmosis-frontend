@@ -470,6 +470,11 @@
       "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
       "changeButton": "変化"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "取引をより迅速かつ簡単に",
+      "startOneClickTradingNow": "今すぐ1-Click取引を始めましょう",
+      "iconAlt": "1-Click 取引の小さなロゴ"
+    },
     "floatingBanner": {
       "newPill": "新しい",
       "title": "1クリック取引",

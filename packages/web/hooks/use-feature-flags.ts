@@ -77,6 +77,7 @@ export const useFeatureFlags = () => {
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
     oneClickTrading:
+      !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
       launchdarklyFlags.oneClickTrading,
     _isInitialized:

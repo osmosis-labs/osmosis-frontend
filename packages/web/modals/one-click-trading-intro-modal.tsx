@@ -32,9 +32,10 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
 
 const OneClickTradingIntroModal = observer(() => {
   const { accountStore, chainStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
+
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
 
@@ -129,7 +130,7 @@ const OneClickTradingIntroModal = observer(() => {
           )}
         >
           {isLoadingInfo || !currentScreen ? (
-            <div className="flex h-[90vh] max-h-[480px] w-full flex-col items-center justify-center">
+            <div className="flex h-[90vh] max-h-[420px] w-full flex-col items-center justify-center">
               <Spinner />
             </div>
           ) : (

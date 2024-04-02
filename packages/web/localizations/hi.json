@@ -470,6 +470,11 @@
       "defaultParameters": "1-क्लिक ट्रेडिंग इस डिवाइस पर $5,000 USD की खर्च सीमा के साथ 1 घंटे के लिए सक्रिय रहेगी",
       "changeButton": "परिवर्तन"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "जल्दी और आसानी से व्यापार करें",
+      "startOneClickTradingNow": "अभी 1-क्लिक ट्रेडिंग शुरू करें",
+      "iconAlt": "1-क्लिक ट्रेडिंग छोटा लोगो"
+    },
     "floatingBanner": {
       "newPill": "नया",
       "title": "1-ट्रेडिंग पर क्लिक करें",

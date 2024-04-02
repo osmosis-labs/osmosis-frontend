@@ -910,7 +910,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           {!isNil(warningText) && (
             <div
               className={classNames(
-                "body2 flex items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500",
+                "body2 flex animate-[fadeIn_0.3s_ease-in-out_0s] items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500",
                 swapState.isLoadingNetworkFee && "animate-pulse"
               )}
             >

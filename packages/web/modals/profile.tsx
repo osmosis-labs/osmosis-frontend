@@ -443,11 +443,11 @@ export const ProfileModal: FunctionComponent<
                     }}
                     className="group flex w-full items-center justify-between rounded-b-2xl border border-t-0 border-osmoverse-700 bg-osmoverse-800 px-5 py-3"
                   >
-                    <p className="subtitle1 tracking-wide">
+                    <p className="subtitle1 text-left tracking-wide">
                       {t("profile.oneClickTrading")}
                     </p>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 text-left">
                       <OneClickTradingRemainingTime />
                       <div className="flex transform transition-transform duration-100 group-hover:translate-x-1">
                         <Icon

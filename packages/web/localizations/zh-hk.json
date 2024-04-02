@@ -470,6 +470,11 @@
       "defaultParameters": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
       "changeButton": "改變"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "交易更快、更輕鬆",
+      "startOneClickTradingNow": "立即開始一鍵交易",
+      "iconAlt": "一鍵交易小徽標"
+    },
     "floatingBanner": {
       "newPill": "新的",
       "title": "一鍵交易",

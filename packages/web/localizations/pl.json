@@ -470,6 +470,11 @@
       "defaultParameters": "Handel jednym kliknięciem będzie aktywny przez 1 godzinę na tym urządzeniu z limitem wydatków wynoszącym 5000 USD",
       "changeButton": "Zmiana"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Handluj szybciej i łatwiej",
+      "startOneClickTradingNow": "Rozpocznij handel jednym kliknięciem już teraz",
+      "iconAlt": "Handel małym logo jednym kliknięciem"
+    },
     "floatingBanner": {
       "newPill": "Nowy",
       "title": "Handel jednym kliknięciem",

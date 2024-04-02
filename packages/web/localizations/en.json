@@ -470,6 +470,11 @@
       "defaultParameters": "1-Click Trading will be active for 1 hour on this device with a $5,000 USD spend limit",
       "changeButton": "Change"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Trade quicker and easier",
+      "startOneClickTradingNow": "Start 1-Click Trading now",
+      "iconAlt": "1-Click Trading Small Logo"
+    },
     "floatingBanner": {
       "newPill": "New",
       "title": "1-Click Trading",

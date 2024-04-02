@@ -1,14 +1,19 @@
-import { queryOsmosisCMS } from "@osmosis-labs/server";
-import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 
-import { AdBanner } from "~/components/ad-banner";
+import { Ad, AdBanners } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { theme } from "~/tailwind.config";
+import { api } from "~/utils/trpc";
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
@@ -57,53 +62,58 @@ const Home = () => {
   );
 };
 
-export interface SwapAdBannerResponse {
-  banners: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    headerOrTranslationKey: string;
-    subheaderOrTranslationKey: string;
-    externalUrl: string;
-    iconImageUrl: string;
-    iconImageAltOrTranslationKey: string;
-    gradient: string;
-    fontColor: string;
-    arrowColor: string;
-    featured: true;
-  }[];
-  localization: Record<string, Record<string, any>>;
-}
-
 const SwapAdsBanner = () => {
-  /**
-   * Fetches the latest update from the osmosis-labs/fe-content repo
-   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/swap-rotating-banner.json
-   */
-  const { data, isLoading } = useQuery({
-    queryKey: ["swap-ads-banner"],
-    queryFn: () =>
-      queryOsmosisCMS<SwapAdBannerResponse>({
-        filePath: "cms/swap-rotating-banner.json",
+  const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+  const flags = useFeatureFlags();
+  const { t } = useTranslation();
+  const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
+    undefined,
+    {
+      staleTime: 1000 * 60 * 30, // 30 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      select: (data) => ({
+        ...data,
+        banners: data.banners.filter((banner) =>
+          banner.startDate || banner.endDate
+            ? dayjs().isBetween(banner.startDate, banner.endDate)
+            : true
+        ),
       }),
-    staleTime: 1000 * 60 * 30, // 30 minutes
-    cacheTime: 1000 * 60 * 30, // 30 minutes
-    select: (data) => ({
-      ...data,
-      banners: data.banners.filter((banner) =>
-        banner.startDate || banner.endDate
-          ? dayjs().isBetween(banner.startDate, banner.endDate)
-          : true
-      ),
-    }),
-  });
+    }
+  );
 
   if (!data?.banners || isLoading) return null;
+
+  const banners: Ad[] = flags.oneClickTrading
+    ? [
+        // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
+        {
+          name: "one-click-trading",
+          headerOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.tradeQuickerAndEasier"
+          ),
+          subheaderOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.startOneClickTradingNow"
+          ),
+          iconImageAltOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.iconAlt"
+          ),
+          iconImageUrl: "/images/1ct-small-icon.svg",
+          gradient: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+          fontColor: theme.colors.osmoverse["900"],
+          arrowColor: theme.colors.ammelia["900"],
+          onClick() {
+            set1CTIntroModalScreen("settings-no-back-button");
+          },
+        } satisfies Ad,
+        ...data.banners,
+      ]
+    : data.banners;
 
   return (
     // If there is an error, we don't want to show the banner
     <ErrorBoundary fallback={null}>
-      <AdBanner ads={data.banners} localization={data.localization} />
+      <AdBanners ads={banners} localization={data.localization} />
     </ErrorBoundary>
   );
 };

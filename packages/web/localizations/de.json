@@ -470,6 +470,11 @@
       "defaultParameters": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
       "changeButton": "Ändern"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Handeln Sie schneller und einfacher",
+      "startOneClickTradingNow": "Starten Sie jetzt mit dem 1-Click-Trading",
+      "iconAlt": "1-Click Trading Kleines Logo"
+    },
     "floatingBanner": {
       "newPill": "Neu",
       "title": "1-Klick-Handel",

@@ -470,6 +470,11 @@
       "defaultParameters": "Tranzacționarea cu 1 clic va fi activă timp de 1 oră pe acest dispozitiv, cu o limită de cheltuieli de 5.000 USD",
       "changeButton": "Schimbare"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Comerț mai rapid și mai ușor",
+      "startOneClickTradingNow": "Începeți acum tranzacționarea cu 1 clic",
+      "iconAlt": "1-Click Trading Small Logo"
+    },
     "floatingBanner": {
       "newPill": "Nou",
       "title": "1-Click Trading",

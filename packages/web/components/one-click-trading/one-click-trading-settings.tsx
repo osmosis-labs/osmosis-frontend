@@ -491,7 +491,7 @@ const OneClickTradingSettings = ({
                       className="h-5 self-center"
                       isLoaded={!isLoadingEstimateRemoveTx}
                     >
-                      <p className="text-caption font-caption text-osmoverse-300">
+                      <p className="text-center text-caption font-caption text-osmoverse-300">
                         {t("oneClickTrading.settings.feeToDisable")} ~
                         {estimateRemoveTxData?.gasAmount.toString() ??
                           "0.000000 OSMO"}{" "}

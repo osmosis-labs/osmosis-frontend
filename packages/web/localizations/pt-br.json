@@ -470,6 +470,11 @@
       "defaultParameters": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
       "changeButton": "Mudar"
     },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Negocie de forma mais rápida e fácil",
+      "startOneClickTradingNow": "Comece a negociação com 1 clique agora",
+      "iconAlt": "Logotipo pequeno de negociação em 1 clique"
+    },
     "floatingBanner": {
       "newPill": "Novo",
       "title": "Negociação em 1 clique",
