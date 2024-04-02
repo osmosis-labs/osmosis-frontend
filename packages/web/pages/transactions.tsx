@@ -193,7 +193,8 @@ export const Transactions: React.FC = () => {
         <TransactionRow status="Success" />
       </div>
 
-      <div className="flex w-[432px] flex-col border-l-[1px] border-osmoverse-700">
+      {/* <div className="flex w-[432px] flex-col border-l-[1px] border-osmoverse-700"> */}
+      <div className="flex w-1/3 flex-col border-l-[1px] border-osmoverse-700">
         <div className="py-4 pl-4">
           <IconButton
             aria-label="Close"
@@ -216,7 +217,7 @@ export const Transactions: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col rounded-2xl border-[1px] border-osmoverse-700 p-2">
+          <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
                 <Image
@@ -263,6 +264,35 @@ export const Transactions: React.FC = () => {
               </div>
             </div>
           </div>
+          <div className="flex flex-col py-3">
+            <div className="flex justify-between py-3">
+              <div>Execution Price</div>
+              <div className="text-body1 text-wosmongton-300">
+                1 OSMO = 97.80 USDC
+              </div>
+            </div>
+            <div className="flex justify-between py-3">
+              <div>Total Fees</div>
+              <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
+            </div>
+            <div className="flex justify-between py-3">
+              <div>Transaction Fees</div>
+              <div className="text-body1 text-wosmongton-300">
+                F7AC9A...F58F87
+              </div>
+            </div>
+          </div>
+          <Button size="default" variant="secondary" asChild>
+            <a
+              rel="noreferrer"
+              target="_blank"
+              href={`https://www.mintscan.io/cosmos/txs/${
+                "" // TDODO link this - txHash
+              }`}
+            >
+              <span>View on Explorer &#x2197;</span>
+            </a>
+          </Button>
         </div>
       </div>
     </main>
