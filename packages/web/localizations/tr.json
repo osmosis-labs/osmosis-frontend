@@ -836,15 +836,15 @@
     "platform": "platformu",
     "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
-    "myStrategies": "Stratejilerim",
+    "myStrategies": "Stratejileriniz",
     "strategyPlatform": "Strateji",
     "apy": "Nisan",
     "daily": "Günlük",
     "reward": "Ödül",
-    "lock": "Kilit",
+    "lock": "Bağlantıyı kaldır",
     "days": "günler",
     "risk": "Risk",
-    "strategyMethod": "Strateji Yöntemi",
+    "strategyMethod": "Türler",
     "allMethods": "Her türlü",
     "platforms": "Platformlar",
     "allPlatforms": "Tüm platformlar",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Tüm ödülleri talep edin",
     "join": "Katılmak",
     "tokenFilterOptions": {
-      "my": "Varlıklarım",
+      "my": "Varlıklarınız",
       "all": "Tüm varlıklar"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Toplam değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
-    "startEarning": "Stratejileri keşfedin",
     "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiyle uygulamaya koyun.",
     "loadingStrategies": "Stratejiler yükleniyor...",
     "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
@@ -880,6 +879,7 @@
     "noLock": "Kilit yok",
     "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
     "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
+    "instantUnbondOnly": "Yalnızca anında ayrılma",
     "tooltips": {
       "apr": {
         "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."

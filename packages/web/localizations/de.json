@@ -836,15 +836,15 @@
     "platform": "Plattform",
     "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
-    "myStrategies": "Meine Strategien",
+    "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",
     "apy": "APR",
     "daily": "Täglich",
     "reward": "Belohnen",
-    "lock": "Sperren",
+    "lock": "Bindung lösen",
     "days": "Tage",
     "risk": "Risiko",
-    "strategyMethod": "Strategiemethode",
+    "strategyMethod": "Typen",
     "allMethods": "Alle Arten",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
-      "my": "Mein Vermögen",
+      "my": "Ihr Vermögen",
       "all": "Alle Vermögenswerte"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Gesamtwert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarning": "Entdecken Sie Strategien",
     "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
     "loadingStrategies": "Lade Strategien...",
     "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",
@@ -880,6 +879,7 @@
     "noLock": "Kein Schloss",
     "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
     "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
+    "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
         "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."

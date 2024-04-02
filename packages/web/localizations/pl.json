@@ -836,15 +836,15 @@
     "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
-    "myStrategies": "Moje strategie",
+    "myStrategies": "Twoje strategie",
     "strategyPlatform": "Strategia",
     "apy": "KWIECIEŃ",
     "daily": "Codziennie",
     "reward": "Nagroda",
-    "lock": "Zamek",
+    "lock": "Rozłącz",
     "days": "dni",
     "risk": "Ryzyko",
-    "strategyMethod": "Metoda strategii",
+    "strategyMethod": "Typy",
     "allMethods": "Wszystkie typy",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
     "tokenFilterOptions": {
-      "my": "Moje aktywa",
+      "my": "Twoje aktywa",
       "all": "Wszystkie aktywa"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Całkowita wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
-    "startEarning": "Odkryj strategie",
     "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z wielu poniższych strategii.",
     "loadingStrategies": "Ładowanie strategii...",
     "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",
@@ -880,6 +879,7 @@
     "noLock": "Brak blokady",
     "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
     "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
+    "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
     "tooltips": {
       "apr": {
         "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."

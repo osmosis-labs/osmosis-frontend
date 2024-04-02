@@ -836,15 +836,15 @@
     "platform": "平台",
     "scrollToSeeMore": "捲動查看更多",
     "discoverStrategies": "發現策略",
-    "myStrategies": "我的策略",
+    "myStrategies": "你的策略",
     "strategyPlatform": "策略",
     "apy": "年利率",
     "daily": "日常的",
     "reward": "報酬",
-    "lock": "鎖",
+    "lock": "解綁",
     "days": "天",
     "risk": "風險",
-    "strategyMethod": "策略方法",
+    "strategyMethod": "類型",
     "allMethods": "所有類型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
@@ -858,7 +858,7 @@
     "claimAllRewards": "領取所有獎勵",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的資產",
+      "my": "您的資產",
       "all": "所有資產"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "總價值",
     "lookBelow": "請參閱下文並找到最適合您的策略",
-    "startEarning": "發現策略",
     "startEarningDescription": "釋放您的全部賺錢潛力。透過以下多種策略讓您的資產發揮作用。",
     "loadingStrategies": "載入策略...",
     "sorryErrorOccurred": "抱歉，發生錯誤。",
@@ -880,6 +879,7 @@
     "noLock": "無鎖",
     "riskDisclaimer": "風險是根據策略及其基礎資產的一組組合標準來計算的。",
     "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。",
+    "instantUnbondOnly": "僅限即時解綁",
     "tooltips": {
       "apr": {
         "description": "年利率（APR）是指策略的年化百分比回報。注意：策略的報酬可能會根據參與度和表現而波動。"

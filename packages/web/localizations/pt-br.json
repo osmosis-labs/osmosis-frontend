@@ -836,15 +836,15 @@
     "platform": "Plataforma",
     "scrollToSeeMore": "role para ver mais",
     "discoverStrategies": "Descubra estratégias",
-    "myStrategies": "Minhas estratégias",
+    "myStrategies": "Suas estratégias",
     "strategyPlatform": "Estratégia",
     "apy": "ABRIL",
     "daily": "Diário",
     "reward": "Recompensa",
-    "lock": "Trancar",
+    "lock": "Desvincular",
     "days": "dias",
     "risk": "Risco",
-    "strategyMethod": "Método de Estratégia",
+    "strategyMethod": "Tipos",
     "allMethods": "Todos os tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas as plataformas",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Reivindique todas as recompensas",
     "join": "Juntar",
     "tokenFilterOptions": {
-      "my": "Meus ativos",
+      "my": "Seus ativos",
       "all": "Todos os ativos"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Valor total",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
-    "startEarning": "Descubra estratégias",
     "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio das diversas estratégias abaixo.",
     "loadingStrategies": "Carregando estratégias...",
     "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
@@ -880,6 +879,7 @@
     "noLock": "Não feche",
     "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
     "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
+    "instantUnbondOnly": "Somente desvinculação instantânea",
     "tooltips": {
       "apr": {
         "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."

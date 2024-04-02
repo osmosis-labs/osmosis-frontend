@@ -836,15 +836,15 @@
     "platform": "Platformă",
     "scrollToSeeMore": "derulați pentru a vedea mai multe",
     "discoverStrategies": "Descoperiți strategii",
-    "myStrategies": "Strategiile mele",
+    "myStrategies": "Strategiile tale",
     "strategyPlatform": "Strategie",
     "apy": "APRILIE",
     "daily": "Zilnic",
     "reward": "Răsplată",
-    "lock": "Lacăt",
+    "lock": "Dezlegați",
     "days": "zile",
     "risk": "Risc",
-    "strategyMethod": "Metoda Strategiei",
+    "strategyMethod": "Tipuri",
     "allMethods": "Toate tipurile",
     "platforms": "Platforme",
     "allPlatforms": "Toate platformele",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Revendicați toate recompensele",
     "join": "A te alatura",
     "tokenFilterOptions": {
-      "my": "Activele mele",
+      "my": "Activele tale",
       "all": "Toate activele"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Valoarea totală",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine",
-    "startEarning": "Descoperiți strategii",
     "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru prin numeroasele strategii de mai jos.",
     "loadingStrategies": "Se încarcă strategiile...",
     "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
@@ -880,6 +879,7 @@
     "noLock": "Fără blocare",
     "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
     "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
+    "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
         "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."

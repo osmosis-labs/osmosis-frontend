@@ -836,7 +836,7 @@
     "platform": "Platform",
     "scrollToSeeMore": "scroll to see more",
     "discoverStrategies": "Discover Strategies",
-    "myStrategies": "My Strategies",
+    "myStrategies": "Your Strategies",
     "strategyPlatform": "Strategy",
     "apy": "APR",
     "daily": "Daily",
@@ -844,7 +844,7 @@
     "lock": "Unbond",
     "days": "days",
     "risk": "Risk",
-    "strategyMethod": "Strategy Method",
+    "strategyMethod": "Types",
     "allMethods": "All types",
     "platforms": "Platforms",
     "allPlatforms": "All platforms",
@@ -858,7 +858,7 @@
     "claimAllRewards": "Claim all rewards",
     "join": "Join",
     "tokenFilterOptions": {
-      "my": "My assets",
+      "my": "Your assets",
       "all": "All assets"
     },
     "rewardTypes": {
@@ -868,7 +868,6 @@
     },
     "totalValueInvested": "Total value",
     "lookBelow": "Look below and find best strategies for you",
-    "startEarning": "Discover strategies",
     "startEarningDescription": "Unlock your full earning potential. Put your assets to work through the many strategies below.",
     "loadingStrategies": "Loading strategies...",
     "sorryErrorOccurred": "Sorry, an error occured.",
@@ -880,6 +879,7 @@
     "noLock": "No Lock",
     "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
     "strategyGeoblocked": "Sorry, this strategy is unavailable in your country.",
+    "instantUnbondOnly": "Instant unbond only",
     "tooltips": {
       "apr": {
         "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy. Note: A strategy's return may fluctuate based on participation and performance."
