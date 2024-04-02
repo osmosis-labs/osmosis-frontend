@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import Image from "next/image";
+import { useState } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
@@ -13,11 +14,15 @@ type Status = "Pending" | "Success" | "Failure";
 
 import { Dialog, Transition } from "@headlessui/react";
 // import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
-export function Example() {
-  const [open, setOpen] = useState(true);
-
+export function SlideOver({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -47,7 +52,7 @@ export function Example() {
               >
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
                   <div className="flex h-full flex-col overflow-y-scroll bg-osmoverse-900 shadow-xl">
-                    <SideBarContent onRequestClose={() => setOpen(false)} />
+                    <SlideOverContent onRequestClose={() => setOpen(false)} />
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -61,12 +66,16 @@ export function Example() {
 
 interface TransactionRowProps {
   status: Status;
+  setOpen: (open: boolean) => void;
 }
 
-const TransactionRow = ({ status }: TransactionRowProps) => {
+const TransactionRow = ({ status, setOpen, open }: TransactionRowProps) => {
   return (
     // h-20 = h-12 (via designs) + pt-4 + pb-4
-    <div className="w-container flex h-20 cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825">
+    <div
+      className="w-container flex h-20 cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825"
+      onClick={() => setOpen(!open)}
+    >
       <TransactionStatus status={status} />
       <TransactionDetails status={status} />
     </div>
@@ -162,7 +171,13 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
   );
 };
 
-const TransactionContent = () => {
+const TransactionContent = ({
+  setOpen,
+  open,
+}: {
+  setOpen: (open: boolean) => void;
+  open;
+}) => {
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">
@@ -183,46 +198,50 @@ const TransactionContent = () => {
         <div className="text-osmoverse-300">Pending</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Pending" />
+      <TransactionRow status="Pending" setOpen={setOpen} open={open} />
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">Earlier Today</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Failure" />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
+      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">Yesterday</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Success" />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">March 11</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Success" />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">February 8</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Failure" />
-      <TransactionRow status="Failure" />
+      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
+      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">December 29, 2023</div>
         <hr className="text-osmoverse-700" />
       </div>
-      <TransactionRow status="Success" />
-      <TransactionRow status="Success" />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
     </div>
   );
 };
 
-const SideBarContent = ({ onRequestClose }: { onRequestClose: () => void }) => {
+const SlideOverContent = ({
+  onRequestClose,
+}: {
+  onRequestClose: () => void;
+}) => {
   return (
     <div className="w-container flex h-full flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
       <div className="py-4 pl-4">
@@ -351,10 +370,12 @@ export const Transactions: React.FC = () => {
     ctas: [],
   });
 
+  const [open, setOpen] = useState(true);
+
   return (
     <main className="flex gap-8 px-8">
-      <Example />
-      <TransactionContent />
+      <SlideOver open={open} setOpen={setOpen} />
+      <TransactionContent open={open} setOpen={setOpen} />
     </main>
   );
 };
