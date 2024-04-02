@@ -841,7 +841,7 @@
     "apy": "APR",
     "daily": "Daily",
     "reward": "Reward",
-    "lock": "Lock",
+    "lock": "Unbond",
     "days": "days",
     "risk": "Risk",
     "strategyMethod": "Strategy Method",
