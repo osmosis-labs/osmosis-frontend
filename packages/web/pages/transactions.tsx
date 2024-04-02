@@ -67,6 +67,7 @@ export function SlideOver({
 interface TransactionRowProps {
   status: Status;
   setOpen: (open: boolean) => void;
+  open: boolean;
 }
 
 const TransactionRow = ({ status, setOpen, open }: TransactionRowProps) => {
@@ -176,7 +177,7 @@ const TransactionContent = ({
   open,
 }: {
   setOpen: (open: boolean) => void;
-  open;
+  open: boolean;
 }) => {
   return (
     <div className="flex w-full flex-col">
