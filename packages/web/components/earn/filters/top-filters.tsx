@@ -13,6 +13,7 @@ import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
@@ -179,22 +180,26 @@ export const TopFilters = ({
         <div className="flex 2xl:hidden">
           {categories.map((props) => {
             return (
-              <StrategyButton
-                onChange={(value) =>
-                  setFilter("specialTokens", {
-                    label: props.label,
-                    value,
-                  })
-                }
-                isOn={
-                  specialTokens.filter((f) => f.value === props.value)
-                    .length !== 0
-                }
+              <Tooltip
                 key={`${props.label} strategy button`}
-                icon={props.icon}
-                label={props.label}
-                resp={props.value}
-              />
+                content={props.tooltip}
+              >
+                <StrategyButton
+                  onChange={(value) =>
+                    setFilter("specialTokens", {
+                      label: props.label,
+                      value,
+                    })
+                  }
+                  isOn={
+                    specialTokens.filter((f) => f.value === props.value)
+                      .length !== 0
+                  }
+                  icon={props.icon}
+                  label={props.label}
+                  resp={props.value}
+                />
+              </Tooltip>
             );
           })}
         </div>
