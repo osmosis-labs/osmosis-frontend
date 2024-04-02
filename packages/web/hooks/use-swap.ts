@@ -355,15 +355,16 @@ export function useSwap(
       maxSlippage,
       inAmountInput,
       account,
-      swapAssets.fromAsset,
-      swapAssets.toAsset,
       quote,
       isOneClickTradingEnabled,
       accountStore,
       hasOverSpendLimitError,
       hasExceededOneClickTradingGasLimit,
+      estimateTxError,
       featureFlags.swapToolSimulateFee,
       networkFee,
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
       queryClient,
     ]
   );
