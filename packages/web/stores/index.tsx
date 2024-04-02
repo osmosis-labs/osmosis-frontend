@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { RootStore } from "~/stores/root";
@@ -49,8 +49,8 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
                 captionElement: (
                   <div className="flex flex-col items-start gap-2">
                     <Button
-                      mode="text"
-                      className="caption px-0"
+                      variant="link"
+                      className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
                       onClick={() => {
                         toast.dismiss(EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID);
                         setOneClickTradingIntroModalScreen(
@@ -62,8 +62,8 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
                       {t("oneClickTrading.toast.increaseFeeLimit")}
                     </Button>
                     <Button
-                      mode="text"
-                      className="caption"
+                      variant="link"
+                      className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
                       onClick={() => {
                         toast.dismiss(EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID);
                         continueTx();
@@ -80,7 +80,7 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
                 onClose: () => {
                   finish();
                 },
-                autoClose: 10_000,
+                autoClose: 20_000,
               }
             );
           },

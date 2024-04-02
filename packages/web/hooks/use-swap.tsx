@@ -21,11 +21,14 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
+import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useTranslation } from "~/hooks/language";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -82,6 +85,7 @@ export function useSwap(
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
+  const { t } = useTranslation();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -274,15 +278,41 @@ export function useSwap(
             !hasExceededOneClickTradingGasLimit &&
             estimateTxError
           ) {
-            displayToast(
-              {
-                titleTranslationKey:
-                  "oneClickTrading.toast.currentlyUnavailable",
-                captionTranslationKey:
-                  "oneClickTrading.toast.pleaseTryAgainLater",
-              },
-              ToastType.ONE_CLICK_TRADING
-            );
+            try {
+              const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
+              await new Promise((continueTx, rej) => {
+                displayToast(
+                  {
+                    titleTranslationKey:
+                      "oneClickTrading.toast.currentlyUnavailable",
+                    captionElement: (
+                      <Button
+                        variant="link"
+                        className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
+                        onClick={() => {
+                          toast.dismiss(ONE_CLICK_UNAVAILABLE_TOAST_ID);
+                          continueTx(void 0);
+                        }}
+                      >
+                        {t("oneClickTrading.toast.approveManually", {
+                          walletName: account.walletInfo?.prettyName ?? "",
+                        })}
+                      </Button>
+                    ),
+                  },
+                  ToastType.ONE_CLICK_TRADING,
+                  {
+                    toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
+                    onClose: () => {
+                      rej();
+                    },
+                    autoClose: false,
+                  }
+                );
+              });
+            } catch (e) {
+              return reject("Rejected manual approval");
+            }
           }
 
           const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
@@ -365,6 +395,7 @@ export function useSwap(
       networkFee,
       swapAssets.fromAsset,
       swapAssets.toAsset,
+      t,
       queryClient,
     ]
   );

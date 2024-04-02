@@ -77,6 +77,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
+    const [isSendingTx, setIsSendingTx] = useState(false);
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig();
@@ -182,6 +183,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           page,
         },
       ]);
+      setIsSendingTx(true);
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
@@ -206,6 +208,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           console.error("swap error", error);
         })
         .finally(() => {
+          setIsSendingTx(false);
           onRequestModalClose?.();
         });
     };
@@ -920,6 +923,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           {swapButton ?? (
             <Button
               disabled={
+                isSendingTx ||
                 isWalletLoading ||
                 swapState.isQuoteLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
