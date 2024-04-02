@@ -65,7 +65,8 @@ interface TransactionRowProps {
 
 const TransactionRow = ({ status }: TransactionRowProps) => {
   return (
-    <div className="w-container m-4 flex h-12 justify-between">
+    // h-20 = h-12 (via designs) + pt-4 + pb-4
+    <div className="w-container flex h-20 cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825">
       <TransactionStatus status={status} />
       <TransactionDetails status={status} />
     </div>
