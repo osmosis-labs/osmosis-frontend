@@ -879,6 +879,7 @@
     "noLock": "Não feche",
     "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
     "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
+    "instantUnbondOnly": "Somente desvinculação instantânea",
     "tooltips": {
       "apr": {
         "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."

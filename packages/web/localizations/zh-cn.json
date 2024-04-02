@@ -879,6 +879,7 @@
     "noLock": "无锁",
     "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
     "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。",
+    "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
         "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"

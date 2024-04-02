@@ -879,6 +879,7 @@
     "noLock": "Kilit yok",
     "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
     "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
+    "instantUnbondOnly": "Yalnızca anında ayrılma",
     "tooltips": {
       "apr": {
         "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."

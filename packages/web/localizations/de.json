@@ -879,6 +879,7 @@
     "noLock": "Kein Schloss",
     "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
     "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
+    "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
         "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."

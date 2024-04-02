@@ -879,6 +879,7 @@
     "noLock": "Fără blocare",
     "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
     "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
+    "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
         "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."

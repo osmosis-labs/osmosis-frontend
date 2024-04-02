@@ -14,6 +14,7 @@ import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
 import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
@@ -156,13 +157,17 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="flex items-center justify-between gap-7 lg:hidden">
         <SearchBox
@@ -245,13 +250,17 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect

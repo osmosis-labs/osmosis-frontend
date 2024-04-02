@@ -879,6 +879,7 @@
     "noLock": "No Lock",
     "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
     "strategyGeoblocked": "Sorry, this strategy is unavailable in your country.",
+    "instantUnbondOnly": "Instant unbond only",
     "tooltips": {
       "apr": {
         "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy. Note: A strategy's return may fluctuate based on participation and performance."

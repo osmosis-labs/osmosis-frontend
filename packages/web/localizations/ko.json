@@ -879,6 +879,7 @@
     "noLock": "잠금 없음",
     "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다.",
     "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다.",
+    "instantUnbondOnly": "즉시 결합해제만 가능",
     "tooltips": {
       "apr": {
         "description": "연간 백분율(APR)은 전략의 연간 백분율 수익률을 나타냅니다. 참고: 전략의 수익은 참여와 성과에 따라 변동될 수 있습니다."

@@ -879,6 +879,7 @@
     "noLock": "Brak blokady",
     "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
     "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
+    "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
     "tooltips": {
       "apr": {
         "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."

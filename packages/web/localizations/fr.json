@@ -879,6 +879,7 @@
     "noLock": "Aucun verrou",
     "riskDisclaimer": "Le risque est calculé avec un ensemble combiné de critères concernant une stratégie et ses actifs sous-jacents.",
     "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays.",
+    "instantUnbondOnly": "Décollage instantané uniquement",
     "tooltips": {
       "apr": {
         "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."

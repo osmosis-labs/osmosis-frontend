@@ -879,6 +879,7 @@
     "noLock": "Sin bloqueo",
     "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
     "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
+    "instantUnbondOnly": "Solo desvinculación instantánea",
     "tooltips": {
       "apr": {
         "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
