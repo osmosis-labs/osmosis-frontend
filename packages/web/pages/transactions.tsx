@@ -217,23 +217,25 @@ export const Transactions: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col rounded-2xl border-[1px] border-osmoverse-700 p-2">
-            <div>
-              <Image
-                alt="OSMO"
-                src="/tokens/generated/osmo.svg"
-                height={32}
-                width={32}
-              />
-              <div>
-                <div>Sold</div>
-                <div>OSMO</div>
+            <div className="flex justify-between p-2">
+              <div className="flex gap-4">
+                <Image
+                  alt="OSMO"
+                  src="/tokens/generated/osmo.svg"
+                  height={32}
+                  width={32}
+                />
+                <div className="flex flex-col">
+                  <div className="text-subtitle1">Sold</div>
+                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                </div>
               </div>
-              <div>
-                <div>$100.00</div>
-                <div>10</div>
+              <div className="flex-end flex flex-col text-right">
+                <div className="text-subtitle1">$100.00</div>
+                <div className="text-body1 text-osmoverse-300">10</div>
               </div>
             </div>
-            <div>
+            <div className="flex h-10 w-12 items-center justify-center p-2">
               <Image
                 alt="down"
                 src="/icons/arrow-right.svg"
@@ -242,14 +244,23 @@ export const Transactions: React.FC = () => {
                 className="rotate-90 text-osmoverse-600"
               />
             </div>
-            <div>
-              {" "}
-              <Image
-                alt="USDC"
-                src="/tokens/generated/usdc.svg"
-                height={32}
-                width={32}
-              />
+            <div className="flex justify-between p-2">
+              <div className="flex gap-4">
+                <Image
+                  alt="USDC"
+                  src="/tokens/generated/usdc.svg"
+                  height={32}
+                  width={32}
+                />
+                <div className="flex flex-col">
+                  <div className="text-subtitle1">Sold</div>
+                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                </div>
+              </div>
+              <div className="flex-end flex flex-col text-right">
+                <div className="text-subtitle1">$100.00</div>
+                <div className="text-body1 text-osmoverse-300">10</div>
+              </div>
             </div>
           </div>
         </div>
