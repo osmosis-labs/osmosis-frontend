@@ -173,7 +173,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
 };
 
 function _getRiskLabel(risk: number) {
-  return `${Math.floor(risk * 100)}/100`;
+  return `${Math.floor(risk * 100)}%`;
 }
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
