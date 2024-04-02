@@ -13,7 +13,6 @@ import { theme } from "~/tailwind.config";
 type Status = "Pending" | "Success" | "Failure";
 
 import { Dialog, Transition } from "@headlessui/react";
-// import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 
 export function SlideOver({
