@@ -161,7 +161,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   return (
     <div className="flex flex-col">
       <ColumnCellCell>
-        {hasLockingDuration ? lockingDuration : "N/A"}
+        {hasLockingDuration ? lockingDuration : "Instant"}
       </ColumnCellCell>
       {hasLockingDuration && (
         <small className="text-sm font-subtitle2 text-osmoverse-400">
@@ -173,11 +173,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
 };
 
 function _getRiskLabel(risk: number) {
-  if (risk <= 0.25) return "Low";
-  else if (risk <= 0.5) return "Medium";
-  else if (risk <= 0.75) return "High";
-  else if (risk <= 1) return "Very High";
-  else return "Very Low";
+  return `${Math.floor(risk * 100)}/100`;
 }
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
