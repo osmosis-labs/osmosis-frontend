@@ -451,6 +451,8 @@
       "oneClickTradingActive": "一鍵交易活躍",
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
+      "currentlyUnavailable": "一鍵交易目前無法使用",
+      "pleaseTryAgainLater": "請稍後再試",
       "networkFeeTooHigh": "網路費太高",
       "enableOneClickTrading": "啟用一鍵交易",
       "increaseFeeLimit": "提高網路費用限額",
@@ -797,6 +799,13 @@
     "priceImpact": "價格影響",
     "routerTooltipFee": "費",
     "routerTooltipSpreadFactor": "擴頻因子",
+    "continueAnyway": "無論如何繼續",
+    "warning": {
+      "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
+      "exceedsNetworkFeeLimit": "此交換超出了一鍵交易的網路費用限制。",
+      "increaseSpendLimit": "提高支出限額",
+      "increaseNetworkFeeLimit": "提高網路費用限額"
+    },
     "settings": {
       "slippage": "允許嘅滑價",
       "slippageInfo": "你嘅交易在價格嘅不利變動超過此百份比時會被取消",

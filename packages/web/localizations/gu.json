@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
       "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
+      "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
+      "pleaseTryAgainLater": "પછીથી ફરી પ્રયત્ન કરો",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
       "enableOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
       "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
@@ -797,6 +799,13 @@
     "priceImpact": "ભાવની અસર",
     "routerTooltipFee": "ફી",
     "routerTooltipSpreadFactor": "સ્પ્રેડ ફેક્ટર",
+    "continueAnyway": "કોઈપણ રીતે ચાલુ રાખો",
+    "warning": {
+      "exceedsSpendLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી બાકીની ખર્ચ મર્યાદાને ઓળંગે છે.",
+      "exceedsNetworkFeeLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી નેટવર્ક ફી મર્યાદાને ઓળંગે છે.",
+      "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો",
+      "increaseNetworkFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો"
+    },
     "settings": {
       "slippage": "સ્લિપેજ સહનશીલતા",
       "slippageInfo": "જો કિંમત આ ટકાવારી કરતાં વધુ પ્રતિકૂળ રીતે બદલાશે તો તમારો વ્યવહાર પાછો આવશે.",

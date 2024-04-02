@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { base64FromBytes, bytesFromBase64 } from "../../helpers";
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticator {
   sender: string;
@@ -12,9 +13,9 @@ export interface MsgAddAuthenticatorProtoMsg {
 }
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticatorAmino {
-  sender: string;
-  type: string;
-  data: Uint8Array;
+  sender?: string;
+  type?: string;
+  data?: string;
 }
 export interface MsgAddAuthenticatorAminoMsg {
   type: "osmosis/authenticator/add-authenticator";
@@ -38,7 +39,7 @@ export interface MsgAddAuthenticatorResponseProtoMsg {
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponseAmino {
   /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgAddAuthenticatorResponseAminoMsg {
   type: "osmosis/authenticator/add-authenticator-response";
@@ -65,8 +66,8 @@ export interface MsgRemoveAuthenticatorProtoMsg {
  * type.
  */
 export interface MsgRemoveAuthenticatorAmino {
-  sender: string;
-  id: string;
+  sender?: string;
+  id?: string;
 }
 export interface MsgRemoveAuthenticatorAminoMsg {
   type: "osmosis/authenticator/remove-authenticator";
@@ -104,7 +105,7 @@ export interface MsgRemoveAuthenticatorResponseAmino {
    * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
    * type.
    */
-  success: boolean;
+  success?: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseAminoMsg {
   type: "osmosis/authenticator/remove-authenticator-response";
@@ -123,10 +124,10 @@ export interface MsgRemoveAuthenticatorResponseSDKType {
  */
 export interface TxExtension {
   /**
-   * selected_authenticators holds indices for the chosen authenticators per
-   * message.
+   * selected_authenticators holds the authenticator_id for the chosen
+   * authenticator per message.
    */
-  selectedAuthenticators: number[];
+  selectedAuthenticators: bigint[];
 }
 export interface TxExtensionProtoMsg {
   typeUrl: "/osmosis.authenticator.TxExtension";
@@ -138,10 +139,10 @@ export interface TxExtensionProtoMsg {
  */
 export interface TxExtensionAmino {
   /**
-   * selected_authenticators holds indices for the chosen authenticators per
-   * message.
+   * selected_authenticators holds the authenticator_id for the chosen
+   * authenticator per message.
    */
-  selected_authenticators: number[];
+  selected_authenticators?: string[];
 }
 export interface TxExtensionAminoMsg {
   type: "osmosis/authenticator/tx-extension";
@@ -152,7 +153,7 @@ export interface TxExtensionAminoMsg {
  * transactions.
  */
 export interface TxExtensionSDKType {
-  selected_authenticators: number[];
+  selected_authenticators: bigint[];
 }
 function createBaseMsgAddAuthenticator(): MsgAddAuthenticator {
   return {
@@ -213,17 +214,23 @@ export const MsgAddAuthenticator = {
     return message;
   },
   fromAmino(object: MsgAddAuthenticatorAmino): MsgAddAuthenticator {
-    return {
-      sender: object.sender,
-      type: object.type,
-      data: object.data,
-    };
+    const message = createBaseMsgAddAuthenticator();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgAddAuthenticator): MsgAddAuthenticatorAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.type = message.type;
-    obj.data = message.data;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.type = message.type === "" ? undefined : message.type;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgAddAuthenticatorAminoMsg): MsgAddAuthenticator {
@@ -295,15 +302,17 @@ export const MsgAddAuthenticatorResponse = {
   fromAmino(
     object: MsgAddAuthenticatorResponseAmino
   ): MsgAddAuthenticatorResponse {
-    return {
-      success: object.success,
-    };
+    const message = createBaseMsgAddAuthenticatorResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(
     message: MsgAddAuthenticatorResponse
   ): MsgAddAuthenticatorResponseAmino {
     const obj: any = {};
-    obj.success = message.success;
+    obj.success = message.success === false ? undefined : message.success;
     return obj;
   },
   fromAminoMsg(
@@ -390,15 +399,19 @@ export const MsgRemoveAuthenticator = {
     return message;
   },
   fromAmino(object: MsgRemoveAuthenticatorAmino): MsgRemoveAuthenticator {
-    return {
-      sender: object.sender,
-      id: BigInt(object.id),
-    };
+    const message = createBaseMsgRemoveAuthenticator();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = BigInt(object.id);
+    }
+    return message;
   },
   toAmino(message: MsgRemoveAuthenticator): MsgRemoveAuthenticatorAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.id = message.id ? message.id.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAuthenticatorAminoMsg): MsgRemoveAuthenticator {
@@ -472,15 +485,17 @@ export const MsgRemoveAuthenticatorResponse = {
   fromAmino(
     object: MsgRemoveAuthenticatorResponseAmino
   ): MsgRemoveAuthenticatorResponse {
-    return {
-      success: object.success,
-    };
+    const message = createBaseMsgRemoveAuthenticatorResponse();
+    if (object.success !== undefined && object.success !== null) {
+      message.success = object.success;
+    }
+    return message;
   },
   toAmino(
     message: MsgRemoveAuthenticatorResponse
   ): MsgRemoveAuthenticatorResponseAmino {
     const obj: any = {};
-    obj.success = message.success;
+    obj.success = message.success === false ? undefined : message.success;
     return obj;
   },
   fromAminoMsg(
@@ -526,7 +541,7 @@ export const TxExtension = {
   ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.selectedAuthenticators) {
-      writer.int32(v);
+      writer.uint64(v);
     }
     writer.ldelim();
     return writer;
@@ -543,10 +558,10 @@ export const TxExtension = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.selectedAuthenticators.push(reader.int32());
+              message.selectedAuthenticators.push(reader.uint64());
             }
           } else {
-            message.selectedAuthenticators.push(reader.int32());
+            message.selectedAuthenticators.push(reader.uint64());
           }
           break;
         default:
@@ -559,24 +574,23 @@ export const TxExtension = {
   fromPartial(object: Partial<TxExtension>): TxExtension {
     const message = createBaseTxExtension();
     message.selectedAuthenticators =
-      object.selectedAuthenticators?.map((e) => e) || [];
+      object.selectedAuthenticators?.map((e) => BigInt(e.toString())) || [];
     return message;
   },
   fromAmino(object: TxExtensionAmino): TxExtension {
-    return {
-      selectedAuthenticators: Array.isArray(object?.selected_authenticators)
-        ? object.selected_authenticators.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseTxExtension();
+    message.selectedAuthenticators =
+      object.selected_authenticators?.map((e) => BigInt(e)) || [];
+    return message;
   },
   toAmino(message: TxExtension): TxExtensionAmino {
     const obj: any = {};
     if (message.selectedAuthenticators) {
-      obj.selected_authenticators = message.selectedAuthenticators.map(
-        (e) => e
+      obj.selected_authenticators = message.selectedAuthenticators.map((e) =>
+        e.toString()
       );
     } else {
-      obj.selected_authenticators = [];
+      obj.selected_authenticators = message.selectedAuthenticators;
     }
     return obj;
   },

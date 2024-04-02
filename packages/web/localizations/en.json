@@ -451,6 +451,8 @@
       "oneClickTradingActive": "1-Click Trading active",
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
+      "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "pleaseTryAgainLater": "Please try again later",
       "networkFeeTooHigh": "Network fee too high",
       "enableOneClickTrading": "Enable 1-Click Trading",
       "increaseFeeLimit": "Increase network fee limit",
@@ -797,6 +799,13 @@
     "priceImpact": "Price Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
+    "continueAnyway": "Continue Anyway",
+    "warning": {
+      "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
+      "exceedsNetworkFeeLimit": "This swap exceeds your network fee limit for 1-Click Trading.",
+      "increaseSpendLimit": "Increase spend limit",
+      "increaseNetworkFeeLimit": "Increase network fee limit"
+    },
     "settings": {
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",

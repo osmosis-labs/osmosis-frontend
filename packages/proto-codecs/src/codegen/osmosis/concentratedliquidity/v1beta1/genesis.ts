@@ -184,11 +184,12 @@ export interface GenesisStateProtoMsg {
 export interface GenesisStateAmino {
   /** params are all the parameters of the module */
   params?: ParamsAmino;
-  /** pool data containining serialized pool struct and ticks. */
+  /** pool data containing serialized pool struct and ticks. */
   pool_data?: PoolDataAmino[];
   position_data?: PositionDataAmino[];
   next_position_id?: string;
   next_incentive_record_id?: string;
+  incentives_accumulator_pool_id_migration_threshold?: string;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/concentratedliquidity/genesis-state";
@@ -764,6 +765,14 @@ export const GenesisState = {
     ) {
       message.nextIncentiveRecordId = BigInt(object.next_incentive_record_id);
     }
+    if (
+      object.incentives_accumulator_pool_id_migration_threshold !== undefined &&
+      object.incentives_accumulator_pool_id_migration_threshold !== null
+    ) {
+      message.incentivesAccumulatorPoolIdMigrationThreshold = BigInt(
+        object.incentives_accumulator_pool_id_migration_threshold
+      );
+    }
     return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
@@ -790,6 +799,10 @@ export const GenesisState = {
     obj.next_incentive_record_id =
       message.nextIncentiveRecordId !== BigInt(0)
         ? message.nextIncentiveRecordId.toString()
+        : undefined;
+    obj.incentives_accumulator_pool_id_migration_threshold =
+      message.incentivesAccumulatorPoolIdMigrationThreshold !== BigInt(0)
+        ? message.incentivesAccumulatorPoolIdMigrationThreshold.toString()
         : undefined;
     return obj;
   },

@@ -2,10 +2,10 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText } from "@osmosis-labs/utils";
+import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
@@ -28,7 +28,11 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {
+  useFeatureFlags,
+  useOneClickTradingSession,
+  useTranslation,
+} from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -37,6 +41,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
@@ -70,8 +75,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
+    const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+    const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
     const account = accountStore.getWallet(chainId);
+    const slippageConfig = useSlippageConfig();
 
     const swapState = useSwap({
       initialFromDenom: sendTokenDenom,
@@ -79,6 +87,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
       forceSwapInPoolId,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -86,8 +95,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       estimateDetailsContentRef,
       { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
     ] = useMeasure<HTMLDivElement>();
-
-    const slippageConfig = useSlippageConfig();
 
     // out amount less slippage calculated from slippage config
     const outAmountLessSlippage = useMemo(
@@ -176,7 +183,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         },
       ]);
       swapState
-        .sendTradeTokenInTx(slippageConfig.slippage.toDec())
+        .sendTradeTokenInTx()
         .then((result) => {
           // onFullfill
           logEvent([
@@ -205,11 +212,52 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
-    const buttonText = swapState.error
-      ? t(...tError(swapState.error))
-      : showPriceImpactWarning
-      ? t("swap.buttonError")
-      : t("swap.button");
+    let buttonText: string;
+    if (swapState.error) {
+      buttonText = t(...tError(swapState.error));
+    } else if (showPriceImpactWarning) {
+      buttonText = t("swap.buttonError");
+    } else if (
+      swapState.hasOverSpendLimitError ||
+      swapState.hasExceededOneClickTradingGasLimit
+    ) {
+      buttonText = t("swap.continueAnyway");
+    } else {
+      buttonText = t("swap.button");
+    }
+
+    let warningText: string | ReactNode;
+    if (swapState.hasOverSpendLimitError) {
+      warningText = (
+        <span>
+          {t("swap.warning.exceedsSpendLimit")}{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            {t("swap.warning.increaseSpendLimit")}
+          </Button>
+        </span>
+      );
+    } else if (swapState.hasExceededOneClickTradingGasLimit) {
+      warningText = (
+        <span>
+          {t("swap.warning.exceedsNetworkFeeLimit")}{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            {t("swap.warning.increaseNetworkFeeLimit")}
+          </Button>
+        </span>
+      );
+    }
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
@@ -859,6 +907,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </div>
             </SkeletonLoader>
           </div>
+          {!isNil(warningText) && (
+            <div
+              className={classNames(
+                "body2 flex items-center justify-center rounded-xl border border-rust-600 py-2 px-3 text-center text-rust-500",
+                swapState.isLoadingNetworkFee && "animate-pulse"
+              )}
+            >
+              {warningText}
+            </div>
+          )}
           {swapButton ?? (
             <Button
               disabled={
@@ -869,6 +927,18 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
+              isLoading={
+                /**
+                 * While 1-Click is enabled, display a loading spinner when simulation
+                 * is in progress since we don't have a wallet to compute the fee for
+                 * us. We need the network fee to be calculated before we can proceed
+                 * with the trade.
+                 */
+                isOneClickTradingEnabled &&
+                swapState.isLoadingNetworkFee &&
+                !swapState.inAmountInput.isEmpty
+              }
+              loadingText={buttonText}
               onClick={sendSwapTx}
             >
               {account?.walletStatus === WalletStatus.Connected ||
