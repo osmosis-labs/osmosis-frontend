@@ -14,14 +14,22 @@ import { getPriceFromPools } from "./pools";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
-/** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to querying CoinGecko if not available.
+/** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to pools then querying CoinGecko if not available.
  *  @throws if there's an issue getting the price. */
 export function getPriceFromSidecar(
   assetLists: AssetList[],
   chainList: Chain[],
   asset: Asset
 ) {
-  return getPriceBatched(assetLists, chainList, asset);
+  return getBatchLoader().then((loader) =>
+    loader
+      .load(asset.coinMinimalDenom)
+      .then((price) => new Dec(price))
+      .catch((e) => {
+        captureError(e);
+        return getPriceFromPools(assetLists, chainList, asset);
+      })
+  );
 }
 
 /** Prevent long-running batch loaders as recommended by `DataLoader` docs. */
@@ -59,28 +67,6 @@ function getBatchLoader() {
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
           maxBatchSize: 100,
         }
-      ),
-  });
-}
-
-export function getPriceBatched(
-  assetLists: AssetList[],
-  chainList: Chain[],
-  asset: Asset
-) {
-  return cachified({
-    cache: sidecarCache,
-    key: `sidecar-price-${asset.coinMinimalDenom}`,
-    ttl: 1000 * 60, // 1 minute
-    getFreshValue: () =>
-      getBatchLoader().then((loader) =>
-        loader
-          .load(asset.coinMinimalDenom)
-          .then((price) => new Dec(price))
-          .catch((e) => {
-            captureError(e);
-            return getPriceFromPools(assetLists, chainList, asset);
-          })
       ),
   });
 }
