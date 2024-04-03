@@ -290,7 +290,9 @@
   "portfolio": {
     "yourAssets": "Your assets",
     "yourPositions": "Your positions",
-    "recentTransfers": "Recent transfers"
+    "recentTransfers": "Recent transfers",
+    "yourSuperchargedPositions": "Your Supercharged positions",
+    "yourLiquidityPools": "Your liquidity pools"
   },
   "buyTokens": "Buy tokens",
   "components": {

@@ -3,6 +3,8 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback } from "react";
 
+import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { EventName } from "~/config";
 import {
@@ -100,6 +102,16 @@ export const PortfolioPage: FunctionComponent = () => {
                   [bridgeAsset]
                 )}
               />
+            </Tab.Panel>
+            <Tab.Panel>
+              <section>
+                <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+                <MyPositionsSection />
+              </section>
+              <section>
+                <h6>{t("portfolio.yourLiquidityPools")}</h6>
+                <MyPoolsCardsGrid />
+              </section>
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
