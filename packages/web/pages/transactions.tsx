@@ -5,7 +5,6 @@ import { useFeatureFlags } from "~/hooks";
 
 const Transactions = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
-  console.log("transactionsPage: ", transactionsPage);
   const router = useRouter();
 
   useEffect(() => {
