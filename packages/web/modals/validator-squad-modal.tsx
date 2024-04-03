@@ -619,7 +619,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             <Button
               className="w-80"
               disabled={setSquadButtonDisabled}
-              vvariant="success"
+              variant="success"
               onClick={handleSetSquadClick}
             >
               {action === "stake"
