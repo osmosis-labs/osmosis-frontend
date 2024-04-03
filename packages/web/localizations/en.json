@@ -176,7 +176,6 @@
       "titleWithdraw": "Withdraw to"
     },
     "stakedAssets": "Staked OSMO",
-    "pooledAssets": "Pooled",
     "table": {
       "columns": {
         "assetChain": "Asset / Chain",

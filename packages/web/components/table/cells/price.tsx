@@ -8,7 +8,7 @@ import { Sparkline } from "~/components/chart/sparkline";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
-export const PriceCell: FunctionComponent<{
+export const HistoricalPriceCell: FunctionComponent<{
   coinDenom: string;
   timeFrame: CommonPriceChartTimeFrame;
   priceChange24h?: RatePretty;

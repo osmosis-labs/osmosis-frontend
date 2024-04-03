@@ -176,7 +176,6 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
-    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",

@@ -32,16 +32,14 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 import { Icon } from "../assets";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
-import { PriceCell } from "./cells/price";
+import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
   RouterOutputs["edge"]["assets"]["getUserBridgeAssets"]["items"][number];
-type SortKey =
-  | NonNullable<
-      RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
-    >["keyPath"]
-  | undefined;
+type SortKey = NonNullable<
+  RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
+>["keyPath"];
 
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -63,7 +61,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [sortKey, setSortKey] = useState<SortKey>();
+  const [sortKey, setSortKey] = useState<SortKey>("usdValue");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const showUnverifiedAssetsSetting =
@@ -133,8 +131,21 @@ export const AssetBalancesTable: FunctionComponent<{
           />
         ),
       }),
-      columnHelper.accessor((row) => row, {
+      columnHelper.accessor((row) => row.currentPrice.toString(), {
         id: "price",
+        header: () => (
+          <SortHeader
+            label="Price"
+            sortKey="currentPrice"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "historicalPrice",
         header: () => (
           <SortHeader
             className="mx-auto"
@@ -147,7 +158,7 @@ export const AssetBalancesTable: FunctionComponent<{
           />
         ),
         cell: (cell) => (
-          <PriceCell
+          <HistoricalPriceCell
             coinDenom={cell.row.original.coinDenom}
             priceChange24h={cell.row.original.priceChange24h}
             timeFrame="1D"

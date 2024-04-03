@@ -45,7 +45,7 @@ import { AssetCategoriesSelectors } from "../assets/categories";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
-import { PriceCell } from "./cells/price";
+import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -169,7 +169,7 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
         cell: (cell) => (
-          <PriceCell
+          <HistoricalPriceCell
             coinDenom={cell.row.original.coinDenom}
             priceChange24h={cell.row.original.priceChange24h}
             timeFrame={selectedTimeFrame}

@@ -176,7 +176,6 @@
       "titleWithdraw": "출금할 지갑"
     },
     "stakedAssets": "스테이킹된 OSMO",
-    "pooledAssets": "풀링됨",
     "table": {
       "columns": {
         "assetChain": "자산 / 체인",

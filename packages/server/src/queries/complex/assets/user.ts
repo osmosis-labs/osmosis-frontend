@@ -9,14 +9,7 @@ import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coi
 import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";
 import { getGammShareUnderlyingCoins } from "../pools/share";
 import { getUserTotalDelegatedCoin } from "../staking/user";
-import {
-  Asset,
-  AssetFilter,
-  calcCoinValue,
-  calcSumCoinsValue,
-  getAsset,
-  getAssets,
-} from ".";
+import { Asset, AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -126,26 +119,13 @@ export async function mapGetAssetsWithUserBalances<TAsset extends Asset>(
   return userAssets;
 }
 
-/** Lists of all of a user's underlying coins that are listed in asset list, along with their total fiat values.
- *  Broken down by delegated/staked, pooled (CL and GAMM shares), and available assets (not CL assets).
+/** Returns total fiat value of all assets held by a user.
  *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
-export async function getUserAssetsBreakdown(params: {
+export async function getUserAssetsTotalValue(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   userOsmoAddress: string;
-}): Promise<{
-  delegated: CoinPretty;
-  delegatedValue: PricePretty;
-
-  pooled: CoinPretty[];
-  pooledValue: PricePretty;
-
-  available: CoinPretty[];
-  availableValue: PricePretty;
-
-  aggregated: CoinPretty[];
-  aggregatedValue: PricePretty;
-}> {
+}): Promise<PricePretty> {
   // Use Promise.all to send concurrent requests.
   const coins = await Promise.all([
     getUserCoinsFromBank(params),
@@ -160,32 +140,13 @@ export async function getUserAssetsBreakdown(params: {
   const lockedCoins = coins[2];
   const delegatedCoin = coins[3];
 
-  const pooledCoins = [...underlyingGammShareCoins, ...clCoins, ...lockedCoins];
   const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
 
-  const [delegatedValue, pooledValue, availableValue, aggregatedValue] =
-    await Promise.all([
-      calcCoinValue({ ...params, coin: delegatedCoin }).catch((e) =>
-        captureErrorAndReturn(e, 0)
-      ),
-      calcSumCoinsValue({ ...params, coins: pooledCoins }),
-      calcSumCoinsValue({ ...params, coins: available }),
-      calcSumCoinsValue({ ...params, coins: allCoins }),
-    ]);
+  const [aggregatedValue] = await Promise.all([
+    calcSumCoinsValue({ ...params, coins: allCoins }),
+  ]);
 
-  return {
-    delegated: delegatedCoin, // Should be OSMO
-    delegatedValue: new PricePretty(DEFAULT_VS_CURRENCY, delegatedValue),
-
-    pooled: aggregateCoinsByDenom(pooledCoins),
-    pooledValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledValue),
-
-    available: aggregateCoinsByDenom(available),
-    availableValue: new PricePretty(DEFAULT_VS_CURRENCY, availableValue),
-
-    aggregated: aggregateCoinsByDenom(allCoins),
-    aggregatedValue: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
-  };
+  return new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue);
 }
 
 /** Lists all of a user's underlying assets in bank module.

@@ -10,7 +10,7 @@ import {
   getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetsBreakdown,
+  getUserAssetsTotalValue,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
 } from "../queries/complex/assets";
@@ -245,6 +245,7 @@ export const assetsRouter = createTRPCRouter({
           /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
           sort: createSortSchema([
+            "currentPrice",
             "priceChange24h",
             "usdValue",
           ] as const).optional(),
@@ -309,14 +310,29 @@ export const assetsRouter = createTRPCRouter({
             }
 
             let priceAssets = await Promise.all(
-              assets.map(async (asset) => ({
-                ...asset,
-                priceChange24h: (
-                  await getAssetMarketActivity({
+              assets.map(async (asset) => {
+                const [currentPrice, priceChange24h] = await Promise.all([
+                  getAssetPrice({ ...ctx, asset })
+                    .then(
+                      (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
+                    )
+                    .catch((e) =>
+                      captureErrorAndReturn(
+                        e,
+                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                      )
+                    ),
+                  getAssetMarketActivity({
                     coinDenom: asset.coinDenom,
-                  })
-                )?.price24hChange,
-              }))
+                  }).then((activity) => activity?.price24hChange),
+                ]);
+
+                return {
+                  ...asset,
+                  currentPrice,
+                  priceChange24h,
+                };
+              })
             );
 
             if (sortInput && sortInput.keyPath !== "usdValue") {
@@ -342,9 +358,9 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
-  getUserAssetsBreakdown: publicProcedure
+  getUserAssetsTotalValue: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) => getUserAssetsBreakdown({ ...ctx, ...input })),
+    .query(({ input, ctx }) => getUserAssetsTotalValue({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
