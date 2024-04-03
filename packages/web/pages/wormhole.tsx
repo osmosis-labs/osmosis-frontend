@@ -27,7 +27,6 @@ const config: WormholeConnectConfig = {
     solana:
       "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
   },
-  tokens: ["SOL", "PYTH"],
   tokensConfig: {
     W: {
       key: "W",
@@ -58,6 +57,7 @@ const config: WormholeConnectConfig = {
     token: "W",
     requiredNetwork: "osmosis",
   },
+  tokens: ["W", "SOL", "PYTH"],
 };
 
 const customTheme: WormholeConnectPartialTheme = {
