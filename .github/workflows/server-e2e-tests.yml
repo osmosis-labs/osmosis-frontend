@@ -1,0 +1,48 @@
+name: Server E2E Workflow
+
+on: [push]
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "::set-output name=matrix::{\"include\":[{ \"env\":\"production\", \"server-url\":\"${{ secrets.PRODUCTION_SIDECAR_BASE_URL }}\"}]}"
+          else
+            echo "::set-output name=matrix::{\"include\":[{ \"env\":\"production\", \"server-url\":\"${{ secrets.PRODUCTION_SIDECAR_BASE_URL }}\"}, { \"env\":\"staging\", \"server-url\":\"${{ secrets.STAGING_SIDECAR_BASE_URL }}\"}]}"
+          fi
+
+  test:
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-${{ matrix.node-version }}-
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Tests
+        run: yarn test --filter=${{ matrix.package }} --server-url=${{ matrix.server-url }}
+        env:
+          SIDECAR_BASE_URL: ${{ matrix.server-url }}

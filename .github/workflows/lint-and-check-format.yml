@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        package: ["web", "stores", "pools", "math"]
+        package: ["web", "utils", "server", "stores", "pools", "math"]
 
     steps:
       - name: Checkout Repo
