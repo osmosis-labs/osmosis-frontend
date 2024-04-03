@@ -46,6 +46,6 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run Tests
-        run: yarn test --filter=server
+        run: yarn test:e2e --filter=server
         env:
           SIDECAR_BASE_URL: ${{ matrix.server-url }}
