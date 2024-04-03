@@ -3,7 +3,7 @@ v                               ✰  Thanks for creating a PR! ✰
 v    Before smashing the submit button please review the checkboxes.
 v    If a checkbox is n/a - please still include it but + a little note why
 v    If your PR doesn't close an issue, that's OK!  Just remove the Closes: #XXX line!
-v    If you are a member of the Osmosis org, please include a link to the relevant clickup task in your PR description!
+v    If you are a member of the Osmosis org, please include a link to the relevant Linear task in your PR description!
 ☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
 
 ## What is the purpose of the change
@@ -12,9 +12,9 @@ v    If you are a member of the Osmosis org, please include a link to the releva
 
 _(E.g.: This pull request improves area A by adding ...._ -->
 
-### ClickUp Task
+### Linear Task
 
-[ClickUp Task URL](PASTE_CLICKUP_TASK_URL_HERE)
+[Linear Task URL](PASTE_LINEAR_TASK_URL_HERE)
 
 ## Brief Changelog
 
