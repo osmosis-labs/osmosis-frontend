@@ -39,7 +39,7 @@ export const useStrategyTableConfig = (
         holdsTokens: false,
         hasLockingDuration: false,
         type: false,
-        tags: false,
+        categories: false,
         platform: false,
         depositAssets_coinDenom: false,
       },

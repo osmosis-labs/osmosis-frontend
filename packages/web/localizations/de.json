@@ -832,20 +832,20 @@
     "strategiesCount": "{number} Strategien",
     "oneStrategy": "1 Strategie",
     "value": "Wert",
-    "method": "Methode",
+    "method": "Typ",
     "platform": "Plattform",
     "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
-    "myStrategies": "Meine Strategien",
-    "strategyPlatform": "Strategie / Plattform",
-    "apy": "APY",
+    "myStrategies": "Ihre Strategien",
+    "strategyPlatform": "Strategie",
+    "apy": "APR",
     "daily": "Täglich",
     "reward": "Belohnen",
-    "lock": "Sperren",
+    "lock": "Bindung lösen",
     "days": "Tage",
     "risk": "Risiko",
-    "strategyMethod": "Strategiemethode",
-    "allMethods": "Alle Methoden",
+    "strategyMethod": "Typen",
+    "allMethods": "Alle Arten",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
     "allCategories": "Alle Kategorien",
@@ -858,8 +858,8 @@
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
-      "my": "Meine Token",
-      "all": "Alle Token"
+      "my": "Ihr Vermögen",
+      "all": "Alle Vermögenswerte"
     },
     "rewardTypes": {
       "all": "Alle",
@@ -868,17 +868,41 @@
     },
     "totalValueInvested": "Gesamtwert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarning": "Entdecken Sie Strategien",
-    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mit einer der vielen unten aufgeführten Strategien.",
+    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
     "loadingStrategies": "Lade Strategien...",
-    "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
+    "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",
+    "sorryNoResultsWithAssets": "Es wurden keine mit Ihren Vermögenswerten verknüpften Strategien gefunden.",
     "sorryNoResults": "Keine Strategien gefunden.",
     "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
     "retry": "Wiederholen",
     "manage": "Verwalten",
     "noLock": "Kein Schloss",
     "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
-    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
+    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
+    "instantUnbondOnly": "Nur sofortiges Lösen",
+    "tooltips": {
+      "apr": {
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
+      },
+      "daily": {
+        "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
+      },
+      "reward": {
+        "description": "Die Art der Vermögenswerte, die durch die Operationen und/oder Anreize der Strategie erzielt werden."
+      },
+      "lock": {
+        "description": "Der Zeitraum, in dem eine Position gesperrt ist, bevor sie aus der Strategie verlassen werden kann (d. h. bevor die hinterlegten Vermögenswerte abgehoben werden können). Hinweis: Bei einigen Strategien können während des Entsperrungszeitraums möglicherweise keine Belohnungen verdient werden."
+      },
+      "strategy": {
+        "description": "Auf Osmosis sind Verdienstmöglichkeiten verschiedener Art verfügbar, die von verschiedenen Plattformen gehostet werden. Der Zugriff auf eine Strategie erfordert die Hinterlegung bestimmter Vermögenswerte."
+      },
+      "risk": {
+        "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
+      }
+    }
   },
   "disclaimer": "Haftungsausschluss",
   "unstableAssetsWarning": {

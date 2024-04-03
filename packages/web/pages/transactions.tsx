@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { useEffect } from "react";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import { CopyIcon, Icon } from "~/components/assets";
@@ -9,6 +11,7 @@ import LinkButton from "~/components/buttons/link-button";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { useNavBar } from "~/hooks";
+import { useFeatureFlags } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
 type Status = "Pending" | "Success" | "Failure";
@@ -390,6 +393,15 @@ const SlideOverContent = ({
 };
 
 export const Transactions: React.FC = () => {
+  const { transactionsPage, _isInitialized } = useFeatureFlags();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!transactionsPage && _isInitialized) {
+      router.push("/");
+    }
+  }, [transactionsPage, router, _isInitialized]);
+
   useNavBar({
     title: (
       <LinkButton
@@ -421,5 +433,3 @@ export const Transactions: React.FC = () => {
     </main>
   );
 };
-
-export default Transactions;

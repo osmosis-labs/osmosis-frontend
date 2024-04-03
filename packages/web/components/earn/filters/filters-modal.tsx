@@ -5,12 +5,10 @@ import { Icon } from "~/components/assets";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
-import {
-  ListOption,
-  StrategyButtonResponsibility,
-} from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -65,13 +63,17 @@ const FiltersModal = (
         />
       </div>
       <div className="mt-20 flex flex-col gap-10">
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={props.lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center justify-between gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
         <RadioWithOptions
           mode="secondary"
           variant="small"
@@ -103,7 +105,7 @@ const FiltersModal = (
             toggleFn={({ label, value }) =>
               setFilter("specialTokens", {
                 label,
-                value: value as StrategyButtonResponsibility,
+                value,
               })
             }
             containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
