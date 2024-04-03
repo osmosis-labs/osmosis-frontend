@@ -22,7 +22,6 @@ import { Fragment } from "react";
 const BackToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Function to detect scroll and update state
   const toggleVisibility = () => {
     if (window.scrollY > 1) {
       setIsVisible(true);
@@ -31,7 +30,6 @@ const BackToTopButton = () => {
     }
   };
 
-  // Function to scroll to top
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
