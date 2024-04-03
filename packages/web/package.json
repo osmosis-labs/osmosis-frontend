@@ -86,6 +86,7 @@
     "@walletconnect/sign-client": "2.11.3",
     "@walletconnect/types": "2.11.3",
     "@walletconnect/utils": "2.11.3",
+    "@wormhole-foundation/wormhole-connect": "^0.3.2",
     "axios": "^0.27.2",
     "bip39-light": "^1.0.7",
     "bitcoin-address-validation": "^2.2.3",
