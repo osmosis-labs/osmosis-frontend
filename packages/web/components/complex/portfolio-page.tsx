@@ -28,17 +28,19 @@ export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
 
-  const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
+  const [overviewRef, { height: overviewHeight }] =
+    useDimension<HTMLDivElement>();
+  const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <section className="flex gap-5" ref={heroRef}>
+      <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview />
       </section>
 
       <section className="py-3">
         <Tab.Group>
-          <Tab.List className="flex gap-6">
+          <Tab.List className="flex gap-6" ref={tabsRef}>
             <Tab>
               {({ selected }) => (
                 <h5 className={!selected ? "text-osmoverse-500" : undefined}>
@@ -64,7 +66,7 @@ export const PortfolioPage: FunctionComponent = () => {
           <Tab.Panels className="py-3">
             <Tab.Panel>
               <AssetBalancesTable
-                tableTopPadding={heroHeight}
+                tableTopPadding={overviewHeight + tabsHeight}
                 onDeposit={useCallback(
                   (coinMinimalDenom) => {
                     bridgeAsset(coinMinimalDenom, "deposit");

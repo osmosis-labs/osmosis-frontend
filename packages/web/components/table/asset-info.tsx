@@ -360,7 +360,6 @@ export const AssetsInfoTable: FunctionComponent<{
                       rows[virtualRow.index].original.coinDenom
                     }`}
                     onClick={(e) => e.stopPropagation()}
-                    prefetch={false}
                     passHref
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
