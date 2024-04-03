@@ -36,6 +36,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
       queryUrl.pathname = "/router/custom-direct-quote";
     }
     try {
+      console.log(queryUrl.toString());
       const {
         amount_out,
         route: routes,

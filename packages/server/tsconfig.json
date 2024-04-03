@@ -3,14 +3,9 @@
   "compilerOptions": {
     "outDir": "build",
     "declaration": true,
-    "allowJs": true,
+    "allowJs": false,
     "rootDir": "src",
-    "module": "ES6",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["*"]
-    },
-    "types": ["node", "jest" ]
+    "module": "ES6"
   },
   "include": ["src/**/*"]
 }
