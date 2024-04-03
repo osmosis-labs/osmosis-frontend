@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "व्यापार",
     "yourAssets": "आपकी संपत्ति",
     "yourPositions": "आपके पद",
     "recentTransfers": "हालिया स्थानांतरण"

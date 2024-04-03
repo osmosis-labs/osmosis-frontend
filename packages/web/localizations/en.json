@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Trade",
     "yourAssets": "Your assets",
     "yourPositions": "Your positions",
     "recentTransfers": "Recent transfers",

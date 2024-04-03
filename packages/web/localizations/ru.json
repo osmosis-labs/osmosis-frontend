@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Торговля",
     "yourAssets": "Ваши активы",
     "yourPositions": "Ваши позиции",
     "recentTransfers": "Недавние трансферы"

@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Ticaret",
     "yourAssets": "Varlıklarınız",
     "yourPositions": "Pozisyonlarınız",
     "recentTransfers": "Son transferler"

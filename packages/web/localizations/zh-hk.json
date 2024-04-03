@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "貿易",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會"

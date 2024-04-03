@@ -7,9 +7,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -20,10 +18,10 @@ import {
   useState,
 } from "react";
 
+import { AssetCell } from "~/components/table/cells/asset";
 import {
   Breakpoint,
   useTranslation,
-  useUserFavoriteAssetDenoms,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
@@ -62,9 +60,6 @@ export const AssetBalancesTable: FunctionComponent<{
   const router = useRouter();
 
   // State
-  const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
-    useUserFavoriteAssetDenoms();
-
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
   const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
@@ -90,17 +85,14 @@ export const AssetBalancesTable: FunctionComponent<{
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
-      preferredDenoms: favoritesList,
-      limit: 20,
+      limit: 50,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: sortKey
-        ? {
-            keyPath: sortKey,
-            direction: sortDirection,
-          }
-        : undefined,
+      sort: {
+        keyPath: sortKey,
+        direction: sortDirection,
+      },
     },
     {
       enabled: !isLoadingWallet,
@@ -127,20 +119,9 @@ export const AssetBalancesTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => (
-          <AssetCell
-            {...cell}
-            isFavorite={favoritesList.includes(cell.row.original.coinDenom)}
-            onRemoveFavorite={() =>
-              onRemoveFavoriteDenom(cell.row.original.coinDenom)
-            }
-            onSetFavorite={() =>
-              onAddFavoriteDenom(cell.row.original.coinDenom)
-            }
-          />
-        ),
+        cell: (cell) => <AssetCell {...cell.row.original} />,
       }),
-      columnHelper.accessor((row) => row.currentPrice.toString(), {
+      columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
         header: () => (
           <SortHeader
@@ -167,11 +148,7 @@ export const AssetBalancesTable: FunctionComponent<{
           />
         ),
         cell: (cell) => (
-          <HistoricalPriceCell
-            coinDenom={cell.row.original.coinDenom}
-            priceChange24h={cell.row.original.priceChange24h}
-            timeFrame="1D"
-          />
+          <HistoricalPriceCell {...cell.row.original} timeFrame="1D" />
         ),
       }),
       columnHelper.accessor((row) => row, {
@@ -186,30 +163,21 @@ export const AssetBalancesTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: BalanceCell,
+        cell: (cell) => <BalanceCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
         cell: (cell) => (
           <AssetActionsCell
-            {...cell}
+            {...cell.row.original}
             onDeposit={onDeposit}
             onWithdraw={onWithdraw}
           />
         ),
       }),
     ];
-  }, [
-    favoritesList,
-    sortKey,
-    sortDirection,
-    onAddFavoriteDenom,
-    onRemoveFavoriteDenom,
-    onDeposit,
-    onWithdraw,
-    setSortKey,
-  ]);
+  }, [sortKey, sortDirection, onDeposit, onWithdraw, setSortKey]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -351,69 +319,12 @@ export const AssetBalancesTable: FunctionComponent<{
 });
 
 type AssetCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetRow, AssetRow> & TProps
+  CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-const AssetCell: AssetCellComponent<{
-  isFavorite: boolean;
-  onSetFavorite: () => void;
-  onRemoveFavorite: () => void;
-}> = ({
-  row: {
-    original: { coinDenom, coinName, coinImageUrl, isVerified },
-  },
-  isFavorite,
-  onSetFavorite,
-  onRemoveFavorite,
-}) => (
-  <div
-    className={classNames("group flex items-center gap-2 md:gap-1", {
-      "opacity-40": !isVerified,
-    })}
-  >
-    <div className="cursor-pointer">
-      <Icon
-        id="star"
-        className={classNames(
-          "text-osmoverse-600 transition-opacity group-hover:opacity-100 md:hidden",
-          isFavorite ? "text-wosmongton-400" : "opacity-0"
-        )}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-
-          if (isFavorite) onRemoveFavorite();
-          else onSetFavorite();
-        }}
-        height={24}
-        width={24}
-      />
-    </div>
-    <div className="flex items-center gap-4 md:gap-2">
-      <div className="h-10 w-10">
-        {coinImageUrl && (
-          <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
-        )}
-      </div>
-      <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
-        <div className="flex">
-          <span className="text-white-high">{coinDenom}</span>
-        </div>
-        <span className="md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
-          {coinName}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-const BalanceCell: AssetCellComponent = ({
-  row: {
-    original: { amount, usdValue },
-  },
-}) => (
+const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
   <div className="ml-auto flex w-28 flex-col">
-    <span className="subtitle1">
+    <span>
       {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
     </span>
     {usdValue && (
@@ -425,13 +336,7 @@ const BalanceCell: AssetCellComponent = ({
 export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
-}> = ({
-  row: {
-    original: { coinMinimalDenom, amount },
-  },
-  onDeposit,
-  onWithdraw,
-}) => (
+}> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
   <div className="flex items-center gap-2">
     <button
       className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"

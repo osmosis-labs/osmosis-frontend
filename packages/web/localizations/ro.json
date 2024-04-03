@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Comerț",
     "yourAssets": "Activele tale",
     "yourPositions": "Pozițiile tale",
     "recentTransfers": "Transferuri recente"

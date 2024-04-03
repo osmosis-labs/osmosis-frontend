@@ -74,7 +74,7 @@ export const MyPoolsCardsGrid = observer(() => {
             {new Array(6).fill(undefined).map((_, i) => (
               <SkeletonLoader
                 key={i}
-                className="h-[226px] w-[341px] rounded-4xl"
+                className="h-[226px] w-full rounded-4xl"
               />
             ))}
           </>

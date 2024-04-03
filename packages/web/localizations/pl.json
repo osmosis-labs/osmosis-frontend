@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Handel",
     "yourAssets": "Twoje aktywa",
     "yourPositions": "Twoje pozycje",
     "recentTransfers": "Ostatnie transfery"

@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "Commerce",
     "yourAssets": "Vos atouts",
     "yourPositions": "Vos postes",
     "recentTransfers": "Transferts récents"

@@ -12,9 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -25,12 +23,8 @@ import {
   useState,
 } from "react";
 
-import {
-  Breakpoint,
-  useTranslation,
-  useUserFavoriteAssetDenoms,
-  useWindowSize,
-} from "~/hooks";
+import { AssetCell } from "~/components/table/cells/asset";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -40,7 +34,6 @@ import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
-import { Icon } from "../assets";
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
@@ -63,9 +56,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
 
   // State
-  const { favoritesList, onAddFavoriteDenom, onRemoveFavoriteDenom } =
-    useUserFavoriteAssetDenoms();
-
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
   const [selectedTimeFrame, setSelectedTimeFrame] =
@@ -105,17 +95,14 @@ export const AssetsInfoTable: FunctionComponent<{
     fetchNextPage,
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
-      preferredDenoms: favoritesList,
       limit: 50,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: sortKey
-        ? {
-            keyPath: sortKey,
-            direction: sortDirection,
-          }
-        : undefined,
+      sort: {
+        keyPath: sortKey,
+        direction: sortDirection,
+      },
       categories,
     },
     {
@@ -142,26 +129,28 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => (
-          <AssetCell
-            {...cell}
-            isFavorite={favoritesList.includes(cell.row.original.coinDenom)}
-            onRemoveFavorite={() =>
-              onRemoveFavoriteDenom(cell.row.original.coinDenom)
-            }
-            onSetFavorite={() =>
-              onAddFavoriteDenom(cell.row.original.coinDenom)
-            }
+        cell: (cell) => <AssetCell {...cell.row.original} />,
+      }),
+      columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
+        id: "price",
+        header: () => (
+          <SortHeader
+            label="Price"
+            sortKey="currentPrice"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
           />
         ),
       }),
       columnHelper.accessor((row) => row, {
-        id: "price",
+        id: "historicalPrice",
         header: () => (
           <SortHeader
             className="mx-auto"
-            label={`Price (${selectedTimeFrame})`}
-            sortKey="currentPrice"
+            label="24h change"
+            sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
@@ -176,6 +165,22 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
+      columnHelper.accessor(
+        (row) => (row.volume24h ? formatPretty(row.volume24h) : "-"),
+        {
+          id: "volume24h",
+          header: () => (
+            <SortHeader
+              label="Volume (24h)"
+              sortKey="volume24h"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "marketCap",
         header: () => (
@@ -188,37 +193,15 @@ export const AssetsInfoTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: MarketCapCell,
-      }),
-      columnHelper.accessor((row) => row, {
-        id: "volume24h",
-        header: () => (
-          <SortHeader
-            label="Volume (24h)"
-            sortKey="volume24h"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: Volume24hCell,
+        cell: (cell) => <MarketCapCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => <AssetActionsCell {...cell} onBuy={() => {}} />,
+        cell: (cell) => <AssetActionsCell {...cell.row.original} />,
       }),
     ];
-  }, [
-    favoritesList,
-    selectedTimeFrame,
-    sortKey,
-    sortDirection,
-    setSortKey,
-    onAddFavoriteDenom,
-    onRemoveFavoriteDenom,
-  ]);
+  }, [selectedTimeFrame, sortKey, sortDirection, setSortKey]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -373,99 +356,21 @@ export const AssetsInfoTable: FunctionComponent<{
 });
 
 type AssetCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetRow, AssetRow> & TProps
+  CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-const AssetCell: AssetCellComponent<{
-  isFavorite: boolean;
-  onSetFavorite: () => void;
-  onRemoveFavorite: () => void;
-}> = ({
-  row: {
-    original: { coinDenom, coinName, coinImageUrl, isVerified },
-  },
-  isFavorite,
-  onSetFavorite,
-  onRemoveFavorite,
-}) => (
-  <div
-    className={classNames("group flex items-center gap-2 md:gap-1", {
-      "opacity-40": !isVerified,
-    })}
-  >
-    <div className="cursor-pointer">
-      <Icon
-        id="star"
-        className={classNames(
-          "text-osmoverse-600 transition-opacity group-hover:opacity-100 md:hidden",
-          isFavorite ? "text-wosmongton-400" : "opacity-0"
-        )}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-
-          if (isFavorite) onRemoveFavorite();
-          else onSetFavorite();
-        }}
-        height={24}
-        width={24}
-      />
-    </div>
-    <div className="flex items-center gap-4 md:gap-2">
-      <div className="h-10 w-10">
-        {coinImageUrl && (
-          <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
-        )}
-      </div>
-      <div className="subtitle1 flex max-w-[200px] flex-col place-content-center">
-        <div className="flex">
-          <span className="text-white-high">{coinDenom}</span>
-        </div>
-        <span className="md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
-          {coinName}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-const MarketCapCell: AssetCellComponent = ({
-  row: {
-    original: { marketCap, marketCapRank },
-  },
-}) => (
+const MarketCapCell: AssetCellComponent = ({ marketCap, marketCapRank }) => (
   <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span className="subtitle1">{formatPretty(marketCap)}</span>}
+    {marketCap && <span>{formatPretty(marketCap)}</span>}
     {marketCapRank && (
       <span className="caption text-osmoverse-300">#{marketCapRank}</span>
     )}
   </div>
 );
 
-const Volume24hCell: AssetCellComponent = ({
-  row: {
-    original: { volume24h },
-  },
-}) =>
-  volume24h ? (
-    <span className="subtitle1">{formatPretty(volume24h)}</span>
-  ) : null;
-
-export const AssetActionsCell: AssetCellComponent<{
-  onBuy: (coinMinimalDenom: string) => void;
-}> = ({
-  row: {
-    original: { coinMinimalDenom },
-  },
-  onBuy,
-}) => (
-  <button
-    onClick={(e) => {
-      e.preventDefault();
-      onBuy(coinMinimalDenom);
-    }}
-  >
-    <span className="text-wosmongton-200">Buy</span>
+export const AssetActionsCell: AssetCellComponent = () => (
+  <button>
+    <span className="text-wosmongton-200">Trade</span>
   </button>
 );
 

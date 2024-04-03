@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "貿易",
     "yourAssets": "あなたの資産",
     "yourPositions": "あなたの立場",
     "recentTransfers": "最近の送金"

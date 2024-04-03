@@ -161,13 +161,12 @@ export const assetsRouter = createTRPCRouter({
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
-          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
-          preferredDenoms: z.array(z.string()).optional(),
           sort: createSortSchema([
             "currentPrice",
+            "priceChange24h",
             "marketCap",
             "volume24h",
-          ] as const).optional(),
+          ] as const),
         })
       )
     )
@@ -176,7 +175,6 @@ export const assetsRouter = createTRPCRouter({
         input: {
           search,
           onlyVerified,
-          preferredDenoms,
           sort: sortInput,
           categories,
           cursor,
@@ -187,8 +185,6 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const isDefaultSort = !sortInput && !search;
-
             let assets = await mapGetMarketAssets({
               ...ctx,
               search,
@@ -196,28 +192,6 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
               categories,
             });
-
-            // Default sort (no sort provided):
-            //  1. preferred denoms (from `preferredDenoms`)
-            //  2. fiat balance descending (from `mapGetUserAssetInfos`)
-            //  3. Market cap
-            if (isDefaultSort) {
-              assets = assets.sort((assetA, assetB) => {
-                const isAPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetA.coinDenom) ||
-                    preferredDenoms.includes(assetA.coinMinimalDenom));
-                const isBPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetB.coinDenom) ||
-                    preferredDenoms.includes(assetB.coinMinimalDenom));
-
-                if (isAPreferred && !isBPreferred) return -1;
-                if (!isAPreferred && isBPreferred) return 1;
-
-                return 0;
-              });
-            }
 
             if (sortInput) {
               assets = sort(assets, sortInput.keyPath, sortInput.direction);
@@ -229,7 +203,6 @@ export const assetsRouter = createTRPCRouter({
           cacheKey: JSON.stringify({
             search,
             onlyVerified,
-            preferredDenoms,
             sort: sortInput,
             categories,
             includePreview,
@@ -242,13 +215,11 @@ export const assetsRouter = createTRPCRouter({
     .input(
       GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
         z.object({
-          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
-          preferredDenoms: z.array(z.string()).optional(),
           sort: createSortSchema([
             "currentPrice",
             "priceChange24h",
             "usdValue",
-          ] as const).optional(),
+          ] as const),
         })
       )
     )
@@ -258,7 +229,6 @@ export const assetsRouter = createTRPCRouter({
           search,
           onlyVerified,
           userOsmoAddress,
-          preferredDenoms,
           sort: sortInput,
           categories,
           cursor,
@@ -269,45 +239,17 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const isDefaultSort = !sortInput && !search;
-
             let assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               categories,
               userOsmoAddress,
               includePreview,
-              sortFiatValueDirection: isDefaultSort
-                ? "desc"
-                : !search && sortInput && sortInput.keyPath === "usdValue"
-                ? sortInput.direction
-                : undefined,
             });
 
-            // Filter out assets with zero balance if not searching
-            if (!search) {
-              assets = assets.filter((asset) =>
-                asset.amount?.toDec().isPositive()
-              );
-            }
-
-            if (isDefaultSort) {
-              assets = assets.sort((assetA, assetB) => {
-                const isAPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetA.coinDenom) ||
-                    preferredDenoms.includes(assetA.coinMinimalDenom));
-                const isBPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetB.coinDenom) ||
-                    preferredDenoms.includes(assetB.coinMinimalDenom));
-
-                if (isAPreferred && !isBPreferred) return -1;
-                if (!isAPreferred && isBPreferred) return 1;
-
-                return 0;
-              });
-            }
+            assets = assets.filter((asset) =>
+              asset.amount?.toDec().isPositive()
+            );
 
             let priceAssets = await Promise.all(
               assets.map(async (asset) => {
@@ -316,12 +258,7 @@ export const assetsRouter = createTRPCRouter({
                     .then(
                       (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
                     )
-                    .catch((e) =>
-                      captureErrorAndReturn(
-                        e,
-                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
-                      )
-                    ),
+                    .catch((e) => captureErrorAndReturn(e, undefined)),
                   getAssetMarketActivity({
                     coinDenom: asset.coinDenom,
                   }).then((activity) => activity?.price24hChange),
@@ -349,7 +286,6 @@ export const assetsRouter = createTRPCRouter({
             search,
             onlyVerified,
             userOsmoAddress,
-            preferredDenoms,
             sort: sortInput,
             categories,
             includePreview,

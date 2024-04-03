@@ -1,17 +1,16 @@
 import { Tab } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
+import { Icon } from "~/components/assets";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { EventName } from "~/config";
 import {
-  useAmplitudeAnalytics,
   useDimension,
   useDisclosure,
-  useNavBar,
   useTranslation,
   useWalletSelect,
   useWindowSize,
@@ -27,30 +26,7 @@ import { Button } from "../ui/button";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { startBridge, bridgeAsset } = useBridge();
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Assets.pageViewed],
-  });
-
-  // set nav bar ctas
-  useNavBar({
-    ctas: [
-      {
-        label: t("assets.table.depositButton"),
-        onClick: () => {
-          startBridge("deposit");
-          logEvent([EventName.Assets.depositClicked]);
-        },
-      },
-      {
-        label: t("assets.table.withdrawButton"),
-        onClick: () => {
-          startBridge("withdraw");
-          logEvent([EventName.Assets.withdrawClicked]);
-        },
-      },
-    ],
-  });
+  const { bridgeAsset } = useBridge();
 
   const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
 
@@ -60,7 +36,7 @@ export const PortfolioPage: FunctionComponent = () => {
         <AssetsOverview />
       </section>
 
-      <section className="flex flex-col gap-2 py-3">
+      <section className="py-3">
         <Tab.Group>
           <Tab.List className="flex gap-6">
             <Tab>
@@ -85,7 +61,7 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </Tab>
           </Tab.List>
-          <Tab.Panels>
+          <Tab.Panels className="py-3">
             <Tab.Panel>
               <AssetBalancesTable
                 tableTopPadding={heroHeight}
@@ -123,26 +99,49 @@ export const PortfolioPage: FunctionComponent = () => {
 const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { startBridge } = useBridge();
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
+  if (isWalletLoading) return null;
+
   return (
-    <div className="relative flex h-48 w-full place-content-between items-center">
-      <SkeletonLoader
-        className="rounded-5xl 1.5lg:w-full"
-        isLoaded={!isWalletLoading}
-      >
-        {wallet && wallet.isWalletConnected && wallet.address ? (
-          <Hero userOsmoAddress={wallet.address} />
-        ) : (
-          <GetStartedWithOsmosis />
-        )}
-      </SkeletonLoader>
+    <div className="flex w-full flex-col">
+      {wallet && wallet.isWalletConnected && wallet.address ? (
+        <UserAssetsTotal userOsmoAddress={wallet.address} />
+      ) : (
+        <GetStartedWithOsmosis />
+      )}
+      <div className="flex items-center gap-3">
+        <Button
+          className="flex items-center gap-2 !rounded-full"
+          onClick={() => router.push("/")}
+        >
+          <Icon id="swap-horizontal" height={16} width={16} />
+          <span className="subtitle1">{t("portfolio.trade")}</span>
+        </Button>
+        <Button
+          className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
+          onClick={() => startBridge("deposit")}
+        >
+          <Icon id="deposit" height={16} width={16} />
+          <span className="subtitle1">{t("assets.table.depositButton")}</span>
+        </Button>
+        <Button
+          className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
+          onClick={() => startBridge("withdraw")}
+        >
+          <Icon id="withdraw" height={16} width={16} />
+          <span className="subtitle1">{t("assets.table.withdrawButton")}</span>
+        </Button>
+      </div>
     </div>
   );
 });
 
-const Hero: FunctionComponent<{ userOsmoAddress: string }> = ({
+const UserAssetsTotal: FunctionComponent<{ userOsmoAddress: string }> = ({
   userOsmoAddress,
 }) => {
   const { t } = useTranslation();

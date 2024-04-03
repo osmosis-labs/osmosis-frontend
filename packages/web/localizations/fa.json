@@ -288,6 +288,7 @@
     }
   },
   "portfolio": {
+    "trade": "تجارت",
     "yourAssets": "دارایی های شما",
     "yourPositions": "موقعیت های شما",
     "recentTransfers": "نقل و انتقالات اخیر"
