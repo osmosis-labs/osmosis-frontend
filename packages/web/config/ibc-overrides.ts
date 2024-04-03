@@ -597,6 +597,10 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
   },
+  W: {
+    depositUrlOverride: "/wormhole",
+    withdrawUrlOverride: "/wormhole",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
