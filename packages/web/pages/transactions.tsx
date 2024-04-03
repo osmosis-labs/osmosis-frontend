@@ -392,7 +392,7 @@ const SlideOverContent = ({
   );
 };
 
-export const Transactions: React.FC = () => {
+const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
 
@@ -433,3 +433,5 @@ export const Transactions: React.FC = () => {
     </main>
   );
 };
+
+export default Transactions;
