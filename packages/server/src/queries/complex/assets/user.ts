@@ -121,11 +121,11 @@ export async function mapGetAssetsWithUserBalances<TAsset extends Asset>(
 
 /** Returns total fiat value of all assets held by a user.
  *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
-export async function getUserAssetsTotalValue(params: {
+export async function getUserAssetsTotal(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   userOsmoAddress: string;
-}): Promise<PricePretty> {
+}): Promise<{ value: PricePretty; coins: CoinPretty[] }> {
   // Use Promise.all to send concurrent requests.
   const coins = await Promise.all([
     getUserCoinsFromBank(params),
@@ -146,7 +146,10 @@ export async function getUserAssetsTotalValue(params: {
     calcSumCoinsValue({ ...params, coins: allCoins }),
   ]);
 
-  return new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue);
+  return {
+    value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
+    coins: allCoins,
+  };
 }
 
 /** Lists all of a user's underlying assets in bank module.

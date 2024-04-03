@@ -148,11 +148,13 @@ const UserAssetsTotal: FunctionComponent<{ userOsmoAddress: string }> = ({
   const { isMobile } = useWindowSize();
 
   const { data: totalValue, isFetched } =
-    api.edge.assets.getUserAssetsTotalValue.useQuery(
+    api.edge.assets.getUserAssetsTotal.useQuery(
       {
         userOsmoAddress,
       },
       {
+        select: ({ value }) => value,
+
         // expensive query
         trpc: {
           context: {

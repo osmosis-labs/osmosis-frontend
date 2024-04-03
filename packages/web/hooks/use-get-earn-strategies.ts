@@ -28,13 +28,13 @@ const useGetEarnStrategies = (
     data: holdenDenoms,
     isLoading: isAssetsBreakdownLoading,
     isError: isAssetsBreakdownError,
-  } = api.edge.assets.getUserAssetsBreakdown.useQuery(
+  } = api.edge.assets.getUserAssetsTotal.useQuery(
     { userOsmoAddress },
     {
       trpc: { context: { skipBatch: true } },
       enabled: !!userOsmoAddress,
       select: (assetsBreakdown): string[] =>
-        assetsBreakdown.available.map((coin) => coin.denom),
+        assetsBreakdown.coins.map((coin) => coin.denom),
     }
   );
 

@@ -10,7 +10,7 @@ import {
   getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetsTotalValue,
+  getUserAssetsTotal,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
 } from "../queries/complex/assets";
@@ -294,9 +294,9 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
-  getUserAssetsTotalValue: publicProcedure
+  getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) => getUserAssetsTotalValue({ ...ctx, ...input })),
+    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
