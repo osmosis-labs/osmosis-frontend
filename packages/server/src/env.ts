@@ -13,8 +13,13 @@ export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;
 export const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
 
 // data services
-export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
-export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+// export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
+// export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+
+// hardcoding numia staging proxy
+export const TIMESERIES_DATA_URL = "https://data-proxy-numia-stage.osmosis-labs.workers.dev"
+export const INDEXER_DATA_URL = "https://data-proxy-numia-stage.osmosis-labs.workers.dev"
+
 export const SIDECAR_BASE_URL =
   process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "https://sqs.osmosis.zone/";
 export const TFM_BASE_URL = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
