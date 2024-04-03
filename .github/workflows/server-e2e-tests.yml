@@ -9,15 +9,17 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
+        env:
+          MAIN_BRANCH: "refs/heads/master"
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.PRODUCTION_SIDECAR_BASE_URL }}\"}]}"
+          if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.SIDECAR_PRODUCTION_BASE_URL }}\", \"env\": \"production\"}]}"
           else
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.PRODUCTION_SIDECAR_BASE_URL }}\"}, { \"server-url\":\"${{ secrets.STAGING_SIDECAR_BASE_URL }}\"}]}"
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.SIDECAR_PRODUCTION_BASE_URL }}\", \"env\": \"production\"}, { \"server-url\":\"${{ secrets.SIDECAR_STAGING_BASE_URL }}\", \"env\": \"staging\"}]}"
           fi
 
   test:
-    name: Test on ${{ matrix.server-url }}
+    name: ${{ matrix.env }}
     needs: setup-matrix
     runs-on: ubuntu-latest
     strategy:
