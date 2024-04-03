@@ -6,7 +6,7 @@ v    If your PR doesn't close an issue, that's OK!  Just remove the Closes: #XXX
 v    If you are a member of the Osmosis org, please include a link to the relevant Linear task in your PR description!
 ☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
 
-## What is the purpose of the change
+## What is the purpose of the change:
 
 <!-- > Add a description of the overall background and high level changes that this PR introduces
 
