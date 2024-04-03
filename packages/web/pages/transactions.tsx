@@ -1,8 +1,9 @@
 import classNames from "classnames";
 import Image from "next/image";
 import { useState } from "react";
+import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
-import { Icon } from "~/components/assets";
+import { CopyIcon, Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import LinkButton from "~/components/buttons/link-button";
 import { Spinner } from "~/components/loaders";
@@ -120,6 +121,41 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
 interface TransactionDetailsProps {
   status: Status;
 }
+
+// TODO migrate from profile
+const CopyIconButton = ({ valueToCopy }: { valueToCopy: string }) => {
+  const [hasCopied, setHasCopied] = useState(false);
+  const [_state, copyToClipboard] = useCopyToClipboard();
+  const [_isReady, _cancel, reset] = useTimeoutFn(
+    () => setHasCopied(false),
+    2000
+  );
+
+  const onCopyAddress = () => {
+    copyToClipboard(valueToCopy);
+    setHasCopied(true);
+    reset();
+  };
+
+  return (
+    <button
+      className="flex h-6 w-6 items-center justify-center"
+      onClick={onCopyAddress}
+    >
+      {hasCopied ? (
+        <Icon id="check-mark" className="text-wosmongton-300" />
+      ) : (
+        <CopyIcon
+          isAnimated
+          classes={{
+            frontCube: "text-wosmongton-300",
+            backCube: "text-wosmongton-300",
+          }}
+        />
+      )}
+    </button>
+  );
+};
 
 const TransactionDetails = ({ status }: TransactionDetailsProps) => {
   const getFromTextStyle = () => {
@@ -316,8 +352,11 @@ const SlideOverContent = ({
         <div className="flex flex-col py-3">
           <div className="flex justify-between py-3">
             <div>Execution Price</div>
-            <div className="text-body1 text-wosmongton-300">
-              1 OSMO = 97.80 USDC
+            <div className="flex gap-3">
+              <div className="text-body1 text-wosmongton-300">
+                1 OSMO = 97.80 USDC
+              </div>
+              <CopyIconButton valueToCopy="97.80 USDC" />
             </div>
           </div>
           <div className="flex justify-between py-3">
@@ -326,8 +365,11 @@ const SlideOverContent = ({
           </div>
           <div className="flex justify-between py-3">
             <div>Transaction Fees</div>
-            <div className="text-body1 text-wosmongton-300">
-              F7AC9A...F58F87
+            <div className="flex gap-3">
+              <div className="text-body1 text-wosmongton-300">
+                F7AC9A...F58F87
+              </div>
+              <CopyIconButton valueToCopy="F7AC9A...F58F87" />
             </div>
           </div>
         </div>

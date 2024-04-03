@@ -30,7 +30,7 @@ const buttonVariants = cva(
         outline:
           "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-wosmongton-400 hover:text-white-full",
         secondary:
-          "bg-osmoverse-825 text-wosmongton-200 shadow hover:bg-wosmongton-825/80",
+          "bg-osmoverse-825 text-wosmongton-200 shadow hover:bg-osmoverse-825/80",
         success:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
         ghost: "hover:bg-osmoverse-600",
