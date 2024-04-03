@@ -108,7 +108,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   if (isWalletLoading) return null;
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col gap-4">
       {wallet && wallet.isWalletConnected && wallet.address ? (
         <UserAssetsTotal userOsmoAddress={wallet.address} />
       ) : (
@@ -167,22 +167,20 @@ const UserAssetsTotal: FunctionComponent<{ userOsmoAddress: string }> = ({
   }
 
   return (
-    <div className="flex items-center gap-8 p-5 1.5lg:w-full 1.5lg:place-content-between">
-      <div className="flex flex-col gap-2">
-        <span className="body1 md:caption text-osmoverse-300">
-          {t("assets.totalBalance")}
-        </span>
-        <SkeletonLoader
-          className={classNames(isFetched ? null : "h-14 w-48")}
-          isLoaded={isFetched}
-        >
-          {isMobile ? (
-            <h5>{totalValue?.toString()}</h5>
-          ) : (
-            <h3>{totalValue?.toString()}</h3>
-          )}
-        </SkeletonLoader>
-      </div>
+    <div className="flex flex-col gap-2">
+      <span className="body1 md:caption text-osmoverse-300">
+        {t("assets.totalBalance")}
+      </span>
+      <SkeletonLoader
+        className={classNames(isFetched ? null : "h-14 w-48")}
+        isLoaded={isFetched}
+      >
+        {isMobile ? (
+          <h5>{totalValue?.toString()}</h5>
+        ) : (
+          <h3>{totalValue?.toString()}</h3>
+        )}
+      </SkeletonLoader>
     </div>
   );
 };
