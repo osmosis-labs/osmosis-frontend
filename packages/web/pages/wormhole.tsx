@@ -54,7 +54,7 @@ const config: WormholeConnectConfig = {
   bridgeDefaults: {
     fromNetwork: "solana",
     toNetwork: "osmosis",
-    token: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
+    token: "W",
     requiredNetwork: "osmosis",
   },
 };
