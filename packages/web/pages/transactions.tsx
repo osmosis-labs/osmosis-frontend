@@ -250,7 +250,7 @@ const SlideOverContent = ({
           mode="unstyled"
           size="unstyled"
           className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
-          icon={<Icon id="close" width={32} height={32} />}
+          icon={<Icon id="close" width={48} height={48} />}
           onClick={onRequestClose}
         />
       </div>
