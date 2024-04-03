@@ -22,7 +22,7 @@ const WormholeConnect = dynamic(
 );
 
 const config: WormholeConnectConfig = {
-  networks: ["ethereum", "solana"],
+  networks: ["solana", "osmosis"],
 };
 
 const customTheme: WormholeConnectPartialTheme = {
