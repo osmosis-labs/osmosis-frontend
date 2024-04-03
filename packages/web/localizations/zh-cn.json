@@ -287,6 +287,11 @@
       "liquid_staking": "流动质押"
     }
   },
+  "portfolio": {
+    "yourAssets": "您的资产",
+    "yourPositions": "您的职位",
+    "recentTransfers": "最近转会"
+  },
   "buyTokens": "购买代币",
   "components": {
     "fiatOnrampSelection": {

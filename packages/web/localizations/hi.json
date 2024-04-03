@@ -287,6 +287,11 @@
       "liquid_staking": "तरल दाँव"
     }
   },
+  "portfolio": {
+    "yourAssets": "आपकी संपत्ति",
+    "yourPositions": "आपके पद",
+    "recentTransfers": "हालिया स्थानांतरण"
+  },
   "buyTokens": "टोकन खरीदें",
   "components": {
     "fiatOnrampSelection": {

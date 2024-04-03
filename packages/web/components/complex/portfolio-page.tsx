@@ -1,3 +1,4 @@
+import { Tab } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback } from "react";
@@ -57,21 +58,52 @@ export const PortfolioPage: FunctionComponent = () => {
         <AssetsOverview />
       </section>
 
-      <AssetBalancesTable
-        tableTopPadding={heroHeight}
-        onDeposit={useCallback(
-          (coinMinimalDenom) => {
-            bridgeAsset(coinMinimalDenom, "deposit");
-          },
-          [bridgeAsset]
-        )}
-        onWithdraw={useCallback(
-          (coinMinimalDenom) => {
-            bridgeAsset(coinMinimalDenom, "withdraw");
-          },
-          [bridgeAsset]
-        )}
-      />
+      <section className="flex flex-col gap-2 py-3">
+        <Tab.Group>
+          <Tab.List className="flex gap-6">
+            <Tab>
+              {({ selected }) => (
+                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  {t("portfolio.yourAssets")}
+                </h5>
+              )}
+            </Tab>
+            <Tab>
+              {({ selected }) => (
+                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  {t("portfolio.yourPositions")}
+                </h5>
+              )}
+            </Tab>
+            <Tab>
+              {({ selected }) => (
+                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  {t("portfolio.recentTransfers")}
+                </h5>
+              )}
+            </Tab>
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <AssetBalancesTable
+                tableTopPadding={heroHeight}
+                onDeposit={useCallback(
+                  (coinMinimalDenom) => {
+                    bridgeAsset(coinMinimalDenom, "deposit");
+                  },
+                  [bridgeAsset]
+                )}
+                onWithdraw={useCallback(
+                  (coinMinimalDenom) => {
+                    bridgeAsset(coinMinimalDenom, "withdraw");
+                  },
+                  [bridgeAsset]
+                )}
+              />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+      </section>
     </main>
   );
 };

@@ -287,6 +287,11 @@
       "liquid_staking": "Sıvı esnetme"
     }
   },
+  "portfolio": {
+    "yourAssets": "Varlıklarınız",
+    "yourPositions": "Pozisyonlarınız",
+    "recentTransfers": "Son transferler"
+  },
   "buyTokens": "jeton satın al",
   "components": {
     "fiatOnrampSelection": {

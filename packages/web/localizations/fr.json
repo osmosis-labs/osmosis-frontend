@@ -287,6 +287,11 @@
       "liquid_staking": "Jalonnement liquide"
     }
   },
+  "portfolio": {
+    "yourAssets": "Vos atouts",
+    "yourPositions": "Vos postes",
+    "recentTransfers": "Transferts récents"
+  },
   "buyTokens": "Acheter jetons",
   "components": {
     "fiatOnrampSelection": {

@@ -287,6 +287,11 @@
       "liquid_staking": "流動質押"
     }
   },
+  "portfolio": {
+    "yourAssets": "您的資產",
+    "yourPositions": "您的職位",
+    "recentTransfers": "最近轉會"
+  },
   "buyTokens": "購買代幣",
   "components": {
     "fiatOnrampSelection": {

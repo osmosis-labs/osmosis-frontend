@@ -287,6 +287,11 @@
       "liquid_staking": "લિક્વિડ સ્ટેકિંગ"
     }
   },
+  "portfolio": {
+    "yourAssets": "તમારી સંપત્તિ",
+    "yourPositions": "તમારી સ્થિતિ",
+    "recentTransfers": "તાજેતરના ટ્રાન્સફર"
+  },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
     "fiatOnrampSelection": {

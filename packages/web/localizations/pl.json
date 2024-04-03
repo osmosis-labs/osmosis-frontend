@@ -287,6 +287,11 @@
       "liquid_staking": "Płynna stawka"
     }
   },
+  "portfolio": {
+    "yourAssets": "Twoje aktywa",
+    "yourPositions": "Twoje pozycje",
+    "recentTransfers": "Ostatnie transfery"
+  },
   "buyTokens": "Kup tokeny",
   "components": {
     "fiatOnrampSelection": {

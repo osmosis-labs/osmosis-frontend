@@ -287,6 +287,11 @@
       "liquid_staking": "Estaca liquida"
     }
   },
+  "portfolio": {
+    "yourAssets": "Tus activos",
+    "yourPositions": "Tus posiciones",
+    "recentTransfers": "Transferencias recientes"
+  },
   "buyTokens": "Comprar fichas",
   "components": {
     "fiatOnrampSelection": {

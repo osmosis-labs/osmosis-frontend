@@ -287,6 +287,11 @@
       "liquid_staking": "Liquid staking"
     }
   },
+  "portfolio": {
+    "yourAssets": "Your assets",
+    "yourPositions": "Your positions",
+    "recentTransfers": "Recent transfers"
+  },
   "buyTokens": "Buy tokens",
   "components": {
     "fiatOnrampSelection": {

@@ -287,6 +287,11 @@
       "liquid_staking": "Flüssiges Abstecken"
     }
   },
+  "portfolio": {
+    "yourAssets": "Ihr Vermögen",
+    "yourPositions": "Ihre Positionen",
+    "recentTransfers": "Letzte Übertragungen"
+  },
   "buyTokens": "Kaufen Sie Token",
   "components": {
     "fiatOnrampSelection": {

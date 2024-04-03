@@ -287,6 +287,11 @@
       "liquid_staking": "리퀴드 스테이킹"
     }
   },
+  "portfolio": {
+    "yourAssets": "귀하의 자산",
+    "yourPositions": "귀하의 직위",
+    "recentTransfers": "최근 이적"
+  },
   "buyTokens": "토큰 구매",
   "components": {
     "fiatOnrampSelection": {

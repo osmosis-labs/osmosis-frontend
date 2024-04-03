@@ -287,6 +287,11 @@
       "liquid_staking": "Mărire lichidă"
     }
   },
+  "portfolio": {
+    "yourAssets": "Activele tale",
+    "yourPositions": "Pozițiile tale",
+    "recentTransfers": "Transferuri recente"
+  },
   "buyTokens": "Cumpărați jetoane",
   "components": {
     "fiatOnrampSelection": {

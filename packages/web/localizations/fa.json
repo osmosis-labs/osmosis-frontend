@@ -287,6 +287,11 @@
       "liquid_staking": "استقرار مایع"
     }
   },
+  "portfolio": {
+    "yourAssets": "دارایی های شما",
+    "yourPositions": "موقعیت های شما",
+    "recentTransfers": "نقل و انتقالات اخیر"
+  },
   "buyTokens": "خرید توکن",
   "components": {
     "fiatOnrampSelection": {

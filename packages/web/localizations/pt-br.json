@@ -287,6 +287,11 @@
       "liquid_staking": "Estaqueamento líquido"
     }
   },
+  "portfolio": {
+    "yourAssets": "Seus ativos",
+    "yourPositions": "Suas posições",
+    "recentTransfers": "Transferências recentes"
+  },
   "buyTokens": "Comprar tokens",
   "components": {
     "fiatOnrampSelection": {

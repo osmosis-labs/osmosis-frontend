@@ -12,7 +12,13 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   Breakpoint,
@@ -61,7 +67,10 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
-  const [sortKey, setSortKey] = useState<SortKey>("usdValue");
+  const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
+  const setSortKey = useCallback((key: SortKey | undefined) => {
+    if (key !== undefined) setSortKey_(key);
+  }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const showUnverifiedAssetsSetting =
@@ -199,6 +208,7 @@ export const AssetBalancesTable: FunctionComponent<{
     onRemoveFavoriteDenom,
     onDeposit,
     onWithdraw,
+    setSortKey,
   ]);
 
   /** Columns collapsed for screen size responsiveness. */
@@ -458,13 +468,10 @@ const TableControls: FunctionComponent<{
   useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
 
   return (
-    <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-      <h5>Your assets</h5>
-      <SearchBox
-        currentValue={searchInput}
-        onInput={setSearchInput}
-        placeholder={t("assets.table.search")}
-      />
-    </div>
+    <SearchBox
+      currentValue={searchInput}
+      onInput={setSearchInput}
+      placeholder={t("assets.table.search")}
+    />
   );
 };
