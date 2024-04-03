@@ -23,6 +23,30 @@ const WormholeConnect = dynamic(
 
 const config: WormholeConnectConfig = {
   networks: ["solana", "osmosis"],
+  tokensConfig: {
+    W: {
+      key: "W",
+      symbol: "W",
+      nativeChain: "solana",
+      tokenId: {
+        chain: "solana",
+        address: "6gnCPhXtLnUD76HjQuSYPENLSZdG8RvDB1pTLM5aLSJA",
+      },
+      coinGeckoId: "wormhole",
+      icon: "https://assets.coingecko.com/coins/images/35087/standard/womrhole_logo_full_color_rgb_2000px_72ppi_fb766ac85a.png?1708688954",
+      color: "#2894EE",
+      decimals: {
+        default: 6,
+      },
+      foreignAssets: {
+        osmosis: {
+          address:
+            "ibc/AC6EE43E608B5A7EEE460C960480BC1C3708010E32B2071C429DA259836E10C3",
+          decimals: 6,
+        },
+      },
+    },
+  },
 };
 
 const customTheme: WormholeConnectPartialTheme = {
