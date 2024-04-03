@@ -57,6 +57,7 @@ const config: WormholeConnectConfig = {
     token: "W",
     requiredNetwork: "osmosis",
   },
+  tokens: ["W", "SOL", "PYTH"],
 };
 
 const customTheme: WormholeConnectPartialTheme = {
