@@ -34,7 +34,7 @@ const config: WormholeConnectConfig = {
       nativeChain: "solana",
       tokenId: {
         chain: "solana",
-        address: "6gnCPhXtLnUD76HjQuSYPENLSZdG8RvDB1pTLM5aLSJA",
+        address: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
       },
       coinGeckoId: "wormhole",
       icon: "https://assets.coingecko.com/coins/images/35087/standard/womrhole_logo_full_color_rgb_2000px_72ppi_fb766ac85a.png?1708688954",
