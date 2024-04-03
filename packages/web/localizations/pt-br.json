@@ -291,7 +291,9 @@
     "trade": "Troca",
     "yourAssets": "Seus ativos",
     "yourPositions": "Suas posições",
-    "recentTransfers": "Transferências recentes"
+    "recentTransfers": "Transferências recentes",
+    "yourSuperchargedPositions": "Suas posições sobrecarregadas",
+    "yourLiquidityPools": "Seus pools de liquidez"
   },
   "buyTokens": "Comprar tokens",
   "components": {

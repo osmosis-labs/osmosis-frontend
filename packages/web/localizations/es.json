@@ -291,7 +291,9 @@
     "trade": "Comercio",
     "yourAssets": "Tus activos",
     "yourPositions": "Tus posiciones",
-    "recentTransfers": "Transferencias recientes"
+    "recentTransfers": "Transferencias recientes",
+    "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
+    "yourLiquidityPools": "Tus fondos de liquidez"
   },
   "buyTokens": "Comprar fichas",
   "components": {

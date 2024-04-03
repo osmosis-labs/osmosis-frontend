@@ -291,7 +291,9 @@
     "trade": "Comerț",
     "yourAssets": "Activele tale",
     "yourPositions": "Pozițiile tale",
-    "recentTransfers": "Transferuri recente"
+    "recentTransfers": "Transferuri recente",
+    "yourSuperchargedPositions": "Pozițiile tale Supercharged",
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {

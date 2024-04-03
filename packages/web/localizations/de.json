@@ -291,7 +291,9 @@
     "trade": "Handel",
     "yourAssets": "Ihr Vermögen",
     "yourPositions": "Ihre Positionen",
-    "recentTransfers": "Letzte Übertragungen"
+    "recentTransfers": "Letzte Übertragungen",
+    "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
+    "yourLiquidityPools": "Ihre Liquiditätspools"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

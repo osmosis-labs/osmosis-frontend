@@ -291,7 +291,9 @@
     "trade": "Торговля",
     "yourAssets": "Ваши активы",
     "yourPositions": "Ваши позиции",
-    "recentTransfers": "Недавние трансферы"
+    "recentTransfers": "Недавние трансферы",
+    "yourSuperchargedPositions": "Ваши суперзаряженные позиции",
+    "yourLiquidityPools": "Ваши пулы ликвидности"
   },
   "buyTokens": "Купить токены",
   "components": {

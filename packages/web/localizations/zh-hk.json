@@ -291,7 +291,9 @@
     "trade": "貿易",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
-    "recentTransfers": "最近轉會"
+    "recentTransfers": "最近轉會",
+    "yourSuperchargedPositions": "您的超級職位",
+    "yourLiquidityPools": "您的流動資金池"
   },
   "buyTokens": "購買代幣",
   "components": {

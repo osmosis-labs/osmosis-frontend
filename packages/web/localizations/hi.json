@@ -291,7 +291,9 @@
     "trade": "व्यापार",
     "yourAssets": "आपकी संपत्ति",
     "yourPositions": "आपके पद",
-    "recentTransfers": "हालिया स्थानांतरण"
+    "recentTransfers": "हालिया स्थानांतरण",
+    "yourSuperchargedPositions": "आपकी सुपरचार्ज्ड स्थिति",
+    "yourLiquidityPools": "आपकी तरलता पूल"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {

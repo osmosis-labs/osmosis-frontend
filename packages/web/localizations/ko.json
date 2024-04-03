@@ -291,7 +291,9 @@
     "trade": "거래",
     "yourAssets": "귀하의 자산",
     "yourPositions": "귀하의 직위",
-    "recentTransfers": "최근 이적"
+    "recentTransfers": "최근 이적",
+    "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
+    "yourLiquidityPools": "귀하의 유동성 풀"
   },
   "buyTokens": "토큰 구매",
   "components": {

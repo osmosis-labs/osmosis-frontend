@@ -291,7 +291,9 @@
     "trade": "Ticaret",
     "yourAssets": "Varlıklarınız",
     "yourPositions": "Pozisyonlarınız",
-    "recentTransfers": "Son transferler"
+    "recentTransfers": "Son transferler",
+    "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
+    "yourLiquidityPools": "Likidite havuzlarınız"
   },
   "buyTokens": "jeton satın al",
   "components": {

@@ -291,7 +291,9 @@
     "trade": "贸易",
     "yourAssets": "您的资产",
     "yourPositions": "您的职位",
-    "recentTransfers": "最近转会"
+    "recentTransfers": "最近转会",
+    "yourSuperchargedPositions": "您的超级职位",
+    "yourLiquidityPools": "您的流动资金池"
   },
   "buyTokens": "购买代币",
   "components": {

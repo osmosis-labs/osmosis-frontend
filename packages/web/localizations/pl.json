@@ -291,7 +291,9 @@
     "trade": "Handel",
     "yourAssets": "Twoje aktywa",
     "yourPositions": "Twoje pozycje",
-    "recentTransfers": "Ostatnie transfery"
+    "recentTransfers": "Ostatnie transfery",
+    "yourSuperchargedPositions": "Twoje doładowane pozycje",
+    "yourLiquidityPools": "Twoje pule płynności"
   },
   "buyTokens": "Kup tokeny",
   "components": {

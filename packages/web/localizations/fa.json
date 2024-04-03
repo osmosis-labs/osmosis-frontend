@@ -291,7 +291,9 @@
     "trade": "تجارت",
     "yourAssets": "دارایی های شما",
     "yourPositions": "موقعیت های شما",
-    "recentTransfers": "نقل و انتقالات اخیر"
+    "recentTransfers": "نقل و انتقالات اخیر",
+    "yourSuperchargedPositions": "موقعیت های سوپرشارژ شما",
+    "yourLiquidityPools": "استخرهای نقدینگی شما"
   },
   "buyTokens": "خرید توکن",
   "components": {

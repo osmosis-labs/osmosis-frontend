@@ -291,7 +291,9 @@
     "trade": "Commerce",
     "yourAssets": "Vos atouts",
     "yourPositions": "Vos postes",
-    "recentTransfers": "Transferts récents"
+    "recentTransfers": "Transferts récents",
+    "yourSuperchargedPositions": "Vos positions suralimentées",
+    "yourLiquidityPools": "Vos pools de liquidité"
   },
   "buyTokens": "Acheter jetons",
   "components": {
