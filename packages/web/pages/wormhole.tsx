@@ -51,6 +51,12 @@ const config: WormholeConnectConfig = {
       },
     },
   },
+  bridgeDefaults: {
+    fromNetwork: "solana",
+    toNetwork: "osmosis",
+    token: "W",
+    requiredNetwork: "osmosis",
+  },
 };
 
 const customTheme: WormholeConnectPartialTheme = {
