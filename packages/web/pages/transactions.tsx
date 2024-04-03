@@ -19,6 +19,45 @@ type Status = "Pending" | "Success" | "Failure";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
+const BackToTopButton = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Function to detect scroll and update state
+  const toggleVisibility = () => {
+    if (window.scrollY > 1) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
+
+  // Function to scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", toggleVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
+
+  return isVisible ? (
+    <Button
+      onClick={scrollToTop}
+      className="z-99 fixed inset-x-1/2 bottom-6 m-auto w-32 !rounded-3xl transition duration-200 ease-in"
+      aria-label="Go to top"
+    >
+      Back to Top
+    </Button>
+  ) : null;
+};
+
 export function SlideOver({
   open,
   setOpen,
@@ -272,6 +311,13 @@ const TransactionContent = ({
       </div>
       <TransactionRow status="Success" setOpen={setOpen} open={open} />
       <TransactionRow status="Success" setOpen={setOpen} open={open} />
+
+      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+        <div className="text-osmoverse-300">July 7, 2022</div>
+        <hr className="text-osmoverse-700" />
+      </div>
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
+      <TransactionRow status="Success" setOpen={setOpen} open={open} />
     </div>
   );
 };
@@ -424,12 +470,13 @@ const Transactions: React.FC = () => {
     ctas: [],
   });
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
-    <main className="flex gap-8 px-8">
+    <main className="relative flex gap-8 px-8">
       <SlideOver open={open} setOpen={setOpen} />
       <TransactionContent open={open} setOpen={setOpen} />
+      <BackToTopButton />
     </main>
   );
 };
