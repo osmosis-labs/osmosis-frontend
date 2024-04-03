@@ -33,8 +33,3 @@ This change has been tested locally by rebuilding the website and verified conte
 _(or)_
 
 This change has not been tested locally, because (to-be-explained-why...) -->
-
-## Documentation and Release Note
-
-<!-- - Does this pull request introduce a new feature or user-facing behavior changes? (yes / no)
-- How is the feature or change documented? (not applicable / [Osmosis web dev guide](https://docs.osmosis.zone/developing/web-dev-guide.html) / not documented) -->
