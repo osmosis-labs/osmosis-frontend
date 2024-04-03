@@ -98,7 +98,7 @@ export const StakeTool: React.FC<{
         <UnbondingCard />
       )}
       <Button
-        variant="secondary"
+        variant="success"
         onClick={onStakeButtonClick}
         disabled={disabled}
       >

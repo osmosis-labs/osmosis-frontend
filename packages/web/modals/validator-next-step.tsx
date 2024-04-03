@@ -73,7 +73,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           >
             {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
           </Button>
-          <Button variant="secondary" onClick={handleNewUserClick}>
+          <Button variant="success" onClick={handleNewUserClick}>
             {t("stake.validatorNextStep.newUser.button")}
           </Button>
         </>
