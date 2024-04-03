@@ -7,6 +7,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -25,7 +26,6 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -58,9 +58,13 @@ export const AssetBalancesTable: FunctionComponent<{
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
+  const { t } = useTranslation();
 
   // State
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+  const onSearchInput = useCallback((input: string) => {
+    setSearchQuery(input ? { query: input } : undefined);
+  }, []);
 
   const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
   const setSortKey = useCallback((key: SortKey | undefined) => {
@@ -80,6 +84,8 @@ export const AssetBalancesTable: FunctionComponent<{
     data: assetPagesData,
     hasNextPage,
     isLoading,
+    isFetching,
+    isPreviousData,
     isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
@@ -98,6 +104,7 @@ export const AssetBalancesTable: FunctionComponent<{
       enabled: !isLoadingWallet,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      keepPreviousData: true,
 
       // expensive query
       trpc: {
@@ -240,8 +247,21 @@ export const AssetBalancesTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <TableControls setSearchQuery={setSearchQuery} />
-      <table className="w-full">
+      <SearchBox
+        className="my-4"
+        currentValue={searchQuery?.query ?? ""}
+        onInput={onSearchInput}
+        placeholder={t("assets.table.search")}
+        debounce={500}
+      />
+      <table
+        className={classNames(
+          "w-full",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -337,46 +357,26 @@ export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
 }> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-2 text-wosmongton-200">
     <button
-      className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+      className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
       onClick={(e) => {
         e.preventDefault();
         onDeposit(coinMinimalDenom);
       }}
     >
-      <Icon className="m-auto" id="deposit" width={24} height={24} />
+      <Icon className="m-auto" id="deposit" width={16} height={16} />
     </button>
     {amount?.toDec().isPositive() && (
       <button
-        className="h-11 w-11 rounded-xl bg-osmoverse-825 p-1"
+        className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
         onClick={(e) => {
           e.preventDefault();
           onWithdraw(coinMinimalDenom);
         }}
       >
-        <Icon className="m-auto" id="withdraw" width={24} height={24} />
+        <Icon className="m-auto" id="withdraw" width={16} height={16} />
       </button>
     )}
   </div>
 );
-
-const TableControls: FunctionComponent<{
-  setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ setSearchQuery }) => {
-  const { t } = useTranslation();
-
-  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
-
-  // Pass search query in an effect to prevent rendering the entire table on every input change
-  // Only on debounced search query input
-  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
-
-  return (
-    <SearchBox
-      currentValue={searchInput}
-      onInput={setSearchInput}
-      placeholder={t("assets.table.search")}
-    />
-  );
-};

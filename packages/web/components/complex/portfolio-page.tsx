@@ -31,7 +31,7 @@ export const PortfolioPage: FunctionComponent = () => {
   const [heroRef, { height: heroHeight }] = useDimension<HTMLDivElement>();
 
   return (
-    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={heroRef}>
         <AssetsOverview />
       </section>
@@ -114,7 +114,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
       ) : (
         <GetStartedWithOsmosis />
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 py-3">
         <Button
           className="flex items-center gap-2 !rounded-full"
           onClick={() => router.push("/")}

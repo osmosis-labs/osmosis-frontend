@@ -12,6 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -25,7 +26,6 @@ import {
 
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
@@ -54,9 +54,13 @@ export const AssetsInfoTable: FunctionComponent<{
   const { userSettings } = useStore();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
+  const { t } = useTranslation();
 
   // State
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+  const onSearchInput = useCallback((input: string) => {
+    setSearchQuery(input ? { query: input } : undefined);
+  }, []);
 
   const [selectedTimeFrame, setSelectedTimeFrame] =
     useState<CommonPriceChartTimeFrame>("1D");
@@ -91,6 +95,8 @@ export const AssetsInfoTable: FunctionComponent<{
     data: assetPagesData,
     hasNextPage,
     isLoading,
+    isFetching,
+    isPreviousData,
     isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
@@ -108,6 +114,7 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      keepPreviousData: true,
 
       // expensive query
       trpc: {
@@ -273,12 +280,37 @@ export const AssetsInfoTable: FunctionComponent<{
           unselectCategory={unselectCategory}
         />
       </section>
-      <TableControls
-        selectedTimeFrame={selectedTimeFrame}
-        setSelectedTimeFrame={setSelectedTimeFrame}
-        setSearchQuery={setSearchQuery}
-      />
-      <table className="w-full">
+      <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
+        <SearchBox
+          currentValue={searchQuery?.query ?? ""}
+          onInput={onSearchInput}
+          placeholder={t("assets.table.search")}
+          debounce={500}
+        />
+        <SelectMenu
+          classes={useConst({ container: "h-full 1.5lg:hidden" })}
+          options={useConst([
+            { id: "1H", display: "1H" },
+            { id: "1D", display: "1D" },
+            { id: "1W", display: "1W" },
+            { id: "1M", display: "1M" },
+          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
+          defaultSelectedOptionId={selectedTimeFrame}
+          onSelect={useCallback(
+            (id: string) =>
+              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
+            [setSelectedTimeFrame]
+          )}
+        />
+      </div>
+      <table
+        className={classNames(
+          "w-full",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -373,41 +405,3 @@ export const AssetActionsCell: AssetCellComponent = () => (
     <span className="text-wosmongton-200">Trade</span>
   </button>
 );
-
-const TableControls: FunctionComponent<{
-  selectedTimeFrame: CommonPriceChartTimeFrame;
-  setSelectedTimeFrame: (timeFrame: CommonPriceChartTimeFrame) => void;
-  setSearchQuery: (searchQuery: Search | undefined) => void;
-}> = ({ selectedTimeFrame, setSelectedTimeFrame, setSearchQuery }) => {
-  const { t } = useTranslation();
-
-  const { searchInput, setSearchInput, queryInput } = useSearchQueryInput();
-
-  // Pass search query in an effect to prevent rendering the entire table on every input change
-  // Only on debounced search query input
-  useEffect(() => setSearchQuery(queryInput), [setSearchQuery, queryInput]);
-
-  return (
-    <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-      <SearchBox
-        currentValue={searchInput}
-        onInput={setSearchInput}
-        placeholder={t("assets.table.search")}
-      />
-      <SelectMenu
-        classes={useConst({ container: "h-full 1.5lg:hidden" })}
-        options={useConst([
-          { id: "1H", display: "1H" },
-          { id: "1D", display: "1D" },
-          { id: "1W", display: "1W" },
-          { id: "1M", display: "1M" },
-        ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-        defaultSelectedOptionId={selectedTimeFrame}
-        onSelect={useCallback(
-          (id: string) => setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-          [setSelectedTimeFrame]
-        )}
-      />
-    </div>
-  );
-};

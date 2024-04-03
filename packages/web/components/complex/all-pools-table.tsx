@@ -205,10 +205,10 @@ export const AllPoolsTable: FunctionComponent<{
   }, [poolsData]);
 
   // Define columns
-  const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-
   const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Pool>();
+
     let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
@@ -315,7 +315,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     return allColumns;
   }, [
-    columnHelper,
     t,
     isLoading,
     sortKey,
