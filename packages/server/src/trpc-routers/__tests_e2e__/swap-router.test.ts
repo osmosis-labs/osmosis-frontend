@@ -900,7 +900,7 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
       pool.volume24hUsdDec.lte(averageVolume) && pool.reserveCoins.length === 2
   )!;
 
-  const [inAsset, toAsset] = mediumVolumePool.reserveCoins;
+  const [inAsset, outAsset] = mediumVolumePool.reserveCoins;
 
   const tokenInAmount = new Dec(1)
     .mul(DecUtils.getTenExponentN(inAsset.currency.coinDecimals))
@@ -909,13 +909,13 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: inAsset.currency.coinMinimalDenom,
     tokenInAmount,
-    tokenOutDenom: toAsset.currency.coinMinimalDenom,
+    tokenOutDenom: outAsset.currency.coinMinimalDenom,
     preferredRouter: "sidecar",
   });
 
   // Amount
   expect(reply.amount).toBeInstanceOf(CoinPretty);
-  expect(reply.amount.currency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
+  expect(reply.amount.currency).toEqual(outAsset.currency);
 
   const amount = reply.amount.toDec().toString();
   expect(isNumeric(amount)).toBeTruthy();
@@ -1004,7 +1004,7 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
       pool.reserveCoins.length === 2
   )!;
 
-  const [inAsset, toAsset] = lowVolumeToken.reserveCoins;
+  const [inAsset, outAsset] = lowVolumeToken.reserveCoins;
 
   const tokenInAmount = new Dec(1)
     .mul(DecUtils.getTenExponentN(inAsset.currency.coinDecimals))
@@ -1013,13 +1013,13 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: inAsset.currency.coinMinimalDenom,
     tokenInAmount,
-    tokenOutDenom: toAsset.currency.coinMinimalDenom,
+    tokenOutDenom: outAsset.currency.coinMinimalDenom,
     preferredRouter: "sidecar",
   });
 
   // Amount
   expect(reply.amount).toBeInstanceOf(CoinPretty);
-  expect(reply.amount.currency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
+  expect(reply.amount.currency).toEqual(outAsset.currency);
 
   const amount = reply.amount.toDec().toString();
   expect(isNumeric(amount)).toBeTruthy();
