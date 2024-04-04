@@ -218,6 +218,10 @@ export interface StrategyCMSData {
    */
   categories: string[];
   hasLockingDuration?: boolean;
+  /**
+   * Link to the individual file related to the risk report for this strategy
+   */
+  riskReportCardUrl?: string;
 }
 
 export interface EarnStrategyBalance {
