@@ -1,6 +1,7 @@
 import { RatePretty } from "@keplr-wallet/unit";
 import { EarnStrategy, StrategyCMSData } from "@osmosis-labs/server";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
+import dayjs from "dayjs";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
@@ -100,6 +101,27 @@ export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
   const rowBConvertedValue = Number(
     (rowB.getValue(colId) as RatePretty).toDec().toString()
   );
+
+  if (rowAConvertedValue === rowBConvertedValue) return 0;
+  /**
+   * We can also write it as a === b ? 0 : a < b ? -1 : 1
+   * but I prefer using guard clauses as written above.
+   */
+  return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
+};
+
+export const sortDurationValues: SortingFn<EarnStrategy> = (
+  rowA,
+  rowB,
+  colId
+) => {
+  const valueA: string = rowA.getValue(colId);
+  const valueB: string = rowB.getValue(colId);
+
+  if (!valueA || !valueB) return -1;
+
+  const rowAConvertedValue = dayjs.duration(valueA).asMilliseconds();
+  const rowBConvertedValue = dayjs.duration(valueB).asMilliseconds();
 
   if (rowAConvertedValue === rowBConvertedValue) return 0;
   /**
