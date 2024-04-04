@@ -764,7 +764,7 @@ it("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", async
   expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
 });
 
-it.skip("TFM - ATOM <> OSMO - should return valid quote", async () => {
+it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async () => {
   const tokenInAmount = "1000000";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: atomMinimalDenom,
@@ -783,13 +783,13 @@ it.skip("TFM - ATOM <> OSMO - should return valid quote", async () => {
   expect(parseFloat(amount)).toBeGreaterThan(0);
 
   // Swap fee
-  expect(reply.swapFee).toBeInstanceOf(RatePretty);
-  // Should match with the format of "0.1%"
-  expect(reply.swapFee?.toString()).toMatch(percentageRegex);
+  // expect(reply.swapFee).toBeInstanceOf(RatePretty);
+  // // Should match with the format of "0.1%"
+  // expect(reply.swapFee?.toString()).toMatch(percentageRegex);
 
-  const swapFee = reply.swapFee!.toDec().toString();
-  expect(isNumeric(swapFee)).toBeTruthy();
-  expect(parseFloat(swapFee)).toBeGreaterThan(0);
+  // const swapFee = reply.swapFee!.toDec().toString();
+  // expect(isNumeric(swapFee)).toBeTruthy();
+  // expect(parseFloat(swapFee)).toBeGreaterThan(0);
 
   // Price impact token out
   expect(reply.priceImpactTokenOut).toBeInstanceOf(RatePretty);
@@ -801,10 +801,10 @@ it.skip("TFM - ATOM <> OSMO - should return valid quote", async () => {
   expect(parseFloat(priceImpactTokenOut)).toBeGreaterThan(0);
 
   // Token in fee amount
-  expect(reply.tokenInFeeAmount).toBeInstanceOf(Int);
-  const tokenInFeeAmount = reply.tokenInFeeAmount!.toString();
-  expect(isNumeric(tokenInFeeAmount)).toBeTruthy();
-  expect(parseFloat(tokenInFeeAmount)).toBeGreaterThan(0);
+  // expect(reply.tokenInFeeAmount).toBeInstanceOf(Int);
+  // const tokenInFeeAmount = reply.tokenInFeeAmount!.toString();
+  // expect(isNumeric(tokenInFeeAmount)).toBeTruthy();
+  // expect(parseFloat(tokenInFeeAmount)).toBeGreaterThan(0);
 
   // Split
   expect(Array.isArray(reply.split)).toBeTruthy();
@@ -824,19 +824,19 @@ it.skip("TFM - ATOM <> OSMO - should return valid quote", async () => {
   }
 
   // name
-  expect(reply.name).toBe("sidecar");
+  expect(reply.name).toBe("tfm");
 
   // timeMs
   expect(isNumeric(reply.timeMs)).toBeTruthy();
 
   // Token in fee amount fiat value
-  expect(reply.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
+  // expect(reply.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
 
-  const tokenInFeeAmountFiatValue = reply
-    .tokenInFeeAmountFiatValue!.toDec()
-    .toString();
-  expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
-  expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
+  // const tokenInFeeAmountFiatValue = reply
+  //   .tokenInFeeAmountFiatValue!.toDec()
+  //   .toString();
+  // expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
+  // expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
 
   // token out price
   expect(reply.tokenOutPrice).toBeInstanceOf(PricePretty);
