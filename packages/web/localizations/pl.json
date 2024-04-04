@@ -843,6 +843,7 @@
     "reward": "Nagroda",
     "lock": "Rozłącz",
     "days": "dni",
+    "day": "dzień",
     "risk": "Ryzyko",
     "strategyMethod": "Typy",
     "allMethods": "Wszystkie typy",
@@ -894,7 +895,7 @@
         "description": "Rodzaj aktywów uzyskanych dzięki operacjom i/lub zachętom w ramach strategii."
       },
       "lock": {
-        "description": "Okres czasu, przez jaki pozycja jest zablokowana, zanim będzie można ją opuścić (tj. zanim będzie można wycofać zdeponowane aktywa) ze strategii. Uwaga: w przypadku niektórych strategii nagrody mogą nie zostać zdobyte w okresie odblokowania."
+        "description": "Okres czasu, przez który pozycja jest zamknięta, zanim będzie można z niej wyjść. Uwaga: nie wszystkie okresy odłączenia* strategii obejmują dystrybucję nagród."
       },
       "strategy": {
         "description": "Na Osmosis dostępne są różnego rodzaju możliwości zarobku, hostowane przez różne platformy. Dostęp do strategii wymaga zdeponowania określonych aktywów."

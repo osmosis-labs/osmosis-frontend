@@ -15,6 +15,7 @@ export type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "earnPage"
+  | "transactionsPage"
   | "sidecarRouter"
   | "legacyRouter"
   | "tfmRouter"
@@ -40,6 +41,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
+  transactionsPage: false,
   sidecarRouter: true,
   legacyRouter: true,
   tfmRouter: true,
