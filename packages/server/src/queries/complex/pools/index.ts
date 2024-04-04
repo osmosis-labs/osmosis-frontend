@@ -13,6 +13,7 @@ const allPooltypes = [
   "stable",
   "cosmwasm-transmuter",
   "cosmwasm-astroport-pcl",
+  "cosmwasm-whitewhale",
   "cosmwasm",
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
