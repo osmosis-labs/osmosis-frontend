@@ -165,7 +165,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
       </ColumnCellCell>
       {hasLockingDuration && (
         <small className="text-sm font-subtitle2 text-osmoverse-400">
-          {t("earnPage.days")}
+          {t(lockingDuration <= 1 ? "earnPage.day" : "earnPage.days")}
         </small>
       )}
     </div>

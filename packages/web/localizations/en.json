@@ -843,6 +843,7 @@
     "reward": "Reward",
     "lock": "Unbond",
     "days": "days",
+    "day": "day",
     "risk": "Risk",
     "strategyMethod": "Types",
     "allMethods": "All types",

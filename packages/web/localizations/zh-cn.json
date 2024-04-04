@@ -843,6 +843,7 @@
     "reward": "报酬",
     "lock": "解绑",
     "days": "天",
+    "day": "天",
     "risk": "风险",
     "strategyMethod": "类型",
     "allMethods": "所有类型",

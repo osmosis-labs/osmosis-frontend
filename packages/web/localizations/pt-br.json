@@ -843,6 +843,7 @@
     "reward": "Recompensa",
     "lock": "Desvincular",
     "days": "dias",
+    "day": "dia",
     "risk": "Risco",
     "strategyMethod": "Tipos",
     "allMethods": "Todos os tipos",
