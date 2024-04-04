@@ -165,7 +165,7 @@ export interface StrategyCMSData {
   /**
    * URL to risk report on Google Sheets.
    */
-  riskReportUrl: string;
+  riskReportUrl?: string;
   /**
    * Start date and time (UTC) of the strategy.
    */
@@ -218,10 +218,6 @@ export interface StrategyCMSData {
    */
   categories: string[];
   hasLockingDuration?: boolean;
-  /**
-   * Link to the individual file related to the risk report for this strategy
-   */
-  riskReportCardUrl?: string;
 }
 
 export interface EarnStrategyBalance {
