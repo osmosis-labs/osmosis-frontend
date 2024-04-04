@@ -13,11 +13,9 @@ import { Button } from "~/components/ui/button";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks";
 import { theme } from "~/tailwind.config";
-
 type Status = "Pending" | "Success" | "Failure";
 
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Transition } from "@headlessui/react";
 
 const BackToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -55,54 +53,6 @@ const BackToTopButton = () => {
     </Button>
   ) : null;
 };
-
-export function SlideOver({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
-  return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-in-out duration-500"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in-out duration-500"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="bg-gray-500 fixed inset-0 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 top-[72px] flex max-w-full pl-10">
-              <Transition.Child
-                as={Fragment}
-                enter="transform transition ease-in-out duration-500 sm:duration-700"
-                enterFrom="translate-x-full"
-                enterTo="translate-x-0"
-                leave="transform transition ease-in-out duration-500 sm:duration-700"
-                leaveFrom="translate-x-0"
-                leaveTo="translate-x-full"
-              >
-                <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-                  <div className="flex h-full flex-col overflow-y-scroll bg-osmoverse-900 shadow-xl">
-                    <SlideOverContent onRequestClose={() => setOpen(false)} />
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </div>
-      </Dialog>
-    </Transition.Root>
-  );
-}
 
 interface TransactionRowProps {
   status: Status;
@@ -322,117 +272,129 @@ const TransactionContent = ({
 
 const SlideOverContent = ({
   onRequestClose,
+  open,
 }: {
   onRequestClose: () => void;
+  open: boolean;
 }) => {
   return (
-    <div className="w-container flex h-full flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
-      <div className="py-4 pl-4">
-        <IconButton
-          aria-label="Close"
-          mode="unstyled"
-          size="unstyled"
-          className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
-          icon={<Icon id="close" width={48} height={48} />}
-          onClick={onRequestClose}
-        />
-      </div>
-      <div className="flex flex-col px-4">
-        <div className="flex flex-col items-center gap-4 pt-2 pb-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
-            <Icon id="swap" width={24} height={24} aria-label="swap icon" />
-          </div>
-          <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">Swapped</div>
-            <div className="text-body1 text-osmoverse-300">
-              March 14, 2024, 13:01
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
-          <div className="flex justify-between p-2">
-            <div className="flex gap-4">
-              <Image
-                alt="OSMO"
-                src="/tokens/generated/osmo.svg"
-                height={32}
-                width={32}
-              />
-              <div className="flex flex-col">
-                <div className="text-subtitle1">Sold</div>
-                <div className="text-body1 text-osmoverse-300">OSMO</div>
-              </div>
-            </div>
-            <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">$100.00</div>
-              <div className="text-body1 text-osmoverse-300">10</div>
-            </div>
-          </div>
-          <div className="flex h-10 w-12 items-center justify-center p-2">
-            <Image
-              alt="down"
-              src="/icons/arrow-right.svg"
-              width={24}
-              height={24}
-              className="rotate-90 text-osmoverse-600"
+    <Transition
+      show={open}
+      enter="transition-width ease-in-out duration-300"
+      enterFrom="w-0" // Starting from width 0
+      enterTo="w-[456px]" // Ending at full width
+      leave="transition-width ease-in-out duration-300"
+      leaveFrom="w-[456px]" // Starting from full width
+      leaveTo="w-0" // Ending at width 0
+    >
+      <div className="flex min-h-full w-[456px] flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
+        <div className="flex flex-col px-4">
+          <div className="py-4 pl-4">
+            <IconButton
+              aria-label="Close"
+              mode="unstyled"
+              size="unstyled"
+              className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
+              icon={<Icon id="close" width={48} height={48} />}
+              onClick={onRequestClose}
             />
           </div>
-          <div className="flex justify-between p-2">
-            <div className="flex gap-4">
+          <div className="flex flex-col items-center gap-4 pt-2 pb-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
+              <Icon id="swap" width={24} height={24} aria-label="swap icon" />
+            </div>
+            <div className="flex flex-col items-center justify-center gap-2 text-center">
+              <div className="text-h5">Swapped</div>
+              <div className="text-body1 text-osmoverse-300">
+                March 14, 2024, 13:01
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
+            <div className="flex justify-between p-2">
+              <div className="flex gap-4">
+                <Image
+                  alt="OSMO"
+                  src="/tokens/generated/osmo.svg"
+                  height={32}
+                  width={32}
+                />
+                <div className="flex flex-col">
+                  <div className="text-subtitle1">Sold</div>
+                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                </div>
+              </div>
+              <div className="flex-end flex flex-col text-right">
+                <div className="text-subtitle1">$100.00</div>
+                <div className="text-body1 text-osmoverse-300">10</div>
+              </div>
+            </div>
+            <div className="flex h-10 w-12 items-center justify-center p-2">
               <Image
-                alt="USDC"
-                src="/tokens/generated/usdc.svg"
-                height={32}
-                width={32}
+                alt="down"
+                src="/icons/arrow-right.svg"
+                width={24}
+                height={24}
+                className="rotate-90 text-osmoverse-600"
               />
-              <div className="flex flex-col">
-                <div className="text-subtitle1">Sold</div>
-                <div className="text-body1 text-osmoverse-300">OSMO</div>
+            </div>
+            <div className="flex justify-between p-2">
+              <div className="flex gap-4">
+                <Image
+                  alt="USDC"
+                  src="/tokens/generated/usdc.svg"
+                  height={32}
+                  width={32}
+                />
+                <div className="flex flex-col">
+                  <div className="text-subtitle1">Sold</div>
+                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                </div>
+              </div>
+              <div className="flex-end flex flex-col text-right">
+                <div className="text-subtitle1">$100.00</div>
+                <div className="text-body1 text-osmoverse-300">10</div>
               </div>
             </div>
-            <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">$100.00</div>
-              <div className="text-body1 text-osmoverse-300">10</div>
+          </div>
+          <div className="flex flex-col py-3">
+            <div className="flex justify-between py-3">
+              <div>Execution Price</div>
+              <div className="flex gap-3">
+                <div className="text-body1 text-wosmongton-300">
+                  1 OSMO = 97.80 USDC
+                </div>
+                <CopyIconButton valueToCopy="97.80 USDC" />
+              </div>
+            </div>
+            <div className="flex justify-between py-3">
+              <div>Total Fees</div>
+              <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
+            </div>
+            <div className="flex justify-between py-3">
+              <div>Transaction Fees</div>
+              <div className="flex gap-3">
+                <div className="text-body1 text-wosmongton-300">
+                  F7AC9A...F58F87
+                </div>
+                <CopyIconButton valueToCopy="F7AC9A...F58F87" />
+              </div>
             </div>
           </div>
+          <Button size="default" variant="secondary" asChild>
+            <a
+              rel="noreferrer"
+              target="_blank"
+              href={`https://www.mintscan.io/cosmos/txs/${
+                "" // TDODO link this - txHash
+              }`}
+            >
+              <span>View on Explorer &#x2197;</span>
+            </a>
+          </Button>
         </div>
-        <div className="flex flex-col py-3">
-          <div className="flex justify-between py-3">
-            <div>Execution Price</div>
-            <div className="flex gap-3">
-              <div className="text-body1 text-wosmongton-300">
-                1 OSMO = 97.80 USDC
-              </div>
-              <CopyIconButton valueToCopy="97.80 USDC" />
-            </div>
-          </div>
-          <div className="flex justify-between py-3">
-            <div>Total Fees</div>
-            <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
-          </div>
-          <div className="flex justify-between py-3">
-            <div>Transaction Fees</div>
-            <div className="flex gap-3">
-              <div className="text-body1 text-wosmongton-300">
-                F7AC9A...F58F87
-              </div>
-              <CopyIconButton valueToCopy="F7AC9A...F58F87" />
-            </div>
-          </div>
-        </div>
-        <Button size="default" variant="secondary" asChild>
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`https://www.mintscan.io/cosmos/txs/${
-              "" // TDODO link this - txHash
-            }`}
-          >
-            <span>View on Explorer &#x2197;</span>
-          </a>
-        </Button>
       </div>
-    </div>
+    </Transition>
   );
 };
 
@@ -471,9 +433,9 @@ const Transactions: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <main className="relative flex gap-8 px-8">
-      <SlideOver open={open} setOpen={setOpen} />
+    <main className="relative mx-8 flex gap-4">
       <TransactionContent open={open} setOpen={setOpen} />
+      <SlideOverContent onRequestClose={() => setOpen(false)} open={open} />
       <BackToTopButton />
     </main>
   );
