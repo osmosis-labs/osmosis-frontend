@@ -13,9 +13,9 @@ jobs:
           MAIN_BRANCH: "refs/heads/master"
         run: |
           if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\"}]}"
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries_url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}"
           else
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\"}]}"
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries_url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries_url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}"
           fi
 
   test:
@@ -52,3 +52,4 @@ jobs:
         run: yarn test:e2e --filter=server
         env:
           SIDECAR_BASE_URL: ${{ matrix.server-url }}
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries_url }}

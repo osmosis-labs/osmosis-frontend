@@ -19,9 +19,14 @@ import {
 } from "@osmosis-labs/utils";
 import { inferRouterOutputs, initTRPC } from "@trpc/server";
 
+import {
+  getCachedPoolMarketMetricsMap,
+  getPoolsFromIndexer,
+} from "../../queries";
 import { AssetLists } from "../../queries/__tests__/mock-asset-lists";
 import { MockChains } from "../../queries/__tests__/mock-chains";
 import { createInnerTRPCContext } from "../../trpc";
+import { sort } from "../../utils";
 import { superjson } from "../../utils/superjson";
 import { swapRouter } from "../swap-router";
 
@@ -837,6 +842,245 @@ it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async
   //   .toString();
   // expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
   // expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
+
+  // token out price
+  expect(reply.tokenOutPrice).toBeInstanceOf(PricePretty);
+
+  const tokenOutPrice = reply.tokenOutPrice!.toDec().toString();
+  expect(isNumeric(tokenOutPrice)).toBeTruthy();
+  expect(parseFloat(tokenOutPrice)).toBeGreaterThan(0);
+
+  // amount fiat value
+  expect(reply.amountFiatValue).toBeInstanceOf(PricePretty);
+
+  const amountFiatValue = reply.amountFiatValue!.toDec().toString();
+  expect(isNumeric(amountFiatValue)).toBeTruthy();
+  expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
+});
+
+async function getSortedPoolsWithVolume() {
+  const [pools, marketMetrics] = await Promise.all([
+    getPoolsFromIndexer({
+      assetLists: AssetLists,
+      chainList: MockChains,
+    }),
+    getCachedPoolMarketMetricsMap(),
+  ]);
+
+  let totalVolume = new Dec(0);
+  const poolsWithVolume = pools
+    .map((pool) => {
+      const metricsForPool = marketMetrics.get(pool.id);
+      if (!metricsForPool) return undefined;
+
+      const volume24hUsdDec =
+        metricsForPool.volume24hUsd?.toDec() ?? new Dec(0);
+      totalVolume = totalVolume.add(volume24hUsdDec);
+
+      return {
+        ...pool,
+        volume24hUsdDec,
+      };
+    })
+    .filter((pool): pool is NonNullable<typeof pool> => !!pool);
+
+  const sortedPoolsWithVolume = sort(poolsWithVolume, "volume24hUsdDec");
+
+  const averageVolume = totalVolume.quo(new Dec(sortedPoolsWithVolume.length));
+
+  return { sortedPoolsWithVolume, averageVolume };
+}
+
+it("Sidecar — Should return valid quote for medium volume token", async () => {
+  const { averageVolume, sortedPoolsWithVolume } =
+    await getSortedPoolsWithVolume();
+
+  const mediumVolumePool = sortedPoolsWithVolume.find(
+    (pool) =>
+      pool.volume24hUsdDec.lte(averageVolume) && pool.reserveCoins.length === 2
+  )!;
+
+  const [inAsset, toAsset] = mediumVolumePool.reserveCoins;
+
+  const tokenInAmount = new Dec(1)
+    .mul(DecUtils.getTenExponentN(inAsset.currency.coinDecimals))
+    .truncate()
+    .toString();
+  const reply = await caller.swapRouter.routeTokenOutGivenIn({
+    tokenInDenom: inAsset.currency.coinMinimalDenom,
+    tokenInAmount,
+    tokenOutDenom: toAsset.currency.coinMinimalDenom,
+    preferredRouter: "sidecar",
+  });
+
+  // Amount
+  expect(reply.amount).toBeInstanceOf(CoinPretty);
+  expect(reply.amount.currency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
+
+  const amount = reply.amount.toDec().toString();
+  expect(isNumeric(amount)).toBeTruthy();
+  // Make sure amount is not negative
+  expect(parseFloat(amount)).toBeGreaterThan(0);
+
+  // Swap fee
+  expect(reply.swapFee).toBeInstanceOf(RatePretty);
+  // Should match with the format of "0.1%"
+  expect(reply.swapFee?.toString()).toMatch(percentageRegex);
+
+  const swapFee = reply.swapFee!.toDec().toString();
+  expect(isNumeric(swapFee)).toBeTruthy();
+  expect(parseFloat(swapFee)).toBeGreaterThan(0);
+
+  // Price impact token out
+  expect(reply.priceImpactTokenOut).toBeInstanceOf(RatePretty);
+  // Should match with the format of "0.1%"
+  expect(reply.priceImpactTokenOut?.toString()).toMatch(percentageRegex);
+
+  const priceImpactTokenOut = reply.priceImpactTokenOut!.toDec().toString();
+  expect(isNumeric(priceImpactTokenOut)).toBeTruthy();
+  expect(parseFloat(priceImpactTokenOut)).toBeGreaterThan(0);
+
+  // Token in fee amount
+  expect(reply.tokenInFeeAmount).toBeInstanceOf(Int);
+  const tokenInFeeAmount = reply.tokenInFeeAmount!.toString();
+  expect(isNumeric(tokenInFeeAmount)).toBeTruthy();
+  expect(parseFloat(tokenInFeeAmount)).toBeGreaterThan(0);
+
+  // Split
+  expect(Array.isArray(reply.split)).toBeTruthy();
+  expect(reply.split.length).toBeGreaterThan(0);
+
+  for (const split of reply.split) {
+    expect(split.initialAmount).toBeInstanceOf(Int);
+    expect(split.initialAmount.toString()).toBe(tokenInAmount);
+
+    expect(Array.isArray(split.pools)).toBeTruthy();
+    expect(split.pools.length).toBeGreaterThan(0);
+
+    expect(split.tokenInDenom).toBe(inAsset.currency.coinMinimalDenom);
+
+    expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
+    expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
+  }
+
+  // name
+  expect(reply.name).toBe("sidecar");
+
+  // timeMs
+  expect(isNumeric(reply.timeMs)).toBeTruthy();
+
+  // Token in fee amount fiat value
+  expect(reply.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
+
+  const tokenInFeeAmountFiatValue = reply
+    .tokenInFeeAmountFiatValue!.toDec()
+    .toString();
+  expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
+  expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
+
+  // token out price
+  expect(reply.tokenOutPrice).toBeInstanceOf(PricePretty);
+
+  const tokenOutPrice = reply.tokenOutPrice!.toDec().toString();
+  expect(isNumeric(tokenOutPrice)).toBeTruthy();
+  expect(parseFloat(tokenOutPrice)).toBeGreaterThan(0);
+
+  // amount fiat value
+  expect(reply.amountFiatValue).toBeInstanceOf(PricePretty);
+
+  const amountFiatValue = reply.amountFiatValue!.toDec().toString();
+  expect(isNumeric(amountFiatValue)).toBeTruthy();
+  expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
+});
+
+it("Sidecar — Should return valid quote for low volume token", async () => {
+  const { averageVolume, sortedPoolsWithVolume } =
+    await getSortedPoolsWithVolume();
+
+  const lowVolumeToken = sortedPoolsWithVolume.find(
+    (pool) =>
+      // Find a token that is 75% less than the average volume
+      pool.volume24hUsdDec.lte(averageVolume.mul(new Dec(0.75))) &&
+      pool.reserveCoins.length === 2
+  )!;
+
+  const [inAsset, toAsset] = lowVolumeToken.reserveCoins;
+
+  const tokenInAmount = new Dec(1)
+    .mul(DecUtils.getTenExponentN(inAsset.currency.coinDecimals))
+    .truncate()
+    .toString();
+  const reply = await caller.swapRouter.routeTokenOutGivenIn({
+    tokenInDenom: inAsset.currency.coinMinimalDenom,
+    tokenInAmount,
+    tokenOutDenom: toAsset.currency.coinMinimalDenom,
+    preferredRouter: "sidecar",
+  });
+
+  // Amount
+  expect(reply.amount).toBeInstanceOf(CoinPretty);
+  expect(reply.amount.currency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
+
+  const amount = reply.amount.toDec().toString();
+  expect(isNumeric(amount)).toBeTruthy();
+  // Make sure amount is not negative
+  expect(parseFloat(amount)).toBeGreaterThan(0);
+
+  // Swap fee
+  expect(reply.swapFee).toBeInstanceOf(RatePretty);
+  // Should match with the format of "0.1%"
+  expect(reply.swapFee?.toString()).toMatch(percentageRegex);
+
+  const swapFee = reply.swapFee!.toDec().toString();
+  expect(isNumeric(swapFee)).toBeTruthy();
+  expect(parseFloat(swapFee)).toBeGreaterThan(0);
+
+  // Price impact token out
+  expect(reply.priceImpactTokenOut).toBeInstanceOf(RatePretty);
+  // Should match with the format of "0.1%"
+  expect(reply.priceImpactTokenOut?.toString()).toMatch(percentageRegex);
+
+  const priceImpactTokenOut = reply.priceImpactTokenOut!.toDec().toString();
+  expect(isNumeric(priceImpactTokenOut)).toBeTruthy();
+  expect(parseFloat(priceImpactTokenOut)).toBeGreaterThan(0);
+
+  // Token in fee amount
+  expect(reply.tokenInFeeAmount).toBeInstanceOf(Int);
+  const tokenInFeeAmount = reply.tokenInFeeAmount!.toString();
+  expect(isNumeric(tokenInFeeAmount)).toBeTruthy();
+  expect(parseFloat(tokenInFeeAmount)).toBeGreaterThan(0);
+
+  // Split
+  expect(Array.isArray(reply.split)).toBeTruthy();
+  expect(reply.split.length).toBeGreaterThan(0);
+
+  for (const split of reply.split) {
+    expect(split.initialAmount).toBeInstanceOf(Int);
+    expect(split.initialAmount.toString()).toBe(tokenInAmount);
+
+    expect(Array.isArray(split.pools)).toBeTruthy();
+    expect(split.pools.length).toBeGreaterThan(0);
+
+    expect(split.tokenInDenom).toBe(inAsset.currency.coinMinimalDenom);
+
+    expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
+    expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
+  }
+
+  // name
+  expect(reply.name).toBe("sidecar");
+
+  // timeMs
+  expect(isNumeric(reply.timeMs)).toBeTruthy();
+
+  // Token in fee amount fiat value
+  expect(reply.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
+
+  const tokenInFeeAmountFiatValue = reply
+    .tokenInFeeAmountFiatValue!.toDec()
+    .toString();
+  expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
+  expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
 
   // token out price
   expect(reply.tokenOutPrice).toBeInstanceOf(PricePretty);
