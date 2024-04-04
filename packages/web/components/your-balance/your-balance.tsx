@@ -274,7 +274,7 @@ const YourBalance = observer(
               </Link>
             )}
             <Link
-              href="/pools"
+              href={`/pools?searchQuery=${encodeURIComponent(denom)}`}
               passHref
               className="flex flex-[0.5]"
               onClick={() =>

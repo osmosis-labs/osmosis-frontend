@@ -27,7 +27,16 @@ export const DropdownWithLabel = <T,>({
       <span className="whitespace-nowrap font-subtitle1 font-bold 2xl:hidden">
         {label}
       </span>
-      <Listbox value={value} onChange={onChange}>
+      <Listbox
+        value={value.value}
+        onChange={(value) => {
+          const selectedOption = options.find((opt) => opt.value === value);
+
+          if (selectedOption) {
+            return onChange(selectedOption);
+          }
+        }}
+      >
         <div className="relative flex w-full">
           <Listbox.Button
             className={classNames(
@@ -35,10 +44,10 @@ export const DropdownWithLabel = <T,>({
               buttonClassName
             )}
           >
-            <span className="font-subtitle1 capitalize leading-6 2xl:hidden">
+            <span className="font-subtitle1 leading-6 2xl:hidden">
               {value.label}
             </span>
-            <span className="hidden max-w-[100px] truncate font-subtitle1 capitalize leading-6 2xl:block">
+            <span className="hidden max-w-[100px] truncate font-subtitle1 leading-6 2xl:block">
               {(value.value as unknown as string) === "" && allLabel
                 ? allLabel
                 : value.label}
@@ -70,7 +79,7 @@ export const DropdownWithLabel = <T,>({
                     )
                   }
                   key={option.value as unknown as string}
-                  value={option}
+                  value={option.value}
                 >
                   {({ selected }) => (
                     <>

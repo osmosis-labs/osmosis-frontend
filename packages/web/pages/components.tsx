@@ -364,6 +364,11 @@ const Buttons = () => {
           Click
         </Button>
       </Component>
+      <Component title="Success">
+        <Button onClick={() => console.log("clicked")} variant="success">
+          Click
+        </Button>
+      </Component>
       <Component title="Destructive">
         <Button onClick={() => console.log("clicked")} variant="destructive">
           Click

@@ -8,50 +8,17 @@ import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import FiltersModal from "~/components/earn/filters/filters-modal";
-import {
-  ListOption,
-  StrategyButtonResponsibility,
-} from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
-
-const strategiesFilters = [
-  {
-    label: "Stablecoins",
-    value: "stablecoins",
-    icon: <Icon id="stablecoins" />,
-  },
-  {
-    label: "Correlated",
-    value: "correlated",
-    icon: (
-      <Image
-        src="/icons/correlated.svg"
-        alt="Correlated icon"
-        width={28}
-        height={28}
-      />
-    ),
-  },
-  {
-    label: "Blue Chip",
-    value: "bluechip",
-    icon: (
-      <Image
-        src="/icons/blue-chip.svg"
-        alt="Bluechip icon"
-        width={28}
-        height={28}
-      />
-    ),
-  },
-];
 
 export const TopFilters = ({
   tokenHolderSwitchDisabled,
@@ -103,12 +70,12 @@ export const TopFilters = ({
   const tokenFilterOptions = useMemo(
     () => [
       {
-        value: "all",
-        label: t("earnPage.tokenFilterOptions.all"),
-      },
-      {
         value: "my",
         label: t("earnPage.tokenFilterOptions.my"),
+      },
+      {
+        value: "all",
+        label: t("earnPage.tokenFilterOptions.all"),
       },
     ],
     [t]
@@ -119,7 +86,7 @@ export const TopFilters = ({
       getListOptions<string>(
         cmsData?.strategies ?? [],
         "type",
-        "category",
+        "type",
         t("earnPage.rewardTypes.all")
       ),
     [cmsData, t]
@@ -134,6 +101,24 @@ export const TopFilters = ({
         t("earnPage.rewardTypes.all")
       ),
     [cmsData, t]
+  );
+
+  const categories = useMemo(
+    () =>
+      cmsData?.categories.map((category) => ({
+        label: category.name,
+        value: category.name,
+        icon: (
+          <Image
+            src={category.iconURL}
+            alt={category.name}
+            width={28}
+            height={28}
+          />
+        ),
+        tooltip: category.description,
+      })) ?? [],
+    [cmsData]
   );
 
   const {
@@ -173,13 +158,17 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="flex items-center justify-between gap-7 lg:hidden">
         <SearchBox
@@ -189,35 +178,39 @@ export const TopFilters = ({
           size={"full"}
         />
         <div className="flex 2xl:hidden">
-          {strategiesFilters.map((props) => {
+          {categories.map((props) => {
             return (
-              <StrategyButton
-                onChange={(e) =>
-                  setFilter("specialTokens", {
-                    label: props.label,
-                    value: e as StrategyButtonResponsibility,
-                  })
-                }
-                isOn={
-                  specialTokens.filter((f) => f.value === props.value)
-                    .length !== 0
-                }
+              <Tooltip
                 key={`${props.label} strategy button`}
-                icon={props.icon}
-                label={props.label}
-                resp={props.value}
-              />
+                content={props.tooltip}
+              >
+                <StrategyButton
+                  onChange={(value) =>
+                    setFilter("specialTokens", {
+                      label: props.label,
+                      value,
+                    })
+                  }
+                  isOn={
+                    specialTokens.filter((f) => f.value === props.value)
+                      .length !== 0
+                  }
+                  icon={props.icon}
+                  label={props.label}
+                  resp={props.value}
+                />
+              </Tooltip>
             );
           })}
         </div>
         <DropdownWithMultiSelect
           label={t("earnPage.allCategories")}
-          options={strategiesFilters}
+          options={categories}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
-              value: value as StrategyButtonResponsibility,
+              value,
             })
           }
           containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
@@ -262,23 +255,27 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
           label={t("earnPage.allCategories")}
-          options={strategiesFilters}
+          options={categories}
           stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
-              value: value as StrategyButtonResponsibility,
+              value,
             })
           }
           containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
@@ -311,7 +308,7 @@ export const TopFilters = ({
         rewardTypes={rewardTypes}
         lockDurationTypes={lockDurationTypes}
         strategies={strategies}
-        strategiesFilters={strategiesFilters}
+        strategiesFilters={categories}
         tokenFilterOptions={tokenFilterOptions}
         isMyAllSwitchDisabled={tokenHolderSwitchDisabled}
       />
@@ -320,7 +317,7 @@ export const TopFilters = ({
           {t("earnPage.riskDisclaimer")}
         </span>
         <Link
-          href={cmsData?.riskReportUrl ?? "#"}
+          href="https://docs.osmosis.zone/overview/integrate/earn-risk"
           target="_blank"
           className="caption inline-flex items-center gap-1 text-wosmongton-300"
         >
