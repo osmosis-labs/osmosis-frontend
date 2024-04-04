@@ -48,7 +48,7 @@ export const WalletRegistry: RegistryWallet[] = [
   {
     ...CosmosKitWalletList["trust-mobile"],
     logo: "/wallets/trust.png",
-    mobileDisabled: false,
+    mobileDisabled: true,
     lazyInstall: () =>
       import("~/integrations/trust-walletconnect").then(
         (m) => m.TrustMobileWallet
