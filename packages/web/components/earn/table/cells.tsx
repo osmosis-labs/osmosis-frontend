@@ -165,7 +165,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
       </ColumnCellCell>
       {hasLockingDuration && (
         <small className="text-sm font-subtitle2 text-osmoverse-400">
-          {t("earnPage.days")}
+          {t(lockingDuration <= 1 ? "earnPage.day" : "earnPage.days")}
         </small>
       )}
     </div>
@@ -177,10 +177,20 @@ function _getRiskLabel(risk: number) {
 }
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
+  const RiskLink =
+    item.row.original.riskReportCardUrl &&
+    item.row.original.riskReportCardUrl.length > 0
+      ? Link
+      : "div";
+
   return (
     <div className="flex items-center justify-center">
       <div className="flex flex-col items-center gap-1">
-        <div className="relative h-6">
+        <RiskLink
+          href={item.row.original.riskReportCardUrl ?? ""}
+          className="relative h-6"
+          target="_blank"
+        >
           <Image
             src={"/images/risk-indicator-bg.svg"}
             alt="Risk indicator background"
@@ -195,7 +205,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
             className="absolute left-3.5 -top-1 h-11 w-2"
             style={{ rotate: `${item.getValue() * 180 - 90}deg` }}
           />
-        </div>
+        </RiskLink>
         <p className="text-caption text-osmoverse-200">
           {_getRiskLabel(item.getValue())}
         </p>

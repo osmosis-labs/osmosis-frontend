@@ -46,9 +46,13 @@ const useGetEarnStrategies = (
         );
         return {
           ..._strategy,
-          holdsTokens: involvedDenoms.every((involvedDenom) =>
-            holdenDenoms?.includes(involvedDenom)
-          ),
+          holdsTokens: _strategy.categories.includes("Correlated")
+            ? involvedDenoms.some((involvedDenom) =>
+                holdenDenoms?.includes(involvedDenom)
+              )
+            : involvedDenoms.every((involvedDenom) =>
+                holdenDenoms?.includes(involvedDenom)
+              ),
           balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           aprUrl: _strategy.apr,
           tvlUrl: _strategy.tvl,
