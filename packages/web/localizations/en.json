@@ -895,7 +895,7 @@
         "description": "The type of assets earned through the strategy's operations and/or incentives."
       },
       "lock": {
-        "description": "The period of time a position is locked before it can be exited (i.e., before the deposited assets can be withdrawn) from the strategy. Note: In some strategies, rewards may not be earned during the unlocking period."
+        "description": "The period of time a position is bonded before it can be exited. Note: Not all strategy unbonding* periods have reward distributions."
       },
       "strategy": {
         "description": "Earning opportunities of various types, hosted by various platforms, are available on Osmosis. Accessing a strategy necessitates the deposit of specific assets."

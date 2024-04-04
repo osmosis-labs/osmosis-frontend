@@ -895,7 +895,7 @@
         "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
       },
       "lock": {
-        "description": "Perioada de timp în care o poziție este blocată înainte ca aceasta să poată fi ieșită (adică înainte ca activele depozitate să poată fi retrase) din strategie. Notă: în unele strategii, recompensele pot să nu fie câștigate în perioada de deblocare."
+        "description": "Perioada de timp în care o poziție este legată înainte de a putea fi părăsită. Notă: nu toate perioadele de dezlegare a strategiilor* au distribuții de recompense."
       },
       "strategy": {
         "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."

@@ -895,7 +895,7 @@
         "description": "Stratejinin operasyonları ve/veya teşvikleri aracılığıyla kazanılan varlıkların türü."
       },
       "lock": {
-        "description": "Bir pozisyonun stratejiden çıkılmadan önce (yani yatırılan varlıkların geri çekilebilmesinden önce) kilitlendiği süre. Not: Bazı stratejilerde, kilit açma süresi boyunca ödüller kazanılamayabilir."
+        "description": "Bir pozisyondan çıkılmadan önce bağlı kalınan süre. Not: Tüm strateji çözülme* dönemlerinde ödül dağılımları yoktur."
       },
       "strategy": {
         "description": "Osmosis'te çeşitli platformların barındırdığı çeşitli türlerde kazanç fırsatları mevcuttur. Bir stratejiye erişim belirli varlıkların yatırılmasını gerektirir."

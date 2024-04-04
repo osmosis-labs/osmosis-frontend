@@ -895,7 +895,7 @@
         "description": "Die Art der Vermögenswerte, die durch die Operationen und/oder Anreize der Strategie erzielt werden."
       },
       "lock": {
-        "description": "Der Zeitraum, in dem eine Position gesperrt ist, bevor sie aus der Strategie verlassen werden kann (d. h. bevor die hinterlegten Vermögenswerte abgehoben werden können). Hinweis: Bei einigen Strategien können während des Entsperrungszeitraums möglicherweise keine Belohnungen verdient werden."
+        "description": "Der Zeitraum, für den eine Position gebunden ist, bevor sie veräußert werden kann. Hinweis: Nicht alle Strategie-Unbonding-Zeiträume* verfügen über Belohnungsverteilungen."
       },
       "strategy": {
         "description": "Auf Osmosis sind Verdienstmöglichkeiten verschiedener Art verfügbar, die von verschiedenen Plattformen gehostet werden. Der Zugriff auf eine Strategie erfordert die Hinterlegung bestimmter Vermögenswerte."

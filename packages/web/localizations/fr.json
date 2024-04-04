@@ -895,7 +895,7 @@
         "description": "Le type d'actifs gagnés grâce aux opérations et/ou aux incitations de la stratégie."
       },
       "lock": {
-        "description": "La période pendant laquelle une position est verrouillée avant de pouvoir être sortie (c'est-à-dire avant que les actifs déposés puissent être retirés) de la stratégie. Remarque : Dans certaines stratégies, les récompenses peuvent ne pas être gagnées pendant la période de déverrouillage."
+        "description": "La période pendant laquelle une position est liée avant de pouvoir être liquidée. Remarque : Toutes les périodes de déliement de stratégie* ne comportent pas de distributions de récompenses."
       },
       "strategy": {
         "description": "Des opportunités de gains de différents types, hébergées par diverses plateformes, sont disponibles sur Osmosis. Accéder à une stratégie nécessite le dépôt d’actifs spécifiques."
