@@ -178,8 +178,8 @@ function _getRiskLabel(risk: number) {
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
   const RiskLink =
-    item.row.original.riskReportCardUrl &&
-    item.row.original.riskReportCardUrl.length > 0
+    item.row.original.riskReportUrl &&
+    item.row.original.riskReportUrl.length > 0
       ? Link
       : "div";
 
@@ -187,7 +187,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
     <div className="flex items-center justify-center">
       <div className="flex flex-col items-center gap-1">
         <RiskLink
-          href={item.row.original.riskReportCardUrl ?? ""}
+          href={item.row.original.riskReportUrl ?? ""}
           className="relative h-6"
           target="_blank"
         >
