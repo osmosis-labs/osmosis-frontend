@@ -68,7 +68,8 @@
     "ts-jest": "^29.1.2",
     "turbo": "^1.13.0",
     "typescript": "5.4.3",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "is-ci-cli": "^2.2.0"
   },
   "dependencies": {},
   "resolutions": {

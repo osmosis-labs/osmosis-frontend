@@ -911,6 +911,7 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     tokenInAmount,
     tokenOutDenom: outAsset.currency.coinMinimalDenom,
     preferredRouter: "sidecar",
+    forcePoolId: mediumVolumePool.id,
   });
 
   // Amount
@@ -1015,6 +1016,7 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     tokenInAmount,
     tokenOutDenom: outAsset.currency.coinMinimalDenom,
     preferredRouter: "sidecar",
+    forcePoolId: lowVolumeToken.id,
   });
 
   // Amount
