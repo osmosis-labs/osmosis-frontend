@@ -13,9 +13,9 @@ jobs:
           MAIN_BRANCH: "refs/heads/master"
         run: |
           if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.SIDECAR_PRODUCTION_BASE_URL }}\", \"env\": \"production\"}]}"
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\"}]}"
           else
-            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"${{ secrets.SIDECAR_PRODUCTION_BASE_URL }}\", \"env\": \"production\"}, { \"server-url\":\"${{ secrets.SIDECAR_STAGING_BASE_URL }}\", \"env\": \"staging\"}]}"
+            echo "::set-output name=matrix::{\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\"}]}"
           fi
 
   test:
@@ -44,6 +44,9 @@ jobs:
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
+
+      - name: Echo Current Server URL
+        run: echo "SQS Server URL:${{ matrix.server-url }}"
 
       - name: Run Tests
         run: yarn test:e2e --filter=server
