@@ -26,7 +26,7 @@ const config: WormholeConnectConfig = {
   rpcs: {
     solana:
       "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
-    gateway: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
+    wormchain: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
   },
   tokensConfig: {
     W: {
