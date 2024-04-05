@@ -21,7 +21,7 @@ const WormholeConnect = dynamic(
   }
 );
 
-const config: WormholeConnectConfig = {
+var config: WormholeConnectConfig = {
   networks: ["solana", "osmosis"],
   rpcs: {
     solana:
@@ -50,12 +50,6 @@ const config: WormholeConnectConfig = {
         },
       },
     },
-  },
-  bridgeDefaults: {
-    fromNetwork: "solana",
-    toNetwork: "osmosis",
-    token: "W",
-    requiredNetwork: "osmosis",
   },
   tokens: ["W", "SOL", "PYTH"],
 };
@@ -100,6 +94,30 @@ const customTheme: WormholeConnectPartialTheme = {
 };
 
 const Wormhole: FunctionComponent = () => {
+  const queryParams = new URLSearchParams(window.location.href.split("?")[1]);
+
+  var bridgeDefaults = {
+    fromNetwork: "solana",
+    toNetwork: "osmosis",
+    token: "W",
+    requiredNetwork: "osmosis",
+  };
+
+  const fromNetwork = queryParams.get("from");
+  const toNetwork = queryParams.get("to");
+  const token = queryParams.get("token");
+
+  if (fromNetwork) {
+    bridgeDefaults.fromNetwork = fromNetwork;
+  }
+  if (toNetwork) {
+    bridgeDefaults.toNetwork = toNetwork;
+  }
+  if (token) {
+    bridgeDefaults.token = token;
+  }
+  config.bridgeDefaults = bridgeDefaults;
+
   return <WormholeConnect config={config} theme={customTheme} />;
 };
 
