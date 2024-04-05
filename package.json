@@ -28,7 +28,9 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix"
+    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix",
+    "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores",
+    "postinstall": "yarn lint:workspace"
   },
   "pre-commit": [
     "pre-commit"
@@ -71,7 +73,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "is-ci-cli": "^2.2.0"
   },
-  "dependencies": {},
+  "packageManager": "yarn@1.22.22",
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
