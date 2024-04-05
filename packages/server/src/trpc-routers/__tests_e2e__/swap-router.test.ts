@@ -139,7 +139,6 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -149,6 +148,13 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -228,7 +234,6 @@ it("Sidecar - OSMO <> ATOM - should return valid quote", async () => {
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -238,6 +243,13 @@ it("Sidecar - OSMO <> ATOM - should return valid quote", async () => {
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -327,7 +339,6 @@ it("Sidecar - USDC <> USDT - should return valid quote. Token in amount differen
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -337,6 +348,13 @@ it("Sidecar - USDC <> USDT - should return valid quote. Token in amount differen
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -426,7 +444,6 @@ it("Sidecar - USDT <> USDC - should return valid quote. Token in amount differen
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -436,6 +453,13 @@ it("Sidecar - USDT <> USDC - should return valid quote. Token in amount differen
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -515,7 +539,6 @@ it("Sidecar - OSMO <> USK - should return valid quote even if the token price is
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -525,6 +548,13 @@ it("Sidecar - OSMO <> USK - should return valid quote even if the token price is
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -614,7 +644,6 @@ it("Sidecar — USDC.axl <> USDC — Should return valid quote for alloyed asset
     | undefined;
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -628,6 +657,13 @@ it("Sidecar — USDC.axl <> USDC — Should return valid quote for alloyed asset
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // Alloyed assets should go through a transmuter pool
   expect(transmuterPool).toBeDefined();
@@ -719,7 +755,6 @@ it("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", async
     | undefined;
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -733,6 +768,13 @@ it("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", async
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // PCL assets should go through a pcl pool
   expect(pclPool).toBeDefined();
@@ -817,7 +859,6 @@ it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -827,6 +868,13 @@ it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("tfm");
@@ -953,7 +1001,6 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -963,6 +1010,13 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
@@ -1058,7 +1112,6 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
 
   for (const split of reply.split) {
     expect(split.initialAmount).toBeInstanceOf(Int);
-    expect(split.initialAmount.toString()).toBe(tokenInAmount);
 
     expect(Array.isArray(split.pools)).toBeTruthy();
     expect(split.pools.length).toBeGreaterThan(0);
@@ -1068,6 +1121,13 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
     expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
   }
+
+  // Sum of all split amount should equal token in amount
+  const splitAmountSum = reply.split.reduce(
+    (acc, split) => acc.add(split.initialAmount),
+    new Int(0)
+  );
+  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
   // name
   expect(reply.name).toBe("sidecar");
