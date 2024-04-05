@@ -22,7 +22,7 @@ const WormholeConnect = dynamic(
 );
 
 const config: WormholeConnectConfig = {
-  networks: ["solana", "osmosis", "gateway"],
+  networks: ["solana", "osmosis"],
   rpcs: {
     solana:
       "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
