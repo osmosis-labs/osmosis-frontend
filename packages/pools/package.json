@@ -39,7 +39,7 @@
   "dependencies": {
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/math": "^5.1.0",
-    "@osmosis-labs/types": "1.0.0"
+    "@osmosis-labs/types": "^1.0.0"
   },
   "devDependencies": {
     "deepmerge": ""
