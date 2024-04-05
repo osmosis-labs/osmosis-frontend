@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const JSDOMEnvironment = require("jest-environment-jsdom").default;
 const { Blob, File } = require("node:buffer");
-const { fetch } = require("whatwg-fetch");
 
 /**
  *
@@ -24,7 +23,10 @@ class JSDOMEnvironmentExtended extends JSDOMEnvironment {
     this.global.Response = Response;
     this.global.Request = Request;
     this.global.Response = Response;
-    this.global.fetch = fetch;
+    Object.defineProperty(this.global, "fetch", {
+      value: fetch,
+      writable: true,
+    });
     this.global.structuredClone = structuredClone;
   }
 }
