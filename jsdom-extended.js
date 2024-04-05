@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const JSDOMEnvironment = require("jest-environment-jsdom").default;
 const { Blob, File } = require("node:buffer");
+const { fetch } = require("whatwg-fetch");
 
 /**
  *
