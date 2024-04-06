@@ -65,7 +65,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@react-spring/web": "^9.6.1",
-    "@sentry/nextjs": "^7.107.0",
+    "@sentry/nextjs": "^7.109.0",
+    "@sentry/opentelemetry-node": "^7.109.0",
     "@tanstack/match-sorter-utils": "^8.8.4",
     "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-table": "^8.10.3",
@@ -129,7 +130,8 @@
     "tailwindcss-animate": "^1.0.7",
     "utility-types": "^3.10.0",
     "web3-utils": "^1.7.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@vercel/otel": "^1.8.1"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
