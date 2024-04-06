@@ -84,7 +84,7 @@ const astroAsset = getAssetFromAssetList({
   assetLists: AssetLists,
 })!;
 
-const percentageRegex = /^(<\s)?\d+\.\d+%$/;
+const percentageRegex = /^(<\s)?\d*\.?\d+%$/;
 
 function assertValidQuote({
   quote,
