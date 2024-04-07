@@ -626,14 +626,12 @@ export class WCClient implements WalletClient {
     signDoc: StdSignDoc,
     _signOptions?: SignOptions
   ) {
-    const session = await this.getSession("cosmos", chainId);
+    const session = this.getSession("cosmos", chainId);
     if (!session) {
       throw new Error(`Session for ${chainId} not established yet.`);
     }
 
-    if (this.redirect) this.openApp();
-
-    const resp = await this.signClient?.request({
+    const resp = await this.signClient?.request<AminoSignResponse>({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
       request: {
@@ -658,7 +656,7 @@ export class WCClient implements WalletClient {
       chainId,
       signer,
       signDoc,
-      signOptions || this.defaultSignOptions
+      signOptions
     )) as AminoSignResponse;
     return result;
   }
@@ -669,7 +667,8 @@ export class WCClient implements WalletClient {
     signDoc: DirectSignDoc,
     _signOptions?: SignOptions
   ) {
-    const session = await this.getSession("cosmos", chainId);
+    const session = this.getSession("cosmos", chainId);
+
     if (!session) {
       throw new Error(`Session for ${chainId} not established yet.`);
     }
@@ -695,8 +694,6 @@ export class WCClient implements WalletClient {
       },
     };
 
-    if (this.redirect) this.openApp();
-
     const resp = await this.signClient?.request({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
@@ -719,7 +716,7 @@ export class WCClient implements WalletClient {
       chainId,
       signer,
       signDoc,
-      signOptions || this.defaultSignOptions
+      signOptions
     )) as WCSignDirectResponse;
     return {
       signed: {
@@ -735,24 +732,4 @@ export class WCClient implements WalletClient {
       signature,
     };
   }
-
-  // restoreLatestSession() {
-  //   if (typeof this.signClient === 'undefined') {
-  //     throw new Error('WalletConnect is not initialized');
-  //   }
-  //   if (typeof this.session !== 'undefined') return;
-
-  //   const targetKey = this.signClient.session.keys.reverse().find((key) => {
-  //     const session = this.signClient.session.get(key);
-  //     return (
-  //       session.peer.metadata.name === this.walletWCName &&
-  //       session.expiry * 1000 > Date.now() + 1000
-  //     );
-  //   });
-
-  //   if (targetKey) {
-  //     this.session = this.signClient.session.get(targetKey);
-  //     this.logger?.debug('RESTORED LATEST SESSION:', this.session);
-  //   }
-  // }
 }

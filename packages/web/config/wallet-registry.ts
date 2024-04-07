@@ -45,52 +45,52 @@ export const WalletRegistry: RegistryWallet[] = [
     ] as DownloadInfo[],
     mode: "extension", // Add mode property with correct value
   },
-  // {
-  //   ...CosmosKitWalletList["trust-mobile"],
-  //   logo: "/wallets/trust.png",
-  //   mobileDisabled: true,
-  //   lazyInstall: () =>
-  //     import("~/integrations/trust-walletconnect").then(
-  //       (m) => m.TrustMobileWallet
-  //     ),
-  //   supportsChain: async (chainId) => {
-  //     const trustMobileAvailableChains: MainnetChainIds[] = [
-  //       "agoric-3",
-  //       "akashnet-2",
-  //       "mantle-1",
-  //       "axelar-dojo-1",
-  //       "carbon-1",
-  //       "celestia",
-  //       "chihuahua-1",
-  //       "cosmoshub-4",
-  //       "mainnet-3",
-  //       "dydx-mainnet-1",
-  //       "emoney-3",
-  //       "evmos_9001-2",
-  //       "injective-1",
-  //       "irishub-1",
-  //       "juno-1",
-  //       "kava_2222-10",
-  //       "likecoin-mainnet-2",
-  //       "mars-1",
-  //       "neutron-1",
-  //       "osmosis-1",
-  //       "secret-4",
-  //       "pacific-1",
-  //       "sentinelhub-2",
-  //       "stargaze-1",
-  //       "iov-mainnet-ibc",
-  //       "stride-1",
-  //       "phoenix-1",
-  //     ];
+  {
+    ...CosmosKitWalletList["trust-mobile"],
+    logo: "/wallets/trust.png",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("~/integrations/trust-walletconnect").then(
+        (m) => m.TrustMobileWallet
+      ),
+    supportsChain: async (chainId) => {
+      const trustMobileAvailableChains: MainnetChainIds[] = [
+        "agoric-3",
+        "akashnet-2",
+        "mantle-1",
+        "axelar-dojo-1",
+        "carbon-1",
+        "celestia",
+        "chihuahua-1",
+        "cosmoshub-4",
+        "mainnet-3",
+        "dydx-mainnet-1",
+        "emoney-3",
+        "evmos_9001-2",
+        "injective-1",
+        "irishub-1",
+        "juno-1",
+        "kava_2222-10",
+        "likecoin-mainnet-2",
+        "mars-1",
+        "neutron-1",
+        "osmosis-1",
+        "secret-4",
+        "pacific-1",
+        "sentinelhub-2",
+        "stargaze-1",
+        "iov-mainnet-ibc",
+        "stride-1",
+        "phoenix-1",
+      ];
 
-  //     return trustMobileAvailableChains.includes(chainId as MainnetChainIds);
-  //   },
-  //   stakeUrl: "https://trustwallet.com/staking",
-  //   governanceUrl: "https://governance.trustwallet.com/",
-  //   features: [],
-  //   mode: "wallet-connect",
-  // },
+      return trustMobileAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    mode: "wallet-connect",
+  },
   {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
