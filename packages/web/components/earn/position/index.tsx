@@ -1,8 +1,6 @@
 import classNames from "classnames";
 
-import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 
 // const mockData = [
@@ -132,9 +130,9 @@ export const EarnPosition = ({
       <div className="flex flex-col gap-2">
         <span className="inline-flex items-center gap-4">
           <p className="text-subtitle-1">{t("earnPage.totalValueInvested")}</p>
-          <Tooltip content="lorem ipsum">
+          {/* <Tooltip content="lorem ipsum">
             <Icon id="info" width={16} height={16} />
-          </Tooltip>
+          </Tooltip> */}
           <Spinner
             className={classNames({ hidden: !isLoading, block: isLoading })}
           />
