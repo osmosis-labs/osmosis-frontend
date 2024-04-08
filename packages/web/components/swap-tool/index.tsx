@@ -73,12 +73,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
 
+    const slippageConfig = useSlippageConfig();
     const swapState = useSwap({
       initialFromDenom: sendTokenDenom,
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
       forceSwapInPoolId,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -86,8 +88,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       estimateDetailsContentRef,
       { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
     ] = useMeasure<HTMLDivElement>();
-
-    const slippageConfig = useSlippageConfig();
 
     // out amount less slippage calculated from slippage config
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
@@ -190,7 +190,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         },
       ]);
       swapState
-        .sendTradeTokenInTx(slippageConfig.slippage.toDec())
+        .sendTradeTokenInTx()
         .then((result) => {
           // onFullfill
           logEvent([
@@ -410,7 +410,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     size="sm"
                     className={classNames(
                       "text-wosmongton-300",
-                      swapState.inAmountInput.fraction === 0.5
+                      swapState.fractionButtonState.isHalf
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
@@ -418,7 +418,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       !swapState.inAmountInput.balance ||
                       swapState.inAmountInput.balance.toDec().isZero()
                     }
-                    onClick={() => swapState.inAmountInput.toggleHalf()}
+                    onClick={() => swapState.fractionButtonState.toggleHalf()}
                   >
                     {t("swap.HALF")}
                   </Button>
@@ -427,15 +427,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     size="sm"
                     className={classNames(
                       "text-wosmongton-300",
-                      swapState.inAmountInput.fraction === 1
+                      swapState.fractionButtonState.isMax
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
                     disabled={
                       !swapState.inAmountInput.balance ||
+                      (featureFlags.swapToolSimulateFee &&
+                        swapState.isLoadingMaxBalanceNetworkFee) ||
                       swapState.inAmountInput.balance.toDec().isZero()
                     }
-                    onClick={() => swapState.inAmountInput.toggleMax()}
+                    onClick={() => swapState.fractionButtonState.toggleMax()}
                   >
                     {t("swap.MAX")}
                   </Button>
