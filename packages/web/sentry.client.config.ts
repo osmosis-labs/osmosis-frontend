@@ -21,10 +21,10 @@ Sentry.init({
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
 
-  environment: process.env.NODE_ENV || "development",
+  environment: process.env.VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Temporarily disable due to client-side noise coming from extensions, Cosmos Kit, etc.
-  enabled: true,
+  enabled: false,
   // enabled:
   //   process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 

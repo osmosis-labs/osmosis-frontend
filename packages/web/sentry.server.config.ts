@@ -12,7 +12,7 @@ Sentry.init({
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 0.3,
 
-  environment: process.env.NODE_ENV || "development",
+  environment: process.env.VERCEL_ENV || process.env.NODE_ENV || "development",
 
   enabled:
     process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",

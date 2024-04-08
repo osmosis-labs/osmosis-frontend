@@ -10,7 +10,7 @@ Sentry.init({
 
   instrumenter: "otel",
 
-  environment: process.env.NODE_ENV || "development",
+  environment: process.env.VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 0.2,
