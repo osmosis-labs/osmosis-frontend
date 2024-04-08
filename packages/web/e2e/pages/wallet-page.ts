@@ -13,6 +13,7 @@ export class WalletPage {
   readonly nextBtn: Locator;
   readonly allCheckbox: Locator;
   readonly saveBtn: Locator;
+  readonly finishBtn: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -30,6 +31,7 @@ export class WalletPage {
     this.nextBtn = page.getByRole("button", { name: "Next", exact: true });
     this.allCheckbox = page.locator('input[type="checkbox"]').first();
     this.saveBtn = page.getByRole("button", { name: "Save", exact: true });
+    this.finishBtn = page.getByRole("button", { name: "Finish", exact: true });
   }
 
   async goto(extensionId: string) {
@@ -68,10 +70,6 @@ export class WalletPage {
   }
 
   async finish() {
-    // Finish button will close the extension page
-    // Just to show that not all locators must be in constructor.
-    await this.page
-      .getByRole("button", { name: "Finish", exact: true })
-      .click();
+    await this.finishBtn.click();
   }
 }
