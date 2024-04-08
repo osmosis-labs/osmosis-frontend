@@ -129,8 +129,7 @@
     "tailwindcss-animate": "^1.0.7",
     "utility-types": "^3.10.0",
     "web3-utils": "^1.7.4",
-    "zod": "^3.22.4",
-    "@vercel/otel": "^1.8.1"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
