@@ -129,7 +129,8 @@
     "tailwindcss-animate": "^1.0.7",
     "utility-types": "^3.10.0",
     "web3-utils": "^1.7.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@playwright/test": "^1.41.0"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
@@ -140,7 +141,6 @@
     "@types/debounce": "^1.2.1",
     "@types/dompurify": "^3.0.4",
     "@types/jest-in-case": "^1.0.6",
-    "@playwright/test": "^1.41.0",
     "@types/node": "^20.11.5",
     "@types/prettier": "^2.7.2",
     "@types/qrcode": "^1.5.0",
