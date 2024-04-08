@@ -107,8 +107,8 @@ It returns `unknown` types, so you may need to type cast to resolve TS errors.
 
 ### Run E2E Tests
 
-To install Playwright please execute `npx playwright install` from /web folder
+To install Playwright, please execute `npx playwright install` from the /web folder.
 
-To run E2E test please execute `npx playwright test -g "Test Select Swap Pair feature"` from /web folder
+To run E2E tests, please execute `npx playwright test -g "Test Select Swap Pair feature"` from the /web folder.
 
-Tests can be execute locally in a browser, just change `headless: true` to `headless: false`
+Tests can be executed locally in a browser by changing `headless: true` to `headless: false`.
