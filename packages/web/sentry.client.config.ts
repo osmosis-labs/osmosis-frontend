@@ -11,7 +11,7 @@ Sentry.init({
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 0.3,
+  tracesSampleRate: 1,
 
   replaysOnErrorSampleRate: 1.0,
 
@@ -20,9 +20,8 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
 
   // Temporarily disable due to client-side noise coming from extensions, Cosmos Kit, etc.
-  enabled: false,
-  // enabled:
-  //   process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
+  enabled:
+    process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
