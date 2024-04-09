@@ -4,14 +4,7 @@
  * production data from the SQS Osmosis API to ensure
  * functionality and stability.
  */
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -161,28 +154,11 @@ function assertValidQuote({
   // timeMs
   expect(isNumeric(quote.timeMs)).toBeTruthy();
 
-  // Token in fee amount fiat value
-  expect(quote.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
-
-  const tokenInFeeAmountFiatValue = quote
-    .tokenInFeeAmountFiatValue!.toDec()
-    .toString();
-  expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
-  expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
-
-  // token out price
-  expect(quote.tokenOutPrice).toBeInstanceOf(PricePretty);
-
-  const tokenOutPrice = quote.tokenOutPrice!.toDec().toString();
-  expect(isNumeric(tokenOutPrice)).toBeTruthy();
-  expect(parseFloat(tokenOutPrice)).toBeGreaterThan(0);
-
-  // amount fiat value
-  expect(quote.amountFiatValue).toBeInstanceOf(PricePretty);
-
-  const amountFiatValue = quote.amountFiatValue!.toDec().toString();
-  expect(isNumeric(amountFiatValue)).toBeTruthy();
-  expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
+  // In base out quote spot price
+  expect(quote.inBaseOutQuoteSpotPrice).toBeInstanceOf(Dec);
+  const inBaseOutQuoteSpotPrice = quote.inBaseOutQuoteSpotPrice;
+  expect(isNumeric(inBaseOutQuoteSpotPrice)).toBeTruthy();
+  expect(inBaseOutQuoteSpotPrice).toBeGreaterThan(0);
 }
 
 it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
@@ -462,19 +438,13 @@ it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async
   // expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
   // expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
 
-  // token out price
-  expect(reply.tokenOutPrice).toBeInstanceOf(PricePretty);
-
-  const tokenOutPrice = reply.tokenOutPrice!.toDec().toString();
-  expect(isNumeric(tokenOutPrice)).toBeTruthy();
-  expect(parseFloat(tokenOutPrice)).toBeGreaterThan(0);
-
-  // amount fiat value
-  expect(reply.amountFiatValue).toBeInstanceOf(PricePretty);
-
-  const amountFiatValue = reply.amountFiatValue!.toDec().toString();
-  expect(isNumeric(amountFiatValue)).toBeTruthy();
-  expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
+  // Note that TFM router does not return inBaseOutQuoteSpotPrice
+  // As a result, we keep this commented out for now.
+  //   // In base out quote spot price
+  //   expect(reply.inBaseOutQuoteSpotPrice).toBeInstanceOf(Dec);
+  //   const inBaseOutQuoteSpotPrice = reply.inBaseOutQuoteSpotPrice;
+  //   expect(isNumeric(inBaseOutQuoteSpotPrice)).toBeTruthy();
+  //   expect(inBaseOutQuoteSpotPrice).toBeGreaterThan(0);
 });
 
 /**

@@ -54,6 +54,8 @@ export type Quote = {
   effectivePriceOutOverIn?: Dec;
   /** Generally a positive number. */
   priceImpactTokenOut?: Dec;
+  // Spot price where token in is base and token out is quote.
+  inBaseOutQuoteSpotPrice?: Dec;
 };
 
 /** Quote with potential split of in token amount across multiple routes. */

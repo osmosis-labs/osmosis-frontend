@@ -1,11 +1,11 @@
 import { SignOptions } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { Asset, RouterKey } from "@osmosis-labs/server";
+import { type Asset, type RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
@@ -24,6 +24,10 @@ import { useEffect } from "react";
 
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import {
+  getTokenInFeeAmountFiatValue,
+  getTokenOutFiatValue,
+} from "~/hooks/fiat-getters";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -417,9 +421,41 @@ export function useSwap({
     quote,
   ]);
 
+  // Calculate token out fiat value from price impact and token in fiat value.
+  //
+  // This helps to mitigate the impact of various levels of caches. Here, we are guaranteed that to use
+  // the same fiat spot price used for both token in and token out amounts.
+  //
+  // The price impact is computed directly from quote, ensuring most up-to-date state.
+  // This guarantees consistency between token in and token out fiat values.
+  let tokenOutFiatValue: PricePretty = useMemo(
+    () =>
+      getTokenOutFiatValue(
+        quote?.priceImpactTokenOut?.toDec(),
+        inAmountInput.fiatValue?.toDec()
+      ),
+    [inAmountInput.fiatValue, quote?.priceImpactTokenOut]
+  );
+
+  // Calculate token in fee amount fiat value from token in fee amount returned by quote and token in price
+  // queried above from the same source.
+  // By inversally using the token in price, we ensure that the token in fee amount fiat value is consistent
+  // relative to the token in and token out fiat value
+  let tokenInFeeAmountFiatValue: PricePretty = useMemo(
+    () =>
+      getTokenInFeeAmountFiatValue(
+        swapAssets.fromAsset,
+        quote?.tokenInFeeAmount,
+        inAmountInput.price
+      ),
+    [inAmountInput.price, quote?.tokenInFeeAmount, swapAssets.fromAsset]
+  );
+
   return {
     ...swapAssets,
     inAmountInput,
+    tokenOutFiatValue,
+    tokenInFeeAmountFiatValue,
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
@@ -428,7 +464,7 @@ export function useSwap({
         : undefined,
     inBaseOutQuoteSpotPrice,
     totalFee: sum([
-      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+      tokenInFeeAmountFiatValue,
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
     ]),
     networkFee,
