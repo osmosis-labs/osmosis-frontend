@@ -6,11 +6,8 @@ import { CopyIcon, Icon } from "~/components/assets";
 // TODO migrate from profile
 export const CopyIconButton = ({ valueToCopy }: { valueToCopy: string }) => {
   const [hasCopied, setHasCopied] = useState(false);
-  const [_state, copyToClipboard] = useCopyToClipboard();
-  const [_isReady, _cancel, reset] = useTimeoutFn(
-    () => setHasCopied(false),
-    2000
-  );
+  const [, copyToClipboard] = useCopyToClipboard();
+  const [, , reset] = useTimeoutFn(() => setHasCopied(false), 2000);
 
   const onCopyAddress = () => {
     copyToClipboard(valueToCopy);

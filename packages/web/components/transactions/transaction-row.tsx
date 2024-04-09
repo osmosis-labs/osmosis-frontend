@@ -13,15 +13,21 @@ interface TransactionDetailsProps {
 
 const TransactionDetails = ({ status }: TransactionDetailsProps) => {
   const getFromTextStyle = () => {
-    if (status === "Pending") return "text-osmoverse-400";
-    if (status === "Success") return "text-osmoverse-100";
-    if (status === "Failure") return "text-rust-400";
+    const styles = {
+      Pending: "text-osmoverse-400",
+      Success: "text-osmoverse-100",
+      Failure: "text-rust-400",
+    };
+    return styles[status];
   };
 
   const getToTextStyle = () => {
-    if (status === "Pending") return "text-osmoverse-400";
-    if (status === "Success") return "text-bullish-400";
-    if (status === "Failure") return "text-rust-400";
+    const styles = {
+      Pending: "text-osmoverse-400",
+      Success: "text-bullish-400",
+      Failure: "text-rust-400",
+    };
+    return styles[status];
   };
 
   return (

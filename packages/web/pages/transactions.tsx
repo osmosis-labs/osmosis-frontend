@@ -1,14 +1,12 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import LinkButton from "~/components/buttons/link-button";
 import { SlideOverContent } from "~/components/transactions/slide-over-content";
 import { TransactionContent } from "~/components/transactions/transaction-content";
-import { useNavBar } from "~/hooks";
-import { useFeatureFlags } from "~/hooks";
+import { useFeatureFlags, useNavBar } from "~/hooks";
 
 const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
