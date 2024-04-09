@@ -37,9 +37,10 @@ function getBatchLoader() {
   return cachified({
     cache: sidecarCache,
     key: "sidecar-batch-loader",
-    ttl: 1000 * 60 * 10, // 10 minutes
-    getFreshValue: () =>
-      new EdgeDataLoader(
+    ttl: 1000 * 10, // 10 seconds
+    getFreshValue: () => {
+      console.log("getFreshValue Batch loader");
+      return new EdgeDataLoader(
         (coinMinimalDenoms: readonly string[]) => {
           return queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
             coinMinimalDenoms.map((baseCoinMinimalDenom) => {
@@ -67,6 +68,7 @@ function getBatchLoader() {
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
           maxBatchSize: 100,
         }
-      ),
+      );
+    },
   });
 }

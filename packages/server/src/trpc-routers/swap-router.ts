@@ -7,11 +7,7 @@ import { AssetList } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { SIDECAR_BASE_URL, TFM_BASE_URL } from "../env";
-import {
-  calcAssetValue,
-  getAsset,
-  getAssetPrice,
-} from "../queries/complex/assets";
+import { calcAssetValue, getAsset } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { Pool } from "../queries/complex/pools";
 import { getCosmwasmPoolTypeFromCodeId } from "../queries/complex/pools/env";
@@ -106,17 +102,11 @@ export const swapRouter = createTRPCRouter({
 
         // calculate fiat value of amounts
         // get fiat value
-        const tokenInFeeAmountValue = quote.tokenInFeeAmount
-          ? await calcAssetValue({
-              ...ctx,
-              anyDenom: tokenInDenom,
-              amount: quote.tokenInFeeAmount,
-            }).catch((e) => captureErrorAndReturn(e, undefined))
-          : undefined;
-        const tokenOutPrice = await getAssetPrice({
-          ...ctx,
-          asset: { coinMinimalDenom: tokenOutDenom },
-        }).catch((e) => captureErrorAndReturn(e, undefined));
+        // NOTE: remove to avoid noise stemming from prices.
+        const tokenInFeeAmountValue = undefined;
+
+        const tokenOutPrice = undefined;
+
         const tokenOutValue = await calcAssetValue({
           ...ctx,
           anyDenom: tokenOutDenom,
@@ -131,6 +121,8 @@ export const swapRouter = createTRPCRouter({
         const amountFiatValue = tokenOutValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
+
+        console.log("amountFiatValue ", amountFiatValue?.toString());
 
         return {
           ...quote,

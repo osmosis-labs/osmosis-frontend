@@ -707,8 +707,8 @@ function useQueryRouterBestQuote(
 
           // quotes should not be considered fresh for long, otherwise
           // the gas simulation will fail due to slippage and the user would see errors
-          staleTime: 5_000,
-          cacheTime: 5_000,
+          staleTime: 2_000,
+          cacheTime: 2_000,
           // Disable retries, as useQueries
           // will block successfull quotes from being returned
           // if failed quotes are being returned
