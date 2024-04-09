@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText } from "@osmosis-labs/utils";
+import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
@@ -433,10 +433,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                     disabled={
                       !swapState.inAmountInput.balance ||
-                      (featureFlags.swapToolSimulateFee &&
-                        swapState.isLoadingMaxBalanceNetworkFee) ||
                       swapState.inAmountInput.balance.toDec().isZero()
                     }
+                    isLoading={
+                      featureFlags.swapToolSimulateFee &&
+                      !isNil(account?.address) &&
+                      !swapState.inAmountInput?.balance?.toDec().isZero() &&
+                      swapState.isLoadingMaxBalanceNetworkFee
+                    }
+                    loadingText={t("swap.MAX")}
+                    classes={{
+                      spinner: "!h-3 !w-3",
+                      spinnerContainer: "!gap-1",
+                    }}
                     onClick={() => swapState.fractionButtonState.toggleMax()}
                   >
                     {t("swap.MAX")}
