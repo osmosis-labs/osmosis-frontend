@@ -213,6 +213,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                       type === "stable" ||
                       type === "cosmwasm-transmuter" ||
                       type === "cosmwasm-astroport-pcl" ||
+                      type === "cosmwasm-whitewhale" ||
                       type === "cosmwasm") && (
                       <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
                         {type === "concentrated" && (
@@ -237,6 +238,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                             ? "pool.transmuter"
                             : type === "cosmwasm-astroport-pcl"
                             ? "Astroport PCL"
+                            : type === "cosmwasm-whitewhale"
+                            ? "White Whale"
                             : type === "cosmwasm"
                             ? "pool.custom"
                             : "pool.stableswapEnabled"

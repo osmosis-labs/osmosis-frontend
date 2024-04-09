@@ -191,15 +191,6 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
       },
-      flags.earnPage
-        ? {
-            label: t("earnPage.title"),
-            link: "/earn",
-            icon: <Icon id="earn" className="h-5 w-5" />,
-            isNew: true,
-            selectionTest: /\/earn/,
-          }
-        : null,
       ...(flags.portfolioPageAndNewAssetsPage
         ? [
             {
@@ -223,6 +214,15 @@ const MainLayoutWrapper: FunctionComponent<{
               selectionTest: /\/assets/,
             },
           ]),
+      flags.earnPage
+        ? {
+            label: t("earnPage.title"),
+            link: "/earn",
+            icon: <Icon id="earn" className="h-5 w-5" />,
+            isNew: true,
+            selectionTest: /\/earn/,
+          }
+        : null,
       flags.staking
         ? {
             label: t("menu.stake"),

@@ -18,7 +18,7 @@ import { superjson } from "./utils/superjson";
 /**
  * Pass asset lists and chain list to be used cas context in backend service.
  */
-type CreateContextOptions = {
+export type CreateContextOptions = {
   assetLists: AssetList[];
   chainList: Chain[];
 };

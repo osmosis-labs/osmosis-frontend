@@ -508,6 +508,8 @@ export function useSwapAssets({
       enabled: canLoadAssets,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      trpc: { context: { skipBatch: true } },
     }
   );
 

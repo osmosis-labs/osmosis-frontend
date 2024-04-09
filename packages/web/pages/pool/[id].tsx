@@ -50,7 +50,8 @@ const Pool: FunctionComponent<Props> = ({
     const isCosmwasmNotSupported =
       pool.type.startsWith("cosmwasm") &&
       pool.type !== "cosmwasm-transmuter" &&
-      pool.type !== "cosmwasm-astroport-pcl";
+      pool.type !== "cosmwasm-astroport-pcl" &&
+      pool.type !== "cosmwasm-whitewhale";
 
     const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
 

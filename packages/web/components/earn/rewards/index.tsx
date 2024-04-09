@@ -38,12 +38,13 @@ export const EarnRewards = ({
   const claimAllRewards = useCallback(async () => {
     logEvent([EventName.EarnPage.rewardsClaimStarted]);
     const messages: EncodeObject[] = [];
+    console.log(filteredUnclaimedRewards);
 
     if (!account) return;
 
     filteredUnclaimedRewards.forEach(({ id, platform }) => {
       switch (platform) {
-        case "Cosmos SDK":
+        case "Osmosis":
           messages.push(
             account?.osmosis.msgOpts.withdrawDelegationRewards.messageComposer({
               delegator: account.address ?? "",
