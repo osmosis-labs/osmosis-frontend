@@ -54,12 +54,12 @@ export const MockChainList: (Chain & {
     apis: {
       rpc: [
         {
-          address: "https://rpc-osmosis.keplr.app",
+          address: "https://rpc.stage.osmosis.zone",
         },
       ],
       rest: [
         {
-          address: "https://lcd-osmosis.keplr.app",
+          address: "https://lcd.stage.osmosis.zone",
         },
       ],
     },
@@ -76,8 +76,8 @@ export const MockChainList: (Chain & {
       "osmosis-txfees",
     ],
     keplrChain: {
-      rpc: "https://rpc-osmosis.keplr.app",
-      rest: "https://lcd-osmosis.keplr.app",
+      rpc: "https://rpc.stage.osmosis.zone",
+      rest: "https://lcd.stage.osmosis.zone",
       chainId: TestOsmosisChainId,
       chainName: "osmosis",
       prettyChainName: "Osmosis",

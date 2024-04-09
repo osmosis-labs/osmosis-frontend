@@ -331,8 +331,8 @@ describe("getKeplrCompatibleChain", () => {
           },
         ],
         "prettyChainName": "Osmosis",
-        "rest": "https://lcd-osmosis.keplr.app",
-        "rpc": "https://rpc-osmosis.keplr.app",
+        "rest": "https://lcd.stage.osmosis.zone",
+        "rpc": "https://rpc.stage.osmosis.zone",
         "stakeCurrency": {
           "base": "uosmo",
           "coinDecimals": 6,

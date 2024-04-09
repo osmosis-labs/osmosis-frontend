@@ -25,7 +25,7 @@ describe("createNodeQuery", () => {
     const result = await query({ chainList: MockChains, ...params });
 
     expect(apiClient).toHaveBeenCalledWith(
-      `https://lcd-osmosis.keplr.app${path}`
+      `https://lcd.stage.osmosis.zone${path}`
     );
     expect(result).toEqual(mockResult);
   });
@@ -45,7 +45,7 @@ describe("createNodeQuery", () => {
     const result = await query({ chainList: MockChains, ...params });
 
     expect(apiClient).toHaveBeenCalledWith(
-      `https://lcd-osmosis.keplr.app${path(params)}`
+      `https://lcd.stage.osmosis.zone${path(params)}`
     );
     expect(result).toEqual(mockResult);
   });

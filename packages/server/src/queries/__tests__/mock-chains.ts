@@ -43,12 +43,12 @@ export const MockChains: Chain[] = [
     apis: {
       rpc: [
         {
-          address: "https://rpc-osmosis.keplr.app",
+          address: "https://rpc.stage.osmosis.zone",
         },
       ],
       rest: [
         {
-          address: "https://lcd-osmosis.keplr.app",
+          address: "https://lcd.stage.osmosis.zone",
         },
       ],
     },
