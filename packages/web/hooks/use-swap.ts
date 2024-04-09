@@ -119,8 +119,10 @@ export function useSwap(
   });
 
   useEffect(() => {
-    if (!maxBalanceNetworkFee?.gasAmount) return;
-    setGasAmount(maxBalanceNetworkFee.gasAmount);
+    if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
+    setGasAmount(
+      maxBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
+    );
   }, [maxBalanceNetworkFee?.gasAmount]);
 
   // load flags

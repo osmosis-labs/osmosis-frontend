@@ -72,25 +72,16 @@ export function useAmountInput({
         fractionState.isMax &&
         gasFee?.denom === currency?.coinDenom &&
         !!gasFee;
-      console.log(
-        shouldSubtractMaxWithFee,
-        fractionState.value &&
-          rawCurrencyBalance && {
-            fee: gasFee?.toDec(),
-            sub: shouldSubtractMaxWithFee ? gasFee.toDec() : new Dec(0),
-            before: new Dec(rawCurrencyBalance).mul(
-              new Dec(fractionState.value)
-            ),
-            after: new Dec(rawCurrencyBalance)
-              .mul(new Dec(fractionState.value))
-              .sub(shouldSubtractMaxWithFee ? gasFee.toDec() : new Dec(0)),
-          }
-      );
+
       const amountInt = (
         fractionState.value && rawCurrencyBalance
           ? new Dec(rawCurrencyBalance)
               .mul(new Dec(fractionState.value))
-              .sub(shouldSubtractMaxWithFee ? gasFee.toDec() : new Dec(0))
+              .sub(
+                shouldSubtractMaxWithFee
+                  ? new Dec(gasFee.toCoin().amount)
+                  : new Dec(0)
+              )
           : new Dec(inputAmount === "" ? 0 : inputAmount).mul(
               decimalMultiplication
             )
