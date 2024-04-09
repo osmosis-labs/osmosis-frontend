@@ -2,6 +2,9 @@
   "name": "@osmosis-labs/web",
   "version": "5.1.0",
   "private": true,
+  "jest": {
+    "testPathIgnorePatterns": ["e2e"]
+  },
   "scripts": {
     "predev": "yarn generate",
     "dev": "concurrently --raw --kill-others 'next dev' 'yarn watch'",
