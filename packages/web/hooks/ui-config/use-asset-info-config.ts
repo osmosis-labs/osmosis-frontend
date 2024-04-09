@@ -100,6 +100,11 @@ export const useAssetInfoConfig = (
     isError: isErrorCoingecko,
   } = api.edge.assets.getCoingeckoAssetHistoricalPrice.useQuery(
     {
+      /**
+       * We need to add a fallback but just to avoid ts errors,
+       * using `enabled` prop we make sure that we do not trigger
+       * the query if the id is undefined
+       */
       id: coingeckoId ?? "",
       timeFrame: config.historicalRange,
     },
