@@ -30,7 +30,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
 
     return (
       <div
-        className={classNames("flex items-center gap-2", {
+        className={classNames("flex w-48 items-center gap-2", {
           "opacity-40": !shouldDisplayUnverifiedAssets && !isVerified,
         })}
         onMouseEnter={() => setShowStar(true)}

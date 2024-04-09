@@ -388,6 +388,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       () => searchBoxIsFocused && (!query || query.length === 0),
       [query, searchBoxIsFocused]
     );
+    // const shouldShowTop5 = false;
 
     const tableData = useMemo(() => {
       const data: TableCell[] = [];
@@ -709,12 +710,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 display: t("assets.table.columns.assetChain"),
                 displayCell: AssetNameCell,
                 sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+                className: "w-32 min-w-32",
               },
               {
                 display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
+                className: "text-right pr-24 lg:pr-8 1.5md:pr-1 w-32 min-w-32",
               },
               ...(mergeWithdrawCol
                 ? ([
@@ -749,7 +751,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         ) : (
                           <TransferButtonCell type="deposit" {...cell} />
                         ),
-                      className: "text-left",
+                      className: "text-left w-32 min-w-32 max-w-[5rem]",
                     },
                     {
                       display: t("assets.table.columns.withdraw"),
@@ -758,6 +760,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         !cell.isVerified ? null : (
                           <TransferButtonCell type="withdraw" {...cell} />
                         ),
+                      className: "text-left w-32 min-w-32 max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}

@@ -8,7 +8,7 @@ export const BalanceCell: FunctionComponent<Partial<Cell>> = ({
   fiatValue,
 }) =>
   amount ? (
-    <div className="right flex flex-col">
+    <div className="right flex w-48 flex-col">
       <span className="body1 text-white-high">
         <DesktopOnlyPrivateText text={amount} />
       </span>
