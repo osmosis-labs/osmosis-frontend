@@ -280,10 +280,10 @@ const SlideOverContent = ({
   return (
     <Transition
       show={open}
-      enter="transition-width ease-in-out duration-300"
+      enter="transition-width ease-out duration-500"
       enterFrom="w-0" // Starting from width 0
       enterTo="w-[456px]" // Ending at full width
-      leave="transition-width ease-in-out duration-300"
+      leave="transition-width ease-out duration-500"
       leaveFrom="w-[456px]" // Starting from full width
       leaveTo="w-0" // Ending at width 0
     >
