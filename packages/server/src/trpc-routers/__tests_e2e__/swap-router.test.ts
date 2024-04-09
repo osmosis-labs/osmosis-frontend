@@ -153,12 +153,6 @@ function assertValidQuote({
 
   // timeMs
   expect(isNumeric(quote.timeMs)).toBeTruthy();
-
-  // In base out quote spot price
-  expect(quote.inBaseOutQuoteSpotPrice).toBeInstanceOf(Dec);
-  const inBaseOutQuoteSpotPrice = quote.inBaseOutQuoteSpotPrice;
-  expect(isNumeric(inBaseOutQuoteSpotPrice)).toBeTruthy();
-  expect(inBaseOutQuoteSpotPrice).toBeGreaterThan(0);
 }
 
 it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
@@ -437,14 +431,6 @@ it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async
   //   .toString();
   // expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
   // expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
-
-  // Note that TFM router does not return inBaseOutQuoteSpotPrice
-  // As a result, we keep this commented out for now.
-  //   // In base out quote spot price
-  //   expect(reply.inBaseOutQuoteSpotPrice).toBeInstanceOf(Dec);
-  //   const inBaseOutQuoteSpotPrice = reply.inBaseOutQuoteSpotPrice;
-  //   expect(isNumeric(inBaseOutQuoteSpotPrice)).toBeTruthy();
-  //   expect(inBaseOutQuoteSpotPrice).toBeGreaterThan(0);
 });
 
 /**

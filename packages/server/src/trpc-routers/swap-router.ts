@@ -109,7 +109,6 @@ export const swapRouter = createTRPCRouter({
             ? new RatePretty(quote.priceImpactTokenOut.abs())
             : undefined,
           swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
-          inBaseOutQuoteSpotPrice: quote.inBaseOutQuoteSpotPrice ?? undefined,
         };
       }
     ),
