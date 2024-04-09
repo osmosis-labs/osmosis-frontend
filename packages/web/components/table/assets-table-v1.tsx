@@ -571,13 +571,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   onFocusChange={(isFocused) =>
                     setSearchBoxIsFocused(isFocused)
                   }
-                  rightIcon={() =>
-                    !searchBoxIsFocused && (
-                      <text className="mr-2 rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
-                        /
+                  rightIcon={() => (
+                    <div className="w-10 text-end">
+                      <text className="inline-block rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
+                        {searchBoxIsFocused ? "esc" : " /"}
                       </text>
-                    )
-                  }
+                    </div>
+                  )}
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
