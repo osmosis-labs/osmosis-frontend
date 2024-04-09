@@ -807,7 +807,12 @@ const useWebSearchBoxState = () => {
     { event: "keydown" },
     []
   );
-  useKey("Escape", () => searchBoxRef.current?.blur(), { event: "keydown" }, []);
+  useKey(
+    "Escape",
+    () => searchBoxRef.current?.blur(),
+    { event: "keydown" },
+    []
+  );
   return {
     searchBoxIsFocused,
     searchBoxRef,
