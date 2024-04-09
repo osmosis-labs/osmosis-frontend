@@ -288,7 +288,7 @@
     }
   },
   "portfolio": {
-    "trade": "貿易",
+    "trade": "交易",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會",
@@ -399,7 +399,7 @@
   },
   "menu": {
     "assets": "資產",
-    "portfolio": "資料夾",
+    "portfolio": "投資組合",
     "help": "支持",
     "info": "統計數據",
     "pools": "流動性池",
@@ -784,7 +784,7 @@
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
     },
     "portfolio": {
-      "title": "滲透產品組合",
+      "title": "投資組合",
       "description": "在 Osmosis 上查看您的資產 - 領先的去中心化 Cosmos 交易所"
     },
     "disclaimer": {
