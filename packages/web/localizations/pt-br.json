@@ -843,6 +843,7 @@
     "reward": "Recompensa",
     "lock": "Desvincular",
     "days": "dias",
+    "day": "dia",
     "risk": "Risco",
     "strategyMethod": "Tipos",
     "allMethods": "Todos os tipos",
@@ -894,7 +895,7 @@
         "description": "O tipo de ativos obtidos através das operações e/ou incentivos da estratégia."
       },
       "lock": {
-        "description": "O período de tempo que uma posição fica bloqueada antes de poder ser encerrada (ou seja, antes que os ativos depositados possam ser retirados) da estratégia. Observação: em algumas estratégias, as recompensas podem não ser ganhas durante o período de desbloqueio."
+        "description": "O período de tempo em que uma posição fica vinculada antes de poder ser encerrada. Nota: Nem todos os períodos de desvinculação da estratégia* têm distribuições de recompensas."
       },
       "strategy": {
         "description": "Oportunidades de ganhos de vários tipos, hospedadas em diversas plataformas, estão disponíveis no Osmosis. O acesso a uma estratégia exige o depósito de ativos específicos."

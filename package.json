@@ -23,12 +23,14 @@
     "clean": "turbo clean --parallel; rm -rf node_modules",
     "analyze": "turbo analyze",
     "test": "turbo test",
-    "test:e2e": "lerna run test:e2e",
+    "test:e2e": "turbo run test:e2e",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix"
+    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix",
+    "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores",
+    "postinstall": "yarn lint:workspace"
   },
   "pre-commit": [
     "pre-commit"
@@ -43,10 +45,13 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
+    "@babel/core": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
     "@inlang/cli": "^2.11.0",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "babel-jest": "^29.7.0",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.50.0",
     "eslint-plugin-import": "^2.28.1",
@@ -64,9 +69,11 @@
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.2",
     "turbo": "^1.13.0",
-    "typescript": "5.4.3"
+    "typescript": "5.4.3",
+    "jest-environment-jsdom": "^29.7.0",
+    "is-ci-cli": "^2.2.0"
   },
-  "dependencies": {},
+  "packageManager": "yarn@1.22.22",
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",

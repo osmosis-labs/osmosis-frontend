@@ -187,6 +187,12 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
       },
+      {
+        label: t("menu.assets"),
+        link: "/assets",
+        icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+        selectionTest: /\/assets/,
+      },
       flags.earnPage
         ? {
             label: t("earnPage.title"),
@@ -196,12 +202,6 @@ const MainLayoutWrapper: FunctionComponent<{
             selectionTest: /\/earn/,
           }
         : null,
-      {
-        label: t("menu.assets"),
-        link: "/assets",
-        icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-        selectionTest: /\/assets/,
-      },
       flags.staking
         ? {
             label: t("menu.stake"),
