@@ -176,7 +176,6 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
-    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -288,6 +287,14 @@
       "liquid_staking": "Płynna stawka"
     }
   },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Twoje aktywa",
+    "yourPositions": "Twoje pozycje",
+    "recentTransfers": "Ostatnie transfery",
+    "yourSuperchargedPositions": "Twoje doładowane pozycje",
+    "yourLiquidityPools": "Twoje pule płynności"
+  },
   "buyTokens": "Kup tokeny",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Środki",
+    "portfolio": "Teczka",
     "help": "Wsparcie",
     "info": "Statystyki",
     "pools": "Pule",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
+    "portfolio": {
+      "title": "Portfolio osmozy",
+      "description": "Przeglądaj swoje aktywa na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
     },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",

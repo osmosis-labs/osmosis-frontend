@@ -3,16 +3,16 @@ import { apiClient } from "@osmosis-labs/utils";
 import { TIMESERIES_DATA_URL } from "../../env";
 
 export interface TokenData {
-  price: number;
+  price: number | null;
   denom: string;
   symbol: string;
   main: boolean;
   liquidity: number;
-  liquidity_24h_change: number;
+  liquidity_24h_change: number | null;
   volume_24h: number;
-  volume_24h_change: number;
+  volume_24h_change: number | null;
   name: string;
-  price_24h_change: number;
+  price_24h_change: number | null;
   exponent: number;
   display: string;
 }

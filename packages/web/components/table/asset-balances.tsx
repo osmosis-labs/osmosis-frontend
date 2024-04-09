@@ -1,9 +1,4 @@
-import type {
-  Category,
-  CommonPriceChartTimeFrame,
-  Search,
-  SortDirection,
-} from "@osmosis-labs/server";
+import type { Search, SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -25,8 +20,12 @@ import {
 } from "react";
 
 import { AssetCell } from "~/components/table/cells/asset";
-import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
+import {
+  Breakpoint,
+  useTranslation,
+  useWalletSelect,
+  useWindowSize,
+} from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -34,24 +33,29 @@ import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
-import { AssetCategoriesSelectors } from "../assets/categories";
-import { SelectMenu } from "../control/select-menu";
+import { Icon } from "../assets";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
-  RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
+  RouterOutputs["edge"]["assets"]["getUserBridgeAssets"]["items"][number];
 type SortKey = NonNullable<
-  RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+  RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
 
-export const AssetsInfoTable: FunctionComponent<{
+export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
-  const { userSettings } = useStore();
+  /** Memoized function for handling deposits from table row. */
+  onDeposit: (coinMinimalDenom: string) => void;
+  /** Memoized function for handling withdrawals from table row. */
+  onWithdraw: (coinMinimalDenom: string) => void;
+}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
+  const { accountStore, userSettings } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
@@ -62,26 +66,11 @@ export const AssetsInfoTable: FunctionComponent<{
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
-
-  const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
   }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  const [selectedCategory, setCategory] = useState<Category | undefined>();
-  const selectCategory = useCallback((category: Category) => {
-    setCategory(category);
-  }, []);
-  const unselectCategory = useCallback(() => {
-    setCategory(undefined);
-  }, []);
-  const categories = useMemo(
-    () => (selectedCategory ? [selectedCategory] : undefined),
-    [selectedCategory]
-  );
 
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
@@ -99,8 +88,9 @@ export const AssetsInfoTable: FunctionComponent<{
     isPreviousData,
     isFetchingNextPage,
     fetchNextPage,
-  } = api.edge.assets.getMarketAssets.useInfiniteQuery(
+  } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
+      userOsmoAddress: account?.address,
       limit: 50,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
@@ -109,9 +99,9 @@ export const AssetsInfoTable: FunctionComponent<{
         keyPath: sortKey,
         direction: sortDirection,
       },
-      categories,
     },
     {
+      enabled: !isLoadingWallet,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
@@ -165,56 +155,40 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
         cell: (cell) => (
-          <HistoricalPriceCell
-            coinDenom={cell.row.original.coinDenom}
-            priceChange24h={cell.row.original.priceChange24h}
-            timeFrame={selectedTimeFrame}
-          />
+          <HistoricalPriceCell {...cell.row.original} timeFrame="1D" />
         ),
       }),
-      columnHelper.accessor(
-        (row) => (row.volume24h ? formatPretty(row.volume24h) : "-"),
-        {
-          id: "volume24h",
-          header: () => (
-            <SortHeader
-              label="Volume (24h)"
-              sortKey="volume24h"
-              currentSortKey={sortKey}
-              currentDirection={sortDirection}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            />
-          ),
-        }
-      ),
       columnHelper.accessor((row) => row, {
-        id: "marketCap",
+        id: "balance",
         header: () => (
           <SortHeader
-            label="Market Cap"
-            sortKey="marketCap"
+            label="Balance"
+            sortKey="usdValue"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
             setSortKey={setSortKey}
           />
         ),
-        cell: (cell) => <MarketCapCell {...cell.row.original} />,
+        cell: (cell) => <BalanceCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => <AssetActionsCell {...cell.row.original} />,
+        cell: (cell) => (
+          <AssetActionsCell
+            {...cell.row.original}
+            onDeposit={onDeposit}
+            onWithdraw={onWithdraw}
+          />
+        ),
       }),
     ];
-  }, [selectedTimeFrame, sortKey, sortDirection, setSortKey]);
+  }, [sortKey, sortDirection, onDeposit, onWithdraw, setSortKey]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
-    if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
     if (width < Breakpoint.lg) collapsedColIds.push("price");
     if (width < Breakpoint.md) collapsedColIds.push("assetActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
@@ -273,36 +247,13 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <section className="mb-4">
-        <AssetCategoriesSelectors
-          selectedCategory={selectedCategory}
-          onSelectCategory={selectCategory}
-          unselectCategory={unselectCategory}
-        />
-      </section>
-      <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-        <SearchBox
-          currentValue={searchQuery?.query ?? ""}
-          onInput={onSearchInput}
-          placeholder={t("assets.table.search")}
-          debounce={500}
-        />
-        <SelectMenu
-          classes={useConst({ container: "h-full 1.5lg:hidden" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-            [setSelectedTimeFrame]
-          )}
-        />
-      </div>
+      <SearchBox
+        className="my-4"
+        currentValue={searchQuery?.query ?? ""}
+        onInput={onSearchInput}
+        placeholder={t("assets.table.search")}
+        debounce={500}
+      />
       <table
         className={classNames(
           "w-full",
@@ -390,17 +341,41 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-const MarketCapCell: AssetCellComponent = ({ marketCap, marketCapRank }) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span>{formatPretty(marketCap)}</span>}
-    {marketCapRank && (
-      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
+const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
+  <div className="ml-auto flex w-28 flex-col">
+    <span>
+      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
+    </span>
+    {usdValue && (
+      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
     )}
   </div>
 );
 
-export const AssetActionsCell: AssetCellComponent = () => (
-  <button>
-    <span className="text-wosmongton-200">Trade</span>
-  </button>
+export const AssetActionsCell: AssetCellComponent<{
+  onDeposit: (coinMinimalDenom: string) => void;
+  onWithdraw: (coinMinimalDenom: string) => void;
+}> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
+  <div className="flex items-center gap-2 text-wosmongton-200">
+    <button
+      className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+      onClick={(e) => {
+        e.preventDefault();
+        onDeposit(coinMinimalDenom);
+      }}
+    >
+      <Icon className="m-auto" id="deposit" width={16} height={16} />
+    </button>
+    {amount?.toDec().isPositive() && (
+      <button
+        className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+        onClick={(e) => {
+          e.preventDefault();
+          onWithdraw(coinMinimalDenom);
+        }}
+      >
+        <Icon className="m-auto" id="withdraw" width={16} height={16} />
+      </button>
+    )}
+  </div>
 );
