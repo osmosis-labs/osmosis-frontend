@@ -37,7 +37,7 @@ function getBatchLoader() {
   return cachified({
     cache: sidecarCache,
     key: "sidecar-batch-loader",
-    ttl: 1000 * 60, // 10 minute
+    ttl: 1000 * 60, // 1 minute
     getFreshValue: () =>
       new EdgeDataLoader(
         (coinMinimalDenoms: readonly string[]) => {
