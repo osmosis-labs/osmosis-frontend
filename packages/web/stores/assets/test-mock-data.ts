@@ -2,7 +2,7 @@ import type { Asset, ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 export const mockChainInfos: ChainInfoWithExplorer[] = [
   {
-    rpc: "https://rpc-osmosis.keplr.app/",
+    rpc: "https://rpc.stage.osmosis.zone/",
     rest: "https://lcd-osmosis-baba.keplr.app/",
     chainId: "osmosis-1",
     chainName: "Osmosis",

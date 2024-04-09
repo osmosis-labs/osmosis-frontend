@@ -444,7 +444,7 @@ export const MockChainList: (Chain & {
 
 export const mockChainInfos: ChainInfo[] = [
   {
-    rpc: "https://rpc-osmosis.keplr.app/",
+    rpc: "https://rpc.stage.osmosis.zone/",
     rest: "https://lcd-osmosis-baba.keplr.app/",
     chainId: "osmosis-1",
     chainName: "Osmosis",

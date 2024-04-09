@@ -1,7 +1,7 @@
 import { createNodeQuery } from "../../../queries/base-utils";
 
 /** Params needed by frontend. There are more, so add them if needed. */
-// Try: https://lcd-osmosis.keplr.app/osmosis/poolmanager/v1beta1/Params
+// Try: https://lcd.stage.osmosis.zone/osmosis/poolmanager/v1beta1/Params
 export type PoolmanagerParamsResponse = {
   params: {
     taker_fee_params: {

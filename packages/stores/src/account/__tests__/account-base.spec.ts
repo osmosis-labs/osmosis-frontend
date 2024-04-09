@@ -45,7 +45,7 @@ describe("getFeeAmount — no address", () => {
 
     server.use(
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -76,7 +76,7 @@ describe("getFeeAmount — no address", () => {
 
     server.use(
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(ctx.status(500));
         }
@@ -177,7 +177,7 @@ describe("getFeeAmount — with address", () => {
 
     server.use(
       rest.get(
-        `https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/${address}`,
+        `https://lcd.stage.osmosis.zone/cosmos/bank/v1beta1/balances/${address}`,
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -206,7 +206,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -218,7 +218,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/fee_tokens",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/fee_tokens",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -240,7 +240,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/base_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/base_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -250,7 +250,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/spot_price_by_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/spot_price_by_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -293,7 +293,7 @@ describe("getFeeAmount — with address", () => {
 
     server.use(
       rest.get(
-        `https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/${address}`,
+        `https://lcd.stage.osmosis.zone/cosmos/bank/v1beta1/balances/${address}`,
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -322,7 +322,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -334,7 +334,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/fee_tokens",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/fee_tokens",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -356,7 +356,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/base_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/base_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -366,7 +366,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/spot_price_by_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/spot_price_by_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -475,7 +475,7 @@ describe("getFeeAmount — with address", () => {
 
     server.use(
       rest.get(
-        `https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/${address}`,
+        `https://lcd.stage.osmosis.zone/cosmos/bank/v1beta1/balances/${address}`,
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -495,7 +495,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -507,7 +507,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/fee_tokens",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/fee_tokens",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -524,7 +524,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/base_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/base_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -556,7 +556,7 @@ describe("getFeeAmount — with address", () => {
 
     server.use(
       rest.get(
-        `https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/${address}`,
+        `https://lcd.stage.osmosis.zone/cosmos/bank/v1beta1/balances/${address}`,
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -571,7 +571,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -583,7 +583,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/fee_tokens",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/fee_tokens",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -600,7 +600,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/base_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/base_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -632,7 +632,7 @@ describe("getFeeAmount — with address", () => {
 
     server.use(
       rest.get(
-        `https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/${address}`,
+        `https://lcd.stage.osmosis.zone/cosmos/bank/v1beta1/balances/${address}`,
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -652,7 +652,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -664,7 +664,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/fee_tokens",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/fee_tokens",
         (_req, res, ctx) => {
           return res(
             ctx.json({
@@ -674,7 +674,7 @@ describe("getFeeAmount — with address", () => {
         }
       ),
       rest.get(
-        "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/base_denom",
+        "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/base_denom",
         (_req, res, ctx) => {
           return res(
             ctx.json({

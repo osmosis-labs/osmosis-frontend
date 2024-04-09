@@ -40,7 +40,7 @@ import { server } from "tests/msw-server";
 
 server.use(
   rest.get(
-    "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+    "https://lcd.stage.osmosis.zone/osmosis/txfees/v1beta1/cur_eip_base_fee",
     (_req, res, ctx) => {
       return res(
         ctx.json({
