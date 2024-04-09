@@ -10,5 +10,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/(.*)",
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - monitoring (See https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/#configure-tunneling-to-avoid-ad-blockers)
+     */
+    "/((?!monitoring).*)",
+  ],
 };
