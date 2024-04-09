@@ -18,9 +18,9 @@ export const SlideOverContent = ({
       show={open}
       enter="transition-width ease-out duration-300"
       enterFrom="w-0"
-      enterTo="w-[480px]"
+      enterTo="w-[452px]"
       leave="transition-width ease-out duration-300"
-      leaveFrom="w-[480px]"
+      leaveFrom="w-[452px]"
       leaveTo="w-0"
     >
       <div className="flex min-h-full flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
@@ -94,7 +94,7 @@ export const SlideOverContent = ({
             </div>
           </div>
           <div className="flex flex-col py-3">
-            <div className="flex justify-between py-3">
+            <div className="flex justify-between gap-3 py-3">
               <div>Execution Price</div>
               <div className="flex gap-3">
                 <div className="text-body1 text-wosmongton-300">
@@ -103,7 +103,7 @@ export const SlideOverContent = ({
                 <CopyIconButton valueToCopy="97.80 USDC" />
               </div>
             </div>
-            <div className="flex justify-between py-3">
+            <div className="flex justify-between gap-3 py-3">
               <div>Total Fees</div>
               <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
             </div>
