@@ -13,7 +13,8 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - monitoring (See https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/#configure-tunneling-to-avoid-ad-blockers)
+     * - monitoring: Required in order to get Sentry data.
+     *   See https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/#configure-tunneling-to-avoid-ad-blockers)
      */
     "/((?!monitoring).*)",
   ],
