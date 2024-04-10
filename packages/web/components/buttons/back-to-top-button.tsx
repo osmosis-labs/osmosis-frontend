@@ -1,14 +1,29 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { Button } from "~/components/ui/button";
 
+function subscribe(callback: () => void) {
+  window.addEventListener("scroll", callback);
+
+  return () => {
+    window.removeEventListener("scroll", callback);
+  };
+}
+
+// https://react.dev/learn/you-might-not-need-an-effect#subscribing-to-an-external-store
+function useGetScrollY() {
+  return useSyncExternalStore(
+    subscribe,
+    () => window.scrollY, // value on the client
+    () => 0 // value on the server
+  );
+}
+
 // use within relative container
 export const BackToTopButton = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const scrollY = useGetScrollY();
 
-  const toggleVisibility = () => {
-    setIsVisible(window.scrollY > 1);
-  };
+  const isVisible = scrollY > 1;
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -16,14 +31,6 @@ export const BackToTopButton = () => {
       behavior: "smooth",
     });
   };
-
-  useEffect(() => {
-    window.addEventListener("scroll", toggleVisibility);
-
-    return () => {
-      window.removeEventListener("scroll", toggleVisibility);
-    };
-  }, []);
 
   return isVisible ? (
     <Button
