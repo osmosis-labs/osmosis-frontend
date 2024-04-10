@@ -574,7 +574,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   rightIcon={() => (
                     <div className="w-10 text-end">
                       <text className="inline-block rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
-                        {searchBoxInputIsFocused ? "esc" : " /"}
+                        {searchBoxInputIsFocused ? "esc" : " / "}
                       </text>
                     </div>
                   )}
