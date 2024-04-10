@@ -54,7 +54,7 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
           onClick={() => setIsExpended((prev) => !prev)}
         >
           <p className="subtitle1">{labelWithAlerts.label.name}</p>
-          <p className="caption font-caption text-osmoverse-200">
+          <p className="caption text-osmoverse-200">
             {labelWithAlerts.label.tooltipContent}
           </p>
           <Icon

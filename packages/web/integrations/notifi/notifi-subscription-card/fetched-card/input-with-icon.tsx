@@ -30,9 +30,7 @@ export const InputWithIcon: FunctionComponent<Props> = ({
           {...inputProps}
         />
       </div>
-      <label className="caption font-caption text-missionError">
-        {errorMessage}
-      </label>
+      <label className="caption text-missionError">{errorMessage}</label>
     </>
   );
 };

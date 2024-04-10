@@ -315,7 +315,7 @@ export const PriceChartHeader: FunctionComponent<{
         >
           <h4
             className={classNames(
-              "row-span-2 pr-1 font-caption sm:text-h5",
+              "caption row-span-2 pr-1 sm:text-h5",
               classes?.priceHeaderClass
             )}
           >
@@ -329,7 +329,7 @@ export const PriceChartHeader: FunctionComponent<{
           {baseDenom && quoteDenom ? (
             <div
               className={classNames(
-                "flex flex-col justify-center font-caption",
+                "caption flex flex-col justify-center",
                 classes?.priceSubheaderClass
               )}
             >
