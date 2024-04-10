@@ -25,7 +25,6 @@ import { useEffect } from "react";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { useFractionButtonState } from "~/hooks/use-faction-button-state";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
@@ -87,10 +86,8 @@ export function useSwap(
   });
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
-  const fractionButtonState = useFractionButtonState();
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
-    fractionState: fractionButtonState,
     gasAmount: gasAmount,
   });
 
@@ -362,7 +359,6 @@ export function useSwap(
   return {
     ...swapAssets,
     inAmountInput,
-    fractionButtonState,
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote

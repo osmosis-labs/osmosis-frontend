@@ -11,7 +11,6 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 
 import { useDebouncedState } from "~/hooks/use-debounced-state";
-import { FractionButtonState } from "~/hooks/use-faction-button-state";
 import { useStore } from "~/stores";
 
 import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
@@ -22,12 +21,10 @@ import { useBalances } from "../queries/cosmos/use-balances";
 export function useAmountInput({
   currency,
   inputDebounceMs = 500,
-  fractionState,
   gasAmount,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
-  fractionState: FractionButtonState;
   gasAmount?: CoinPretty;
 }) {
   // query user balance for currency
@@ -45,6 +42,8 @@ export function useAmountInput({
   // manage amounts, with ability to set fraction of the amount
   // `inputAmount` is the raw string input that includes decimals
   const [inputAmount, _setAmount] = useState("");
+  const [fraction, setFraction] = useState<number | null>(null);
+
   const setAmount = useCallback(
     (amount: string) => {
       // check validity of raw input
@@ -52,16 +51,24 @@ export function useAmountInput({
       if (amount.startsWith(".")) {
         amount = "0" + amount;
       }
-      fractionState.reset();
+
+      if (fraction != null) {
+        setFraction(null);
+      }
+
       _setAmount(amount);
     },
-    [fractionState]
+    [fraction]
   );
   // clear fraction when user changes currency
   // and user has no balance
   useEffect(() => {
-    if (isBalancesFetched && !rawCurrencyBalance) fractionState.reset();
-  }, [isBalancesFetched, rawCurrencyBalance, currency, fractionState]);
+    if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
+  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+
+  const isHalf = useMemo(() => fraction === 0.5, [fraction]);
+  const isMax = useMemo(() => fraction === 1, [fraction]);
+
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
@@ -69,14 +76,12 @@ export function useAmountInput({
         currency.coinDecimals
       );
       const shouldSubtractMaxWithFee =
-        fractionState.isMax &&
-        gasAmount?.denom === currency?.coinDenom &&
-        !!gasAmount;
+        isMax && gasAmount?.denom === currency?.coinDenom && !!gasAmount;
 
       const amountInt = (
-        fractionState.value && rawCurrencyBalance
+        fraction != null && rawCurrencyBalance
           ? new Dec(rawCurrencyBalance)
-              .mul(new Dec(fractionState.value))
+              .mul(new Dec(fraction))
               .sub(
                 shouldSubtractMaxWithFee
                   ? new Dec(gasAmount.toCoin().amount)
@@ -89,24 +94,17 @@ export function useAmountInput({
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [
-    currency,
-    fractionState.isMax,
-    fractionState.value,
-    gasAmount,
-    inputAmount,
-    rawCurrencyBalance,
-  ]);
+  }, [currency, inputAmount, isMax, gasAmount, fraction, rawCurrencyBalance]);
   const inputAmountWithFraction = useMemo(
     () =>
-      fractionState.value && amount
+      fraction != null && amount
         ? new IntPretty(amount)
             .inequalitySymbol(false)
             .locale(false)
             .trim(true)
             .toString()
         : inputAmount,
-    [fractionState, amount, inputAmount]
+    [amount, fraction, inputAmount]
   );
   // generate debounced quote from user inputs
   const [debouncedInAmount, setDebounceInAmount] =
@@ -133,10 +131,12 @@ export function useAmountInput({
     if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec()))
       return new InsufficientBalanceError("Insufficient balance");
   }, [inputAmount, balance, isBalancesFetched, amount]);
+
   const reset = useCallback(() => {
     setAmount("");
-    fractionState.reset();
-  }, [fractionState, setAmount]);
+    setFraction(null);
+  }, [setAmount]);
+
   return {
     inputAmount: inputAmountWithFraction,
     debouncedInAmount,
@@ -151,6 +151,19 @@ export function useAmountInput({
     error,
     setAmount,
     reset,
+
+    fraction,
+    setFraction,
+    isHalf,
+    isMax,
+    toggleMax: useCallback(
+      () => setFraction(fraction === 1 ? null : 1),
+      [fraction]
+    ),
+    toggleHalf: useCallback(
+      () => setFraction(fraction === 0.5 ? null : 0.5),
+      [fraction]
+    ),
   };
 }
 function isValidNumericalRawInput(input: string) {
