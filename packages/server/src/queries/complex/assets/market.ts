@@ -78,9 +78,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(
-    assets.map((asset) => getMarketAsset({ ...params, asset }))
-  );
+  return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
