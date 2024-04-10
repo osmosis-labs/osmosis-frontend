@@ -1,9 +1,4 @@
-import type {
-  Category,
-  CommonPriceChartTimeFrame,
-  Search,
-  SortDirection,
-} from "@osmosis-labs/server";
+import type { Category, Search, SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -26,7 +21,6 @@ import {
 
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -35,7 +29,6 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
-import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
@@ -61,9 +54,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
-
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
 
   const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
   const setSortKey = useCallback((key: SortKey | undefined) => {
@@ -168,7 +158,7 @@ export const AssetsInfoTable: FunctionComponent<{
           <HistoricalPriceCell
             coinDenom={cell.row.original.coinDenom}
             priceChange24h={cell.row.original.priceChange24h}
-            timeFrame={selectedTimeFrame}
+            timeFrame="1D"
           />
         ),
       }),
@@ -208,7 +198,7 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: (cell) => <AssetActionsCell {...cell.row.original} />,
       }),
     ];
-  }, [selectedTimeFrame, sortKey, sortDirection, setSortKey]);
+  }, [sortKey, sortDirection, setSortKey]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -280,29 +270,13 @@ export const AssetsInfoTable: FunctionComponent<{
           unselectCategory={unselectCategory}
         />
       </section>
-      <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-        <SearchBox
-          currentValue={searchQuery?.query ?? ""}
-          onInput={onSearchInput}
-          placeholder={t("assets.table.search")}
-          debounce={500}
-        />
-        <SelectMenu
-          classes={useConst({ container: "h-full 1.5lg:hidden" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-            [setSelectedTimeFrame]
-          )}
-        />
-      </div>
+      <SearchBox
+        className="mb-4 h-12"
+        currentValue={searchQuery?.query ?? ""}
+        onInput={onSearchInput}
+        placeholder={t("assets.table.search")}
+        debounce={500}
+      />
       <table
         className={classNames(
           "w-full",
