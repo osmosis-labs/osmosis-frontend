@@ -441,7 +441,7 @@ export function useSwap({
   // queried above from the same source.
   // By inversally using the token in price, we ensure that the token in fee amount fiat value is consistent
   // relative to the token in and token out fiat value
-  let tokenInFeeAmountFiatValue: PricePretty = useMemo(
+  const tokenInFeeAmountFiatValue: PricePretty = useMemo(
     () =>
       getTokenInFeeAmountFiatValue(
         swapAssets.fromAsset,
