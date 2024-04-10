@@ -89,7 +89,7 @@ export const EarnAllocation = () => {
                     ? strategyMethod
                     : displayedInfo === "platform"
                     ? platform
-                    : name}
+                    : name} 
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -101,7 +101,7 @@ export const EarnAllocation = () => {
         </div>
         <small
           className={classNames(
-            "absolute bottom-0 inline-flex w-full justify-center self-center font-subtitle2 font-medium tracking-normal text-osmoverse-300 overline transition-opacity duration-200 ease-in-out",
+            "subtitle2 absolute bottom-0 inline-flex w-full justify-center self-center tracking-normal text-osmoverse-300 overline transition-opacity duration-200 ease-in-out",
             { "opacity-0": y > 10 },
             { "opacity-50": y < 10 }
           )}
