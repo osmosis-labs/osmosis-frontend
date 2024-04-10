@@ -70,10 +70,6 @@ export class SwapPage {
       .getByText("type: osmosis/poolmanager/")
       .textContent();
     console.log("Wallet is approving: " + msgContentAmount);
-    await approvePage.screenshot({
-      path: "screenshot-approve-popup.png",
-      fullPage: true,
-    });
     // Approve trx
     await approveBtn.click();
     // wait for trx confirmation
@@ -153,7 +149,7 @@ export class SwapPage {
 
   async takeScreenshot(name: string) {
     await this.page.screenshot({
-      path: `screenshot-swap-${name}.png`,
+      path: `/e2e/screenshot-swap-${name}.png`,
       fullPage: true,
     });
   }

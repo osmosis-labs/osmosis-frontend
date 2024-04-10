@@ -10,7 +10,6 @@ test.describe("Test Swap feature", () => {
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "add your private key here";
-  const home = process.env.HOME; // Or path to the extension
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
 
@@ -19,11 +18,8 @@ test.describe("Test Swap feature", () => {
       "Before tests setup Wallet Extension. This will be extracted to a separate fixture"
     );
     // Launch Chrome with a Keplr wallet extension
-    const extensionId = "imjgbinhimofjphjnidblbbfopkplpfi";
-    const pathToExtension = path.join(
-      home,
-      "/keplr-wallet/packages/extension/build/manifest-v3"
-    );
+    const extensionId = "ibomioleaahcoaakgginocklpgejhmen";
+    const pathToExtension = path.join(__dirname, "../keplr-extension");
     console.log("pathToExtension" + pathToExtension);
     context = await chromium.launchPersistentContext("", {
       headless: false,

@@ -64,7 +64,7 @@ export class WalletPage {
 
   async takeScreenshot() {
     await this.page.screenshot({
-      path: "screenshot-wallet-setup.png",
+      path: "/e2e/screenshot-wallet-setup.png",
       fullPage: true,
     });
   }

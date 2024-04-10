@@ -3,6 +3,7 @@
 .eslintignore
 
 /.next
+/e2e/keplr-extension
 
 *.ico
 *.svg
