@@ -692,6 +692,7 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
+    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",

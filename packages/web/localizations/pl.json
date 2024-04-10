@@ -692,6 +692,7 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",

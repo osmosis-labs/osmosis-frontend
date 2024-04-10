@@ -91,24 +91,28 @@ export function useSwap(
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
     fractionState: fractionButtonState,
-    gasFee: gasAmount,
+    gasAmount: gasAmount,
   });
 
-  const { data: maxBalanceQuote, isLoading: isMaxBalanceQuoteLoading } =
-    useQueryRouterBestQuote(
-      {
-        tokenIn: swapAssets.fromAsset,
-        tokenOut: swapAssets.toAsset,
-        tokenInAmount: inAmountInput.balance?.toCoin().amount!,
-        forcePoolId: forceSwapInPoolId,
-        maxSlippage,
-      },
-      !!inAmountInput.balance
-    );
+  const {
+    data: maxBalanceQuote,
+    isLoading: isMaxBalanceQuoteLoading,
+    error: maxBalanceQuoteError,
+  } = useQueryRouterBestQuote(
+    {
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
+      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    },
+    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
+  );
 
   const {
     data: maxBalanceNetworkFee,
     isLoading: isLoadingMaxBalanceNetworkFee,
+    error: maxBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: maxBalanceQuote?.messages,
@@ -117,6 +121,10 @@ export function useSwap(
       !!inAmountInput.balance &&
       !isMaxBalanceQuoteLoading,
   });
+
+  const hasMaxBalanceError = useMemo(() => {
+    return !!maxBalanceNetworkFeeError || !!maxBalanceQuoteError;
+  }, [maxBalanceNetworkFeeError, maxBalanceQuoteError]);
 
   useEffect(() => {
     if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
@@ -369,6 +377,7 @@ export function useSwap(
     networkFee,
     isLoadingNetworkFee,
     isLoadingMaxBalanceNetworkFee,
+    hasMaxBalanceError,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,

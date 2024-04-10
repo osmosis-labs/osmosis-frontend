@@ -23,12 +23,12 @@ export function useAmountInput({
   currency,
   inputDebounceMs = 500,
   fractionState,
-  gasFee,
+  gasAmount,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   fractionState: FractionButtonState;
-  gasFee?: CoinPretty;
+  gasAmount?: CoinPretty;
 }) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
@@ -70,8 +70,8 @@ export function useAmountInput({
       );
       const shouldSubtractMaxWithFee =
         fractionState.isMax &&
-        gasFee?.denom === currency?.coinDenom &&
-        !!gasFee;
+        gasAmount?.denom === currency?.coinDenom &&
+        !!gasAmount;
 
       const amountInt = (
         fractionState.value && rawCurrencyBalance
@@ -79,7 +79,7 @@ export function useAmountInput({
               .mul(new Dec(fractionState.value))
               .sub(
                 shouldSubtractMaxWithFee
-                  ? new Dec(gasFee.toCoin().amount)
+                  ? new Dec(gasAmount.toCoin().amount)
                   : new Dec(0)
               )
           : new Dec(inputAmount === "" ? 0 : inputAmount).mul(
@@ -93,7 +93,7 @@ export function useAmountInput({
     currency,
     fractionState.isMax,
     fractionState.value,
-    gasFee,
+    gasAmount,
     inputAmount,
     rawCurrencyBalance,
   ]);
