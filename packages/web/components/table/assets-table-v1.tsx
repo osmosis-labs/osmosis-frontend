@@ -571,8 +571,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   size="small"
                   onFocusChange={delayOnFalse(setSearchBoxInputIsFocused)}
                   rightIcon={() => (
-                    <div className="w-10 text-end">
-                      <text className="inline-block rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
+                    <div className="mr-2 w-10 text-end lg:hidden">
+                      <text className="sr-3 inline-block rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
                         {searchBoxInputIsFocused ? "esc" : " / "}
                       </text>
                     </div>
