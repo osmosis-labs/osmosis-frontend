@@ -14,7 +14,6 @@ import {
 } from "../../data-services";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
-import { getAssetPrice } from "./price";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
@@ -27,12 +26,8 @@ export type AssetMarketInfo = Partial<{
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
 export async function getMarketAsset<TAsset extends Asset>({
-  assetLists,
-  chainList,
   asset,
 }: {
-  assetLists: AssetList[];
-  chainList: Chain[];
   asset: TAsset;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
@@ -40,11 +35,8 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const [currentPrice, marketCap, assetMarketActivity, coingeckoCoin] =
-        await Promise.all([
-          getAssetPrice({ assetLists, chainList, asset }).catch((e) =>
-            captureErrorAndReturn(e, undefined)
-          ),
+      const [marketCap, assetMarketActivity, coingeckoCoin] = await Promise.all(
+        [
           getAssetMarketCap(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           ),
@@ -54,14 +46,13 @@ export async function getMarketAsset<TAsset extends Asset>({
           getCoingeckoCoin(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           ),
-        ]);
+        ]
+      );
 
       const marketCapRank = coingeckoCoin?.market_cap_rank;
 
       return {
-        currentPrice: currentPrice
-          ? new PricePretty(DEFAULT_VS_CURRENCY, currentPrice)
-          : undefined,
+        currentPrice: assetMarketActivity?.price,
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
@@ -87,9 +78,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(
-    assets.map((asset) => getMarketAsset({ ...params, asset }))
-  );
+  return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
