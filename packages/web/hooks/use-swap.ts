@@ -428,7 +428,7 @@ export function useSwap({
   //
   // The price impact is computed directly from quote, ensuring most up-to-date state.
   // This guarantees consistency between token in and token out fiat values.
-  let tokenOutFiatValue: PricePretty = useMemo(
+  const tokenOutFiatValue: PricePretty = useMemo(
     () =>
       getTokenOutFiatValue(
         quote?.priceImpactTokenOut?.toDec(),
