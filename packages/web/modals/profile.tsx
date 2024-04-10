@@ -38,7 +38,7 @@ import {
 import Spinner from "~/components/loaders/spinner";
 import { ArrowButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -63,6 +63,7 @@ export const ProfileModal: FunctionComponent<
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const { fiatRampSelection } = useBridge();
+  const featureFlags = useFeatureFlags();
 
   const {
     isOpen: isAvatarSelectOpen,
@@ -250,7 +251,15 @@ export const ProfileModal: FunctionComponent<
               <span>{t("buyTokens")}</span>
             </button>
 
-            <Link href="/assets" passHref legacyBehavior>
+            <Link
+              href={
+                featureFlags.portfolioPageAndNewAssetsPage
+                  ? "/portfolio"
+                  : "/assets"
+              }
+              passHref
+              legacyBehavior
+            >
               <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
             </Link>
           </div>

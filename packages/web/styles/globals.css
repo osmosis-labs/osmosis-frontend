@@ -107,7 +107,7 @@
   }
 
   thead > tr {
-    @apply subtitle1 mb-1 border-b-2 border-osmoverse-800 text-osmoverse-300;
+    @apply body2 mb-1 border-b-2 border-osmoverse-800 text-osmoverse-300;
   }
 
   thead > tr > th:first-child {
@@ -119,7 +119,7 @@
   }
 
   tbody > tr {
-    @apply rounded-3xl;
+    @apply subtitle1 rounded-3xl;
   }
 
   tbody > tr > td {

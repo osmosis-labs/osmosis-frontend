@@ -61,96 +61,112 @@ export const useAssetInfoConfig = (
     };
   }, [config.historicalRange]);
 
-  if (!coingeckoId) {
-    const {
-      data: historicalPriceData,
-      isLoading,
-      isError,
-    } = api.edge.assets.getAssetHistoricalPrice.useQuery(
-      {
-        coinDenom: denom ?? queryDenom,
-        timeFrame: {
-          custom: customTimeFrame,
+  const {
+    data: historicalPriceData,
+    isLoading,
+    isError,
+  } = api.edge.assets.getAssetHistoricalPrice.useQuery(
+    {
+      coinDenom: denom ?? queryDenom,
+      timeFrame: {
+        custom: customTimeFrame,
+      },
+    },
+    {
+      enabled: Boolean(denom ?? queryDenom),
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 6, // 6 minutes
+      trpc: {
+        context: {
+          skipBatch: true,
         },
       },
-      {
-        enabled: Boolean(denom ?? queryDenom),
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
+    }
+  );
 
-    if (historicalPriceData) config.setHistoricalData(historicalPriceData);
-    config.setIsHistoricalDataLoading(isLoading);
-    config.setHistoricalDataError(isError);
-  } else {
-    const {
-      data: historicalPriceData,
-      isLoading,
-      isError,
-    } = api.edge.assets.getCoingeckoAssetHistoricalPrice.useQuery(
-      {
-        id: coingeckoId,
-        timeFrame: config.historicalRange,
+  if (historicalPriceData) config.setHistoricalData(historicalPriceData);
+  config.setIsHistoricalDataLoading(isLoading);
+  config.setHistoricalDataError(isError);
+
+  const enableCoinGecko =
+    Boolean(coingeckoId) &&
+    coingeckoId !== undefined &&
+    historicalPriceData !== undefined &&
+    historicalPriceData.length === 0;
+
+  const {
+    data: coingeckoHistoricalPriceData,
+    isLoading: isLoadingCoingecko,
+    isError: isErrorCoingecko,
+  } = api.edge.assets.getCoingeckoAssetHistoricalPrice.useQuery(
+    {
+      /**
+       * We need to add a fallback but just to avoid ts errors,
+       * using `enabled` prop we make sure that we do not trigger
+       * the query if the id is undefined
+       */
+      id: coingeckoId ?? "",
+      timeFrame: config.historicalRange,
+    },
+    {
+      select(data) {
+        const historicalData = data?.prices.map(([timestamp, price]) => ({
+          time: timestamp / 1000,
+          close: price,
+          high: price,
+          low: price,
+          open: price,
+          volume: 0,
+        }));
+
+        if (config.historicalRange === "all") {
+          return historicalData;
+        }
+
+        let min = dayjs(new Date());
+        const max = dayjs(Date.now());
+        const maxTime = max.unix();
+
+        switch (config.historicalRange) {
+          case "1h":
+            min = min.subtract(1, "hour");
+            break;
+          case "1d":
+            min = min.subtract(1, "day");
+            break;
+          case "7d":
+            min = min.subtract(1, "week");
+            break;
+          case "1mo":
+            min = min.subtract(1, "month");
+            break;
+          case "1y":
+            min = min.subtract(1, "year");
+            break;
+        }
+
+        const minTime = min.unix();
+
+        return historicalData?.filter(
+          (price) => price.time <= maxTime && price.time >= minTime
+        );
       },
-      {
-        select(data) {
-          const historicalData = data?.prices.map(([timestamp, price]) => ({
-            time: timestamp / 1000,
-            close: price,
-            high: price,
-            low: price,
-            open: price,
-            volume: 0,
-          }));
-
-          if (config.historicalRange === "all") {
-            return historicalData;
-          }
-
-          let min = dayjs(new Date());
-          const max = dayjs(Date.now());
-          const maxTime = max.unix();
-
-          switch (config.historicalRange) {
-            case "1h":
-              min = min.subtract(1, "hour");
-              break;
-            case "1d":
-              min = min.subtract(1, "day");
-              break;
-            case "7d":
-              min = min.subtract(1, "week");
-              break;
-            case "1mo":
-              min = min.subtract(1, "month");
-              break;
-            case "1y":
-              min = min.subtract(1, "year");
-              break;
-          }
-
-          const minTime = min.unix();
-
-          return historicalData?.filter(
-            (price) => price.time <= maxTime && price.time >= minTime
-          );
+      enabled: enableCoinGecko,
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 6, // 6 minutes
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-        enabled: Boolean(coingeckoId),
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
+      },
+    }
+  );
 
-    if (historicalPriceData) config.setHistoricalData(historicalPriceData);
-    config.setIsHistoricalDataLoading(isLoading);
-    config.setHistoricalDataError(isError);
+  if (enableCoinGecko) {
+    if (coingeckoHistoricalPriceData)
+      config.setHistoricalData(coingeckoHistoricalPriceData);
+    config.setIsHistoricalDataLoading(isLoadingCoingecko);
+    config.setHistoricalDataError(isErrorCoingecko);
   }
 
   return config;

@@ -176,7 +176,6 @@
       "titleWithdraw": "출금할 지갑"
     },
     "stakedAssets": "스테이킹된 OSMO",
-    "pooledAssets": "풀링됨",
     "table": {
       "columns": {
         "assetChain": "자산 / 체인",
@@ -288,6 +287,14 @@
       "liquid_staking": "리퀴드 스테이킹"
     }
   },
+  "portfolio": {
+    "trade": "거래",
+    "yourAssets": "귀하의 자산",
+    "yourPositions": "귀하의 직위",
+    "recentTransfers": "최근 이적",
+    "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
+    "yourLiquidityPools": "귀하의 유동성 풀"
+  },
   "buyTokens": "토큰 구매",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "자산",
+    "portfolio": "포트폴리오",
     "help": "헬프데스크",
     "info": "정보",
     "pools": "풀",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "오스모시스 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
+    },
+    "portfolio": {
+      "title": "삼투 포트폴리오",
+      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
     },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
