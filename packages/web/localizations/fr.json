@@ -176,7 +176,6 @@
       "titleWithdraw": "Retirer à"
     },
     "stakedAssets": "OSMO cautionné",
-    "pooledAssets": "Regroupé",
     "table": {
       "columns": {
         "assetChain": "Actif / Chaine",
@@ -288,6 +287,14 @@
       "liquid_staking": "Jalonnement liquide"
     }
   },
+  "portfolio": {
+    "trade": "Commerce",
+    "yourAssets": "Vos atouts",
+    "yourPositions": "Vos postes",
+    "recentTransfers": "Transferts récents",
+    "yourSuperchargedPositions": "Vos positions suralimentées",
+    "yourLiquidityPools": "Vos pools de liquidité"
+  },
   "buyTokens": "Acheter jetons",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Actifs",
+    "portfolio": "Portefeuille",
     "help": "Support",
     "info": "Info",
     "pools": "Bassins",
@@ -775,6 +783,10 @@
       "title": "Actifs d'osmose",
       "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
     },
+    "portfolio": {
+      "title": "Portefeuille Osmose",
+      "description": "Consultez vos actifs sur Osmosis - le principal échange décentralisé Cosmos"
+    },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",
       "description": "Lisez la clause de non-responsabilité et la politique de confidentialité d'Osmosis - le principal échange Cosmos décentralisé"
@@ -836,15 +848,16 @@
     "platform": "Plate-forme",
     "scrollToSeeMore": "faites défiler pour en voir plus",
     "discoverStrategies": "Découvrez les stratégies",
-    "myStrategies": "Mes stratégies",
+    "myStrategies": "Vos stratégies",
     "strategyPlatform": "Stratégie",
     "apy": "AVR",
     "daily": "Tous les jours",
     "reward": "Récompense",
-    "lock": "Verrouillage",
+    "lock": "Dissocier",
     "days": "jours",
+    "day": "jour",
     "risk": "Risque",
-    "strategyMethod": "Méthode stratégique",
+    "strategyMethod": "Les types",
     "allMethods": "Tous les types",
     "platforms": "Plateformes",
     "allPlatforms": "Toutes les plateformes",
@@ -858,7 +871,7 @@
     "claimAllRewards": "Réclamez toutes les récompenses",
     "join": "Rejoindre",
     "tokenFilterOptions": {
-      "my": "Mes atouts",
+      "my": "Vos atouts",
       "all": "Tous les actifs"
     },
     "rewardTypes": {
@@ -868,7 +881,6 @@
     },
     "totalValueInvested": "Valeur totale",
     "lookBelow": "Regardez ci-dessous et trouvez les meilleures stratégies pour vous",
-    "startEarning": "Découvrez les stratégies",
     "startEarningDescription": "Libérez tout votre potentiel de revenus. Mettez vos atouts à profit grâce aux nombreuses stratégies ci-dessous.",
     "loadingStrategies": "Chargement des stratégies...",
     "sorryErrorOccurred": "Désolé, une erreur s'est produite.",
@@ -880,6 +892,7 @@
     "noLock": "Aucun verrou",
     "riskDisclaimer": "Le risque est calculé avec un ensemble combiné de critères concernant une stratégie et ses actifs sous-jacents.",
     "strategyGeoblocked": "Désolé, cette stratégie n'est pas disponible dans votre pays.",
+    "instantUnbondOnly": "Décollage instantané uniquement",
     "tooltips": {
       "apr": {
         "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
@@ -894,7 +907,7 @@
         "description": "Le type d'actifs gagnés grâce aux opérations et/ou aux incitations de la stratégie."
       },
       "lock": {
-        "description": "La période pendant laquelle une position est verrouillée avant de pouvoir être sortie (c'est-à-dire avant que les actifs déposés puissent être retirés) de la stratégie. Remarque : Dans certaines stratégies, les récompenses peuvent ne pas être gagnées pendant la période de déverrouillage."
+        "description": "La période pendant laquelle une position est liée avant de pouvoir être liquidée. Remarque : Toutes les périodes de déliement de stratégie* ne comportent pas de distributions de récompenses."
       },
       "strategy": {
         "description": "Des opportunités de gains de différents types, hébergées par diverses plateformes, sont disponibles sur Osmosis. Accéder à une stratégie nécessite le dépôt d’actifs spécifiques."

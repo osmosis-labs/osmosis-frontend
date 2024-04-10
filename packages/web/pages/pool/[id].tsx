@@ -47,12 +47,15 @@ const Pool: FunctionComponent<Props> = ({
     // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     if (!pool || !isValidPoolId) return;
 
-    const isCosmwasmNotTransmuter =
-      pool.type.startsWith("cosmwasm") && pool.type !== "cosmwasm-transmuter";
+    const isCosmwasmNotSupported =
+      pool.type.startsWith("cosmwasm") &&
+      pool.type !== "cosmwasm-transmuter" &&
+      pool.type !== "cosmwasm-astroport-pcl" &&
+      pool.type !== "cosmwasm-whitewhale";
 
     const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
 
-    if (isCosmwasmNotTransmuter) window.location.href = celatoneUrl;
+    if (isCosmwasmNotSupported) window.location.href = celatoneUrl;
   }, [pool, poolId, isValidPoolId]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {

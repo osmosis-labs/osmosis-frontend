@@ -176,7 +176,6 @@
       "titleWithdraw": "Retirar a"
     },
     "stakedAssets": "OSMO Abonado",
-    "pooledAssets": "agrupado",
     "table": {
       "columns": {
         "assetChain": "Activo / cadena",
@@ -288,6 +287,14 @@
       "liquid_staking": "Estaca liquida"
     }
   },
+  "portfolio": {
+    "trade": "Comercio",
+    "yourAssets": "Tus activos",
+    "yourPositions": "Tus posiciones",
+    "recentTransfers": "Transferencias recientes",
+    "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
+    "yourLiquidityPools": "Tus fondos de liquidez"
+  },
   "buyTokens": "Comprar fichas",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Activos",
+    "portfolio": "portafolio",
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
@@ -775,6 +783,10 @@
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
+    "portfolio": {
+      "title": "Portafolio de Ósmosis",
+      "description": "Vea sus activos en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -836,15 +848,16 @@
     "platform": "Plataforma",
     "scrollToSeeMore": "desplázate para ver más",
     "discoverStrategies": "Descubra estrategias",
-    "myStrategies": "Mis estrategias",
+    "myStrategies": "Tus estrategias",
     "strategyPlatform": "Estrategia",
     "apy": "ABR",
     "daily": "A diario",
     "reward": "Premio",
-    "lock": "Cerrar",
+    "lock": "Desvinculado",
     "days": "días",
+    "day": "día",
     "risk": "Riesgo",
-    "strategyMethod": "Método de estrategia",
+    "strategyMethod": "Tipos",
     "allMethods": "Todos los tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
@@ -858,7 +871,7 @@
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
     "tokenFilterOptions": {
-      "my": "Mis activos",
+      "my": "Tus activos",
       "all": "Todos los activos"
     },
     "rewardTypes": {
@@ -868,7 +881,6 @@
     },
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
-    "startEarning": "Descubre estrategias",
     "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
     "loadingStrategies": "Cargando estrategias...",
     "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
@@ -880,6 +892,7 @@
     "noLock": "Sin bloqueo",
     "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
     "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
+    "instantUnbondOnly": "Solo desvinculación instantánea",
     "tooltips": {
       "apr": {
         "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
@@ -894,7 +907,7 @@
         "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
       },
       "lock": {
-        "description": "El período de tiempo que una posición está bloqueada antes de que se pueda salir de ella (es decir, antes de que se puedan retirar los activos depositados) de la estrategia. Nota: En algunas estrategias, es posible que no se obtengan recompensas durante el período de desbloqueo."
+        "description": "El período de tiempo que una posición está vinculada antes de que se pueda salir de ella. Nota: No todos los períodos de desvinculación de estrategias* tienen distribuciones de recompensas."
       },
       "strategy": {
         "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."

@@ -165,7 +165,7 @@ export interface StrategyCMSData {
   /**
    * URL to risk report on Google Sheets.
    */
-  riskReportUrl: string;
+  riskReportUrl?: string;
   /**
    * Start date and time (UTC) of the strategy.
    */

@@ -176,7 +176,6 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
-    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -288,6 +287,14 @@
       "liquid_staking": "流动质押"
     }
   },
+  "portfolio": {
+    "trade": "贸易",
+    "yourAssets": "您的资产",
+    "yourPositions": "您的职位",
+    "recentTransfers": "最近转会",
+    "yourSuperchargedPositions": "您的超级职位",
+    "yourLiquidityPools": "您的流动资金池"
+  },
   "buyTokens": "购买代币",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "资产",
+    "portfolio": "文件夹",
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
@@ -775,6 +783,10 @@
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
     },
+    "portfolio": {
+      "title": "渗透产品组合",
+      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
+    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
@@ -836,15 +848,16 @@
     "platform": "平台",
     "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
-    "myStrategies": "我的策略",
+    "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
     "daily": "日常的",
     "reward": "报酬",
-    "lock": "锁",
+    "lock": "解绑",
     "days": "天",
+    "day": "天",
     "risk": "风险",
-    "strategyMethod": "策略方法",
+    "strategyMethod": "类型",
     "allMethods": "所有类型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
@@ -858,7 +871,7 @@
     "claimAllRewards": "领取所有奖励",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的资产",
+      "my": "您的资产",
       "all": "所有资产"
     },
     "rewardTypes": {
@@ -868,7 +881,6 @@
     },
     "totalValueInvested": "总价值",
     "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarning": "探索策略",
     "startEarningDescription": "释放您的全部赚钱潜力。通过以下多种策略让您的资产发挥作用。",
     "loadingStrategies": "加载策略...",
     "sorryErrorOccurred": "抱歉，发生错误。",
@@ -880,6 +892,7 @@
     "noLock": "无锁",
     "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
     "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。",
+    "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
         "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
@@ -894,7 +907,7 @@
         "description": "通过该策略的运营和/或激励措施获得的资产类型。"
       },
       "lock": {
-        "description": "仓位在从策略中退出之前（即存入的资产可以提取之前）被锁定的时间段。注意：在某些策略中，解锁期间可能无法获得奖励。"
+        "description": "头寸在可以退出之前被绑定的时间段。注意：并非所有策略解除绑定*期间都有奖励分配。"
       },
       "strategy": {
         "description": "Osmosis 上提供由各种平台托管的各种类型的赚钱机会。访问策略需要存入特定资产。"

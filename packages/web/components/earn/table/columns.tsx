@@ -20,6 +20,7 @@ import {
   lockDurationFilter,
   multiListOptionValueEquals,
   sortDecValues,
+  sortDurationValues,
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
@@ -185,6 +186,7 @@ export const tableColumns = [
       />
     ),
     cell: LockCell,
+    sortingFn: sortDurationValues,
   }),
   columnHelper.accessor("riskLevel", {
     header: () => (

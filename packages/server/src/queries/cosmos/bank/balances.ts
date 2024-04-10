@@ -13,5 +13,6 @@ export const queryBalances = createNodeQuery<
     bech32Address: string;
   }
 >({
-  path: ({ bech32Address }) => `/cosmos/bank/v1beta1/balances/${bech32Address}`,
+  path: ({ bech32Address }) =>
+    `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`,
 });

@@ -8,19 +8,19 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        package: ["web", "stores", "pools", "math"]
+        package: ["web", "utils", "server", "stores", "pools", "math"]
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}

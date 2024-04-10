@@ -176,7 +176,6 @@
       "titleWithdraw": "출금할 지갑"
     },
     "stakedAssets": "스테이킹된 OSMO",
-    "pooledAssets": "풀링됨",
     "table": {
       "columns": {
         "assetChain": "자산 / 체인",
@@ -288,6 +287,14 @@
       "liquid_staking": "리퀴드 스테이킹"
     }
   },
+  "portfolio": {
+    "trade": "거래",
+    "yourAssets": "귀하의 자산",
+    "yourPositions": "귀하의 직위",
+    "recentTransfers": "최근 이적",
+    "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
+    "yourLiquidityPools": "귀하의 유동성 풀"
+  },
   "buyTokens": "토큰 구매",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "자산",
+    "portfolio": "포트폴리오",
     "help": "헬프데스크",
     "info": "정보",
     "pools": "풀",
@@ -775,6 +783,10 @@
       "title": "오스모시스 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
     },
+    "portfolio": {
+      "title": "삼투 포트폴리오",
+      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
+    },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
@@ -836,15 +848,16 @@
     "platform": "플랫폼",
     "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
-    "myStrategies": "내 전략",
+    "myStrategies": "귀하의 전략",
     "strategyPlatform": "전략",
     "apy": "4월",
     "daily": "일일",
     "reward": "보상",
-    "lock": "잠그다",
+    "lock": "언본드",
     "days": "날",
+    "day": "낮",
     "risk": "위험",
-    "strategyMethod": "전략 방법",
+    "strategyMethod": "유형",
     "allMethods": "모든 유형",
     "platforms": "플랫폼",
     "allPlatforms": "모든 플랫폼",
@@ -858,7 +871,7 @@
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
     "tokenFilterOptions": {
-      "my": "내 자산",
+      "my": "귀하의 자산",
       "all": "모든 자산"
     },
     "rewardTypes": {
@@ -868,7 +881,6 @@
     },
     "totalValueInvested": "총 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요.",
-    "startEarning": "전략 발견",
     "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략을 통해 자산을 활용해 보세요.",
     "loadingStrategies": "전략 로드 중...",
     "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",
@@ -880,6 +892,7 @@
     "noLock": "잠금 없음",
     "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다.",
     "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다.",
+    "instantUnbondOnly": "즉시 결합해제만 가능",
     "tooltips": {
       "apr": {
         "description": "연간 백분율(APR)은 전략의 연간 백분율 수익률을 나타냅니다. 참고: 전략의 수익은 참여와 성과에 따라 변동될 수 있습니다."
@@ -894,7 +907,7 @@
         "description": "전략 운영 및/또는 인센티브를 통해 획득한 자산 유형입니다."
       },
       "lock": {
-        "description": "전략에서 포지션을 청산하기 전(즉, 예치된 자산을 인출하기 전) 포지션이 잠기는 기간입니다. 참고: 일부 전략에서는 잠금 해제 기간 동안 보상을 획득하지 못할 수도 있습니다."
+        "description": "포지션이 청산될 수 있을 때까지 본딩이 유지되는 기간입니다. 참고: 모든 전략 언본딩* 기간에 보상 분배가 있는 것은 아닙니다."
       },
       "strategy": {
         "description": "다양한 플랫폼에서 호스팅되는 다양한 유형의 수익 창출 기회가 Osmosis에서 제공됩니다. 전략에 접근하려면 특정 자산을 예치해야 합니다."

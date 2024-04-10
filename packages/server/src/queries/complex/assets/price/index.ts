@@ -9,7 +9,7 @@ import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getPriceFromSidecar } from "./providers/sidecar";
 
-/** Provides a price given a valid asset from asset list and a fiat currency code.
+/** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
   assetLists: AssetList[],
@@ -61,7 +61,7 @@ export async function getAssetPrice({
   return cachified({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
-    ttl: 1000 * 30, // 30 seconds, as calculating prices is expensive and cached remotely
+    ttl: 1000 * 10, // 10 seconds
     getFreshValue: () =>
       priceProvider(assetLists, chainList, foundAsset, currency),
   });

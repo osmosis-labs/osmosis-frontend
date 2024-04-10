@@ -135,6 +135,10 @@ const MainLayoutWrapper: FunctionComponent<{
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
+    if (!flags._isInitialized) {
+      return [];
+    }
+
     if (!levanaGeoblock && !error) {
       return [];
     }
@@ -187,6 +191,29 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="trade" className="h-5 w-5" />,
         selectionTest: /\/$/,
       },
+      ...(flags.portfolioPageAndNewAssetsPage
+        ? [
+            {
+              label: t("menu.portfolio"),
+              link: "/portfolio",
+              icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+              selectionTest: /\/portfolio/,
+            },
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+              selectionTest: /\/assets/,
+            },
+          ]
+        : [
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+              selectionTest: /\/assets/,
+            },
+          ]),
       flags.earnPage
         ? {
             label: t("earnPage.title"),
@@ -196,12 +223,6 @@ const MainLayoutWrapper: FunctionComponent<{
             selectionTest: /\/earn/,
           }
         : null,
-      {
-        label: t("menu.assets"),
-        link: "/assets",
-        icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-        selectionTest: /\/assets/,
-      },
       flags.staking
         ? {
             label: t("menu.stake"),
@@ -244,10 +265,12 @@ const MainLayoutWrapper: FunctionComponent<{
   }, [
     levanaGeoblock,
     error,
-    t,
     flags.earnPage,
     flags.staking,
+    flags.portfolioPageAndNewAssetsPage,
+    flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
+    t,
     onOpenLeavingOsmosisToLevana,
     onOpenLeavingOsmosisToMars,
   ]);

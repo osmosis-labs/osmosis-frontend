@@ -13,7 +13,9 @@ import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
@@ -68,12 +70,12 @@ export const TopFilters = ({
   const tokenFilterOptions = useMemo(
     () => [
       {
-        value: "all",
-        label: t("earnPage.tokenFilterOptions.all"),
-      },
-      {
         value: "my",
         label: t("earnPage.tokenFilterOptions.my"),
+      },
+      {
+        value: "all",
+        label: t("earnPage.tokenFilterOptions.all"),
       },
     ],
     [t]
@@ -156,13 +158,17 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="flex items-center justify-between gap-7 lg:hidden">
         <SearchBox
@@ -174,22 +180,26 @@ export const TopFilters = ({
         <div className="flex 2xl:hidden">
           {categories.map((props) => {
             return (
-              <StrategyButton
-                onChange={(value) =>
-                  setFilter("specialTokens", {
-                    label: props.label,
-                    value,
-                  })
-                }
-                isOn={
-                  specialTokens.filter((f) => f.value === props.value)
-                    .length !== 0
-                }
+              <Tooltip
                 key={`${props.label} strategy button`}
-                icon={props.icon}
-                label={props.label}
-                resp={props.value}
-              />
+                content={props.tooltip}
+              >
+                <StrategyButton
+                  onChange={(value) =>
+                    setFilter("specialTokens", {
+                      label: props.label,
+                      value,
+                    })
+                  }
+                  isOn={
+                    specialTokens.filter((f) => f.value === props.value)
+                      .length !== 0
+                  }
+                  icon={props.icon}
+                  label={props.label}
+                  resp={props.value}
+                />
+              </Tooltip>
             );
           })}
         </div>
@@ -245,13 +255,17 @@ export const TopFilters = ({
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
-        <RadioWithOptions
-          mode="secondary"
-          onChange={(value) => setFilter("lockDurationType", value)}
-          options={lockDurationTypes}
-          value={lockDurationType}
-          variant="small"
-        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.instantUnbondOnly")}
+          </span>
+          <Switch
+            checked={lockDurationType === "nolock"}
+            onCheckedChange={(value) =>
+              setFilter("lockDurationType", value ? "nolock" : "all")
+            }
+          />
+        </div>
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect

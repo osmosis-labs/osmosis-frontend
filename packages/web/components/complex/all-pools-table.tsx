@@ -153,8 +153,13 @@ export const AllPoolsTable: FunctionComponent<{
           }
         : undefined,
       // These are all of the pools that we support fetching.
-      // In addiion, to pool filters, there are also general cosmwasm pools and cosmwasm Astroport PCL pools.
-      types: [...filters.poolTypesFilter, "cosmwasm", "cosmwasm-astroport-pcl"],
+      // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      types: [
+        ...filters.poolTypesFilter,
+        "cosmwasm",
+        "cosmwasm-astroport-pcl",
+        "cosmwasm-whitewhale",
+      ],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
         ? {
@@ -205,10 +210,10 @@ export const AllPoolsTable: FunctionComponent<{
   }, [poolsData]);
 
   // Define columns
-  const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-
   const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Pool>();
+
     let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
@@ -315,7 +320,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     return allColumns;
   }, [
-    columnHelper,
     t,
     isLoading,
     sortKey,
@@ -672,12 +676,23 @@ function getPoolLink(pool: Pool): string {
   if (pool.type === "cosmwasm-transmuter") {
     return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
   }
+  if (pool.type === "cosmwasm-astroport-pcl") {
+    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+  }
+
+  if (pool.type === "cosmwasm-whitewhale") {
+    return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
 
   return `/pool/${pool.id}`;
 }
 
 function getPoolTypeTarget(pool: Pool) {
-  if (pool.type === "cosmwasm-transmuter") {
+  if (
+    pool.type === "cosmwasm-transmuter" ||
+    pool.type === "cosmwasm-astroport-pcl" ||
+    pool.type === "cosmwasm-whitewhale"
+  ) {
     return "_blank";
   }
   return "";
