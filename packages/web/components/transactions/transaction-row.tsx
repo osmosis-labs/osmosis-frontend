@@ -12,24 +12,6 @@ interface TransactionDetailsProps {
 }
 
 const TransactionDetails = ({ status }: TransactionDetailsProps) => {
-  const getFromTextStyle = () => {
-    const styles = {
-      Pending: "text-osmoverse-400",
-      Success: "text-osmoverse-100",
-      Failure: "text-rust-400",
-    };
-    return styles[status];
-  };
-
-  const getToTextStyle = () => {
-    const styles = {
-      Pending: "text-osmoverse-400",
-      Success: "text-bullish-400",
-      Failure: "text-rust-400",
-    };
-    return styles[status];
-  };
-
   return (
     <div className="flex gap-4">
       <Image
@@ -39,7 +21,13 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
         width={32}
       />
       <div className="flex flex-col text-right ">
-        <div className={classNames("text-subtitle1", getFromTextStyle())}>
+        <div
+          className={classNames("text-subtitle1", {
+            "text-osmoverse-400": status === "Pending",
+            "text-osmoverse-100": status === "Success",
+            "text-rust-400": status === "Failure",
+          })}
+        >
           - $100.00
         </div>
         <div className="text-body2 text-osmoverse-400">10 OSMO</div>
@@ -58,7 +46,13 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
         width={32}
       />
       <div className="flex flex-col text-right text-osmoverse-400">
-        <div className={classNames("text-subtitle1", getToTextStyle())}>
+        <div
+          className={classNames("text-subtitle1", {
+            "text-osmoverse-400": status === "Pending",
+            "text-bullish-400": status === "Success",
+            "text-rust-400": status === "Failure",
+          })}
+        >
           + $100.00
         </div>
         <div className="text-body2">100 USDC</div>
