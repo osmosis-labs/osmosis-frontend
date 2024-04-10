@@ -692,6 +692,7 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",

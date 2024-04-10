@@ -25,7 +25,7 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
-import { InfoTooltip } from "~/components/tooltip";
+import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, SwapPage } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -228,6 +228,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .toDec()
       .gte(new Dec(0.01));
 
+    const isLoadingMaxButton =
+      featureFlags.swapToolSimulateFee &&
+      !isNil(account?.address) &&
+      !swapState.hasMaxBalanceError &&
+      !swapState.inAmountInput?.balance?.toDec().isZero() &&
+      swapState.isLoadingMaxBalanceNetworkFee;
+
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
@@ -422,34 +429,39 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     {t("swap.HALF")}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={classNames(
-                      "text-wosmongton-300",
-                      swapState.fractionButtonState.isMax
-                        ? "bg-wosmongton-100/20"
-                        : "bg-transparent"
-                    )}
-                    disabled={
-                      !swapState.inAmountInput.balance ||
-                      swapState.inAmountInput.balance.toDec().isZero()
+                  <Tooltip
+                    content={
+                      <div className="text-center">
+                        {t("swap.maxButtonError")}
+                      </div>
                     }
-                    isLoading={
-                      featureFlags.swapToolSimulateFee &&
-                      !isNil(account?.address) &&
-                      !swapState.inAmountInput?.balance?.toDec().isZero() &&
-                      swapState.isLoadingMaxBalanceNetworkFee
-                    }
-                    loadingText={t("swap.MAX")}
-                    classes={{
-                      spinner: "!h-3 !w-3",
-                      spinnerContainer: "!gap-1",
-                    }}
-                    onClick={() => swapState.fractionButtonState.toggleMax()}
+                    disabled={!swapState.hasMaxBalanceError}
                   >
-                    {t("swap.MAX")}
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={classNames(
+                        "text-wosmongton-300",
+                        swapState.fractionButtonState.isMax
+                          ? "bg-wosmongton-100/20"
+                          : "bg-transparent"
+                      )}
+                      disabled={
+                        !swapState.inAmountInput.balance ||
+                        swapState.inAmountInput.balance.toDec().isZero() ||
+                        swapState.hasMaxBalanceError
+                      }
+                      isLoading={isLoadingMaxButton}
+                      loadingText={t("swap.MAX")}
+                      classes={{
+                        spinner: "!h-3 !w-3",
+                        spinnerContainer: "!gap-1",
+                      }}
+                      onClick={() => swapState.fractionButtonState.toggleMax()}
+                    >
+                      {t("swap.MAX")}
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
               <div className="mt-3 flex place-content-between items-center">

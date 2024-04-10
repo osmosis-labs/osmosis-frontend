@@ -692,6 +692,7 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
+    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
     "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
