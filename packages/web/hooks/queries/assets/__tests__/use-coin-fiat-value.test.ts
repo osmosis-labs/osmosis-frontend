@@ -1,7 +1,7 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 
-import { mulPrice } from "./use-coin-fiat-value";
+import { mulPrice } from "../use-coin-fiat-value";
 
 const testDenom = "USDC";
 
