@@ -3,6 +3,18 @@ import { useKey } from "react-use";
 
 import { useControllableState } from "~/hooks/use-controllable-state";
 
+export const delayOnFalse =
+  (callback: (newValue: boolean) => void, ms: number = 100) =>
+  (newVale: boolean) => {
+    if (!newVale) {
+      setTimeout(() => {
+        callback(false);
+      }, ms);
+    } else {
+      callback(true);
+    }
+  };
+
 export const useWebSearchBoxInputState = () => {
   const [searchBoxInputIsFocused, setSearchBoxInputIsFocused] =
     useControllableState({

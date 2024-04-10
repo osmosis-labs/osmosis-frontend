@@ -43,7 +43,10 @@ import {
 import { HideBalancesState } from "~/stores/user-settings";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
-import { useWebSearchBoxInputState } from "./hooks/use-web-search-box-input-state";
+import {
+  delayOnFalse,
+  useWebSearchBoxInputState,
+} from "./hooks/use-web-search-box-input-state";
 
 interface Props {
   nativeBalances: (CoinBalance & { isVerified: boolean })[];
@@ -473,9 +476,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               }}
               placeholder={t("assets.table.search")}
               size="small"
-              onFocusChange={(isFocused) =>
-                setSearchBoxInputIsFocused(isFocused)
-              }
+              onFocusChange={delayOnFalse(setSearchBoxInputIsFocused)}
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <div className="flex shrink-0 flex-wrap gap-2">
@@ -568,9 +569,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   }}
                   placeholder={t("assets.table.search")}
                   size="small"
-                  onFocusChange={(isFocused) =>
-                    setSearchBoxInputIsFocused(isFocused)
-                  }
+                  onFocusChange={delayOnFalse(setSearchBoxInputIsFocused)}
                   rightIcon={() => (
                     <div className="w-10 text-end">
                       <text className="inline-block rounded bg-osmoverse-800 px-2 text-sm tracking-wider text-osmoverse-200 transition-colors">
