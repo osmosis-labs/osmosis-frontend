@@ -41,10 +41,10 @@ const categoryAssetSampleImages = {
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
-  selectedCategories: Category[];
+  selectedCategory?: Category;
   onSelectCategory: (category: Category) => void;
-  unselectCategory: (category: Category) => void;
-}> = ({ selectedCategories, onSelectCategory, unselectCategory }) => {
+  unselectCategory: () => void;
+}> = ({ selectedCategory, onSelectCategory, unselectCategory }) => {
   const { t } = useTranslation();
 
   return (
@@ -58,13 +58,13 @@ export const AssetCategoriesSelectors: FunctionComponent<{
             className={classNames(
               "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
               {
-                "border-wosmongton-400": selectedCategories.includes(category),
-                "border-osmoverse-600": !selectedCategories.includes(category),
+                "border-wosmongton-400": selectedCategory === category,
+                "border-osmoverse-600": selectedCategory !== category,
               }
             )}
             onClick={() => {
-              if (selectedCategories.includes(category)) {
-                unselectCategory(category);
+              if (selectedCategory === category) {
+                unselectCategory();
               } else {
                 onSelectCategory(category);
               }

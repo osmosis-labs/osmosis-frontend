@@ -176,7 +176,6 @@
       "titleWithdraw": "Sacar para"
     },
     "stakedAssets": "OSMO em stake",
-    "pooledAssets": "Agrupados",
     "table": {
       "columns": {
         "assetChain": "Ativo / Rede",
@@ -288,6 +287,14 @@
       "liquid_staking": "Estaqueamento líquido"
     }
   },
+  "portfolio": {
+    "trade": "Troca",
+    "yourAssets": "Seus ativos",
+    "yourPositions": "Suas posições",
+    "recentTransfers": "Transferências recentes",
+    "yourSuperchargedPositions": "Suas posições sobrecarregadas",
+    "yourLiquidityPools": "Seus pools de liquidez"
+  },
   "buyTokens": "Comprar tokens",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Ativos",
+    "portfolio": "Portfólio",
     "help": "Apoiar",
     "info": "Status",
     "pools": "Piscinas",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "Ativos de Osmose",
       "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
+    },
+    "portfolio": {
+      "title": "Portfólio de Osmose",
+      "description": "Veja seus ativos na Osmosis - a bolsa descentralizada líder do Cosmos"
     },
     "disclaimer": {
       "title": "Isenção de responsabilidade de osmose",

@@ -3,21 +3,20 @@ import { NextSeo } from "next-seo";
 
 import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
 import { AssetsPageV2 } from "~/components/complex/assets-page-v2";
-import { useTranslation } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 
 const Assets: NextPage = () => {
-  const flags = useFeatureFlags();
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
-  // will lose SSR until we delete the old assets page and FF
-  if (!flags._isInitialized)
+  if (!featureFlags._isInitialized) {
     return (
       <NextSeo
         title={t("seo.assets.title")}
         description={t("seo.assets.description")}
       />
     );
+  }
 
   return (
     <>
@@ -25,7 +24,11 @@ const Assets: NextPage = () => {
         title={t("seo.assets.title")}
         description={t("seo.assets.description")}
       />
-      {flags.newAssetsTable ? <AssetsPageV2 /> : <AssetsPageV1 />}
+      {featureFlags.portfolioPageAndNewAssetsPage ? (
+        <AssetsPageV2 />
+      ) : (
+        <AssetsPageV1 />
+      )}
     </>
   );
 };

@@ -176,7 +176,6 @@
       "titleWithdraw": "Retirer à"
     },
     "stakedAssets": "OSMO cautionné",
-    "pooledAssets": "Regroupé",
     "table": {
       "columns": {
         "assetChain": "Actif / Chaine",
@@ -288,6 +287,14 @@
       "liquid_staking": "Jalonnement liquide"
     }
   },
+  "portfolio": {
+    "trade": "Commerce",
+    "yourAssets": "Vos atouts",
+    "yourPositions": "Vos postes",
+    "recentTransfers": "Transferts récents",
+    "yourSuperchargedPositions": "Vos positions suralimentées",
+    "yourLiquidityPools": "Vos pools de liquidité"
+  },
   "buyTokens": "Acheter jetons",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Actifs",
+    "portfolio": "Portefeuille",
     "help": "Support",
     "info": "Info",
     "pools": "Bassins",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "Actifs d'osmose",
       "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
+    },
+    "portfolio": {
+      "title": "Portefeuille Osmose",
+      "description": "Consultez vos actifs sur Osmosis - le principal échange décentralisé Cosmos"
     },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",
