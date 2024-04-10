@@ -5,13 +5,13 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://c696452bb7ce4cc98150142ebea1c32f@o4505285755600896.ingest.us.sentry.io/4505285757698048",
+  dsn: "https://02eef43c9ee248d8b64d967cc908818a@o219003.ingest.us.sentry.io/1362463",
 
   environment:
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 0.05,
+  tracesSampleRate: 1,
 
   replaysOnErrorSampleRate: 1.0,
 
@@ -28,10 +28,14 @@ Sentry.init({
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
-    new Sentry.Replay({
+    Sentry.replayIntegration({
       // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
+
+  tracePropagationTargets: [process.env.NEXT_PUBLIC_SIDECAR_BASE_URL].filter(
+    (val): val is NonNullable<typeof val> => !!val
+  ),
 });
