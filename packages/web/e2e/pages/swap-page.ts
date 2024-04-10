@@ -31,7 +31,7 @@ export class SwapPage {
     const assetPromise = this.page.waitForRequest("**/assets.json");
     await this.page.goto("/");
     const request = await assetPromise;
-    console.log(request.url());
+    expect(request).toBeTruthy();
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
   }
@@ -42,11 +42,10 @@ export class SwapPage {
     // Handle Pop-up page ->
     const newPage = await promise;
     await newPage.waitForLoadState();
-    console.log(newPage.url());
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
-    const wallet = await this.page.getByRole("button", {
+    const wallet = this.page.getByRole("button", {
       name: "Wosmongton profile osmo1k...",
     });
     expect(wallet).toBeTruthy();
@@ -70,7 +69,7 @@ export class SwapPage {
     const msgContentAmount = await approvePage
       .getByText("type: osmosis/poolmanager/")
       .textContent();
-    console.log(msgContentAmount);
+    console.log("Wallet is approving: " + msgContentAmount);
     await approvePage.screenshot({
       path: "screenshot-approve-popup.png",
       fullPage: true,
@@ -102,7 +101,7 @@ export class SwapPage {
 
     let fromTokenText = await fromToken.innerText();
     let toTokenText = await toToken.innerText();
-    console.log("Current pair:" + fromTokenText + toTokenText);
+    console.log("Current pair: " + fromTokenText + " / " + toTokenText);
 
     if (fromTokenText == from && toTokenText == to) {
       console.log(
