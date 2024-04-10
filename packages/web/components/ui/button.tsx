@@ -38,7 +38,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-14 px-6 py-2 rounded-xl",
-        sm: "h-6 py-1 px-1.5 rounded-md text-caption",
+        sm: "h-6 py-1 px-1.5 rounded-md caption",
         md: "h-10 py-2 px-3 rounded-xl",
         icon: "h-10 w-10 rounded-full",
       },
@@ -190,7 +190,7 @@ export const ChartButton: FunctionComponent<{
     <Button
       size="sm"
       className={classNames(
-        "flex cursor-pointer items-center justify-center !bg-osmoverse-800 px-2 text-caption  hover:!bg-osmoverse-900",
+        "caption flex cursor-pointer items-center justify-center !bg-osmoverse-800 px-2  hover:!bg-osmoverse-900",
         {
           "!bg-osmoverse-600": props.selected,
         }

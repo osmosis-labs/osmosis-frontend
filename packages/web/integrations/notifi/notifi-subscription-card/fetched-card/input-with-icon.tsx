@@ -24,13 +24,13 @@ export const InputWithIcon: FunctionComponent<Props> = ({
         <Icon id={iconId} width="24" height="24" className="inline" />
         <input
           className={classNames(
-            "text-body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
+            "body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
             "appearance-none bg-transparent"
           )}
           {...inputProps}
         />
       </div>
-      <label className="text-caption font-caption text-missionError">
+      <label className="caption font-caption text-missionError">
         {errorMessage}
       </label>
     </>

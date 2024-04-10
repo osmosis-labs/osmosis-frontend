@@ -69,10 +69,10 @@ export const SignupView: FunctionComponent = () => {
           ))}
         </div>
       </div>
-      <p className="mx-[2rem] mt-[0.3125rem] text-center text-subtitle1">
+      <p className="subtitle1 mx-[2rem] mt-[0.3125rem] text-center">
         {t("notifi.signupPageTitle")}
       </p>
-      <p className="mx-[2rem] mt-[1.3125rem] mb-[2.5rem] text-center text-body2">
+      <p className="body2 mx-[2rem] mt-[1.3125rem] mb-[2.5rem] text-center">
         {t("notifi.signupPageMessage")}
       </p>
       <div className="mx-[2rem]">

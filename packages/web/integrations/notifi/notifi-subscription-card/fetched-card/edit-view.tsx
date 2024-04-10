@@ -249,7 +249,7 @@ export const EditView: FunctionComponent = () => {
         </div>
       )}
       <div className="flex h-full flex-col overflow-scroll">
-        <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
+        <p className="caption mb-3 px-10 font-caption text-osmoverse-200 sm:px-5">
           Add additional channels to receive your notifications.
         </p>
         <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">
@@ -367,7 +367,7 @@ export const EditView: FunctionComponent = () => {
           }`}
         >
           <div className="fixed z-[10] flex w-[15.875rem] flex-col items-center gap-3">
-            <p className="z-[52] mb-3 w-full text-center text-subtitle1">
+            <p className="subtitle1 z-[52] mb-3 w-full text-center">
               {t("notifi.unsavedChangeModalInfo")}
             </p>
             <Button

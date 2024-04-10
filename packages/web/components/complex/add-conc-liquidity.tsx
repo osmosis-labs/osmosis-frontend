@@ -552,7 +552,7 @@ const AddConcLiqView: FunctionComponent<
                   "opacity-30": sfStakingDisabled,
                 })}
               >
-                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                <h6 className="md:subtitle1 md:font-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
                   {superfluidPoolDetail.superfluidApr.toDec().isPositive()
                     ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
@@ -995,7 +995,7 @@ const PriceInputBox: FunctionComponent<{
         </div>
       ) : (
         <InputBox
-          className="bg-transparent text-subtitle1 leading-tight"
+          className="subtitle1 bg-transparent leading-tight"
           style="no-border"
           type="number"
           rightEntry

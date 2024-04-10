@@ -268,7 +268,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                     !isMobile &&
                     spreadFactor &&
                     !dynamicSpreadFactor && (
-                      <p className="text-caption">
+                      <p className="caption">
                         {spreadFactor.maxDecimals(1).toString()}
                       </p>
                     )}

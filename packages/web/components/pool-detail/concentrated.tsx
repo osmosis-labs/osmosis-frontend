@@ -163,7 +163,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                         (asset) => asset.currency.coinDenom
                       )}
                     />
-                    <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
+                    <span className="subtitle1 hidden py-1 text-osmoverse-100 lg:inline-block">
                       {pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"}{" "}
                       {t("clPositions.spreadFactor")}
                     </span>
@@ -308,7 +308,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex items-center text-body2 font-body2">
+                <div className="body2 flex items-center font-body2">
                   <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
@@ -377,7 +377,7 @@ const PoolDataGroup: FunctionComponent<{
   className?: string;
 }> = ({ label, value, className }) => (
   <div className={classNames("flex flex-col gap-2", className)}>
-    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
+    <div className="body2 font-body2 text-osmoverse-400">{label}</div>
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
 );

@@ -100,7 +100,7 @@ export const BondCard: FunctionComponent<
 
         {userUnlockingShares && (
           <div className="flex w-fit flex-wrap items-center gap-1 rounded-lg bg-osmoverse-900 p-3 md:p-1.5">
-            <span className="text-subtitle1 font-subtitle1">
+            <span className="subtitle1 font-subtitle1">
               ~
               {t("pool.sharesAmount", {
                 shares: userUnlockingShares.shares
@@ -110,7 +110,7 @@ export const BondCard: FunctionComponent<
                   .toString(),
               })}
             </span>
-            <span className="flex items-center gap-1 text-subtitle1 font-subtitle1 text-osmoverse-400">
+            <span className="subtitle1 flex items-center gap-1 font-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
                   {t("pool.sharesAvailableIn")}

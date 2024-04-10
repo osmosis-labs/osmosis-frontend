@@ -22,7 +22,7 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
       />
       <div className="flex flex-col text-right ">
         <div
-          className={classNames("text-subtitle1", {
+          className={classNames("subtitle1", {
             "text-osmoverse-400": status === "Pending",
             "text-osmoverse-100": status === "Success",
             "text-rust-400": status === "Failure",
@@ -30,7 +30,7 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
         >
           - $100.00
         </div>
-        <div className="text-body2 text-osmoverse-400">10 OSMO</div>
+        <div className="body2 text-osmoverse-400">10 OSMO</div>
       </div>
       <Image
         alt="right"
@@ -47,7 +47,7 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
       />
       <div className="flex flex-col text-right text-osmoverse-400">
         <div
-          className={classNames("text-subtitle1", {
+          className={classNames("subtitle1", {
             "text-osmoverse-400": status === "Pending",
             "text-bullish-400": status === "Success",
             "text-rust-400": status === "Failure",
@@ -55,7 +55,7 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
         >
           + $100.00
         </div>
-        <div className="text-body2">100 USDC</div>
+        <div className="body2">100 USDC</div>
       </div>
     </div>
   );

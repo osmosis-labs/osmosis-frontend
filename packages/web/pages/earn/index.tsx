@@ -112,7 +112,7 @@ function Earn() {
             />
             {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation /> */}
-            <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">
+            <p className="body2 ml-auto max-w-[160px] text-right font-medium text-osmoverse-200 2xl:hidden">
               {t("earnPage.lookBelow")}
             </p>
             <Image

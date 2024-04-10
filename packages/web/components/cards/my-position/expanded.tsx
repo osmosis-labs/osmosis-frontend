@@ -482,7 +482,7 @@ const PriceBox: FunctionComponent<{
   infinity?: boolean;
 }> = ({ label, currentValue, infinity }) => (
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
-    <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
+    <span className="caption pt-2 text-osmoverse-400">{label}</span>
     {infinity ? (
       <div className="flex items-center">
         <Image
@@ -493,7 +493,7 @@ const PriceBox: FunctionComponent<{
         />
       </div>
     ) : (
-      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight">
+      <h6 className="subtitle1 overflow-hidden text-ellipsis border-0 bg-transparent leading-tight">
         {currentValue}
       </h6>
     )}

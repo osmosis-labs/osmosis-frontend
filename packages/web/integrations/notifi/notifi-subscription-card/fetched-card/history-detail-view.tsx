@@ -50,15 +50,15 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
       )}
       <div className="flex flex-col overflow-scroll px-[2rem]">
         <div className="mb-5 flex flex-row items-center justify-between">
-          <div className="col-span-2 text-subtitle1">{title}</div>
-          <div className="col-span-1 text-right text-caption opacity-[0.7]">
+          <div className="subtitle1 col-span-2">{title}</div>
+          <div className="caption col-span-1 text-right opacity-[0.7]">
             {timestamp}
           </div>
         </div>
 
         <div>
           <div
-            className="whitespace-pre-wrap break-words text-caption text-osmoverse-200"
+            className="caption whitespace-pre-wrap break-words text-osmoverse-200"
             dangerouslySetInnerHTML={{ __html: message }}
           />
         </div>

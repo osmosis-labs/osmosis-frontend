@@ -21,9 +21,7 @@ const MarkdownParagraph: NormalMarkdownComponent<"p"> = ({
   node,
   ...props
 }) => {
-  return (
-    <p {...props} className="text-body2 font-medium text-osmoverse-300"></p>
-  );
+  return <p {...props} className="body2 font-medium text-osmoverse-300"></p>;
 };
 
 const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {

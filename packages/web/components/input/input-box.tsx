@@ -154,7 +154,7 @@ export const InputBox: FunctionComponent<Props> = ({
                   onClick={onClick}
                   disabled={disabled || labelButtonDisabled}
                 >
-                  <span className="mx-2 text-caption">{label}</span>
+                  <span className="caption mx-2">{label}</span>
                 </button>
               )
             )}

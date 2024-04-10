@@ -248,7 +248,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
                       }) || ""}
                     </h6>
 
-                    <p className="text-caption font-medium text-osmoverse-200">
+                    <p className="caption font-medium text-osmoverse-200">
                       {date}
                     </p>
                   </div>
@@ -333,10 +333,10 @@ export const PriceChartHeader: FunctionComponent<{
                 classes?.priceSubheaderClass
               )}
             >
-              <div className="text-caption text-osmoverse-300">
+              <div className="caption text-osmoverse-300">
                 {t("addConcentratedLiquidity.currentPrice")}
               </div>
-              <div className="whitespace-nowrap text-caption text-osmoverse-300">
+              <div className="caption whitespace-nowrap text-osmoverse-300">
                 {t("addConcentratedLiquidity.basePerQuote", {
                   base: baseDenom,
                   quote: quoteDenom,

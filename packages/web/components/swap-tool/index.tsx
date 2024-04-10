@@ -458,7 +458,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     ref={fromAmountInputEl}
                     type="number"
                     className={classNames(
-                      "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                      "md:subtitle1 w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none",
                       "text-h5 font-h5 md:font-subtitle1"
                     )}
                     placeholder="0"

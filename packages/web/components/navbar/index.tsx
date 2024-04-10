@@ -528,7 +528,7 @@ const AnnouncementBanner: FunctionComponent<{
         bg
       )}
     >
-      <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
+      <div className="subtitle1 flex w-full place-content-center items-center gap-1.5 text-center lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
         <span>
           {isChainHalted
             ? banner?.enTextOrLocalizationPath ?? ""

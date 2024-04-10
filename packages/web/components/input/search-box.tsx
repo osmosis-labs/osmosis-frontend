@@ -27,12 +27,11 @@ const searchBoxClasses = cva(
        * - letter spacing
        */
       size: {
-        small: "h-10 pl-5 pr-1 w-max [&_input]:text-body2 [&_input]:font-body2",
-        medium:
-          "h-12 pl-5 pr-2 w-max [&_input]:text-body2 [&_input]:font-body2",
-        large: "h-14 pl-5 pr-3 w-max [&_input]:text-body1 [&_input]:font-body2",
-        long: "h-14 pl-5 pr-3 w-80 [&_input]:text-body1 [&_input]:font-body2",
-        full: "h-14 pl-5 pr-3 w-full [&_input]:text-body1 [&_input]:font-body2",
+        small: "h-10 pl-5 pr-1 w-max [&_input]:body2 [&_input]:font-body2",
+        medium: "h-12 pl-5 pr-2 w-max [&_input]:body2 [&_input]:font-body2",
+        large: "h-14 pl-5 pr-3 w-max [&_input]:body1 [&_input]:font-body2",
+        long: "h-14 pl-5 pr-3 w-80 [&_input]:body1 [&_input]:font-body2",
+        full: "h-14 pl-5 pr-3 w-full [&_input]:body1 [&_input]:font-body2",
       },
     },
     defaultVariants: {

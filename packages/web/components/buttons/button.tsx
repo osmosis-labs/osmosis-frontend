@@ -186,10 +186,9 @@ export const buttonCVA = cva(
         sm: "h-10 px-5 button tracking-wide",
         normal: "h-[56px] px-6 subtitle1 tracking-wide",
         text: "w-auto h-auto block py-0 text-start tracking-wide",
-        framed:
-          "h-auto px-2 py-1 w-auto text-caption font-semibold tracking-wider",
+        framed: "h-auto px-2 py-1 w-auto caption font-semibold tracking-wider",
         amount:
-          "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
+          "h-[24px] px-2 py-1 w-auto caption font-semibold tracking-wider",
         "md-icon-social": "w-10 h-10 button tracking-wide shrink-0 py-0",
         "md-min": "w-auto min-w-10 h-10 button tracking-wide shrink-0 py-0",
         unstyled: null,

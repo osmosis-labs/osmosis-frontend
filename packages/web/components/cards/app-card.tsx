@@ -64,7 +64,7 @@ export const AppCard: FunctionComponent<{
                 "text-h6 font-h6 font-semibold",
                 title.split(" ").length === 1 &&
                   title.length >= 10 &&
-                  "xs:text-body1"
+                  "xs:body1"
               )}
             >
               {title}

@@ -53,7 +53,7 @@ export const ColumnCellHeader = ({
           header={t(tKey)}
           body={
             tooltipDescription && (
-              <p className="text-caption text-osmoverse-300">
+              <p className="caption text-osmoverse-300">
                 {t(tooltipDescription)}
               </p>
             )

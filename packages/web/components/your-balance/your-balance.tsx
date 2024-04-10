@@ -431,7 +431,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
           "gap-3": account?.isWalletConnected,
         })}
       >
-        <h6 className="text-subtitle1 font-subtitle1 leading-6">
+        <h6 className="subtitle1 font-subtitle1 leading-6">
           {t("tokenInfos.yourBalance")}
         </h6>
         {account?.isWalletConnected ? (
@@ -442,7 +442,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                   <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
                     {formatPretty(data.currentPrice.mul(data.amount))}
                   </h4>
-                  <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                  <p className="subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
                     {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
                   </p>
                 </>
@@ -456,7 +456,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
         ) : (
           <button
             onClick={() => onOpenWalletSelect(chainName!)}
-            className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
+            className="subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
             {t("connectWallet")}
           </button>

@@ -115,7 +115,7 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
       <div className="m-auto mr-[1.25rem] flex-1 ">{emoji}</div>
       <div className="flex w-full flex-col">
         <div className="mb-[0.25rem] flex w-full justify-between">
-          <div className="max-w-sm text-subtitle1">{title}</div>
+          <div className="subtitle1 max-w-sm">{title}</div>
           <div
             className="flex h-[1.5rem] max-w-[5.5625rem] cursor-pointer items-center text-wosmongton-200 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200"
             onClick={() => {
@@ -133,7 +133,7 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
             />
           </div>
         </div>
-        <div className="flex w-full items-center justify-between text-caption font-[500]">
+        <div className="caption flex w-full items-center justify-between font-[500]">
           <div
             className="max-w-[13.75rem] whitespace-pre-wrap break-words text-osmoverse-200 sm:max-w-[9rem]"
             // To avoid installing extra tailwind utils lib, in-line style is adopted here

@@ -178,7 +178,7 @@ export const LockTokensModal: FunctionComponent<
                   !superfluidDurationSelected || hasSuperfluidValidator,
               })}
             >
-              <h6 className="md:text-subtitle1 md:font-subtitle1">
+              <h6 className="md:subtitle1 md:font-subtitle1">
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>

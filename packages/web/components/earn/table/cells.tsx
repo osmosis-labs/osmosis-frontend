@@ -25,7 +25,7 @@ export const StrategyTooltip = ({
   body: ReactNode;
 }) => (
   <div className="flex flex-col gap-1">
-    {header && <p className="text-caption">{header}</p>}
+    {header && <p className="caption">{header}</p>}
     {body}
   </div>
 );
@@ -100,7 +100,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
             <StrategyTooltip
               header="Deposit Cap"
               body={
-                <p className="text-caption text-osmoverse-300">
+                <p className="caption text-osmoverse-300">
                   {formatPretty(tvlUsd, {
                     unitDisplay: "narrow",
                   })}
@@ -125,7 +125,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
                 }}
               />
             </div>
-            <p className="w-8 text-caption text-osmoverse-200">
+            <p className="caption w-8 text-osmoverse-200">
               {depositCapOccupied}%
             </p>
           </span>
@@ -206,7 +206,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
             style={{ rotate: `${item.getValue() * 180 - 90}deg` }}
           />
         </RiskLink>
-        <p className="text-caption text-osmoverse-200">
+        <p className="caption text-osmoverse-200">
           {_getRiskLabel(item.getValue())}
         </p>
       </div>
@@ -249,7 +249,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
         content={
           <StrategyTooltip
             body={
-              <p className="text-caption text-osmoverse-200">
+              <p className="caption text-osmoverse-200">
                 {t("earnPage.strategyGeoblocked")}
               </p>
             }

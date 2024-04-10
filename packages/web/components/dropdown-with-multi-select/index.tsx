@@ -45,7 +45,7 @@ export const DropdownWithMultiSelect = <T,>({
                       "inline-flex items-center gap-0.5 overflow-hidden rounded-md bg-wosmongton-700 px-2"
                     )}
                   >
-                    <span className="overflow-hidden whitespace-nowrap text-overline leading-6 tracking-normal text-white-high">
+                    <span className="overflow-hidden whitespace-nowrap leading-6 tracking-normal text-white-high overline">
                       {label}
                     </span>
                     <Icon

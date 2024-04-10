@@ -111,7 +111,7 @@ export const MyPositionCard: FunctionComponent<{
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
               <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
-                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+                <span className="subtitle1 px-2 py-1 text-osmoverse-100 xs:px-0">
                   {positionDetails?.spreadFactor.toString() ?? ""}{" "}
                   {t("clPositions.spreadFactor")}
                 </span>
@@ -178,7 +178,7 @@ const PositionDataGroup: FunctionComponent<{
   isSuperfluid?: boolean;
 }> = ({ label, value, isSuperfluid = false }) => (
   <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
-    <div className="text-subtitle1 text-osmoverse-400">{label}</div>
+    <div className="subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
       <h6
         className={classNames(
