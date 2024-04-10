@@ -7,6 +7,7 @@ import LinkButton from "~/components/buttons/link-button";
 import { SlideOverContent } from "~/components/transactions/slide-over-content";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
@@ -17,6 +18,8 @@ const Transactions: React.FC = () => {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
+
+  const { t } = useTranslation();
 
   useNavBar({
     title: (
@@ -31,9 +34,8 @@ const Transactions: React.FC = () => {
             className="text-osmoverse-200"
           />
         }
-        // TODO add translations
-        label="Portfolio"
-        ariaLabel="Portfolio"
+        label={t("menu.portfolio")}
+        ariaLabel={t("menu.portfolio")}
         href="/portfolio"
       />
     ),
