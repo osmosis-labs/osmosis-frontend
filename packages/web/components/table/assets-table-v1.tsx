@@ -250,10 +250,23 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             coinMinimalDenom: currency?.coinMinimalDenom,
             assetLists: AssetLists,
           });
-
+          let isFavorite = favoritesList.includes(balance.coinDenom);
+          const onToggleFavorite = () => {
+            // debugger;
+            isFavorite = !favoritesList.includes(balance.coinDenom);
+            if (isFavorite) {
+              onSetFavoritesList([...favoritesList, balance.coinDenom]);
+            } else {
+              onSetFavoritesList(
+                favoritesList.filter((d) => d !== balance.coinDenom)
+              );
+            }
+          };
           return {
             ...balance,
+            onToggleFavorite,
             assetName: asset?.rawAsset.name,
+            isFavorite,
           };
         }),
       [
@@ -266,6 +279,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
+        onSetFavoritesList,
+        favoritesList,
       ]
     );
 
@@ -388,44 +403,28 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       () => searchBoxInputIsFocused && (!query || query.length === 0),
       [query, searchBoxInputIsFocused]
     );
-    // const shouldShowTop5 = false;
 
     const tableData = useMemo(() => {
+      if (shouldShowTop5) {
+        return filteredSortedCells.filter((coin) => {
+          if (TOP_5.includes(coin.coinDenom)) {
+            return true;
+          }
+          return false;
+        });
+      }
       const data: TableCell[] = [];
       const favorites: TableCell[] = [];
-      if (shouldShowTop5) {
-        return filteredSortedCells.filter((coin) =>
-          TOP_5.includes(coin.coinDenom)
-        );
-      }
       filteredSortedCells.forEach((coin) => {
         if (favoritesList.includes(coin.coinDenom)) {
-          coin.isFavorite = true;
-          coin.onToggleFavorite = () => {
-            const newFavorites = favoritesList.filter(
-              (d) => d !== coin.coinDenom
-            );
-            onSetFavoritesList(newFavorites);
-          };
           favorites.push(coin);
         } else {
-          coin.isFavorite = false;
-          coin.onToggleFavorite = () => {
-            const newFavorites = [...favoritesList, coin.coinDenom];
-            onSetFavoritesList(newFavorites);
-          };
           data.push(coin);
         }
       });
       const tableData = favorites.concat(data);
       return showAllAssets ? tableData : tableData.slice(0, 10);
-    }, [
-      favoritesList,
-      filteredSortedCells,
-      onSetFavoritesList,
-      showAllAssets,
-      shouldShowTop5,
-    ]);
+    }, [favoritesList, filteredSortedCells, showAllAssets, shouldShowTop5]);
 
     const rowDefs = useMemo<RowDef[]>(
       () =>
