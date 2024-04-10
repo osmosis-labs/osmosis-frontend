@@ -24,6 +24,7 @@ test.describe("Test Swap feature", () => {
       home,
       "/keplr-wallet/packages/extension/build/manifest-v3"
     );
+    console.log("pathToExtension" + pathToExtension);
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
