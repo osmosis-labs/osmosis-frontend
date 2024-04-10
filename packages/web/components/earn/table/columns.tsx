@@ -63,7 +63,7 @@ export const ColumnCellHeader = ({
     >
       <small
         className={classNames(
-          "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
+          "subtitle2 whitespace-nowrap text-base font-semibold leading-normal text-osmoverse-300",
           className
         )}
       >
@@ -73,7 +73,7 @@ export const ColumnCellHeader = ({
   );
 };
 export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
-  <p className="text-white font-subtitle2 font-semibold 1.5xs:text-sm">
+  <p className="text-white subtitle2 font-semibold leading-normal 1.5xs:text-sm">
     {children}
   </p>
 );
@@ -203,7 +203,7 @@ export const tableColumns = [
     cell: (item) => (
       <div className="flex flex-col">
         <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
-        {/* <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
+        {/* <small className="text-xs leading-normal subtitle2 font-medium text-osmoverse-300">
           {item.row.original.balance.converted}
         </small> */}
       </div>

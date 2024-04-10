@@ -84,7 +84,7 @@ export const EarnAllocation = () => {
             >
               <div className="flex items-center gap-4">
                 <div className="h-8 w-8 rounded-full bg-osmoverse-400" />
-                <p className="font-subtitle1 text-osmoverse-100">
+                <p className="subtitle1 text-osmoverse-100">
                   {displayedInfo === "method"
                     ? strategyMethod
                     : displayedInfo === "platform"

@@ -234,7 +234,7 @@ const TokenDetails = ({
                   !isExpanded && isExpandable && "tokendetailshadow"
                 } relative self-stretch`}
               >
-                <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
+                <div className="breakspaces font-base subtitle1 self-stretch text-osmoverse-200 transition-all">
                   <Markdown>{expandedText ?? ""}</Markdown>
                 </div>
                 {isExpandable && (
@@ -286,7 +286,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.marketCapRank")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
@@ -294,7 +294,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.marketCap")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
@@ -304,7 +304,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.circulatingSupply")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
@@ -318,7 +318,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
           </h5>
         </li>
         {/* <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="text-base subtitle1 leading-6 text-osmoverse-300">
             {t("tokenInfos.tvl")}
           </p>
           <h5 className="text-xl font-h5 leading-8">

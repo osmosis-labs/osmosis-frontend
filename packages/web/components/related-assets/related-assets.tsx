@@ -162,10 +162,10 @@ const RelatedAssetSkeleton: FunctionComponent<{
           <div className="h-12 w-12 rounded-full bg-osmoverse-800" />
         )}
         <div className="flex flex-col gap-1">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
+          <p className="subtitle1 text-base leading-6 text-osmoverse-100">
             {coinDenom}
           </p>
-          <p className="text-sm font-body2 font-medium capitalize leading-5 text-osmoverse-300">
+          <p className="body2 text-sm font-medium capitalize leading-5 text-osmoverse-300">
             {assetName}
           </p>
         </div>
@@ -176,7 +176,7 @@ const RelatedAssetSkeleton: FunctionComponent<{
             {price}
           </h6>
           {priceChange && (
-            <p className="text-sm font-subtitle2 font-medium leading-5 text-osmoverse-300">
+            <p className="subtitle2 text-sm font-medium leading-5 text-osmoverse-300">
               {priceChange}
             </p>
           )}

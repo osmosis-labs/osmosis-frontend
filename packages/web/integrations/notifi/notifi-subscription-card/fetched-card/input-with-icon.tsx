@@ -24,7 +24,7 @@ export const InputWithIcon: FunctionComponent<Props> = ({
         <Icon id={iconId} width="24" height="24" className="inline" />
         <input
           className={classNames(
-            "body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
+            "body1 text-osmoverse-100 placeholder:text-osmoverse-200",
             "appearance-none bg-transparent"
           )}
           {...inputProps}

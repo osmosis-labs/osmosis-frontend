@@ -64,7 +64,7 @@ const FiltersModal = (
       </div>
       <div className="mt-20 flex flex-col gap-10">
         <div className="flex items-center justify-between gap-7">
-          <span className="font-subtitle1 font-bold">
+          <span className="subtitle1 font-bold">
             {t("earnPage.instantUnbondOnly")}
           </span>
           <Switch

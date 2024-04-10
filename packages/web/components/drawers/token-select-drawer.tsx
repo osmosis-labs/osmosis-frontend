@@ -370,7 +370,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                               </div>
                             )}
                             <div className="mr-4">
-                              <h6 className="button font-button text-white-full">
+                              <h6 className="button text-white-full">
                                 {coinDenom}
                               </h6>
                               <div className="caption text-left font-medium text-osmoverse-400">

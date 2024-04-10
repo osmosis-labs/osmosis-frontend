@@ -33,15 +33,15 @@ export const StrategyTooltip = ({
 export const StrategyNameCell = (item: CellContext<EarnStrategy, string>) => {
   return (
     <>
-      <p className="text-white min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left font-subtitle1 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
+      <p className="text-white subtitle1 min-w-[270px] max-w-[270px] overflow-hidden text-ellipsis whitespace-nowrap text-left 1.5xs:text-sm xs:min-w-[160px] xs:max-w-[160px]">
         {item.getValue()}
       </p>
       <div className="flex items-center gap-2">
-        <small className="text-left text-sm font-subtitle1 capitalize text-osmoverse-400 1.5xs:text-xs">
+        <small className="subtitle1 text-left text-sm capitalize text-osmoverse-400 1.5xs:text-xs">
           {item.row.original.platform} · {item.row.original.type}
         </small>
         {/*  <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-2">
-          <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm font-subtitle1 leading-6 1.5xs:text-xs">
+          <span className="text-white overflow-hidden text-ellipsis whitespace-nowrap text-sm subtitle1 leading-6 1.5xs:text-xs">
             {item.row.original.category}
           </span>
         </div> */}
@@ -86,7 +86,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
       <ColumnCellCell>{tvlUsd ? formatPretty(tvlUsd) : "N/A"}</ColumnCellCell>
       {/* {fluctuation && (
         <small
-          className={classNames("text-xs font-subtitle2 font-medium", {
+          className={classNames("text-xs subtitle2 font-medium", {
             "text-bullish-400": fluctuation > 0,
             "text-osmoverse-500": fluctuation < 0,
           })}
@@ -164,7 +164,7 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
         {hasLockingDuration ? lockingDuration : "Instant"}
       </ColumnCellCell>
       {hasLockingDuration && (
-        <small className="text-sm font-subtitle2 text-osmoverse-400">
+        <small className="subtitle2 text-sm text-osmoverse-400">
           {t(lockingDuration <= 1 ? "earnPage.day" : "earnPage.days")}
         </small>
       )}
@@ -291,7 +291,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
               />
             ) : (
               <div className="inline-flex items-center gap-1">
-                <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
+                <p className="subtitle1 text-sm font-medium text-osmoverse-300">
                   {isBalanceVisible ? (
                     <span>{t("earnPage.manage")}</span>
                   ) : isGeoblocked ? (

@@ -159,7 +159,7 @@ export const TopFilters = ({
           onChange={(value) => setFilter("platform", value)}
         />
         <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">
+          <span className="subtitle1 font-bold">
             {t("earnPage.instantUnbondOnly")}
           </span>
           <Switch
@@ -256,7 +256,7 @@ export const TopFilters = ({
           onChange={(value) => setFilter("platform", value)}
         />
         <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">
+          <span className="subtitle1 font-bold">
             {t("earnPage.instantUnbondOnly")}
           </span>
           <Switch

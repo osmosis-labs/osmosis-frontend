@@ -552,7 +552,7 @@ const AddConcLiqView: FunctionComponent<
                   "opacity-30": sfStakingDisabled,
                 })}
               >
-                <h6 className="md:subtitle1 md:font-subtitle1">
+                <h6 className="md:subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
                   {superfluidPoolDetail.superfluidApr.toDec().isPositive()
                     ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(

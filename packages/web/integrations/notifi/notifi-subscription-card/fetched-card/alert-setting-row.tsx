@@ -53,9 +53,7 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
           className={`flex flex-col gap-3 ${isExpended ? "mb-[0.375rem]" : ""}`}
           onClick={() => setIsExpended((prev) => !prev)}
         >
-          <p className="font-subtitle subtitle1">
-            {labelWithAlerts.label.name}
-          </p>
+          <p className="subtitle1">{labelWithAlerts.label.name}</p>
           <p className="caption font-caption text-osmoverse-200">
             {labelWithAlerts.label.tooltipContent}
           </p>

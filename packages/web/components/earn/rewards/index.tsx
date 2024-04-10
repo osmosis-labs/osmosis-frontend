@@ -124,7 +124,7 @@ export const EarnRewards = ({
       {/* <div className="mt-5 flex flex-col gap-1">
         <h5 className="text-xl font-semibold text-bullish-400">$221.64</h5>
         <div className="flex items-center gap-1">
-          <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
+          <small className="text-xs subtitle2 font-medium text-osmoverse-300">
             {t("earnPage.estimatedInYearlyRewards")}
           </small>
           <Tooltip
@@ -138,7 +138,7 @@ export const EarnRewards = ({
         <h4 className="text-osmoverse-200">
           {formatPretty(totalUnclaimedRewards)}
         </h4>
-        <small className="max-w-[54px] text-right text-xs font-subtitle2 font-medium text-osmoverse-300">
+        <small className="subtitle2 max-w-[54px] text-right text-xs leading-normal text-osmoverse-300">
           {t("earnPage.availableToClaim")}
         </small>
       </div>

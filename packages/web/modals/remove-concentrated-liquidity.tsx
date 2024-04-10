@@ -105,7 +105,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       <div className="pt-8">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="subtitle1 pl-4 font-subtitle1 xs:pl-0">
+            <div className="subtitle1 pl-4 xs:pl-0">
               {t("clPositions.yourPosition")}
             </div>
             <MyPositionStatus className="xs:px-0" status={status} negative />
@@ -153,14 +153,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
         {(claimableRewardCoins?.length ?? 0) > 0 && (
           <div className="mt-8 flex w-full flex-col gap-3 py-3">
-            <div className="subtitle1 pl-4 font-subtitle1 xl:pl-1">
+            <div className="subtitle1 pl-4 xl:pl-1">
               {t("clPositions.pendingRewards")}
             </div>
             <div className="flex flex-wrap justify-between gap-3 rounded-xl border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
               {claimableRewardCoins?.map((coin) => (
                 <AssetAmount
                   key={coin.currency.coinMinimalDenom}
-                  className="!body2 !font-body2"
+                  className="!body2"
                   amount={coin}
                 />
               ))}
@@ -203,7 +203,7 @@ export const AssetAmount: FunctionComponent<{
 }> = ({ amount, className }) => (
   <div
     className={classNames(
-      "subtitle1 xs:body2 flex shrink-0 items-center gap-2 font-subtitle1",
+      "subtitle1 xs:body2 flex shrink-0 items-center gap-2",
       className
     )}
   >

@@ -233,7 +233,7 @@ export const HistoryView: FunctionComponent = () => {
 
           {[...allNodes, ...dummyRows].length > 0 ? (
             <div
-              className={`absolute left-[2rem] top-[0.625rem] cursor-pointer font-body2 text-osmoverse-300 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200 md:top-8`}
+              className={`body2 absolute left-[2rem] top-[0.625rem] cursor-pointer text-osmoverse-300 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200 md:top-8`}
               onClick={clearAll}
             >
               {t("notifi.clearAllHistory")}

@@ -129,9 +129,7 @@ export const StakeInfoCard: FunctionComponent<{
             <input
               type="number"
               className={classNames(
-                "placeholder:text-white md:subtitle1 w-full bg-transparent text-right text-white-full focus:outline-none",
-                "text-h5 font-h5 md:font-subtitle1",
-                "overflow-hidden"
+                "placeholder:text-white md:subtitle1 md:subtitle1 w-full overflow-hidden bg-transparent text-right text-h5 font-h5 text-white-full focus:outline-none"
               )}
               placeholder="0"
               onChange={handleInputChange}

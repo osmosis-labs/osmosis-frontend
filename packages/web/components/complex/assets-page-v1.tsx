@@ -202,7 +202,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
 const Metric: FunctionComponent<Metric> = ({ label, value }) => (
   <div className="flex shrink-0 flex-col gap-1 md:gap-2">
-    <h6 className="md:subtitle1 md:font-subtitle1">{label}</h6>
+    <h6 className="md:subtitle1">{label}</h6>
     <h2 className="text-h3 font-h3 text-wosmongton-100 md:text-h4 md:font-h4">
       {value}
     </h2>

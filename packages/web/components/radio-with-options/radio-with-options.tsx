@@ -46,7 +46,7 @@ export const RadioWithOptions = ({
           key={`${value} radio button`}
           className={({ checked }) =>
             classNames(
-              "inline-flex w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer",
+              "subtitle1 inline-flex w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-2.5 leading-5 opacity-30 hover:cursor-pointer",
               {
                 "opacity-100": checked,
                 "hover:bg-osmoverse-900/25": !checked,

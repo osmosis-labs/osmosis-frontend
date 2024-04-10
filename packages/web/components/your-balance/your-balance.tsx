@@ -347,7 +347,7 @@ const ActionButton = ({
   return (
     <div className="relative flex flex-1 flex-row justify-between overflow-hidden rounded-2xl bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6">
       <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
-        {largeTitle && <p className="font-subtitle1">{title}</p>}
+        {largeTitle && <p className="subtitle1">{title}</p>}
         {largeTitle ? (
           <h4
             className={classNames("text-osmoverse-100", {
@@ -360,7 +360,7 @@ const ActionButton = ({
           <h6 className="text-osmoverse-100">{title}</h6>
         )}
         {!shrinkTitle && (
-          <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
+          <p className="body2 max-w-[165px] text-sm font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
             {sub}
           </p>
         )}
@@ -431,9 +431,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
           "gap-3": account?.isWalletConnected,
         })}
       >
-        <h6 className="subtitle1 font-subtitle1 leading-6">
-          {t("tokenInfos.yourBalance")}
-        </h6>
+        <h6 className="subtitle1 leading-6">{t("tokenInfos.yourBalance")}</h6>
         {account?.isWalletConnected ? (
           <SkeletonLoader isLoaded={!isCoinDataLoading}>
             <div className="flex flex-col items-start gap-1">
@@ -442,7 +440,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                   <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
                     {formatPretty(data.currentPrice.mul(data.amount))}
                   </h4>
-                  <p className="subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                  <p className="subtitle1 leading-6 text-osmoverse-300">
                     {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
                   </p>
                 </>
@@ -456,7 +454,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
         ) : (
           <button
             onClick={() => onOpenWalletSelect(chainName!)}
-            className="subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
+            className="subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
             {t("connectWallet")}
           </button>

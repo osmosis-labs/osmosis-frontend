@@ -24,7 +24,7 @@ export const DropdownWithLabel = <T,>({
 }: DropdownWithLabelProps<T>) => {
   return (
     <div className="flex items-center gap-7">
-      <span className="whitespace-nowrap font-subtitle1 font-bold 2xl:hidden">
+      <span className="subtitle1 whitespace-nowrap font-bold 2xl:hidden">
         {label}
       </span>
       <Listbox
@@ -44,10 +44,10 @@ export const DropdownWithLabel = <T,>({
               buttonClassName
             )}
           >
-            <span className="font-subtitle1 leading-6 2xl:hidden">
+            <span className="subtitle1 leading-6 2xl:hidden">
               {value.label}
             </span>
-            <span className="hidden max-w-[100px] truncate font-subtitle1 leading-6 2xl:block">
+            <span className="subtitle1 hidden max-w-[100px] truncate leading-6 2xl:block">
               {(value.value as unknown as string) === "" && allLabel
                 ? allLabel
                 : value.label}
