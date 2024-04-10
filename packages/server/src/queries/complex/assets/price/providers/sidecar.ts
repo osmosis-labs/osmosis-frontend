@@ -39,7 +39,7 @@ function getBatchLoader() {
     key: "sidecar-batch-loader",
     // This TTL only controls the lifetime of the DataLoader instance, not the individual cache entries.
     // The value is chosen arbitrarily to prevent long-running batch loaders as recommended by the documentation
-    ttl: 1000 * 60 * 10, // 10 minute
+    ttl: 1000 * 60 * 10, // 10 minutes
     getFreshValue: () =>
       new EdgeDataLoader(
         (coinMinimalDenoms: readonly string[]) => {
