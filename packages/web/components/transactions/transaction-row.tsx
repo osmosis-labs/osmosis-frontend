@@ -9,14 +9,23 @@ type Status = "Pending" | "Success" | "Failure";
 
 interface TransactionDetailsProps {
   status: Status;
+  // TODO - update metadata type
+  metadata: any;
 }
 
-const TransactionDetails = ({ status }: TransactionDetailsProps) => {
+const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
+  // TODO - update this to filter by metadata type
+  const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
+
+  // console.log("metadata: ", metadata[0]);
+  // console.log("tokenIn: ", tokenIn);
+  console.log("tokenOut: ", tokenOut);
+
   return (
     <div className="flex gap-4">
       <Image
-        alt="OSMO"
-        src="/tokens/generated/osmo.svg"
+        alt={tokenIn.denom.coinDenom}
+        src={tokenIn.denom.coinImageUrl}
         height={32}
         width={32}
       />
@@ -28,9 +37,11 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          - $100.00
+          - ${tokenIn.usd}
         </div>
-        <div className="text-body2 text-osmoverse-400">10 OSMO</div>
+        <div className="text-body2 text-osmoverse-400">
+          {tokenIn.amount} {tokenIn.denom.coinDenom}
+        </div>
       </div>
       <Image
         alt="right"
@@ -40,8 +51,8 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
         className="text-osmoverse-600"
       />
       <Image
-        alt="USDC"
-        src="/tokens/generated/usdc.svg"
+        alt={tokenOut.denom.coinDenom}
+        src={tokenOut.denom.coinImageUrl}
         height={32}
         width={32}
       />
@@ -53,9 +64,11 @@ const TransactionDetails = ({ status }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          + $100.00
+          + ${tokenOut.usd}
         </div>
-        <div className="text-body2">100 USDC</div>
+        <div className="text-body2">
+          {tokenOut.amount} {tokenOut.denom.coinDenom}
+        </div>
       </div>
     </div>
   );
@@ -100,12 +113,15 @@ interface TransactionRowProps {
   status: Status;
   setOpen: (open: boolean) => void;
   open: boolean;
+  // TODO - update metadata type
+  metadata: any;
 }
 
 export const TransactionRow = ({
   status,
   setOpen,
   open,
+  metadata,
 }: TransactionRowProps) => {
   return (
     // h-20 = h-12 (via designs) + pt-4 + pb-4
@@ -114,7 +130,7 @@ export const TransactionRow = ({
       onClick={() => setOpen(!open)}
     >
       <TransactionStatus status={status} />
-      <TransactionDetails status={status} />
+      <TransactionDetails status={status} metadata={metadata} />
     </div>
   );
 };
