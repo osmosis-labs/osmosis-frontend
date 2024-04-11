@@ -1,4 +1,5 @@
 import { Transition } from "@headlessui/react";
+import { getShortAddress } from "@osmosis-labs/utils";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
@@ -9,10 +10,15 @@ import { Button } from "~/components/ui/button";
 export const SlideOverContent = ({
   onRequestClose,
   open,
+  transaction,
 }: {
   onRequestClose: () => void;
   open: boolean;
+  // TODO - update type for transaction
+  transaction: any;
 }) => {
+  const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
+
   return (
     <Transition
       show={open}
@@ -42,7 +48,7 @@ export const SlideOverContent = ({
             <div className="flex flex-col items-center justify-center gap-2 text-center">
               <div className="text-h5">Swapped</div>
               <div className="text-body1 text-osmoverse-300">
-                March 14, 2024, 13:01
+                {transaction.blockTimestamp}
               </div>
             </div>
           </div>
@@ -50,19 +56,23 @@ export const SlideOverContent = ({
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
                 <Image
-                  alt="OSMO"
-                  src="/tokens/generated/osmo.svg"
+                  alt={tokenIn.denom.coinDenom}
+                  src={tokenIn.denom.coinImageUrl}
                   height={32}
                   width={32}
                 />
                 <div className="flex flex-col">
                   <div className="text-subtitle1">Sold</div>
-                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                  <div className="text-body1 text-osmoverse-300">
+                    {tokenIn.denom.coinDenom}
+                  </div>
                 </div>
               </div>
               <div className="flex-end flex flex-col text-right">
-                <div className="text-subtitle1">$100.00</div>
-                <div className="text-body1 text-osmoverse-300">10</div>
+                <div className="text-subtitle1">{tokenIn.usd.toString()}</div>
+                <div className="text-body1 text-osmoverse-300">
+                  {tokenIn.amount.toString()}
+                </div>
               </div>
             </div>
             <div className="flex h-10 w-12 items-center justify-center p-2">
@@ -77,19 +87,23 @@ export const SlideOverContent = ({
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
                 <Image
-                  alt="USDC"
-                  src="/tokens/generated/usdc.svg"
+                  alt={tokenOut.denom.coinDenom}
+                  src={tokenOut.denom.coinImageUrl}
                   height={32}
                   width={32}
                 />
                 <div className="flex flex-col">
-                  <div className="text-subtitle1">Sold</div>
-                  <div className="text-body1 text-osmoverse-300">OSMO</div>
+                  <div className="text-subtitle1">Bought</div>
+                  <div className="text-body1 text-osmoverse-300">
+                    {tokenOut.denom.coinDenom}
+                  </div>
                 </div>
               </div>
               <div className="flex-end flex flex-col text-right">
-                <div className="text-subtitle1">$100.00</div>
-                <div className="text-body1 text-osmoverse-300">10</div>
+                <div className="text-subtitle1">{tokenOut.usd.toString()}</div>
+                <div className="text-body1 text-osmoverse-300">
+                  {tokenOut.amount.toString()}
+                </div>
               </div>
             </div>
           </div>
@@ -108,12 +122,12 @@ export const SlideOverContent = ({
               <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
             </div>
             <div className="flex justify-between py-3">
-              <div>Transaction Fees</div>
+              <div>Transaction hash</div>
               <div className="flex gap-3">
                 <div className="text-body1 text-wosmongton-300">
-                  F7AC9A...F58F87
+                  {getShortAddress(transaction.hash)}
                 </div>
-                <CopyIconButton valueToCopy="F7AC9A...F58F87" />
+                <CopyIconButton valueToCopy={transaction.hash} />
               </div>
             </div>
           </div>
@@ -121,9 +135,7 @@ export const SlideOverContent = ({
             <a
               rel="noreferrer"
               target="_blank"
-              href={`https://www.mintscan.io/cosmos/txs/${
-                "" // TDODO link this - txHash
-              }`}
+              href={`https://www.mintscan.io/cosmos/txs/${transaction.hash}`}
             >
               <span>View on Explorer &#x2197;</span>
             </a>

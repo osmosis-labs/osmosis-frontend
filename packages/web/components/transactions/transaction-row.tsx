@@ -37,10 +37,10 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          - ${tokenIn.usd}
+          - {tokenIn.usd.toString()}
         </div>
         <div className="text-body2 text-osmoverse-400">
-          {tokenIn.amount} {tokenIn.denom.coinDenom}
+          {tokenIn.amount.toString()} {tokenIn.denom.coinDenom}
         </div>
       </div>
       <Image
@@ -64,10 +64,10 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          + ${tokenOut.usd}
+          + {tokenOut.usd.toString()}
         </div>
         <div className="text-body2">
-          {tokenOut.amount} {tokenOut.denom.coinDenom}
+          {tokenOut.amount.toString()} {tokenOut.denom.coinDenom}
         </div>
       </div>
     </div>
@@ -111,26 +111,24 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
 
 interface TransactionRowProps {
   status: Status;
-  setOpen: (open: boolean) => void;
-  open: boolean;
-  // TODO - update metadata type
-  metadata: any;
+  setOpen: () => void;
+  // TODO - update transaction type
+  transaction: any;
 }
 
 export const TransactionRow = ({
   status,
   setOpen,
-  open,
-  metadata,
+  transaction,
 }: TransactionRowProps) => {
   return (
     // h-20 = h-12 (via designs) + pt-4 + pb-4
     <div
       className="w-container flex h-20 cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825"
-      onClick={() => setOpen(!open)}
+      onClick={() => setOpen()}
     >
       <TransactionStatus status={status} />
-      <TransactionDetails status={status} metadata={metadata} />
+      <TransactionDetails status={status} metadata={transaction.metadata} />
     </div>
   );
 };

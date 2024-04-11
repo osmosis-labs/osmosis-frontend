@@ -1,3 +1,4 @@
+import { PricePretty } from "@keplr-wallet/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -6,6 +7,7 @@ import { AssetLists } from "../../../queries/__tests__/mock-asset-lists";
 import { getAsset } from "../../../queries/complex/assets";
 // import { queryTransactions } from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { EXAMPLE_TRANSACTION_DATA } from "./example-transaction-data";
 import { Metadata, Transaction } from "./transaction-types";
 
@@ -30,6 +32,10 @@ function mapData(metadataArray: Metadata[]) {
             assetLists: AssetLists,
             anyDenom: valueItem.txInfo.tokenIn.denom,
           }),
+          usd: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            valueItem.txInfo.tokenIn.usd
+          ),
         },
         tokenOut: {
           ...valueItem.txInfo.tokenOut,
@@ -37,6 +43,10 @@ function mapData(metadataArray: Metadata[]) {
             assetLists: AssetLists,
             anyDenom: valueItem.txInfo.tokenOut.denom,
           }),
+          usd: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            valueItem.txInfo.tokenIn.usd
+          ),
         },
       },
     })),
@@ -78,6 +88,7 @@ export async function getTransactions({
           (transaction) => {
             return {
               id: transaction._id,
+              hash: transaction.hash,
               blockTimestamp: transaction.blockTimestamp,
               code: transaction.code,
               metadata: mapData(transaction.metadata),

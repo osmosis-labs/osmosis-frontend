@@ -35,12 +35,13 @@ const EXAMPLE_METADATA = [
 ];
 
 export const TransactionContent = ({
-  setOpen,
-  open,
+  setSelectedTransaction,
+  selectedTransaction,
   transactions,
 }: {
-  setOpen: (open: boolean) => void;
-  open: boolean;
+  // TODO - update type for selectedTransaction
+  setSelectedTransaction: (selectedTransaction: any) => void;
+  selectedTransaction: any;
   transactions: any;
 }) => {
   return (
@@ -68,9 +69,9 @@ export const TransactionContent = ({
         <TransactionRow
           key={transaction._id}
           status={transaction.code === 0 ? "Success" : "Failure"}
-          setOpen={setOpen}
-          open={open}
-          metadata={transaction.metadata}
+          setOpen={() => setSelectedTransaction(transaction)}
+          // open={!!selectedTransaction}
+          transaction={transaction}
         />
       ))}
 

@@ -46,19 +46,26 @@ const Transactions: React.FC = () => {
     ctas: [],
   });
 
-  const [open, setOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
   return (
     <main className="relative mx-16 flex gap-4">
       {!isLoading && (
         // TODO - add loading state
-        <TransactionContent
-          open={open}
-          setOpen={setOpen}
-          transactions={transactionData}
-        />
+        <>
+          <TransactionContent
+            selectedTransaction={selectedTransaction}
+            setSelectedTransaction={setSelectedTransaction}
+            transactions={transactionData}
+          />
+          <SlideOverContent
+            onRequestClose={() => setSelectedTransaction(null)}
+            open={!!selectedTransaction}
+            transaction={transactionData[0]}
+          />
+        </>
       )}
-      <SlideOverContent onRequestClose={() => setOpen(false)} open={open} />
+
       <BackToTopButton />
     </main>
   );
