@@ -11,7 +11,6 @@ export type AvailableFlags =
   | "notifications"
   | "mobileNotifications"
   | "tokenInfo"
-  | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "earnPage"
@@ -24,7 +23,8 @@ export type AvailableFlags =
   | "topAnnouncementBanner"
   | "tfmProTradingNavbarButton"
   | "positionRoi"
-  | "swapToolSimulateFee";
+  | "swapToolSimulateFee"
+  | "portfolioPageAndNewAssetsPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -37,7 +37,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   swapsAdBanner: true,
   notifications: true,
   tokenInfo: true,
-  newAssetsTable: false,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
@@ -51,6 +50,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   tfmProTradingNavbarButton: true,
   positionRoi: true,
   swapToolSimulateFee: false,
+  portfolioPageAndNewAssetsPage: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };

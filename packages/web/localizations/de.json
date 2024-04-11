@@ -176,7 +176,6 @@
       "titleWithdraw": "Sich zurückziehen"
     },
     "stakedAssets": "Abgestecktes OSMO",
-    "pooledAssets": "Gebündelt",
     "table": {
       "columns": {
         "assetChain": "Vermögenswert/Kette",
@@ -288,6 +287,14 @@
       "liquid_staking": "Flüssiges Abstecken"
     }
   },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Ihr Vermögen",
+    "yourPositions": "Ihre Positionen",
+    "recentTransfers": "Letzte Übertragungen",
+    "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
+    "yourLiquidityPools": "Ihre Liquiditätspools"
+  },
   "buyTokens": "Kaufen Sie Token",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Vermögenswerte",
+    "portfolio": "Portfolio",
     "help": "Support-Labor",
     "info": "Statistiken",
     "pools": "Pools",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "Osmose-Vermögenswerte",
       "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
+    },
+    "portfolio": {
+      "title": "Osmose-Portfolio",
+      "description": "Sehen Sie sich Ihr Vermögen auf Osmosis an – der führenden dezentralen Cosmos-Börse"
     },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",

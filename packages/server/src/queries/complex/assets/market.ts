@@ -14,24 +14,20 @@ import {
 } from "../../data-services";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
-import { getAssetPrice } from "./price";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
   marketCapRank: number;
   currentPrice: PricePretty;
   priceChange24h: RatePretty;
+  volume24h: PricePretty;
 }>;
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
 export async function getMarketAsset<TAsset extends Asset>({
-  assetLists,
-  chainList,
   asset,
 }: {
-  assetLists: AssetList[];
-  chainList: Chain[];
   asset: TAsset;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
@@ -39,11 +35,8 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const [currentPrice, marketCap, assetMarketActivity, coingeckoCoin] =
-        await Promise.all([
-          getAssetPrice({ assetLists, chainList, asset }).catch((e) =>
-            captureErrorAndReturn(e, undefined)
-          ),
+      const [marketCap, assetMarketActivity, coingeckoCoin] = await Promise.all(
+        [
           getAssetMarketCap(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           ),
@@ -53,22 +46,19 @@ export async function getMarketAsset<TAsset extends Asset>({
           getCoingeckoCoin(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           ),
-        ]);
+        ]
+      );
 
-      const priceChange24h = assetMarketActivity?.price_24h_change;
       const marketCapRank = coingeckoCoin?.market_cap_rank;
 
       return {
-        currentPrice: currentPrice
-          ? new PricePretty(DEFAULT_VS_CURRENCY, currentPrice)
-          : undefined,
+        currentPrice: assetMarketActivity?.price,
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
         marketCapRank,
-        priceChange24h: priceChange24h
-          ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
-          : undefined,
+        priceChange24h: assetMarketActivity?.price24hChange,
+        volume24h: assetMarketActivity?.volume24h,
       };
     },
   });
@@ -88,9 +78,7 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(
-    assets.map((asset) => getMarketAsset({ ...params, asset }))
-  );
+  return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -164,7 +152,11 @@ async function getActiveCoingeckoCoins() {
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
  *  configured outside of our asset list (from data services).
  *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
-async function getAssetMarketActivity({ coinDenom }: { coinDenom: string }) {
+export async function getAssetMarketActivity({
+  coinDenom,
+}: {
+  coinDenom: string;
+}) {
   const assetMarketMap = await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 5, // 5 minutes since there's price data
@@ -172,13 +164,46 @@ async function getAssetMarketActivity({ coinDenom }: { coinDenom: string }) {
     getFreshValue: async () => {
       const allTokenData = await queryAllTokenData();
 
-      const tokenInfoMap = new Map<string, TokenData>();
+      const tokenInfoMap = new Map<string, MarketActivity>();
       allTokenData.forEach((tokenData) => {
-        tokenInfoMap.set(tokenData.symbol, tokenData);
+        const activity = makeMarketActivityFromTokenData(tokenData);
+        tokenInfoMap.set(tokenData.symbol, activity);
       });
       return tokenInfoMap;
     },
   });
 
   return assetMarketMap.get(coinDenom);
+}
+
+type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;
+/** Converts raw token data to useful types where applicable. */
+function makeMarketActivityFromTokenData(tokenData: TokenData) {
+  return {
+    price:
+      tokenData.price !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.price)
+        : undefined,
+    denom: tokenData.denom,
+    symbol: tokenData.symbol,
+    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity),
+    liquidity24hChange:
+      tokenData.liquidity_24h_change !== null
+        ? new RatePretty(
+            new Dec(tokenData.liquidity_24h_change).quo(new Dec(100))
+          )
+        : undefined,
+    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h),
+    volume24hChange:
+      tokenData.volume_24h_change !== null
+        ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
+        : undefined,
+    name: tokenData.name,
+    price24hChange:
+      tokenData.price_24h_change !== null
+        ? new RatePretty(new Dec(tokenData.price_24h_change).quo(new Dec(100)))
+        : undefined,
+    exponent: tokenData.exponent,
+    display: tokenData.display,
+  };
 }
