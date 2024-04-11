@@ -97,7 +97,7 @@ const customTheme: WormholeConnectPartialTheme = {
 const Wormhole: FunctionComponent = () => {
   const queryParams = new URLSearchParams(window.location.href.split("?")[1]);
 
-  var bridgeDefaults = {
+  let bridgeDefaults = {
     fromNetwork: "solana",
     toNetwork: "osmosis",
     token: "W",
