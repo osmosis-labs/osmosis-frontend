@@ -19,6 +19,8 @@ export const SlideOverContent = ({
 }) => {
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
+  const txFee = transaction.metadata[0].value[0].txFee[0];
+
   return (
     <Transition
       show={open}
@@ -112,14 +114,20 @@ export const SlideOverContent = ({
               <div>Execution Price</div>
               <div className="flex gap-3">
                 <div className="text-body1 text-wosmongton-300">
-                  1 OSMO = 97.80 USDC
+                  {/*  TODO - derive these values */}1 OSMO = 97.80 USDC
                 </div>
                 <CopyIconButton valueToCopy="97.80 USDC" />
               </div>
             </div>
             <div className="flex justify-between gap-3 py-3">
               <div>Total Fees</div>
-              <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
+              <div className="text-body1 text-wosmongton-300">
+                {
+                  // TODO - update the value of txFee.amount
+                  txFee.amount
+                }{" "}
+                {txFee.denom.coinDenom}
+              </div>
             </div>
             <div className="flex justify-between py-3">
               <div>Transaction hash</div>
