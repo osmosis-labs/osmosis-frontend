@@ -1,6 +1,7 @@
 export * from "./data";
 export * from "./language";
 export * from "./staking/use-get-apr";
+export * from "./transactions/use-get-transactions";
 export * from "./ui-config";
 export * from "./use-amplitude-analytics";
 export * from "./use-boolean-with-window-event";

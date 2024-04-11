@@ -7,11 +7,15 @@ import LinkButton from "~/components/buttons/link-button";
 import { SlideOverContent } from "~/components/transactions/slide-over-content";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { useFeatureFlags, useNavBar } from "~/hooks";
-import { useTranslation } from "~/hooks";
+import { useGetTransactions, useTranslation } from "~/hooks";
 
 const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
+
+  const { data } = useGetTransactions();
+
+  console.log("transactions: ", data);
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
