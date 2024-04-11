@@ -47,9 +47,7 @@ export async function basicIbcTransfer(
       }),
     onFulfill: (tx: DeliverTxResponse) => {
       if (!tx.code) {
-        const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
-          | TxEvent[]
-          | undefined;
+        const events = tx.events as TxEvent[] | undefined;
 
         for (const event of events ?? []) {
           if (event.type === "send_packet") {
