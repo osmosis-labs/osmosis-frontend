@@ -9,6 +9,7 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -628,9 +629,18 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "concentrated" && (
                     <Icon id="concentrated-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-astroport-pcl" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/astroport_icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
                   {type === "cosmwasm-transmuter" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
+
                   {spreadFactor ? spreadFactor.toString() : ""}
                 </p>
               </div>
