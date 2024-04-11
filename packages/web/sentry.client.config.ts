@@ -20,9 +20,8 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
 
   // Temporarily disable due to client-side noise coming from extensions, Cosmos Kit, etc.
-  enabled: false,
-  // enabled:
-  //   process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
+  enabled:
+    process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
