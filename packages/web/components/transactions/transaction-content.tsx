@@ -4,9 +4,11 @@ import { Button } from "~/components/ui/button";
 export const TransactionContent = ({
   setOpen,
   open,
+  transactions,
 }: {
   setOpen: (open: boolean) => void;
   open: boolean;
+  transactions: any;
 }) => {
   return (
     <div className="flex w-full flex-col">
@@ -23,6 +25,20 @@ export const TransactionContent = ({
       </div>
 
       {/* TODO - parse by date, into groups */}
+
+      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
+        <div className="text-osmoverse-300">Example Transaction Data</div>
+        <hr className="text-osmoverse-700" />
+      </div>
+
+      {transactions.map((transaction: any) => (
+        <TransactionRow
+          key={transaction._id}
+          status={transaction.code === 0 ? "Success" : "Failure"}
+          setOpen={setOpen}
+          open={open}
+        />
+      ))}
 
       <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">Pending</div>

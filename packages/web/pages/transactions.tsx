@@ -13,9 +13,9 @@ const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
 
-  const { data } = useGetTransactions();
+  const { data: transactionData, isLoading } = useGetTransactions();
 
-  console.log("transactions: ", data);
+  console.log("transactionData: ", transactionData);
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -50,7 +50,14 @@ const Transactions: React.FC = () => {
 
   return (
     <main className="relative mx-16 flex gap-4">
-      <TransactionContent open={open} setOpen={setOpen} />
+      {!isLoading && (
+        // TODO - add loading state
+        <TransactionContent
+          open={open}
+          setOpen={setOpen}
+          transactions={transactionData}
+        />
+      )}
       <SlideOverContent onRequestClose={() => setOpen(false)} open={open} />
       <BackToTopButton />
     </main>
