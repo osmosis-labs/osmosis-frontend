@@ -12,6 +12,9 @@ Sentry.init({
   environment:
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
+  // Only send 25% of error events to Sentry
+  sampleRate: 0.25,
+
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampler: (samplingContext) => {
     const validPaths = ["/", "/pool/[id]", "/assets/[denom]"];
