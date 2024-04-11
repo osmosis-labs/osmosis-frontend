@@ -89,8 +89,8 @@ module.exports = withSentryConfig(
 
     authToken: process.env.SENTRY_AUTH_TOKEN,
 
-    org: "jose-felix",
-    project: "react",
+    org: "osmosis-labs",
+    project: "osmosis-web",
   },
   {
     // For all available options, see:

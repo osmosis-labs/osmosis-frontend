@@ -8,7 +8,7 @@ import * as Sentry from "@sentry/nextjs";
 import { getValidSwapTRPCRoutesForSentry } from "~/utils/sentry-init";
 
 Sentry.init({
-  dsn: "https://02eef43c9ee248d8b64d967cc908818a@o219003.ingest.us.sentry.io/1362463",
+  dsn: "https://c696452bb7ce4cc98150142ebea1c32f@o4505285755600896.ingest.us.sentry.io/4505285757698048",
 
   environment:
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
@@ -32,6 +32,9 @@ Sentry.init({
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
 
+  /**
+   * Propagate traces to the sidecar in order to setup distributed tracing.
+   */
   tracePropagationTargets: [process.env.NEXT_PUBLIC_SIDECAR_BASE_URL].filter(
     (val): val is NonNullable<typeof val> => !!val
   ),
