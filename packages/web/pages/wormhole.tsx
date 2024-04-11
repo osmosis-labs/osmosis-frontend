@@ -21,7 +21,7 @@ const WormholeConnect = dynamic(
   }
 );
 
-let: WormholeConnectConfig = {
+let config: WormholeConnectConfig = {
   networks: ["solana", "osmosis"],
   rpcs: {
     solana:
