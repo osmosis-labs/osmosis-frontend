@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import LinkButton from "~/components/buttons/link-button";
-import { SlideOverContent } from "~/components/transactions/slide-over-content";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import { useGetTransactions, useTranslation } from "~/hooks";
@@ -58,11 +57,11 @@ const Transactions: React.FC = () => {
             setSelectedTransaction={setSelectedTransaction}
             transactions={transactionData}
           />
-          <SlideOverContent
+          {/* <SlideOverContent
             onRequestClose={() => setSelectedTransaction(null)}
             open={!!selectedTransaction}
             transaction={transactionData[0]}
-          />
+          /> */}
         </>
       )}
 

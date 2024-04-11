@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
+import { formatPretty } from "~/utils/formatter";
 
 type Status = "Pending" | "Success" | "Failure";
 
@@ -18,8 +19,8 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
   const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
 
   // console.log("metadata: ", metadata[0]);
-  // console.log("tokenIn: ", tokenIn);
-  console.log("tokenOut: ", tokenOut);
+  console.log("tokenIn: ", tokenIn);
+  // console.log("tokenOut: ", tokenOut);
 
   return (
     <div className="flex gap-4">
@@ -37,10 +38,10 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          - {tokenIn.usd.toString()}
+          - ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
         </div>
         <div className="text-body2 text-osmoverse-400">
-          {tokenIn.amount.toString()} {tokenIn.denom.coinDenom}
+          {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
         </div>
       </div>
       <Image
@@ -64,10 +65,10 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          + {tokenOut.usd.toString()}
+          + ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
         </div>
         <div className="text-body2">
-          {tokenOut.amount.toString()} {tokenOut.denom.coinDenom}
+          {formatPretty(tokenOut.amount, { maxDecimals: 2 })?.toString()}
         </div>
       </div>
     </div>

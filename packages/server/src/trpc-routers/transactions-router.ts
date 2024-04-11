@@ -12,8 +12,13 @@ export const transactionsRouter = createTRPCRouter({
         pageSize: z.number().optional(),
       })
     )
-    .query(async ({ input: { address, page, pageSize } }) => {
-      const res = await getTransactions({ address, page, pageSize });
+    .query(async ({ input: { address, page, pageSize }, ctx }) => {
+      const res = await getTransactions({
+        address,
+        page,
+        pageSize,
+        assetLists: ctx.assetLists,
+      });
       return res;
     }),
 });
