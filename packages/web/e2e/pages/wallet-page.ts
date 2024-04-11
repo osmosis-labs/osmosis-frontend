@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { expect, Locator, Page } from "@playwright/test";
 
 export class WalletPage {
@@ -64,7 +65,7 @@ export class WalletPage {
 
   async takeScreenshot() {
     await this.page.screenshot({
-      path: "/e2e/screenshot-wallet-setup.png",
+      path: "screenshot-wallet-setup.png",
       fullPage: true,
     });
   }

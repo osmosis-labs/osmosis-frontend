@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { BrowserContext, chromium, test } from "@playwright/test";
 
 import { SwapPage } from "../pages/swap-page";

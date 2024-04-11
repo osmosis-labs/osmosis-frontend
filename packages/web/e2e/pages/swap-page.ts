@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { expect, Locator, Page } from "@playwright/test";
 
 export class SwapPage {
@@ -48,7 +49,9 @@ export class SwapPage {
     const wallet = this.page.getByRole("button", {
       name: "Wosmongton profile osmo1k...",
     });
+    await this.page.waitForTimeout(2000);
     expect(wallet).toBeTruthy();
+    console.log("Wallet is connected.");
   }
 
   async flipTokenPair() {
@@ -103,6 +106,7 @@ export class SwapPage {
       console.log(
         "Current pair:" + fromTokenText + toTokenText + " is already matching."
       );
+      return;
     }
 
     if (fromTokenText == to && toTokenText == from) {
@@ -110,6 +114,7 @@ export class SwapPage {
       console.log(
         "Current pair:" + fromTokenText + toTokenText + " is fliped."
       );
+      return;
     }
 
     if (from == toTokenText || to == fromTokenText) {
@@ -149,7 +154,7 @@ export class SwapPage {
 
   async takeScreenshot(name: string) {
     await this.page.screenshot({
-      path: `/e2e/screenshot-swap-${name}.png`,
+      path: `screenshot-swap-${name}.png`,
       fullPage: true,
     });
   }
