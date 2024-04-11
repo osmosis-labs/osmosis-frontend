@@ -11,10 +11,15 @@ Sentry.init({
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  tracesSampleRate: 0.01,
 
-  enabled:
-    process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
+  /**
+   * Disable server-side (Node.js serverless) tracing since we are only interested
+   * in tracing swap transactions, specifically including bridge transfer transactions.
+   */
+  enabled: false,
+  // enabled:
+  //   process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,

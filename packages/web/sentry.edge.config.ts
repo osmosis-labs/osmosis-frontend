@@ -5,6 +5,8 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+import { getValidSwapTRPCRoutesForSentry } from "~/utils/sentry-init";
+
 Sentry.init({
   dsn: "https://02eef43c9ee248d8b64d967cc908818a@o219003.ingest.us.sentry.io/1362463",
 
@@ -12,7 +14,17 @@ Sentry.init({
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  tracesSampler: (samplingContext) => {
+    const validTrpcRoutes = getValidSwapTRPCRoutesForSentry();
+
+    // Log 10% of transactions of pools, root page and trpc methods related to swap
+    if (validTrpcRoutes.includes(samplingContext.transactionContext.name)) {
+      return 0.1;
+    }
+
+    // Log 1% of all other transactions
+    return 0.01;
+  },
 
   enabled:
     process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
