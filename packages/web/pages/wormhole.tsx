@@ -3,6 +3,7 @@ import type {
   WormholeConnectPartialTheme,
 } from "@wormhole-foundation/wormhole-connect";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 
 import { Spinner } from "~/components/loaders";
@@ -21,39 +22,39 @@ const WormholeConnect = dynamic(
   }
 );
 
-let config: WormholeConnectConfig = {
-  networks: ["solana", "osmosis"],
-  rpcs: {
-    solana:
-      "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
-    wormchain: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
-  },
-  tokensConfig: {
-    W: {
-      key: "W",
-      symbol: "W",
-      nativeChain: "solana",
-      tokenId: {
-        chain: "solana",
-        address: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
-      },
-      coinGeckoId: "wormhole",
-      icon: "https://assets.coingecko.com/coins/images/35087/standard/womrhole_logo_full_color_rgb_2000px_72ppi_fb766ac85a.png?1708688954",
-      color: "#2894EE",
-      decimals: {
-        default: 6,
-      },
-      foreignAssets: {
-        osmosis: {
-          address:
-            "ibc/AC6EE43E608B5A7EEE460C960480BC1C3708010E32B2071C429DA259836E10C3",
-          decimals: 6,
-        },
-      },
-    },
-  },
-  tokens: ["W", "SOL", "PYTH"],
-};
+// let config: WormholeConnectConfig = {
+//   networks: ["solana", "osmosis"],
+//   rpcs: {
+//     solana:
+//       "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
+//     wormchain: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
+//   },
+//   tokensConfig: {
+//     W: {
+//       key: "W",
+//       symbol: "W",
+//       nativeChain: "solana",
+//       tokenId: {
+//         chain: "solana",
+//         address: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
+//       },
+//       coinGeckoId: "wormhole",
+//       icon: "https://assets.coingecko.com/coins/images/35087/standard/womrhole_logo_full_color_rgb_2000px_72ppi_fb766ac85a.png?1708688954",
+//       color: "#2894EE",
+//       decimals: {
+//         default: 6,
+//       },
+//       foreignAssets: {
+//         osmosis: {
+//           address:
+//             "ibc/AC6EE43E608B5A7EEE460C960480BC1C3708010E32B2071C429DA259836E10C3",
+//           decimals: 6,
+//         },
+//       },
+//     },
+//   },
+//   tokens: ["W", "SOL", "PYTH"],
+// };
 
 const customTheme: WormholeConnectPartialTheme = {
   mode: "dark",
@@ -95,7 +96,48 @@ const customTheme: WormholeConnectPartialTheme = {
 };
 
 const Wormhole: FunctionComponent = () => {
-  const queryParams = new URLSearchParams(window.location.href.split("?")[1]);
+  const router = useRouter(); // Use Next.js useRouter hook
+
+  // Access query parameters via router.query
+  const fromNetwork = router.query.from as string;
+  const toNetwork = router.query.to as string;
+  const token = router.query.token as string;
+
+  let config: WormholeConnectConfig = {
+    networks: ["solana", "osmosis"],
+    rpcs: {
+      solana:
+        "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
+      wormchain: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
+    },
+    tokensConfig: {
+      W: {
+        key: "W",
+        symbol: "W",
+        nativeChain: "solana",
+        tokenId: {
+          chain: "solana",
+          address: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
+        },
+        coinGeckoId: "wormhole",
+        icon: "https://assets.coingecko.com/coins/images/35087/standard/womrhole_logo_full_color_rgb_2000px_72ppi_fb766ac85a.png?1708688954",
+        color: "#2894EE",
+        decimals: {
+          default: 6,
+        },
+        foreignAssets: {
+          osmosis: {
+            address:
+              "ibc/AC6EE43E608B5A7EEE460C960480BC1C3708010E32B2071C429DA259836E10C3",
+            decimals: 6,
+          },
+        },
+      },
+    },
+    tokens: ["W", "SOL", "PYTH"],
+  };
+
+  // const queryParams = new URLSearchParams(window.location.href.split("?")[1]);
 
   let bridgeDefaults = {
     fromNetwork: "solana",
@@ -104,9 +146,9 @@ const Wormhole: FunctionComponent = () => {
     requiredNetwork: "osmosis",
   };
 
-  const fromNetwork = queryParams.get("from");
-  const toNetwork = queryParams.get("to");
-  const token = queryParams.get("token");
+  // const fromNetwork = queryParams.get("from");
+  // const toNetwork = queryParams.get("to");
+  // const token = queryParams.get("token");
 
   if (fromNetwork) {
     bridgeDefaults.fromNetwork = fromNetwork;
