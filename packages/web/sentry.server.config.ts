@@ -15,7 +15,8 @@ Sentry.init({
 
   /**
    * Disable server-side (Node.js serverless) tracing since we are only interested
-   * in tracing swap transactions, specifically including bridge transfer transactions.
+   * in tracing swap transactions. This sentry.server.ts only applies to bridge
+   * transfer transactions.
    */
   enabled: false,
   // enabled:
