@@ -19,14 +19,14 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
   const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
 
   // console.log("metadata: ", metadata[0]);
-  console.log("tokenIn: ", tokenIn);
+  // console.log("tokenIn: ", tokenIn);
   // console.log("tokenOut: ", tokenOut);
 
   return (
     <div className="flex gap-4">
       <Image
-        alt={tokenIn.denom.coinDenom}
-        src={tokenIn.denom.coinImageUrl}
+        alt={tokenIn.token.denom}
+        src={tokenIn.token.currency.coinImageUrl}
         height={32}
         width={32}
       />
@@ -41,7 +41,7 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
           - ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
         </div>
         <div className="text-body2 text-osmoverse-400">
-          {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
+          {formatPretty(tokenIn.token, { maxDecimals: 2 })?.toString()}
         </div>
       </div>
       <Image
@@ -52,8 +52,8 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
         className="text-osmoverse-600"
       />
       <Image
-        alt={tokenOut.denom.coinDenom}
-        src={tokenOut.denom.coinImageUrl}
+        alt={tokenOut.token.denom}
+        src={tokenOut.token.currency.coinImageUrl}
         height={32}
         width={32}
       />
@@ -68,7 +68,7 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
           + ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
         </div>
         <div className="text-body2">
-          {formatPretty(tokenOut.amount, { maxDecimals: 2 })?.toString()}
+          {formatPretty(tokenOut.token, { maxDecimals: 2 })?.toString()}
         </div>
       </div>
     </div>

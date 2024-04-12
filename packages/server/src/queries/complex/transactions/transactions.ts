@@ -27,38 +27,28 @@ function mapData(metadataArray: Metadata[], assetLists: AssetList[]) {
       })),
       txInfo: {
         tokenIn: {
-          ...valueItem.txInfo.tokenIn,
           // TODO - combine into token key
-          amount: new CoinPretty(
+          token: new CoinPretty(
             getAsset({
               assetLists,
               anyDenom: valueItem.txInfo.tokenIn.denom,
             }),
             valueItem.txInfo.tokenIn.amount
           ),
-          denom: getAsset({
-            assetLists,
-            anyDenom: valueItem.txInfo.tokenIn.denom,
-          }),
           usd: new PricePretty(
             DEFAULT_VS_CURRENCY,
             valueItem.txInfo.tokenIn.usd
           ),
         },
         tokenOut: {
-          ...valueItem.txInfo.tokenOut,
           // TODO - combine into token key
-          amount: new CoinPretty(
+          token: new CoinPretty(
             getAsset({
               assetLists,
               anyDenom: valueItem.txInfo.tokenOut.denom,
             }),
             valueItem.txInfo.tokenIn.amount
           ),
-          denom: getAsset({
-            assetLists,
-            anyDenom: valueItem.txInfo.tokenOut.denom,
-          }),
           usd: new PricePretty(
             DEFAULT_VS_CURRENCY,
             valueItem.txInfo.tokenIn.usd

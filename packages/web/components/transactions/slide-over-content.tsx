@@ -67,15 +67,15 @@ export const SlideOverContent = ({
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
                 <Image
-                  alt={tokenIn.denom.coinDenom}
-                  src={tokenIn.denom.coinImageUrl}
+                  alt={tokenIn.token.denom}
+                  src={tokenIn.token.currency.coinImageUrl}
                   height={32}
                   width={32}
                 />
                 <div className="flex flex-col">
                   <div className="text-subtitle1">Sold</div>
                   <div className="text-body1 text-osmoverse-300">
-                    {tokenIn.denom.coinDenom}
+                    {tokenIn.token.denom}
                   </div>
                 </div>
               </div>
@@ -84,7 +84,7 @@ export const SlideOverContent = ({
                   ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
                 </div>
                 <div className="text-body1 text-osmoverse-300">
-                  {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
+                  {formatPretty(tokenIn.token, { maxDecimals: 2 })?.toString()}
                 </div>
               </div>
             </div>
@@ -100,15 +100,15 @@ export const SlideOverContent = ({
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
                 <Image
-                  alt={tokenOut.denom.coinDenom}
-                  src={tokenOut.denom.coinImageUrl}
+                  alt={tokenOut.token.denom}
+                  src={tokenOut.token.currency.coinImageUrl}
                   height={32}
                   width={32}
                 />
                 <div className="flex flex-col">
                   <div className="text-subtitle1">Bought</div>
                   <div className="text-body1 text-osmoverse-300">
-                    {tokenOut.denom.coinDenom}
+                    {tokenOut.token.denom}
                   </div>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export const SlideOverContent = ({
                   ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
                 </div>
                 <div className="text-body1 text-osmoverse-300">
-                  {formatPretty(tokenOut.amount, {
+                  {formatPretty(tokenOut.token, {
                     maxDecimals: 2,
                   })?.toString()}
                 </div>
@@ -138,8 +138,8 @@ export const SlideOverContent = ({
               <div>Total Fees</div>
               <div className="text-body1 text-wosmongton-300">
                 {
-                  // TODO - update the value of txFee.amount
-                  txFee.amount
+                  // TODO - update the value of txFee.token
+                  txFee.token
                 }{" "}
                 {txFee.denom.coinDenom}
               </div>
