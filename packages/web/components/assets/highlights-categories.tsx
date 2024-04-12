@@ -154,17 +154,25 @@ const AssetHighlightRow: FunctionComponent<{
   asset: { coinDenom, coinName, coinImageUrl },
   extraInfo,
   disableLinking = false,
-}) =>
-  disableLinking ? (
-    <div className="flex items-center justify-between gap-4 rounded-lg p-2">
+}) => {
+  const AssetContent = (
+    <>
       <div className="flex items-center gap-2">
         {coinImageUrl && (
           <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
         )}
-        <span className="body2">{coinName}</span>
+        <span className="body2 max-w-50 overflow-clip text-ellipsis whitespace-nowrap">
+          {coinName}
+        </span>
         <span className="caption text-osmoverse-400">{coinDenom}</span>
       </div>
       <div>{extraInfo}</div>
+    </>
+  );
+
+  return disableLinking ? (
+    <div className="flex items-center justify-between gap-4 rounded-lg p-2">
+      {AssetContent}
     </div>
   ) : (
     <Link
@@ -172,13 +180,7 @@ const AssetHighlightRow: FunctionComponent<{
       passHref
       className="flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
     >
-      <div className="flex items-center gap-2">
-        {coinImageUrl && (
-          <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
-        )}
-        <span className="body2">{coinName}</span>
-        <span className="caption text-osmoverse-400">{coinDenom}</span>
-      </div>
-      <div>{extraInfo}</div>
+      {AssetContent}
     </Link>
   );
+};
