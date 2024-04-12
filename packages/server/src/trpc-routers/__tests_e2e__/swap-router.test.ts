@@ -554,7 +554,7 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     .toDec()
     .mul(new Dec(0.1));
 
-  // Desired token in amount is the desired price divided by the token price
+  // Token in amount is the desired price divided by the token price
   const tokenInAmount = desiredPrice
     .quo(tokenPrice)
     .mul(DecUtils.getTenExponentN(tokenIn.currency.coinDecimals))
@@ -614,7 +614,7 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     .toDec()
     .mul(new Dec(0.1));
 
-  // Desired token in amount is the desired price divided by the token price
+  // Token in amount is the desired price divided by the token price
   const tokenInAmount = desiredPrice
     .quo(tokenPrice)
     .mul(DecUtils.getTenExponentN(tokenIn.currency.coinDecimals))
