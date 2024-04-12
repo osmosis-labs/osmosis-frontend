@@ -55,7 +55,10 @@ function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
   return {
     asset,
     extraInfo: asset.priceChange24h ? (
-      <PriceChange priceChange={asset.priceChange24h} />
+      <PriceChange
+        priceChange={asset.priceChange24h}
+        overrideTextClasses="body2"
+      />
     ) : null,
   };
 }

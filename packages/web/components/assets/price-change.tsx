@@ -6,7 +6,8 @@ import { Icon } from "~/components/assets/icon";
 
 export const PriceChange: FunctionComponent<{
   priceChange: RatePretty;
-}> = ({ priceChange }) => {
+  overrideTextClasses?: string;
+}> = ({ priceChange, overrideTextClasses = "caption" }) => {
   const isBullish = priceChange.toDec().isPositive();
   const isBearish = priceChange.toDec().isNegative();
   const isFlat = !isBullish && !isBearish;
@@ -33,11 +34,14 @@ export const PriceChange: FunctionComponent<{
         />
       )}
       <span
-        className={classNames("caption", {
-          "text-bullish-400": isBullish,
-          "text-ammelia-400": isBearish,
-          "text-wosmongton-200": isFlat,
-        })}
+        className={classNames(
+          {
+            "text-bullish-400": isBullish,
+            "text-ammelia-400": isBearish,
+            "text-wosmongton-200": isFlat,
+          },
+          overrideTextClasses
+        )}
       >
         {isFlat
           ? "-"
