@@ -10,10 +10,7 @@ import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { Metadata } from "./transaction-types";
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Gets the numerical market cap rank given a token symbol/denom.
- *  Returns `undefined` if a market cap is not available for the given symbol/denom. */
 
-// TODO - extend this to cover RatePretty and PricePretty
 // TODO - try / catch the getAssets - for v1 omit a specific trx if getAsset fails
 // TODO - try / catch in the map
 function mapData(metadataArray: Metadata[], assetLists: AssetList[]) {
