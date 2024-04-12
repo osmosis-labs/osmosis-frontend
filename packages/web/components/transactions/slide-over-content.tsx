@@ -1,11 +1,13 @@
 import { Transition } from "@headlessui/react";
 import { getShortAddress } from "@osmosis-labs/utils";
+import dayjs from "dayjs";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
+import { formatPretty } from "~/utils/formatter";
 
 export const SlideOverContent = ({
   onRequestClose,
@@ -23,6 +25,10 @@ export const SlideOverContent = ({
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
+  const formattedDate = dayjs(transaction.blockTimestamp).format(
+    "MMM DD, YYYY, HH:mm"
+  );
+
   return (
     <Transition
       show={open}
@@ -33,6 +39,7 @@ export const SlideOverContent = ({
       leaveFrom="w-[452px]"
       leaveTo="w-0"
     >
+      {/* TODO remove w-[452px] */}
       <div className="flex min-h-full w-[452px] flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
         <div className="fixed mx-4 flex flex-col">
           <div className="py-4">
@@ -52,7 +59,7 @@ export const SlideOverContent = ({
             <div className="flex flex-col items-center justify-center gap-2 text-center">
               <div className="text-h5">Swapped</div>
               <div className="text-body1 text-osmoverse-300">
-                {transaction.blockTimestamp}
+                {formattedDate}
               </div>
             </div>
           </div>
@@ -73,9 +80,11 @@ export const SlideOverContent = ({
                 </div>
               </div>
               <div className="flex-end flex flex-col text-right">
-                <div className="text-subtitle1">{tokenIn.usd.toString()}</div>
+                <div className="text-subtitle1">
+                  ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
+                </div>
                 <div className="text-body1 text-osmoverse-300">
-                  {tokenIn.amount.toString()}
+                  {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
                 </div>
               </div>
             </div>
@@ -104,9 +113,13 @@ export const SlideOverContent = ({
                 </div>
               </div>
               <div className="flex-end flex flex-col text-right">
-                <div className="text-subtitle1">{tokenOut.usd.toString()}</div>
+                <div className="text-subtitle1">
+                  ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
+                </div>
                 <div className="text-body1 text-osmoverse-300">
-                  {tokenOut.amount.toString()}
+                  {formatPretty(tokenOut.amount, {
+                    maxDecimals: 2,
+                  })?.toString()}
                 </div>
               </div>
             </div>
