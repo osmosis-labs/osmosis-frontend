@@ -1,5 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+import { NUMIA_BASE_URL } from "../../env";
 import { Transaction } from "../complex/transactions/transaction-types";
 
 export async function queryTransactions({
@@ -11,8 +12,7 @@ export async function queryTransactions({
   page: string;
   pageSize: string;
 }): Promise<Transaction[]> {
-  // TODO update URL
-  const url = new URL(`https://osmosis.numia.xyz/v2/txs/${address}`);
+  const url = new URL(`/v2/txs/${address}`, NUMIA_BASE_URL);
 
   url.searchParams.append("page", page);
   url.searchParams.append("pageSize", pageSize);
