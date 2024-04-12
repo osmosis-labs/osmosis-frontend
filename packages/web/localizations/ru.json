@@ -285,6 +285,12 @@
       "stablecoin": "Стейблкоины",
       "meme": "Мем",
       "liquid_staking": "Ликвидный стейкинг"
+    },
+    "seeAll": "Увидеть все",
+    "highlights": {
+      "new": "Новый",
+      "topGainers": "Лидеры роста",
+      "upcoming": "Предстоящие"
     }
   },
   "portfolio": {

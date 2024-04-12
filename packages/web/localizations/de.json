@@ -285,6 +285,12 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Flüssiges Abstecken"
+    },
+    "seeAll": "Alles sehen",
+    "highlights": {
+      "new": "Neu",
+      "topGainers": "Top-Gewinner",
+      "upcoming": "Bevorstehende"
     }
   },
   "portfolio": {

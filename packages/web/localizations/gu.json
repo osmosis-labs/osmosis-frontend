@@ -285,6 +285,12 @@
       "stablecoin": "સ્ટેબલકોઇન્સ",
       "meme": "મેમે",
       "liquid_staking": "લિક્વિડ સ્ટેકિંગ"
+    },
+    "seeAll": "બધા જુઓ",
+    "highlights": {
+      "new": "નવી",
+      "topGainers": "ટોચના લાભાર્થીઓ",
+      "upcoming": "આગામી"
     }
   },
   "portfolio": {

@@ -6,6 +6,7 @@ import { FunctionComponent, ReactNode } from "react";
 import { Icon } from "~/components/assets/icon";
 import { PriceChange } from "~/components/assets/price-change";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { useTranslation } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 type PriceChange24hAsset =
@@ -19,6 +20,8 @@ export const HighlightsCategories: FunctionComponent<{
   isCategorySelected: boolean;
   onSelectCategory: (category: Category) => void;
 }> = ({ isCategorySelected, onSelectCategory }) => {
+  const { t } = useTranslation();
+
   const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
     api.edge.assets.getTopNewAssets.useQuery({});
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
@@ -31,18 +34,18 @@ export const HighlightsCategories: FunctionComponent<{
   return (
     <div className="flex gap-6">
       <AssetHighlights
-        title="New"
+        title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={() => onSelectCategory("new")}
       />
       <AssetHighlights
-        title="Top gainers"
+        title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
       />
       <AssetHighlights
-        title="Upcoming"
+        title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
         disableLinking
@@ -100,38 +103,42 @@ export const AssetHighlights: FunctionComponent<{
   assets,
   isLoading = false,
   disableLinking = false,
-}) => (
-  <div className="flex w-full flex-col border-t border-osmoverse-700">
-    <div className="flex place-content-between py-3">
-      <h6>{title}</h6>
-      {onClickSeeAll && (
-        <button className="body2 text-wosmongton-300" onClick={onClickSeeAll}>
-          See All
-        </button>
-      )}
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex w-full flex-col border-t border-osmoverse-700">
+      <div className="flex place-content-between py-3">
+        <h6>{title}</h6>
+        {onClickSeeAll && (
+          <button className="body2 text-wosmongton-300" onClick={onClickSeeAll}>
+            {t("assets.seeAll")}
+          </button>
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
+        {isLoading ? (
+          <>
+            {new Array(3).fill(0).map((_, i) => (
+              <SkeletonLoader className="h-12 w-full" key={i} />
+            ))}
+          </>
+        ) : (
+          <>
+            {assets.map(({ asset, extraInfo }) => (
+              <AssetHighlightRow
+                key={asset.coinDenom}
+                asset={asset}
+                extraInfo={extraInfo}
+                disableLinking={disableLinking}
+              />
+            ))}
+          </>
+        )}
+      </div>
     </div>
-    <div className="flex flex-col gap-1">
-      {isLoading ? (
-        <>
-          {new Array(3).fill(0).map((_, i) => (
-            <SkeletonLoader className="h-12 w-full" key={i} />
-          ))}
-        </>
-      ) : (
-        <>
-          {assets.map(({ asset, extraInfo }) => (
-            <AssetHighlightRow
-              key={asset.coinDenom}
-              asset={asset}
-              extraInfo={extraInfo}
-              disableLinking={disableLinking}
-            />
-          ))}
-        </>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const AssetHighlightRow: FunctionComponent<{
   asset: {

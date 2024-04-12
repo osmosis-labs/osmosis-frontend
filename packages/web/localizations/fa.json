@@ -285,6 +285,12 @@
       "stablecoin": "استیبل کوین ها",
       "meme": "میم",
       "liquid_staking": "استقرار مایع"
+    },
+    "seeAll": "همه را ببین",
+    "highlights": {
+      "new": "جدید",
+      "topGainers": "برترین برندگان",
+      "upcoming": "آینده"
     }
   },
   "portfolio": {

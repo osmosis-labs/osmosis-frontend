@@ -285,6 +285,12 @@
       "stablecoin": "稳定币",
       "meme": "模因",
       "liquid_staking": "流动质押"
+    },
+    "seeAll": "查看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "涨幅最大的股票",
+      "upcoming": "即将推出"
     }
   },
   "portfolio": {

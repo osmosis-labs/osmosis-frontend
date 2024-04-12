@@ -285,6 +285,12 @@
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
       "liquid_staking": "Mărire lichidă"
+    },
+    "seeAll": "Vezi toate",
+    "highlights": {
+      "new": "Nou",
+      "topGainers": "Câștigători de top",
+      "upcoming": "În viitor"
     }
   },
   "portfolio": {

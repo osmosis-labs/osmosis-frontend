@@ -285,6 +285,12 @@
       "stablecoin": "Stablecoiny",
       "meme": "Ja ja",
       "liquid_staking": "Płynna stawka"
+    },
+    "seeAll": "Widzieć wszystko",
+    "highlights": {
+      "new": "Nowy",
+      "topGainers": "Najlepsi zdobywcy",
+      "upcoming": "Nadchodzące"
     }
   },
   "portfolio": {

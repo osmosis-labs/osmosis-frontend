@@ -285,6 +285,12 @@
       "stablecoin": "穩定幣",
       "meme": "迷因",
       "liquid_staking": "流動質押"
+    },
+    "seeAll": "看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "漲幅居前者",
+      "upcoming": "即將推出"
     }
   },
   "portfolio": {

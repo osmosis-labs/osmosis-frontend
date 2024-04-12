@@ -285,6 +285,12 @@
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
       "liquid_staking": "Sıvı esnetme"
+    },
+    "seeAll": "Hepsini gör",
+    "highlights": {
+      "new": "Yeni",
+      "topGainers": "En çok kazananlar",
+      "upcoming": "Yaklaşan"
     }
   },
   "portfolio": {

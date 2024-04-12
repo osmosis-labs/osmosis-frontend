@@ -285,6 +285,12 @@
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
       "liquid_staking": "リキッドステーキング"
+    },
+    "seeAll": "すべてを見る",
+    "highlights": {
+      "new": "新しい",
+      "topGainers": "上位の利益",
+      "upcoming": "今後の予定"
     }
   },
   "portfolio": {

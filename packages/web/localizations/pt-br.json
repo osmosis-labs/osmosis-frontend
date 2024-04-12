@@ -285,6 +285,12 @@
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
       "liquid_staking": "Estaqueamento líquido"
+    },
+    "seeAll": "Ver tudo",
+    "highlights": {
+      "new": "Novo",
+      "topGainers": "Principais ganhadores",
+      "upcoming": "Por vir"
     }
   },
   "portfolio": {

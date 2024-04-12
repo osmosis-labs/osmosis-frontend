@@ -285,6 +285,12 @@
       "stablecoin": "스테이블코인",
       "meme": "나 나",
       "liquid_staking": "리퀴드 스테이킹"
+    },
+    "seeAll": "모두 보기",
+    "highlights": {
+      "new": "새로운",
+      "topGainers": "최고 상승자",
+      "upcoming": "예정"
     }
   },
   "portfolio": {

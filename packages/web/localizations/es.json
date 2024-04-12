@@ -285,6 +285,12 @@
       "stablecoin": "Monedas estables",
       "meme": "meme",
       "liquid_staking": "Estaca liquida"
+    },
+    "seeAll": "Ver todo",
+    "highlights": {
+      "new": "Nuevo",
+      "topGainers": "Principales ganadores",
+      "upcoming": "Próximo"
     }
   },
   "portfolio": {

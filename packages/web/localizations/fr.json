@@ -285,6 +285,12 @@
       "stablecoin": "Pièces stables",
       "meme": "Mème",
       "liquid_staking": "Jalonnement liquide"
+    },
+    "seeAll": "Voir tout",
+    "highlights": {
+      "new": "Nouveau",
+      "topGainers": "Meilleurs gagnants",
+      "upcoming": "A venir"
     }
   },
   "portfolio": {
