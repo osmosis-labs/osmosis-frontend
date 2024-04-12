@@ -8,8 +8,8 @@ import { queryTransactions } from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
-  TransactionMetadata,
   MappedTransactionMetadata,
+  TransactionMetadata,
 } from "./transaction-types";
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -56,11 +56,11 @@ function mapMetadata(
               assetLists,
               anyDenom: valueItem.txInfo.tokenOut.denom,
             }),
-            valueItem.txInfo.tokenIn.amount
+            valueItem.txInfo.tokenOut.amount
           ),
           usd: new PricePretty(
             DEFAULT_VS_CURRENCY,
-            valueItem.txInfo.tokenIn.usd
+            valueItem.txInfo.tokenOut.usd
           ),
         },
       },
