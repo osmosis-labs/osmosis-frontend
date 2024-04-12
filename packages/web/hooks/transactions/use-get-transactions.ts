@@ -7,7 +7,7 @@ const EXAMPLE = {
 };
 
 export function useGetTransactions() {
-  const { data, isLoading } = api.local.transactions.getTransactions.useQuery({
+  const { data, isLoading } = api.edge.transactions.getTransactions.useQuery({
     address: EXAMPLE.ADDRESS,
     page: EXAMPLE.PAGE,
     pageSize: EXAMPLE.PAGE_SIZE,
