@@ -140,17 +140,6 @@ export const tableColumns = [
     cell: APYCell,
     sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("daily", {
-    header: () => (
-      <ColumnCellHeader
-        tooltipDescription={"earnPage.tooltips.daily.description"}
-        tKey={"earnPage.daily"}
-      />
-    ),
-    // use the same logic as the APY cell
-    cell: APYCell,
-    sortingFn: sortDecValues,
-  }),
   columnHelper.accessor("rewardAssets", {
     header: () => (
       <ColumnCellHeader
