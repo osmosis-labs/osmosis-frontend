@@ -46,7 +46,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
     if (!isLoading && positions && !positions.length) return null;
 
     return (
-      <div className="flex flex-col gap-3">
+      <div className="my-5 flex flex-col gap-3">
         {isLoading ? (
           <>
             <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />

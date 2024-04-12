@@ -14,7 +14,7 @@ export type CommonCompareType =
 export type CompareResult = -1 | 1 | 0;
 
 /** Compare common comparable types used in app. Useful with sort function.
- *  Prefers non-nil values. */
+ *  Prefers non-nil values, but will sort non-nil values before nil values. */
 export function compareCommon(
   aValue: CommonCompareType,
   bValue: CommonCompareType

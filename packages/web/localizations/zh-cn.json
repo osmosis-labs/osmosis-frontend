@@ -176,7 +176,6 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
-    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -288,6 +287,14 @@
       "liquid_staking": "流动质押"
     }
   },
+  "portfolio": {
+    "trade": "贸易",
+    "yourAssets": "您的资产",
+    "yourPositions": "您的职位",
+    "recentTransfers": "最近转会",
+    "yourSuperchargedPositions": "您的超级职位",
+    "yourLiquidityPools": "您的流动资金池"
+  },
   "buyTokens": "购买代币",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "资产",
+    "portfolio": "文件夹",
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
@@ -774,6 +782,10 @@
     "assets": {
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
+    },
+    "portfolio": {
+      "title": "渗透产品组合",
+      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
     },
     "disclaimer": {
       "title": "渗透免责声明",

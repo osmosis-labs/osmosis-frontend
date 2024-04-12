@@ -47,9 +47,13 @@ export async function basicIbcTransfer(
       }),
     onFulfill: (tx: DeliverTxResponse) => {
       if (!tx.code) {
-        const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
-          | TxEvent[]
-          | undefined;
+        let events: TxEvent[] | undefined = [];
+
+        if (tx.rawLog && tx.rawLog.length > 0) {
+          events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events;
+        } else {
+          events = tx.events;
+        }
 
         for (const event of events ?? []) {
           if (event.type === "send_packet") {
@@ -82,6 +86,8 @@ export async function basicIbcTransfer(
             const timeoutTimestamp = timeoutTimestampAttr
               ? timeoutTimestampAttr.value
               : undefined;
+
+            console.log(events, sourceChannel, destChannel, sequence);
 
             if (sourceChannel && destChannel && sequence) {
               onFulfill?.({

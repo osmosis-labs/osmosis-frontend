@@ -14,6 +14,7 @@ export type TxEvent = {
 };
 
 export interface DeliverTxResponse {
+  readonly events?: TxEvent[];
   readonly height?: number;
   /** Error code. The transaction suceeded if code is 0. */
   readonly code: number;
