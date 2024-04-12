@@ -69,7 +69,13 @@ export const TransactionContent = ({
         <TransactionRow
           key={transaction._id}
           status={transaction.code === 0 ? "Success" : "Failure"}
-          setOpen={() => setSelectedTransaction(transaction)}
+          setOpen={() => {
+            if (selectedTransaction._id === transaction._id) {
+              setSelectedTransaction(null);
+            } else {
+              setSelectedTransaction(transaction);
+            }
+          }}
           // open={!!selectedTransaction}
           transaction={transaction}
         />

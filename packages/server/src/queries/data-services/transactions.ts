@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-type TransactionsResponse = any;
+import { Transaction } from "../complex/transactions/transaction-types";
 
 export async function queryTransactions({
   address,
@@ -10,7 +10,7 @@ export async function queryTransactions({
   address: string;
   page: string;
   pageSize: string;
-}): Promise<TransactionsResponse[]> {
+}): Promise<Transaction[]> {
   // TODO update URL
   const url = new URL(`https://osmosis.numia.xyz/v2/txs/${address}`);
 
@@ -21,5 +21,5 @@ export async function queryTransactions({
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
   };
 
-  return apiClient<TransactionsResponse[]>(url.toString(), { headers });
+  return apiClient<Transaction[]>(url.toString(), { headers });
 }

@@ -78,7 +78,6 @@ export async function getTransactions({
   address: string;
   page?: number;
   pageSize?: number;
-  // TODO - add type
   assetLists: AssetList[];
   // TODO update return type
 }): Promise<any> {

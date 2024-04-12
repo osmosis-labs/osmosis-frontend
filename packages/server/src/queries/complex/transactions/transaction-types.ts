@@ -3,7 +3,7 @@ export interface Transaction {
   hash: string;
   chainId: string;
   schemaVersion: number;
-  blockTimestamp: string; // Could use Date for stronger typing
+  blockTimestamp: string;
   index: number;
   height: number;
   code: number;
@@ -15,7 +15,7 @@ export interface Transaction {
   messageTypes: string[];
   memo: string;
   messages: Message[];
-  ingested_at: string; // Could use Date for stronger typing
+  ingested_at: string;
   metadata: Metadata[];
   prices: Price[];
 }
@@ -71,6 +71,6 @@ export interface Price {
   denom: string;
   symbol: string;
   price_usd: number;
-  price_date: string; // Could use Date for stronger typing
+  price_date: string;
   exponent: number;
 }

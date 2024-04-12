@@ -17,6 +17,8 @@ export const SlideOverContent = ({
   // TODO - update type for transaction
   transaction: any;
 }) => {
+  if (!transaction) return null;
+
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
@@ -31,7 +33,7 @@ export const SlideOverContent = ({
       leaveFrom="w-[452px]"
       leaveTo="w-0"
     >
-      <div className="flex min-h-full flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
+      <div className="flex min-h-full w-[452px] flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
         <div className="fixed mx-4 flex flex-col">
           <div className="py-4">
             <IconButton
