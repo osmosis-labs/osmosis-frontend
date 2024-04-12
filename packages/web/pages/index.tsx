@@ -2,6 +2,7 @@ import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
+import { useLocalStorage } from "react-use";
 
 import { AdBanner } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
@@ -12,6 +13,10 @@ import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
+  const [previousTrade, setPreviousTrade] = useLocalStorage<{
+    sendTokenDenom: string;
+    outTokenDenom: string;
+  }>("swap-previous-trade");
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -50,7 +55,14 @@ const Home = () => {
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-          <SwapTool />
+          <SwapTool
+            onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
+              setPreviousTrade({ sendTokenDenom, outTokenDenom });
+            }}
+            initialSendTokenDenom={previousTrade?.sendTokenDenom}
+            initialOutTokenDenom={previousTrade?.outTokenDenom}
+            page="Swap Page"
+          />
         </div>
       </div>
     </main>

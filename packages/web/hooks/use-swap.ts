@@ -504,7 +504,7 @@ export function useSwapAssets({
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
-  } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
+  } = useToFromDenoms({ useQueryParams, initialFromDenom, initialToDenom });
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -594,17 +594,25 @@ export function useSwapAssets({
   };
 }
 
-/** Switches on query params or react state to store to/from asset denoms.
- *  The initial denoms will be ignored if the user set preferences via query params. */
-function useToFromDenoms(
-  useQueryParams: boolean,
-  initialFromDenom?: string,
-  initialToDenom?: string
-) {
+/**
+ * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
+ * If the user has set preferences via query parameters, the initial denominations will be ignored.
+ */
+function useToFromDenoms({
+  useQueryParams,
+  initialFromDenom,
+  initialToDenom,
+}: {
+  useQueryParams: boolean;
+  initialFromDenom?: string;
+  initialToDenom?: string;
+}) {
   const router = useRouter();
 
-  // user query params as state source-of-truth
-  // ignores initial denoms if there are query params
+  /**
+   * user query params as state source-of-truth
+   * ignores initial denoms if there are query params
+   */
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
     "from",
     useQueryParams ? initialFromDenom : undefined
@@ -636,7 +644,7 @@ function useToFromDenoms(
   const switchAssets = () => {
     if (useQueryParams) {
       const existingParams = router.query;
-      router.push({
+      router.replace({
         query: {
           ...existingParams,
           from: toDenomQueryParamStr,

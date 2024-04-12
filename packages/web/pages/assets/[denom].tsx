@@ -233,8 +233,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <div className="xl:hidden">
                 <SwapTool
                   isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  outTokenDenom={denom}
+                  initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+                  initialOutTokenDenom={denom}
                   page="Token Info Page"
                 />
               </div>
