@@ -895,7 +895,7 @@
     "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
       },
       "daily": {
         "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."

@@ -895,7 +895,7 @@
     "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
-        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
       },
       "daily": {
         "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
