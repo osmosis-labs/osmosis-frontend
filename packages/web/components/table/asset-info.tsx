@@ -19,6 +19,7 @@ import {
   useState,
 } from "react";
 
+import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -263,6 +264,12 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <section className="mb-4">
+        <HighlightsCategories
+          isCategorySelected={!!selectedCategory}
+          onSelectCategory={selectCategory}
+        />
+      </section>
       <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}

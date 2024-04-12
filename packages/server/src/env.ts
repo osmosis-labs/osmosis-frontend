@@ -11,6 +11,7 @@ export const FE_CONTENT_COMMIT_HASH =
   process.env.NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH;
 export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;
 export const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
+export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 
 // data services
 export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
