@@ -8,6 +8,7 @@ import { queryTransactions } from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
+  MappedTransaction,
   MappedTransactionMetadata,
   TransactionMetadata,
 } from "./transaction-types";
@@ -78,47 +79,43 @@ export async function getTransactions({
   page?: number;
   pageSize?: number;
   assetLists: AssetList[];
-  // TODO update return type
-}): Promise<any> {
+}): Promise<MappedTransaction[]> {
   return await cachified({
     cache: transactionsCache,
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
-      try {
-        // const data = EXAMPLE_TRANSACTION_DATA as Transaction[];
+      // TODO - remove this once testing is complete
+      // const data = EXAMPLE_TRANSACTION_DATA as Transaction[];
 
-        const data = await queryTransactions({
-          address,
-          page: page.toString(),
-          pageSize: pageSize.toString(),
-        });
+      const data = await queryTransactions({
+        address,
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      });
 
-        // v1 only display swap transactions
-        const filteredSwapTransactions = data.filter((transaction) =>
-          transaction.metadata.some((metadataItem) =>
-            metadataItem.value.some((valueItem) => valueItem.txType === "swap")
-          )
-        );
+      // v1 only display swap transactions
+      const filteredSwapTransactions = data.filter((transaction) =>
+        transaction.metadata.some((metadataItem) =>
+          metadataItem.value.some((valueItem) => valueItem.txType === "swap")
+        )
+      );
 
-        // TODO - wrap getAsset with captureIfError
+      // TODO - wrap getAsset with captureIfError
 
-        const mappedSwapTransactions = filteredSwapTransactions.map(
-          (transaction) => {
-            return {
-              id: transaction._id,
-              hash: transaction.hash,
-              blockTimestamp: transaction.blockTimestamp,
-              code: transaction.code,
-              metadata: mapMetadata(transaction.metadata, assetLists),
-            };
-          }
-        );
+      const mappedSwapTransactions = filteredSwapTransactions.map(
+        (transaction) => {
+          return {
+            id: transaction._id,
+            hash: transaction.hash,
+            blockTimestamp: transaction.blockTimestamp,
+            code: transaction.code,
+            metadata: mapMetadata(transaction.metadata, assetLists),
+          };
+        }
+      );
 
-        return mappedSwapTransactions;
-      } catch {
-        // TODO - pass through to react query isError
-      }
+      return mappedSwapTransactions;
     },
   });
 }
