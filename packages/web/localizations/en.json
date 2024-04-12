@@ -897,9 +897,6 @@
       "apr": {
         "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy.\n\nNote: A strategy's return may fluctuate based on participation and performance.\n\nDisclaimer: These APRs are self-reported by projects themselves and may be inaccurate."
       },
-      "daily": {
-        "description": "Daily percentage return of a strategy - akin to APR, but reflecting daily return instead of annual. Note: A strategy's return may fluctuate based on participation and performance."
-      },
       "tvl": {
         "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."
       },

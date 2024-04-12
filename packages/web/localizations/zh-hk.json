@@ -897,9 +897,6 @@
       "apr": {
         "description": "年利率（APR）是指策略的年化百分比回報。<inlang-LineFeed><inlang-LineFeed>注意：策略的報酬可能會根據參與度和表現而波動。<inlang-LineFeed><inlang-LineFeed>免責聲明：這些年利率是由項目本身自行報告的，可能不準確。"
       },
-      "daily": {
-        "description": "策略的每日百分比回報 - 類似於年利率，但反映每日回報而不是年度回報。注意：策略的報酬可能會根據參與度和表現而波動。"
-      },
       "tvl": {
         "description": "鎖定總價值 (TVL) 是指存入策略的資產的美元總價值。"
       },

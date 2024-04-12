@@ -897,9 +897,6 @@
       "apr": {
         "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie.\n\nRemarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance.\n\nAvertissement : Ces TAEG sont auto-déclarés par les projets eux-mêmes et peuvent être inexacts."
       },
-      "daily": {
-        "description": "Pourcentage de rendement quotidien d'une stratégie - semblable au TAEG, mais reflétant le rendement quotidien au lieu du rendement annuel. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
-      },
       "tvl": {
         "description": "La valeur totale verrouillée (TVL) fait référence à la valeur totale en dollars américains des actifs déposés dans la stratégie."
       },

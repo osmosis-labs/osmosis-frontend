@@ -897,9 +897,6 @@
       "apr": {
         "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
       },
-      "daily": {
-        "description": "Retorno porcentual diario de una estrategia, similar a la APR, pero que refleja el rendimiento diario en lugar de anual. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
-      },
       "tvl": {
         "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
       },
