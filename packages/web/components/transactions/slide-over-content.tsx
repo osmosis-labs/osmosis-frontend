@@ -9,6 +9,8 @@ import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { formatPretty } from "~/utils/formatter";
 
+import { MappedTransaction } from "../../../server/src/queries/complex/transactions/transaction-types";
+
 export const SlideOverContent = ({
   onRequestClose,
   open,
@@ -16,18 +18,21 @@ export const SlideOverContent = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  // TODO - update type for transaction
-  transaction: any;
+  transaction: MappedTransaction;
 }) => {
   if (!transaction) return null;
 
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
+
+  console.log("metadata: ", transaction.metadata[0]);
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
   const formattedDate = dayjs(transaction.blockTimestamp).format(
     "MMM DD, YYYY, HH:mm"
   );
+
+  console.log("txFee: ", txFee);
 
   return (
     <Transition
@@ -101,6 +106,7 @@ export const SlideOverContent = ({
               <div className="flex gap-4">
                 <Image
                   alt={tokenOut.token.denom}
+                  // TODO - add FallbackImg
                   src={tokenOut.token.currency.coinImageUrl}
                   height={32}
                   width={32}
@@ -137,11 +143,9 @@ export const SlideOverContent = ({
             <div className="flex justify-between gap-3 py-3">
               <div>Total Fees</div>
               <div className="text-body1 text-wosmongton-300">
-                {
-                  // TODO - update the value of txFee.token
-                  txFee.token
-                }{" "}
-                {txFee.denom.coinDenom}
+                {formatPretty(txFee.token, {
+                  maxDecimals: 2,
+                })?.toString()}
               </div>
             </div>
             <div className="flex justify-between py-3">

@@ -15,8 +15,6 @@ const Transactions: React.FC = () => {
 
   const { data: transactionData, isLoading } = useGetTransactions();
 
-  console.log("transactionData: ", transactionData);
-
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
       router.push("/");
@@ -54,7 +52,6 @@ const Transactions: React.FC = () => {
         // TODO - add loading state
         <>
           <TransactionContent
-            selectedTransaction={selectedTransaction}
             setSelectedTransaction={setSelectedTransaction}
             transactions={transactionData}
           />

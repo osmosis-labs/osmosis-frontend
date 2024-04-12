@@ -1,48 +1,14 @@
+import { MappedTransaction } from "@osmosis-labs/server";
+
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import { Button } from "~/components/ui/button";
 
-const EXAMPLE_METADATA = [
-  {
-    type: "osmosis-ui",
-    value: [
-      {
-        txType: "swap",
-        txMessageIndex: 0,
-        txFee: [
-          {
-            denom: "uosmo",
-            amount: "1",
-            usd: 1,
-          },
-        ],
-        txInfo: {
-          tokenIn: {
-            denom:
-              "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-            amount: "100",
-            usd: 10,
-          },
-          tokenOut: {
-            denom:
-              "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
-            amount: "200",
-            usd: 30,
-          },
-        },
-      },
-    ],
-  },
-];
-
 export const TransactionContent = ({
   setSelectedTransaction,
-  selectedTransaction,
   transactions,
 }: {
-  // TODO - update type for selectedTransaction
-  setSelectedTransaction: (selectedTransaction: any) => void;
-  selectedTransaction: any;
-  transactions: any;
+  setSelectedTransaction: (selectedTransaction: MappedTransaction) => void;
+  transactions: MappedTransaction[];
 }) => {
   return (
     <div className="flex w-full flex-col">
@@ -72,7 +38,6 @@ export const TransactionContent = ({
           setOpen={() => {
             setSelectedTransaction(transaction);
           }}
-          // open={!!selectedTransaction}
           transaction={transaction}
         />
       ))}

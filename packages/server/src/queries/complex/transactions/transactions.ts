@@ -7,20 +7,32 @@ import { getAsset } from "../../../queries/complex/assets";
 import { queryTransactions } from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
-import { Metadata } from "./transaction-types";
+import {
+  TransactionMetadata,
+  MappedTransactionMetadata,
+} from "./transaction-types";
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 // TODO - try / catch the getAssets - for v1 omit a specific trx if getAsset fails
 // TODO - try / catch in the map
-function mapData(metadataArray: Metadata[], assetLists: AssetList[]) {
+function mapMetadata(
+  metadataArray: TransactionMetadata[],
+  assetLists: AssetList[]
+): MappedTransactionMetadata[] {
   return metadataArray.map((metadata) => ({
     ...metadata,
     value: metadata.value.map((valueItem) => ({
       ...valueItem,
       txFee: valueItem.txFee.map((fee) => ({
-        ...fee,
-        denom: getAsset({ assetLists, anyDenom: fee.denom }),
+        token: new CoinPretty(
+          getAsset({
+            assetLists,
+            anyDenom: fee.denom,
+          }),
+          fee.amount
+        ),
+        usd: new PricePretty(DEFAULT_VS_CURRENCY, fee.usd),
       })),
       txInfo: {
         tokenIn: {
@@ -98,7 +110,7 @@ export async function getTransactions({
               hash: transaction.hash,
               blockTimestamp: transaction.blockTimestamp,
               code: transaction.code,
-              metadata: mapData(transaction.metadata, assetLists),
+              metadata: mapMetadata(transaction.metadata, assetLists),
             };
           }
         );
