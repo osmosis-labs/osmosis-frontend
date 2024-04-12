@@ -156,7 +156,7 @@ const AssetHighlightRow: FunctionComponent<{
   disableLinking = false,
 }) =>
   disableLinking ? (
-    <div className="flex items-center justify-between rounded-lg p-2">
+    <div className="flex items-center justify-between gap-4 rounded-lg p-2">
       <div className="flex items-center gap-2">
         {coinImageUrl && (
           <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
@@ -170,7 +170,7 @@ const AssetHighlightRow: FunctionComponent<{
     <Link
       href={`/assets/${coinDenom}`}
       passHref
-      className="flex items-center justify-between rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+      className="flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
     >
       <div className="flex items-center gap-2">
         {coinImageUrl && (
