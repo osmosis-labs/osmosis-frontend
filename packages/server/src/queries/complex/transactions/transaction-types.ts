@@ -48,17 +48,17 @@ export interface TransactionMetadata {
 export interface TransactionMetadataValue {
   txType: string;
   txMessageIndex: number;
-  txFee: TxFee[];
-  txInfo: TxInfo;
+  txFee: TransactionFee[];
+  txInfo: TransactionInfo;
 }
 
-export interface TxFee {
+export interface TransactionFee {
   denom: string;
   amount: string;
   usd: number;
 }
 
-export interface TxInfo {
+export interface TransactionInfo {
   tokenIn: TransactionToken;
   tokenOut: TransactionToken;
 }
@@ -77,6 +77,7 @@ export interface TransactionPrice {
   exponent: number;
 }
 
+// mapped data for the frontend
 export interface MappedTransactionMetadata {
   value: {
     txFee: {
@@ -100,6 +101,7 @@ export interface MappedTransactionMetadata {
 }
 [];
 
+// mapped data for the frontend
 export interface MappedTransaction {
   id: string;
   hash: string;
