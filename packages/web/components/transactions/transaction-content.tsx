@@ -6,9 +6,13 @@ import { Button } from "~/components/ui/button";
 export const TransactionContent = ({
   setSelectedTransaction,
   transactions,
+  setOpen,
+  open,
 }: {
   setSelectedTransaction: (selectedTransaction: MappedTransaction) => void;
   transactions: MappedTransaction[];
+  setOpen: (open: boolean) => void;
+  open: boolean;
 }) => {
   return (
     <div className="flex w-full flex-col">
@@ -37,6 +41,11 @@ export const TransactionContent = ({
           status={transaction.code === 0 ? "Success" : "Failure"}
           setOpen={() => {
             setSelectedTransaction(transaction);
+
+            // delay to ensure the slide over transitions smoothly
+            if (!open) {
+              setTimeout(() => setOpen(true), 1);
+            }
           }}
           transaction={transaction}
         />

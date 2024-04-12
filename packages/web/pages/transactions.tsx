@@ -45,6 +45,7 @@ const Transactions: React.FC = () => {
   });
 
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [open, setOpen] = useState(false);
 
   return (
     <main className="relative mx-16 flex gap-4">
@@ -54,10 +55,12 @@ const Transactions: React.FC = () => {
           <TransactionContent
             setSelectedTransaction={setSelectedTransaction}
             transactions={transactionData}
+            setOpen={setOpen}
+            open={open}
           />
           <SlideOverContent
-            onRequestClose={() => setSelectedTransaction(null)}
-            open={!!selectedTransaction}
+            onRequestClose={() => setOpen(false)}
+            open={open}
             transaction={selectedTransaction}
           />
         </>

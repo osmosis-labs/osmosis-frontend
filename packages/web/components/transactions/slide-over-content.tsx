@@ -47,8 +47,7 @@ export const SlideOverContent = ({
       leaveFrom="w-[452px]"
       leaveTo="w-0"
     >
-      {/* TODO remove w-[452px] */}
-      <div className="flex min-h-full w-[452px] flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
+      <div className="flex min-h-full flex-col border-l-[1px] border-osmoverse-700 bg-osmoverse-900">
         <div className="fixed mx-4 flex flex-col">
           <div className="py-4">
             <IconButton
