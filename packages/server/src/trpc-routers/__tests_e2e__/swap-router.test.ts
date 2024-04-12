@@ -188,7 +188,7 @@ function assertValidQuote({
 
 jest.retryTimes(2, { logErrorsBeforeRetry: true });
 
-it.only("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
+it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = atomAsset;
   const tokenOut = osmoAsset;
