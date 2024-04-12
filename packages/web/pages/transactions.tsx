@@ -8,12 +8,21 @@ import { SlideOverContent } from "~/components/transactions/slide-over-content";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import { useGetTransactions, useTranslation } from "~/hooks";
+import { useStore } from "~/stores";
 
 const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
 
-  const { data: transactionData, isLoading } = useGetTransactions();
+  const { accountStore, chainStore } = useStore();
+
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address || "";
+
+  const { data: transactionData, isLoading } = useGetTransactions(address);
+
+  console.log("transactionData: ", transactionData);
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
