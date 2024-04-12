@@ -200,8 +200,6 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     preferredRouter,
   });
 
-  expect(false).toBeTruthy();
-
   assertValidQuote({
     quote: reply,
     tokenInAmount,
