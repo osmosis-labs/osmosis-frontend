@@ -70,11 +70,7 @@ export const TransactionContent = ({
           key={transaction._id}
           status={transaction.code === 0 ? "Success" : "Failure"}
           setOpen={() => {
-            if (selectedTransaction._id === transaction._id) {
-              setSelectedTransaction(null);
-            } else {
-              setSelectedTransaction(transaction);
-            }
+            setSelectedTransaction(transaction);
           }}
           // open={!!selectedTransaction}
           transaction={transaction}
