@@ -19,7 +19,8 @@ type UpcomingReleaseAsset =
 export const HighlightsCategories: FunctionComponent<{
   isCategorySelected: boolean;
   onSelectCategory: (category: Category) => void;
-}> = ({ isCategorySelected, onSelectCategory }) => {
+  onSelectAllTopGainers: () => void;
+}> = ({ isCategorySelected, onSelectCategory, onSelectAllTopGainers }) => {
   const { t } = useTranslation();
 
   const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
@@ -43,6 +44,7 @@ export const HighlightsCategories: FunctionComponent<{
         title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
+        onClickSeeAll={onSelectAllTopGainers}
       />
       <AssetHighlights
         title={t("assets.highlights.upcoming")}

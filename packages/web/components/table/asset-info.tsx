@@ -69,6 +69,10 @@ export const AssetsInfoTable: FunctionComponent<{
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
   }, []);
+  const onSelectTopGainers = useCallback(() => {
+    setSortKey_("priceChange24h");
+    setSortDirection("desc");
+  }, []);
   const categories = useMemo(
     () => (selectedCategory ? [selectedCategory] : undefined),
     [selectedCategory]
@@ -268,6 +272,7 @@ export const AssetsInfoTable: FunctionComponent<{
         <HighlightsCategories
           isCategorySelected={!!selectedCategory}
           onSelectCategory={selectCategory}
+          onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>
       <section className="mb-4">
