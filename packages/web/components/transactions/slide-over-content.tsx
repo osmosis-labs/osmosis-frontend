@@ -25,15 +25,17 @@ export const SlideOverContent = ({
 
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
-  console.log("metadata: ", transaction.metadata[0]);
-
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
   const formattedDate = dayjs(transaction.blockTimestamp).format(
     "MMM DD, YYYY, HH:mm"
   );
 
-  console.log("txFee: ", txFee);
+  // TODO is there a better way to do this with CoinPretty?
+  const conversionRate = Number(
+    // @ts-ignore
+    +tokenIn.token.amount.toString() / +tokenOut.token.amount.toString()
+  ).toFixed(2);
 
   return (
     <Transition
@@ -137,9 +139,10 @@ export const SlideOverContent = ({
               <div>Execution Price</div>
               <div className="flex gap-3">
                 <div className="text-body1 text-wosmongton-300">
-                  {/*  TODO - derive these values */}1 OSMO = 97.80 USDC
+                  1 {tokenOut.token.denom} = {conversionRate}{" "}
+                  {tokenIn.token.denom}
                 </div>
-                <CopyIconButton valueToCopy="97.80 USDC" />
+                <CopyIconButton valueToCopy={conversionRate} />
               </div>
             </div>
             <div className="flex justify-between gap-3 py-3">
