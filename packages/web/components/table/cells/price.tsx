@@ -28,8 +28,6 @@ export const HistoricalPriceCell: FunctionComponent<{
     [recentPrices]
   );
 
-  if (recentPriceCloses.length === 0) return <div className="w-20" />;
-
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
 
@@ -44,13 +42,15 @@ export const HistoricalPriceCell: FunctionComponent<{
 
   return (
     <div className="flex items-center gap-4">
-      <Sparkline
-        width={80}
-        height={50}
-        lineWidth={2}
-        data={recentPriceCloses}
-        color={color}
-      />
+      {recentPriceCloses.length && (
+        <Sparkline
+          width={80}
+          height={50}
+          lineWidth={2}
+          data={recentPriceCloses}
+          color={color}
+        />
+      )}
       {priceChange24h && <PriceChange priceChange={priceChange24h} />}
     </div>
   );
