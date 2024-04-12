@@ -186,7 +186,9 @@ function assertValidQuote({
   expect(parseFloat(amountFiatValue)).toBeGreaterThan(0);
 }
 
-it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
+jest.retryTimes(2, { logErrorsBeforeRetry: true });
+
+it.only("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = atomAsset;
   const tokenOut = osmoAsset;
@@ -197,6 +199,8 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     tokenOutDenom: tokenOut.coinMinimalDenom,
     preferredRouter,
   });
+
+  expect(false).toBeTruthy();
 
   assertValidQuote({
     quote: reply,
