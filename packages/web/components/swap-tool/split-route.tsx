@@ -167,15 +167,13 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
               dynamicSpreadFactor,
             },
             index
-          ) => {
-            if (!inCurrency || !outCurrency) return null;
-
-            return (
-              <Tooltip
-                key={`${id}${index}`}
-                singleton={target}
-                content={
-                  <div className="space-y-3">
+          ) => (
+            <Tooltip
+              key={`${id}${index}`}
+              singleton={target}
+              content={
+                <div className="space-y-3">
+                  {inCurrency && outCurrency && (
                     <div className="flex space-x-2">
                       <div className="flex">
                         <div className="h-[20px] w-[20px]">
@@ -192,69 +190,74 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                         <span>{outCurrency.coinDenom}</span>
                       </p>
                     </div>
+                  )}
 
-                    <div className="flex justify-center space-x-1 text-center text-xs font-medium">
+                  <div className="flex justify-center space-x-1 text-center text-xs font-medium">
+                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
+                      {t("swap.pool", { id })}
+                    </p>
+
+                    {spreadFactor && (
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.pool", { id })}
+                        {type === "concentrated"
+                          ? t("swap.routerTooltipSpreadFactor")
+                          : t("swap.routerTooltipFee")}{" "}
+                        {dynamicSpreadFactor
+                          ? t("swap.dynamicSpreadFactor")
+                          : spreadFactor.maxDecimals(2).toString()}
                       </p>
-
-                      {spreadFactor && (
-                        <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                          {type === "concentrated"
-                            ? t("swap.routerTooltipSpreadFactor")
-                            : t("swap.routerTooltipFee")}{" "}
-                          {dynamicSpreadFactor
-                            ? t("swap.dynamicSpreadFactor")
-                            : spreadFactor.maxDecimals(2).toString()}
-                        </p>
-                      )}
-                    </div>
-                    {(type === "concentrated" ||
-                      type === "stable" ||
-                      type === "cosmwasm-transmuter" ||
-                      type === "cosmwasm-astroport-pcl" ||
-                      type === "cosmwasm-whitewhale" ||
-                      type === "cosmwasm") && (
-                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
-                        {type === "concentrated" && (
-                          <Icon id="lightning-small" height={16} width={16} />
-                        )}
-                        {(type === "stable" ||
-                          type === "cosmwasm-transmuter") && (
-                          <Image
-                            alt="stable-pool"
-                            src="/icons/stableswap-pool.svg"
-                            width={16}
-                            height={16}
-                          />
-                        )}
-                        {type === "cosmwasm" && (
-                          <Icon id="setting" height={16} width={16} />
-                        )}
-                        {t(
-                          type === "concentrated"
-                            ? "clPositions.supercharged"
-                            : type === "cosmwasm-transmuter"
-                            ? "pool.transmuter"
-                            : type === "cosmwasm-astroport-pcl"
-                            ? "Astroport PCL"
-                            : type === "cosmwasm-whitewhale"
-                            ? "White Whale"
-                            : type === "cosmwasm"
-                            ? "pool.custom"
-                            : "pool.stableswapEnabled"
-                        )}
-                      </div>
                     )}
                   </div>
-                }
+                  {(type === "concentrated" ||
+                    type === "stable" ||
+                    type === "cosmwasm-transmuter" ||
+                    type === "cosmwasm-astroport-pcl" ||
+                    type === "cosmwasm-whitewhale" ||
+                    type === "cosmwasm") && (
+                    <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                      {type === "concentrated" && (
+                        <Icon id="lightning-small" height={16} width={16} />
+                      )}
+                      {(type === "stable" ||
+                        type === "cosmwasm-transmuter") && (
+                        <Image
+                          alt="stable-pool"
+                          src="/icons/stableswap-pool.svg"
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      {type === "cosmwasm" && (
+                        <Icon id="setting" height={16} width={16} />
+                      )}
+                      {t(
+                        type === "concentrated"
+                          ? "clPositions.supercharged"
+                          : type === "cosmwasm-transmuter"
+                          ? "pool.transmuter"
+                          : type === "cosmwasm-astroport-pcl"
+                          ? "Astroport PCL"
+                          : type === "cosmwasm-whitewhale"
+                          ? "White Whale"
+                          : type === "cosmwasm"
+                          ? "pool.custom"
+                          : "pool.stableswapEnabled"
+                      )}
+                    </div>
+                  )}
+                </div>
+              }
+            >
+              <button
+                className={classNames(
+                  "flex items-center space-x-2 rounded-full bg-osmoverse-800 hover:bg-osmoverse-700",
+                  inCurrency && outCurrency ? "p-1" : "p-2"
+                )}
+                onClick={() => {
+                  if (!isMobile) router.push("/pool/" + id);
+                }}
               >
-                <button
-                  className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700"
-                  onClick={() => {
-                    if (!isMobile) router.push("/pool/" + id);
-                  }}
-                >
+                {inCurrency && outCurrency && (
                   <div className="flex">
                     <div className="h-[20px] w-[20px]">
                       <DenomImage currency={inCurrency} />
@@ -263,19 +266,19 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                       <DenomImage currency={outCurrency} />
                     </div>
                   </div>
+                )}
 
-                  {pools.length < 4 &&
-                    !isMobile &&
-                    spreadFactor &&
-                    !dynamicSpreadFactor && (
-                      <p className="text-caption">
-                        {spreadFactor.maxDecimals(1).toString()}
-                      </p>
-                    )}
-                </button>
-              </Tooltip>
-            );
-          }
+                {pools.length < 4 &&
+                  !isMobile &&
+                  spreadFactor &&
+                  !dynamicSpreadFactor && (
+                    <p className="text-caption">
+                      {spreadFactor.maxDecimals(1).toString()}
+                    </p>
+                  )}
+              </button>
+            </Tooltip>
+          )
         )}
       </div>
     </>
