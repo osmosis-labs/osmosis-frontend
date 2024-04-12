@@ -5,6 +5,7 @@ import {
 import classNames from "classnames";
 import Image from "next/image";
 
+import { FallbackImg } from "~/components/assets";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
@@ -14,7 +15,6 @@ type Status = "Pending" | "Success" | "Failure";
 
 interface TransactionDetailsProps {
   status: Status;
-  // TODO - update metadata type
   metadata: MappedTransactionMetadata[];
 }
 
@@ -22,15 +22,12 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
   // TODO - update this to filter by metadata type
   const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
 
-  // console.log("metadata: ", metadata[0]);
-  // console.log("tokenIn: ", tokenIn);
-  // console.log("tokenOut: ", tokenOut);
-
   return (
     <div className="flex gap-4">
-      <Image
+      <FallbackImg
         alt={tokenIn.token.denom}
         src={tokenIn.token.currency.coinImageUrl}
+        fallbacksrc="/icons/superfluid-osmo.svg"
         height={32}
         width={32}
       />
@@ -55,9 +52,10 @@ const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
         height={24}
         className="text-osmoverse-600"
       />
-      <Image
+      <FallbackImg
         alt={tokenOut.token.denom}
         src={tokenOut.token.currency.coinImageUrl}
+        fallbacksrc="/icons/superfluid-osmo.svg"
         height={32}
         width={32}
       />

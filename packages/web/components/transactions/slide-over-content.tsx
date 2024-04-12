@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
+import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
@@ -71,9 +72,10 @@ export const SlideOverContent = ({
           <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
-                <Image
+                <FallbackImg
                   alt={tokenIn.token.denom}
                   src={tokenIn.token.currency.coinImageUrl}
+                  fallbacksrc="/icons/superfluid-osmo.svg"
                   height={32}
                   width={32}
                 />
@@ -104,10 +106,10 @@ export const SlideOverContent = ({
             </div>
             <div className="flex justify-between p-2">
               <div className="flex gap-4">
-                <Image
+                <FallbackImg
                   alt={tokenOut.token.denom}
-                  // TODO - add FallbackImg
                   src={tokenOut.token.currency.coinImageUrl}
+                  fallbacksrc="/icons/superfluid-osmo.svg"
                   height={32}
                   width={32}
                 />
