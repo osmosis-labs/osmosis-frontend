@@ -37,7 +37,6 @@ function mapMetadata(
       })),
       txInfo: {
         tokenIn: {
-          // TODO - combine into token key
           token: new CoinPretty(
             getAsset({
               assetLists,
@@ -51,7 +50,6 @@ function mapMetadata(
           ),
         },
         tokenOut: {
-          // TODO - combine into token key
           token: new CoinPretty(
             getAsset({
               assetLists,

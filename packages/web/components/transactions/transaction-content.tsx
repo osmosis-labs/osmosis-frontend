@@ -14,6 +14,9 @@ export const TransactionContent = ({
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
+  // TODO - add loading state
+  if (!transactions) return null;
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">

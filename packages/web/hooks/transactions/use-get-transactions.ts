@@ -7,7 +7,11 @@ const EXAMPLE = {
   PAGE_SIZE: 100,
 };
 
-export function useGetTransactions(address: string) {
+export function useGetTransactions(
+  // TODO - remove this once address is being used in query
+  //  @ts-ignore
+  address: string
+) {
   const { data, isLoading } = api.edge.transactions.getTransactions.useQuery(
     {
       // address,
