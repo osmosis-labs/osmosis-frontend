@@ -1,8 +1,10 @@
 import {
   captureException,
   getClient,
-  getCurrentScope,
+  SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN,
   SEMANTIC_ATTRIBUTE_SENTRY_SOURCE,
+  setContext,
+  startSpanManual,
 } from "@sentry/core";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { isThenable, normalize } from "@sentry/utils";
@@ -19,6 +21,10 @@ interface TrpcMiddlewareArguments<T> {
   rawInput: unknown;
 }
 
+const trpcCaptureContext = {
+  mechanism: { handled: false, data: { function: "trpcMiddleware" } },
+};
+
 /**
  * Sentry tRPC middleware that names the handling transaction after the called procedure.
  *
@@ -32,67 +38,75 @@ export function trpcMiddleware(options: SentryTrpcMiddlewareOptions = {}) {
     next,
     rawInput,
   }: TrpcMiddlewareArguments<T>): T {
-    const clientOptions = getClient()?.getOptions();
-    const sentryTransaction = getCurrentScope().getTransaction();
+    const client = getClient();
+    const clientOptions = client?.getOptions();
 
-    if (sentryTransaction) {
-      sentryTransaction.updateName(`trpc/${path}`);
-      sentryTransaction.setAttribute(SEMANTIC_ATTRIBUTE_SENTRY_SOURCE, "route");
-      sentryTransaction.op = "rpc.server";
+    const trpcContext: Record<string, unknown> = {
+      procedure_type: type,
+    };
 
-      const trpcContext: Record<string, unknown> = {
-        procedure_type: type,
-      };
+    if (
+      options.attachRpcInput !== undefined
+        ? options.attachRpcInput
+        : clientOptions && clientOptions.sendDefaultPii
+    ) {
+      trpcContext.input = normalize(rawInput);
+    }
 
+    setContext("trpc", trpcContext);
+
+    function captureIfError(nextResult: unknown): void {
+      // TODO: Set span status based on what TRPCError was encountered
       if (
-        options.attachRpcInput !== undefined
-          ? options.attachRpcInput
-          : clientOptions?.sendDefaultPii
+        typeof nextResult === "object" &&
+        nextResult !== null &&
+        "ok" in nextResult &&
+        !nextResult.ok &&
+        "error" in nextResult
       ) {
-        trpcContext.input = normalize(rawInput);
-      }
-
-      // TODO: Can we rewrite this to an attribute? Or set this on the scope?
-      sentryTransaction.setContext("trpc", trpcContext);
-    }
-
-    function captureIfError(
-      nextResult: { ok: false; error?: Error } | { ok: true }
-    ): void {
-      if (!nextResult.ok) {
-        captureException(nextResult.error, {
-          mechanism: { handled: false, data: { function: "trpcMiddleware" } },
-        });
+        captureException(nextResult.error, trpcCaptureContext);
       }
     }
 
-    let maybePromiseResult;
-    try {
-      maybePromiseResult = next();
-    } catch (e) {
-      captureException(e, {
-        mechanism: { handled: false, data: { function: "trpcMiddleware" } },
-      });
-      throw e;
-    }
-
-    if (isThenable(maybePromiseResult)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      Promise.resolve(maybePromiseResult).then(
-        (nextResult) => {
-          captureIfError(nextResult as any);
+    return startSpanManual(
+      {
+        name: `trpc/${path}`,
+        op: "rpc.server",
+        forceTransaction: true,
+        attributes: {
+          [SEMANTIC_ATTRIBUTE_SENTRY_SOURCE]: "route",
+          [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: "auto.rpc.trpc",
         },
-        (e) => {
-          captureException(e, {
-            mechanism: { handled: false, data: { function: "trpcMiddleware" } },
-          });
+      },
+      (span) => {
+        let maybePromiseResult;
+        try {
+          maybePromiseResult = next();
+        } catch (e) {
+          captureException(e, trpcCaptureContext);
+          span?.end();
+          throw e;
         }
-      );
-    } else {
-      captureIfError(maybePromiseResult as any);
-    }
 
-    // We return the original promise just to be safe.
-    return maybePromiseResult;
+        if (isThenable(maybePromiseResult)) {
+          return maybePromiseResult.then(
+            (nextResult) => {
+              captureIfError(nextResult);
+              span?.end();
+              return nextResult;
+            },
+            (e) => {
+              captureException(e, trpcCaptureContext);
+              span?.end();
+              throw e;
+            }
+          ) as T;
+        } else {
+          captureIfError(maybePromiseResult);
+          span?.end();
+          return maybePromiseResult;
+        }
+      }
+    );
   };
 }
