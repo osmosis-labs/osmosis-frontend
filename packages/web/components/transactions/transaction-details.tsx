@@ -1,11 +1,13 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TransactionDetailsContent = ({
   onRequestClose,
@@ -156,10 +158,6 @@ export const TransactionDetailsSlideover = ({
     </Transition>
   );
 };
-
-import { FunctionComponent } from "react";
-
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TransactionDetailsModal: FunctionComponent<ModalBaseProps> = ({
   onRequestClose,
