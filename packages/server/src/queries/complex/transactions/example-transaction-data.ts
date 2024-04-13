@@ -1,3 +1,398 @@
+export const EXAMPLE_TRANSACTION_DATA_BY_DATE = [
+  {
+    _id: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA#14652830",
+    hash: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA",
+    chainId: "osmosis-1",
+    schemaVersion: 6,
+    blockTimestamp: "2024-04-12T20:58:51.331Z",
+    index: 4,
+    height: 14652830,
+    code: 0,
+    info: "",
+    gasWanted: 533786,
+    gasUsed: 533786,
+    codespace: "",
+    addressIndex: [
+      "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+      "osmo19n4q7va8gdm2l7544k94pufhdp5tpu7pmfw4vqyvvzlzjvvc8v3qtyz27t",
+      "osmo100jqvejpw0fyzd87gmswvt8vjuckazdzakeu8lr9ccdz7283hueqyjwd3s",
+    ],
+    messageTypes: [
+      "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    ],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+        routes: [
+          {
+            pools: [
+              {
+                pool_id: "1400",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "813400000",
+          },
+          {
+            pools: [
+              {
+                pool_id: "1399",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "348600000",
+          },
+        ],
+        token_in_denom: "uosmo",
+        token_out_min_amount: "131251765",
+        "@type": "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+      },
+    ],
+    ingested_at: "2024-04-05T09:41:57.451Z",
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "swap",
+            txMessageIndex: 0,
+            txFee: [
+              { denom: "uosmo", amount: "2002", usd: 0.0025067057271103755 },
+            ],
+            txInfo: {
+              tokenIn: {
+                denom: "uosmo",
+                amount: "1160803175",
+                usd: 1453.4425408693346,
+              },
+              tokenOut: {
+                denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                amount: "131911257",
+                usd: 1456.0919263007333,
+              },
+            },
+          },
+        ],
+      },
+    ],
+    prices: [
+      {
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        symbol: "ATOM",
+        price_usd: 11.038420521614265,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+      {
+        denom: "uosmo",
+        symbol: "OSMO",
+        price_usd: 1.2521007627923955,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+    ],
+  },
+  {
+    _id: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA#14652830",
+    hash: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA",
+    chainId: "osmosis-1",
+    schemaVersion: 6,
+    blockTimestamp: "2024-04-11T20:58:51.331Z",
+    index: 4,
+    height: 14652830,
+    code: 0,
+    info: "",
+    gasWanted: 533786,
+    gasUsed: 533786,
+    codespace: "",
+    addressIndex: [
+      "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+      "osmo19n4q7va8gdm2l7544k94pufhdp5tpu7pmfw4vqyvvzlzjvvc8v3qtyz27t",
+      "osmo100jqvejpw0fyzd87gmswvt8vjuckazdzakeu8lr9ccdz7283hueqyjwd3s",
+    ],
+    messageTypes: [
+      "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    ],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+        routes: [
+          {
+            pools: [
+              {
+                pool_id: "1400",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "813400000",
+          },
+          {
+            pools: [
+              {
+                pool_id: "1399",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "348600000",
+          },
+        ],
+        token_in_denom: "uosmo",
+        token_out_min_amount: "131251765",
+        "@type": "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+      },
+    ],
+    ingested_at: "2024-04-05T09:41:57.451Z",
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "swap",
+            txMessageIndex: 0,
+            txFee: [
+              { denom: "uosmo", amount: "2002", usd: 0.0025067057271103755 },
+            ],
+            txInfo: {
+              tokenIn: {
+                denom: "uosmo",
+                amount: "1160803175",
+                usd: 1453.4425408693346,
+              },
+              tokenOut: {
+                denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                amount: "131911257",
+                usd: 1456.0919263007333,
+              },
+            },
+          },
+        ],
+      },
+    ],
+    prices: [
+      {
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        symbol: "ATOM",
+        price_usd: 11.038420521614265,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+      {
+        denom: "uosmo",
+        symbol: "OSMO",
+        price_usd: 1.2521007627923955,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+    ],
+  },
+  {
+    _id: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA#14652830",
+    hash: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA",
+    chainId: "osmosis-1",
+    schemaVersion: 6,
+    blockTimestamp: "2024-01-02T20:58:51.331Z",
+    index: 4,
+    height: 14652830,
+    code: 0,
+    info: "",
+    gasWanted: 533786,
+    gasUsed: 533786,
+    codespace: "",
+    addressIndex: [
+      "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+      "osmo19n4q7va8gdm2l7544k94pufhdp5tpu7pmfw4vqyvvzlzjvvc8v3qtyz27t",
+      "osmo100jqvejpw0fyzd87gmswvt8vjuckazdzakeu8lr9ccdz7283hueqyjwd3s",
+    ],
+    messageTypes: [
+      "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    ],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+        routes: [
+          {
+            pools: [
+              {
+                pool_id: "1400",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "813400000",
+          },
+          {
+            pools: [
+              {
+                pool_id: "1399",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "348600000",
+          },
+        ],
+        token_in_denom: "uosmo",
+        token_out_min_amount: "131251765",
+        "@type": "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+      },
+    ],
+    ingested_at: "2024-04-05T09:41:57.451Z",
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "swap",
+            txMessageIndex: 0,
+            txFee: [
+              { denom: "uosmo", amount: "2002", usd: 0.0025067057271103755 },
+            ],
+            txInfo: {
+              tokenIn: {
+                denom: "uosmo",
+                amount: "1160803175",
+                usd: 1453.4425408693346,
+              },
+              tokenOut: {
+                denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                amount: "131911257",
+                usd: 1456.0919263007333,
+              },
+            },
+          },
+        ],
+      },
+    ],
+    prices: [
+      {
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        symbol: "ATOM",
+        price_usd: 11.038420521614265,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+      {
+        denom: "uosmo",
+        symbol: "OSMO",
+        price_usd: 1.2521007627923955,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+    ],
+  },
+  {
+    _id: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA#14652830",
+    hash: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA",
+    chainId: "osmosis-1",
+    schemaVersion: 6,
+    blockTimestamp: "2023-01-02T20:58:51.331Z",
+    index: 4,
+    height: 14652830,
+    code: 0,
+    info: "",
+    gasWanted: 533786,
+    gasUsed: 533786,
+    codespace: "",
+    addressIndex: [
+      "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+      "osmo19n4q7va8gdm2l7544k94pufhdp5tpu7pmfw4vqyvvzlzjvvc8v3qtyz27t",
+      "osmo100jqvejpw0fyzd87gmswvt8vjuckazdzakeu8lr9ccdz7283hueqyjwd3s",
+    ],
+    messageTypes: [
+      "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    ],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+        routes: [
+          {
+            pools: [
+              {
+                pool_id: "1400",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "813400000",
+          },
+          {
+            pools: [
+              {
+                pool_id: "1399",
+                token_out_denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+              },
+            ],
+            token_in_amount: "348600000",
+          },
+        ],
+        token_in_denom: "uosmo",
+        token_out_min_amount: "131251765",
+        "@type": "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+      },
+    ],
+    ingested_at: "2024-04-05T09:41:57.451Z",
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "swap",
+            txMessageIndex: 0,
+            txFee: [
+              { denom: "uosmo", amount: "2002", usd: 0.0025067057271103755 },
+            ],
+            txInfo: {
+              tokenIn: {
+                denom: "uosmo",
+                amount: "1160803175",
+                usd: 1453.4425408693346,
+              },
+              tokenOut: {
+                denom:
+                  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                amount: "131911257",
+                usd: 1456.0919263007333,
+              },
+            },
+          },
+        ],
+      },
+    ],
+    prices: [
+      {
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        symbol: "ATOM",
+        price_usd: 11.038420521614265,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+      {
+        denom: "uosmo",
+        symbol: "OSMO",
+        price_usd: 1.2521007627923955,
+        price_date: "2024-04-02T20:59:00.000Z",
+        exponent: 6,
+      },
+    ],
+  },
+];
+
 export const EXAMPLE_TRANSACTION_DATA = [
   {
     _id: "FBD7BA48AE83133F2158E145850E7F13BD7422780CBD143D8EA0E03660A42AEA#14652830",

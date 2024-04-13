@@ -4,9 +4,9 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { getAsset } from "../../../queries/complex/assets";
-import { queryTransactions } from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
+import { EXAMPLE_TRANSACTION_DATA_BY_DATE } from "./example-transaction-data";
 import {
   MappedTransaction,
   MappedTransactionMetadata,
@@ -84,13 +84,13 @@ export async function getTransactions({
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
       // TODO - remove this once testing is complete
-      // const data = EXAMPLE_TRANSACTION_DATA as Transaction[];
+      const data = EXAMPLE_TRANSACTION_DATA_BY_DATE;
 
-      const data = await queryTransactions({
-        address,
-        page: page.toString(),
-        pageSize: pageSize.toString(),
-      });
+      // const data = await queryTransactions({
+      //   address,
+      //   page: page.toString(),
+      //   pageSize: pageSize.toString(),
+      // });
 
       // v1 only display swap transactions
       const filteredSwapTransactions = data.filter((transaction) =>
