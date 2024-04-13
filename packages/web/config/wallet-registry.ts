@@ -55,16 +55,10 @@ export const WalletRegistry: RegistryWallet[] = [
       ),
     supportsChain: async (chainId) => {
       const trustMobileAvailableChains: MainnetChainIds[] = [
-        "agoric-3",
         "akashnet-2",
         "mantle-1",
         "axelar-dojo-1",
-        "carbon-1",
-        "celestia",
-        "chihuahua-1",
         "cosmoshub-4",
-        "mainnet-3",
-        "dydx-mainnet-1",
         "emoney-3",
         "evmos_9001-2",
         "injective-1",
@@ -112,32 +106,23 @@ export const WalletRegistry: RegistryWallet[] = [
       ),
     supportsChain: async (chainId) => {
       const keplrMobileAvailableChains: MainnetChainIds[] = [
+        "agoric-3" /** agoric */,
         "cosmoshub-4",
         "osmosis-1",
         "secret-4",
         "regen-1",
         "juno-1",
         "stargaze-1",
-        "core-1", // Persistence,
         "axelar-dojo-1",
-        "sommelier-3",
-        "umee-1",
-        "agoric-3",
-        "gravity-bridge-3",
         "evmos_9001-2",
         "crypto-org-chain-mainnet-1",
         "stride-1",
         "injective-1",
-        "mars-1",
         "columbus-5", // Terra Classic
-        "quasar-1",
-        "quicksilver-2",
-        "omniflixhub-1",
-        "kyve-1",
         "neutron-1",
-        "gitopia",
-        "likecoin-mainnet-2",
         "akashnet-2",
+        "pacific-1" /** sei */,
+        "kava_2222-10" /** kava */,
       ];
 
       return keplrMobileAvailableChains.includes(chainId as MainnetChainIds);
