@@ -25,7 +25,6 @@ export const WalletRegistry: RegistryWallet[] = [
         "laozi-mainnet",
         "columbus-5",
         "phoenix-1",
-        "phoenix-1",
         "evmos_9001-2",
         "injective-1",
         "stargaze-1",
