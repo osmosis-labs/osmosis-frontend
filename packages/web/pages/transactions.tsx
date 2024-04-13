@@ -58,7 +58,7 @@ const Transactions: React.FC = () => {
 
   return (
     <main className="relative mx-16 flex gap-4">
-      {!isLoading && (
+      {!isLoading && transactionData && (
         // TODO - add loading state
         <>
           <TransactionContent
