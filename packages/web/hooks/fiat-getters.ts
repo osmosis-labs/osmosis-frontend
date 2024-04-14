@@ -1,5 +1,6 @@
 import { Dec, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
-import { type Asset, DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
 
 // getTokenInFeeAmountFiatValue returns the fiat value of the token in fee amount.
 // If any of the input values are undefined, it returns a PricePretty with 0 value.
@@ -9,7 +10,7 @@ import { type Asset, DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 // - tokenInFeeAmount the fee amount in the token in asset (scaled according to the asset's precision)
 // - inAmountInputPrice the price of the token in asset in fiat (scaled according to the asset's precision)
 export function getTokenInFeeAmountFiatValue(
-  asset: Asset | undefined,
+  asset: Currency | undefined,
   tokenInFeeAmount: Int | undefined,
   inAmountInputPrice: PricePretty | undefined
 ) {
