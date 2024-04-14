@@ -113,8 +113,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SOL: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=SOL",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
   },
   DOT: {
     depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
@@ -184,8 +184,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   APT: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=aptos&to=osmosis&token=APT",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=aptos&token=APT",
   },
   ARB: {
     sourceChainNameOverride: "Arbitrum",
@@ -257,8 +257,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SUI: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=sui&to=osmosis&token=SUI",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=sui&token=SUI",
   },
   cbETH: {
     sourceChainNameOverride: "Ethereum",
@@ -374,8 +374,8 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "https://app.evmos.org/assets",
   },
   BONK: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=BONK",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=BONK",
   },
   SWTH: {
     depositUrlOverride:
@@ -509,8 +509,8 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
   PYTH: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=PYTH",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=PYTH",
   },
   YieldETH: {
     sourceChainNameOverride: "Ethereum",
@@ -602,8 +602,8 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
   },
   W: {
-    depositUrlOverride: "/wormhole",
-    withdrawUrlOverride: "/wormhole",
+    depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=W",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=W",
   },
   HAVA: {
     depositUrlOverride:
