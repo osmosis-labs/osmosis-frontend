@@ -632,7 +632,15 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "cosmwasm-astroport-pcl" && (
                     <Image
                       alt="astroport icon"
-                      src="/images/astroport_icon.png"
+                      src="/images/astroport-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
+                  {type === "cosmwasm-whitewhale" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/whitewhale-icon.png"
                       height={16}
                       width={16}
                     />
@@ -641,7 +649,9 @@ const PoolCompositionCell: PoolCellComponent = ({
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
 
-                  {spreadFactor ? spreadFactor.toString() : ""}
+                  {type != "cosmwasm-astroport-pcl" &&
+                    type != "cosmwasm-whitewhale" &&
+                    (spreadFactor ? spreadFactor.toString() : "")}
                 </p>
               </div>
             </p>
