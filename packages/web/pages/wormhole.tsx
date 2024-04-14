@@ -75,7 +75,7 @@ const Wormhole: FunctionComponent = () => {
   });
 
   let config: WormholeConnectConfig = {
-    networks: ["solana", "osmosis"],
+    networks: ["solana", "osmosis", "sui", "aptos"],
     rpcs: {
       solana:
         "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
@@ -105,7 +105,7 @@ const Wormhole: FunctionComponent = () => {
         },
       },
     },
-    tokens: ["W", "SOL", "PYTH"],
+    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APTOS"],
   };
 
   let bridgeDefaults = {
