@@ -200,7 +200,12 @@
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
-      "activate": "Activar"
+      "activate": "Activar",
+      "marketCap": "Tapa del mercado",
+      "volume24h": "Volumen (24H)",
+      "priceChange24h": "cambio 24h",
+      "price": "Precio",
+      "name": "Nombre"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",

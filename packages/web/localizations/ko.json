@@ -200,7 +200,12 @@
       },
       "title": "모든 자산",
       "withdrawButton": "출금",
-      "activate": "활성화"
+      "activate": "활성화",
+      "marketCap": "시가총액",
+      "volume24h": "거래량(24시간)",
+      "priceChange24h": "24시간 변경",
+      "price": "가격",
+      "name": "이름"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",

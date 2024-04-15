@@ -200,7 +200,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume (24H)",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",

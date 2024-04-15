@@ -200,7 +200,12 @@
       },
       "title": "Все активы",
       "withdrawButton": "Отзывать",
-      "activate": "Активировать"
+      "activate": "Активировать",
+      "marketCap": "Рыночная капитализация",
+      "volume24h": "Объем (24 часа)",
+      "priceChange24h": "24-часовая смена",
+      "price": "Цена",
+      "name": "Имя"
     },
     "totalAssets": "Всего активов",
     "totalBalance": "Итоговый баланс",

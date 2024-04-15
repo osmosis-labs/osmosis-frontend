@@ -200,7 +200,12 @@
       },
       "title": "Tüm Varlıklar",
       "withdrawButton": "Çek",
-      "activate": "Etkinleştir"
+      "activate": "Etkinleştir",
+      "marketCap": "Piyasa değeri",
+      "volume24h": "Hacim (24 saat)",
+      "priceChange24h": "24 saat değişim",
+      "price": "Fiyat",
+      "name": "İsim"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",

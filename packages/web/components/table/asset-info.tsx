@@ -136,14 +136,14 @@ export const AssetsInfoTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: "Name",
+        header: t("assets.table.name"),
         cell: (cell) => <AssetCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
         header: () => (
           <SortHeader
-            label="Price"
+            label={t("assets.table.price")}
             sortKey="currentPrice"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -157,7 +157,7 @@ export const AssetsInfoTable: FunctionComponent<{
         header: () => (
           <SortHeader
             className="mx-auto"
-            label="24h change"
+            label={t("assets.table.priceChange24h")}
             sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -179,7 +179,7 @@ export const AssetsInfoTable: FunctionComponent<{
           id: "volume24h",
           header: () => (
             <SortHeader
-              label="Volume (24h)"
+              label={t("assets.table.volume24h")}
               sortKey="volume24h"
               currentSortKey={sortKey}
               currentDirection={sortDirection}
@@ -195,7 +195,7 @@ export const AssetsInfoTable: FunctionComponent<{
           id: "marketCap",
           header: () => (
             <SortHeader
-              label="Market Cap"
+              label={t("assets.table.marketCap")}
               sortKey="marketCap"
               currentSortKey={sortKey}
               currentDirection={sortDirection}
