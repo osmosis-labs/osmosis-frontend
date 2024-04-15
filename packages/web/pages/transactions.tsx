@@ -9,9 +9,16 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import { useGetTransactions, useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+const EXAMPLE = {
+  ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
+  PAGE: 1,
+  PAGE_SIZE: 100,
+};
 
 const Transactions: React.FC = () => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
@@ -21,9 +28,21 @@ const Transactions: React.FC = () => {
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
+  // @ts-ignore - ignore unused address temporarily
   const address = account?.address || "";
 
-  const { data: transactionData, isLoading } = useGetTransactions(address);
+  const { data: transactionData, isLoading } =
+    api.edge.transactions.getTransactions.useQuery(
+      {
+        // address,
+        address: EXAMPLE.ADDRESS,
+        page: EXAMPLE.PAGE,
+        pageSize: EXAMPLE.PAGE_SIZE,
+      },
+      {
+        // enabled: !!address,
+      }
+    );
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
