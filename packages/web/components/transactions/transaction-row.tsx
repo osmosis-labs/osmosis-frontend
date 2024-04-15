@@ -1,7 +1,4 @@
-import {
-  FormattedTransaction,
-  FormattedTransactionMetadata,
-} from "@osmosis-labs/server";
+import { FormattedMetadata, FormattedTransaction } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
 
@@ -15,7 +12,7 @@ type Status = "Pending" | "Success" | "Failure";
 
 interface TransactionSummaryProps {
   status: Status;
-  metadata: FormattedTransactionMetadata[];
+  metadata: FormattedMetadata[];
 }
 
 const TransactionSummary = ({ status, metadata }: TransactionSummaryProps) => {
