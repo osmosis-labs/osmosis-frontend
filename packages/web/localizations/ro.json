@@ -693,6 +693,7 @@
       "show": "Arata"
     },
     "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
+    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",

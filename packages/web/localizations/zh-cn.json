@@ -693,6 +693,7 @@
       "show": "节目"
     },
     "maxButtonError": "无法计算最大金额。请检查您的网络连接或尝试刷新页面。",
+    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",

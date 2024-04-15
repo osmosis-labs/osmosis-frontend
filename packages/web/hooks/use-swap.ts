@@ -89,50 +89,11 @@ export function useSwap(
     useOtherCurrencies,
   });
 
-  const [gasAmount, setGasAmount] = useState<CoinPretty>();
-  const inAmountInput = useAmountInput({
-    currency: swapAssets.fromAsset,
-    gasAmount: gasAmount,
+  const inAmountInput = useSwapAmountInput({
+    forceSwapInPoolId,
+    maxSlippage,
+    swapAssets,
   });
-
-  const {
-    data: maxBalanceQuote,
-    isLoading: isMaxBalanceQuoteLoading,
-    error: maxBalanceQuoteError,
-  } = useQueryRouterBestQuote(
-    {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
-      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
-      forcePoolId: forceSwapInPoolId,
-      maxSlippage,
-    },
-    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
-  );
-
-  const {
-    data: maxBalanceNetworkFee,
-    isLoading: isLoadingMaxBalanceNetworkFee,
-    error: maxBalanceNetworkFeeError,
-  } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
-    messages: maxBalanceQuote?.messages,
-    enabled:
-      featureFlags.swapToolSimulateFee &&
-      !!inAmountInput.balance &&
-      !isMaxBalanceQuoteLoading,
-  });
-
-  const hasMaxBalanceError = useMemo(() => {
-    return !!maxBalanceNetworkFeeError || !!maxBalanceQuoteError;
-  }, [maxBalanceNetworkFeeError, maxBalanceQuoteError]);
-
-  useEffect(() => {
-    if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
-    setGasAmount(
-      maxBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
-    );
-  }, [maxBalanceNetworkFee?.gasAmount]);
 
   // load flags
   const isToFromAssets =
@@ -276,9 +237,6 @@ export function useSwap(
               )
               .catch((reason) => {
                 reject(reason);
-              })
-              .finally(() => {
-                inAmountInput.reset();
               });
             return pools.length === 1 ? "exact-in" : "multihop";
           } else if (routes.length > 1) {
@@ -295,9 +253,6 @@ export function useSwap(
               )
               .catch((reason) => {
                 reject(reason);
-              })
-              .finally(() => {
-                inAmountInput.reset();
               });
           } else {
             reject("No routes given");
@@ -409,8 +364,6 @@ export function useSwap(
     ]),
     networkFee,
     isLoadingNetworkFee,
-    isLoadingMaxBalanceNetworkFee,
-    hasMaxBalanceError,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
@@ -531,6 +484,77 @@ export function useSwapAssets({
     setToAssetDenom,
     switchAssets,
     fetchNextPageAssets: fetchNextPage,
+  };
+}
+
+function useSwapAmountInput({
+  swapAssets,
+  forceSwapInPoolId,
+  maxSlippage,
+}: {
+  swapAssets: ReturnType<typeof useSwapAssets>;
+  forceSwapInPoolId: string | undefined;
+  maxSlippage: Dec | undefined;
+}) {
+  const { chainStore } = useStore();
+  const featureFlags = useFeatureFlags();
+
+  const [gasAmount, setGasAmount] = useState<CoinPretty>();
+  const inAmountInput = useAmountInput({
+    currency: swapAssets.fromAsset,
+    gasAmount: gasAmount,
+  });
+
+  const {
+    data: maxBalanceQuote,
+    isLoading: isMaxBalanceQuoteLoading,
+    error: maxBalanceQuoteError,
+  } = useQueryRouterBestQuote(
+    {
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
+      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    },
+    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
+  );
+
+  const {
+    data: maxBalanceNetworkFee,
+    isLoading: isLoadingMaxBalanceNetworkFee,
+    error: maxBalanceNetworkFeeError,
+  } = useEstimateTxFees({
+    chainId: chainStore.osmosis.chainId,
+    messages: maxBalanceQuote?.messages,
+    enabled:
+      featureFlags.swapToolSimulateFee &&
+      !!inAmountInput.balance &&
+      !isMaxBalanceQuoteLoading,
+  });
+
+  const hasMaxBalanceError = useMemo(() => {
+    return !!maxBalanceNetworkFeeError || !!maxBalanceQuoteError;
+  }, [maxBalanceNetworkFeeError, maxBalanceQuoteError]);
+
+  const notEnoughBalanceForMax = useMemo(() => {
+    return maxBalanceNetworkFeeError?.message.includes(
+      "min out amount or max in amount should be positive"
+    );
+  }, [maxBalanceNetworkFeeError?.message]);
+
+  useEffect(() => {
+    if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
+    setGasAmount(
+      maxBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
+    );
+  }, [maxBalanceNetworkFee?.gasAmount]);
+
+  return {
+    ...inAmountInput,
+    isLoadingMaxBalanceNetworkFee,
+    hasMaxBalanceError,
+    notEnoughBalanceForMax,
   };
 }
 

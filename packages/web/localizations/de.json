@@ -693,6 +693,7 @@
       "show": "Zeigen"
     },
     "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
+    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
