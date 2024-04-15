@@ -42,7 +42,7 @@ export const HistoricalPriceCell: FunctionComponent<{
 
   return (
     <div className="flex items-center gap-4">
-      {recentPriceCloses.length && (
+      {recentPriceCloses.length > 0 && (
         <Sparkline
           width={80}
           height={50}
