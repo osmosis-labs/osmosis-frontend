@@ -862,7 +862,6 @@
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
-    "daily": "日常的",
     "reward": "报酬",
     "lock": "解绑",
     "days": "天",
@@ -906,10 +905,7 @@
     "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
-        "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
-      },
-      "daily": {
-        "description": "策略的每日百分比回报 - 类似于 APR，但反映的是每日回报而非年度回报。注意：策略的回报可能会根据参与度和表现而波动。"
+        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
       },
       "tvl": {
         "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"

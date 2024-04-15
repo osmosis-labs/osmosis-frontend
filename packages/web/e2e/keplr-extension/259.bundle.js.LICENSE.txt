@@ -1,0 +1,5 @@
+/*! https://mths.be/punycode v1.3.2 by @mathias */
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+/*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
