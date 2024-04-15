@@ -81,11 +81,13 @@ const Transactions: React.FC = () => {
         <TransactionDetailsSlideover
           onRequestClose={() => setOpen(false)}
           open={open}
+          transaction={selectedTransaction}
         />
       ) : (
         <TransactionDetailsModal
           onRequestClose={() => setOpen(false)}
           isOpen={open}
+          transaction={selectedTransaction}
         />
       )}
       <BackToTopButton />
