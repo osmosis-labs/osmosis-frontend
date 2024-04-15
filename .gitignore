@@ -13,3 +13,5 @@ src/styles/index.scss
 .repos
 
 lerna-debug.log
+
+packages/web/playwright-report/index.html
