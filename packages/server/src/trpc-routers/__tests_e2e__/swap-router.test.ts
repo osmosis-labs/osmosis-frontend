@@ -19,6 +19,7 @@ import {
 } from "../../queries";
 import { AssetLists } from "../../queries/__tests__/mock-asset-lists";
 import { MockChains } from "../../queries/__tests__/mock-chains";
+import { getPriceFromSidecar } from "../../queries/complex/assets/price/providers/sidecar";
 import { createInnerTRPCContext } from "../../trpc";
 import { sort } from "../../utils";
 import { superjson } from "../../utils/superjson";
@@ -154,6 +155,8 @@ function assertValidQuote({
   // timeMs
   expect(isNumeric(quote.timeMs)).toBeTruthy();
 }
+
+jest.retryTimes(2, { logErrorsBeforeRetry: true });
 
 it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
   const tokenInAmount = "1000000";
@@ -489,10 +492,29 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
 
   const [tokenIn, tokenOut] = mediumVolumePool.reserveCoins;
 
-  const tokenInAmount = new Dec(1)
+  const tokenInAsset = getAssetFromAssetList({
+    coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+    assetLists: AssetLists,
+  })!.rawAsset;
+
+  const tokenPrice = await getPriceFromSidecar(
+    AssetLists,
+    MockChains,
+    tokenInAsset
+  );
+
+  // Desired price is 10% of the total fiat value locked in the pool
+  const desiredPrice = mediumVolumePool.totalFiatValueLocked
+    .toDec()
+    .mul(new Dec(0.1));
+
+  // Token in amount is the desired price divided by the token price
+  const tokenInAmount = desiredPrice
+    .quo(tokenPrice)
     .mul(DecUtils.getTenExponentN(tokenIn.currency.coinDecimals))
     .truncate()
     .toString();
+
   const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.currency.coinMinimalDenom,
@@ -521,37 +543,53 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
   const { averageVolume, sortedPoolsWithVolume } =
     await getSortedPoolsWithVolume();
 
-  const lowVolumeToken = sortedPoolsWithVolume.find(
+  const lowVolumeTokenPool = sortedPoolsWithVolume.find(
     (pool) =>
       // Find a token that less than or equal to 40% of the average volume
       pool.volume24hUsdDec.lte(averageVolume.mul(new Dec(0.4))) &&
       pool.reserveCoins.length === 2
   )!;
 
-  const [inAsset, outAsset] = lowVolumeToken.reserveCoins;
+  const [tokenIn, tokenOut] = lowVolumeTokenPool.reserveCoins;
 
-  const tokenInAmount = new Dec(1)
-    .mul(DecUtils.getTenExponentN(inAsset.currency.coinDecimals))
+  const tokenInAsset = getAssetFromAssetList({
+    coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+    assetLists: AssetLists,
+  })!.rawAsset;
+
+  const tokenPrice = await getPriceFromSidecar(
+    AssetLists,
+    MockChains,
+    tokenInAsset
+  );
+
+  // Desired price is 10% of the total fiat value locked in the pool
+  const desiredPrice = lowVolumeTokenPool.totalFiatValueLocked
+    .toDec()
+    .mul(new Dec(0.1));
+
+  // Token in amount is the desired price divided by the token price
+  const tokenInAmount = desiredPrice
+    .quo(tokenPrice)
+    .mul(DecUtils.getTenExponentN(tokenIn.currency.coinDecimals))
     .truncate()
     .toString();
+
   const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
-    tokenInDenom: inAsset.currency.coinMinimalDenom,
+    tokenInDenom: tokenIn.currency.coinMinimalDenom,
     tokenInAmount,
-    tokenOutDenom: outAsset.currency.coinMinimalDenom,
+    tokenOutDenom: tokenOut.currency.coinMinimalDenom,
     preferredRouter,
-    forcePoolId: lowVolumeToken.id,
+    forcePoolId: lowVolumeTokenPool.id,
   });
 
   assertValidQuote({
     quote: reply,
     tokenInAmount,
-    tokenIn: getAssetFromAssetList({
-      coinMinimalDenom: inAsset.currency.coinMinimalDenom,
-      assetLists: AssetLists,
-    })!.rawAsset,
+    tokenIn: tokenInAsset,
     tokenOut: getAssetFromAssetList({
-      coinMinimalDenom: outAsset.currency.coinMinimalDenom,
+      coinMinimalDenom: tokenOut.currency.coinMinimalDenom,
       assetLists: AssetLists,
     })!.rawAsset,
     router: preferredRouter,

@@ -851,7 +851,6 @@
     "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",
     "apy": "APR",
-    "daily": "Täglich",
     "reward": "Belohnen",
     "lock": "Bindung lösen",
     "days": "Tage",
@@ -895,10 +894,7 @@
     "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
-        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
-      },
-      "daily": {
-        "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
