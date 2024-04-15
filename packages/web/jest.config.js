@@ -24,6 +24,7 @@ const config = {
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "../../jsdom-extended.js",
+  testPathIgnorePatterns: ["e2e"],
 };
 
 module.exports = async () => ({
