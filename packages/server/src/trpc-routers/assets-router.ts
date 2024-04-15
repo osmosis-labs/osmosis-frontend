@@ -403,7 +403,9 @@ export const assetsRouter = createTRPCRouter({
         })
       );
 
-      return marketAssets.slice(0, topN);
+      return marketAssets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(0, topN);
     }),
   getTopGainerAssets: publicProcedure
     .input(
