@@ -1,4 +1,5 @@
 import { Transition } from "@headlessui/react";
+import { FormattedTransaction } from "@osmosis-labs/server";
 import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -12,8 +13,6 @@ import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { formatPretty } from "~/utils/formatter";
-
-import { FormattedTransaction } from "../../../server/src/queries/complex/transactions/transaction-types";
 
 export const TransactionDetailsContent = ({
   onRequestClose,
