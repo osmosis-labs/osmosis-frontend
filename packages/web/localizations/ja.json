@@ -851,7 +851,6 @@
     "myStrategies": "あなたの戦略",
     "strategyPlatform": "戦略",
     "apy": "4月",
-    "daily": "毎日",
     "reward": "褒美",
     "lock": "結合を解除する",
     "days": "日々",
@@ -895,10 +894,7 @@
     "instantUnbondOnly": "即時結合解除のみ",
     "tooltips": {
       "apr": {
-        "description": "年間パーセンテージ レート (APR) は、戦略の年率リターンを指します。注: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。"
-      },
-      "daily": {
-        "description": "戦略の毎日のパーセンテージ収益 - APR に似ていますが、年間ではなく毎日の収益を反映します。注: 戦略の収益は、参加とパフォーマンスに基づいて変動する場合があります。"
+        "description": "年率 (APR) は、戦略の年間パーセンテージ収益を指します。<inlang-LineFeed><inlang-LineFeed>注意: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。<inlang-LineFeed><inlang-LineFeed>免責事項: これらの APR はプロジェクト自体によって自己報告されたものであり、不正確な可能性があります。"
       },
       "tvl": {
         "description": "Total Value Locked (TVL) は、ストラテジーに入金された資産の米ドル総額を指します。"

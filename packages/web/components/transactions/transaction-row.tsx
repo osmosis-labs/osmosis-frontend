@@ -13,12 +13,12 @@ import { formatPretty } from "~/utils/formatter";
 
 type Status = "Pending" | "Success" | "Failure";
 
-interface TransactionDetailsProps {
+interface TransactionSummaryProps {
   status: Status;
   metadata: MappedTransactionMetadata[];
 }
 
-const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
+const TransactionSummary = ({ status, metadata }: TransactionSummaryProps) => {
   // TODO - update this to filter by metadata type
   const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
 
@@ -130,7 +130,7 @@ export const TransactionRow = ({
       onClick={() => setOpen()}
     >
       <TransactionStatus status={status} />
-      <TransactionDetails status={status} metadata={transaction.metadata} />
+      <TransactionSummary status={status} metadata={transaction.metadata} />
     </div>
   );
 };

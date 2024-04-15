@@ -19,7 +19,7 @@ import { routeTokenOutGivenIn } from "../queries/complex/pools/route-token-out-g
 import { OsmosisSidecarRemoteRouter } from "../queries/sidecar/router";
 import { TfmRemoteRouter } from "../queries/tfm/router";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { captureErrorAndReturn } from "../utils/error";
+import { captureErrorAndReturn, captureIfError } from "../utils/error";
 
 const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
@@ -165,14 +165,18 @@ function makeDisplayableSplit(
         type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
       }
 
-      const inAsset = getAsset({
-        assetLists,
-        anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
-      });
-      const outAsset = getAsset({
-        assetLists,
-        anyDenom: tokenOutDenoms[index],
-      });
+      const inAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
+        })
+      );
+      const outAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: tokenOutDenoms[index],
+        })
+      );
 
       return {
         id: pool_.id,
