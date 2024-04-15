@@ -32,11 +32,10 @@ export const TransactionDetailsContent = ({
     "MMM DD, YYYY, HH:mm"
   );
 
-  // TODO is there a better way to do this with CoinPretty?
-  const conversionRate = Number(
-    // @ts-ignore
-    +tokenIn.token.amount.toString() / +tokenOut.token.amount.toString()
-  ).toFixed(2);
+  const conversionRate = formatPretty(
+    tokenIn.token.toDec().quo(tokenOut.token.toDec()),
+    { maxDecimals: 2 }
+  );
 
   return (
     <div
