@@ -47,14 +47,13 @@ test.describe("Test Swap feature", () => {
     // This is needed to handle a wallet popup
     const pagePromise = context.waitForEvent("page");
     await swapPage.connectWallet(pagePromise);
-    await swapPage.isTransactionBroadcasted();
   });
 
   test.afterEach(async () => {
     await context.close();
   });
 
-  test.skip("User should be able to swap OSMO to ATOM", async () => {
+  test("User should be able to swap OSMO to ATOM", async () => {
     await swapPage.selectPair("OSMO", "ATOM");
     await swapPage.swap("0.01");
     // Handle Pop-up page ->
@@ -71,7 +70,7 @@ test.describe("Test Swap feature", () => {
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 
-  test.skip("User should be able to swap ATOM to OSMO", async () => {
+  test("User should be able to swap ATOM to OSMO", async () => {
     await swapPage.selectPair("ATOM", "OSMO");
     await swapPage.swap("0.001");
     // Handle Pop-up page ->
