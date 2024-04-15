@@ -42,7 +42,7 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
             <div className="text-h5">Swapped</div>
-            <div className="text-body1 text-osmoverse-300">
+            <div className="body1 text-osmoverse-300">
               March 14, 2024, 13:01
             </div>
           </div>
@@ -57,13 +57,13 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="text-subtitle1">Sold</div>
-                <div className="text-body1 text-osmoverse-300">OSMO</div>
+                <div className="subtitle1">Sold</div>
+                <div className="body1 text-osmoverse-300">OSMO</div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">$100.00</div>
-              <div className="text-body1 text-osmoverse-300">10</div>
+              <div className="subtitle1">$100.00</div>
+              <div className="-body1 text-osmoverse-300">10</div>
             </div>
           </div>
           <div className="flex h-10 w-12 items-center justify-center p-2">
@@ -84,13 +84,13 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="text-subtitle1">Sold</div>
-                <div className="text-body1 text-osmoverse-300">OSMO</div>
+                <div className="subtitle1">Sold</div>
+                <div className="body1 text-osmoverse-300">OSMO</div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">$100.00</div>
-              <div className="text-body1 text-osmoverse-300">10</div>
+              <div className="subtitle1">$100.00</div>
+              <div className="body1 text-osmoverse-300">10</div>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export const TransactionDetailsContent = ({
           <div className="flex justify-between gap-3 py-3">
             <div>Execution Price</div>
             <div className="flex gap-3">
-              <div className="text-body1 text-wosmongton-300">
+              <div className="body1 text-wosmongton-300">
                 1 OSMO = 97.80 USDC
               </div>
               <CopyIconButton valueToCopy="97.80 USDC" />
@@ -106,14 +106,12 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="flex justify-between gap-3 py-3">
             <div>Total Fees</div>
-            <div className="text-body1 text-wosmongton-300">0.001 OSMO</div>
+            <div className="body1 text-wosmongton-300">0.001 OSMO</div>
           </div>
           <div className="flex justify-between py-3">
             <div>Transaction Fees</div>
             <div className="flex gap-3">
-              <div className="text-body1 text-wosmongton-300">
-                F7AC9A...F58F87
-              </div>
+              <div className="body1 text-wosmongton-300">F7AC9A...F58F87</div>
               <CopyIconButton valueToCopy="F7AC9A...F58F87" />
             </div>
           </div>
