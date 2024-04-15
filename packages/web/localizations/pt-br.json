@@ -851,7 +851,6 @@
     "myStrategies": "Suas estratégias",
     "strategyPlatform": "Estratégia",
     "apy": "ABRIL",
-    "daily": "Diário",
     "reward": "Recompensa",
     "lock": "Desvincular",
     "days": "dias",
@@ -895,10 +894,7 @@
     "instantUnbondOnly": "Somente desvinculação instantânea",
     "tooltips": {
       "apr": {
-        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
-      },
-      "daily": {
-        "description": "Retorno percentual diário de uma estratégia - semelhante à TAEG, mas refletindo o retorno diário em vez do anual. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
+        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia.\n\nNota: O retorno de uma estratégia pode variar com base na participação e no desempenho.\n\nIsenção de responsabilidade: essas APRs são relatadas pelos próprios projetos e podem ser imprecisas."
       },
       "tvl": {
         "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."

@@ -1,7 +1,4 @@
-import {
-  MappedTransaction,
-  MappedTransactionMetadata,
-} from "@osmosis-labs/server";
+import { FormattedMetadata, FormattedTransaction } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
 
@@ -13,12 +10,12 @@ import { formatPretty } from "~/utils/formatter";
 
 type Status = "Pending" | "Success" | "Failure";
 
-interface TransactionDetailsProps {
+interface TransactionSummaryProps {
   status: Status;
-  metadata: MappedTransactionMetadata[];
+  metadata: FormattedMetadata[];
 }
 
-const TransactionDetails = ({ status, metadata }: TransactionDetailsProps) => {
+const TransactionSummary = ({ status, metadata }: TransactionSummaryProps) => {
   // TODO - update this to filter by metadata type
   const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
 
@@ -115,7 +112,7 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
 interface TransactionRowProps {
   status: Status;
   setOpen: () => void;
-  transaction: MappedTransaction;
+  transaction: FormattedTransaction;
 }
 
 export const TransactionRow = ({
@@ -130,7 +127,7 @@ export const TransactionRow = ({
       onClick={() => setOpen()}
     >
       <TransactionStatus status={status} />
-      <TransactionDetails status={status} metadata={transaction.metadata} />
+      <TransactionSummary status={status} metadata={transaction.metadata} />
     </div>
   );
 };

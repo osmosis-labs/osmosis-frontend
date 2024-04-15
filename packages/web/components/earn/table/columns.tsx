@@ -53,7 +53,7 @@ export const ColumnCellHeader = ({
           header={t(tKey)}
           body={
             tooltipDescription && (
-              <p className="text-caption text-osmoverse-300">
+              <p className="whitespace-pre-line text-caption text-osmoverse-300">
                 {t(tooltipDescription)}
               </p>
             )
@@ -137,17 +137,6 @@ export const tableColumns = [
         tKey={"earnPage.apy"}
       />
     ),
-    cell: APYCell,
-    sortingFn: sortDecValues,
-  }),
-  columnHelper.accessor("daily", {
-    header: () => (
-      <ColumnCellHeader
-        tooltipDescription={"earnPage.tooltips.daily.description"}
-        tKey={"earnPage.daily"}
-      />
-    ),
-    // use the same logic as the APY cell
     cell: APYCell,
     sortingFn: sortDecValues,
   }),

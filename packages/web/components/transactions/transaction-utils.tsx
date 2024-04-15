@@ -1,4 +1,4 @@
-import { MappedTransaction } from "@osmosis-labs/server";
+import { FormattedTransaction } from "@osmosis-labs/server";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
@@ -9,8 +9,8 @@ dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 
 export const groupTransactionsByDate = (
-  transactions: MappedTransaction[]
-): Record<string, MappedTransaction[]> => {
+  transactions: FormattedTransaction[]
+): Record<string, FormattedTransaction[]> => {
   return transactions.reduce((acc, transaction) => {
     // extract date from block timestamp
     const date = dayjs(transaction.blockTimestamp).format("YYYY-MM-DD");
@@ -22,7 +22,7 @@ export const groupTransactionsByDate = (
     acc[date].push(transaction);
 
     return acc;
-  }, {} as Record<string, MappedTransaction[]>);
+  }, {} as Record<string, FormattedTransaction[]>);
 };
 
 export const formatDate = (dateString: string) => {

@@ -13,7 +13,7 @@ import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 
 const searchBoxClasses = cva(
-  "flex flex-nowrap items-center justify-between gap-2 rounded-full bg-osmoverse-850 relative transition-colors [&_input]:placeholder:text-osmoverse-400 [&_input]:placeholder:font-medium",
+  "flex flex-nowrap items-center justify-between gap-2 bg-osmoverse-850 relative transition-colors [&_input]:placeholder:font-medium",
   {
     variants: {
       /**
@@ -34,9 +34,15 @@ const searchBoxClasses = cva(
         long: "h-14 pl-5 pr-3 w-80 [&_input]:text-body1 [&_input]:font-body2",
         full: "h-14 pl-5 pr-3 w-full [&_input]:text-body1 [&_input]:font-body2",
       },
+      variant: {
+        default: "[&_input]:placeholder:text-osmoverse-400 rounded-full",
+        outline:
+          "border border-osmoverse-500 [&_input]:placeholder:text-osmoverse-500 rounded-xl",
+      },
     },
     defaultVariants: {
       size: "small",
+      variant: "default",
     },
   }
 );
@@ -71,6 +77,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       onKeyDown,
       onFocusChange,
       size,
+      variant,
       rightIcon,
       debounce: _debounce,
     },
@@ -89,7 +96,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={classNames(
-          searchBoxClasses({ size }),
+          searchBoxClasses({ size, variant }),
           {
             "opacity-50": disabled,
           },

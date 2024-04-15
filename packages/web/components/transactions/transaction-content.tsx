@@ -1,4 +1,4 @@
-import { MappedTransaction } from "@osmosis-labs/server";
+import { FormattedTransaction } from "@osmosis-labs/server";
 
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import {
@@ -13,8 +13,8 @@ export const TransactionContent = ({
   setOpen,
   open,
 }: {
-  setSelectedTransaction: (selectedTransaction: MappedTransaction) => void;
-  transactions: MappedTransaction[];
+  setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  transactions: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
@@ -80,7 +80,7 @@ export const TransactionContent = ({
           }}
           transaction={transaction}
         />
-      ))} */}
+      ))}
 
       {/* <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">Pending</div>
