@@ -4,10 +4,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { getAsset } from "../../../queries/complex/assets";
-import {
-  Metadata,
-  queryTransactions,
-} from "../../../queries/data-services/transactions";
+import { Metadata, queryTransactions } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 
