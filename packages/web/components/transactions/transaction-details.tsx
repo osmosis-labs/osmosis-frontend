@@ -73,7 +73,7 @@ export const TransactionDetailsContent = ({
               <FallbackImg
                 alt={tokenIn.token.denom}
                 src={tokenIn.token.currency.coinImageUrl}
-                fallbacksrc="/icons/superfluid-osmo.svg"
+                fallbacksrc="/icons/question-mark.svg"
                 height={32}
                 width={32}
               />
@@ -107,7 +107,7 @@ export const TransactionDetailsContent = ({
               <FallbackImg
                 alt={tokenOut.token.denom}
                 src={tokenOut.token.currency.coinImageUrl}
-                fallbacksrc="/icons/superfluid-osmo.svg"
+                fallbacksrc="/icons/question-mark.svg"
                 height={32}
                 width={32}
               />
