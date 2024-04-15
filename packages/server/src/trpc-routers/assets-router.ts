@@ -394,7 +394,9 @@ export const assetsRouter = createTRPCRouter({
 
       const marketAssets = await Promise.all(
         assets.map(async (asset) => {
-          const marketAsset = await getAssetMarketActivity(asset);
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
 
           return {
             ...asset,
@@ -421,7 +423,9 @@ export const assetsRouter = createTRPCRouter({
 
       const marketAssets = await Promise.all(
         assets.map(async (asset) => {
-          const marketAsset = await getAssetMarketActivity(asset);
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
 
           return {
             ...asset,
