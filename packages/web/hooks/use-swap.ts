@@ -538,10 +538,15 @@ function useSwapAmountInput({
   }, [maxBalanceNetworkFeeError, maxBalanceQuoteError]);
 
   const notEnoughBalanceForMax = useMemo(() => {
-    return maxBalanceNetworkFeeError?.message.includes(
-      "min out amount or max in amount should be positive"
+    return (
+      maxBalanceNetworkFeeError?.message.includes(
+        "min out amount or max in amount should be positive"
+      ) ||
+      maxBalanceQuoteError?.message.includes(
+        "Not enough quoted. Try increasing amount."
+      )
     );
-  }, [maxBalanceNetworkFeeError?.message]);
+  }, [maxBalanceNetworkFeeError?.message, maxBalanceQuoteError?.message]);
 
   useEffect(() => {
     if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
