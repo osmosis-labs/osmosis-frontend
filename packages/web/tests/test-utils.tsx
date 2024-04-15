@@ -8,29 +8,37 @@ import { ReactNode } from "react";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import SuperJSON from "superjson";
 
+import { WalletSelectProvider } from "~/hooks";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
 import { AppRouter } from "~/server/api/root-router";
+import { StoreProvider } from "~/stores";
 
 export const trpcReact = createTRPCReact<AppRouter>();
 
 const queryClient = new QueryClient();
 export const withTRPC = ({ children }: { children: ReactNode }) => (
-  <MultiLanguageProvider defaultLanguage="en">
-    <trpcReact.Provider
-      client={trpcReact.createClient({
-        transformer: SuperJSON,
-        links: [
-          httpBatchLink({
-            url: "http://localhost:3000/trpc",
-          }),
-        ],
-      })}
-      queryClient={queryClient}
-    >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </trpcReact.Provider>
-  </MultiLanguageProvider>
+  <StoreProvider>
+    <WalletSelectProvider>
+      <MultiLanguageProvider defaultLanguage="en">
+        <trpcReact.Provider
+          client={trpcReact.createClient({
+            transformer: SuperJSON,
+            links: [
+              httpBatchLink({
+                url: "http://localhost:3000/trpc",
+              }),
+            ],
+          })}
+          queryClient={queryClient}
+        >
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </trpcReact.Provider>
+      </MultiLanguageProvider>
+    </WalletSelectProvider>
+  </StoreProvider>
 );
 
 export function renderWithProviders(ui: React.ReactElement) {

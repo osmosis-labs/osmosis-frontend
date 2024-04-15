@@ -107,6 +107,7 @@ export function useSwap({
     },
     canLoadQuote
   );
+
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
@@ -684,7 +685,6 @@ function useSwapAsset<TAsset extends Asset>(
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  !existingAsset;
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 

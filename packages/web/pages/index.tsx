@@ -11,12 +11,16 @@ import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 
+export const SwapPreviousTradeKey = "swap-previous-trade";
+export type PreviousTrade = {
+  sendTokenDenom: string;
+  outTokenDenom: string;
+};
+
 const Home = () => {
   const featureFlags = useFeatureFlags();
-  const [previousTrade, setPreviousTrade] = useLocalStorage<{
-    sendTokenDenom: string;
-    outTokenDenom: string;
-  }>("swap-previous-trade");
+  const [previousTrade, setPreviousTrade] =
+    useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],

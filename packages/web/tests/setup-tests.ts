@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import "@testing-library/jest-dom";
+import "fake-indexeddb/auto";
 
 import { server } from "~/tests/msw";
 
