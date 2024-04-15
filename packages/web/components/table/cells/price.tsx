@@ -35,7 +35,7 @@ export const HistoricalPriceCell: FunctionComponent<{
   if (isBullish) {
     color = theme.colors.bullish[400];
   } else if (isBearish) {
-    color = theme.colors.ammelia[400];
+    color = theme.colors.rust[400];
   } else {
     color = theme.colors.wosmongton[200];
   }

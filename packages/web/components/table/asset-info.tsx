@@ -1,6 +1,5 @@
 import type { Category, Search, SortDirection } from "@osmosis-labs/server";
 import {
-  CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -56,7 +55,12 @@ export const AssetsInfoTable: FunctionComponent<{
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
-  const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const sortKey = useMemo(
+    // avoid sorting while searching, as the search results are sorted by relevance
+    () => (searchQuery ? undefined : sortKey_),
+    [searchQuery, sortKey_]
+  );
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
   }, []);
@@ -100,10 +104,12 @@ export const AssetsInfoTable: FunctionComponent<{
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: {
-        keyPath: sortKey,
-        direction: sortDirection,
-      },
+      sort: sortKey
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
       categories,
     },
     {
@@ -183,27 +189,33 @@ export const AssetsInfoTable: FunctionComponent<{
           ),
         }
       ),
-      columnHelper.accessor((row) => row, {
-        id: "marketCap",
-        header: () => (
-          <SortHeader
-            label="Market Cap"
-            sortKey="marketCap"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: (cell) => <MarketCapCell {...cell.row.original} />,
-      }),
+      columnHelper.accessor(
+        (row) => (row.marketCap ? formatPretty(row.marketCap) : "-"),
+        {
+          id: "marketCap",
+          header: () => (
+            <SortHeader
+              label="Market Cap"
+              sortKey="marketCap"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => <AssetActionsCell {...cell.row.original} />,
+        cell: () => (
+          <button>
+            <span className="text-wosmongton-200">{t("portfolio.trade")}</span>
+          </button>
+        ),
       }),
     ];
-  }, [sortKey, sortDirection, setSortKey]);
+  }, [sortKey, sortDirection, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -371,22 +383,3 @@ export const AssetsInfoTable: FunctionComponent<{
     </div>
   );
 });
-
-type AssetCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
->;
-
-const MarketCapCell: AssetCellComponent = ({ marketCap, marketCapRank }) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span>{formatPretty(marketCap)}</span>}
-    {marketCapRank && (
-      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
-    )}
-  </div>
-);
-
-export const AssetActionsCell: AssetCellComponent = () => (
-  <button>
-    <span className="text-wosmongton-200">Trade</span>
-  </button>
-);

@@ -27,7 +27,7 @@ export const PriceChange: FunctionComponent<{
       )}
       {isBearish && (
         <Icon
-          className="text-ammelia-400"
+          className="text-rust-400"
           id="bearish-arrow"
           height={9}
           width={9}
@@ -37,7 +37,7 @@ export const PriceChange: FunctionComponent<{
         className={classNames(
           {
             "text-bullish-400": isBullish,
-            "text-ammelia-400": isBearish,
+            "text-rust-400": isBearish,
             "text-wosmongton-200": isFlat,
           },
           overrideTextClasses
