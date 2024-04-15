@@ -428,9 +428,11 @@ export const assetsRouter = createTRPCRouter({
         })
       );
 
-      return sort(marketAssets, "priceChange24h", "desc")
-        .filter((asset) => asset.priceChange24h !== undefined)
-        .slice(0, topN);
+      return sort(
+        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        "priceChange24h",
+        "desc"
+      ).slice(0, topN);
     }),
   getTopUpcomingAssets: publicProcedure
     .input(
