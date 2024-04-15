@@ -206,7 +206,7 @@ export const AllPoolsTable: FunctionComponent<{
     });
     return {
       shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
-      shouldDisplayFeesData: feesPresenceCount > poolsData.length / 2,
+      shouldDisplayFeesData: false, // never show fees in the table
     };
   }, [poolsData]);
 
