@@ -7,11 +7,11 @@ import { theme } from "~/tailwind.config";
 
 type Status = "Pending" | "Success" | "Failure";
 
-interface TransactionDetailsProps {
+interface TransactionSummaryProps {
   status: Status;
 }
 
-const TransactionDetails = ({ status }: TransactionDetailsProps) => {
+const TransactionSummary = ({ status }: TransactionSummaryProps) => {
   return (
     <div className="flex gap-4">
       <Image
@@ -114,7 +114,7 @@ export const TransactionRow = ({
       onClick={() => setOpen(!open)}
     >
       <TransactionStatus status={status} />
-      <TransactionDetails status={status} />
+      <TransactionSummary status={status} />
     </div>
   );
 };
