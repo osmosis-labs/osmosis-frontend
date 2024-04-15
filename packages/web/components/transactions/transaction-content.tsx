@@ -1,4 +1,4 @@
-import { MappedTransaction } from "@osmosis-labs/server";
+import { FormattedTransaction } from "@osmosis-labs/server";
 
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import { Button } from "~/components/ui/button";
@@ -9,8 +9,8 @@ export const TransactionContent = ({
   setOpen,
   open,
 }: {
-  setSelectedTransaction: (selectedTransaction: MappedTransaction) => void;
-  transactions: MappedTransaction[];
+  setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  transactions: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {

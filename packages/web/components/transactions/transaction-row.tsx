@@ -1,6 +1,6 @@
 import {
-  MappedTransaction,
-  MappedTransactionMetadata,
+  FormattedTransaction,
+  FormattedTransactionMetadata,
 } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
@@ -15,7 +15,7 @@ type Status = "Pending" | "Success" | "Failure";
 
 interface TransactionSummaryProps {
   status: Status;
-  metadata: MappedTransactionMetadata[];
+  metadata: FormattedTransactionMetadata[];
 }
 
 const TransactionSummary = ({ status, metadata }: TransactionSummaryProps) => {
@@ -115,7 +115,7 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
 interface TransactionRowProps {
   status: Status;
   setOpen: () => void;
-  transaction: MappedTransaction;
+  transaction: FormattedTransaction;
 }
 
 export const TransactionRow = ({

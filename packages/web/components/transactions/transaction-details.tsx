@@ -13,7 +13,7 @@ import { Button } from "~/components/ui/button";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { formatPretty } from "~/utils/formatter";
 
-import { MappedTransaction } from "../../../server/src/queries/complex/transactions/transaction-types";
+import { FormattedTransaction } from "../../../server/src/queries/complex/transactions/transaction-types";
 
 export const TransactionDetailsContent = ({
   onRequestClose,
@@ -22,7 +22,7 @@ export const TransactionDetailsContent = ({
 }: {
   onRequestClose: () => void;
   isModal: boolean;
-  transaction: MappedTransaction;
+  transaction: FormattedTransaction;
 }) => {
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
@@ -179,7 +179,7 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: MappedTransaction;
+  transaction: FormattedTransaction;
 }) => {
   return (
     <Transition
@@ -201,7 +201,7 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: MappedTransaction }
+  ModalBaseProps & { transaction: FormattedTransaction }
 > = ({ onRequestClose, isOpen, transaction }) => {
   return (
     <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>

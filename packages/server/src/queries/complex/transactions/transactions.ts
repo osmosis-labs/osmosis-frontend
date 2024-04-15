@@ -4,23 +4,52 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { getAsset } from "../../../queries/complex/assets";
-import { queryTransactions } from "../../../queries/data-services/transactions";
+import {
+  Metadata,
+  queryTransactions,
+} from "../../../queries/data-services/transactions";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
-import {
-  MappedTransaction,
-  MappedTransactionMetadata,
-  TransactionMetadata,
-} from "./transaction-types";
+
+export interface FormattedMetadata {
+  value: {
+    txFee: {
+      token: CoinPretty;
+      usd: PricePretty;
+    }[];
+    txInfo: {
+      tokenIn: {
+        token: CoinPretty;
+        usd: PricePretty;
+      };
+      tokenOut: {
+        token: CoinPretty;
+        usd: PricePretty;
+      };
+    };
+    txType: string;
+    txMessageIndex: number;
+  }[];
+  type: string;
+}
+[];
+
+export interface FormattedTransaction {
+  id: string;
+  hash: string;
+  blockTimestamp: string;
+  code: number;
+  metadata: FormattedMetadata[];
+}
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 // TODO - try / catch the getAssets - for v1 omit a specific trx if getAsset fails
 // TODO - try / catch in the map
 function mapMetadata(
-  metadataArray: TransactionMetadata[],
+  metadataArray: Metadata[],
   assetLists: AssetList[]
-): MappedTransactionMetadata[] {
+): FormattedMetadata[] {
   return metadataArray.map((metadata) => ({
     ...metadata,
     value: metadata.value.map((valueItem) => ({
@@ -77,7 +106,7 @@ export async function getTransactions({
   page?: number;
   pageSize?: number;
   assetLists: AssetList[];
-}): Promise<MappedTransaction[]> {
+}): Promise<FormattedTransaction[]> {
   return await cachified({
     cache: transactionsCache,
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
