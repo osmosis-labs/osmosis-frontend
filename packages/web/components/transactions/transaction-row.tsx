@@ -1,22 +1,30 @@
+import { FormattedMetadata, FormattedTransaction } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
 
+import { FallbackImg } from "~/components/assets";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
+import { formatPretty } from "~/utils/formatter";
 
 type Status = "Pending" | "Success" | "Failure";
 
 interface TransactionSummaryProps {
   status: Status;
+  metadata: FormattedMetadata[];
 }
 
-const TransactionSummary = ({ status }: TransactionSummaryProps) => {
+const TransactionSummary = ({ status, metadata }: TransactionSummaryProps) => {
+  // TODO - update this to filter by metadata type
+  const { tokenIn, tokenOut } = metadata[0].value[0].txInfo;
+
   return (
     <div className="flex gap-4">
-      <Image
-        alt="OSMO"
-        src="/tokens/generated/osmo.svg"
+      <FallbackImg
+        alt={tokenIn.token.denom}
+        src={tokenIn.token.currency.coinImageUrl}
+        fallbacksrc="/icons/superfluid-osmo.svg"
         height={32}
         width={32}
       />
@@ -28,9 +36,11 @@ const TransactionSummary = ({ status }: TransactionSummaryProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          - $100.00
+          - ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
         </div>
-        <div className="text-body2 text-osmoverse-400">10 OSMO</div>
+        <div className="text-body2 text-osmoverse-400">
+          {formatPretty(tokenIn.token, { maxDecimals: 2 })?.toString()}
+        </div>
       </div>
       <Image
         alt="right"
@@ -39,9 +49,10 @@ const TransactionSummary = ({ status }: TransactionSummaryProps) => {
         height={24}
         className="text-osmoverse-600"
       />
-      <Image
-        alt="USDC"
-        src="/tokens/generated/usdc.svg"
+      <FallbackImg
+        alt={tokenOut.token.denom}
+        src={tokenOut.token.currency.coinImageUrl}
+        fallbacksrc="/icons/superfluid-osmo.svg"
         height={32}
         width={32}
       />
@@ -53,9 +64,11 @@ const TransactionSummary = ({ status }: TransactionSummaryProps) => {
             "text-rust-400": status === "Failure",
           })}
         >
-          + $100.00
+          + ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
         </div>
-        <div className="text-body2">100 USDC</div>
+        <div className="text-body2">
+          {formatPretty(tokenOut.token, { maxDecimals: 2 })?.toString()}
+        </div>
       </div>
     </div>
   );
@@ -98,23 +111,23 @@ const TransactionStatus = ({ status }: TransactionStatusProps) => {
 
 interface TransactionRowProps {
   status: Status;
-  setOpen: (open: boolean) => void;
-  open: boolean;
+  setOpen: () => void;
+  transaction: FormattedTransaction;
 }
 
 export const TransactionRow = ({
   status,
   setOpen,
-  open,
+  transaction,
 }: TransactionRowProps) => {
   return (
     // h-20 = h-12 (via designs) + pt-4 + pb-4
     <div
       className="w-container flex h-20 cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825"
-      onClick={() => setOpen(!open)}
+      onClick={() => setOpen()}
     >
       <TransactionStatus status={status} />
-      <TransactionSummary status={status} />
+      <TransactionSummary status={status} metadata={transaction.metadata} />
     </div>
   );
 };
