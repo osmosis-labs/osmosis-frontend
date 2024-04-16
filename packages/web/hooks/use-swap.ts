@@ -350,7 +350,6 @@ export function useSwap(
     inAmountInput,
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
-    fractionButtonState,
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote

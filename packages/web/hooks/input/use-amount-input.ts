@@ -74,9 +74,6 @@ export function useAmountInput({
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
-      const decimalMultiplication = DecUtils.getTenExponentN(
-        currency.coinDecimals
-      );
       const shouldSubtractMaxWithFee =
         isMax && gasAmount?.denom === currency?.coinDenom && !!gasAmount;
 
@@ -90,7 +87,7 @@ export function useAmountInput({
                   : new Dec(0)
               )
           : new Dec(inputAmount === "" ? 0 : inputAmount).mul(
-              decimalMultiplication
+              DecUtils.getTenExponentN(currency.coinDecimals)
             )
       ).truncate();
       if (amountInt.isZero()) return;
@@ -161,8 +158,6 @@ export function useAmountInput({
     error,
     setAmount,
     reset,
-
-    fraction,
     setFraction,
     isHalf,
     isMax,
