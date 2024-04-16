@@ -7,6 +7,7 @@ import {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -101,7 +102,14 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  const { price } = useCoinPrice(amount);
+  let coin: CoinPretty | undefined;
+  if (!isNil(amount)) {
+    coin = amount;
+  } else if (!isNil(currency)) {
+    coin = new CoinPretty(currency, 0);
+  }
+
+  const { price } = useCoinPrice(coin);
   const fiatValue = useMemo(
     () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
     [amount, price]
