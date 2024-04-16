@@ -719,6 +719,7 @@
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
+    "gettingStarted": "はじめる",
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",
     "somethingWentWrong": "何か問題が発生しました",
     "isNotInstalled": "{walletName}インストールされていません",

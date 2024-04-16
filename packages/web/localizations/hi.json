@@ -719,6 +719,7 @@
     "dynamicSpreadFactor": "गतिशील"
   },
   "walletSelect": {
+    "gettingStarted": "शुरू करना",
     "connectionInProgress": "वॉलेट कनेक्शन पहले से ही प्रगति पर है. स्थिति जांचने के लिए कृपया अपना एक्सटेंशन खोलें।",
     "somethingWentWrong": "कुछ गलत हो गया",
     "isNotInstalled": "{walletName} स्थापित नहीं है",

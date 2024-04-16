@@ -719,6 +719,7 @@
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
+    "gettingStarted": "入门",
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",

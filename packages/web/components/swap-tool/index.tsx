@@ -529,6 +529,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               onClick={() => {
                 swapState.switchAssets();
               }}
+              aria-label="Switch assets"
             >
               <div
                 className={classNames(

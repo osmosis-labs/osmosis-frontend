@@ -1,10 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import HomePage, { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
+import { server, trpcMsw } from "~/tests/msw";
 import { renderWithProviders } from "~/tests/test-utils";
 
 jest.mock("next/router", () => jest.requireActual("next-router-mock"));
@@ -31,8 +33,11 @@ afterEach(() => {
   localStorage.removeItem(SwapPreviousTradeKey);
 });
 
-it("should display initial tokens when there are no previous trades", () => {
+it("should display initial tokens when there are no previous trades", async () => {
   renderWithProviders(<HomePage />);
+
+  await screen.findByRole("heading", { name: "Swap" });
+
   expect(mockRouter).toMatchObject({
     pathname: "/",
     query: {
@@ -41,8 +46,6 @@ it("should display initial tokens when there are no previous trades", () => {
     },
   });
 
-  screen.getByRole("heading", { name: "Swap" });
-
   screen.getByRole("heading", { name: atomAsset.symbol });
   screen.getByText(atomAsset.rawAsset.name);
 
@@ -50,7 +53,7 @@ it("should display initial tokens when there are no previous trades", () => {
   screen.getByText(osmoAsset.rawAsset.name);
 });
 
-it("If there's a previous trade, swap tool should select those tokens", () => {
+it("If there's a previous trade and no query params, swap tool should select those tokens", async () => {
   localStorage.setItem(
     SwapPreviousTradeKey,
     JSON.stringify({
@@ -61,6 +64,8 @@ it("If there's a previous trade, swap tool should select those tokens", () => {
 
   renderWithProviders(<HomePage />);
 
+  await screen.findByRole("heading", { name: "Swap" });
+
   expect(mockRouter).toMatchObject({
     pathname: "/",
     query: {
@@ -69,8 +74,6 @@ it("If there's a previous trade, swap tool should select those tokens", () => {
     },
   });
 
-  screen.getByRole("heading", { name: "Swap" });
-
   screen.getByRole("heading", { name: usdtAsset.symbol });
   screen.getByText(usdtAsset.rawAsset.name);
 
@@ -78,23 +81,31 @@ it("If there's a previous trade, swap tool should select those tokens", () => {
   screen.getByText(usdcAsset.rawAsset.name);
 });
 
-it.only("If the previous trade are not available, swap tool should select default tokens", () => {
+it("If the previous trade is not available, swap tool should select default tokens", async () => {
+  server.use(
+    trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
+      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
+    })
+  );
+
   localStorage.setItem(
     SwapPreviousTradeKey,
     JSON.stringify({
       sendTokenDenom: "NOTEXIST",
-      outTokenDenom: "MAYBEEXIST",
+      outTokenDenom: "NOTEXIST2",
     } as PreviousTrade)
   );
 
   renderWithProviders(<HomePage />);
 
-  expect(mockRouter).toMatchObject({
-    pathname: "/",
-    query: {
-      from: atomAsset.symbol,
-      to: osmoAsset.symbol,
-    },
+  await waitFor(() => {
+    expect(mockRouter).toMatchObject({
+      pathname: "/",
+      query: {
+        from: atomAsset.symbol,
+        to: osmoAsset.symbol,
+      },
+    });
   });
 
   screen.getByRole("heading", { name: "Swap" });
@@ -104,4 +115,45 @@ it.only("If the previous trade are not available, swap tool should select defaul
 
   screen.getByRole("heading", { name: osmoAsset.symbol });
   screen.getByText(osmoAsset.rawAsset.name);
+});
+
+it("If there's no previous trade and no query params, swap tool should select default tokens and can switch between them", async () => {
+  server.use(
+    trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
+      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
+    })
+  );
+
+  renderWithProviders(<HomePage />);
+
+  await waitFor(() => {
+    expect(mockRouter).toMatchObject({
+      pathname: "/",
+      query: {
+        from: atomAsset.symbol,
+        to: osmoAsset.symbol,
+      },
+    });
+  });
+
+  screen.getByRole("heading", { name: "Swap" });
+
+  screen.getByRole("heading", { name: atomAsset.symbol });
+  screen.getByText(atomAsset.rawAsset.name);
+
+  screen.getByRole("heading", { name: osmoAsset.symbol });
+  screen.getByText(osmoAsset.rawAsset.name);
+
+  // Switch assets
+  await userEvent.click(screen.getByLabelText("Switch assets"));
+
+  await waitFor(() => {
+    expect(mockRouter).toMatchObject({
+      pathname: "/",
+      query: {
+        from: osmoAsset.symbol,
+        to: atomAsset.symbol,
+      },
+    });
+  });
 });

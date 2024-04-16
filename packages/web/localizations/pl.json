@@ -719,6 +719,7 @@
     "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
+    "gettingStarted": "Pierwsze kroki",
     "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",

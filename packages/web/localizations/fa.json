@@ -719,6 +719,7 @@
     "dynamicSpreadFactor": "پویا"
   },
   "walletSelect": {
+    "gettingStarted": "شروع شدن",
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
     "isNotInstalled": "تعریف نشده",
