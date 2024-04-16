@@ -102,14 +102,14 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  let coin: CoinPretty | undefined;
+  let coinForPrice: CoinPretty | undefined;
   if (!isNil(amount)) {
-    coin = amount;
+    coinForPrice = amount;
   } else if (!isNil(currency)) {
-    coin = new CoinPretty(currency, 0);
+    coinForPrice = new CoinPretty(currency, 0);
   }
 
-  const { price } = useCoinPrice(coin);
+  const { price } = useCoinPrice(coinForPrice);
   const fiatValue = useMemo(
     () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
     [amount, price]
