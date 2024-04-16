@@ -176,7 +176,6 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
-    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -288,6 +287,14 @@
       "liquid_staking": "Płynna stawka"
     }
   },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Twoje aktywa",
+    "yourPositions": "Twoje pozycje",
+    "recentTransfers": "Ostatnie transfery",
+    "yourSuperchargedPositions": "Twoje doładowane pozycje",
+    "yourLiquidityPools": "Twoje pule płynności"
+  },
   "buyTokens": "Kup tokeny",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Środki",
+    "portfolio": "Teczka",
     "help": "Wsparcie",
     "info": "Statystyki",
     "pools": "Pule",
@@ -775,6 +783,10 @@
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     },
+    "portfolio": {
+      "title": "Portfolio osmozy",
+      "description": "Przeglądaj swoje aktywa na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -839,7 +851,6 @@
     "myStrategies": "Twoje strategie",
     "strategyPlatform": "Strategia",
     "apy": "KWIECIEŃ",
-    "daily": "Codziennie",
     "reward": "Nagroda",
     "lock": "Rozłącz",
     "days": "dni",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
     "tooltips": {
       "apr": {
-        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
-      },
-      "daily": {
-        "description": "Dzienny procentowy zwrot strategii - podobny do RRSO, ale odzwierciedlający dzienny zwrot, a nie roczny. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii.\n\nUwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników.\n\nZastrzeżenie: Te RRSO są zgłaszane przez same projekty i mogą być niedokładne."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."

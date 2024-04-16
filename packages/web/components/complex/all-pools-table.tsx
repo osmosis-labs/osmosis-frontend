@@ -9,6 +9,7 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -205,15 +206,15 @@ export const AllPoolsTable: FunctionComponent<{
     });
     return {
       shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
-      shouldDisplayFeesData: feesPresenceCount > poolsData.length / 2,
+      shouldDisplayFeesData: false, // never show fees in the table
     };
   }, [poolsData]);
 
   // Define columns
-  const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-
   const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Pool>();
+
     let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
@@ -320,7 +321,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     return allColumns;
   }, [
-    columnHelper,
     t,
     isLoading,
     sortKey,
@@ -629,10 +629,29 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "concentrated" && (
                     <Icon id="concentrated-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-astroport-pcl" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/astroport-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
+                  {type === "cosmwasm-whitewhale" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/whitewhale-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
                   {type === "cosmwasm-transmuter" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
-                  {spreadFactor ? spreadFactor.toString() : ""}
+
+                  {type != "cosmwasm-astroport-pcl" &&
+                    type != "cosmwasm-whitewhale" &&
+                    (spreadFactor ? spreadFactor.toString() : "")}
                 </p>
               </div>
             </p>

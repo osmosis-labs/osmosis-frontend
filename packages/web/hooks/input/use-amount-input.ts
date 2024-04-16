@@ -4,16 +4,18 @@ import {
   InvalidNumberAmountError,
   NegativeAmountError,
 } from "@osmosis-labs/keplr-hooks";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
-import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
 import { useBalances } from "../queries/cosmos/use-balances";
 
 /** Manages user input for a currency, with helpers for selecting
@@ -99,7 +101,11 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  const fiatValue = useCoinFiatValue(amount);
+  const { price } = useCoinPrice(amount);
+  const fiatValue = useMemo(
+    () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
+    [amount, price]
+  );
 
   const balance = useMemo(
     () =>
@@ -136,6 +142,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     amount,
     balance,
     fiatValue,
+    price,
     fraction,
     isEmpty: inputAmountWithFraction === "",
     error,

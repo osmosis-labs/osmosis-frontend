@@ -176,7 +176,6 @@
       "titleWithdraw": "Sich zurückziehen"
     },
     "stakedAssets": "Abgestecktes OSMO",
-    "pooledAssets": "Gebündelt",
     "table": {
       "columns": {
         "assetChain": "Vermögenswert/Kette",
@@ -288,6 +287,14 @@
       "liquid_staking": "Flüssiges Abstecken"
     }
   },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Ihr Vermögen",
+    "yourPositions": "Ihre Positionen",
+    "recentTransfers": "Letzte Übertragungen",
+    "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
+    "yourLiquidityPools": "Ihre Liquiditätspools"
+  },
   "buyTokens": "Kaufen Sie Token",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Vermögenswerte",
+    "portfolio": "Portfolio",
     "help": "Support-Labor",
     "info": "Statistiken",
     "pools": "Pools",
@@ -775,6 +783,10 @@
       "title": "Osmose-Vermögenswerte",
       "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
     },
+    "portfolio": {
+      "title": "Osmose-Portfolio",
+      "description": "Sehen Sie sich Ihr Vermögen auf Osmosis an – der führenden dezentralen Cosmos-Börse"
+    },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",
       "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"
@@ -839,7 +851,6 @@
     "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",
     "apy": "APR",
-    "daily": "Täglich",
     "reward": "Belohnen",
     "lock": "Bindung lösen",
     "days": "Tage",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
-        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
-      },
-      "daily": {
-        "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."

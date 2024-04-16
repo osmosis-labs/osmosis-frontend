@@ -176,7 +176,6 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
-    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -288,6 +287,14 @@
       "liquid_staking": "流动质押"
     }
   },
+  "portfolio": {
+    "trade": "贸易",
+    "yourAssets": "您的资产",
+    "yourPositions": "您的职位",
+    "recentTransfers": "最近转会",
+    "yourSuperchargedPositions": "您的超级职位",
+    "yourLiquidityPools": "您的流动资金池"
+  },
   "buyTokens": "购买代币",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "资产",
+    "portfolio": "文件夹",
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
@@ -775,6 +783,10 @@
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
     },
+    "portfolio": {
+      "title": "渗透产品组合",
+      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
+    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
@@ -839,7 +851,6 @@
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
-    "daily": "日常的",
     "reward": "报酬",
     "lock": "解绑",
     "days": "天",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
-        "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
-      },
-      "daily": {
-        "description": "策略的每日百分比回报 - 类似于 APR，但反映的是每日回报而非年度回报。注意：策略的回报可能会根据参与度和表现而波动。"
+        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
       },
       "tvl": {
         "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"

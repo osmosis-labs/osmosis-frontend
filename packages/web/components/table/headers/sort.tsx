@@ -1,4 +1,4 @@
-import { SortDirection } from "@osmosis-labs/server";
+import type { SortDirection } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { PropsWithChildren } from "react";
 

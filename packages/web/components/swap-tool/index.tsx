@@ -90,17 +90,31 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const slippageConfig = useSlippageConfig();
 
     // out amount less slippage calculated from slippage config
-    const outAmountLessSlippage = useMemo(
-      () =>
+    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
+      // Compute ratio of 1 - slippage
+      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+
+      // Compute out amount less slippage
+      const outAmountLessSlippage =
         swapState.quote && swapState.toAsset
-          ? new IntPretty(
-              swapState.quote.amount
-                .toDec()
-                .mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
-            )
-          : undefined,
-      [swapState.quote, swapState.toAsset, slippageConfig.slippage]
-    );
+          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+          : undefined;
+
+      // Compute out fiat amount less slippage
+      const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
+        ? new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+          )
+        : undefined;
+
+      return { outAmountLessSlippage, outFiatAmountLessSlippage };
+    }, [
+      swapState.quote,
+      swapState.toAsset,
+      slippageConfig.slippage,
+      swapState.tokenOutFiatValue,
+    ]);
 
     const routesVisDisclosure = useDisclosure();
 
@@ -187,9 +201,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               quoteTimeMilliseconds: swapState.quote?.timeMs,
               router: swapState.quote?.name,
               page,
-              valueUsd: Number(
-                swapState.quote?.amountFiatValue?.toString() ?? "0"
-              ),
+              valueUsd: Number(swapState.tokenOutFiatValue?.toString() ?? "0"),
             },
           ]);
         })
@@ -607,23 +619,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       "subtitle1 md:caption text-osmoverse-300 opacity-100 transition-opacity",
                       {
                         "opacity-0":
-                          !swapState.quote?.amountFiatValue ||
-                          swapState.quote.amountFiatValue.toDec().isZero() ||
+                          !swapState.tokenOutFiatValue ||
+                          swapState.tokenOutFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          (!swapState.quote?.amountFiatValue
-                            ?.toDec()
-                            .isZero() &&
+                          (!swapState.tokenOutFiatValue?.toDec().isZero() &&
                             isSwapToolLoading) ||
                           swapState.inAmountInput.isTyping,
                       }
                     )}
                   >
                     {`≈ ${
-                      swapState.quote?.amountFiatValue &&
-                      swapState.quote.amountFiatValue.toString().length > 15
-                        ? formatPretty(swapState.quote.amountFiatValue)
-                        : swapState.quote?.amountFiatValue?.toString() ?? "0"
+                      swapState.tokenOutFiatValue &&
+                      swapState.tokenOutFiatValue.toString().length > 15
+                        ? formatPretty(swapState.tokenOutFiatValue)
+                        : swapState.tokenOutFiatValue?.toString() ?? "0"
                     }`}
                   </span>
                 </div>
@@ -744,7 +754,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     </span>
                   </div>
                 )}
-                {swapState.quote?.tokenInFeeAmountFiatValue &&
+                {swapState.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee && (
                     <div className="flex justify-between">
                       <span className="caption">
@@ -753,9 +763,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         })}
                       </span>
                       <span className="caption text-osmoverse-200">
-                        {`≈ ${
-                          swapState.quote.tokenInFeeAmountFiatValue ?? "0"
-                        } `}
+                        {`≈ ${swapState.tokenInFeeAmountFiatValue ?? "0"} `}
                       </span>
                     </div>
                   )}
@@ -775,7 +783,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     </SkeletonLoader>
                   </div>
                 ) : undefined}
-                {((swapState.quote?.tokenInFeeAmountFiatValue &&
+                {((swapState.tokenInFeeAmountFiatValue &&
                   swapState.quote?.swapFee) ||
                   (swapState.networkFee && !swapState.isLoadingNetworkFee)) &&
                   featureFlags.swapToolSimulateFee &&
@@ -825,7 +833,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     isLoaded={!swapState.isQuoteLoading}
                   >
                     {outAmountLessSlippage &&
-                      swapState.quote?.tokenOutPrice &&
+                      outFiatAmountLessSlippage &&
                       swapState.toAsset && (
                         <div
                           className={classNames(
@@ -837,14 +845,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               maxDecimals: 8,
                             })}
                           </span>
-                          <span>{`≈ ${
-                            new PricePretty(
-                              swapState.quote.tokenOutPrice.fiatCurrency,
-                              outAmountLessSlippage.mul(
-                                swapState.quote.tokenOutPrice
-                              )
-                            ) || "0"
-                          }`}</span>
+                          <span>{`≈ ${outFiatAmountLessSlippage || "0"}`}</span>
                         </div>
                       )}
                   </SkeletonLoader>

@@ -176,7 +176,6 @@
       "titleWithdraw": "Withdraw to"
     },
     "stakedAssets": "Staked OSMO",
-    "pooledAssets": "Pooled",
     "table": {
       "columns": {
         "assetChain": "Asset / Chain",
@@ -288,6 +287,14 @@
       "liquid_staking": "Liquid staking"
     }
   },
+  "portfolio": {
+    "trade": "Trade",
+    "yourAssets": "Your assets",
+    "yourPositions": "Your positions",
+    "recentTransfers": "Recent transfers",
+    "yourSuperchargedPositions": "Your Supercharged positions",
+    "yourLiquidityPools": "Your liquidity pools"
+  },
   "buyTokens": "Buy tokens",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Assets",
+    "portfolio": "Portfolio",
     "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
@@ -775,6 +783,10 @@
       "title": "Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
+    "portfolio": {
+      "title": "Osmosis Portfolio",
+      "description": "View your assets on Osmosis - the leading decentralized Cosmos exchange"
+    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -839,7 +851,6 @@
     "myStrategies": "Your Strategies",
     "strategyPlatform": "Strategy",
     "apy": "APR",
-    "daily": "Daily",
     "reward": "Reward",
     "lock": "Unbond",
     "days": "days",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Instant unbond only",
     "tooltips": {
       "apr": {
-        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy. Note: A strategy's return may fluctuate based on participation and performance."
-      },
-      "daily": {
-        "description": "Daily percentage return of a strategy - akin to APR, but reflecting daily return instead of annual. Note: A strategy's return may fluctuate based on participation and performance."
+        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy.\n\nNote: A strategy's return may fluctuate based on participation and performance.\n\nDisclaimer: These APRs are self-reported by projects themselves and may be inaccurate."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."

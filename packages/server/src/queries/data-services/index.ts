@@ -10,3 +10,4 @@ export * from "./token-data";
 export * from "./token-historical-chart";
 export * from "./token-pair-historical-chart";
 export * from "./tokens";
+export * from "./transactions";

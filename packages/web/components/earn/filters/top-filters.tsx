@@ -175,7 +175,8 @@ export const TopFilters = ({
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
           placeholder={t("store.searchPlaceholder")}
-          size={"full"}
+          size="full"
+          variant="outline"
         />
         <div className="flex 2xl:hidden">
           {categories.map((props) => {

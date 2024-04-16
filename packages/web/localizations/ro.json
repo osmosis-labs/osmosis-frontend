@@ -176,7 +176,6 @@
       "titleWithdraw": "Retrage catre"
     },
     "stakedAssets": "Staked OSMO",
-    "pooledAssets": "Adunate",
     "table": {
       "columns": {
         "assetChain": "Active / Retea",
@@ -288,6 +287,14 @@
       "liquid_staking": "Mărire lichidă"
     }
   },
+  "portfolio": {
+    "trade": "Comerț",
+    "yourAssets": "Activele tale",
+    "yourPositions": "Pozițiile tale",
+    "recentTransfers": "Transferuri recente",
+    "yourSuperchargedPositions": "Pozițiile tale Supercharged",
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
+  },
   "buyTokens": "Cumpărați jetoane",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Active",
+    "portfolio": "Portofoliu",
     "help": "A sustine",
     "info": "Statistici",
     "pools": "Pool-uri",
@@ -775,6 +783,10 @@
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
+    "portfolio": {
+      "title": "Portofoliu de osmoză",
+      "description": "Vizualizați-vă activele pe Osmosis - principalul schimb descentralizat Cosmos"
+    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -839,7 +851,6 @@
     "myStrategies": "Strategiile tale",
     "strategyPlatform": "Strategie",
     "apy": "APRILIE",
-    "daily": "Zilnic",
     "reward": "Răsplată",
     "lock": "Dezlegați",
     "days": "zile",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
-      },
-      "daily": {
-        "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
       },
       "tvl": {
         "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."

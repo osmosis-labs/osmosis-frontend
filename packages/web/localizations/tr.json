@@ -176,7 +176,6 @@
       "titleWithdraw": "Adrese çek"
     },
     "stakedAssets": "Stake Edilmiş OSMO",
-    "pooledAssets": "havuzlanmış",
     "table": {
       "columns": {
         "assetChain": "Varlık / Ağ",
@@ -288,6 +287,14 @@
       "liquid_staking": "Sıvı esnetme"
     }
   },
+  "portfolio": {
+    "trade": "Ticaret",
+    "yourAssets": "Varlıklarınız",
+    "yourPositions": "Pozisyonlarınız",
+    "recentTransfers": "Son transferler",
+    "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
+    "yourLiquidityPools": "Likidite havuzlarınız"
+  },
   "buyTokens": "jeton satın al",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Varlıklar",
+    "portfolio": "Portföy",
     "help": "Destek",
     "info": "Bilgi",
     "pools": "Havuzlar",
@@ -775,6 +783,10 @@
       "title": "Osmoz Varlıkları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
     },
+    "portfolio": {
+      "title": "Osmoz Portföyü",
+      "description": "Varlıklarınızı önde gelen merkezi olmayan Cosmos borsası Osmosis'te görüntüleyin"
+    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -839,7 +851,6 @@
     "myStrategies": "Stratejileriniz",
     "strategyPlatform": "Strateji",
     "apy": "Nisan",
-    "daily": "Günlük",
     "reward": "Ödül",
     "lock": "Bağlantıyı kaldır",
     "days": "günler",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Yalnızca anında ayrılma",
     "tooltips": {
       "apr": {
-        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."
-      },
-      "daily": {
-        "description": "Bir stratejinin günlük getiri yüzdesi - APR'ye benzer, ancak yıllık getiri yerine günlük getiriyi yansıtır. Not: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir."
+        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder.\n\nNot: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir.\n\nSorumluluk reddi beyanı: Bu APR'ler projelerin kendisi tarafından raporlanmaktadır ve hatalı olabilir."
       },
       "tvl": {
         "description": "Kilitli Toplam Değer (TVL), stratejiye yatırılan varlıkların ABD Doları cinsinden toplam değerini ifade eder."

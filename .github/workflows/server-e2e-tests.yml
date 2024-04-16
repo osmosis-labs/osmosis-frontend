@@ -1,0 +1,55 @@
+name: Server E2E Workflow
+
+on: [push]
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        env:
+          MAIN_BRANCH: "refs/heads/master"
+        run: |
+          if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
+            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+          fi
+
+  test:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Echo Current Server URL
+        run: echo "SQS Server URL:${{ matrix.server-url }}"
+
+      - name: Run Tests
+        run: yarn test:e2e --filter=server
+        env:
+          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}

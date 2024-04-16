@@ -176,7 +176,6 @@
       "titleWithdraw": "Retirar a"
     },
     "stakedAssets": "OSMO Abonado",
-    "pooledAssets": "agrupado",
     "table": {
       "columns": {
         "assetChain": "Activo / cadena",
@@ -288,6 +287,14 @@
       "liquid_staking": "Estaca liquida"
     }
   },
+  "portfolio": {
+    "trade": "Comercio",
+    "yourAssets": "Tus activos",
+    "yourPositions": "Tus posiciones",
+    "recentTransfers": "Transferencias recientes",
+    "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
+    "yourLiquidityPools": "Tus fondos de liquidez"
+  },
   "buyTokens": "Comprar fichas",
   "components": {
     "fiatOnrampSelection": {
@@ -392,6 +399,7 @@
   },
   "menu": {
     "assets": "Activos",
+    "portfolio": "portafolio",
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
@@ -775,6 +783,10 @@
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
+    "portfolio": {
+      "title": "Portafolio de Ósmosis",
+      "description": "Vea sus activos en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -839,7 +851,6 @@
     "myStrategies": "Tus estrategias",
     "strategyPlatform": "Estrategia",
     "apy": "ABR",
-    "daily": "A diario",
     "reward": "Premio",
     "lock": "Desvinculado",
     "days": "días",
@@ -883,10 +894,7 @@
     "instantUnbondOnly": "Solo desvinculación instantánea",
     "tooltips": {
       "apr": {
-        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
-      },
-      "daily": {
-        "description": "Retorno porcentual diario de una estrategia, similar a la APR, pero que refleja el rendimiento diario en lugar de anual. Nota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento."
+        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
       },
       "tvl": {
         "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."

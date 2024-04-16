@@ -11,6 +11,7 @@ import { type AnyRouter, initTRPC } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import { ZodError } from "zod";
 
+import { trpcMiddleware } from "./utils";
 import { timeout } from "./utils/async";
 import { Errors } from "./utils/errors";
 import { superjson } from "./utils/superjson";
@@ -18,7 +19,7 @@ import { superjson } from "./utils/superjson";
 /**
  * Pass asset lists and chain list to be used cas context in backend service.
  */
-type CreateContextOptions = {
+export type CreateContextOptions = {
   assetLists: AssetList[];
   chainList: Chain[];
 };
@@ -81,13 +82,19 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but we can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(async (opts) => {
-  /**
-   * Default timeout for all procedures
-   */
-  const result = await timeout(() => opts.next(), 12_000, opts.path)();
-  return result;
-});
+export const publicProcedure = t.procedure
+  .use(
+    trpcMiddleware({
+      attachRpcInput: true,
+    })
+  )
+  .use(async (opts) => {
+    /**
+     * Default timeout for all procedures
+     */
+    const result = await timeout(() => opts.next(), 12_000, opts.path)();
+    return result;
+  });
 
 /**
  * Creates a local link for tRPC operations.
