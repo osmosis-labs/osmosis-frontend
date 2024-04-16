@@ -69,7 +69,7 @@ export function useSwap({
   useOtherCurrencies = true,
   forceSwapInPoolId,
 }: SwapOptions = {}) {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, ephemeralKVStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
@@ -323,15 +323,22 @@ export function useSwap({
          * Send messages to account
          */
         if (routes.length === 1) {
+          console.log("DEBUG -- POSITION1");
           const { pools } = routes[0];
+          const memo =
+            ephemeralKVStore.get("notifi-tx-login")?.nonce ?? undefined;
           account.osmosis
             .sendSwapExactAmountInMsg(
               pools,
               tokenIn,
               tokenOutMinAmount,
-              undefined,
+              memo,
               fee,
-              () => {
+              (tx) => {
+                ephemeralKVStore.set("notifi-last-executed-tx", {
+                  signature: tx.transactionHash,
+                  memo,
+                });
                 resolve(pools.length === 1 ? "exact-in" : "multihop");
               }
             )
@@ -343,14 +350,21 @@ export function useSwap({
             });
           return pools.length === 1 ? "exact-in" : "multihop";
         } else if (routes.length > 1) {
+          console.log("DEBUG -- POSITION2");
+          const memo =
+            ephemeralKVStore.get("notifi-tx-login").nonce ?? undefined;
           account.osmosis
             .sendSplitRouteSwapExactAmountInMsg(
               routes,
               tokenIn,
               tokenOutMinAmount,
-              undefined,
+              memo,
               fee,
-              () => {
+              (tx) => {
+                ephemeralKVStore.set("notifi-last-executed-tx", {
+                  signature: tx.transactionHash,
+                  memo,
+                });
                 resolve("multiroute");
               }
             )
@@ -373,6 +387,7 @@ export function useSwap({
       }),
     [
       account,
+      ephemeralKVStore,
       inAmountInput,
       networkFee,
       queryClient,

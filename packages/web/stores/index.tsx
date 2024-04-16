@@ -2,7 +2,6 @@ import React, { FunctionComponent, useState } from "react";
 
 import { RootStore } from "~/stores/root";
 import { api } from "~/utils/trpc";
-
 const storeContext = React.createContext<RootStore | null>(null);
 
 /** Once data is invalidated, React Query will automatically refetch data
@@ -22,7 +21,9 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
       new RootStore({
         txEvents: {
           onBroadcastFailed: () => invalidateQueryData(apiUtils),
-          onFulfill: () => invalidateQueryData(apiUtils),
+          onFulfill: (str, tx) => {
+            invalidateQueryData(apiUtils);
+          },
         },
       })
   );

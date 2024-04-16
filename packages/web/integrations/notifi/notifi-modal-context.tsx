@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 
+import { useNotifiTxLogin } from "~/integrations/notifi/hooks/use-notifi-tx-login";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { HistoryRowData } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 import { ModalBaseProps } from "~/modals";
@@ -47,6 +48,8 @@ const NotifiModalContext = createContext<NotifiModalFunctions>({
 export const NotifiModalContextProvider: FunctionComponent<
   PropsWithChildren<{ account: string }>
 > = ({ account, children }) => {
+  console.log("DEBUG -- NotifiModalContextProvider notifi-modal-context");
+  useNotifiTxLogin();
   const { setCardView } = useNotifiSubscriptionContext();
   const [innerState, setInnerState] = useState<Partial<ModalBaseProps>>({});
   const [location, setLocation] = useState<Location>("signup");

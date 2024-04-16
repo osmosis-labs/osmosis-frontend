@@ -85,6 +85,10 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
+  // NOTIFI QUESTION - We didn't want to modify the store here, but didn't see a better place to have
+  // the tx nonce that should be used on any new tx, or receiving the tx hash once it was executed
+  public readonly ephemeralKVStore: Map<string, any>;
+
   constructor({
     txEvents,
   }: {
@@ -263,5 +267,7 @@ export class RootStore {
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
+
+    this.ephemeralKVStore = new Map();
   }
 }
