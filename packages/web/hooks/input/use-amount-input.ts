@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
@@ -74,22 +74,27 @@ export function useAmountInput({
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
+      let amountInt =
+        inputAmount === ""
+          ? new Int(0)
+          : new Dec(inputAmount)
+              .mul(DecUtils.getTenExponentN(currency.coinDecimals))
+              .truncate();
+
       const shouldSubtractMaxWithFee =
         isMax && gasAmount?.denom === currency?.coinDenom && !!gasAmount;
 
-      const amountInt = (
-        fraction != null && rawCurrencyBalance
-          ? new Dec(rawCurrencyBalance)
-              .mul(new Dec(fraction))
-              .sub(
-                shouldSubtractMaxWithFee
-                  ? new Dec(gasAmount.toCoin().amount)
-                  : new Dec(0)
-              )
-          : new Dec(inputAmount === "" ? 0 : inputAmount).mul(
-              DecUtils.getTenExponentN(currency.coinDecimals)
-            )
-      ).truncate();
+      if (fraction != null && rawCurrencyBalance) {
+        amountInt = new Dec(rawCurrencyBalance)
+          .mul(new Dec(fraction))
+          .sub(
+            shouldSubtractMaxWithFee
+              ? new Dec(gasAmount.toCoin().amount)
+              : new Dec(0)
+          )
+          .truncate();
+      }
+
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
