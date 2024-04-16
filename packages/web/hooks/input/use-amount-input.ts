@@ -102,6 +102,12 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
+  /**
+   * When the `amount` is `undefined` due to the absence of valid input,
+   * we should create a CoinPretty object using the currency. This allows
+   * us to fetch the price before generating a quote, displaying results
+   * faster on slow networks.
+   */
   let coinForPrice: CoinPretty | undefined;
   if (!isNil(amount)) {
     coinForPrice = amount;
