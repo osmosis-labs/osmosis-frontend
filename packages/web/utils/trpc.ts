@@ -1,4 +1,7 @@
 import { localLink, makeSkipBatchLink, superjson } from "@osmosis-labs/server";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type {
@@ -26,7 +29,27 @@ const getBaseUrl = () => {
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
+    const localStoragePersister = createSyncStoragePersister({
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+      serialize: (client) => superjson.stringify(client),
+      deserialize: (cachedString) => superjson.parse(cachedString),
+    });
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+        },
+      },
+    });
+
+    persistQueryClient({
+      queryClient,
+      persister: localStoragePersister,
+    });
+
     return {
+      queryClient,
       /**
        * Transformer used for data de-serialization from the server.
        *
