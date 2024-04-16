@@ -21,8 +21,11 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
       new RootStore({
         txEvents: {
           onBroadcastFailed: () => invalidateQueryData(apiUtils),
-          onFulfill: (str, tx) => {
+          onFulfill: () => {
             invalidateQueryData(apiUtils);
+            // NOTIFI QUESTION - We need a way to let the Notifi card know that the transaction has been fulfilled.
+            // In order to do that, we'd need to wrap a Notifi context around StoreProvider, which we thought
+            // would be a bit too much, and could possibly cause re-renders of the entire subtree.
           },
         },
       })
