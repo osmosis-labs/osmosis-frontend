@@ -10,7 +10,6 @@ import {
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -105,8 +104,6 @@ export function useEstimateTxFees({
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });
-
-  useEffect(() => {}, []);
 
   return queryResult;
 }

@@ -506,9 +506,9 @@ function useSwapAmountInput({
   });
 
   const {
-    data: maxBalanceQuote,
-    isLoading: isMaxBalanceQuoteLoading,
-    error: maxBalanceQuoteError,
+    data: quoteForCurrentBalance,
+    isLoading: isQuoteForCurrentBalanceLoading,
+    error: quoteForCurrentBalanceError,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset,
@@ -521,44 +521,47 @@ function useSwapAmountInput({
   );
 
   const {
-    data: maxBalanceNetworkFee,
-    isLoading: isLoadingMaxBalanceNetworkFee,
-    error: maxBalanceNetworkFeeError,
+    data: currentBalanceNetworkFee,
+    isLoading: isLoadingCurrentBalanceNetworkFee,
+    error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: maxBalanceQuote?.messages,
+    messages: quoteForCurrentBalance?.messages,
     enabled:
       featureFlags.swapToolSimulateFee &&
       !!inAmountInput.balance &&
-      !isMaxBalanceQuoteLoading,
+      !isQuoteForCurrentBalanceLoading,
   });
 
-  const hasMaxBalanceError = useMemo(() => {
-    return !!maxBalanceNetworkFeeError || !!maxBalanceQuoteError;
-  }, [maxBalanceNetworkFeeError, maxBalanceQuoteError]);
+  const hasErrorWithCurrentBalanceQuote = useMemo(() => {
+    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
+  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
 
   const notEnoughBalanceForMax = useMemo(() => {
     return (
-      maxBalanceNetworkFeeError?.message.includes(
+      currentBalanceNetworkFeeError?.message.includes(
         "min out amount or max in amount should be positive"
       ) ||
-      maxBalanceQuoteError?.message.includes(
+      quoteForCurrentBalanceError?.message.includes(
         "Not enough quoted. Try increasing amount."
       )
     );
-  }, [maxBalanceNetworkFeeError?.message, maxBalanceQuoteError?.message]);
+  }, [
+    currentBalanceNetworkFeeError?.message,
+    quoteForCurrentBalanceError?.message,
+  ]);
 
   useEffect(() => {
-    if (isNil(maxBalanceNetworkFee?.gasAmount)) return;
+    if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
     setGasAmount(
-      maxBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
+      currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
     );
-  }, [maxBalanceNetworkFee?.gasAmount]);
+  }, [currentBalanceNetworkFee?.gasAmount]);
 
   return {
     ...inAmountInput,
-    isLoadingMaxBalanceNetworkFee,
-    hasMaxBalanceError,
+    isLoadingCurrentBalanceNetworkFee,
+    hasErrorWithCurrentBalanceQuote,
     notEnoughBalanceForMax,
   };
 }

@@ -231,9 +231,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isLoadingMaxButton =
       featureFlags.swapToolSimulateFee &&
       !isNil(account?.address) &&
-      !swapState.inAmountInput.hasMaxBalanceError &&
+      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
       !swapState.inAmountInput?.balance?.toDec().isZero() &&
-      swapState.inAmountInput.isLoadingMaxBalanceNetworkFee;
+      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
     return (
       <>
@@ -437,7 +437,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           : t("swap.maxButtonError")}
                       </div>
                     }
-                    disabled={!swapState.inAmountInput.hasMaxBalanceError}
+                    disabled={
+                      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
+                    }
                   >
                     <Button
                       variant="outline"
@@ -451,7 +453,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       disabled={
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
-                        swapState.inAmountInput.hasMaxBalanceError
+                        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
                       }
                       isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
