@@ -38,21 +38,39 @@ export const TransactionContent = ({
         <hr className="text-osmoverse-700" />
       </div>
 
-      {transactions.map((transaction: any) => (
-        <TransactionRow
-          key={transaction._id}
-          status={transaction.code === 0 ? "Success" : "Failure"}
-          setOpen={() => {
-            setSelectedTransaction(transaction);
+      {transactions.map((transaction) => {
+        return (
+          <TransactionRow
+            key={transaction.id}
+            title={{
+              // each type of transaction would have a translation for when it's pending, successful, or failed
+              pending: "Swapping",
+              success: "Swapped",
+              failure: "Swap failed",
+            }}
+            effect="swap"
+            status={transaction.code === 0 ? "success" : "failure"}
+            onClick={() => {
+              setSelectedTransaction(transaction);
 
-            // delay to ensure the slide over transitions smoothly
-            if (!open) {
-              setTimeout(() => setOpen(true), 1);
-            }
-          }}
-          transaction={transaction}
-        />
-      ))}
+              // delay to ensure the slide over transitions smoothly
+              if (!open) {
+                setTimeout(() => setOpen(true), 1);
+              }
+            }}
+            tokenConversion={{
+              tokenIn: {
+                amount: transaction.metadata[0].value[0].txInfo.tokenIn.token,
+                value: transaction.metadata[0].value[0].txInfo.tokenIn.usd,
+              },
+              tokenOut: {
+                amount: transaction.metadata[0].value[0].txInfo.tokenOut.token,
+                value: transaction.metadata[0].value[0].txInfo.tokenOut.usd,
+              },
+            }}
+          />
+        );
+      })}
 
       {/* <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
         <div className="text-osmoverse-300">Pending</div>
