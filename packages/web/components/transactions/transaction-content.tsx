@@ -46,10 +46,10 @@ export const TransactionContent = ({
               // each type of transaction would have a translation for when it's pending, successful, or failed
               pending: "Swapping",
               success: "Swapped",
-              failure: "Swap failed",
+              failed: "Swap failed",
             }}
             effect="swap"
-            status={transaction.code === 0 ? "success" : "failure"}
+            status={transaction.code === 0 ? "success" : "failed"}
             onClick={() => {
               setSelectedTransaction(transaction);
 

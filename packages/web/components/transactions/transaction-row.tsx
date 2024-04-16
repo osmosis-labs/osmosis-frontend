@@ -8,7 +8,7 @@ import { formatPretty } from "~/utils/formatter";
 
 import { Spinner } from "../loaders";
 
-export type TransactionStatus = "pending" | "success" | "failure";
+export type TransactionStatus = "pending" | "success" | "failed";
 
 interface Transaction {
   status: TransactionStatus;
@@ -21,17 +21,17 @@ interface Transaction {
   tokenConversion?: {
     tokenIn: {
       amount: CoinPretty;
-      value: PricePretty;
+      value?: PricePretty;
     };
     tokenOut: {
       amount: CoinPretty;
-      value: PricePretty;
+      value?: PricePretty;
     };
   };
   transfer?: {
     direction: "deposit" | "withdraw";
     amount: CoinPretty;
-    value: PricePretty;
+    value?: PricePretty;
   };
   onClick: () => void;
 }
@@ -40,6 +40,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   status,
   effect,
   title,
+  caption,
   tokenConversion,
   transfer,
   onClick,
@@ -81,6 +82,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 
         <p className="text-osmoverse-100">{title[status]}</p>
       </div>
+      {caption && <p className="body1 text-osmoverse-300">{caption}</p>}
       {tokenConversion && (
         <TokenConversion status={status} {...tokenConversion} />
       )}
@@ -102,15 +104,17 @@ const TokenConversion: FunctionComponent<
       width={32}
     />
     <div className="flex flex-col text-right ">
-      <div
-        className={classNames("text-subtitle1", {
-          "text-osmoverse-400": status === "pending",
-          "text-osmoverse-100": status === "success",
-          "text-rust-400": status === "failure",
-        })}
-      >
-        - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
-      </div>
+      {tokenIn.value && (
+        <div
+          className={classNames("text-subtitle1", {
+            "text-osmoverse-400": status === "pending",
+            "text-osmoverse-100": status === "success",
+            "text-rust-400": status === "failed",
+          })}
+        >
+          - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
+        </div>
+      )}
       <div className="text-body2 text-osmoverse-400">
         {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
       </div>
@@ -129,16 +133,18 @@ const TokenConversion: FunctionComponent<
       width={32}
     />
     <div className="flex flex-col text-right text-osmoverse-400">
-      <div
-        className={classNames("text-subtitle1", {
-          "text-osmoverse-400": status === "pending",
-          "text-osmoverse-100": status === "success",
-          "text-rust-400": status === "failure",
-        })}
-      >
-        + {tokenOut.value.symbol}
-        {Number(tokenOut.value.toDec().toString()).toFixed(2)}
-      </div>
+      {tokenOut.value && (
+        <div
+          className={classNames("text-subtitle1", {
+            "text-osmoverse-400": status === "pending",
+            "text-osmoverse-100": status === "success",
+            "text-rust-400": status === "failed",
+          })}
+        >
+          + {tokenOut.value.symbol}
+          {Number(tokenOut.value.toDec().toString()).toFixed(2)}
+        </div>
+      )}
       <div className="text-body2">
         {formatPretty(tokenOut.amount, { maxDecimals: 2 })?.toString()}
       </div>
@@ -160,15 +166,20 @@ export const TokenTransfer: FunctionComponent<
       height={32}
       width={32}
     />
-    <div
-      className={classNames("text-subtitle1", {
-        "text-osmoverse-400": status === "pending",
-        "text-osmoverse-100": status === "success",
-        "text-rust-400": status === "failure",
-      })}
-    >
-      {direction === "withdraw" ? "-" : "+"} {value.symbol}
-      {Number(value.toDec().abs().toString()).toFixed(2)}
+    <div className="text-body2 text-osmoverse-400">
+      {formatPretty(amount, { maxDecimals: 2 })?.toString()}
     </div>
+    {value && (
+      <div
+        className={classNames("text-subtitle1", {
+          "text-osmoverse-400": status === "pending",
+          "text-osmoverse-100": status === "success",
+          "text-rust-400": status === "failed",
+        })}
+      >
+        {direction === "withdraw" ? "-" : "+"} {value.symbol}
+        {Number(value.toDec().abs().toString()).toFixed(2)}
+      </div>
+    )}
   </div>
 );
