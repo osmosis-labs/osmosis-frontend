@@ -13,7 +13,7 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const config = {
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ["<rootDir>/tests/setup-tests.ts"],
+  setupFilesAfterEnv: ["<rootDir>/__tests__/setup-tests.ts"],
   setupFiles: ["jest-launchdarkly-mock"],
   moduleNameMapper: {
     // Resolve absolute imports
