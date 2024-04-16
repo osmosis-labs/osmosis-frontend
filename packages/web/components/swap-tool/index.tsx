@@ -446,7 +446,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       size="sm"
                       className={classNames(
                         "text-wosmongton-300",
-                        swapState.inAmountInput.isMax
+                        swapState.inAmountInput.isMaxSelected
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
                       )}

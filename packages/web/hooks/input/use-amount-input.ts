@@ -68,8 +68,8 @@ export function useAmountInput({
     if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
   }, [isBalancesFetched, rawCurrencyBalance, currency]);
 
-  const isHalf = useMemo(() => fraction === 0.5, [fraction]);
-  const isMax = useMemo(() => fraction === 1, [fraction]);
+  const isHalfSelected = useMemo(() => fraction === 0.5, [fraction]);
+  const isMaxSelected = useMemo(() => fraction === 1, [fraction]);
 
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
@@ -82,7 +82,9 @@ export function useAmountInput({
               .truncate();
 
       const shouldSubtractMaxWithFee =
-        isMax && gasAmount?.denom === currency?.coinDenom && !!gasAmount;
+        isMaxSelected &&
+        gasAmount?.denom === currency?.coinDenom &&
+        !!gasAmount;
 
       if (fraction != null && rawCurrencyBalance) {
         amountInt = new Dec(rawCurrencyBalance)
@@ -98,7 +100,15 @@ export function useAmountInput({
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [currency, inputAmount, isMax, gasAmount, fraction, rawCurrencyBalance]);
+  }, [
+    currency,
+    inputAmount,
+    isMaxSelected,
+    gasAmount,
+    fraction,
+    rawCurrencyBalance,
+  ]);
+
   const inputAmountWithFraction = useMemo(
     () =>
       fraction != null && amount
@@ -132,6 +142,7 @@ export function useAmountInput({
         : undefined,
     [currency, balances, rawCurrencyBalance]
   );
+
   const error = useMemo(() => {
     if (!amount) return new EmptyAmountError("Empty amount");
     if (!isValidNumericalRawInput(inputAmount))
@@ -164,8 +175,8 @@ export function useAmountInput({
     setAmount,
     reset,
     setFraction,
-    isHalf,
-    isMax,
+    isHalfSelected,
+    isMaxSelected,
     toggleMax: useCallback(
       () => setFraction(fraction === 1 ? null : 1),
       [fraction]
