@@ -36,7 +36,7 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
           const status =
             transfer.status === "complete"
               ? "success"
-              : transfer.status === "pending" ||
+              : transfer.status === "refunded" ||
                 transfer.status === "timeout" ||
                 transfer.status === "failed"
               ? "failed"
@@ -70,7 +70,6 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
                   coinAmount // amount includes decimals
                 ).moveDecimalPointRight(currency.coinDecimals),
               }}
-              onClick={() => {}}
             />
           );
         })}

@@ -33,7 +33,7 @@ interface Transaction {
     amount: CoinPretty;
     value?: PricePretty;
   };
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const TransactionRow: FunctionComponent<Transaction> = ({
@@ -48,10 +48,14 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   const effectIconId = effect === "swap" ? "swap" : "down-arrow";
 
   return (
-    // h-20 = h-12 (via designs) + pt-4 + pb-4
     <div
-      className="flex h-20 w-full cursor-pointer justify-between rounded-2xl p-4 hover:bg-osmoverse-825"
-      onClick={() => onClick()}
+      className={classNames(
+        "flex h-20 w-full justify-between rounded-2xl p-4",
+        {
+          "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
+        }
+      )}
+      onClick={() => onClick?.()}
     >
       <div className="flex items-center gap-4">
         {status === "pending" ? (
