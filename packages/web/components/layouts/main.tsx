@@ -92,7 +92,7 @@ const OsmosisFullLogo: FunctionComponent<{
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g clip-path="url(#clip0_3347_16138)">
+        <g clipPath="url(#clip0_3347_16138)">
           <path
             d="M28 8C19.1634 8 12 15.1634 12 24C12 32.8366 19.1634 40 28 40C36.8366 40 44 32.8366 44 24C44 15.1634 36.8366 8 28 8Z"
             fill="url(#paint0_linear_3347_16138)"
@@ -121,8 +121,8 @@ const OsmosisFullLogo: FunctionComponent<{
             />
             <path
               opacity="0.3"
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M24.3472 20.4439C25.8102 19.6847 26.8097 18.1559 26.8097 16.3938C26.8097 13.8752 24.768 11.8335 22.2495 11.8335C21.2409 11.8335 20.3088 12.1609 19.5537 12.7152L19.4942 12.6227C8.53862 20.1632 14.695 33.5397 19.6575 36.2056C20.5325 36.4085 20.2805 35.5885 19.8433 34.1652C18.8787 31.0258 17.0122 24.9512 24.3472 20.4439Z"
               fill="url(#paint4_linear_3347_16138)"
             />
@@ -136,8 +136,8 @@ const OsmosisFullLogo: FunctionComponent<{
             />
             <path
               opacity="0.3"
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M24.9605 20.6104C26.4235 19.8512 27.423 18.3224 27.423 16.5603C27.423 14.0417 25.3813 12 22.8627 12C21.8542 12 20.9221 12.3274 20.167 12.8817L20.1074 12.7892C9.1519 20.3297 15.3082 33.7062 20.2708 36.3721C21.1458 36.5751 20.8938 35.755 20.4566 34.3317C19.4919 31.1923 17.6255 25.1178 24.9605 20.6104Z"
               fill="url(#paint7_linear_3347_16138)"
             />
