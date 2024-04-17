@@ -11,7 +11,7 @@ export const AssetCell: FunctionComponent<
   }>
 > = ({ coinDenom, coinName, coinImageUrl, isVerified = false }) => (
   <div
-    className={classNames("flex max-w-[180px] items-center gap-4 md:gap-1", {
+    className={classNames("flex w-44 items-center gap-4 md:gap-1", {
       "opacity-40": !isVerified,
     })}
   >
