@@ -200,21 +200,23 @@ const MenuItemContent: React.FC<{
         {/* Main Icon */}
         <div
           className={classNames(
-            "absolute top-0 left-0 transition-all duration-300 ease-in-out",
+            "transition-all duration-300 ease-in-out",
             showSubTitle ? "opacity-0" : "opacity-100"
           )}
         >
           {icon}
         </div>
         {/* Secondary Logo */}
-        <div
-          className={classNames(
-            "absolute top-0 left-0 transition-all duration-300 ease-in-out",
-            showSubTitle ? "opacity-100" : "opacity-0"
-          )}
-        >
-          {secondaryLogo}
-        </div>
+        {secondaryLogo && (
+          <div
+            className={classNames(
+              "absolute top-0 left-0 transition-all duration-300 ease-in-out",
+              showSubTitle ? "opacity-100" : "opacity-0"
+            )}
+          >
+            {secondaryLogo}
+          </div>
+        )}
       </div>
       <div
         className={classNames(
@@ -239,16 +241,18 @@ const MenuItemContent: React.FC<{
               {label}
               {badge}
             </div>
-            <div
-              className={classNames(
-                "transition-visibility text-white-opacity-70 text-xs font-medium transition-opacity duration-300 ease-in-out",
-                showSubTitle && subtext
-                  ? "visible h-5 opacity-100"
-                  : "invisible h-0 opacity-0"
-              )}
-            >
-              {subtext}
-            </div>
+            {subtext && (
+              <div
+                className={classNames(
+                  "transition-visibility text-white-opacity-70 text-xs font-medium transition-opacity duration-300 ease-in-out",
+                  showSubTitle && subtext
+                    ? "visible h-5 opacity-100"
+                    : "invisible h-0 opacity-0"
+                )}
+              >
+                {subtext}
+              </div>
+            )}
           </>
         )}
       </div>
