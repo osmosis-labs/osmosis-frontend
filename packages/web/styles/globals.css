@@ -107,7 +107,7 @@
   }
 
   thead > tr {
-    @apply body2 mb-1 border-b-2 border-osmoverse-800 text-osmoverse-300;
+    @apply body2 mb-1 border-b border-osmoverse-700 text-osmoverse-300;
   }
 
   thead > tr > th:first-child {
@@ -115,11 +115,11 @@
   }
 
   thead > tr > th {
-    @apply py-2 px-4 font-semibold;
+    @apply py-3 px-4 font-semibold;
   }
 
   tbody > tr {
-    @apply subtitle1 rounded-3xl;
+    @apply body1 rounded-3xl;
   }
 
   tbody > tr > td {
