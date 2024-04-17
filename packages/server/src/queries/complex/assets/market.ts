@@ -98,9 +98,9 @@ async function getAssetMarketCap({
  *  configured outside of our asset list (from data services).
  *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
 export async function getAssetMarketActivity({
-  coinDenom,
+  coinMinimalDenom,
 }: {
-  coinDenom: string;
+  coinMinimalDenom: string;
 }) {
   const assetMarketMap = await cachified({
     cache: assetMarketCache,
@@ -112,13 +112,13 @@ export async function getAssetMarketActivity({
       const tokenInfoMap = new Map<string, MarketActivity>();
       allTokenData.forEach((tokenData) => {
         const activity = makeMarketActivityFromTokenData(tokenData);
-        tokenInfoMap.set(tokenData.symbol, activity);
+        tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
       });
       return tokenInfoMap;
     },
   });
 
-  return assetMarketMap.get(coinDenom);
+  return assetMarketMap.get(coinMinimalDenom.toUpperCase());
 }
 
 type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;
