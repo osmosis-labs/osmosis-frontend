@@ -19,18 +19,18 @@ export const PriceChange: FunctionComponent<{
     <div className="flex items-center gap-1">
       {isBullish && (
         <Icon
-          id="bullish-arrow"
-          className="text-bullish-400"
-          height={9}
-          width={9}
+          id="triangle-down"
+          className="mb-1 rotate-180 transform text-bullish-400"
+          height={10}
+          width={10}
         />
       )}
       {isBearish && (
         <Icon
-          id="bearish-arrow"
-          className="text-rust-400"
-          height={9}
-          width={9}
+          id="triangle-down"
+          className="mt-1 text-rust-400"
+          height={10}
+          width={10}
         />
       )}
       <div
