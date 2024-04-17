@@ -1,5 +1,5 @@
 import { localLink, makeSkipBatchLink, superjson } from "@osmosis-labs/server";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
@@ -14,6 +14,7 @@ import type {
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { type AppRouter, appRouter } from "~/server/api/root-router";
+import { makeIndexedKVStore } from "~/stores/kv-store";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
@@ -29,8 +30,20 @@ const getBaseUrl = () => {
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
-    const localStoragePersister = createSyncStoragePersister({
-      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    const storage = makeIndexedKVStore("tanstack-query-cache");
+
+    const localStoragePersister = createAsyncStoragePersister({
+      storage:
+        typeof window !== "undefined"
+          ? {
+              getItem: async (key) => {
+                const item: string | null | undefined = await storage.get(key);
+                return item ?? null;
+              },
+              setItem: (key, value) => storage.set(key, value),
+              removeItem: (key) => storage.set(key, undefined),
+            }
+          : undefined,
       serialize: (client) => superjson.stringify(client),
       deserialize: (cachedString) => superjson.parse(cachedString),
     });
