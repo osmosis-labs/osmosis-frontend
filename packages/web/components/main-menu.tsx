@@ -187,8 +187,10 @@ const MenuItemContent: React.FC<{
   return (
     <div
       className={classNames(
-        "hover:text-white flex h-7 w-full items-center gap-4 transition-all duration-300 ease-in-out",
-        selected ? "text-white" : "text-osmoverse-300"
+        "flex h-7 w-full items-center gap-4 transition-all duration-300 ease-in-out",
+        selected
+          ? "text-white-high"
+          : "text-osmoverse-300 hover:text-white-high"
       )}
       onClick={() => {
         if (amplitudeEvent) {
