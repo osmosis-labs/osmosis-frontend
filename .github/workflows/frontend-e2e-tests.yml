@@ -20,3 +20,4 @@ jobs:
       - name: Get current date
         run: |
           echo "DATE=$(date +%s)" >> $GITHUB_ENV
+          echo $GITHUB_ENV
