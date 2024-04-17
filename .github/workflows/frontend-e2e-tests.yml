@@ -1,0 +1,21 @@
+name: Frontend E2E Workflow
+
+on:
+  push:
+    branches:
+      - master
+      - stage
+
+env:
+  FRONTEND_MAIN: "https://app.osmosis.zone"
+  FRONTEND_STAGE: "https://stage.osmosis.zone"
+
+jobs:
+  fe-e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Get current date
+        run: |
+          echo "DATE=$(date +%s)" >> $GITHUB_ENV
