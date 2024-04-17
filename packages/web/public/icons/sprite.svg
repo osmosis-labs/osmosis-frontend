@@ -1066,7 +1066,7 @@
       </defs>
     </symbol>
 
-    <symbol id="bullish-arrow" width="9" height="10" viewBox="0 0 9 10" fill="none">
+    <symbol id="bullish-arrow" width="9" height="10" viewBox="0 0 9 10">
       <path d="M1.17045 9.15909L0.130682 8.11364L6.43182 1.80114H1.60227L1.61364 0.363636H8.91477V7.67045H7.46591L7.47727 2.84091L1.17045 9.15909Z" fill="currentColor"/>
     </symbol>
     <symbol id="bearish-arrow" width="9" height="10" viewBox="0 0 9 10" fill="none">
