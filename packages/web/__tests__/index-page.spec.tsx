@@ -1,4 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -31,6 +33,20 @@ const usdtAsset = getAssetFromAssetList({
 afterEach(() => {
   mockRouter.setCurrentUrl("/");
   localStorage.removeItem(SwapPreviousTradeKey);
+});
+
+beforeEach(() => {
+  server.use(
+    trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
+      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
+    }),
+    trpcMsw.edge.assets.getAssetPrice.query((_req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.data(new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)))
+      );
+    })
+  );
 });
 
 it("should display initial tokens when there are no previous trades", async () => {
@@ -82,12 +98,6 @@ it("If there's a previous trade and no query params, swap tool should select tho
 });
 
 it("If the previous trade is not available, swap tool should select default tokens", async () => {
-  server.use(
-    trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
-      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
-    })
-  );
-
   localStorage.setItem(
     SwapPreviousTradeKey,
     JSON.stringify({
@@ -118,12 +128,6 @@ it("If the previous trade is not available, swap tool should select default toke
 });
 
 it("If there's no previous trade and no query params, swap tool should select default tokens and can switch between them", async () => {
-  server.use(
-    trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
-      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
-    })
-  );
-
   renderWithProviders(<HomePage />);
 
   await waitFor(() => {

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { render } from "@testing-library/react";
-import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
+import { createTRPCReact, httpLink } from "@trpc/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { mockFlags } from "jest-launchdarkly-mock";
 import { ReactNode } from "react";
@@ -25,7 +25,7 @@ export const withTRPC = ({ children }: { children: ReactNode }) => (
           client={trpcReact.createClient({
             transformer: SuperJSON,
             links: [
-              httpBatchLink({
+              httpLink({
                 url: "http://localhost:3000/trpc",
               }),
             ],
