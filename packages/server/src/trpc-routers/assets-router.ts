@@ -273,7 +273,7 @@ export const assetsRouter = createTRPCRouter({
               })
             );
 
-            if (sortInput && sortInput.keyPath !== "usdValue") {
+            if (sortInput) {
               priceAssets = sort(
                 priceAssets,
                 sortInput.keyPath,
