@@ -202,7 +202,7 @@
       "withdrawButton": "Withdraw",
       "activate": "Activate",
       "marketCap": "Market cap",
-      "volume24h": "Volume (24H)",
+      "volume24h": "Volume",
       "priceChange24h": "24h change",
       "price": "Price",
       "name": "Name"
