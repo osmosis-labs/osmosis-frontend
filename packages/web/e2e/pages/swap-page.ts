@@ -11,6 +11,8 @@ export class SwapPage {
   readonly kepltWalletBtn: Locator;
   readonly flipAssetsBtn: Locator;
   readonly exchangeRate: Locator;
+  readonly trxSuccessful: Locator;
+  readonly trxBroadcasting: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -26,6 +28,8 @@ export class SwapPage {
       '//div/button[contains(@class, "ease-bounce")]'
     );
     this.exchangeRate = page.locator('//span[contains(@class, "subtitle2")]');
+    this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
+    this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
   }
 
   async goto() {
@@ -150,6 +154,16 @@ export class SwapPage {
 
   async getExchangeRate() {
     return await this.exchangeRate.innerText();
+  }
+
+  async isTransactionSuccesful(delay: number = 7) {
+    console.log("Wait for a transaction success for 7 seconds.");
+    return await this.trxSuccessful.isVisible({ timeout: delay * 1000 });
+  }
+
+  async isTransactionBroadcasted(delay: number = 5) {
+    console.log("Wait for a transaction broadcasting for 5 seconds.");
+    return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
   }
 
   async takeScreenshot(name: string) {

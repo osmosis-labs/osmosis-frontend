@@ -200,7 +200,12 @@
       },
       "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać",
-      "activate": "Aktywuj"
+      "activate": "Aktywuj",
+      "marketCap": "Kapitalizacja rynkowa",
+      "volume24h": "Głośność (24H)",
+      "priceChange24h": "Zmiana 24h",
+      "price": "Cena",
+      "name": "Nazwa"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -285,6 +290,12 @@
       "stablecoin": "Stablecoiny",
       "meme": "Ja ja",
       "liquid_staking": "Płynna stawka"
+    },
+    "seeAll": "Widzieć wszystko",
+    "highlights": {
+      "new": "Nowy",
+      "topGainers": "Najlepsi zdobywcy",
+      "upcoming": "Nadchodzące"
     }
   },
   "portfolio": {
@@ -414,7 +425,9 @@
     "marsSubtext": "Zasilany przez Marsa",
     "levanaSubtext": "Obsługiwane przez Levanę",
     "more": "Więcej",
-    "new": "NOWY"
+    "new": "NOWY",
+    "settings": "Ustawienia",
+    "notifications": "Powiadomienia"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",

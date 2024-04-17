@@ -40,7 +40,7 @@ import {
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 import { Tooltip } from "../tooltip";
 
@@ -710,8 +710,14 @@ const ChartHeader: FunctionComponent<{
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}

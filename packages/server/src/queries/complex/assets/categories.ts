@@ -2,8 +2,12 @@ import {
   Asset,
   AssetCategories as StaticAssetCategories,
 } from "@osmosis-labs/types";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "../../../utils";
 import dayjs from "../../../utils/dayjs";
+import { queryUpcomingAssets } from "../../github";
 
 /** Re-exported static asset categories extended with dynamic categories. */
 export const AssetCategories = ["new", ...StaticAssetCategories] as const;
@@ -36,4 +40,17 @@ export function isAssetNew(
   now = dayjs()
 ) {
   return now.diff(listingDate) < assetNewness.asMilliseconds();
+}
+
+const upcomingAssetsCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+export function getUpcomingAssets() {
+  return cachified({
+    cache: upcomingAssetsCache,
+    key: "upcoming-assets",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    getFreshValue: () =>
+      queryUpcomingAssets().then(({ upcomingAssets }) => upcomingAssets),
+  });
 }

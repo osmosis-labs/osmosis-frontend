@@ -27,8 +27,7 @@ import {
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { getNumberMagnitude } from "~/utils/number";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -133,6 +132,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         removeQueryParam(OpenCreatePositionSearchParam);
       }
     }, [openCreatePosition]);
+
+    const formatOpts = useMemo(
+      () => getPriceExtendedFormatOptions(currentPrice),
+      [currentPrice]
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -290,14 +294,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       }
                     )}
                   >
-                    {formatPretty(currentPrice, {
-                      maxDecimals:
-                        getNumberMagnitude(Number(currentPrice.toString())) <=
-                        -3
-                          ? 0
-                          : 2,
-                      scientificMagnitudeThreshold: 3,
-                    })}
+                    {formatPretty(currentPrice, formatOpts)}
                   </h6>
                 )}
               </div>
@@ -397,8 +394,14 @@ const ChartHeader: FunctionComponent<{
     hoverPrice,
   } = config;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDenom}

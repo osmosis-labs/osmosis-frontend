@@ -87,8 +87,6 @@ export async function basicIbcTransfer(
               ? timeoutTimestampAttr.value
               : undefined;
 
-            console.log(events, sourceChannel, destChannel, sequence);
-
             if (sourceChannel && destChannel && sequence) {
               onFulfill?.({
                 txHash: tx.transactionHash,

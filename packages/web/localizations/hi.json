@@ -200,7 +200,12 @@
       },
       "title": "सभी संपत्तियां",
       "withdrawButton": "निकालना",
-      "activate": "सक्रिय"
+      "activate": "सक्रिय",
+      "marketCap": "बाज़ार आकार",
+      "volume24h": "वॉल्यूम (24 घंटे)",
+      "priceChange24h": "24 घंटे का परिवर्तन",
+      "price": "कीमत",
+      "name": "नाम"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",
@@ -285,6 +290,12 @@
       "stablecoin": "स्थिर सिक्के",
       "meme": "MEME",
       "liquid_staking": "तरल दाँव"
+    },
+    "seeAll": "सभी देखें",
+    "highlights": {
+      "new": "नया",
+      "topGainers": "शीर्ष लाभार्थी",
+      "upcoming": "आगामी"
     }
   },
   "portfolio": {
@@ -414,7 +425,9 @@
     "marsSubtext": "मंगल द्वारा संचालित",
     "levanaSubtext": "लेवाना द्वारा संचालित",
     "more": "अधिक",
-    "new": "नया"
+    "new": "नया",
+    "settings": "समायोजन",
+    "notifications": "सूचनाएं"
   },
   "notifi": {
     "saveChanges": "परिवर्तनों को सुरक्षित करें",
