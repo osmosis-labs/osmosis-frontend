@@ -42,6 +42,7 @@ export const HistoricalPriceCell: FunctionComponent<{
 
   return (
     <div className="flex items-center gap-4">
+      {priceChange24h && <PriceChange priceChange={priceChange24h} />}
       {recentPriceCloses.length > 0 && (
         <Sparkline
           width={80}
@@ -51,7 +52,6 @@ export const HistoricalPriceCell: FunctionComponent<{
           color={color}
         />
       )}
-      {priceChange24h && <PriceChange priceChange={priceChange24h} />}
     </div>
   );
 };
