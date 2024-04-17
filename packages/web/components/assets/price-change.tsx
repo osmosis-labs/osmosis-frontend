@@ -16,19 +16,19 @@ export const PriceChange: FunctionComponent<{
   if (isBearish) priceChange = priceChange.mul(new RatePretty(-1));
 
   return (
-    <div className="flex items-center gap-[2px]">
+    <div className="flex items-center gap-1">
       {isBullish && (
         <Icon
-          className="text-bullish-400"
           id="bullish-arrow"
+          className="text-bullish-400"
           height={9}
           width={9}
         />
       )}
       {isBearish && (
         <Icon
-          className="text-rust-400"
           id="bearish-arrow"
+          className="text-rust-400"
           height={9}
           width={9}
         />
