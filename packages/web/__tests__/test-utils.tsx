@@ -1,13 +1,13 @@
+import { superjson } from "@osmosis-labs/server";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { render } from "@testing-library/react";
-import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
+import { createTRPCReact, httpLink } from "@trpc/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { mockFlags } from "jest-launchdarkly-mock";
 import { ReactNode } from "react";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import SuperJSON from "superjson";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { WalletSelectProvider } from "~/hooks";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
@@ -23,9 +23,9 @@ export const withTRPC = ({ children }: { children: ReactNode }) => (
       <MultiLanguageProvider defaultLanguage="en">
         <trpcReact.Provider
           client={trpcReact.createClient({
-            transformer: SuperJSON,
+            transformer: superjson,
             links: [
-              httpBatchLink({
+              httpLink({
                 url: "http://localhost:3000/trpc",
               }),
             ],

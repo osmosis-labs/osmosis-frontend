@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText } from "@osmosis-labs/utils";
+import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
@@ -25,7 +25,7 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
-import { InfoTooltip } from "~/components/tooltip";
+import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -76,12 +76,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
 
+    const slippageConfig = useSlippageConfig();
     const swapState = useSwap({
       initialFromDenom: sendTokenDenom,
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
       forceSwapInPoolId,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -89,8 +91,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       estimateDetailsContentRef,
       { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
     ] = useMeasure<HTMLDivElement>();
-
-    const slippageConfig = useSlippageConfig();
 
     // out amount less slippage calculated from slippage config
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
@@ -193,7 +193,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         },
       ]);
       swapState
-        .sendTradeTokenInTx(slippageConfig.slippage.toDec())
+        .sendTradeTokenInTx()
         .then((result) => {
           // onFullfill
           logEvent([
@@ -237,6 +237,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
       .toDec()
       .gte(new Dec(0.01));
+
+    const isLoadingMaxButton =
+      featureFlags.swapToolSimulateFee &&
+      !isNil(account?.address) &&
+      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
+      !swapState.inAmountInput?.balance?.toDec().isZero() &&
+      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
     return (
       <>
@@ -432,23 +439,43 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     {t("swap.HALF")}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={classNames(
-                      "text-wosmongton-300",
-                      swapState.inAmountInput.fraction === 1
-                        ? "bg-wosmongton-100/20"
-                        : "bg-transparent"
-                    )}
-                    disabled={
-                      !swapState.inAmountInput.balance ||
-                      swapState.inAmountInput.balance.toDec().isZero()
+                  <Tooltip
+                    content={
+                      <div className="text-center">
+                        {swapState.inAmountInput.notEnoughBalanceForMax
+                          ? t("swap.maxButtonErrorNoBalance")
+                          : t("swap.maxButtonError")}
+                      </div>
                     }
-                    onClick={() => swapState.inAmountInput.toggleMax()}
+                    disabled={
+                      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
+                    }
                   >
-                    {t("swap.MAX")}
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={classNames(
+                        "text-wosmongton-300",
+                        swapState.inAmountInput.isMaxSelected
+                          ? "bg-wosmongton-100/20"
+                          : "bg-transparent"
+                      )}
+                      disabled={
+                        !swapState.inAmountInput.balance ||
+                        swapState.inAmountInput.balance.toDec().isZero() ||
+                        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
+                      }
+                      isLoading={isLoadingMaxButton}
+                      loadingText={t("swap.MAX")}
+                      classes={{
+                        spinner: "!h-3 !w-3",
+                        spinnerContainer: "!gap-1",
+                      }}
+                      onClick={() => swapState.inAmountInput.toggleMax()}
+                    >
+                      {t("swap.MAX")}
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
               <div className="mt-3 flex place-content-between items-center">

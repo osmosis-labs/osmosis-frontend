@@ -711,6 +711,8 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
+    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",

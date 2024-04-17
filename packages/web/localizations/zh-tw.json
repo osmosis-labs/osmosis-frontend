@@ -711,6 +711,8 @@
       "hide": "隱藏",
       "show": "顯示"
     },
+    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
+    "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
     "buttonError": "堅持交易",

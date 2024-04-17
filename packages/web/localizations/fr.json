@@ -711,6 +711,8 @@
       "hide": "Cacher",
       "show": "Montrer"
     },
+    "maxButtonError": "Impossible de calculer le montant maximum. Veuillez vérifier votre connexion réseau ou essayer d'actualiser la page.",
+    "maxButtonErrorNoBalance": "Solde insuffisant pour calculer le montant maximum.",
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
