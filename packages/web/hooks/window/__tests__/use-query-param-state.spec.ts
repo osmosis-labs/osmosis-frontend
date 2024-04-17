@@ -21,10 +21,10 @@ describe("useQueryParamState", () => {
   });
 
   it("should update the query param value", () => {
-    const pushMock = jest.fn();
+    const replaceMock = jest.fn();
     useRouter.mockImplementation(() => ({
       query: { testKey: "testValue" },
-      push: pushMock,
+      replace: replaceMock,
     }));
 
     const { result } = renderHook(() => useQueryParamState("testKey"));
@@ -33,7 +33,7 @@ describe("useQueryParamState", () => {
       result.current[1]("newValue");
     });
 
-    expect(pushMock).toHaveBeenCalledWith(
+    expect(replaceMock).toHaveBeenCalledWith(
       {
         query: {
           testKey: "newValue",
@@ -45,16 +45,16 @@ describe("useQueryParamState", () => {
   });
 
   it("should set default value if query param is not present", () => {
-    const pushMock = jest.fn();
+    const replaceMock = jest.fn();
     useRouter.mockImplementation(() => ({
       query: {},
-      push: pushMock,
+      replace: replaceMock,
       isReady: true,
     }));
 
     renderHook(() => useQueryParamState("testKey", "defaultValue"));
 
-    expect(pushMock).toHaveBeenCalledWith(
+    expect(replaceMock).toHaveBeenCalledWith(
       {
         query: {
           testKey: "defaultValue",

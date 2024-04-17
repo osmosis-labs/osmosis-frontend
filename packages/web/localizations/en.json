@@ -200,7 +200,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -285,6 +290,12 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Liquid staking"
+    },
+    "seeAll": "See all",
+    "highlights": {
+      "new": "New",
+      "topGainers": "Top gainers",
+      "upcoming": "Upcoming"
     }
   },
   "portfolio": {
@@ -414,7 +425,9 @@
     "marsSubtext": "Powered by Mars",
     "levanaSubtext": "Powered by Levana",
     "more": "More",
-    "new": "NEW"
+    "new": "NEW",
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -721,6 +734,7 @@
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
+    "gettingStarted": "Getting Started",
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",

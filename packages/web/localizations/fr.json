@@ -200,7 +200,12 @@
       },
       "title": "Tous les actifs",
       "withdrawButton": "Retirer",
-      "activate": "Activer"
+      "activate": "Activer",
+      "marketCap": "Capitalisation boursière",
+      "volume24h": "Volume",
+      "priceChange24h": "changement 24h",
+      "price": "Prix",
+      "name": "Nom"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -285,6 +290,12 @@
       "stablecoin": "Pièces stables",
       "meme": "Mème",
       "liquid_staking": "Jalonnement liquide"
+    },
+    "seeAll": "Voir tout",
+    "highlights": {
+      "new": "Nouveau",
+      "topGainers": "Meilleurs gagnants",
+      "upcoming": "A venir"
     }
   },
   "portfolio": {
@@ -414,7 +425,9 @@
     "marsSubtext": "Propulsé par Mars",
     "levanaSubtext": "Propulsé par Levana",
     "more": "Plus",
-    "new": "NOUVEAU"
+    "new": "NOUVEAU",
+    "settings": "Paramètres",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",
@@ -721,6 +734,7 @@
     "dynamicSpreadFactor": "Dynamique"
   },
   "walletSelect": {
+    "gettingStarted": "Commencer",
     "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
     "somethingWentWrong": "Quelque chose s'est mal passé",
     "isNotInstalled": "{walletName} n'est pas installé",

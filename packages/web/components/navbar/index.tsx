@@ -17,8 +17,8 @@ import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { MainMenu } from "~/components/main-menu";
-import { CustomClasses, MainLayoutMenu } from "~/components/types";
+import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
+import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -176,26 +176,19 @@ export const NavBar: FunctionComponent<
                 closeMobileMenuRef.current = closeMobileMainMenu;
 
                 let mobileMenus = menus.concat({
-                  label: "Settings",
+                  label: t("menu.settings"),
                   link: (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onOpenSettings();
                     closeMobileMainMenu();
                   },
-                  icon: (
-                    <Icon
-                      id="setting"
-                      className="text-white-full"
-                      width={20}
-                      height={20}
-                    />
-                  ),
+                  icon: <Icon id="setting" className="h-6 w-6" />,
                 });
 
                 if (featureFlags.notifications && walletSupportsNotifications) {
                   mobileMenus = mobileMenus.concat({
-                    label: "Notifications",
+                    label: t("menu.notifications"),
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -203,14 +196,7 @@ export const NavBar: FunctionComponent<
                       onOpenNotifi();
                       closeMobileMainMenu();
                     },
-                    icon: (
-                      <Icon
-                        id="bell"
-                        className="text-white-full"
-                        width={20}
-                        height={20}
-                      />
-                    ),
+                    icon: <Icon id="bell" className="h-6 w-6" />,
                   });
                 }
 

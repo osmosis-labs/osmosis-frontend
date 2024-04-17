@@ -7,6 +7,7 @@ import {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -127,7 +128,20 @@ export function useAmountInput({
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  const { price } = useCoinPrice(amount);
+  /**
+   * When the `amount` is `undefined` due to the absence of valid input,
+   * we should create a CoinPretty object using the currency. This allows
+   * us to fetch the price before generating a quote, displaying results
+   * faster on slow networks.
+   */
+  let coinForPrice: CoinPretty | undefined;
+  if (!isNil(amount)) {
+    coinForPrice = amount;
+  } else if (!isNil(currency)) {
+    coinForPrice = new CoinPretty(currency, 0);
+  }
+
+  const { price } = useCoinPrice(coinForPrice);
   const fiatValue = useMemo(
     () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
     [amount, price]

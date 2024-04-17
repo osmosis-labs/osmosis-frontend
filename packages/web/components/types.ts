@@ -1,20 +1,4 @@
-import { MouseEventHandler, ReactElement, ReactNode } from "react";
-
-import { AmplitudeEvent } from "~/config";
-
-export type MainLayoutMenu = {
-  label: string;
-  link: string | MouseEventHandler;
-  icon: string | ReactNode;
-  iconSelected?: string;
-  selectionTest?: RegExp;
-  amplitudeEvent?: AmplitudeEvent;
-  isNew?: Boolean;
-  badge?: ReactNode;
-  secondaryLogo?: ReactNode;
-  subtext?: string;
-  showMore?: boolean;
-};
+import { ReactElement } from "react";
 
 /** PROPS */
 export interface InputProps<T> {
