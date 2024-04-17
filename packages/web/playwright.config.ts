@@ -14,7 +14,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["html", { open: "never" }],
-    ["junit", { outputFile: "test-results.xml" }],
+    ["junit", { outputFile: "test-results/test-results.xml" }],
   ],
   testDir: "./e2e/tests",
   /* Run tests in files in parallel */
