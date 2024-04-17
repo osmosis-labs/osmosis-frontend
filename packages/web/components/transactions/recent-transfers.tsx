@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -44,7 +44,6 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
               ? "failed"
               : "pending";
 
-          // TODO: translate title with timeout and refunding strings
           const coinAmount = amount.split(" ")[0];
           const coinDenom = amount.split(" ")[1];
           const asset = AssetLists.flatMap(({ assets }) => assets).find(
@@ -79,8 +78,10 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
                 direction: isWithdraw ? "withdraw" : "deposit",
                 amount: new CoinPretty(
                   currency,
-                  coinAmount // amount includes decimals
-                ).moveDecimalPointRight(currency.coinDecimals),
+                  new Dec(coinAmount).mul(
+                    DecUtils.getTenExponentN(currency.coinDecimals)
+                  ) // amount includes decimals
+                ),
               }}
             />
           );

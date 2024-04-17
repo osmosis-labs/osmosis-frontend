@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
@@ -80,9 +80,12 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
                 txHash.toUpperCase()
               ) ?? "",
             amount: isNumeric(amount.amount)
-              ? new CoinPretty(amount.currency, amount.amount)
-                  .moveDecimalPointRight(amount.currency.coinDecimals)
-                  .maxDecimals(6)
+              ? new CoinPretty(
+                  amount.currency,
+                  new Dec(amount.amount).mul(
+                    DecUtils.getTenExponentN(amount.currency.coinDecimals)
+                  )
+                )
                   .trim(true)
                   .toString()
               : "-",
