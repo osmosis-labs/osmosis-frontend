@@ -425,7 +425,9 @@
     "marsSubtext": "Propulsé par Mars",
     "levanaSubtext": "Propulsé par Levana",
     "more": "Plus",
-    "new": "NOUVEAU"
+    "new": "NOUVEAU",
+    "settings": "Paramètres",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",

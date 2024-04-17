@@ -4,16 +4,19 @@ import {
   InvalidNumberAmountError,
   NegativeAmountError,
 } from "@osmosis-labs/keplr-hooks";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
-import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
 import { useBalances } from "../queries/cosmos/use-balances";
 
 /** Manages user input for a currency, with helpers for selecting
@@ -99,7 +102,24 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  const fiatValue = useCoinFiatValue(amount);
+  /**
+   * When the `amount` is `undefined` due to the absence of valid input,
+   * we should create a CoinPretty object using the currency. This allows
+   * us to fetch the price before generating a quote, displaying results
+   * faster on slow networks.
+   */
+  let coinForPrice: CoinPretty | undefined;
+  if (!isNil(amount)) {
+    coinForPrice = amount;
+  } else if (!isNil(currency)) {
+    coinForPrice = new CoinPretty(currency, 0);
+  }
+
+  const { price } = useCoinPrice(coinForPrice);
+  const fiatValue = useMemo(
+    () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
+    [amount, price]
+  );
 
   const balance = useMemo(
     () =>
@@ -136,6 +156,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     amount,
     balance,
     fiatValue,
+    price,
     fraction,
     isEmpty: inputAmountWithFraction === "",
     error,

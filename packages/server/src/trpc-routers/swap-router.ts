@@ -1,4 +1,4 @@
-import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Int, RatePretty } from "@keplr-wallet/unit";
 import type {
   SplitTokenInQuote,
   TokenOutGivenInRouter,
@@ -7,19 +7,14 @@ import { AssetList } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { SIDECAR_BASE_URL, TFM_BASE_URL } from "../env";
-import {
-  calcAssetValue,
-  getAsset,
-  getAssetPrice,
-} from "../queries/complex/assets";
-import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
+import { calcAssetValue, getAsset } from "../queries/complex/assets";
 import { Pool } from "../queries/complex/pools";
 import { getCosmwasmPoolTypeFromCodeId } from "../queries/complex/pools/env";
 import { routeTokenOutGivenIn } from "../queries/complex/pools/route-token-out-given-in";
 import { OsmosisSidecarRemoteRouter } from "../queries/sidecar/router";
 import { TfmRemoteRouter } from "../queries/tfm/router";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { captureErrorAndReturn, captureIfError } from "../utils/error";
+import { captureIfError } from "../utils/error";
 
 const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
@@ -104,34 +99,6 @@ export const swapRouter = createTRPCRouter({
           anyDenom: tokenOutDenom,
         });
 
-        // calculate fiat value of amounts
-        // get fiat value
-        const tokenInFeeAmountValue = quote.tokenInFeeAmount
-          ? await calcAssetValue({
-              ...ctx,
-              anyDenom: tokenInDenom,
-              amount: quote.tokenInFeeAmount,
-            }).catch((e) => captureErrorAndReturn(e, undefined))
-          : undefined;
-        const tokenOutPrice = await getAssetPrice({
-          ...ctx,
-          asset: { coinMinimalDenom: tokenOutDenom },
-        }).catch((e) => captureErrorAndReturn(e, undefined));
-        const tokenOutValue = await calcAssetValue({
-          ...ctx,
-          anyDenom: tokenOutDenom,
-          amount: quote.amount,
-        }).catch((e) => captureErrorAndReturn(e, undefined));
-        const tokenInFeeAmountFiatValue = tokenInFeeAmountValue
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInFeeAmountValue)
-          : undefined;
-        const tokenOutPricePretty = tokenOutPrice
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
-          : undefined;
-        const amountFiatValue = tokenOutValue
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
-          : undefined;
-
         return {
           ...quote,
           split: makeDisplayableSplit(quote.split, ctx.assetLists),
@@ -142,10 +109,7 @@ export const swapRouter = createTRPCRouter({
           priceImpactTokenOut: quote.priceImpactTokenOut
             ? new RatePretty(quote.priceImpactTokenOut.abs())
             : undefined,
-          tokenInFeeAmountFiatValue,
           swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
-          tokenOutPrice: tokenOutPricePretty,
-          amountFiatValue,
         };
       }
     ),

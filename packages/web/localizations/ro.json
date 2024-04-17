@@ -425,7 +425,9 @@
     "marsSubtext": "Alimentat de Marte",
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
-    "new": "NOU"
+    "new": "NOU",
+    "settings": "Setări",
+    "notifications": "Notificări"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",

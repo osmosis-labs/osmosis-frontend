@@ -425,7 +425,9 @@
     "marsSubtext": "Mars tarafından desteklenmektedir",
     "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
-    "new": "YENİ"
+    "new": "YENİ",
+    "settings": "Ayarlar",
+    "notifications": "Bildirimler"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

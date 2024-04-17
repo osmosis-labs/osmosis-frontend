@@ -425,7 +425,9 @@
     "marsSubtext": "由火星提供動力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "設定",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",

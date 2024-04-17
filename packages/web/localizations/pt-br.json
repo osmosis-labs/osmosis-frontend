@@ -425,7 +425,9 @@
     "marsSubtext": "Alimentado por Marte",
     "levanaSubtext": "Desenvolvido por Levana",
     "more": "Mais",
-    "new": "NOVO"
+    "new": "NOVO",
+    "settings": "Configurações",
+    "notifications": "Notificações"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",
