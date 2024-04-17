@@ -240,6 +240,7 @@ module.exports = {
         },
       },
       spacing: {
+        navbar: "72px",
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         "rewards-w": "108px",

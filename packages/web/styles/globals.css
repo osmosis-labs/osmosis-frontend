@@ -107,7 +107,7 @@
   }
 
   thead > tr {
-    @apply body2 mb-1 border-b border-osmoverse-700 text-osmoverse-300;
+    @apply sticky top-navbar z-[1000] border-b border-osmoverse-700 bg-osmoverse-900 text-body2 font-semibold text-osmoverse-300;
   }
 
   thead > tr > th:first-child {
@@ -115,7 +115,7 @@
   }
 
   thead > tr > th {
-    @apply py-3 px-4 font-semibold;
+    @apply py-3 px-4;
   }
 
   tbody > tr {
