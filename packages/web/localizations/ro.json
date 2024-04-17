@@ -145,7 +145,13 @@
       "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
-      "title": "Istoric Transferuri"
+      "title": "Istoric Transferuri",
+      "pendingDeposit": "Depunere în așteptare",
+      "pendingWithdraw": "Retragere în așteptare",
+      "successDeposit": "Depunere reușită",
+      "successWithdraw": "Retragere reușită",
+      "failDeposit": "Depunere nereușită",
+      "failWithdraw": "Retragere nereușită"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",
@@ -934,5 +940,9 @@
     "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
+  },
+  "transactions": {
+    "noRecent": "Fără transferuri recente",
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
   }
 }

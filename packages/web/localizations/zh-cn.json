@@ -145,7 +145,13 @@
       "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
-      "title": "转账记录"
+      "title": "转账记录",
+      "pendingDeposit": "待存款",
+      "pendingWithdraw": "等待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "已退出",
+      "failDeposit": "存款失败",
+      "failWithdraw": "提现失败"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -934,5 +940,9 @@
     "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近没有转会",
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
   }
 }

@@ -145,7 +145,13 @@
       "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
-      "title": "轉移歷史"
+      "title": "轉移歷史",
+      "pendingDeposit": "待定存款",
+      "pendingWithdraw": "待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "退出",
+      "failDeposit": "存款失敗",
+      "failWithdraw": "提現失敗"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -934,5 +940,9 @@
     "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
     "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近沒有轉帳",
+    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。"
   }
 }

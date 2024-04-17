@@ -145,7 +145,13 @@
       "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
-      "title": "تاریخ چه انتقال"
+      "title": "تاریخ چه انتقال",
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",
@@ -934,5 +940,9 @@
     "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
     "buttonContinue": "ادامه دادن به هر طریق",
     "buttonCancel": "لغو کنید"
+  },
+  "transactions": {
+    "noRecent": "بدون نقل و انتقالات اخیر",
+    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند."
   }
 }

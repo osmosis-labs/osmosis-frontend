@@ -145,7 +145,13 @@
       "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
-      "title": "Historial de transferencias"
+      "title": "Historial de transferencias",
+      "pendingDeposit": "Deposito pendiente",
+      "pendingWithdraw": "A la espera de Retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -934,5 +940,9 @@
     "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí."
   }
 }

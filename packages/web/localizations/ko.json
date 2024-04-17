@@ -145,7 +145,13 @@
       "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
-      "title": "전송 내역"
+      "title": "전송 내역",
+      "pendingDeposit": "입금 대기 중",
+      "pendingWithdraw": "출금 대기 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철수",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
     },
     "ibcTransfer": {
       "buttonAdd": "추가하다",
@@ -934,5 +940,9 @@
     "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
     "buttonContinue": "계속 진행",
     "buttonCancel": "취소"
+  },
+  "transactions": {
+    "noRecent": "최근 이적 없음",
+    "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다."
   }
 }
