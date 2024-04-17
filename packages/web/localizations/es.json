@@ -414,7 +414,9 @@
     "marsSubtext": "Impulsado por Marte",
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
-    "new": "NUEVO"
+    "new": "NUEVO",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",

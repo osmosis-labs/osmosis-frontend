@@ -414,7 +414,9 @@
     "marsSubtext": "Zasilany przez Marsa",
     "levanaSubtext": "Obsługiwane przez Levanę",
     "more": "Więcej",
-    "new": "NOWY"
+    "new": "NOWY",
+    "settings": "Ustawienia",
+    "notifications": "Powiadomienia"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",

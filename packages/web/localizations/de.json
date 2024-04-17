@@ -414,7 +414,9 @@
     "marsSubtext": "Angetrieben vom Mars",
     "levanaSubtext": "Unterstützt von Levana",
     "more": "Mehr",
-    "new": "NEU"
+    "new": "NEU",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",

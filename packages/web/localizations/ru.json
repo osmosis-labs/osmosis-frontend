@@ -414,7 +414,9 @@
     "marsSubtext": "При поддержке Марса",
     "levanaSubtext": "При поддержке Леваны",
     "more": "Более",
-    "new": "НОВЫЙ"
+    "new": "НОВЫЙ",
+    "settings": "Настройки",
+    "notifications": "Уведомления"
   },
   "notifi": {
     "saveChanges": "Сохранить изменения",

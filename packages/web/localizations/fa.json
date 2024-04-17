@@ -414,7 +414,9 @@
     "marsSubtext": "پشتیبانی شده توسط مریخ",
     "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
-    "new": "جدید"
+    "new": "جدید",
+    "settings": "تنظیمات",
+    "notifications": "اطلاعیه"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
