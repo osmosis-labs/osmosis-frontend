@@ -234,7 +234,7 @@ const OsmosisFullLogo: FunctionComponent<{
             gradientUnits="userSpaceOnUse"
           >
             <stop stopColor="white" />
-            <stop offset="1" stopColor="white" stop-opacity="0" />
+            <stop offset="1" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <clipPath id="clip0_3347_16138">
             <rect
