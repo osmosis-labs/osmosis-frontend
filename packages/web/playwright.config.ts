@@ -11,6 +11,11 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: [
+    ["html", { open: "never" }],
+    ["junit", { outputFile: "test-results.xml" }],
+  ],
   testDir: "./e2e/tests",
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -20,8 +25,6 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. Multiple swaps on same account could be unsatble. Test execution will be batched per agent. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL: "https://app.osmosis.zone",
