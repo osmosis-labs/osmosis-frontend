@@ -161,7 +161,7 @@ const AssetHighlightRow: FunctionComponent<{
         {coinImageUrl && (
           <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
         )}
-        <span className="body2 max-w-[130px] overflow-clip text-ellipsis whitespace-nowrap">
+        <span className="body2 max-w-[8.125rem] overflow-clip text-ellipsis whitespace-nowrap">
           {coinName}
         </span>
         <span className="caption text-osmoverse-400">{coinDenom}</span>
