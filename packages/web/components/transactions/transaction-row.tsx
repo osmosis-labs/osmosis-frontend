@@ -120,7 +120,7 @@ const TokenConversion: FunctionComponent<
         </div>
       )}
       <div className="text-body2 text-osmoverse-400">
-        {formatPretty(tokenIn.amount, { maxDecimals: 2 })?.toString()}
+        {formatPretty(tokenIn.amount, { maximumSignificantDigits: 4 })}
       </div>
     </div>
     <Icon
@@ -150,7 +150,7 @@ const TokenConversion: FunctionComponent<
         </div>
       )}
       <div className="text-body2">
-        {formatPretty(tokenOut.amount, { maxDecimals: 2 })?.toString()}
+        {formatPretty(tokenOut.amount, { maximumSignificantDigits: 4 })}
       </div>
     </div>
   </div>
@@ -171,7 +171,7 @@ export const TokenTransfer: FunctionComponent<
       width={32}
     />
     <div className="text-body2 text-osmoverse-400">
-      {formatPretty(amount, { maxDecimals: 2 })?.toString()}
+      {formatPretty(amount, { maximumSignificantDigits: 4 })}
     </div>
     {value && (
       <div
