@@ -732,6 +732,7 @@
     "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
+    "gettingStarted": "Başlarken",
     "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
     "somethingWentWrong": "Bir şeyler yanlış gitti",
     "isNotInstalled": "{walletName} yüklü değil",

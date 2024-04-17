@@ -732,6 +732,7 @@
     "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
+    "gettingStarted": "Empezando",
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",

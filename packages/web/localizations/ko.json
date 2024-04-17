@@ -732,6 +732,7 @@
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
+    "gettingStarted": "시작하기",
     "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",
     "somethingWentWrong": "오류가 발생했습니다.",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",

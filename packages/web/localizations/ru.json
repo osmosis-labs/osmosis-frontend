@@ -732,6 +732,7 @@
     "dynamicSpreadFactor": "Динамический"
   },
   "walletSelect": {
+    "gettingStarted": "Начиная",
     "connectionInProgress": "Подключение кошелька уже выполняется. Пожалуйста, откройте свое расширение, чтобы проверить статус.",
     "somethingWentWrong": "Что-то пошло не так",
     "isNotInstalled": "{walletName} не установлено",

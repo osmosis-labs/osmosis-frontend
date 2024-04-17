@@ -27,7 +27,7 @@ import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { EventName, SwapPage } from "~/config";
+import { EventName, EventPage } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -41,15 +41,17 @@ import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
 export interface SwapToolProps {
-  /** IMPORTANT: Pools should be memoized!! */
-  tokenDenoms?: [string, string];
   isInModal?: boolean;
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
-  sendTokenDenom?: string;
-  outTokenDenom?: string;
-  page?: SwapPage;
+  initialSendTokenDenom?: string;
+  initialOutTokenDenom?: string;
+  page?: EventPage;
   forceSwapInPoolId?: string;
+  onSwapSuccess?: (params: {
+    sendTokenDenom: string;
+    outTokenDenom: string;
+  }) => void;
 }
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
@@ -57,10 +59,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     isInModal,
     onRequestModalClose,
     swapButton,
-    sendTokenDenom,
-    outTokenDenom,
+    initialSendTokenDenom: sendTokenDenom,
+    initialOutTokenDenom: outTokenDenom,
     page = "Swap Page",
     forceSwapInPoolId,
+    onSwapSuccess,
   }) => {
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
@@ -204,6 +207,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               valueUsd: Number(swapState.tokenOutFiatValue?.toString() ?? "0"),
             },
           ]);
+
+          if (swapState.toAsset && swapState.fromAsset) {
+            onSwapSuccess?.({
+              outTokenDenom: swapState.toAsset.coinDenom,
+              sendTokenDenom: swapState.fromAsset.coinDenom,
+            });
+          }
         })
         .catch((error) => {
           // failed broadcast txs are handled elsewhere
@@ -519,6 +529,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               onClick={() => {
                 swapState.switchAssets();
               }}
+              aria-label="Switch assets"
             >
               <div
                 className={classNames(
