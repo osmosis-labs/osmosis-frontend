@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - stage
+      - chore/add-e2e-pipeline
 
 env:
   FRONTEND_MAIN: "https://app.osmosis.zone"
