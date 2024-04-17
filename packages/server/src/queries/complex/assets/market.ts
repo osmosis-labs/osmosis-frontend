@@ -3,8 +3,10 @@ import { AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
+import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -75,8 +77,10 @@ const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Fetches and caches asset market capitalization. */
 async function getAssetMarketCap({
   coinDenom,
+  coinGeckoId,
 }: {
   coinDenom: string;
+  coinGeckoId?: string;
 }): Promise<number | undefined> {
   const marketCapsMap = await cachified({
     cache: marketInfoCache,
@@ -86,12 +90,15 @@ async function getAssetMarketCap({
       const marketCaps = await queryTokenMarketCaps();
 
       return marketCaps.reduce((map, mCap) => {
-        return map.set(mCap.symbol, mCap.market_cap);
+        return map.set(mCap.symbol.toUpperCase(), mCap.market_cap);
       }, new Map<string, number>());
     },
   });
 
-  return marketCapsMap.get(coinDenom);
+  return (
+    marketCapsMap.get(coinDenom.toUpperCase()) ??
+    (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
+  );
 }
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
@@ -151,4 +158,48 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
     exponent: tokenData.exponent,
     display: tokenData.display,
   };
+}
+
+/** Used with `DataLoader` to make batched calls to CoinGecko.
+ *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
+async function batchFetchCoingeckoCoins(keys: readonly string[]) {
+  const coins = await queryCoingeckoCoins(keys as string[]);
+  return keys.map(
+    (key) =>
+      coins.find(({ id }) => id === key) ??
+      new Error(`No CoinGecko coin result for ${key}`)
+  );
+}
+const coingeckoCoinBatchLoader = new EdgeDataLoader(batchFetchCoingeckoCoins);
+
+async function getActiveCoingeckoCoins() {
+  return await cachified({
+    cache: assetMarketCache,
+    ttl: 1000 * 60 * 60, // 1 hour
+    key: "coinGeckoIds",
+    getFreshValue: () =>
+      queryCoingeckoCoinIds().then(
+        (coins) => new Set(coins.map(({ id }) => id))
+      ),
+  });
+}
+
+/** Gets the CoinGecko coin object for a given CoinGecko ID.
+ *  Returns `undefined` if the token ID is not actively listed on CoinGecko. */
+async function getCoingeckoCoin({
+  coinGeckoId,
+}: {
+  coinGeckoId: string | undefined;
+}) {
+  if (!coinGeckoId) return;
+
+  // Given ID should be supported by CoinGecko
+  if (!(await getActiveCoingeckoCoins()).has(coinGeckoId)) return;
+
+  return await cachified({
+    cache: assetMarketCache,
+    ttl: 1000 * 60 * 5, // 5 minutes
+    key: "coingecko-coin-" + coinGeckoId,
+    getFreshValue: () => coingeckoCoinBatchLoader.load(coinGeckoId),
+  });
 }
