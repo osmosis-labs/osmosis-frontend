@@ -1,11 +1,5 @@
-import type {
-  Category,
-  CommonPriceChartTimeFrame,
-  Search,
-  SortDirection,
-} from "@osmosis-labs/server";
+import type { Category, Search, SortDirection } from "@osmosis-labs/server";
 import {
-  CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -24,9 +18,9 @@ import {
   useState,
 } from "react";
 
+import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -35,7 +29,6 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
-import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
@@ -62,10 +55,12 @@ export const AssetsInfoTable: FunctionComponent<{
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
-
-  const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const sortKey = useMemo(
+    // avoid sorting while searching, as the search results are sorted by relevance
+    () => (searchQuery ? undefined : sortKey_),
+    [searchQuery, sortKey_]
+  );
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
   }, []);
@@ -77,6 +72,10 @@ export const AssetsInfoTable: FunctionComponent<{
   }, []);
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
+  }, []);
+  const onSelectTopGainers = useCallback(() => {
+    setSortKey_("priceChange24h");
+    setSortDirection("desc");
   }, []);
   const categories = useMemo(
     () => (selectedCategory ? [selectedCategory] : undefined),
@@ -105,10 +104,12 @@ export const AssetsInfoTable: FunctionComponent<{
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: {
-        keyPath: sortKey,
-        direction: sortDirection,
-      },
+      sort: sortKey
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
       categories,
     },
     {
@@ -135,14 +136,14 @@ export const AssetsInfoTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: "Name",
+        header: t("assets.table.name"),
         cell: (cell) => <AssetCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
         header: () => (
           <SortHeader
-            label="Price"
+            label={t("assets.table.price")}
             sortKey="currentPrice"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -156,7 +157,7 @@ export const AssetsInfoTable: FunctionComponent<{
         header: () => (
           <SortHeader
             className="mx-auto"
-            label="24h change"
+            label={t("assets.table.priceChange24h")}
             sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -168,7 +169,7 @@ export const AssetsInfoTable: FunctionComponent<{
           <HistoricalPriceCell
             coinDenom={cell.row.original.coinDenom}
             priceChange24h={cell.row.original.priceChange24h}
-            timeFrame={selectedTimeFrame}
+            timeFrame="1D"
           />
         ),
       }),
@@ -178,7 +179,7 @@ export const AssetsInfoTable: FunctionComponent<{
           id: "volume24h",
           header: () => (
             <SortHeader
-              label="Volume (24h)"
+              label={t("assets.table.volume24h")}
               sortKey="volume24h"
               currentSortKey={sortKey}
               currentDirection={sortDirection}
@@ -188,27 +189,33 @@ export const AssetsInfoTable: FunctionComponent<{
           ),
         }
       ),
-      columnHelper.accessor((row) => row, {
-        id: "marketCap",
-        header: () => (
-          <SortHeader
-            label="Market Cap"
-            sortKey="marketCap"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: (cell) => <MarketCapCell {...cell.row.original} />,
-      }),
+      columnHelper.accessor(
+        (row) => (row.marketCap ? formatPretty(row.marketCap) : "-"),
+        {
+          id: "marketCap",
+          header: () => (
+            <SortHeader
+              label={t("assets.table.marketCap")}
+              sortKey="marketCap"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => <AssetActionsCell {...cell.row.original} />,
+        cell: () => (
+          <button>
+            <span className="text-wosmongton-200">{t("portfolio.trade")}</span>
+          </button>
+        ),
       }),
     ];
-  }, [selectedTimeFrame, sortKey, sortDirection, setSortKey]);
+  }, [sortKey, sortDirection, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -274,35 +281,26 @@ export const AssetsInfoTable: FunctionComponent<{
   return (
     <div className="w-full">
       <section className="mb-4">
+        <HighlightsCategories
+          isCategorySelected={!!selectedCategory}
+          onSelectCategory={selectCategory}
+          onSelectAllTopGainers={onSelectTopGainers}
+        />
+      </section>
+      <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
           onSelectCategory={selectCategory}
           unselectCategory={unselectCategory}
         />
       </section>
-      <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-        <SearchBox
-          currentValue={searchQuery?.query ?? ""}
-          onInput={onSearchInput}
-          placeholder={t("assets.table.search")}
-          debounce={500}
-        />
-        <SelectMenu
-          classes={useConst({ container: "h-full 1.5lg:hidden" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-            [setSelectedTimeFrame]
-          )}
-        />
-      </div>
+      <SearchBox
+        className="mb-4 h-12"
+        currentValue={searchQuery?.query ?? ""}
+        onInput={onSearchInput}
+        placeholder={t("assets.table.search")}
+        debounce={500}
+      />
       <table
         className={classNames(
           "w-full",
@@ -385,22 +383,3 @@ export const AssetsInfoTable: FunctionComponent<{
     </div>
   );
 });
-
-type AssetCellComponent<TProps = {}> = FunctionComponent<
-  CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
->;
-
-const MarketCapCell: AssetCellComponent = ({ marketCap, marketCapRank }) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span>{formatPretty(marketCap)}</span>}
-    {marketCapRank && (
-      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
-    )}
-  </div>
-);
-
-export const AssetActionsCell: AssetCellComponent = () => (
-  <button>
-    <span className="text-wosmongton-200">Trade</span>
-  </button>
-);

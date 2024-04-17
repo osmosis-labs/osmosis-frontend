@@ -200,7 +200,12 @@
       },
       "title": "すべての資産",
       "withdrawButton": "撤回する",
-      "activate": "活性化"
+      "activate": "活性化",
+      "marketCap": "時価総額",
+      "volume24h": "ボリューム（24時間）",
+      "priceChange24h": "24時間の変更",
+      "price": "価格",
+      "name": "名前"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
@@ -285,6 +290,12 @@
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
       "liquid_staking": "リキッドステーキング"
+    },
+    "seeAll": "すべてを見る",
+    "highlights": {
+      "new": "新しい",
+      "topGainers": "上位の利益",
+      "upcoming": "今後の予定"
     }
   },
   "portfolio": {

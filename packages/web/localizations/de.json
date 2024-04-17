@@ -200,7 +200,12 @@
       },
       "title": "Alle Vermögenswerte",
       "withdrawButton": "Zurückziehen",
-      "activate": "aktivieren Sie"
+      "activate": "aktivieren Sie",
+      "marketCap": "Marktkapitalisierung",
+      "volume24h": "Volumen (24 Std.)",
+      "priceChange24h": "24h Wechsel",
+      "price": "Preis",
+      "name": "Name"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -285,6 +290,12 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Flüssiges Abstecken"
+    },
+    "seeAll": "Alles sehen",
+    "highlights": {
+      "new": "Neu",
+      "topGainers": "Top-Gewinner",
+      "upcoming": "Bevorstehende"
     }
   },
   "portfolio": {

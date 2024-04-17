@@ -200,7 +200,12 @@
       },
       "title": "Active",
       "withdrawButton": "Retrage",
-      "activate": "Activati"
+      "activate": "Activati",
+      "marketCap": "Capitalizarea pieței",
+      "volume24h": "Volum (24 ore)",
+      "priceChange24h": "schimbare 24h",
+      "price": "Preț",
+      "name": "Nume"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -285,6 +290,12 @@
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
       "liquid_staking": "Mărire lichidă"
+    },
+    "seeAll": "Vezi toate",
+    "highlights": {
+      "new": "Nou",
+      "topGainers": "Câștigători de top",
+      "upcoming": "În viitor"
     }
   },
   "portfolio": {

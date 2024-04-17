@@ -200,7 +200,12 @@
       },
       "title": "Tous les actifs",
       "withdrawButton": "Retirer",
-      "activate": "Activer"
+      "activate": "Activer",
+      "marketCap": "Capitalisation boursière",
+      "volume24h": "Volume (24H)",
+      "priceChange24h": "changement 24h",
+      "price": "Prix",
+      "name": "Nom"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -285,6 +290,12 @@
       "stablecoin": "Pièces stables",
       "meme": "Mème",
       "liquid_staking": "Jalonnement liquide"
+    },
+    "seeAll": "Voir tout",
+    "highlights": {
+      "new": "Nouveau",
+      "topGainers": "Meilleurs gagnants",
+      "upcoming": "A venir"
     }
   },
   "portfolio": {

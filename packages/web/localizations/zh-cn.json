@@ -200,7 +200,12 @@
       },
       "title": "所有资产",
       "withdrawButton": "提币",
-      "activate": "启用"
+      "activate": "启用",
+      "marketCap": "市值",
+      "volume24h": "成交量（24小时）",
+      "priceChange24h": "24小时变化",
+      "price": "价格",
+      "name": "姓名"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -285,6 +290,12 @@
       "stablecoin": "稳定币",
       "meme": "模因",
       "liquid_staking": "流动质押"
+    },
+    "seeAll": "查看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "涨幅最大的股票",
+      "upcoming": "即将推出"
     }
   },
   "portfolio": {

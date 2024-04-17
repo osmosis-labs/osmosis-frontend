@@ -7,9 +7,11 @@ import {
   getAssetHistoricalPrice,
   getAssetMarketActivity,
   getAssetPrice,
+  getAssets,
   getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
+  getUpcomingAssets,
   getUserAssetsTotal,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
@@ -165,7 +167,7 @@ export const assetsRouter = createTRPCRouter({
             "priceChange24h",
             "marketCap",
             "volume24h",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )
@@ -376,5 +378,77 @@ export const assetsRouter = createTRPCRouter({
         }).catch((e) =>
           captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
         )
+    ),
+  getTopNewAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+        categories: ["new"],
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return marketAssets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(0, topN);
+    }),
+  getTopGainerAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return sort(
+        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        "priceChange24h",
+        "desc"
+      ).slice(0, topN);
+    }),
+  getTopUpcomingAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(({ input: { topN } }) =>
+      getUpcomingAssets().then((upcomingAssets) =>
+        upcomingAssets.slice(0, topN)
+      )
     ),
 });

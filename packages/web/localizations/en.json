@@ -200,7 +200,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume (24H)",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -285,6 +290,12 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Liquid staking"
+    },
+    "seeAll": "See all",
+    "highlights": {
+      "new": "New",
+      "topGainers": "Top gainers",
+      "upcoming": "Upcoming"
     }
   },
   "portfolio": {

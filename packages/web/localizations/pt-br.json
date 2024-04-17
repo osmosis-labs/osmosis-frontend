@@ -200,7 +200,12 @@
       },
       "title": "Todos os ativos",
       "withdrawButton": "Sacar",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "marketCap": "Valor de mercado",
+      "volume24h": "Volume (24H)",
+      "priceChange24h": "Mudança de 24h",
+      "price": "Preço",
+      "name": "Nome"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -285,6 +290,12 @@
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
       "liquid_staking": "Estaqueamento líquido"
+    },
+    "seeAll": "Ver tudo",
+    "highlights": {
+      "new": "Novo",
+      "topGainers": "Principais ganhadores",
+      "upcoming": "Por vir"
     }
   },
   "portfolio": {

@@ -200,7 +200,12 @@
       },
       "title": "તમામ અસ્કયામતો",
       "withdrawButton": "ઉપાડો",
-      "activate": "સક્રિય કરો"
+      "activate": "સક્રિય કરો",
+      "marketCap": "માર્કેટ કેપ",
+      "volume24h": "વોલ્યુમ (24H)",
+      "priceChange24h": "24 કલાક ફેરફાર",
+      "price": "કિંમત",
+      "name": "નામ"
     },
     "totalAssets": "કુલ સંપતિ",
     "totalBalance": "કુલ બેલેન્સ",
@@ -285,6 +290,12 @@
       "stablecoin": "સ્ટેબલકોઇન્સ",
       "meme": "મેમે",
       "liquid_staking": "લિક્વિડ સ્ટેકિંગ"
+    },
+    "seeAll": "બધા જુઓ",
+    "highlights": {
+      "new": "નવી",
+      "topGainers": "ટોચના લાભાર્થીઓ",
+      "upcoming": "આગામી"
     }
   },
   "portfolio": {
