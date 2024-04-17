@@ -145,7 +145,13 @@
       "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
-      "title": "Historia Transferów"
+      "title": "Historia Transferów",
+      "pendingDeposit": "Oczekujący depozyt",
+      "pendingWithdraw": "Oczekuje na wycofanie",
+      "successDeposit": "Zdeponowane",
+      "successWithdraw": "Wycofał się",
+      "failDeposit": "Wpłata nie powiodła się",
+      "failWithdraw": "Wypłata nie powiodła się"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",

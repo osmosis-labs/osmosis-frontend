@@ -145,7 +145,13 @@
       "pendingRefunded": "Falhou: Reembolso pendente",
       "refunded": "Reembolsado",
       "success": "Sucesso",
-      "title": "Histórico de Transferências"
+      "title": "Histórico de Transferências",
+      "pendingDeposit": "Depósito pendente",
+      "pendingWithdraw": "Retirada pendente",
+      "successDeposit": "Depositado",
+      "successWithdraw": "Retirou-se",
+      "failDeposit": "Falha no depósito",
+      "failWithdraw": "Falha na retirada"
     },
     "ibcTransfer": {
       "buttonAdd": "Adicionar",

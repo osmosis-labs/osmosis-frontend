@@ -145,7 +145,13 @@
       "pendingRefunded": "નિષ્ફળ: બાકી રિફંડ",
       "refunded": "રિફંડ",
       "success": "સફળતા",
-      "title": "ટ્રાન્સફર ઇતિહાસ"
+      "title": "ટ્રાન્સફર ઇતિહાસ",
+      "pendingDeposit": "બાકી થાપણ",
+      "pendingWithdraw": "બાકી ઉપાડ",
+      "successDeposit": "જમા કરાવ્યું",
+      "successWithdraw": "પાછી ખેંચી લીધી",
+      "failDeposit": "ડિપોઝિટ નિષ્ફળ",
+      "failWithdraw": "ઉપાડ નિષ્ફળ"
     },
     "ibcTransfer": {
       "buttonAdd": "ઉમેરો",

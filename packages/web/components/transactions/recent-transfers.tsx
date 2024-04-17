@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useWalletSelect } from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { Spinner } from "../loaders";
@@ -26,25 +26,27 @@ export const RecentTransfers: FunctionComponent = observer(() => {
 
 const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
   ({ address }) => {
+    const { t } = useTranslation();
+
     const recentTransfers = useRecentTransfers(address);
 
     if (recentTransfers.length === 0) return <NoTransfersSplash />;
 
     return (
       <div className="flex w-full flex-col gap-2">
-        {recentTransfers.map((transfer) => {
-          const status =
-            transfer.status === "complete"
+        {recentTransfers.map(({ txHash, status, amount, isWithdraw }) => {
+          const simplifiedStatus =
+            status === "complete"
               ? "success"
-              : transfer.status === "refunded" ||
-                transfer.status === "timeout" ||
-                transfer.status === "failed"
+              : status === "refunded" ||
+                status === "timeout" ||
+                status === "failed"
               ? "failed"
               : "pending";
 
           // TODO: translate title with timeout and refunding strings
-          const coinAmount = transfer.amount.split(" ")[0];
-          const coinDenom = transfer.amount.split(" ")[1];
+          const coinAmount = amount.split(" ")[0];
+          const coinDenom = amount.split(" ")[1];
           const asset = AssetLists.flatMap(({ assets }) => assets).find(
             ({ symbol }) => symbol === coinDenom
           );
@@ -53,18 +55,28 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
 
           const currency = makeMinimalAsset(asset);
 
+          const pendingText = isWithdraw
+            ? t("assets.historyTable.pendingWithdraw")
+            : t("assets.historyTable.pendingDeposit");
+          const successText = isWithdraw
+            ? t("assets.historyTable.successWithdraw")
+            : t("assets.historyTable.successDeposit");
+          const failedText = isWithdraw
+            ? t("assets.historyTable.failWithdraw")
+            : t("assets.historyTable.failDeposit");
+
           return (
             <TransactionRow
-              key={transfer.txHash}
-              status={status}
-              effect={transfer.isWithdraw ? "withdraw" : "deposit"}
+              key={txHash}
+              status={simplifiedStatus}
+              effect={isWithdraw ? "withdraw" : "deposit"}
               title={{
-                pending: "Pending",
-                success: "Completed",
-                failed: "Failed",
+                pending: pendingText,
+                success: successText,
+                failed: failedText,
               }}
               transfer={{
-                direction: transfer.isWithdraw ? "withdraw" : "deposit",
+                direction: isWithdraw ? "withdraw" : "deposit",
                 amount: new CoinPretty(
                   currency,
                   coinAmount // amount includes decimals

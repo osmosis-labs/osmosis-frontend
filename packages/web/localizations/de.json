@@ -145,7 +145,13 @@
       "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
-      "title": "Übertragungsverlauf"
+      "title": "Übertragungsverlauf",
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "pendingWithdraw": "Ausstehender Auszug",
+      "successDeposit": "Hinterlegt",
+      "successWithdraw": "Zurückgezogen",
+      "failDeposit": "Einzahlung fehlgeschlagen",
+      "failWithdraw": "Auszahlung fehlgeschlagen"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",

@@ -145,7 +145,13 @@
       "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
-      "title": "전송 내역"
+      "title": "전송 내역",
+      "pendingDeposit": "입금 대기 중",
+      "pendingWithdraw": "출금 대기 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철수",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
     },
     "ibcTransfer": {
       "buttonAdd": "추가하다",

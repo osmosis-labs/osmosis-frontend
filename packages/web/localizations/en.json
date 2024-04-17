@@ -145,7 +145,13 @@
       "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
-      "title": "Transfer History"
+      "title": "Transfer History",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdraw",
+      "successDeposit": "Deposited",
+      "successWithdraw": "Withdrew",
+      "failDeposit": "Deposit failed",
+      "failWithdraw": "Withdraw failed"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",

@@ -145,7 +145,13 @@
       "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
-      "title": "Transfer Geçmişi"
+      "title": "Transfer Geçmişi",
+      "pendingDeposit": "Bekleyen mevduat",
+      "pendingWithdraw": "Geri çekilme bekleniyor",
+      "successDeposit": "Yatırıldı",
+      "successWithdraw": "Geri çekildi",
+      "failDeposit": "Para yatırma işlemi başarısız oldu",
+      "failWithdraw": "Para çekme işlemi başarısız oldu"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",

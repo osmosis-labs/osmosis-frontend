@@ -145,7 +145,13 @@
       "pendingRefunded": "विफल: धनवापसी लंबित है",
       "refunded": "वापसी की गई है",
       "success": "सफलता",
-      "title": "स्थानांतरण इतिहास"
+      "title": "स्थानांतरण इतिहास",
+      "pendingDeposit": "लंबित जमा",
+      "pendingWithdraw": "लंबित निकासी",
+      "successDeposit": "जमा किया",
+      "successWithdraw": "वापस ले लिया",
+      "failDeposit": "जमा विफल",
+      "failWithdraw": "निकासी विफल"
     },
     "ibcTransfer": {
       "buttonAdd": "जोड़ना",

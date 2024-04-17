@@ -145,7 +145,13 @@
       "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
-      "title": "Istoric Transferuri"
+      "title": "Istoric Transferuri",
+      "pendingDeposit": "Depunerea în așteptare",
+      "pendingWithdraw": "În așteptarea retragerii",
+      "successDeposit": "Depus",
+      "successWithdraw": "S-a retras",
+      "failDeposit": "Depunerea nu a reușit",
+      "failWithdraw": "Retragerea a eșuat"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",

@@ -145,7 +145,13 @@
       "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
-      "title": "تاریخ چه انتقال"
+      "title": "تاریخ چه انتقال",
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",

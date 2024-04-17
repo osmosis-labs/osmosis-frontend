@@ -145,7 +145,13 @@
       "pendingRefunded": "Не удалось: ожидается возврат средств.",
       "refunded": "Возвращено",
       "success": "Успех",
-      "title": "История трансферов"
+      "title": "История трансферов",
+      "pendingDeposit": "Ожидается депозит",
+      "pendingWithdraw": "Ожидается вывод средств",
+      "successDeposit": "Депонированный",
+      "successWithdraw": "Снял",
+      "failDeposit": "Депозит не выполнен",
+      "failWithdraw": "Вывести не удалось"
     },
     "ibcTransfer": {
       "buttonAdd": "Добавлять",
