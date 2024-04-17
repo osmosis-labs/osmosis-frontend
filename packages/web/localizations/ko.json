@@ -414,7 +414,9 @@
     "marsSubtext": "화성에 의해 구동됨",
     "levanaSubtext": "레바나 제공",
     "more": "더",
-    "new": "새로운"
+    "new": "새로운",
+    "settings": "설정",
+    "notifications": "알림"
   },
   "notifi": {
     "saveChanges": "변경 사항 저장",

@@ -414,7 +414,9 @@
     "marsSubtext": "Powered by Mars",
     "levanaSubtext": "Powered by Levana",
     "more": "More",
-    "new": "NEW"
+    "new": "NEW",
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Save changes",

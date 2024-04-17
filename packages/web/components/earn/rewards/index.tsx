@@ -38,7 +38,6 @@ export const EarnRewards = ({
   const claimAllRewards = useCallback(async () => {
     logEvent([EventName.EarnPage.rewardsClaimStarted]);
     const messages: EncodeObject[] = [];
-    console.log(filteredUnclaimedRewards);
 
     if (!account) return;
 

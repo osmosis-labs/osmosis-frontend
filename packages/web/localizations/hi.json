@@ -414,7 +414,9 @@
     "marsSubtext": "मंगल द्वारा संचालित",
     "levanaSubtext": "लेवाना द्वारा संचालित",
     "more": "अधिक",
-    "new": "नया"
+    "new": "नया",
+    "settings": "समायोजन",
+    "notifications": "सूचनाएं"
   },
   "notifi": {
     "saveChanges": "परिवर्तनों को सुरक्षित करें",
