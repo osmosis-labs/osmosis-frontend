@@ -91,21 +91,24 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
   }
 );
 
-const NoTransfersSplash: FunctionComponent = () => (
-  <div className="mx-auto my-6 flex max-w-35 flex-col gap-6 text-center">
-    <Image
-      className="mx-auto"
-      src="/images/ion-thumbs-up.svg"
-      alt="ion thumbs up"
-      width="260"
-      height="160"
-    />
-    <div className="flex flex-col gap-2">
-      <h6>No recent transfers</h6>
-      <p className="body1 text-osmoverse-300">
-        Deposits and withdrawals in the last 3 days on this device (between
-        certain networks) will appear here.
-      </p>
+const NoTransfersSplash: FunctionComponent = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto my-6 flex max-w-35 flex-col gap-6 text-center">
+      <Image
+        className="mx-auto"
+        src="/images/ion-thumbs-up.svg"
+        alt="ion thumbs up"
+        width="260"
+        height="160"
+      />
+      <div className="flex flex-col gap-2">
+        <h6>{t("transactions.noRecent")}</h6>
+        <p className="body1 text-osmoverse-300">
+          {t("transactions.recentShownHere")}
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};

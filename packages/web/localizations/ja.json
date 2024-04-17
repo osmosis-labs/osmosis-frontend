@@ -939,5 +939,9 @@
     "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
     "buttonContinue": "とにかく続けます",
     "buttonCancel": "キャンセル"
+  },
+  "transactions": {
+    "noRecent": "最近の送金はありません",
+    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。"
   }
 }

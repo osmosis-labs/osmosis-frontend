@@ -939,5 +939,9 @@
     "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
+  },
+  "transactions": {
+    "noRecent": "Fără transferuri recente",
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
   }
 }

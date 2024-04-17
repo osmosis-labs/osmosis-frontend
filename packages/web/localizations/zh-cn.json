@@ -939,5 +939,9 @@
     "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近没有转会",
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
   }
 }

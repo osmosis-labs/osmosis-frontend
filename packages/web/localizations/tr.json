@@ -939,5 +939,9 @@
     "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
     "buttonContinue": "Her halükarda devam et",
     "buttonCancel": "İptal etmek"
+  },
+  "transactions": {
+    "noRecent": "Yakın zamanda transfer yok",
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
   }
 }

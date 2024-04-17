@@ -939,5 +939,9 @@
     "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí."
   }
 }

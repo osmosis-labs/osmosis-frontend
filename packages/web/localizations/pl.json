@@ -939,5 +939,9 @@
     "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
     "buttonContinue": "Kontynuować mimo to",
     "buttonCancel": "Anulować"
+  },
+  "transactions": {
+    "noRecent": "Brak ostatnich transferów",
+    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami)."
   }
 }

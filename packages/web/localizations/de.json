@@ -939,5 +939,9 @@
     "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
     "buttonContinue": "Mache trotzdem weiter",
     "buttonCancel": "Stornieren"
+  },
+  "transactions": {
+    "noRecent": "Keine aktuellen Transfers",
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt."
   }
 }
