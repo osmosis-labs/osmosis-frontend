@@ -149,7 +149,7 @@ const TokenConversion: FunctionComponent<
           {Number(tokenOut.value.toDec().toString()).toFixed(2)}
         </div>
       )}
-      <div className="text-body2">
+      <div className="body2">
         {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
       </div>
     </div>
@@ -170,7 +170,7 @@ export const TokenTransfer: FunctionComponent<
       height={32}
       width={32}
     />
-    <div className="text-body2 text-osmoverse-400">
+    <div className="body2 text-osmoverse-400">
       {formatPretty(amount, { maxDecimals: 6 })}
     </div>
     {value && (
