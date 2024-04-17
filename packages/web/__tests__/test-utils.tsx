@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { render } from "@testing-library/react";
 import { createTRPCReact, httpLink } from "@trpc/react-query";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { mockFlags } from "jest-launchdarkly-mock";
 import { ReactNode } from "react";
@@ -13,6 +15,8 @@ import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
 import { AppRouter } from "~/server/api/root-router";
 import { StoreProvider } from "~/stores";
+
+dayjs.extend(duration);
 
 export const trpcReact = createTRPCReact<AppRouter>();
 
