@@ -156,8 +156,8 @@ const OsmosisFullLogo: FunctionComponent<{
             y2="37.9178"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="white" />
-            <stop offset="1" stop-color="#FAE7FD" />
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="#FAE7FD" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_3347_16138"
@@ -167,8 +167,8 @@ const OsmosisFullLogo: FunctionComponent<{
             y2="9.90479"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="white" />
-            <stop offset="1" stop-color="#FAE7FD" />
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="#FAE7FD" />
           </linearGradient>
           <radialGradient
             id="paint2_radial_3347_16138"
@@ -178,8 +178,8 @@ const OsmosisFullLogo: FunctionComponent<{
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(16.7635 29.2957) rotate(1.73961) scale(33.8823 49.7097)"
           >
-            <stop stop-color="#2D01E2" />
-            <stop offset="0.602428" stop-color="#DD4AC8" />
+            <stop stopColor="#2D01E2" />
+            <stop offset="0.602428" stopColor="#DD4AC8" />
           </radialGradient>
           <radialGradient
             id="paint3_radial_3347_16138"
@@ -189,8 +189,8 @@ const OsmosisFullLogo: FunctionComponent<{
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(25.1232 8.99062) rotate(62.2299) scale(28.5431 61.2321)"
           >
-            <stop offset="0.505088" stop-color="#DD4AC8" />
-            <stop offset="0.917785" stop-color="#2D01E2" />
+            <stop offset="0.505088" stopColor="#DD4AC8" />
+            <stop offset="0.917785" stopColor="#2D01E2" />
           </radialGradient>
           <linearGradient
             id="paint4_linear_3347_16138"
@@ -200,8 +200,8 @@ const OsmosisFullLogo: FunctionComponent<{
             y2="37.1706"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="white" />
-            <stop offset="1" stop-color="white" stop-opacity="0" />
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="white" stopOpacity="0" />
           </linearGradient>
           <radialGradient
             id="paint5_radial_3347_16138"
@@ -211,8 +211,8 @@ const OsmosisFullLogo: FunctionComponent<{
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(17.3767 29.4622) rotate(1.73961) scale(33.8823 49.7097)"
           >
-            <stop stop-color="#2D01E2" />
-            <stop offset="0.602428" stop-color="#DD4AC8" />
+            <stop stopColor="#2D01E2" />
+            <stop offset="0.602428" stopColor="#DD4AC8" />
           </radialGradient>
           <radialGradient
             id="paint6_radial_3347_16138"
@@ -222,8 +222,8 @@ const OsmosisFullLogo: FunctionComponent<{
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(25.7365 9.15712) rotate(62.2299) scale(28.5431 61.2321)"
           >
-            <stop offset="0.505088" stop-color="#DD4AC8" />
-            <stop offset="0.917785" stop-color="#2D01E2" />
+            <stop offset="0.505088" stopColor="#DD4AC8" />
+            <stop offset="0.917785" stopColor="#2D01E2" />
           </radialGradient>
           <linearGradient
             id="paint7_linear_3347_16138"
@@ -233,8 +233,8 @@ const OsmosisFullLogo: FunctionComponent<{
             y2="37.3371"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="white" />
-            <stop offset="1" stop-color="white" stop-opacity="0" />
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="white" stop-opacity="0" />
           </linearGradient>
           <clipPath id="clip0_3347_16138">
             <rect
