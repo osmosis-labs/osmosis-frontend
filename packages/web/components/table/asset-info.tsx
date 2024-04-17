@@ -20,6 +20,7 @@ import {
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
+import { HistoricalPriceChartCell } from "~/components/table/cells/price-chart";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
@@ -206,12 +207,17 @@ export const AssetsInfoTable: FunctionComponent<{
         }
       ),
       columnHelper.accessor((row) => row, {
-        id: "assetActions",
+        id: "historicalPriceChart",
         header: "",
-        cell: () => (
-          <button>
-            <span className="text-wosmongton-200">{t("portfolio.trade")}</span>
-          </button>
+        cell: (cell) => (
+          // <button>
+          //   <span className="text-wosmongton-200">{t("portfolio.trade")}</span>
+          // </button>
+          <HistoricalPriceChartCell
+            coinDenom={cell.row.original.coinDenom}
+            priceChange24h={cell.row.original.priceChange24h}
+            timeFrame="1D"
+          />
         ),
       }),
     ];
