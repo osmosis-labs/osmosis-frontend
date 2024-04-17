@@ -260,9 +260,9 @@ export const assetsRouter = createTRPCRouter({
                       (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
                     )
                     .catch((e) => captureErrorAndReturn(e, undefined)),
-                  getAssetMarketActivity({
-                    coinDenom: asset.coinDenom,
-                  }).then((activity) => activity?.price24hChange),
+                  getAssetMarketActivity(asset).then(
+                    (activity) => activity?.price24hChange
+                  ),
                 ]);
 
                 return {
