@@ -25,4 +25,5 @@ jobs:
         run: |
           cd packages/web
           yarn install
+          npx playwright install
           npx playwright test -g "Test Select Swap Pair feature"
