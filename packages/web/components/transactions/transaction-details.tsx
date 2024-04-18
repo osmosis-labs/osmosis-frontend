@@ -4,7 +4,7 @@ import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -43,10 +43,12 @@ export const TransactionDetailsContent = ({
     });
   };
 
-  const conversionRate = formatPretty(
-    conversion.numerator.toDec().quo(conversion.denominator.toDec()),
-    { maxDecimals: 2 }
-  );
+  const conversionRate = useMemo(() => {
+    return formatPretty(
+      conversion.numerator.toDec().quo(conversion.denominator.toDec()),
+      { maxDecimals: 2 }
+    );
+  }, [conversion.numerator, conversion.denominator]);
 
   return (
     <div
