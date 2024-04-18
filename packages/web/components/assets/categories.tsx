@@ -1,4 +1,7 @@
-import { Category, isAssetNew } from "@osmosis-labs/server";
+import {
+  AssetCategories as FixedAssetCategories,
+  isAssetNew,
+} from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
@@ -7,7 +10,17 @@ import { useTranslation } from "~/hooks";
 
 import { Icon } from "./icon";
 
-const categoryAssetSampleImages = {
+// reconcile categories calculated on client and statically served from server (likely from asset list)
+const ClientSideCategories = ["topGainers"] as const;
+export const AssetCategories = [
+  ...ClientSideCategories,
+  ...FixedAssetCategories,
+] as const;
+type ClientSideCategory = (typeof ClientSideCategories)[number];
+/** Re-exported type that includes client-side dynamic categories. */
+export type Category = (typeof AssetCategories)[number];
+
+const staticCategoryAssetImageSamples = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
     if (
       asset.verified &&
@@ -46,26 +59,39 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   selectedCategory?: Category;
   /** Categories that can still be selected, but aren't available from this control. */
   hiddenCategories?: Category[];
+  /** Client side categories need to be queried from client, so image sampled need to be provided. */
+  clientCategoryImageSamples?: { [category in ClientSideCategory]: string[] };
   onSelectCategory: (category: Category) => void;
   unselectCategory: () => void;
 }> = ({
   selectedCategory,
   hiddenCategories,
+  clientCategoryImageSamples = {},
   onSelectCategory,
   unselectCategory,
 }) => {
   const { t } = useTranslation();
 
+  /** Static sample images combined with dynamic */
+  const categoryAssetSampleImages = useMemo(
+    () => ({
+      ...staticCategoryAssetImageSamples,
+      ...(clientCategoryImageSamples as { [category in Category]: string[] }),
+    }),
+    [clientCategoryImageSamples]
+  );
+
   const categories = useMemo(() => {
-    const sortedCategories = Object.keys(categoryAssetSampleImages);
     // move selected to first in list
     if (selectedCategory) {
-      sortedCategories.sort((a, b) =>
+      AssetCategories.slice().sort((a, b) =>
         a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
       );
     }
-    return sortedCategories as Category[];
+    return AssetCategories;
   }, [selectedCategory]);
+
+  console.log({ categories });
 
   return (
     <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
@@ -75,6 +101,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 
         if (hiddenCategories?.includes(category) && !isSelected) return null;
 
+        console.log("selectedCategory", selectedCategory, sampleAssets);
         return (
           <button
             key={category}
