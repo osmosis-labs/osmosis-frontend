@@ -10,8 +10,6 @@ on:
 jobs:
   fe-e2e-tests:
     runs-on: ubuntu-latest
-    env:
-      BASE_URL: "https://app.osmosis.zone"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -24,8 +22,13 @@ jobs:
           cd packages/web
           yarn install
           npx playwright install
-      - name: Run Select Swap Pair tests
+      - name: Run Select Swap Pair tests on Master
         if: github.ref == 'refs/heads/master'
+        run: |
+          export BASE_URL=https://app.osmosis.zone
+          npx playwright test -g "Test Select Swap Pair feature"
+      - name: Run Select Swap Pair tests on Stage
+        if: github.ref == 'refs/heads/stage'
         run: |
           npx playwright test -g "Test Select Swap Pair feature"
       - name: upload test results
