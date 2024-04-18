@@ -654,7 +654,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </h5>
                   <span
                     className={classNames(
-                      "subtitle1 md:caption text-osmoverse-300 opacity-100 transition-opacity",
+                      "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                       {
                         "opacity-0":
                           !swapState.tokenOutFiatValue ||
