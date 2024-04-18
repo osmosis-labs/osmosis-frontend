@@ -5,6 +5,8 @@ import { FunctionComponent } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
+import { Icon } from "./icon";
+
 const categoryAssetSampleImages = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
     if (
@@ -56,10 +58,11 @@ export const AssetCategoriesSelectors: FunctionComponent<{
           <button
             key={category}
             className={classNames(
-              "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
+              "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
               {
-                "border-wosmongton-400": selectedCategory === category,
-                "border-osmoverse-600": selectedCategory !== category,
+                "border-osmoverse-800 bg-osmoverse-800":
+                  selectedCategory === category,
+                "border-osmoverse-700": selectedCategory !== category,
               }
             )}
             onClick={() => {
@@ -113,6 +116,9 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
+            {selectedCategory === category && (
+              <Icon id="x-circle" height={16} width={17} />
+            )}
           </button>
         );
       })}

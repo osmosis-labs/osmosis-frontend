@@ -126,7 +126,13 @@ export const AssetBalancesTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        cell: (cell) => (
+          <AssetCell
+            coinName={cell.row.original.coinName}
+            coinImageUrl={cell.row.original.coinImageUrl}
+            isVerified={cell.row.original.isVerified}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
@@ -342,13 +348,11 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 >;
 
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
-  <div className="ml-auto flex w-28 flex-col">
-    <span>
-      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
-    </span>
-    {usdValue && (
-      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
-    )}
+  <div className="ml-auto flex flex-col">
+    {usdValue && <div>{usdValue.toString()}</div>}
+    <div className="caption whitespace-nowrap text-osmoverse-300">
+      {amount ? formatPretty(amount, { maxDecimals: 8 }) : "0"}
+    </div>
   </div>
 );
 

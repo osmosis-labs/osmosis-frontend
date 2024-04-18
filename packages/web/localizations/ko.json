@@ -145,7 +145,13 @@
       "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
-      "title": "전송 내역"
+      "title": "전송 내역",
+      "pendingDeposit": "입금 대기 중",
+      "pendingWithdraw": "출금 대기 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철수",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
     },
     "ibcTransfer": {
       "buttonAdd": "추가하다",
@@ -200,7 +206,12 @@
       },
       "title": "모든 자산",
       "withdrawButton": "출금",
-      "activate": "활성화"
+      "activate": "활성화",
+      "marketCap": "시가총액",
+      "volume24h": "용량",
+      "priceChange24h": "24시간 변경",
+      "price": "가격",
+      "name": "이름"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
@@ -285,6 +296,12 @@
       "stablecoin": "스테이블코인",
       "meme": "나 나",
       "liquid_staking": "리퀴드 스테이킹"
+    },
+    "seeAll": "모두 보기",
+    "highlights": {
+      "new": "새로운",
+      "topGainers": "최고 상승자",
+      "upcoming": "예정"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "화성에 의해 구동됨",
     "levanaSubtext": "레바나 제공",
     "more": "더",
-    "new": "새로운"
+    "new": "새로운",
+    "settings": "설정",
+    "notifications": "알림"
   },
   "notifi": {
     "saveChanges": "변경 사항 저장",
@@ -692,6 +711,8 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
+    "maxButtonError": "최대 금액을 계산할 수 없습니다. 네트워크 연결을 확인하거나 페이지를 새로 고쳐보세요.",
+    "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
     "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
+    "gettingStarted": "시작하기",
     "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",
     "somethingWentWrong": "오류가 발생했습니다.",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
@@ -920,5 +942,9 @@
     "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
     "buttonContinue": "계속 진행",
     "buttonCancel": "취소"
+  },
+  "transactions": {
+    "noRecent": "최근 이적 없음",
+    "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다."
   }
 }

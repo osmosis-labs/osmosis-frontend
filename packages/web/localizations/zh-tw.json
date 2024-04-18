@@ -145,7 +145,13 @@
       "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
-      "title": "轉移歷史"
+      "title": "轉移歷史",
+      "pendingDeposit": "待定存款",
+      "pendingWithdraw": "待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "退出",
+      "failDeposit": "存款失敗",
+      "failWithdraw": "提現失敗"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -200,7 +206,12 @@
       },
       "title": "所有資產",
       "withdrawButton": "轉出",
-      "activate": "啟用"
+      "activate": "啟用",
+      "marketCap": "市值",
+      "volume24h": "體積",
+      "priceChange24h": "24小時變化",
+      "price": "價格",
+      "name": "姓名"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -285,6 +296,12 @@
       "stablecoin": "穩定幣",
       "meme": "迷因",
       "liquid_staking": "流動質押"
+    },
+    "seeAll": "看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "漲幅居前者",
+      "upcoming": "即將推出"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "由火星提供動力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "設定",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -692,6 +711,8 @@
       "hide": "隱藏",
       "show": "顯示"
     },
+    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
+    "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
     "buttonError": "堅持交易",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "動態的"
   },
   "walletSelect": {
+    "gettingStarted": "入門",
     "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
     "isNotInstalled": "{walletName} 未安裝",
@@ -920,5 +942,9 @@
     "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
     "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近沒有轉帳",
+    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。"
   }
 }

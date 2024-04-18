@@ -45,14 +45,34 @@ export const TransactionContent = ({
             {transactions.map((transaction) => (
               <TransactionRow
                 key={transaction.id}
-                status={transaction.code === 0 ? "Success" : "Failure"}
-                setOpen={() => {
+                title={{
+                  // each type of transaction would have a translation for when it's pending, successful, or failed
+                  pending: "Swapping",
+                  success: "Swapped",
+                  failed: "Swap failed",
+                }}
+                effect="swap"
+                status={transaction.code === 0 ? "success" : "failed"}
+                onClick={() => {
                   setSelectedTransaction(transaction);
+
+                  // delay to ensure the slide over transitions smoothly
                   if (!open) {
                     setTimeout(() => setOpen(true), 1);
                   }
                 }}
-                transaction={transaction}
+                tokenConversion={{
+                  tokenIn: {
+                    amount:
+                      transaction.metadata[0].value[0].txInfo.tokenIn.token,
+                    value: transaction.metadata[0].value[0].txInfo.tokenIn.usd,
+                  },
+                  tokenOut: {
+                    amount:
+                      transaction.metadata[0].value[0].txInfo.tokenOut.token,
+                    value: transaction.metadata[0].value[0].txInfo.tokenOut.usd,
+                  },
+                }}
               />
             ))}
           </div>

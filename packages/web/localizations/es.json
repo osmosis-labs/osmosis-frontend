@@ -145,7 +145,13 @@
       "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
-      "title": "Historial de transferencias"
+      "title": "Historial de transferencias",
+      "pendingDeposit": "Deposito pendiente",
+      "pendingWithdraw": "A la espera de Retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -200,7 +206,12 @@
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
-      "activate": "Activar"
+      "activate": "Activar",
+      "marketCap": "Tapa del mercado",
+      "volume24h": "Volumen",
+      "priceChange24h": "cambio 24h",
+      "price": "Precio",
+      "name": "Nombre"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",
@@ -285,6 +296,12 @@
       "stablecoin": "Monedas estables",
       "meme": "meme",
       "liquid_staking": "Estaca liquida"
+    },
+    "seeAll": "Ver todo",
+    "highlights": {
+      "new": "Nuevo",
+      "topGainers": "Principales ganadores",
+      "upcoming": "Próximo"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "Impulsado por Marte",
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
-    "new": "NUEVO"
+    "new": "NUEVO",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -692,6 +711,8 @@
       "hide": "Ocultar",
       "show": "Mostrar"
     },
+    "maxButtonError": "No se puede calcular el importe máximo. Verifique su conexión de red o intente actualizar la página.",
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
+    "gettingStarted": "Empezando",
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
@@ -920,5 +942,9 @@
     "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí."
   }
 }

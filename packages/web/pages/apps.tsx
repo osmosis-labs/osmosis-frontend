@@ -36,8 +36,8 @@ type AppStoreProps = {
   };
 };
 
-export const OsmosisAppListRepoName = "osmosis-labs/apps-list";
-export const OsmosisAppListFilePath = "applications.json";
+export const OsmosisAppListRepoName = "osmosis-labs/fe-content";
+export const OsmosisAppListFilePath = "cms/apps/applications.json";
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = useState<string>("");
