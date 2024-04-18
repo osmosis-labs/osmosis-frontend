@@ -635,7 +635,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         </section>
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
-            <h6 className="font-h6 text-h6">{t("pool.putAssetsToWork")}</h6>
+            <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
             <span className="body2 text-osmoverse-300">
               {t("pool.putAssetsToWorkCaption")}{" "}
               <a
@@ -664,14 +664,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     <div className="flex flex-wrap items-baseline gap-4 md:gap-3">
                       <LevelBadge level={1} />
                       <div className="flex shrink flex-wrap items-center gap-3">
-                        <h6 className="md:font-h6 md:text-h6">
+                        <h6 className="md:text-h6 md:font-h6">
                           {t("pool.earnSwapFees")}
                         </h6>
                         {isPoolIncentivesLoading ? (
                           <Spinner />
                         ) : (
                           poolIncentives?.aprBreakdown?.swapFee && (
-                            <h6 className="text-bullish-400 md:font-h6 md:text-h6">{`${poolIncentives.aprBreakdown.swapFee
+                            <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee
                               .maxDecimals(2)
                               .toString()} ${t("pool.APR")}`}</h6>
                           )
@@ -901,7 +901,7 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
         "bg-osmoverse-600 text-osmoverse-100": disabled,
       })}
     >
-      <h5 className="md:font-h6 md:text-h6">
+      <h5 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
       </h5>
     </div>

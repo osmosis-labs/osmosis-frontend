@@ -30,7 +30,7 @@ export const DropdownWithMultiSelect = <T,>({
             {stateValues.length === 0 ? (
               <span
                 className={classNames(
-                  "font-subtitle1 text-base font-normal leading-6",
+                  "text-base font-subtitle1 font-normal leading-6",
                   "text-osmoverse-400"
                 )}
               >

@@ -120,7 +120,7 @@ export const StakeInfoCard: FunctionComponent<{
             />
           </div>
           <div className="flex flex-shrink flex-col">
-            <h6 className="flex flex-shrink items-center md:font-h6 md:text-h6">
+            <h6 className="flex flex-shrink items-center md:text-h6 md:font-h6">
               OSMO
             </h6>
             <span className="caption w-fit text-osmoverse-400">Osmosis</span>
@@ -130,7 +130,7 @@ export const StakeInfoCard: FunctionComponent<{
               type="number"
               className={classNames(
                 "placeholder:text-white w-full bg-transparent text-right text-white-full focus:outline-none md:text-subtitle1",
-                "font-h5 text-h5 md:font-subtitle1",
+                "text-h5 font-h5 md:font-subtitle1",
                 "overflow-hidden"
               )}
               placeholder="0"
@@ -139,7 +139,7 @@ export const StakeInfoCard: FunctionComponent<{
             />
             <h5
               className={classNames(
-                "w-full truncate text-right text-osmoverse-300 transition-opacity md:font-h6 md:text-h6",
+                "w-full truncate text-right text-osmoverse-300 transition-opacity md:text-h6 md:font-h6",
                 outAmountValue ? "opacity-100" : "opacity-50"
               )}
             >

@@ -245,7 +245,7 @@ export const ProfileModal: FunctionComponent<
                         }
                       )}
                     </h6>
-                    <p className="font-h5 text-h5">
+                    <p className="text-h5 font-h5">
                       {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                         minimumFractionDigits: 2,
                         maximumSignificantDigits: undefined,

@@ -134,7 +134,7 @@ export const SpendLimitScreen = ({
       />
       <div className="flex flex-col items-center gap-6 px-16 ">
         <div>
-          <h1 className="w-full text-center font-h6 text-h6 tracking-wider">
+          <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
             {t("oneClickTrading.settings.spendLimitTitle")}
           </h1>
           {!isNil(subtitle) && (
@@ -143,7 +143,7 @@ export const SpendLimitScreen = ({
             </p>
           )}
         </div>
-        <p className="text-center font-body2 text-body2 text-osmoverse-200">
+        <p className="text-center text-body2 font-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.spendLimitScreen.spendLimitDescription")}
         </p>
         {!!account?.address && (
@@ -193,7 +193,7 @@ export const SpendLimitScreen = ({
                 }
               }}
               trailingSymbol={
-                <span className="ml-2 font-body1 text-body1 text-osmoverse-300">
+                <span className="ml-2 text-body1 font-body1 text-osmoverse-300">
                   USD
                 </span>
               }
@@ -312,7 +312,7 @@ export const SpendLimitScreen = ({
           </Screen>
         </ScreenManager>
 
-        <p className="text-center font-caption text-caption text-osmoverse-200">
+        <p className="text-center text-caption font-caption text-osmoverse-200">
           {t("oneClickTrading.settings.spendLimitScreen.fluctuationNotice")}
         </p>
       </div>

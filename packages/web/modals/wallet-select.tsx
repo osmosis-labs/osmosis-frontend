@@ -556,7 +556,7 @@ const LeftModalContent: FunctionComponent<
 
   return (
     <section className="flex flex-col gap-8 py-8 pl-8  sm:pl-3">
-      <h1 className="z-10 font-h6 text-h6 tracking-wider sm:text-center">
+      <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
         {t("connectWallet")}
       </h1>
       <div className="z-10 flex flex-col gap-8 overflow-auto pr-5">
@@ -710,7 +710,7 @@ const RightModalContent: FunctionComponent<
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-center font-h6 text-h6">
+              <h1 className="text-center text-h6 font-h6">
                 {t("walletSelect.somethingWentWrong")}
               </h1>
               <p className="body2 text-center text-wosmongton-100">{message}</p>
@@ -741,7 +741,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">
+            <h1 className="text-center text-h6 font-h6">
               {t("walletSelect.isNotInstalled", {
                 walletName: walletInfo?.prettyName ?? "",
               })}
@@ -785,7 +785,7 @@ const RightModalContent: FunctionComponent<
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-center font-h6 text-h6">
+              <h1 className="text-center text-h6 font-h6">
                 {t("walletSelect.requestRejected")}
               </h1>
               <p className="body2 text-center text-wosmongton-100">
@@ -822,7 +822,7 @@ const RightModalContent: FunctionComponent<
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-center font-h6 text-h6">{title}</h1>
+              <h1 className="text-center text-h6 font-h6">{title}</h1>
               <p className="body2 text-center text-wosmongton-100">{desc}</p>
             </div>
 
@@ -868,7 +868,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">{title}</h1>
+            <h1 className="text-center text-h6 font-h6">{title}</h1>
           </div>
         </div>
       );
@@ -906,7 +906,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">{title}</h1>
+            <h1 className="text-center text-h6 font-h6">{title}</h1>
             <p className="body2 text-center text-wosmongton-100">{desc}</p>
           </div>
         </div>
@@ -988,7 +988,7 @@ const RightModalContent: FunctionComponent<
           </ScreenManager>
         ) : (
           <div className="flex flex-col px-8 pt-1.5">
-            <h1 className="mb-10 w-full text-center font-h6 text-h6 tracking-wider">
+            <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
               {t("walletSelect.gettingStarted")}
             </h1>
             <Stepper
@@ -1077,7 +1077,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
               "before:absolute before:inset-0 before:z-50 before:bg-osmoverse-800/70"
           )}
         >
-          <h1 className="mb-6 w-full text-center font-h6 text-h6 tracking-wider">
+          <h1 className="mb-6 w-full text-center text-h6 font-h6 tracking-wider">
             {t("walletSelect.connectWith")} {wallet?.walletPrettyName}
           </h1>
 
@@ -1115,7 +1115,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-center font-h6 text-h6">{errorTitle}</h1>
+                <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
                 <p className="body2 text-center text-wosmongton-100">
                   {errorDesc}
                 </p>

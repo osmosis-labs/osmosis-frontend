@@ -106,16 +106,16 @@ const OneClickFloatingBannerContent = () => {
             >
               <h1
                 className={classNames(
-                  "flex-shrink-0 font-h6 text-h6",
-                  "sm:font-subtitle1 sm:text-subtitle1"
+                  "flex-shrink-0 text-h6 font-h6",
+                  "sm:text-subtitle1 sm:font-subtitle1"
                 )}
               >
                 {t("oneClickTrading.floatingBanner.title")}
               </h1>
               <ArrowButton
                 className={classNames(
-                  "font-subtitle1 text-subtitle1",
-                  "sm:text-left sm:font-caption sm:text-caption"
+                  "text-subtitle1 font-subtitle1",
+                  "sm:text-left sm:text-caption sm:font-caption"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();

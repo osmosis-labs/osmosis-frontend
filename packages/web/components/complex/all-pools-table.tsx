@@ -607,7 +607,7 @@ const PoolCompositionCell: PoolCellComponent = ({
             size="sm"
             assetDenoms={reserveCoins.map((coin) => coin.denom)}
           />
-          <span className={classNames("font-caption text-sm opacity-60")}>
+          <span className={classNames("text-sm font-caption opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>
               {t("components.table.poolId", { id })}
               <div>

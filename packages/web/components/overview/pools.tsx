@@ -67,7 +67,7 @@ export const PoolsOverview: FunctionComponent<
       )}
     >
       <div className="flex flex-col gap-5 md:gap-2">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
         {osmoPrice && (
@@ -83,10 +83,10 @@ export const PoolsOverview: FunctionComponent<
         )}
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.rewardDistribution")}
         </h6>
-        <h2 className="bg-superfluid bg-clip-text text-transparent md:font-h4 md:text-h4">
+        <h2 className="bg-superfluid bg-clip-text text-transparent md:text-h4 md:font-h4">
           {timeRemaining}
         </h2>
       </div>

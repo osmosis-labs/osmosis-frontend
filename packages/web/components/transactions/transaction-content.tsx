@@ -26,7 +26,7 @@ export const TransactionContent = ({
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pb-4 pt-8">
-        <h1 className="font-h3 text-h3">Transactions</h1>
+        <h1 className="text-h3 font-h3">Transactions</h1>
         <div className="flex gap-3">
           <Button variant="secondary" size="md">
             Explorer &#x2197;

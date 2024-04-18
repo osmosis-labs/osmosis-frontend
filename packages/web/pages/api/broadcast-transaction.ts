@@ -1,5 +1,13 @@
 import { ChainList } from "~/config/generated/chain-list";
 
+/**
+ * Broadcasts a transaction to the chain.
+ *
+ * We require this endpoint since many nodes do not have CORS enabled. Without CORS,
+ * a node is unable to interact directly with browsers unless it's updated to incorporate
+ * the CORS headers. Therefore, by having this endpoint, we can ensure that
+ * users can still broadcast their transactions to the network.
+ */
 export default async function broadcastTransactionHandler(req: Request) {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {

@@ -24,17 +24,17 @@ export const IntroducingOneClick = ({
       <Pill className="!px-3 py-1 normal-case">
         {t("oneClickTrading.introduction.newFeature")}
       </Pill>
-      <h1 className="font-h5 text-h5">
+      <h1 className="text-h5 font-h5">
         {t("oneClickTrading.introduction.introducingTitle")}
       </h1>
-      <h2 className="px-8 font-body2 text-body2 text-osmoverse-200">
+      <h2 className="px-8 text-body2 font-body2 text-osmoverse-200">
         {t("oneClickTrading.introduction.introducingSubtitle")}{" "}
         <a
           className={buttonVariants({
             variant: "link",
             size: "sm",
             className:
-              "!inline w-auto !px-0 !font-body2 !text-body2 text-wosmongton-300",
+              "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
           })}
           // TODO: Add link
         >

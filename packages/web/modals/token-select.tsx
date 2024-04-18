@@ -104,7 +104,7 @@ export const TokenSelectModal: FunctionComponent<
                 <div className="flex flex-col text-right">
                   <h6
                     className={classNames({
-                      "md:font-subtitle2 md:text-subtitle2":
+                      "md:text-subtitle2 md:font-subtitle2":
                         tokenAmount.length > 10,
                     })}
                   >

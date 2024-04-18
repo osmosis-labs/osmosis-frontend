@@ -249,7 +249,7 @@ export const EditView: FunctionComponent = () => {
         </div>
       )}
       <div className="flex h-full flex-col overflow-scroll">
-        <p className="mb-3 px-10 font-caption text-caption text-osmoverse-200 sm:px-5">
+        <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
           Add additional channels to receive your notifications.
         </p>
         <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">

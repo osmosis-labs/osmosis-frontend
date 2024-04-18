@@ -246,7 +246,7 @@ export const NavBar: FunctionComponent<
             </Popover>
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            <h4 className="md:font-h6 md:text-h6">
+            <h4 className="md:text-h6 md:font-h6">
               {navBarStore.title || title}
             </h4>
             <div className="flex items-center gap-3 lg:gap-1">

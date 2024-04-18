@@ -29,7 +29,7 @@ export const StrategyButton = ({
       <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
         {icon}
       </div>
-      <span className="font-subtitle1 text-base text-osmoverse-200">
+      <span className="text-base font-subtitle1 text-osmoverse-200">
         {label}
       </span>
     </button>

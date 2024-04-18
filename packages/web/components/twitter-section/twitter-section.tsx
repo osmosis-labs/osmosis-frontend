@@ -23,7 +23,7 @@ const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
       className={`flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 px-8 py-10 md:px-4 md:py-6 ${className}`}
     >
       <header>
-        <h6 className="font-h6 text-lg leading-6">
+        <h6 className="text-lg font-h6 leading-6">
           {t("tokenInfos.followTheConversation")}
         </h6>
       </header>
@@ -83,14 +83,14 @@ const Tweet: FunctionComponent<RichTweet> = ({
         <div className="flex flex-[1_0_0] flex-col items-start gap-3 1.5xs:gap-y-6">
           <div className="flex items-center justify-between self-stretch 1.5xs:flex-col 1.5xs:gap-y-2">
             <div className="flex items-center gap-2">
-              <p className="font-subtitle1 text-body2 leading-6 text-osmoverse-100">
+              <p className="text-body2 font-subtitle1 leading-6 text-osmoverse-100">
                 {user.name}
               </p>
               <Link
                 href={user.url ?? `${TWITTER_PUBLIC_URL}/${user.username}`}
                 passHref
                 target="_blank"
-                className="font-body2 text-body2 text-sm font-medium leading-5 text-osmoverse-300 hover:underline"
+                className="text-body2 text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
                 onClick={onTweetLinkClick}
               >
                 @{user.username}
@@ -98,7 +98,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
             </div>
             <time
               dateTime={createdAt}
-              className="font-body2 text-body2 font-medium leading-5 text-osmoverse-300"
+              className="text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
             >
               {new Date(createdAt).toDateString()}
             </time>
@@ -106,7 +106,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
           <Link
             href={`${TWITTER_PUBLIC_URL}/${user.username}/status/${id}`}
             target="_blank"
-            className="breakspaces self-stretch font-body2 text-body2 font-medium leading-5 text-osmoverse-300"
+            className="breakspaces self-stretch text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
             passHref
             onClick={onTweetLinkClick}
           >

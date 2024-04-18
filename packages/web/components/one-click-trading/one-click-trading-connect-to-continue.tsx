@@ -15,10 +15,10 @@ const OneClickTradingConnectToContinue = () => {
         className="mb-6"
       />
 
-      <h1 className="mb-3 font-h5 text-h5">
+      <h1 className="mb-3 text-h5 font-h5">
         {t("oneClickTrading.connectToContinue.header")}
       </h1>
-      <p className="text-center font-body2 text-body2 text-osmoverse-200">
+      <p className="text-center text-body2 font-body2 text-osmoverse-200">
         {t("oneClickTrading.connectToContinue.description")}
       </p>
     </div>

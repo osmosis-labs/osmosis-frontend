@@ -63,7 +63,7 @@ export const ColumnCellHeader = ({
     >
       <small
         className={classNames(
-          "whitespace-nowrap font-subtitle2 text-base font-semibold text-osmoverse-300",
+          "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
           className
         )}
       >

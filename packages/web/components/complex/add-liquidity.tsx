@@ -201,7 +201,7 @@ const AmountInput: FunctionComponent<{
         )}
         <div className="flex flex-col gap-2">
           {!isMobile && (
-            <div className="flex justify-end gap-2 font-caption text-caption">
+            <div className="flex justify-end gap-2 text-caption font-caption">
               <span className="my-auto">{t("addLiquidity.available")}</span>
               {assetBalance && (
                 <span
@@ -229,7 +229,7 @@ const AmountInput: FunctionComponent<{
                 placeholder=""
               />
               {!isMobile && (
-                <span className="pr-3 text-right font-caption text-xs leading-5 text-osmoverse-400">
+                <span className="pr-3 text-right text-xs font-caption leading-5 text-osmoverse-400">
                   {!inputAmountValue || inputAmountValue.toDec().isZero() ? (
                     <br />
                   ) : (
