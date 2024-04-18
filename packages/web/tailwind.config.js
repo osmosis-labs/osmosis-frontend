@@ -139,8 +139,8 @@ module.exports = {
       h6: 600,
       subtitle1: 600,
       subtitle2: 400,
-      body1: 400,
-      body2: 400,
+      body1: 500,
+      body2: 500,
       button: 600,
       caption: 400,
       overline: 400,
@@ -240,6 +240,7 @@ module.exports = {
         },
       },
       spacing: {
+        navbar: "72px",
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         "rewards-w": "108px",

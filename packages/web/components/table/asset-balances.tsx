@@ -126,7 +126,13 @@ export const AssetBalancesTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        cell: (cell) => (
+          <AssetCell
+            coinName={cell.row.original.coinName}
+            coinImageUrl={cell.row.original.coinImageUrl}
+            isVerified={cell.row.original.isVerified}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
