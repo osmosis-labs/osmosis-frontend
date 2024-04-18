@@ -84,7 +84,7 @@ export const AssetsInfoTable: FunctionComponent<{
   // sorting
   const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
   const sortKey = useMemo(() => {
-    // handle topGainers category on client
+    // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "priceChange24h";
     else return sortKey_;
   }, [selectedCategory, sortKey_]);
@@ -93,7 +93,7 @@ export const AssetsInfoTable: FunctionComponent<{
   }, []);
   const [sortDirection_, setSortDirection] = useState<SortDirection>("desc");
   const sortDirection = useMemo(() => {
-    // handle topGainers category on client
+    // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "desc";
     else return sortDirection_;
   }, [selectedCategory, sortDirection_]);
