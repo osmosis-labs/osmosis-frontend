@@ -1,6 +1,6 @@
-import { AssetCategories, Category, isAssetNew } from "@osmosis-labs/server";
+import { Category, isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
@@ -44,15 +44,36 @@ const categoryAssetSampleImages = {
 
 export const AssetCategoriesSelectors: FunctionComponent<{
   selectedCategory?: Category;
+  /** Categories that can still be selected, but aren't available from this control. */
+  hiddenCategories?: Category[];
   onSelectCategory: (category: Category) => void;
   unselectCategory: () => void;
-}> = ({ selectedCategory, onSelectCategory, unselectCategory }) => {
+}> = ({
+  selectedCategory,
+  hiddenCategories,
+  onSelectCategory,
+  unselectCategory,
+}) => {
   const { t } = useTranslation();
+
+  const categories = useMemo(() => {
+    const sortedCategories = Object.keys(categoryAssetSampleImages);
+    // move selected to first in list
+    if (selectedCategory) {
+      sortedCategories.sort((a, b) =>
+        a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+      );
+    }
+    return sortedCategories as Category[];
+  }, [selectedCategory]);
 
   return (
     <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
-      {AssetCategories.map((category) => {
+      {categories.map((category) => {
+        const isSelected = selectedCategory === category;
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
+
+        if (hiddenCategories?.includes(category) && !isSelected) return null;
 
         return (
           <button
@@ -60,13 +81,12 @@ export const AssetCategoriesSelectors: FunctionComponent<{
             className={classNames(
               "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
               {
-                "border-osmoverse-800 bg-osmoverse-800":
-                  selectedCategory === category,
-                "border-osmoverse-700": selectedCategory !== category,
+                "border-osmoverse-800 bg-osmoverse-800": isSelected,
+                "border-osmoverse-700": !isSelected,
               }
             )}
             onClick={() => {
-              if (selectedCategory === category) {
+              if (isSelected) {
                 unselectCategory();
               } else {
                 onSelectCategory(category);
@@ -116,9 +136,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
-            {selectedCategory === category && (
-              <Icon id="x-circle" height={16} width={17} />
-            )}
+            {isSelected && <Icon id="x-circle" height={16} width={17} />}
           </button>
         );
       })}

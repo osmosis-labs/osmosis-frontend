@@ -21,6 +21,7 @@ import {
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -290,6 +291,7 @@ export const AssetsInfoTable: FunctionComponent<{
       <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
+          hiddenCategories={useConst(["new"])}
           onSelectCategory={selectCategory}
           unselectCategory={unselectCategory}
         />
