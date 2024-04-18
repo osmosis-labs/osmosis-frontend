@@ -81,17 +81,16 @@ export const AssetCategoriesSelectors: FunctionComponent<{
     [clientCategoryImageSamples]
   );
 
-  const categories = useMemo(() => {
-    // move selected to first in list
-    if (selectedCategory) {
-      AssetCategories.slice().sort((a, b) =>
-        a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
-      );
-    }
-    return AssetCategories;
-  }, [selectedCategory]);
-
-  console.log({ categories });
+  /** Selected moved to front of list of categories. */
+  const categories = useMemo(
+    () =>
+      selectedCategory
+        ? AssetCategories.slice().sort((a, b) =>
+            a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+          )
+        : AssetCategories.slice(),
+    [selectedCategory]
+  );
 
   return (
     <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
@@ -101,7 +100,6 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 
         if (hiddenCategories?.includes(category) && !isSelected) return null;
 
-        console.log("selectedCategory", selectedCategory, sampleAssets);
         return (
           <button
             key={category}
