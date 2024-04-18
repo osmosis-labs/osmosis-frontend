@@ -20,7 +20,7 @@ export const StrategyButton = ({
     <button
       onClick={() => onChange(resp)}
       className={classNames(
-        "mx-1 flex min-w-strategy-buttons items-center gap-4 rounded-lg py-1 px-4",
+        "mx-1 flex min-w-strategy-buttons items-center gap-4 rounded-lg px-4 py-1",
         {
           "bg-osmoverse-800": isOn === true,
         }
@@ -29,7 +29,7 @@ export const StrategyButton = ({
       <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
         {icon}
       </div>
-      <span className="text-base font-subtitle1 text-osmoverse-200">
+      <span className="font-subtitle1 text-base text-osmoverse-200">
         {label}
       </span>
     </button>

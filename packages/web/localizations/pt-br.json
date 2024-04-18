@@ -145,7 +145,13 @@
       "pendingRefunded": "Falhou: Reembolso pendente",
       "refunded": "Reembolsado",
       "success": "Sucesso",
-      "title": "Histórico de Transferências"
+      "title": "Histórico de Transferências",
+      "pendingDeposit": "Depósito pendente",
+      "pendingWithdraw": "Retirada pendente",
+      "successDeposit": "Depositado",
+      "successWithdraw": "Retirou-se",
+      "failDeposit": "Falha no depósito",
+      "failWithdraw": "Falha na retirada"
     },
     "ibcTransfer": {
       "buttonAdd": "Adicionar",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Sacar para"
     },
     "stakedAssets": "OSMO em stake",
-    "pooledAssets": "Agrupados",
     "table": {
       "columns": {
         "assetChain": "Ativo / Rede",
@@ -201,7 +206,12 @@
       },
       "title": "Todos os ativos",
       "withdrawButton": "Sacar",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "marketCap": "Valor de mercado",
+      "volume24h": "Volume",
+      "priceChange24h": "Mudança de 24h",
+      "price": "Preço",
+      "name": "Nome"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -286,7 +296,21 @@
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
       "liquid_staking": "Estaqueamento líquido"
+    },
+    "seeAll": "Ver tudo",
+    "highlights": {
+      "new": "Novo",
+      "topGainers": "Principais ganhadores",
+      "upcoming": "Por vir"
     }
+  },
+  "portfolio": {
+    "trade": "Troca",
+    "yourAssets": "Seus ativos",
+    "yourPositions": "Suas posições",
+    "recentTransfers": "Transferências recentes",
+    "yourSuperchargedPositions": "Suas posições sobrecarregadas",
+    "yourLiquidityPools": "Seus pools de liquidez"
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Ativos",
+    "portfolio": "Portfólio",
     "help": "Apoiar",
     "info": "Status",
     "pools": "Piscinas",
@@ -406,7 +431,9 @@
     "marsSubtext": "Alimentado por Marte",
     "levanaSubtext": "Desenvolvido por Levana",
     "more": "Mais",
-    "new": "NOVO"
+    "new": "NOVO",
+    "settings": "Configurações",
+    "notifications": "Notificações"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",
@@ -790,6 +817,8 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
+    "gettingStarted": "Começando",
     "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",
     "somethingWentWrong": "Algo deu errado",
     "isNotInstalled": "{walletName} não está instalado",
@@ -894,6 +924,10 @@
       "title": "Ativos de Osmose",
       "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
     },
+    "portfolio": {
+      "title": "Portfólio de Osmose",
+      "description": "Veja seus ativos na Osmosis - a bolsa descentralizada líder do Cosmos"
+    },
     "disclaimer": {
       "title": "Isenção de responsabilidade de osmose",
       "description": "Leia o aviso de isenção de responsabilidade e a política de privacidade da Osmosis - a principal bolsa descentralizada do Cosmos"
@@ -951,23 +985,23 @@
     "strategiesCount": "{number} estratégias",
     "oneStrategy": "1 estratégia",
     "value": "Valor",
-    "method": "Método",
+    "method": "Tipo",
     "platform": "Plataforma",
     "scrollToSeeMore": "role para ver mais",
     "discoverStrategies": "Descubra estratégias",
-    "myStrategies": "Minhas estratégias",
-    "strategyPlatform": "Estratégia/Plataforma",
-    "apy": "APY",
-    "daily": "Diário",
+    "myStrategies": "Suas estratégias",
+    "strategyPlatform": "Estratégia",
+    "apy": "ABRIL",
     "reward": "Recompensa",
-    "lock": "Trancar",
+    "lock": "Desvincular",
     "days": "dias",
+    "day": "dia",
     "risk": "Risco",
-    "strategyMethod": "Método de Estratégia",
-    "allMethods": "Todos os métodos",
+    "strategyMethod": "Tipos",
+    "allMethods": "Todos os tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas as plataformas",
-    "allCategories": "todas as categorias",
+    "allCategories": "Todas as categorias",
     "filters": "Filtros",
     "resetFilters": "Redefinir filtros",
     "saveFilters": "Salvar filtros",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "Reivindique todas as recompensas",
     "join": "Juntar",
     "tokenFilterOptions": {
-      "my": "Meus tokens",
-      "all": "Todos os tokens"
+      "my": "Seus ativos",
+      "all": "Todos os ativos"
     },
     "rewardTypes": {
       "all": "Todos",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Valor total",
     "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
-    "startEarning": "Descubra estratégias",
-    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio de uma das muitas estratégias abaixo.",
+    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio das diversas estratégias abaixo.",
     "loadingStrategies": "Carregando estratégias...",
     "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
+    "sorryNoResultsWithAssets": "Nenhuma estratégia encontrada associada aos seus recursos.",
     "sorryNoResults": "Nenhuma estratégia encontrada.",
     "tryChangingFilters": "Tente alterar os filtros",
     "retry": "Tentar novamente",
     "manage": "Gerenciar",
     "noLock": "Não feche",
     "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
-    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país."
+    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
+    "instantUnbondOnly": "Somente desvinculação instantânea",
+    "tooltips": {
+      "apr": {
+        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia.\n\nNota: O retorno de uma estratégia pode variar com base na participação e no desempenho.\n\nIsenção de responsabilidade: essas APRs são relatadas pelos próprios projetos e podem ser imprecisas."
+      },
+      "tvl": {
+        "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."
+      },
+      "reward": {
+        "description": "O tipo de ativos obtidos através das operações e/ou incentivos da estratégia."
+      },
+      "lock": {
+        "description": "O período de tempo em que uma posição fica vinculada antes de poder ser encerrada. Nota: Nem todos os períodos de desvinculação da estratégia* têm distribuições de recompensas."
+      },
+      "strategy": {
+        "description": "Oportunidades de ganhos de vários tipos, hospedadas em diversas plataformas, estão disponíveis no Osmosis. O acesso a uma estratégia exige o depósito de ativos específicos."
+      },
+      "risk": {
+        "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
+      }
+    }
   },
   "disclaimer": "Isenção de responsabilidade",
   "remaining": "restante",
@@ -1015,5 +1070,9 @@
     "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
     "buttonContinue": "Continue de qualquer maneira",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Nenhuma transferência recente",
+    "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui."
   }
 }

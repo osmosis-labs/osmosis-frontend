@@ -89,13 +89,13 @@ export const NetworkFeeLimitScreen = ({
             };
           });
         }}
-        className="absolute top-7 left-7"
+        className="absolute left-7 top-7"
       />
       <div className="flex flex-col items-center gap-6 px-16 ">
-        <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
+        <h1 className="w-full text-center font-h6 text-h6 tracking-wider">
           {t("oneClickTrading.settings.networkFeeLimitScreen.title")}
         </h1>
-        <p className="text-center text-body2 font-body2 text-osmoverse-200">
+        <p className="text-center font-body2 text-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.networkFeeLimitScreen.description")}
         </p>
 
@@ -103,7 +103,7 @@ export const NetworkFeeLimitScreen = ({
           {isLoading ? (
             <>
               {arrayOfLength(3).map((_, i) => (
-                <SkeletonLoader className="flex-1 py-4 px-2" key={i}>
+                <SkeletonLoader className="flex-1 px-2 py-4" key={i}>
                   <p aria-hidden>test</p>
                   <p aria-hidden>test</p>
                 </SkeletonLoader>
@@ -118,7 +118,7 @@ export const NetworkFeeLimitScreen = ({
                     key={step.id}
                     mode="unstyled"
                     className={classNames(
-                      "subtitle1 flex flex-1 flex-col items-center gap-2 rounded-lg border-2 bg-osmoverse-700 !py-4 !px-2 text-white-full hover:bg-osmoverse-600",
+                      "subtitle1 flex flex-1 flex-col items-center gap-2 rounded-lg border-2 bg-osmoverse-700 !px-2 !py-4 text-white-full hover:bg-osmoverse-600",
                       String(value) === networkFeeLimit
                         ? "border-osmoverse-200"
                         : "border-transparent"
@@ -162,14 +162,14 @@ export const NetworkFeeLimitScreen = ({
               }
             }}
             trailingSymbol={
-              <span className="ml-2 text-body1 font-body1 text-osmoverse-300">
+              <span className="ml-2 font-body1 text-body1 text-osmoverse-300">
                 {stepAsset?.coinDenom}
               </span>
             }
           />
         </SkeletonLoader>
 
-        <p className="text-center text-caption font-caption text-osmoverse-200">
+        <p className="text-center font-caption text-caption text-osmoverse-200">
           {t("oneClickTrading.settings.networkFeeLimitScreen.info")}
         </p>
       </div>

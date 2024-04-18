@@ -42,7 +42,7 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
 
   return (
     <Button
-      variant="secondary"
+      variant="success"
       className={"w-1/2 self-center lg:w-full"}
       onClick={onStakeButtonClick}
     >

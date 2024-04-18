@@ -145,7 +145,13 @@
       "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
-      "title": "Übertragungsverlauf"
+      "title": "Übertragungsverlauf",
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "pendingWithdraw": "Ausstehender Auszug",
+      "successDeposit": "Hinterlegt",
+      "successWithdraw": "Zurückgezogen",
+      "failDeposit": "Einzahlung fehlgeschlagen",
+      "failWithdraw": "Auszahlung fehlgeschlagen"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Sich zurückziehen"
     },
     "stakedAssets": "Abgestecktes OSMO",
-    "pooledAssets": "Gebündelt",
     "table": {
       "columns": {
         "assetChain": "Vermögenswert/Kette",
@@ -201,7 +206,12 @@
       },
       "title": "Alle Vermögenswerte",
       "withdrawButton": "Zurückziehen",
-      "activate": "aktivieren Sie"
+      "activate": "aktivieren Sie",
+      "marketCap": "Marktkapitalisierung",
+      "volume24h": "Volumen",
+      "priceChange24h": "24h Wechsel",
+      "price": "Preis",
+      "name": "Name"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -286,7 +296,21 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Flüssiges Abstecken"
+    },
+    "seeAll": "Alles sehen",
+    "highlights": {
+      "new": "Neu",
+      "topGainers": "Top-Gewinner",
+      "upcoming": "Bevorstehende"
     }
+  },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Ihr Vermögen",
+    "yourPositions": "Ihre Positionen",
+    "recentTransfers": "Letzte Übertragungen",
+    "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
+    "yourLiquidityPools": "Ihre Liquiditätspools"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Vermögenswerte",
+    "portfolio": "Portfolio",
     "help": "Support-Labor",
     "info": "Statistiken",
     "pools": "Pools",
@@ -406,7 +431,9 @@
     "marsSubtext": "Angetrieben vom Mars",
     "levanaSubtext": "Unterstützt von Levana",
     "more": "Mehr",
-    "new": "NEU"
+    "new": "NEU",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",
@@ -790,6 +817,8 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
+    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
+    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
+    "gettingStarted": "Erste Schritte",
     "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",
     "somethingWentWrong": "Etwas ist schief gelaufen",
     "isNotInstalled": "{walletName} ist nicht installiert",
@@ -894,6 +924,10 @@
       "title": "Osmose-Vermögenswerte",
       "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
     },
+    "portfolio": {
+      "title": "Osmose-Portfolio",
+      "description": "Sehen Sie sich Ihr Vermögen auf Osmosis an – der führenden dezentralen Cosmos-Börse"
+    },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",
       "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"
@@ -951,20 +985,20 @@
     "strategiesCount": "{number} Strategien",
     "oneStrategy": "1 Strategie",
     "value": "Wert",
-    "method": "Methode",
+    "method": "Typ",
     "platform": "Plattform",
     "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
-    "myStrategies": "Meine Strategien",
-    "strategyPlatform": "Strategie / Plattform",
-    "apy": "APY",
-    "daily": "Täglich",
+    "myStrategies": "Ihre Strategien",
+    "strategyPlatform": "Strategie",
+    "apy": "APR",
     "reward": "Belohnen",
-    "lock": "Sperren",
+    "lock": "Bindung lösen",
     "days": "Tage",
+    "day": "Tag",
     "risk": "Risiko",
-    "strategyMethod": "Strategiemethode",
-    "allMethods": "Alle Methoden",
+    "strategyMethod": "Typen",
+    "allMethods": "Alle Arten",
     "platforms": "Plattformen",
     "allPlatforms": "Alle Plattformen",
     "allCategories": "Alle Kategorien",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "Fordern Sie alle Belohnungen an",
     "join": "Verbinden",
     "tokenFilterOptions": {
-      "my": "Meine Token",
-      "all": "Alle Token"
+      "my": "Ihr Vermögen",
+      "all": "Alle Vermögenswerte"
     },
     "rewardTypes": {
       "all": "Alle",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Gesamtwert",
     "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarning": "Entdecken Sie Strategien",
-    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mit einer der vielen unten aufgeführten Strategien.",
+    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
     "loadingStrategies": "Lade Strategien...",
-    "sorryErrorOccurred": "Es tut uns leid, es ist ein Fehler aufgetreten.",
+    "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",
+    "sorryNoResultsWithAssets": "Es wurden keine mit Ihren Vermögenswerten verknüpften Strategien gefunden.",
     "sorryNoResults": "Keine Strategien gefunden.",
     "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
     "retry": "Wiederholen",
     "manage": "Verwalten",
     "noLock": "Kein Schloss",
     "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
-    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar."
+    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
+    "instantUnbondOnly": "Nur sofortiges Lösen",
+    "tooltips": {
+      "apr": {
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
+      },
+      "reward": {
+        "description": "Die Art der Vermögenswerte, die durch die Operationen und/oder Anreize der Strategie erzielt werden."
+      },
+      "lock": {
+        "description": "Der Zeitraum, für den eine Position gebunden ist, bevor sie veräußert werden kann. Hinweis: Nicht alle Strategie-Unbonding-Zeiträume* verfügen über Belohnungsverteilungen."
+      },
+      "strategy": {
+        "description": "Auf Osmosis sind Verdienstmöglichkeiten verschiedener Art verfügbar, die von verschiedenen Plattformen gehostet werden. Der Zugriff auf eine Strategie erfordert die Hinterlegung bestimmter Vermögenswerte."
+      },
+      "risk": {
+        "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
+      }
+    }
   },
   "disclaimer": "Haftungsausschluss",
   "remaining": "übrig",
@@ -1015,5 +1070,9 @@
     "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
     "buttonContinue": "Mache trotzdem weiter",
     "buttonCancel": "Stornieren"
+  },
+  "transactions": {
+    "noRecent": "Keine aktuellen Transfers",
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt."
   }
 }

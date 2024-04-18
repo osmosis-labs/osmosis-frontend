@@ -24,9 +24,13 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
+    "test:e2e": "yarn with-env is-ci-cli test:e2e:ci test:e2e:dev",
+    "test:e2e:dev": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --watch",
+    "test:e2e:ci": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --ci",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "with-env": "dotenv -e ../web/.env -c --"
   },
   "dependencies": {
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
@@ -35,7 +39,7 @@
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
-    "@sentry/core": "^7.107.0",
+    "@sentry/core": "^7.109.0",
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
     "@vercel/kv": "^0.2.3",
@@ -44,13 +48,16 @@
     "dataloader": "^2.2.2",
     "dayjs": "^1.10.7",
     "fuse.js": "^6.5.3",
+    "jest-util": "^29.7.0",
     "lru-cache": "^10.0.1",
     "superjson": "^2.2.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
-    "jest-in-case": "^1.0.2"
+    "jest-in-case": "^1.0.2",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.3"
   },
   "lint-staged": {
     "*": [

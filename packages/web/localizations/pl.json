@@ -145,7 +145,13 @@
       "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
-      "title": "Historia Transferów"
+      "title": "Historia Transferów",
+      "pendingDeposit": "Oczekujący depozyt",
+      "pendingWithdraw": "Oczekuje na wycofanie",
+      "successDeposit": "Zdeponowane",
+      "successWithdraw": "Wycofał się",
+      "failDeposit": "Wpłata nie powiodła się",
+      "failWithdraw": "Wypłata nie powiodła się"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Wypłać do"
     },
     "stakedAssets": "Stakowane OSMO",
-    "pooledAssets": "Połączone",
     "table": {
       "columns": {
         "assetChain": "Token / Sieć",
@@ -201,7 +206,12 @@
       },
       "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać",
-      "activate": "Aktywuj"
+      "activate": "Aktywuj",
+      "marketCap": "Kapitalizacja rynkowa",
+      "volume24h": "Tom",
+      "priceChange24h": "Zmiana 24h",
+      "price": "Cena",
+      "name": "Nazwa"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -286,7 +296,21 @@
       "stablecoin": "Stablecoiny",
       "meme": "Ja ja",
       "liquid_staking": "Płynna stawka"
+    },
+    "seeAll": "Widzieć wszystko",
+    "highlights": {
+      "new": "Nowy",
+      "topGainers": "Najlepsi zdobywcy",
+      "upcoming": "Nadchodzące"
     }
+  },
+  "portfolio": {
+    "trade": "Handel",
+    "yourAssets": "Twoje aktywa",
+    "yourPositions": "Twoje pozycje",
+    "recentTransfers": "Ostatnie transfery",
+    "yourSuperchargedPositions": "Twoje doładowane pozycje",
+    "yourLiquidityPools": "Twoje pule płynności"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Środki",
+    "portfolio": "Teczka",
     "help": "Wsparcie",
     "info": "Statystyki",
     "pools": "Pule",
@@ -406,7 +431,9 @@
     "marsSubtext": "Zasilany przez Marsa",
     "levanaSubtext": "Obsługiwane przez Levanę",
     "more": "Więcej",
-    "new": "NOWY"
+    "new": "NOWY",
+    "settings": "Ustawienia",
+    "notifications": "Powiadomienia"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",
@@ -790,6 +817,8 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
+    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
+    "gettingStarted": "Pierwsze kroki",
     "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
@@ -894,6 +924,10 @@
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     },
+    "portfolio": {
+      "title": "Portfolio osmozy",
+      "description": "Przeglądaj swoje aktywa na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -951,20 +985,20 @@
     "strategiesCount": "Strategie {number}",
     "oneStrategy": "1 strategia",
     "value": "Wartość",
-    "method": "metoda",
+    "method": "Typ",
     "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
-    "myStrategies": "Moje strategie",
-    "strategyPlatform": "Strategia/platforma",
-    "apy": "RRSO",
-    "daily": "Codziennie",
+    "myStrategies": "Twoje strategie",
+    "strategyPlatform": "Strategia",
+    "apy": "KWIECIEŃ",
     "reward": "Nagroda",
-    "lock": "Zamek",
+    "lock": "Rozłącz",
     "days": "dni",
+    "day": "dzień",
     "risk": "Ryzyko",
-    "strategyMethod": "Metoda strategii",
-    "allMethods": "Wszystkie metody",
+    "strategyMethod": "Typy",
+    "allMethods": "Wszystkie typy",
     "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
     "allCategories": "Wszystkie kategorie",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
     "tokenFilterOptions": {
-      "my": "Moje tokeny",
-      "all": "Wszystkie tokeny"
+      "my": "Twoje aktywa",
+      "all": "Wszystkie aktywa"
     },
     "rewardTypes": {
       "all": "Wszystko",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Całkowita wartość",
     "lookBelow": "Spójrz poniżej i znajdź najlepsze strategie dla siebie",
-    "startEarning": "Odkryj strategie",
-    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z jednej z wielu poniższych strategii.",
+    "startEarningDescription": "Odblokuj swój pełny potencjał zarobkowy. Wykorzystaj swoje zasoby, korzystając z wielu poniższych strategii.",
     "loadingStrategies": "Ładowanie strategii...",
     "sorryErrorOccurred": "Przepraszamy, wystąpił błąd.",
+    "sorryNoResultsWithAssets": "Nie znaleziono strategii powiązanych z Twoimi zasobami.",
     "sorryNoResults": "Nie znaleziono strategii.",
     "tryChangingFilters": "Spróbuj zmienić filtry",
     "retry": "Spróbować ponownie",
     "manage": "Zarządzać",
     "noLock": "Brak blokady",
     "riskDisclaimer": "Ryzyko oblicza się na podstawie połączonego zestawu kryteriów dotyczących strategii i jej aktywów bazowych.",
-    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju."
+    "strategyGeoblocked": "Przepraszamy, ta strategia jest niedostępna w Twoim kraju.",
+    "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
+    "tooltips": {
+      "apr": {
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii.\n\nUwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników.\n\nZastrzeżenie: Te RRSO są zgłaszane przez same projekty i mogą być niedokładne."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."
+      },
+      "reward": {
+        "description": "Rodzaj aktywów uzyskanych dzięki operacjom i/lub zachętom w ramach strategii."
+      },
+      "lock": {
+        "description": "Okres czasu, przez który pozycja jest zamknięta, zanim będzie można z niej wyjść. Uwaga: nie wszystkie okresy odłączenia* strategii obejmują dystrybucję nagród."
+      },
+      "strategy": {
+        "description": "Na Osmosis dostępne są różnego rodzaju możliwości zarobku, hostowane przez różne platformy. Dostęp do strategii wymaga zdeponowania określonych aktywów."
+      },
+      "risk": {
+        "description": "Ocena ryzyka obejmuje rozważenie kombinacji kryteriów związanych ze strategią i jej aktywami bazowymi."
+      }
+    }
   },
   "disclaimer": "Zastrzeżenie",
   "remaining": "pozostały",
@@ -1015,5 +1070,9 @@
     "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
     "buttonContinue": "Kontynuować mimo to",
     "buttonCancel": "Anulować"
+  },
+  "transactions": {
+    "noRecent": "Brak ostatnich transferów",
+    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami)."
   }
 }

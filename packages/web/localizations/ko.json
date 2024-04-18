@@ -145,7 +145,13 @@
       "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
-      "title": "전송 내역"
+      "title": "전송 내역",
+      "pendingDeposit": "입금 대기 중",
+      "pendingWithdraw": "출금 대기 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철수",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
     },
     "ibcTransfer": {
       "buttonAdd": "추가하다",
@@ -176,7 +182,6 @@
       "titleWithdraw": "출금할 지갑"
     },
     "stakedAssets": "스테이킹된 OSMO",
-    "pooledAssets": "풀링됨",
     "table": {
       "columns": {
         "assetChain": "자산 / 체인",
@@ -201,7 +206,12 @@
       },
       "title": "모든 자산",
       "withdrawButton": "출금",
-      "activate": "활성화"
+      "activate": "활성화",
+      "marketCap": "시가총액",
+      "volume24h": "용량",
+      "priceChange24h": "24시간 변경",
+      "price": "가격",
+      "name": "이름"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
@@ -286,7 +296,21 @@
       "stablecoin": "스테이블코인",
       "meme": "나 나",
       "liquid_staking": "리퀴드 스테이킹"
+    },
+    "seeAll": "모두 보기",
+    "highlights": {
+      "new": "새로운",
+      "topGainers": "최고 상승자",
+      "upcoming": "예정"
     }
+  },
+  "portfolio": {
+    "trade": "거래",
+    "yourAssets": "귀하의 자산",
+    "yourPositions": "귀하의 직위",
+    "recentTransfers": "최근 이적",
+    "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
+    "yourLiquidityPools": "귀하의 유동성 풀"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "자산",
+    "portfolio": "포트폴리오",
     "help": "헬프데스크",
     "info": "정보",
     "pools": "풀",
@@ -406,7 +431,9 @@
     "marsSubtext": "화성에 의해 구동됨",
     "levanaSubtext": "레바나 제공",
     "more": "더",
-    "new": "새로운"
+    "new": "새로운",
+    "settings": "설정",
+    "notifications": "알림"
   },
   "notifi": {
     "saveChanges": "변경 사항 저장",
@@ -790,6 +817,8 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
+    "maxButtonError": "최대 금액을 계산할 수 없습니다. 네트워크 연결을 확인하거나 페이지를 새로 고쳐보세요.",
+    "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
     "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
+    "gettingStarted": "시작하기",
     "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",
     "somethingWentWrong": "오류가 발생했습니다.",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
@@ -894,6 +924,10 @@
       "title": "오스모시스 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
     },
+    "portfolio": {
+      "title": "삼투 포트폴리오",
+      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
+    },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
@@ -951,20 +985,20 @@
     "strategiesCount": "{number} 전략",
     "oneStrategy": "전략 1개",
     "value": "값",
-    "method": "방법",
+    "method": "유형",
     "platform": "플랫폼",
-    "scrollToSeeMore": "더 보려면 스크롤하세요.",
+    "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
-    "myStrategies": "내 전략",
-    "strategyPlatform": "전략/플랫폼",
-    "apy": "APY",
-    "daily": "일일",
+    "myStrategies": "귀하의 전략",
+    "strategyPlatform": "전략",
+    "apy": "4월",
     "reward": "보상",
-    "lock": "잠그다",
+    "lock": "언본드",
     "days": "날",
+    "day": "낮",
     "risk": "위험",
-    "strategyMethod": "전략 방법",
-    "allMethods": "모든 방법",
+    "strategyMethod": "유형",
+    "allMethods": "모든 유형",
     "platforms": "플랫폼",
     "allPlatforms": "모든 플랫폼",
     "allCategories": "모든 카테고리",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
     "tokenFilterOptions": {
-      "my": "내 토큰",
-      "all": "모든 토큰"
+      "my": "귀하의 자산",
+      "all": "모든 자산"
     },
     "rewardTypes": {
       "all": "모두",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "총 가치",
     "lookBelow": "아래에서 귀하에게 가장 적합한 전략을 찾아보세요.",
-    "startEarning": "전략 발견",
-    "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략 중 하나를 통해 자산을 활용해 보세요.",
+    "startEarningDescription": "귀하의 수익 잠재력을 최대한 활용하세요. 아래의 다양한 전략을 통해 자산을 활용해 보세요.",
     "loadingStrategies": "전략 로드 중...",
     "sorryErrorOccurred": "죄송합니다. 오류가 발생했습니다.",
+    "sorryNoResultsWithAssets": "귀하의 자산과 관련된 전략을 찾을 수 없습니다.",
     "sorryNoResults": "전략을 찾을 수 없습니다.",
     "tryChangingFilters": "필터를 바꿔보세요",
     "retry": "다시 해 보다",
     "manage": "관리하다",
     "noLock": "잠금 없음",
     "riskDisclaimer": "위험은 전략과 기본 자산에 대한 기준을 결합하여 계산됩니다.",
-    "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다."
+    "strategyGeoblocked": "죄송합니다. 해당 국가에서는 이 전략을 사용할 수 없습니다.",
+    "instantUnbondOnly": "즉시 결합해제만 가능",
+    "tooltips": {
+      "apr": {
+        "description": "연간 백분율(APR)은 전략의 연간 백분율 수익률을 나타냅니다.\n\n참고: 전략의 수익은 참여와 성과에 따라 변동될 수 있습니다.\n\n면책조항: 이러한 APR은 프로젝트 자체에서 자체 보고한 것이므로 정확하지 않을 수 있습니다."
+      },
+      "tvl": {
+        "description": "TVL(Total Value Locked)은 전략에 예치된 자산의 총 미국 달러 가치를 나타냅니다."
+      },
+      "reward": {
+        "description": "전략 운영 및/또는 인센티브를 통해 획득한 자산 유형입니다."
+      },
+      "lock": {
+        "description": "포지션이 청산될 수 있을 때까지 본딩이 유지되는 기간입니다. 참고: 모든 전략 언본딩* 기간에 보상 분배가 있는 것은 아닙니다."
+      },
+      "strategy": {
+        "description": "다양한 플랫폼에서 호스팅되는 다양한 유형의 수익 창출 기회가 Osmosis에서 제공됩니다. 전략에 접근하려면 특정 자산을 예치해야 합니다."
+      },
+      "risk": {
+        "description": "위험 평가에는 전략 및 기본 자산과 관련된 기준의 조합을 고려하는 것이 포함됩니다."
+      }
+    }
   },
   "disclaimer": "부인 성명",
   "remaining": "남은",
@@ -1015,5 +1070,9 @@
     "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
     "buttonContinue": "계속 진행",
     "buttonCancel": "취소"
+  },
+  "transactions": {
+    "noRecent": "최근 이적 없음",
+    "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다."
   }
 }

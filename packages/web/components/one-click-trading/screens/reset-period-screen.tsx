@@ -44,12 +44,12 @@ export const ResetPeriodScreen = ({
 
   return (
     <>
-      <ScreenGoBackButton className="absolute top-7 left-7" />
+      <ScreenGoBackButton className="absolute left-7 top-7" />
       <div className="flex flex-col items-center gap-6 px-16">
-        <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
+        <h1 className="w-full text-center font-h6 text-h6 tracking-wider">
           {t("oneClickTrading.settings.resetPeriodScreen.title")}
         </h1>
-        <p className="text-center text-body2 font-body2 text-osmoverse-200">
+        <p className="text-center font-body2 text-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.resetPeriodScreen.description")}
         </p>
 
@@ -59,7 +59,7 @@ export const ResetPeriodScreen = ({
               key={id}
               mode="unstyled"
               className={classNames(
-                "subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  py-4 px-6 capitalize text-white-full hover:bg-osmoverse-900",
+                "subtitle1 -ml-2.5 flex justify-start gap-2 rounded-2xl  px-6 py-4 capitalize text-white-full hover:bg-osmoverse-900",
                 {
                   "bg-osmoverse-900": transaction1CTParams?.resetPeriod === id,
                 }

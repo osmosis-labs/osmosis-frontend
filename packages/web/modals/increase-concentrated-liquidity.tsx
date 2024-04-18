@@ -3,7 +3,12 @@ import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { FunctionComponent, useCallback, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
@@ -22,7 +27,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -99,13 +104,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     >
       <div className="flex flex-col gap-3 pt-8">
         <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+          <div className="pl-4 font-subtitle1 text-subtitle1 xs:pl-0">
             {t("clPositions.yourPosition")}
           </div>
           <MyPositionStatus className="xs:px-0" status={status} negative />
         </div>
-        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
-          <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
+        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+          <div className="flex items-center gap-2 font-subtitle1 text-subtitle1 xs:text-body2">
             {baseCoin.currency.coinImageUrl && (
               <Image
                 alt="base currency"
@@ -116,7 +121,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             )}
             <span>{formatPretty(baseCoin, { maxDecimals: 2 })}</span>
           </div>
-          <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
+          <div className="flex items-center gap-2 font-subtitle1 text-subtitle1 xs:text-body2">
             {quoteCoin.currency.coinImageUrl && (
               <Image
                 alt="base currency"
@@ -130,10 +135,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 pl-4 xs:pl-1">
-            <div className="text-subtitle1 font-subtitle1">
+            <div className="font-subtitle1 text-subtitle1">
               {t("clPositions.selectedRange")}
             </div>
-            <div className="text-subtitle1 font-subtitle1 text-osmoverse-300 xs:text-body2">
+            <div className="font-subtitle1 text-subtitle1 text-osmoverse-300 xs:text-body2">
               {t("addConcentratedLiquidity.basePerQuote", {
                 base: baseCoin.denom,
                 quote: quoteCoin.denom,
@@ -177,7 +182,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 />
               </div>
               <div className="flex h-full flex-col">
-                <div className="absolute right-0 mt-[25px] mr-[8px] flex h-6 gap-1">
+                <div className="absolute right-0 mr-[8px] mt-[25px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
                     icon="refresh-ccw"
@@ -197,7 +202,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     onClick={zoomIn}
                   />
                 </div>
-                <div className="mr-[8px] mt-[55px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
+                <div className="mb-4 mr-[8px] mt-[55px] flex h-full flex-col items-end justify-between py-4 ">
                   <PriceBox
                     currentValue={formatPretty(upperPrice).toString()}
                     label={t("clPositions.maxPrice")}
@@ -216,7 +221,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-1">
+        <div className="pl-4 font-subtitle1 text-subtitle1 xs:pl-1">
           {t("clPositions.addMoreLiquidity")}
         </div>
         <div className="flex flex-col gap-1">
@@ -267,7 +272,7 @@ const PriceBox: FunctionComponent<{
   infinity?: boolean;
 }> = ({ label, currentValue, infinity }) => (
   <div className="flex max-w-[6.25rem] flex-col gap-1">
-    <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
+    <span className="pt-2 font-body2 text-body2 text-osmoverse-300">
       {label}
     </span>
     {infinity ? (
@@ -280,7 +285,7 @@ const PriceBox: FunctionComponent<{
         />
       </div>
     ) : (
-      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
+      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent font-subtitle1 text-subtitle1 leading-tight">
         {currentValue}
       </h6>
     )}
@@ -299,11 +304,17 @@ const ChartHeader: FunctionComponent<{
 
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
       classes={{
         priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
       }}
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}

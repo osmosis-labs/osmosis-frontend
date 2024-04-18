@@ -10,11 +10,12 @@ import {
   queryStrategyTVL,
   RawStrategyCMSData,
   RawStrategyTVL,
+  StategyCMSCategory,
   StrategyAnnualPercentages,
   StrategyCMSData,
   StrategyTVL,
 } from "../../../queries/data-services/earn";
-import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
+import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import dayjs from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
@@ -112,11 +113,13 @@ export async function getStrategies({
     key: "earn-strategy-cmsData",
     getFreshValue: async (): Promise<{
       riskReportUrl?: string;
+      categories: StategyCMSCategory[];
       strategies: StrategyCMSData[];
     }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
+          categories: StategyCMSCategory[];
           riskReportUrl: string;
         }>({ filePath: `cms/earn/strategies.json` });
 
@@ -166,6 +169,7 @@ export async function getStrategies({
 
         return {
           riskReportUrl: cmsData.riskReportUrl,
+          categories: cmsData.categories,
           strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {

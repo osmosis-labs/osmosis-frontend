@@ -73,7 +73,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           >
             {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
           </Button>
-          <Button variant="secondary" onClick={handleNewUserClick}>
+          <Button variant="success" onClick={handleNewUserClick}>
             {t("stake.validatorNextStep.newUser.button")}
           </Button>
         </>
@@ -85,14 +85,14 @@ export const ValidatorNextStepModal: FunctionComponent<
           <div className="flex w-full gap-8 md:gap-2">
             <Button
               className="w-full"
-              variant="secondary"
+              variant="success"
               onClick={handleExistingUserKeepClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonKeep")}
             </Button>
             <Button
               className="w-full"
-              variant="secondary"
+              variant="success"
               onClick={handleExistingUserSelectClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonSelect")}

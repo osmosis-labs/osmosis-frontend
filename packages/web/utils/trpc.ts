@@ -1,7 +1,12 @@
 import { localLink, makeSkipBatchLink, superjson } from "@osmosis-labs/server";
 import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+import type {
+  AnyProcedure,
+  AnyRouter,
+  inferRouterInputs,
+  inferRouterOutputs,
+} from "@trpc/server";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -131,6 +136,19 @@ export const api = createTRPCNext<AppRouter>({
   ssr: false,
 });
 
+type inferRouterKeys<TRouter extends AnyRouter, Prefix extends string = ""> = {
+  [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
+    ? TRouterOrProcedure extends AnyRouter
+      ? inferRouterKeys<
+          TRouterOrProcedure,
+          `${Prefix}${TKey extends string ? TKey : never}.`
+        >
+      : TRouterOrProcedure extends AnyProcedure
+      ? `${Prefix}${TKey extends string ? TKey : never}`
+      : never
+    : never;
+}[keyof TRouter["_def"]["record"]];
+
 /**
  * Inference helper for inputs.
  *
@@ -144,3 +162,10 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  * @example type HelloOutput = RouterOutputs['example']['hello']
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
+
+/**
+ * Inference helper for router keys.
+ *
+ * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
+ */
+export type RouterKeys = inferRouterKeys<AppRouter>;

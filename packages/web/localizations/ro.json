@@ -145,7 +145,13 @@
       "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
-      "title": "Istoric Transferuri"
+      "title": "Istoric Transferuri",
+      "pendingDeposit": "Depunere în așteptare",
+      "pendingWithdraw": "Retragere în așteptare",
+      "successDeposit": "Depunere reușită",
+      "successWithdraw": "Retragere reușită",
+      "failDeposit": "Depunere nereușită",
+      "failWithdraw": "Retragere nereușită"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Retrage catre"
     },
     "stakedAssets": "Staked OSMO",
-    "pooledAssets": "Adunate",
     "table": {
       "columns": {
         "assetChain": "Active / Retea",
@@ -201,7 +206,12 @@
       },
       "title": "Active",
       "withdrawButton": "Retrage",
-      "activate": "Activati"
+      "activate": "Activati",
+      "marketCap": "Capitalizarea pieței",
+      "volume24h": "Volum",
+      "priceChange24h": "schimbare 24h",
+      "price": "Preț",
+      "name": "Nume"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -286,7 +296,21 @@
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
       "liquid_staking": "Mărire lichidă"
+    },
+    "seeAll": "Vezi toate",
+    "highlights": {
+      "new": "Nou",
+      "topGainers": "Câștigători de top",
+      "upcoming": "În viitor"
     }
+  },
+  "portfolio": {
+    "trade": "Comerț",
+    "yourAssets": "Activele tale",
+    "yourPositions": "Pozițiile tale",
+    "recentTransfers": "Transferuri recente",
+    "yourSuperchargedPositions": "Pozițiile tale Supercharged",
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Active",
+    "portfolio": "Portofoliu",
     "help": "A sustine",
     "info": "Statistici",
     "pools": "Pool-uri",
@@ -406,7 +431,9 @@
     "marsSubtext": "Alimentat de Marte",
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
-    "new": "NOU"
+    "new": "NOU",
+    "settings": "Setări",
+    "notifications": "Notificări"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -790,6 +817,8 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
+    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
+    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
+    "gettingStarted": "Noțiuni de bază",
     "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
     "somethingWentWrong": "Ceva nu a mers bine",
     "isNotInstalled": "{walletName} nu este instalat",
@@ -894,6 +924,10 @@
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
+    "portfolio": {
+      "title": "Portofoliu de osmoză",
+      "description": "Vizualizați-vă activele pe Osmosis - principalul schimb descentralizat Cosmos"
+    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -951,23 +985,23 @@
     "strategiesCount": "{number} strategii",
     "oneStrategy": "1 strategie",
     "value": "Valoare",
-    "method": "Metodă",
+    "method": "Tip",
     "platform": "Platformă",
     "scrollToSeeMore": "derulați pentru a vedea mai multe",
-    "discoverStrategies": "Descoperiți strategiile",
-    "myStrategies": "Strategiile mele",
-    "strategyPlatform": "Strategie / Platformă",
-    "apy": "APY",
-    "daily": "Zilnic",
+    "discoverStrategies": "Descoperiți strategii",
+    "myStrategies": "Strategiile tale",
+    "strategyPlatform": "Strategie",
+    "apy": "APRILIE",
     "reward": "Răsplată",
-    "lock": "Lacăt",
+    "lock": "Dezlegați",
     "days": "zile",
+    "day": "zi",
     "risk": "Risc",
-    "strategyMethod": "Metoda Strategiei",
-    "allMethods": "Toate Metodele",
+    "strategyMethod": "Tipuri",
+    "allMethods": "Toate tipurile",
     "platforms": "Platforme",
     "allPlatforms": "Toate platformele",
-    "allCategories": "toate categoriile",
+    "allCategories": "Toate categoriile",
     "filters": "Filtre",
     "resetFilters": "Resetați filtrele",
     "saveFilters": "Salvați filtrele",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "Revendicați toate recompensele",
     "join": "A te alatura",
     "tokenFilterOptions": {
-      "my": "Jetoanele mele",
-      "all": "Toate jetoanele"
+      "my": "Activele tale",
+      "all": "Toate activele"
     },
     "rewardTypes": {
       "all": "Toate",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Valoarea totală",
     "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine",
-    "startEarning": "Descoperiți strategii",
-    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru printr-una dintre numeroasele strategii de mai jos.",
+    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru prin numeroasele strategii de mai jos.",
     "loadingStrategies": "Se încarcă strategiile...",
     "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
+    "sorryNoResultsWithAssets": "Nu s-au găsit strategii asociate cu activele dvs.",
     "sorryNoResults": "Nu s-au găsit strategii.",
     "tryChangingFilters": "Încercați să schimbați filtrele",
     "retry": "Reîncercați",
     "manage": "Administra",
     "noLock": "Fără blocare",
     "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
-    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs."
+    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
+    "instantUnbondOnly": "Dezlegarea instantanee numai",
+    "tooltips": {
+      "apr": {
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
+      },
+      "tvl": {
+        "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
+      },
+      "reward": {
+        "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
+      },
+      "lock": {
+        "description": "Perioada de timp în care o poziție este legată înainte de a putea fi părăsită. Notă: nu toate perioadele de dezlegare a strategiilor* au distribuții de recompense."
+      },
+      "strategy": {
+        "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."
+      },
+      "risk": {
+        "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
+      }
+    }
   },
   "disclaimer": "Disclaimer",
   "remaining": "rămas",
@@ -1015,5 +1070,9 @@
     "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
+  },
+  "transactions": {
+    "noRecent": "Fără transferuri recente",
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
   }
 }

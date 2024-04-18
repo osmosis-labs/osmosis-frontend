@@ -58,7 +58,7 @@ export const AdBannerContent: React.FC<
 
     return (
       <Component
-        className="z-50 flex w-full items-center gap-5 rounded-3xl py-3 px-4 hover:cursor-pointer"
+        className="z-50 flex w-full items-center gap-5 rounded-3xl px-4 py-3 hover:cursor-pointer"
         style={gradientStyle}
         target="_blank"
         rel="noopener noreferrer"

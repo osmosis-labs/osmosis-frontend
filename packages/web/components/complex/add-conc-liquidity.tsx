@@ -40,7 +40,7 @@ import {
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 import { Tooltip } from "../tooltip";
 
@@ -192,7 +192,7 @@ const Overview: FunctionComponent<
             </span>
           )}
         </div>
-        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
+        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-x-6 xs:gap-y-4">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
               {t("pool.24hrTradingVolume")}
@@ -288,13 +288,13 @@ const StrategySelector: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl py-8 px-4",
+          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl px-4 py-8",
           {
             "bg-osmoverse-700": Boolean(onClick),
           }
         )}
       >
-        <div className="flex items-center justify-center gap-2 text-h6 font-h6">
+        <div className="flex items-center justify-center gap-2 font-h6 text-h6">
           {title}
           {isNew && (
             <Pill>
@@ -426,7 +426,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
+              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
                   alt="refresh"
                   icon="refresh-ccw"
@@ -552,7 +552,7 @@ const AddConcLiqView: FunctionComponent<
                   "opacity-30": sfStakingDisabled,
                 })}
               >
-                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                <h6 className="md:font-subtitle1 md:text-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
                   {superfluidPoolDetail.superfluidApr.toDec().isPositive()
                     ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
@@ -710,8 +710,14 @@ const ChartHeader: FunctionComponent<{
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}

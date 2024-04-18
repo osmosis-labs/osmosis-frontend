@@ -1,6 +1,7 @@
 import { RatePretty } from "@keplr-wallet/unit";
 import { EarnStrategy, StrategyCMSData } from "@osmosis-labs/server";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
+import dayjs from "dayjs";
 
 import { Filters } from "~/components/earn/filters/filter-context";
 import { ListOption } from "~/components/earn/table/types/filters";
@@ -109,6 +110,27 @@ export const sortDecValues: SortingFn<EarnStrategy> = (rowA, rowB, colId) => {
   return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
+export const sortDurationValues: SortingFn<EarnStrategy> = (
+  rowA,
+  rowB,
+  colId
+) => {
+  const valueA: string = rowA.getValue(colId);
+  const valueB: string = rowB.getValue(colId);
+
+  if (!valueA || !valueB) return -1;
+
+  const rowAConvertedValue = dayjs.duration(valueA).asMilliseconds();
+  const rowBConvertedValue = dayjs.duration(valueB).asMilliseconds();
+
+  if (rowAConvertedValue === rowBConvertedValue) return 0;
+  /**
+   * We can also write it as a === b ? 0 : a < b ? -1 : 1
+   * but I prefer using guard clauses as written above.
+   */
+  return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
+};
+
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
@@ -122,7 +144,7 @@ export const _getKey = (k: keyof Filters) => {
     case "tokenHolder":
       return "holdsTokens";
     case "specialTokens":
-      return "tags";
+      return "categories";
     default:
       return k;
   }
@@ -136,8 +158,8 @@ export const getDefaultFiltersState = (filters: Filters) =>
 
 export const getListOptions = <T>(
   strategies: StrategyCMSData[],
-  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type">,
-  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "category">,
+  valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
+  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
   allLabel: string
 ) => {
   const uniqueOptionsMap = new Map<string, ListOption<T>>();
@@ -152,7 +174,9 @@ export const getListOptions = <T>(
     }
   });
 
-  uniqueOptionsMap.set("all", { value: "" as unknown as T, label: allLabel });
+  const uniqueOptions = Array.from(uniqueOptionsMap.values());
 
-  return Array.from(uniqueOptionsMap.values());
+  uniqueOptions.unshift({ value: "" as unknown as T, label: allLabel });
+
+  return uniqueOptions;
 };

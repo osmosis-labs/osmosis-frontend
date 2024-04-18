@@ -24,7 +24,11 @@ import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import {
+  FormatOptions,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
 const TokenPairHistoricalChart: FunctionComponent<{
@@ -203,16 +207,24 @@ const TokenPairHistoricalChart: FunctionComponent<{
               const time = tooltipData?.nearestDatum?.datum?.time;
 
               if (showTooltip && time && close) {
-                const maxDecimals = Math.max(getDecimalCount(close), 2);
                 const date = dayjs(time).format("MMM Do, hh:mma");
+                const minimumDecimals = 2;
+                const maxDecimals = Math.max(
+                  getDecimalCount(close),
+                  minimumDecimals
+                );
+
+                const closeDec = new Dec(close);
+
+                const formatOpts = getPriceExtendedFormatOptions(closeDec);
 
                 return (
                   <div className="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     <h6 className="text-h6 font-semibold text-white-full">
                       {fiatSymbol}
-                      {formatPretty(new Dec(close), {
+                      {formatPretty(closeDec, {
                         maxDecimals,
-                        notation: "compact",
+                        ...formatOpts,
                       }) || ""}
                     </h6>
 
@@ -239,6 +251,7 @@ export const PriceChartHeader: FunctionComponent<{
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
   decimal: number;
+  formatOpts?: FormatOptions;
   fiatSymbol?: string;
   baseDenom?: string;
   quoteDenom?: string;
@@ -258,6 +271,7 @@ export const PriceChartHeader: FunctionComponent<{
     baseDenom,
     quoteDenom,
     hoverPrice,
+    formatOpts,
     decimal,
     hideButtons,
     classes,
@@ -269,7 +283,7 @@ export const PriceChartHeader: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "flex flex-row sm:flex-col-reverse sm:items-start sm:gap-y-4",
+          "flex flex-row lg:flex-col-reverse sm:items-start sm:gap-y-4",
           classes?.pricesHeaderRootContainer
         )}
       >
@@ -289,6 +303,7 @@ export const PriceChartHeader: FunctionComponent<{
             {formatPretty(new Dec(hoverPrice), {
               maxDecimals: decimal,
               notation: "compact",
+              ...formatOpts,
             }) || ""}
           </h4>
           {baseDenom && quoteDenom ? (

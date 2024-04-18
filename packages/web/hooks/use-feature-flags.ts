@@ -11,10 +11,10 @@ export type AvailableFlags =
   | "notifications"
   | "mobileNotifications"
   | "tokenInfo"
-  | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "earnPage"
+  | "transactionsPage"
   | "sidecarRouter"
   | "legacyRouter"
   | "tfmRouter"
@@ -24,6 +24,7 @@ export type AvailableFlags =
   | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
+  | "portfolioPageAndNewAssetsPage"
   | "oneClickTrading";
 
 type ModifiedFlags =
@@ -37,10 +38,10 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   swapsAdBanner: true,
   notifications: true,
   tokenInfo: true,
-  newAssetsTable: false,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
+  transactionsPage: false,
   sidecarRouter: true,
   legacyRouter: true,
   tfmRouter: true,
@@ -50,6 +51,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   tfmProTradingNavbarButton: true,
   positionRoi: true,
   swapToolSimulateFee: false,
+  portfolioPageAndNewAssetsPage: false,
   oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,

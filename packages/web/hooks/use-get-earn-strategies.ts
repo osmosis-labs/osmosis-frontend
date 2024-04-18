@@ -28,13 +28,13 @@ const useGetEarnStrategies = (
     data: holdenDenoms,
     isLoading: isAssetsBreakdownLoading,
     isError: isAssetsBreakdownError,
-  } = api.edge.assets.getUserAssetsBreakdown.useQuery(
+  } = api.edge.assets.getUserAssetsTotal.useQuery(
     { userOsmoAddress },
     {
       trpc: { context: { skipBatch: true } },
       enabled: !!userOsmoAddress,
       select: (assetsBreakdown): string[] =>
-        assetsBreakdown.available.map((coin) => coin.denom),
+        assetsBreakdown.coins.map((coin) => coin.denom),
     }
   );
 
@@ -46,9 +46,13 @@ const useGetEarnStrategies = (
         );
         return {
           ..._strategy,
-          holdsTokens: involvedDenoms.every((involvedDenom) =>
-            holdenDenoms?.includes(involvedDenom)
-          ),
+          holdsTokens: _strategy.categories.includes("Correlated")
+            ? involvedDenoms.some((involvedDenom) =>
+                holdenDenoms?.includes(involvedDenom)
+              )
+            : involvedDenoms.every((involvedDenom) =>
+                holdenDenoms?.includes(involvedDenom)
+              ),
           balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           aprUrl: _strategy.apr,
           tvlUrl: _strategy.tvl,
@@ -211,6 +215,7 @@ const useGetEarnStrategies = (
   return {
     strategies,
     ...additionalBalanceData,
+    holdenDenoms,
     areBalancesLoading,
     areStrategiesLoading,
     isAssetsBreakdownLoading,

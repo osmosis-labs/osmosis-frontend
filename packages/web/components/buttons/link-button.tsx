@@ -26,7 +26,7 @@ export default function LinkButton({
         className={`flex flex-row gap-2 ${optionalClassNames ?? ""}`}
       >
         {icon}
-        <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
+        <p className="font-subtitle1 text-base leading-6 tracking-wide text-osmoverse-200">
           {label}
         </p>
       </Link>

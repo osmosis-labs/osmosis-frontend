@@ -47,12 +47,15 @@ const Pool: FunctionComponent<Props> = ({
     // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     if (!pool || !isValidPoolId) return;
 
-    const isCosmwasmNotTransmuter =
-      pool.type.startsWith("cosmwasm") && pool.type !== "cosmwasm-transmuter";
+    const isCosmwasmNotSupported =
+      pool.type.startsWith("cosmwasm") &&
+      pool.type !== "cosmwasm-transmuter" &&
+      pool.type !== "cosmwasm-astroport-pcl" &&
+      pool.type !== "cosmwasm-whitewhale";
 
     const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
 
-    if (isCosmwasmNotTransmuter) window.location.href = celatoneUrl;
+    if (isCosmwasmNotSupported) window.location.href = celatoneUrl;
   }, [pool, poolId, isValidPoolId]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {
@@ -73,10 +76,11 @@ const Pool: FunctionComponent<Props> = ({
           sendTokenDenom={pool.reserveCoins[0].denom}
           outTokenDenom={pool.reserveCoins[1].denom}
           forceSwapInPoolId={poolId}
+          page="Pool Details Page"
         />
       )}
       {!pool ? (
-        <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
+        <div className="mx-auto flex max-w-container flex-col gap-10 px-6 py-6">
           <SkeletonLoader className="h-[30rem] !rounded-3xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
           <SkeletonLoader className="h-8 !rounded-xl" />

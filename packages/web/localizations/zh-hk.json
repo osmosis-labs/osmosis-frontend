@@ -145,7 +145,13 @@
       "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
-      "title": "轉移歷史"
+      "title": "轉移歷史",
+      "pendingDeposit": "待定存款",
+      "pendingWithdraw": "待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "退出",
+      "failDeposit": "存款失敗",
+      "failWithdraw": "提現失敗"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -176,7 +182,6 @@
       "titleWithdraw": "轉出到"
     },
     "stakedAssets": "已質押嘅OSMO",
-    "pooledAssets": "匯集",
     "table": {
       "columns": {
         "assetChain": "資產 / 鏈",
@@ -201,7 +206,12 @@
       },
       "title": "所有資產",
       "withdrawButton": "轉出",
-      "activate": "啟用"
+      "activate": "啟用",
+      "marketCap": "市值",
+      "volume24h": "體積",
+      "priceChange24h": "24小時變化",
+      "price": "價格",
+      "name": "姓名"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -286,7 +296,21 @@
       "stablecoin": "穩定幣",
       "meme": "迷因",
       "liquid_staking": "流動質押"
+    },
+    "seeAll": "看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "漲幅居前者",
+      "upcoming": "即將推出"
     }
+  },
+  "portfolio": {
+    "trade": "貿易",
+    "yourAssets": "您的資產",
+    "yourPositions": "您的職位",
+    "recentTransfers": "最近轉會",
+    "yourSuperchargedPositions": "您的超級職位",
+    "yourLiquidityPools": "您的流動資金池"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "資產",
+    "portfolio": "資料夾",
     "help": "支持",
     "info": "統計數據",
     "pools": "流動性池",
@@ -406,7 +431,9 @@
     "marsSubtext": "由火星提供動力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "設定",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -790,6 +817,8 @@
       "hide": "隱藏",
       "show": "顯示"
     },
+    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
+    "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
     "buttonError": "照樣交易",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "動態的"
   },
   "walletSelect": {
+    "gettingStarted": "入門",
     "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
     "isNotInstalled": "{walletName} 未安裝",
@@ -894,6 +924,10 @@
       "title": "滲透資產",
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
     },
+    "portfolio": {
+      "title": "滲透產品組合",
+      "description": "在 Osmosis 上查看您的資產 - 領先的去中心化 Cosmos 交易所"
+    },
     "disclaimer": {
       "title": "滲透免責聲明",
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
@@ -951,20 +985,20 @@
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 策略",
     "value": "價值",
-    "method": "方法",
+    "method": "類型",
     "platform": "平台",
     "scrollToSeeMore": "捲動查看更多",
     "discoverStrategies": "發現策略",
-    "myStrategies": "我的策略",
-    "strategyPlatform": "策略/平台",
-    "apy": "平均年產量",
-    "daily": "日常的",
+    "myStrategies": "你的策略",
+    "strategyPlatform": "策略",
+    "apy": "年利率",
     "reward": "報酬",
-    "lock": "鎖",
+    "lock": "解綁",
     "days": "天",
+    "day": "天",
     "risk": "風險",
-    "strategyMethod": "策略方法",
-    "allMethods": "所有方法",
+    "strategyMethod": "類型",
+    "allMethods": "所有類型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
     "allCategories": "所有類別",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "領取所有獎勵",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的代幣",
-      "all": "所有代幣"
+      "my": "您的資產",
+      "all": "所有資產"
     },
     "rewardTypes": {
       "all": "全部",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "總價值",
     "lookBelow": "請參閱下文並找到最適合您的策略",
-    "startEarning": "發現策略",
-    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下眾多策略之一讓您的資產發揮作用。",
+    "startEarningDescription": "釋放您的全部賺錢潛力。透過以下多種策略讓您的資產發揮作用。",
     "loadingStrategies": "載入策略...",
     "sorryErrorOccurred": "抱歉，發生錯誤。",
+    "sorryNoResultsWithAssets": "未找到與您的資產相關的策略。",
     "sorryNoResults": "沒有找到策略。",
     "tryChangingFilters": "嘗試更換過濾器",
     "retry": "重試",
     "manage": "管理",
     "noLock": "無鎖",
     "riskDisclaimer": "風險是根據策略及其基礎資產的一組組合標準來計算的。",
-    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。"
+    "strategyGeoblocked": "抱歉，此策略在您所在的國家/地區不可用。",
+    "instantUnbondOnly": "僅限即時解綁",
+    "tooltips": {
+      "apr": {
+        "description": "年利率（APR）是指策略的年化百分比回報。<inlang-LineFeed><inlang-LineFeed>注意：策略的報酬可能會根據參與度和表現而波動。<inlang-LineFeed><inlang-LineFeed>免責聲明：這些年利率是由項目本身自行報告的，可能不準確。"
+      },
+      "tvl": {
+        "description": "鎖定總價值 (TVL) 是指存入策略的資產的美元總價值。"
+      },
+      "reward": {
+        "description": "透過策略的營運和/或激勵措施獲得的資產類型。"
+      },
+      "lock": {
+        "description": "頭寸在可以退出之前被綁定的時間段。注意：並非所有策略解除綁定*期間都有獎勵分配。"
+      },
+      "strategy": {
+        "description": "Osmosis 上提供由各種平台託管的各種類型的賺錢機會。存取策略需要存入特定資產。"
+      },
+      "risk": {
+        "description": "風險評估涉及考慮與策略及其基礎資產相關的標準組合。"
+      }
+    }
   },
   "disclaimer": "免責聲明",
   "remaining": "其餘的",
@@ -1015,5 +1070,9 @@
     "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
     "buttonContinue": "無論如何繼續",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近沒有轉帳",
+    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。"
   }
 }

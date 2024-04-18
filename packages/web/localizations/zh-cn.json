@@ -145,7 +145,13 @@
       "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
-      "title": "转账记录"
+      "title": "转账记录",
+      "pendingDeposit": "待存款",
+      "pendingWithdraw": "等待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "已退出",
+      "failDeposit": "存款失败",
+      "failWithdraw": "提现失败"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -176,7 +182,6 @@
       "titleWithdraw": "提币至"
     },
     "stakedAssets": "质押 OSMO",
-    "pooledAssets": "汇集",
     "table": {
       "columns": {
         "assetChain": "资产 / 链",
@@ -201,7 +206,12 @@
       },
       "title": "所有资产",
       "withdrawButton": "提币",
-      "activate": "启用"
+      "activate": "启用",
+      "marketCap": "市值",
+      "volume24h": "体积",
+      "priceChange24h": "24小时变化",
+      "price": "价格",
+      "name": "姓名"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -286,7 +296,21 @@
       "stablecoin": "稳定币",
       "meme": "模因",
       "liquid_staking": "流动质押"
+    },
+    "seeAll": "查看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "涨幅最大的股票",
+      "upcoming": "即将推出"
     }
+  },
+  "portfolio": {
+    "trade": "贸易",
+    "yourAssets": "您的资产",
+    "yourPositions": "您的职位",
+    "recentTransfers": "最近转会",
+    "yourSuperchargedPositions": "您的超级职位",
+    "yourLiquidityPools": "您的流动资金池"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "资产",
+    "portfolio": "文件夹",
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
@@ -406,7 +431,9 @@
     "marsSubtext": "由火星提供动力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "设置",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -790,6 +817,8 @@
       "hide": "隐藏",
       "show": "节目"
     },
+    "maxButtonError": "无法计算最大金额。请检查您的网络连接或尝试刷新页面。",
+    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
+    "gettingStarted": "入门",
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",
@@ -894,6 +924,10 @@
       "title": "渗透资产",
       "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
     },
+    "portfolio": {
+      "title": "渗透产品组合",
+      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
+    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
@@ -949,22 +983,22 @@
     "allocation": "分配",
     "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
-    "oneStrategy": "1 策略",
+    "oneStrategy": "1 个策略",
     "value": "价值",
-    "method": "方法",
+    "method": "类型",
     "platform": "平台",
     "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
-    "myStrategies": "我的策略",
-    "strategyPlatform": "策略/平台",
-    "apy": "平均年产量",
-    "daily": "日常的",
+    "myStrategies": "你的策略",
+    "strategyPlatform": "战略",
+    "apy": "年利率",
     "reward": "报酬",
-    "lock": "锁",
+    "lock": "解绑",
     "days": "天",
+    "day": "天",
     "risk": "风险",
-    "strategyMethod": "策略方法",
-    "allMethods": "所有方法",
+    "strategyMethod": "类型",
+    "allMethods": "所有类型",
     "platforms": "平台",
     "allPlatforms": "所有平台",
     "allCategories": "所有类别",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "领取所有奖励",
     "join": "加入",
     "tokenFilterOptions": {
-      "my": "我的代币",
-      "all": "所有代币"
+      "my": "您的资产",
+      "all": "所有资产"
     },
     "rewardTypes": {
       "all": "全部",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "总价值",
     "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarning": "发现策略",
-    "startEarningDescription": "释放您的全部赚钱潜力。通过以下众多策略之一让您的资产发挥作用。",
+    "startEarningDescription": "释放您的全部赚钱潜力。通过以下多种策略让您的资产发挥作用。",
     "loadingStrategies": "加载策略...",
     "sorryErrorOccurred": "抱歉，发生错误。",
-    "sorryNoResults": "没有找到策略。",
+    "sorryNoResultsWithAssets": "未找到与您的资产相关的策略。",
+    "sorryNoResults": "未找到任何策略。",
     "tryChangingFilters": "尝试更换过滤器",
     "retry": "重试",
     "manage": "管理",
     "noLock": "无锁",
     "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
-    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。"
+    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。",
+    "instantUnbondOnly": "仅限即时解绑",
+    "tooltips": {
+      "apr": {
+        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
+      },
+      "tvl": {
+        "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"
+      },
+      "reward": {
+        "description": "通过该策略的运营和/或激励措施获得的资产类型。"
+      },
+      "lock": {
+        "description": "头寸在可以退出之前被绑定的时间段。注意：并非所有策略解除绑定*期间都有奖励分配。"
+      },
+      "strategy": {
+        "description": "Osmosis 上提供由各种平台托管的各种类型的赚钱机会。访问策略需要存入特定资产。"
+      },
+      "risk": {
+        "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
+      }
+    }
   },
   "disclaimer": "免责声明",
   "remaining": "其余的",
@@ -1015,5 +1070,9 @@
     "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近没有转会",
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
   }
 }

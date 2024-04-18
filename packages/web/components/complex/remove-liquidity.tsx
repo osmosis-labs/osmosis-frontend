@@ -52,7 +52,7 @@ export const RemoveLiquidity: FunctionComponent<
             <h2 className="mt-12 md:mt-7">
               {removableValueWithPercentage.toString()}
             </h2>
-            <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
+            <h5 className="text-osmoverse-100 md:font-h6 md:text-h6">
               {t("removeLiquidity.sharesAmount", {
                 shares: removableSharesWithPercentage
                   .trim(true)
@@ -61,7 +61,7 @@ export const RemoveLiquidity: FunctionComponent<
               })}
             </h5>
           </div>
-          <div className="flex flex-wrap place-content-around items-center gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
+          <div className="flex flex-wrap place-content-around items-center gap-4 rounded-xl border border-osmoverse-600 px-3 py-2 text-osmoverse-300">
             {underlyingCoins.map((asset) => (
               <div
                 className="flex items-center gap-2"

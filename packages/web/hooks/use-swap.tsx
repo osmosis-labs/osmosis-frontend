@@ -12,7 +12,11 @@ import {
   TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { isNil, makeMinimalAsset } from "@osmosis-labs/utils";
+import {
+  getAssetFromAssetList,
+  isNil,
+  makeMinimalAsset,
+} from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
@@ -28,6 +32,10 @@ import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import {
+  getTokenInFeeAmountFiatValue,
+  getTokenOutFiatValue,
+} from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
@@ -94,8 +102,13 @@ export function useSwap(
     useOtherCurrencies,
   });
 
-  const inAmountInput = useAmountInput(swapAssets.fromAsset);
+  const inAmountInput = useSwapAmountInput({
+    forceSwapInPoolId,
 
+    maxSlippage,
+
+    swapAssets,
+  });
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
@@ -346,9 +359,6 @@ export function useSwap(
               )
               .catch((reason) => {
                 reject(reason);
-              })
-              .finally(() => {
-                inAmountInput.reset();
               });
             return pools.length === 1 ? "exact-in" : "multihop";
           } else if (routes.length > 1) {
@@ -365,9 +375,6 @@ export function useSwap(
               )
               .catch((reason) => {
                 reject(reason);
-              })
-              .finally(() => {
-                inAmountInput.reset();
               });
           } else {
             reject("No routes given");
@@ -436,9 +443,44 @@ export function useSwap(
     quote,
   ]);
 
+  // Calculate token out fiat value from price impact and token in fiat value.
+  // This helps to mitigate the impact of various levels of caches. Here, we are guaranteed that to use
+  // the same fiat spot price used for both token in and token out amounts.
+  // The price impact is computed directly from quote, ensuring most up-to-date state.
+  // This guarantees consistency between token in and token out fiat values.
+  const tokenOutFiatValue: PricePretty = useMemo(
+    () =>
+      getTokenOutFiatValue(
+        quote?.priceImpactTokenOut?.toDec(),
+
+        inAmountInput.fiatValue?.toDec()
+      ),
+
+    [inAmountInput.fiatValue, quote?.priceImpactTokenOut]
+  );
+
+  // Calculate token in fee amount fiat value from token in fee amount returned by quote and token in price
+  // queried above from the same source.
+  // By inversally using the token in price, we ensure that the token in fee amount fiat value is consistent
+  // relative to the token in and token out fiat value
+  const tokenInFeeAmountFiatValue: PricePretty = useMemo(
+    () =>
+      getTokenInFeeAmountFiatValue(
+        swapAssets.fromAsset,
+
+        quote?.tokenInFeeAmount,
+
+        inAmountInput.price
+      ),
+
+    [inAmountInput.price, quote?.tokenInFeeAmount, swapAssets.fromAsset]
+  );
+
   return {
     ...swapAssets,
     inAmountInput,
+    tokenOutFiatValue,
+    tokenInFeeAmountFiatValue,
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
@@ -447,7 +489,7 @@ export function useSwap(
         : undefined,
     inBaseOutQuoteSpotPrice,
     totalFee: sum([
-      quote?.tokenInFeeAmountFiatValue?.toDec() ?? new Dec(0),
+      tokenInFeeAmountFiatValue,
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
     ]),
     networkFee,
@@ -466,6 +508,97 @@ export function useSwap(
   };
 }
 
+const DefaultDenoms = ["ATOM", "OSMO"];
+
+/**
+ * Determines the next fallback denom for `fromAssetDenom` based on the
+ * current asset denoms and defaults.
+ * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is not the first default,
+ *   set `fromAssetDenom` to the first default denom.
+ * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is the first default,
+ *   set `fromAssetDenom` to the second default denomination.
+ * - If `initialFromDenom` is the same as `toAssetDenom`, set `fromAssetDenom` to `initialToDenom`.
+ * - Otherwise, reset `fromAssetDenom` to `initialFromDenom`.
+ */
+export function determineNextFallbackFromDenom(params: {
+  fromAssetDenom: string;
+
+  toAssetDenom: string | undefined;
+
+  initialFromDenom: string;
+
+  initialToDenom: string;
+
+  DefaultDenoms: string[];
+}): string {
+  const {
+    fromAssetDenom,
+
+    toAssetDenom,
+
+    initialFromDenom,
+
+    initialToDenom,
+
+    DefaultDenoms,
+  } = params;
+
+  if (fromAssetDenom === initialFromDenom) {
+    return toAssetDenom === DefaultDenoms[0]
+      ? DefaultDenoms[1]
+      : DefaultDenoms[0];
+  } else if (initialFromDenom === toAssetDenom) {
+    return initialToDenom;
+  } else {
+    return initialFromDenom;
+  }
+}
+
+/**
+ * Determines the next fallback denom for `toAssetDenom` based on the
+ * current asset denoms and defaults.
+ * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is not the second default,
+ *   it sets `toAssetDenom` to the second default denomination.
+ * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is the second default,
+ *   it sets `toAssetDenom` to the first default denomination.
+ * - If the `initialToDenom` is the same as `fromAssetDenom`, it sets `toAssetDenom` to `initialFromDenom`.
+ * - Otherwise, it resets `toAssetDenom` to `initialToDenom`.
+ */
+
+export function determineNextFallbackToDenom(params: {
+  toAssetDenom: string;
+
+  fromAssetDenom: string | undefined;
+
+  initialToDenom: string;
+
+  initialFromDenom: string;
+
+  DefaultDenoms: string[];
+}): string {
+  const {
+    toAssetDenom,
+
+    fromAssetDenom,
+
+    initialToDenom,
+
+    initialFromDenom,
+
+    DefaultDenoms,
+  } = params;
+
+  if (toAssetDenom === initialToDenom) {
+    return fromAssetDenom === DefaultDenoms[1]
+      ? DefaultDenoms[0]
+      : DefaultDenoms[1];
+  } else if (initialToDenom === fromAssetDenom) {
+    return initialFromDenom;
+  } else {
+    return initialToDenom;
+  }
+}
+
 /** Use assets for swapping: the from and to assets, as well as the list of
  *  swappable assets. Sorts by balance if user is signed in.
  *
@@ -474,8 +607,8 @@ export function useSwap(
  *  * Paginated swappable assets, with user balances if wallet connected
  *  * Assets search query */
 export function useSwapAssets({
-  initialFromDenom = "ATOM",
-  initialToDenom = "OSMO",
+  initialFromDenom = DefaultDenoms[0],
+  initialToDenom = DefaultDenoms[1],
   useQueryParams = true,
   useOtherCurrencies = true,
 } = {}) {
@@ -489,7 +622,7 @@ export function useSwapAssets({
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
-  } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
+  } = useToFromDenoms({ useQueryParams, initialFromDenom, initialToDenom });
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -537,11 +670,74 @@ export function useSwapAssets({
     [selectableAssetPages?.pages]
   );
 
-  const { asset: fromAsset } = useSwapAsset(
+  const { asset: fromAsset } = useSwapAsset({
+    minDenomOrSymbol: fromAssetDenom,
+
+    existingAssets: allSelectableAssets,
+  });
+
+  const { asset: toAsset } = useSwapAsset({
+    minDenomOrSymbol: toAssetDenom,
+
+    existingAssets: allSelectableAssets,
+  });
+
+  /**
+   * This effect handles the scenario where the selected asset denoms do not correspond to any available
+   * assets (`fromAsset` or `toAsset` are undefined). It attempts to set a default based on
+   *
+   * predefined DefaultDenoms or initial denoms.
+   * This ensures that the denoms are reset to valid defaults when the currently selected assets are not available.
+   */
+  useEffect(() => {
+    if (!isNil(fromAssetDenom) && !fromAsset) {
+      const nextFromDenom = determineNextFallbackFromDenom({
+        fromAssetDenom,
+
+        toAssetDenom,
+
+        initialFromDenom,
+
+        initialToDenom,
+
+        DefaultDenoms,
+      });
+
+      setFromAssetDenom(nextFromDenom);
+    }
+
+    if (!isNil(toAssetDenom) && !toAsset) {
+      const nextToDenom = determineNextFallbackToDenom({
+        toAssetDenom,
+
+        fromAssetDenom,
+
+        initialToDenom,
+
+        initialFromDenom,
+
+        DefaultDenoms,
+      });
+
+      setToAssetDenom(nextToDenom);
+    }
+  }, [
+    fromAsset,
+
     fromAssetDenom,
-    allSelectableAssets
-  );
-  const { asset: toAsset } = useSwapAsset(toAssetDenom, allSelectableAssets);
+
+    initialFromDenom,
+
+    initialToDenom,
+
+    setFromAssetDenom,
+
+    setToAssetDenom,
+
+    toAsset,
+
+    toAssetDenom,
+  ]);
 
   const recommendedAssets = useRecommendedAssets(
     fromAsset?.coinMinimalDenom,
@@ -577,17 +773,131 @@ export function useSwapAssets({
   };
 }
 
-/** Switches on query params or react state to store to/from asset denoms.
- *  The initial denoms will be ignored if the user set preferences via query params. */
-function useToFromDenoms(
-  useQueryParams: boolean,
-  initialFromDenom?: string,
-  initialToDenom?: string
-) {
+function useSwapAmountInput({
+  swapAssets,
+
+  forceSwapInPoolId,
+
+  maxSlippage,
+}: {
+  swapAssets: ReturnType<typeof useSwapAssets>;
+
+  forceSwapInPoolId: string | undefined;
+
+  maxSlippage: Dec | undefined;
+}) {
+  const { chainStore } = useStore();
+
+  const featureFlags = useFeatureFlags();
+
+  const [gasAmount, setGasAmount] = useState<CoinPretty>();
+
+  const inAmountInput = useAmountInput({
+    currency: swapAssets.fromAsset,
+
+    gasAmount: gasAmount,
+  });
+
+  const {
+    data: quoteForCurrentBalance,
+
+    isLoading: isQuoteForCurrentBalanceLoading,
+
+    error: quoteForCurrentBalanceError,
+  } = useQueryRouterBestQuote(
+    {
+      tokenIn: swapAssets.fromAsset,
+
+      tokenOut: swapAssets.toAsset,
+
+      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
+
+      forcePoolId: forceSwapInPoolId,
+
+      maxSlippage,
+    },
+
+    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
+  );
+
+  const {
+    data: currentBalanceNetworkFee,
+
+    isLoading: isLoadingCurrentBalanceNetworkFee,
+
+    error: currentBalanceNetworkFeeError,
+  } = useEstimateTxFees({
+    chainId: chainStore.osmosis.chainId,
+
+    messages: quoteForCurrentBalance?.messages,
+
+    enabled:
+      featureFlags.swapToolSimulateFee &&
+      !!inAmountInput.balance &&
+      !isQuoteForCurrentBalanceLoading,
+  });
+
+  const hasErrorWithCurrentBalanceQuote = useMemo(() => {
+    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
+  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
+
+  const notEnoughBalanceForMax = useMemo(() => {
+    return (
+      currentBalanceNetworkFeeError?.message.includes(
+        "min out amount or max in amount should be positive"
+      ) ||
+      quoteForCurrentBalanceError?.message.includes(
+        "Not enough quoted. Try increasing amount."
+      )
+    );
+  }, [
+    currentBalanceNetworkFeeError?.message,
+
+    quoteForCurrentBalanceError?.message,
+  ]);
+
+  useEffect(() => {
+    if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
+
+    setGasAmount(
+      currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
+    );
+  }, [currentBalanceNetworkFee?.gasAmount]);
+
+  return {
+    ...inAmountInput,
+
+    isLoadingCurrentBalanceNetworkFee,
+
+    hasErrorWithCurrentBalanceQuote,
+
+    notEnoughBalanceForMax,
+  };
+}
+
+/**
+ * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
+ * If the user has set preferences via query parameters, the initial denominations will be ignored.
+ */
+function useToFromDenoms({
+  useQueryParams,
+
+  initialFromDenom,
+
+  initialToDenom,
+}: {
+  useQueryParams: boolean;
+
+  initialFromDenom?: string;
+
+  initialToDenom?: string;
+}) {
   const router = useRouter();
 
-  // user query params as state source-of-truth
-  // ignores initial denoms if there are query params
+  /**
+   * user query params as state source-of-truth
+   * ignores initial denoms if there are query params
+   */
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
     "from",
     useQueryParams ? initialFromDenom : undefined
@@ -619,7 +929,7 @@ function useToFromDenoms(
   const switchAssets = () => {
     if (useQueryParams) {
       const existingParams = router.query;
-      router.push({
+      router.replace({
         query: {
           ...existingParams,
           from: toDenomQueryParamStr,
@@ -647,10 +957,13 @@ function useToFromDenoms(
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends Asset>(
-  minDenomOrSymbol?: string,
-  existingAssets: TAsset[] = []
-) {
+function useSwapAsset<TAsset extends Asset>({
+  minDenomOrSymbol,
+  existingAssets = [],
+}: {
+  minDenomOrSymbol?: string;
+  existingAssets: TAsset[] | undefined;
+}) {
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -663,15 +976,15 @@ function useSwapAsset<TAsset extends Asset>(
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 
-    const asset = AssetLists.flatMap(({ assets }) => assets).find(
-      (asset) =>
-        minDenomOrSymbol &&
-        (asset.symbol === minDenomOrSymbol ||
-          asset.coinMinimalDenom === minDenomOrSymbol)
-    );
+    const asset = getAssetFromAssetList({
+      assetLists: AssetLists,
+      coinMinimalDenom: minDenomOrSymbol,
+      symbol: minDenomOrSymbol,
+    });
+
     if (!asset) return;
 
-    return makeMinimalAsset(asset);
+    return makeMinimalAsset(asset.rawAsset);
   }, [minDenomOrSymbol, existingAsset]);
 
   return {

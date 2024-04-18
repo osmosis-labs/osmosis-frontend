@@ -23,7 +23,7 @@
     background: rgba(0, 0, 0, 0);
   }
   .tokendetailshadow::after {
-    @apply absolute top-0 bottom-0 -left-4 -right-4 bg-gradient-token-details-shadow content-[""];
+    @apply absolute -left-4 -right-4 bottom-0 top-0 bg-gradient-token-details-shadow content-[""];
   }
 }
 
@@ -37,43 +37,43 @@
   }
 
   h1 {
-    @apply text-h1 font-h1;
+    @apply font-h1 text-h1;
   }
   h2 {
-    @apply text-h2 font-h2;
+    @apply font-h2 text-h2;
   }
   h3 {
-    @apply text-h3 font-h3;
+    @apply font-h3 text-h3;
   }
   h4 {
-    @apply text-h4 font-h4;
+    @apply font-h4 text-h4;
   }
   h5 {
-    @apply text-h5 font-h5;
+    @apply font-h5 text-h5;
   }
   h6 {
-    @apply text-h6 font-h6;
+    @apply font-h6 text-h6;
   }
   .subtitle1 {
-    @apply text-subtitle1 font-subtitle1;
+    @apply font-subtitle1 text-subtitle1;
   }
   .subtitle2 {
-    @apply text-subtitle2 font-subtitle2;
+    @apply font-subtitle2 text-subtitle2;
   }
   .body1 {
-    @apply text-body1 font-body1;
+    @apply font-body1 text-body1;
   }
   .body2 {
-    @apply text-body2 font-body2;
+    @apply font-body2 text-body2;
   }
   .button {
-    @apply text-button font-button;
+    @apply font-button text-button;
   }
   .caption {
-    @apply text-caption font-caption;
+    @apply font-caption text-caption;
   }
   .overline {
-    @apply text-overline font-overline;
+    @apply font-overline text-overline;
   }
   .text-superfluid-gradient {
     @apply bg-superfluid bg-clip-text text-transparent;
@@ -107,7 +107,7 @@
   }
 
   thead > tr {
-    @apply subtitle1 mb-1 border-b-2 border-osmoverse-800 text-osmoverse-300;
+    @apply sticky top-navbar z-50 border-b border-osmoverse-700 bg-osmoverse-900 text-body2 font-semibold text-osmoverse-300;
   }
 
   thead > tr > th:first-child {
@@ -115,11 +115,11 @@
   }
 
   thead > tr > th {
-    @apply py-2 px-4 font-semibold;
+    @apply px-4 py-3;
   }
 
   tbody > tr {
-    @apply rounded-3xl;
+    @apply body1 rounded-3xl;
   }
 
   tbody > tr > td {

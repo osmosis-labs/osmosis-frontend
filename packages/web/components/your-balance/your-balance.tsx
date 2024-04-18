@@ -71,7 +71,7 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getMarketAsset.useQuery({
+    const { data } = api.edge.assets.getUserMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
@@ -219,7 +219,7 @@ const YourBalance = observer(
         />
         <div className="flex flex-col gap-6 self-stretch">
           <header>
-            <h6 className="text-lg font-h6 leading-6 tracking-wide">
+            <h6 className="font-h6 text-lg leading-6 tracking-wide">
               {t("tokenInfos.earnWith", { denom })}
             </h6>
           </header>
@@ -274,7 +274,7 @@ const YourBalance = observer(
               </Link>
             )}
             <Link
-              href="/pools"
+              href={`/pools?searchQuery=${encodeURIComponent(denom)}`}
               passHref
               className="flex flex-[0.5]"
               onClick={() =>
@@ -351,7 +351,7 @@ const ActionButton = ({
         {largeTitle ? (
           <h4
             className={classNames("text-osmoverse-100", {
-              "text-h5 font-h5": shrinkTitle,
+              "font-h5 text-h5": shrinkTitle,
             })}
           >
             {largeTitle}
@@ -360,7 +360,7 @@ const ActionButton = ({
           <h6 className="text-osmoverse-100">{title}</h6>
         )}
         {!shrinkTitle && (
-          <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
+          <p className="max-w-[165px] font-body2 text-sm font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
             {sub}
           </p>
         )}
@@ -388,7 +388,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const chainName = tokenChain?.chainName;
 
   const { data, isLoading: isCoinDataLoading } =
-    api.edge.assets.getMarketAsset.useQuery({
+    api.edge.assets.getUserMarketAsset.useQuery({
       findMinDenomOrSymbol: denom,
       userOsmoAddress: account?.address,
     });
@@ -431,7 +431,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
           "gap-3": account?.isWalletConnected,
         })}
       >
-        <h6 className="text-subtitle1 font-subtitle1 leading-6">
+        <h6 className="font-subtitle1 text-subtitle1 leading-6">
           {t("tokenInfos.yourBalance")}
         </h6>
         {account?.isWalletConnected ? (
@@ -439,15 +439,15 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
             <div className="flex flex-col items-start gap-1">
               {data?.currentPrice && data.amount ? (
                 <>
-                  <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                  <h4 className="font-h4 text-h4 leading-9 text-osmoverse-100">
                     {formatPretty(data.currentPrice.mul(data.amount))}
                   </h4>
-                  <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
+                  <p className="font-subtitle1 text-subtitle1 leading-6 text-osmoverse-300">
                     {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
                   </p>
                 </>
               ) : (
-                <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
+                <h4 className="font-h4 text-h4 leading-9 text-osmoverse-100">
                   {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
                 </h4>
               )}
@@ -456,7 +456,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
         ) : (
           <button
             onClick={() => onOpenWalletSelect(chainName!)}
-            className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
+            className="font-subtitle1 text-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
             {t("connectWallet")}
           </button>

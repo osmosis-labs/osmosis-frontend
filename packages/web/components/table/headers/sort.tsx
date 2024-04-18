@@ -1,4 +1,4 @@
-import { SortDirection } from "@osmosis-labs/server";
+import type { SortDirection } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
@@ -49,7 +49,7 @@ export const SortHeader = <TSortKey extends string | undefined>({
     }}
   >
     {children}
-    <span>{label}</span>
+    {label}
     {currentSortKey === sortKey && (
       <Icon
         width={10}

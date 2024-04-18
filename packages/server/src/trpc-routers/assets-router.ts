@@ -5,16 +5,19 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
+  getAssetMarketActivity,
   getAssetPrice,
+  getAssets,
+  getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
-  getUserAssetCoin,
-  getUserAssetsBreakdown,
+  getUpcomingAssets,
+  getUserAssetsTotal,
+  mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
-  mapGetUserAssetCoins,
 } from "../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
-import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/providers/coingecko";
+import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,
@@ -23,15 +26,13 @@ import {
 } from "../queries/data-services";
 import { TimeDuration } from "../queries/data-services";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { compareDec, compareMemberDefinition } from "../utils/compare";
 import { captureErrorAndReturn } from "../utils/error";
 import { maybeCachePaginatedItems } from "../utils/pagination";
 import { createSortSchema, sort } from "../utils/sort";
 import { InfiniteQuerySchema } from "../utils/zod-types";
 
-const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.merge(
-  AssetFilterSchema
-).merge(UserOsmoAddressSchema);
+const GetInfiniteAssetsInputSchema =
+  InfiniteQuerySchema.merge(AssetFilterSchema);
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -49,7 +50,7 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        return await getUserAssetCoin({
+        return await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
@@ -57,7 +58,7 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema)
+    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
     .query(
       async ({
         input: {
@@ -73,7 +74,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: () =>
-            mapGetUserAssetCoins({
+            mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -127,7 +128,7 @@ export const assetsRouter = createTRPCRouter({
         currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
       };
     }),
-  getMarketAsset: publicProcedure
+  getUserMarketAsset: publicProcedure
     .input(
       z
         .object({
@@ -142,13 +143,12 @@ export const assetsRouter = createTRPCRouter({
           anyDenom: findMinDenomOrSymbol,
         });
 
-        const userAsset = await getUserAssetCoin({
+        const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
           userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
-          ...ctx,
           asset: userAsset,
         });
 
@@ -158,18 +158,16 @@ export const assetsRouter = createTRPCRouter({
         };
       }
     ),
-  getUserMarketAssets: publicProcedure
+  getMarketAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(
         z.object({
-          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
-          preferredDenoms: z.array(z.string()).optional(),
           sort: createSortSchema([
             "currentPrice",
+            "priceChange24h",
             "marketCap",
-            "usdValue",
+            "volume24h",
           ] as const).optional(),
-          onlyPositiveBalances: z.boolean().default(false).optional(),
         })
       )
     )
@@ -178,10 +176,7 @@ export const assetsRouter = createTRPCRouter({
         input: {
           search,
           onlyVerified,
-          userOsmoAddress,
-          preferredDenoms,
           sort: sortInput,
-          onlyPositiveBalances,
           categories,
           cursor,
           limit,
@@ -191,10 +186,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const isDefaultSort = !sortInput && !search;
-
-            let assets;
-            assets = await mapGetMarketAssets({
+            let assets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -202,65 +194,7 @@ export const assetsRouter = createTRPCRouter({
               categories,
             });
 
-            assets = await mapGetUserAssetCoins({
-              ...ctx,
-              assets,
-              userOsmoAddress,
-              includePreview,
-              sortFiatValueDirection: isDefaultSort
-                ? "desc"
-                : !search && sortInput && sortInput.keyPath === "usdValue"
-                ? sortInput.direction
-                : undefined,
-            });
-
-            if (onlyPositiveBalances) {
-              assets = assets.filter((asset) =>
-                asset.amount?.toDec().isPositive()
-              );
-            }
-
-            // Default sort (no sort provided):
-            //  1. preferred denoms (from `preferredDenoms`)
-            //  2. fiat balance descending (from `mapGetUserAssetInfos`)
-            //  3. Market cap
-            if (isDefaultSort) {
-              assets = assets.sort((assetA, assetB) => {
-                const isAPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetA.coinDenom) ||
-                    preferredDenoms.includes(assetA.coinMinimalDenom));
-                const isBPreferred =
-                  preferredDenoms &&
-                  (preferredDenoms.includes(assetB.coinDenom) ||
-                    preferredDenoms.includes(assetB.coinMinimalDenom));
-
-                if (isAPreferred && !isBPreferred) return -1;
-                if (!isAPreferred && isBPreferred) return 1;
-
-                // Sort by market cap as long as there's no user fiat balance
-                // Assets with fiat balances will remain sorted as they are
-                if (!assetA.usdValue && !assetB.usdValue) {
-                  const marketCapDefinedCompare = compareMemberDefinition(
-                    assetA,
-                    assetB,
-                    "marketCap"
-                  );
-                  if (marketCapDefinedCompare) return marketCapDefinedCompare;
-
-                  if (assetA.marketCap && assetB.marketCap) {
-                    const marketCapCompare = compareDec(
-                      assetA.marketCap.toDec(),
-                      assetB.marketCap.toDec()
-                    );
-                    if (marketCapCompare) return marketCapCompare;
-                  }
-                }
-                return 0;
-              });
-            }
-
-            if (sortInput && sortInput.keyPath !== "usdValue") {
+            if (sortInput) {
               assets = sort(assets, sortInput.keyPath, sortInput.direction);
             }
 
@@ -270,10 +204,7 @@ export const assetsRouter = createTRPCRouter({
           cacheKey: JSON.stringify({
             search,
             onlyVerified,
-            userOsmoAddress,
-            preferredDenoms,
             sort: sortInput,
-            onlyPositiveBalances,
             categories,
             includePreview,
           }),
@@ -281,9 +212,92 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
-  getUserAssetsBreakdown: publicProcedure
+  getUserBridgeAssets: publicProcedure
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          sort: createSortSchema([
+            "currentPrice",
+            "priceChange24h",
+            "usdValue",
+          ] as const),
+        })
+      )
+    )
+    .query(
+      ({
+        input: {
+          search,
+          onlyVerified,
+          userOsmoAddress,
+          sort: sortInput,
+          categories,
+          cursor,
+          limit,
+          includePreview,
+        },
+        ctx,
+      }) =>
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            let assets = await mapGetAssetsWithUserBalances({
+              ...ctx,
+              search,
+              categories,
+              userOsmoAddress,
+              includePreview,
+            });
+
+            assets = assets.filter((asset) =>
+              asset.amount?.toDec().isPositive()
+            );
+
+            let priceAssets = await Promise.all(
+              assets.map(async (asset) => {
+                const [currentPrice, priceChange24h] = await Promise.all([
+                  getAssetPrice({ ...ctx, asset })
+                    .then(
+                      (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
+                    )
+                    .catch((e) => captureErrorAndReturn(e, undefined)),
+                  getAssetMarketActivity(asset).then(
+                    (activity) => activity?.price24hChange
+                  ),
+                ]);
+
+                return {
+                  ...asset,
+                  currentPrice,
+                  priceChange24h,
+                };
+              })
+            );
+
+            if (sortInput) {
+              priceAssets = sort(
+                priceAssets,
+                sortInput.keyPath,
+                sortInput.direction
+              );
+            }
+
+            return priceAssets;
+          },
+          cacheKey: JSON.stringify({
+            search,
+            onlyVerified,
+            userOsmoAddress,
+            sort: sortInput,
+            categories,
+            includePreview,
+          }),
+          cursor,
+          limit,
+        })
+    ),
+  getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) => getUserAssetsBreakdown({ ...ctx, ...input })),
+    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
@@ -364,5 +378,77 @@ export const assetsRouter = createTRPCRouter({
         }).catch((e) =>
           captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
         )
+    ),
+  getTopNewAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+        categories: ["new"],
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return marketAssets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(0, topN);
+    }),
+  getTopGainerAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return sort(
+        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        "priceChange24h",
+        "desc"
+      ).slice(0, topN);
+    }),
+  getTopUpcomingAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(({ input: { topN } }) =>
+      getUpcomingAssets().then((upcomingAssets) =>
+        upcomingAssets.slice(0, topN)
+      )
     ),
 });

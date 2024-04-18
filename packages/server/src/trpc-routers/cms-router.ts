@@ -1,4 +1,4 @@
-import { querySwapAdBanners } from "../queries";
+import { querySwapAdBanners } from "../queries/github/swap-ad-banners";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const cmsRouter = createTRPCRouter({

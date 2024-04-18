@@ -145,7 +145,13 @@
       "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
-      "title": "Transfer Geçmişi"
+      "title": "Transfer Geçmişi",
+      "pendingDeposit": "Bekleyen mevduat",
+      "pendingWithdraw": "Geri çekilme bekleniyor",
+      "successDeposit": "Yatırıldı",
+      "successWithdraw": "Geri çekildi",
+      "failDeposit": "Para yatırma işlemi başarısız oldu",
+      "failWithdraw": "Para çekme işlemi başarısız oldu"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Adrese çek"
     },
     "stakedAssets": "Stake Edilmiş OSMO",
-    "pooledAssets": "havuzlanmış",
     "table": {
       "columns": {
         "assetChain": "Varlık / Ağ",
@@ -201,7 +206,12 @@
       },
       "title": "Tüm Varlıklar",
       "withdrawButton": "Çek",
-      "activate": "Etkinleştir"
+      "activate": "Etkinleştir",
+      "marketCap": "Piyasa değeri",
+      "volume24h": "Hacim",
+      "priceChange24h": "24 saat değişim",
+      "price": "Fiyat",
+      "name": "İsim"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -286,7 +296,21 @@
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
       "liquid_staking": "Sıvı esnetme"
+    },
+    "seeAll": "Hepsini gör",
+    "highlights": {
+      "new": "Yeni",
+      "topGainers": "En çok kazananlar",
+      "upcoming": "Yaklaşan"
     }
+  },
+  "portfolio": {
+    "trade": "Ticaret",
+    "yourAssets": "Varlıklarınız",
+    "yourPositions": "Pozisyonlarınız",
+    "recentTransfers": "Son transferler",
+    "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
+    "yourLiquidityPools": "Likidite havuzlarınız"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Varlıklar",
+    "portfolio": "Portföy",
     "help": "Destek",
     "info": "Bilgi",
     "pools": "Havuzlar",
@@ -406,7 +431,9 @@
     "marsSubtext": "Mars tarafından desteklenmektedir",
     "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
-    "new": "YENİ"
+    "new": "YENİ",
+    "settings": "Ayarlar",
+    "notifications": "Bildirimler"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
@@ -790,6 +817,8 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
+    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
+    "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
+    "gettingStarted": "Başlarken",
     "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
     "somethingWentWrong": "Bir şeyler yanlış gitti",
     "isNotInstalled": "{walletName} yüklü değil",
@@ -894,6 +924,10 @@
       "title": "Osmoz Varlıkları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
     },
+    "portfolio": {
+      "title": "Osmoz Portföyü",
+      "description": "Varlıklarınızı önde gelen merkezi olmayan Cosmos borsası Osmosis'te görüntüleyin"
+    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -951,34 +985,34 @@
     "strategiesCount": "{number} stratejiler",
     "oneStrategy": "1 strateji",
     "value": "Değer",
-    "method": "Yöntem",
+    "method": "Tip",
     "platform": "platformu",
     "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
-    "myStrategies": "Stratejilerim",
-    "strategyPlatform": "Strateji / Platform",
-    "apy": "APY",
-    "daily": "Günlük",
+    "myStrategies": "Stratejileriniz",
+    "strategyPlatform": "Strateji",
+    "apy": "Nisan",
     "reward": "Ödül",
-    "lock": "Kilit",
+    "lock": "Bağlantıyı kaldır",
     "days": "günler",
+    "day": "gün",
     "risk": "Risk",
-    "strategyMethod": "Strateji Yöntemi",
-    "allMethods": "Tüm Yöntemler",
+    "strategyMethod": "Türler",
+    "allMethods": "Her türlü",
     "platforms": "Platformlar",
-    "allPlatforms": "Tüm Platformlar",
+    "allPlatforms": "Tüm platformlar",
     "allCategories": "Tüm Kategoriler",
     "filters": "Filtreler",
-    "resetFilters": "Filtreleri Sıfırla",
-    "saveFilters": "Filtreleri Kaydet",
+    "resetFilters": "Filtreleri sıfırla",
+    "saveFilters": "Filtreleri kaydet",
     "rewards": "Ödüller",
     "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
     "availableToClaim": "talep edilebilir",
     "claimAllRewards": "Tüm ödülleri talep edin",
     "join": "Katılmak",
     "tokenFilterOptions": {
-      "my": "Jetonlarım",
-      "all": "Tüm Jetonlar"
+      "my": "Varlıklarınız",
+      "all": "Tüm varlıklar"
     },
     "rewardTypes": {
       "all": "Tüm",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Toplam değer",
     "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
-    "startEarning": "Stratejileri keşfedin",
-    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiden birini kullanarak uygulamaya koyun.",
+    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiyle uygulamaya koyun.",
     "loadingStrategies": "Stratejiler yükleniyor...",
     "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
+    "sorryNoResultsWithAssets": "Öğelerinizle ilişkili strateji bulunamadı.",
     "sorryNoResults": "Hiçbir strateji bulunamadı.",
     "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
     "retry": "Yeniden dene",
     "manage": "Üstesinden gelmek",
     "noLock": "Kilit yok",
     "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
-    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor."
+    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
+    "instantUnbondOnly": "Yalnızca anında ayrılma",
+    "tooltips": {
+      "apr": {
+        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder.\n\nNot: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir.\n\nSorumluluk reddi beyanı: Bu APR'ler projelerin kendisi tarafından raporlanmaktadır ve hatalı olabilir."
+      },
+      "tvl": {
+        "description": "Kilitli Toplam Değer (TVL), stratejiye yatırılan varlıkların ABD Doları cinsinden toplam değerini ifade eder."
+      },
+      "reward": {
+        "description": "Stratejinin operasyonları ve/veya teşvikleri aracılığıyla kazanılan varlıkların türü."
+      },
+      "lock": {
+        "description": "Bir pozisyondan çıkılmadan önce bağlı kalınan süre. Not: Tüm strateji çözülme* dönemlerinde ödül dağılımları yoktur."
+      },
+      "strategy": {
+        "description": "Osmosis'te çeşitli platformların barındırdığı çeşitli türlerde kazanç fırsatları mevcuttur. Bir stratejiye erişim belirli varlıkların yatırılmasını gerektirir."
+      },
+      "risk": {
+        "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
+      }
+    }
   },
   "disclaimer": "Sorumluluk reddi beyanı",
   "remaining": "geriye kalan",
@@ -1015,5 +1070,9 @@
     "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
     "buttonContinue": "Her halükarda devam et",
     "buttonCancel": "İptal etmek"
+  },
+  "transactions": {
+    "noRecent": "Yakın zamanda transfer yok",
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
   }
 }

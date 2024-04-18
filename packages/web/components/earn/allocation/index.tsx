@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
 
-import { MOCK_tokenRows } from "~/components/earn/_mock-data";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
 import useScrollMeasure from "~/hooks/use-scroll-measure";
@@ -69,7 +68,7 @@ export const EarnAllocation = () => {
         <div
           ref={containerRef}
           className={classNames(
-            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll before:pointer-events-none before:absolute before:inset-x-0 before:top-9 before:bottom-0 before:bg-gradient-scrollable-allocation-list-reverse before:transition-opacity before:duration-200 before:ease-in-out after:pointer-events-none after:absolute after:inset-x-0 after:-bottom-0.25 after:top-56 after:bg-gradient-scrollable-allocation-list after:transition-opacity after:duration-200 after:ease-in-out",
+            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll before:pointer-events-none before:absolute before:inset-x-0 before:bottom-0 before:top-9 before:bg-gradient-scrollable-allocation-list-reverse before:transition-opacity before:duration-200 before:ease-in-out after:pointer-events-none after:absolute after:inset-x-0 after:-bottom-0.25 after:top-56 after:bg-gradient-scrollable-allocation-list after:transition-opacity after:duration-200 after:ease-in-out",
             {
               "before:opacity-100": y > 10,
               "before:opacity-0": y < 10,
@@ -78,7 +77,7 @@ export const EarnAllocation = () => {
             }
           )}
         >
-          {MOCK_tokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
+          {/*  {MOCK_tokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
             <div
               key={`${name} ${i} stat row`}
               className="flex items-center justify-between"
@@ -98,11 +97,11 @@ export const EarnAllocation = () => {
                 <div className="h-8 w-8 rounded-full bg-wosmongton-500" />
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
         <small
           className={classNames(
-            "absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 transition-opacity duration-200 ease-in-out",
+            "absolute bottom-0 inline-flex w-full justify-center self-center font-subtitle2 text-overline font-medium tracking-normal text-osmoverse-300 transition-opacity duration-200 ease-in-out",
             { "opacity-0": y > 10 },
             { "opacity-50": y < 10 }
           )}

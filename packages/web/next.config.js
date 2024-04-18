@@ -87,6 +87,8 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
 
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
     org: "osmosis-labs",
     project: "osmosis-web",
   },

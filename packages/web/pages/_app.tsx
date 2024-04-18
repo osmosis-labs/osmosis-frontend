@@ -26,8 +26,8 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
+import { MainLayoutMenu } from "~/components/main-menu";
 import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
-import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
   MultiLanguageProvider,
@@ -43,16 +43,12 @@ import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
 import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
-import MarginIcon from "~/public/icons/margin-icon.svg";
-import PerpsIcon from "~/public/icons/perps-icon.svg";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
-import LevanaLogo from "../public/logos/levana-logo.png";
-import MarsLogo from "../public/logos/mars-logo.png";
 import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
@@ -138,6 +134,10 @@ const MainLayoutWrapper: FunctionComponent<{
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
+    if (!flags._isInitialized) {
+      return [];
+    }
+
     if (!levanaGeoblock && !error) {
       return [];
     }
@@ -153,12 +153,15 @@ const MainLayoutWrapper: FunctionComponent<{
               openModal: onOpenLeavingOsmosisToMars,
             });
           },
-          icon: (
-            <Image src={MarginIcon} width={20} height={20} alt="margin icon" />
-          ),
+          icon: <Icon id="margin" className="h-6 w-6" />,
           amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
           secondaryLogo: (
-            <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
+            <Image
+              src="/logos/mars-logo.png"
+              width={24}
+              height={24}
+              alt="mars logo"
+            />
           ),
           subtext: t("menu.marsSubtext"),
         },
@@ -171,12 +174,15 @@ const MainLayoutWrapper: FunctionComponent<{
               openModal: onOpenLeavingOsmosisToLevana,
             });
           },
-          icon: (
-            <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
-          ),
+          icon: <Icon id="perps" className="h-6 w-6" />,
           amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
           secondaryLogo: (
-            <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
+            <Image
+              src="/logos/levana-logo.png"
+              width={24}
+              height={24}
+              alt="mars logo"
+            />
           ),
           subtext: t("menu.levanaSubtext"),
         }
@@ -187,29 +193,46 @@ const MainLayoutWrapper: FunctionComponent<{
       {
         label: t("menu.swap"),
         link: "/",
-        icon: <Icon id="trade" className="h-5 w-5" />,
+        icon: <Icon id="trade" className="h-6 w-6" />,
         selectionTest: /\/$/,
       },
+      ...(flags.portfolioPageAndNewAssetsPage
+        ? [
+            {
+              label: t("menu.portfolio"),
+              link: "/portfolio",
+              icon: <Icon id="portfolio" className="h-6 w-6" />,
+              selectionTest: /\/portfolio/,
+            },
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets" className="h-6 w-6" />,
+              selectionTest: /\/assets/,
+            },
+          ]
+        : [
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets" className="h-6 w-6" />,
+              selectionTest: /\/assets/,
+            },
+          ]),
       flags.earnPage
         ? {
             label: t("earnPage.title"),
             link: "/earn",
-            icon: <Icon id="earn" className="h-5 w-5" />,
+            icon: <Icon id="earn" className="h-6 w-6" />,
             isNew: true,
             selectionTest: /\/earn/,
           }
         : null,
-      {
-        label: t("menu.assets"),
-        link: "/assets",
-        icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-        selectionTest: /\/assets/,
-      },
       flags.staking
         ? {
             label: t("menu.stake"),
             link: "/stake",
-            icon: <Icon id="ticket" className="h-5 w-5" />,
+            icon: <Icon id="ticket" className="h-6 w-6" />,
             selectionTest: /\/stake/,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
@@ -218,26 +241,26 @@ const MainLayoutWrapper: FunctionComponent<{
             link:
               osmosisWallet?.walletInfo?.stakeUrl ??
               "https://wallet.keplr.app/chains/osmosis",
-            icon: <Icon id="ticket" className="h-5 w-5" />,
+            icon: <Icon id="ticket" className="h-6 w-6" />,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           },
       ...conditionalMenuItems,
       {
         label: t("menu.pools"),
         link: "/pools",
-        icon: <Icon id="pool" className="h-5 w-5" />,
+        icon: <Icon id="pool" className="h-6 w-6" />,
         selectionTest: /\/pools/,
       },
       {
         label: t("menu.store"),
         link: "/apps",
-        icon: <Icon id="apps" className="h-5 w-5" />,
+        icon: <Icon id="apps" className="h-6 w-6" />,
         selectionTest: /\/apps/,
         badge: <AppsBadge appsLink="/apps" />,
       },
       {
         label: t("menu.more"),
-        icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
+        icon: <Icon id="dots-three-vertical" className="h-6 w-6" />,
         link: "/",
         showMore: true,
       },
@@ -247,10 +270,12 @@ const MainLayoutWrapper: FunctionComponent<{
   }, [
     levanaGeoblock,
     error,
-    t,
     flags.earnPage,
     flags.staking,
+    flags.portfolioPageAndNewAssetsPage,
+    flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
+    t,
     onOpenLeavingOsmosisToLevana,
     onOpenLeavingOsmosisToMars,
   ]);
@@ -259,7 +284,7 @@ const MainLayoutWrapper: FunctionComponent<{
     {
       label: t("menu.help"),
       link: "https://support.osmosis.zone/",
-      icon: <Icon id="help-circle" className="h-5 w-5" />,
+      icon: <Icon id="help-circle" className="h-6 w-6" />,
       amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
     },
     {
@@ -267,19 +292,19 @@ const MainLayoutWrapper: FunctionComponent<{
       link:
         osmosisWallet?.walletInfo?.governanceUrl ??
         "https://wallet.keplr.app/chains/osmosis?tab=governance",
-      icon: <Icon id="vote" className="h-5 w-5" />,
+      icon: <Icon id="vote" className="h-6 w-6" />,
       amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
     },
     {
       label: t("menu.info"),
       link: "https://www.datalenses.zone/chain/osmosis/overview",
-      icon: <Icon id="chart" className="h-5 w-5" />,
+      icon: <Icon id="chart" className="h-6 w-6" />,
       amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
     },
     {
       label: t("menu.featureRequests"),
       link: "https://forum.osmosis.zone/c/site-feedback/2",
-      icon: <Icon id="gift" className="h-5 w-5" />,
+      icon: <Icon id="gift" className="h-6 w-6" />,
     },
   ];
 

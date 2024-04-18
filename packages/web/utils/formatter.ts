@@ -8,14 +8,21 @@ import {
 } from "@keplr-wallet/unit";
 import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
-import { getNumberMagnitude, toScientificNotation } from "~/utils/number";
+import {
+  getDecimalCount,
+  getNumberMagnitude,
+  toScientificNotation,
+} from "~/utils/number";
 
 type CustomFormatOpts = {
   maxDecimals: number;
   scientificMagnitudeThreshold: number;
+  disabledTrimZeros?: boolean;
 };
 
-type FormatOptions = Partial<Intl.NumberFormatOptions & CustomFormatOpts>;
+export type FormatOptions = Partial<
+  Intl.NumberFormatOptions & CustomFormatOpts
+>;
 
 type FormatOptionsWithDefaults = Partial<Intl.NumberFormatOptions> &
   CustomFormatOpts;
@@ -78,10 +85,24 @@ function decFormatter(
     .toString();
   let num = Number(numStr);
   num = isNaN(num) ? 0 : num;
+
   if (hasIntlFormatOptions(opts)) {
     const formatter = new Intl.NumberFormat("en-US", options);
+
+    if (opts.disabledTrimZeros) {
+      return formatter.format(num);
+    }
+
     return trimZerosFromEnd(formatter.format(num));
   } else {
+    if (opts.disabledTrimZeros) {
+      return new IntPretty(dec)
+        .maxDecimals(opts.maxDecimals)
+        .locale(false)
+        .shrink(true)
+        .toString();
+    }
+
     return trimZerosFromEnd(
       new IntPretty(dec)
         .maxDecimals(opts.maxDecimals)
@@ -209,4 +230,43 @@ export function formatCoinMaxDecimalsByOne(
   return coin.toDec().gt(new Dec(1))
     ? coin.maxDecimals(aboveOneMaxDecimals).trim(true).toString()
     : coin.maxDecimals(belowOneMaxDecimals).trim(true).toString();
+}
+
+export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
+  /**
+   * We need to know how long the integer part of the number is in order to calculate then how many decimal places.
+   */
+  const integerPartLength = value.truncate().toString().length ?? 0;
+
+  /**
+   * If a number is less then $100, we only show 4 significant digits, examples:
+   *  OSMO: $1.612
+   *  AXL: $0.9032
+   *  STARS: $0.03673
+   *  HUAHUA: $0.00001231
+   *
+   * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
+   * BTC: $47,334.21
+   * ETH: $3,441.15
+   */
+  const maximumSignificantDigits = value.lt(new Dec(100))
+    ? 4
+    : integerPartLength + 2;
+
+  const minimumDecimals = 2;
+
+  const maxDecimals = Math.max(
+    getDecimalCount(parseFloat(value.toString())),
+    minimumDecimals
+  );
+
+  return {
+    maxDecimals,
+    notation: "standard",
+    maximumSignificantDigits,
+    minimumSignificantDigits: maximumSignificantDigits,
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4,
+    disabledTrimZeros: true,
+  };
 }

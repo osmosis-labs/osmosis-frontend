@@ -5,21 +5,19 @@ import { NUMIA_BASE_URL } from "../../env";
 import { Asset } from "../../queries/complex/assets";
 
 export const EarnStrategyCategories = [
-  "Lending",
-  "Trading Vault",
   "Staking",
-  "Liquid Staking",
   "Perp LP",
-  "LP",
+  "LP (Vault)",
 ] as const;
 
-export type EarnStrategyCategory = (typeof EarnStrategyCategories)[number];
+export type EarnStrategyType = (typeof EarnStrategyCategories)[number];
 
 export const EarnStrategyProviders = [
-  "quasar",
-  "osmosis",
-  "stride",
-  "levana",
+  "Quasar",
+  "Osmosis",
+  "Stride",
+  "Levana",
+  "Cosmos SDK",
 ] as const;
 
 export type EarnStrategyProvider = (typeof EarnStrategyProviders)[number];
@@ -32,7 +30,7 @@ export const EarnStrategyTypes = [
   "osmosis-staking",
 ] as const;
 
-export type EarnStrategyType = (typeof EarnStrategyTypes)[number];
+export type EarnStrategyMethod = (typeof EarnStrategyTypes)[number];
 
 export type EarnStrategyToken = {
   denom: string;
@@ -90,8 +88,8 @@ export interface RawStrategyCMSData {
   id: string;
   name: string;
   platform: string;
-  category: EarnStrategyCategory;
   type: EarnStrategyType;
+  method: EarnStrategyMethod;
   link: string;
   contract: string;
   tvl: string;
@@ -107,7 +105,13 @@ export interface RawStrategyCMSData {
   depositDenoms: { coinMinimalDenom: string }[];
   positionDenoms: { coinMinimalDenom: string }[];
   rewardDenoms: { coinMinimalDenom: string }[];
-  tags: string[];
+  categories: string[];
+}
+
+export interface StategyCMSCategory {
+  name: string;
+  description: string;
+  iconURL: string;
 }
 
 /**
@@ -137,11 +141,11 @@ export interface StrategyCMSData {
    * - Perp LP: The assets provide liquidity for a perpetual futures contract market.
    * - LP: The assets provide liquidity for a liquidity pool.
    */
-  category: EarnStrategyCategory;
+  type: EarnStrategyType;
   /**
    * Further classification of the strategy.
    */
-  type: EarnStrategyType;
+  method: EarnStrategyMethod;
   /**
    * URL for user participation interface.
    */
@@ -161,7 +165,7 @@ export interface StrategyCMSData {
   /**
    * URL to risk report on Google Sheets.
    */
-  riskReportUrl: string;
+  riskReportUrl?: string;
   /**
    * Start date and time (UTC) of the strategy.
    */
@@ -212,7 +216,7 @@ export interface StrategyCMSData {
    * - - USDC/USDT LP is correlated because both the USDC and USDT prices are meant to follow the same asset (i.e., U.S. Dollar), or
    * - - Liquid Staking strategies are also considered correlated, because the staked token and the LST are closely related, even though only the LST is accruing relative value. In contrast, dpeositing, say, ETH tokens to mint FRAX tokens is not correlated, because FRAX price follows USD--not ETH.
    */
-  tags: string[];
+  categories: string[];
   hasLockingDuration?: boolean;
 }
 

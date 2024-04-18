@@ -4,7 +4,6 @@ import {
   ListOption,
   LockType,
   RewardsTypes,
-  StrategyButtonResponsibility,
   TokenHolder,
 } from "~/components/earn/table/types/filters";
 
@@ -14,17 +13,13 @@ export interface Filters {
   platform: ListOption<string>;
   lockDurationType: LockType;
   search: string;
-  specialTokens: ListOption<StrategyButtonResponsibility>[];
+  specialTokens: ListOption<string>[];
   rewardType: RewardsTypes;
 }
 
 export type SetFilterFn = (
   key: keyof Filters,
-  value:
-    | string
-    | boolean
-    | ListOption<StrategyButtonResponsibility>
-    | ListOption<string>
+  value: string | boolean | ListOption<string> | ListOption<string>
 ) => void;
 
 type FilterContextState = {
@@ -47,7 +42,7 @@ export const FilterProvider = ({
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {
       if (key === "specialTokens") {
-        const filterValue = value as ListOption<StrategyButtonResponsibility>;
+        const filterValue = value as ListOption<string>;
         const isValueInArray =
           filters.specialTokens.filter((f) => f.value === filterValue.value)
             .length !== 0;

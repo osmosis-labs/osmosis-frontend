@@ -228,7 +228,7 @@ export const EditView: FunctionComponent = () => {
   return (
     <>
       {!isMobile && (
-        <div className="mt-[2rem] mb-[1rem] flex place-content-between items-center py-[0.625rem]">
+        <div className="mb-[1rem] mt-[2rem] flex place-content-between items-center py-[0.625rem]">
           {onRequestBack && (
             <IconButton
               aria-label="Back"
@@ -249,7 +249,7 @@ export const EditView: FunctionComponent = () => {
         </div>
       )}
       <div className="flex h-full flex-col overflow-scroll">
-        <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
+        <p className="mb-3 px-10 font-caption text-caption text-osmoverse-200 sm:px-5">
           Add additional channels to receive your notifications.
         </p>
         <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">
@@ -353,7 +353,7 @@ export const EditView: FunctionComponent = () => {
           <div
             className={classNames(
               styles.saveSection,
-              "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
+              "sticky bottom-0 left-0 right-0  px-[2.5rem] pb-[2.25rem] pt-[1.25rem] md:p-5"
             )}
           >
             <Button disabled={loading} onClick={() => onClickSave()}>
@@ -362,7 +362,7 @@ export const EditView: FunctionComponent = () => {
           </div>
         ) : null}
         <div
-          className={`bg-black-full absolute top-[-4.8125rem] left-0 right-0 bottom-0 flex flex-col items-center justify-center ${
+          className={`bg-black-full absolute bottom-0 left-0 right-0 top-[-4.8125rem] flex flex-col items-center justify-center ${
             isSaveOrDiscardModalShown ? "" : "hidden"
           }`}
         >

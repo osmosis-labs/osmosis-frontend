@@ -15,6 +15,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+interface QueryResult {
+  gasUsdValueToPay: PricePretty;
+  gasAmount: CoinPretty;
+  gasLimit: string;
+  amount: readonly Coin[];
+}
+
 async function estimateTxFeesQueryFn({
   wallet,
   messages,
@@ -27,7 +34,7 @@ async function estimateTxFeesQueryFn({
   messages: EncodeObject[] | undefined;
   apiUtils: ReturnType<typeof api.useUtils>;
   signOptions?: SignOptions;
-}) {
+}): Promise<QueryResult> {
   if (!messages) throw new Error("No messages");
 
   const shouldBeSignedWithOneClickTrading =
@@ -83,6 +90,7 @@ export function useEstimateTxFees({
   messages: EncodeObject[] | undefined;
   chainId: string;
   enabled?: boolean;
+  onSuccess?: (data: QueryResult) => void;
   signOptions?: SignOptions;
 }) {
   const { accountStore } = useStore();
@@ -90,15 +98,7 @@ export function useEstimateTxFees({
 
   const wallet = accountStore.getWallet(chainId);
 
-  return useQuery<
-    {
-      gasUsdValueToPay: PricePretty;
-      gasAmount: CoinPretty;
-      gasLimit: string;
-      amount: readonly Coin[];
-    },
-    Error
-  >({
+  const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
@@ -121,6 +121,8 @@ export function useEstimateTxFees({
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });
+
+  return queryResult;
 }
 
 export function useEstimateTxFeesMutation() {

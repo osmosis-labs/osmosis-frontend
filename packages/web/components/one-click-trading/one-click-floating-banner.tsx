@@ -54,7 +54,7 @@ const OneClickFloatingBannerContent = () => {
       <div
         className={classNames(
           "fixed bottom-8 right-8 z-50 w-fit cursor-pointer rounded-5xl bg-osmoverse-800",
-          "sm:right-auto sm:left-1/2 sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
+          "sm:left-1/2 sm:right-auto sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
         )}
         onClick={() => {
           setIs1CTIntroModalScreen("intro");
@@ -106,16 +106,16 @@ const OneClickFloatingBannerContent = () => {
             >
               <h1
                 className={classNames(
-                  "flex-shrink-0 text-h6 font-h6",
-                  "sm:text-subtitle1 sm:font-subtitle1"
+                  "flex-shrink-0 font-h6 text-h6",
+                  "sm:font-subtitle1 sm:text-subtitle1"
                 )}
               >
                 {t("oneClickTrading.floatingBanner.title")}
               </h1>
               <ArrowButton
                 className={classNames(
-                  "text-subtitle1 font-subtitle1",
-                  "sm:text-left sm:text-caption sm:font-caption"
+                  "font-subtitle1 text-subtitle1",
+                  "sm:text-left sm:font-caption sm:text-caption"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -133,8 +133,8 @@ const OneClickFloatingBannerContent = () => {
             variant="default"
             size={null}
             className={classNames(
-              "group mt-3 mr-0.5 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
-              "sm:mt-0 sm:ml-2 sm:self-center"
+              "group mr-0.5 mt-3 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
+              "sm:ml-2 sm:mt-0 sm:self-center"
             )}
             icon={
               <Icon

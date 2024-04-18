@@ -145,7 +145,13 @@
       "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
-      "title": "Historial de transferencias"
+      "title": "Historial de transferencias",
+      "pendingDeposit": "Deposito pendiente",
+      "pendingWithdraw": "A la espera de Retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Retirar a"
     },
     "stakedAssets": "OSMO Abonado",
-    "pooledAssets": "agrupado",
     "table": {
       "columns": {
         "assetChain": "Activo / cadena",
@@ -201,7 +206,12 @@
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
-      "activate": "Activar"
+      "activate": "Activar",
+      "marketCap": "Tapa del mercado",
+      "volume24h": "Volumen",
+      "priceChange24h": "cambio 24h",
+      "price": "Precio",
+      "name": "Nombre"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",
@@ -286,7 +296,21 @@
       "stablecoin": "Monedas estables",
       "meme": "meme",
       "liquid_staking": "Estaca liquida"
+    },
+    "seeAll": "Ver todo",
+    "highlights": {
+      "new": "Nuevo",
+      "topGainers": "Principales ganadores",
+      "upcoming": "Próximo"
     }
+  },
+  "portfolio": {
+    "trade": "Comercio",
+    "yourAssets": "Tus activos",
+    "yourPositions": "Tus posiciones",
+    "recentTransfers": "Transferencias recientes",
+    "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
+    "yourLiquidityPools": "Tus fondos de liquidez"
   },
   "buyTokens": "Comprar fichas",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Activos",
+    "portfolio": "portafolio",
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
@@ -406,7 +431,9 @@
     "marsSubtext": "Impulsado por Marte",
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
-    "new": "NUEVO"
+    "new": "NUEVO",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -790,6 +817,8 @@
       "hide": "Ocultar",
       "show": "Mostrar"
     },
+    "maxButtonError": "No se puede calcular el importe máximo. Verifique su conexión de red o intente actualizar la página.",
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
+    "gettingStarted": "Empezando",
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
@@ -894,6 +924,10 @@
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
+    "portfolio": {
+      "title": "Portafolio de Ósmosis",
+      "description": "Vea sus activos en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -951,23 +985,23 @@
     "strategiesCount": "{number} estrategias",
     "oneStrategy": "1 estrategia",
     "value": "Valor",
-    "method": "Método",
+    "method": "Tipo",
     "platform": "Plataforma",
-    "scrollToSeeMore": "desplácese para ver más",
+    "scrollToSeeMore": "desplázate para ver más",
     "discoverStrategies": "Descubra estrategias",
-    "myStrategies": "Mis estrategias",
-    "strategyPlatform": "Estrategia / Plataforma",
-    "apy": "APY",
-    "daily": "A diario",
+    "myStrategies": "Tus estrategias",
+    "strategyPlatform": "Estrategia",
+    "apy": "ABR",
     "reward": "Premio",
-    "lock": "Cerrar",
+    "lock": "Desvinculado",
     "days": "días",
+    "day": "día",
     "risk": "Riesgo",
-    "strategyMethod": "Método de estrategia",
-    "allMethods": "Todos los métodos",
+    "strategyMethod": "Tipos",
+    "allMethods": "Todos los tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
-    "allCategories": "todas las categorias",
+    "allCategories": "Todas las categorias",
     "filters": "Filtros",
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
@@ -977,8 +1011,8 @@
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
     "tokenFilterOptions": {
-      "my": "Mis fichas",
-      "all": "Todas las fichas"
+      "my": "Tus activos",
+      "all": "Todos los activos"
     },
     "rewardTypes": {
       "all": "Todo",
@@ -987,17 +1021,38 @@
     },
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
-    "startEarning": "Descubre estrategias",
-    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante una de las muchas estrategias siguientes.",
+    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
     "loadingStrategies": "Cargando estrategias...",
     "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
+    "sorryNoResultsWithAssets": "No se encontraron estrategias asociadas con sus activos.",
     "sorryNoResults": "No se encontraron estrategias.",
     "tryChangingFilters": "Prueba a cambiar filtros",
     "retry": "Rever",
     "manage": "Administrar",
     "noLock": "Sin bloqueo",
     "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
-    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país."
+    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
+    "instantUnbondOnly": "Solo desvinculación instantánea",
+    "tooltips": {
+      "apr": {
+        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
+      },
+      "tvl": {
+        "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
+      },
+      "reward": {
+        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
+      },
+      "lock": {
+        "description": "El período de tiempo que una posición está vinculada antes de que se pueda salir de ella. Nota: No todos los períodos de desvinculación de estrategias* tienen distribuciones de recompensas."
+      },
+      "strategy": {
+        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
+      },
+      "risk": {
+        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
+      }
+    }
   },
   "disclaimer": "Descargo de responsabilidad",
   "remaining": "restantes",
@@ -1015,5 +1070,9 @@
     "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí."
   }
 }

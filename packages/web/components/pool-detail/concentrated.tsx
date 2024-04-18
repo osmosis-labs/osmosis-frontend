@@ -27,8 +27,7 @@ import {
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { getNumberMagnitude } from "~/utils/number";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -134,6 +133,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       }
     }, [openCreatePosition]);
 
+    const formatOpts = useMemo(
+      () => getPriceExtendedFormatOptions(currentPrice),
+      [currentPrice]
+    );
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         {pool && activeModal === "add-liquidity" && (
@@ -158,7 +162,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   <div className="flex flex-wrap gap-x-2">
                     <PoolAssetsName
                       size="md"
-                      className="text-h5 font-h5"
+                      className="font-h5 text-h5"
                       assetDenoms={pool?.reserveCoins.map(
                         (asset) => asset.currency.coinDenom
                       )}
@@ -284,20 +288,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {currentPrice && (
                   <h6
                     className={classNames(
-                      "absolute top-[51%] right-0 max-w-[2rem] text-right",
+                      "absolute right-0 top-[51%] max-w-[2rem] text-right",
                       {
                         caption: currentPrice.lt(new Dec(0.01)),
                       }
                     )}
                   >
-                    {formatPretty(currentPrice, {
-                      maxDecimals:
-                        getNumberMagnitude(Number(currentPrice.toString())) <=
-                        -3
-                          ? 0
-                          : 2,
-                      scientificMagnitudeThreshold: 3,
-                    })}
+                    {formatPretty(currentPrice, formatOpts)}
                   </h6>
                 )}
               </div>
@@ -308,7 +305,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex items-center text-body2 font-body2">
+                <div className="flex items-center font-body2 text-body2">
                   <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
@@ -377,7 +374,7 @@ const PoolDataGroup: FunctionComponent<{
   className?: string;
 }> = ({ label, value, className }) => (
   <div className={classNames("flex flex-col gap-2", className)}>
-    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
+    <div className="font-body2 text-body2 text-osmoverse-400">{label}</div>
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
 );
@@ -397,8 +394,14 @@ const ChartHeader: FunctionComponent<{
     hoverPrice,
   } = config;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDenom}

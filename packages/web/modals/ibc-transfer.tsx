@@ -136,6 +136,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       walletConnected &&
       counterpartyAccount?.walletStatus === WalletStatus.Connected;
 
+    const chainInfo = chainStore.getChain(osmosisChainId);
+
+    /**
+     * If the currency is not found in the chain info, query the balance
+     * of OSMO to trigger the ibc registrar and add all missing currencies
+     */
+    if (
+      !chainInfo.currencies.find(
+        (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
+      )
+    ) {
+      queriesStore
+        .get(osmosisChainId)
+        .queryBalances.getQueryBech32Address(account?.address ?? "")
+        .getBalanceFromCurrency(chainInfo.currencies[0]);
+    }
+
     const availableBalance = isWithdraw
       ? queriesStore
           .get(osmosisChainId)

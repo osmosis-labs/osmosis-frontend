@@ -4,9 +4,10 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { FilterContext } from "~/components/earn/filters/filter-context";
 import { useTranslation } from "~/hooks";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 import { theme } from "~/tailwind.config";
@@ -16,6 +17,7 @@ interface StrategiesTableProps {
   strategies?: EarnStrategy[];
   areStrategiesLoading?: boolean;
   isError?: boolean;
+  holdenDenoms?: string[];
   refetch: () => void;
 }
 
@@ -24,9 +26,11 @@ const StrategiesTable = ({
   strategies,
   areStrategiesLoading,
   isError,
+  holdenDenoms,
   refetch,
 }: StrategiesTableProps) => {
   const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
+  const { filters } = useContext(FilterContext);
   const table = useReactTable(tableConfig);
 
   const { rows } = table.getRowModel();
@@ -66,7 +70,16 @@ const StrategiesTable = ({
   if (strategies && strategies.length === 0) return <NoResult />;
 
   if (strategies && virtualRows.length === 0 && strategies.length > 0)
-    return <NoResult isFilterError />;
+    return (
+      <NoResult
+        isFilterError
+        isRelatedBalanceError={
+          holdenDenoms
+            ? holdenDenoms.length > 0 && filters?.tokenHolder === "my"
+            : false
+        }
+      />
+    );
 
   return (
     <div
@@ -86,7 +99,7 @@ const StrategiesTable = ({
                       header.index === 1,
                     "sticky left-0 z-30 bg-osmoverse-850 !pl-4 md:!text-left":
                       header.index === 0,
-                    "!text-center": header.index === 7,
+                    "!text-center": header.index === 6,
                   })}
                   key={header.id}
                 >
@@ -210,7 +223,13 @@ const StrategiesFetchingError = ({ refetch }: { refetch: () => void }) => {
   );
 };
 
-const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
+const NoResult = ({
+  isFilterError,
+  isRelatedBalanceError,
+}: {
+  isFilterError?: boolean;
+  isRelatedBalanceError?: boolean;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -224,7 +243,9 @@ const NoResult = ({ isFilterError }: { isFilterError?: boolean }) => {
         />
       </div>
       <h6 className="text-osmoverse-100">
-        {t("earnPage.sorryNoResults")}{" "}
+        {isRelatedBalanceError
+          ? t("earnPage.sorryNoResultsWithAssets")
+          : t("earnPage.sorryNoResults")}{" "}
         {isFilterError && t("earnPage.tryChangingFilters")}
       </h6>
     </div>

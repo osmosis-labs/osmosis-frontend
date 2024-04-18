@@ -31,6 +31,8 @@ const buttonVariants = cva(
         outline:
           "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-wosmongton-400 hover:text-white-full",
         secondary:
+          "bg-osmoverse-825 text-wosmongton-200 shadow hover:bg-osmoverse-825/80",
+        success:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
         ghost: "hover:bg-osmoverse-600",
         link: "text-white-full underline-offset-4 hover:underline",
@@ -57,6 +59,24 @@ export interface ButtonProps
   loadingText?: string;
 }
 
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
+  classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
+}
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
+  classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
+}
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -66,6 +86,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       isLoading,
       loadingText,
+      classes,
       ...props
     },
     ref
@@ -79,8 +100,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading || props.disabled}
       >
         {isLoading ? (
-          <div className="flex items-center gap-2">
-            <Spinner />
+          <div
+            className={classNames(
+              "flex items-center gap-2",
+              classes?.spinnerContainer
+            )}
+          >
+            <Spinner className={classes?.spinner} />
             {loadingText && <span>{loadingText}</span>}
           </div>
         ) : (

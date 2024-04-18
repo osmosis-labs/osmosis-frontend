@@ -145,7 +145,13 @@
       "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
-      "title": "Transfer History"
+      "title": "Transfer History",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdraw",
+      "successDeposit": "Deposited",
+      "successWithdraw": "Withdrew",
+      "failDeposit": "Deposit failed",
+      "failWithdraw": "Withdraw failed"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",
@@ -176,7 +182,6 @@
       "titleWithdraw": "Withdraw to"
     },
     "stakedAssets": "Staked OSMO",
-    "pooledAssets": "Pooled",
     "table": {
       "columns": {
         "assetChain": "Asset / Chain",
@@ -201,7 +206,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -286,7 +296,21 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Liquid staking"
+    },
+    "seeAll": "See all",
+    "highlights": {
+      "new": "New",
+      "topGainers": "Top gainers",
+      "upcoming": "Upcoming"
     }
+  },
+  "portfolio": {
+    "trade": "Trade",
+    "yourAssets": "Your assets",
+    "yourPositions": "Your positions",
+    "recentTransfers": "Recent transfers",
+    "yourSuperchargedPositions": "Your Supercharged positions",
+    "yourLiquidityPools": "Your liquidity pools"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -392,6 +416,7 @@
   },
   "menu": {
     "assets": "Assets",
+    "portfolio": "Portfolio",
     "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
@@ -406,7 +431,9 @@
     "marsSubtext": "Powered by Mars",
     "levanaSubtext": "Powered by Levana",
     "more": "More",
-    "new": "NEW"
+    "new": "NEW",
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -790,6 +817,8 @@
       "hide": "Hide",
       "show": "Show"
     },
+    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
+    "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
@@ -824,6 +853,7 @@
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
+    "gettingStarted": "Getting Started",
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",
@@ -894,6 +924,10 @@
       "title": "Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
+    "portfolio": {
+      "title": "Osmosis Portfolio",
+      "description": "View your assets on Osmosis - the leading decentralized Cosmos exchange"
+    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -951,53 +985,74 @@
     "strategiesCount": "{number} strategies",
     "oneStrategy": "1 strategy",
     "value": "Value",
-    "method": "Method",
+    "method": "Type",
     "platform": "Platform",
     "scrollToSeeMore": "scroll to see more",
     "discoverStrategies": "Discover Strategies",
-    "myStrategies": "My Strategies",
-    "strategyPlatform": "Strategy / Platform",
-    "apy": "APY",
-    "daily": "Daily",
+    "myStrategies": "Your Strategies",
+    "strategyPlatform": "Strategy",
+    "apy": "APR",
     "reward": "Reward",
-    "lock": "Lock",
+    "lock": "Unbond",
     "days": "days",
+    "day": "day",
     "risk": "Risk",
-    "strategyMethod": "Strategy Method",
-    "allMethods": "All Methods",
+    "strategyMethod": "Types",
+    "allMethods": "All types",
     "platforms": "Platforms",
-    "allPlatforms": "All Platforms",
-    "allCategories": "All Categories",
+    "allPlatforms": "All platforms",
+    "allCategories": "All categories",
     "filters": "Filters",
-    "resetFilters": "Reset Filters",
-    "saveFilters": "Save Filters",
+    "resetFilters": "Reset filters",
+    "saveFilters": "Save filters",
     "rewards": "Rewards",
     "estimatedInYearlyRewards": "Estimated in yearly rewards",
     "availableToClaim": "available to claim",
     "claimAllRewards": "Claim all rewards",
     "join": "Join",
     "tokenFilterOptions": {
-      "my": "My Tokens",
-      "all": "All Tokens"
+      "my": "Your assets",
+      "all": "All assets"
     },
     "rewardTypes": {
       "all": "All",
       "single": "Single",
       "multi": "Multi"
     },
-    "totalValueInvested": "Total Value",
+    "totalValueInvested": "Total value",
     "lookBelow": "Look below and find best strategies for you",
-    "startEarning": "Discover strategies",
-    "startEarningDescription": "Unlock your full earning potential. Put your assets to work through one of the many strategies below.",
+    "startEarningDescription": "Unlock your full earning potential. Put your assets to work through the many strategies below.",
     "loadingStrategies": "Loading strategies...",
     "sorryErrorOccurred": "Sorry, an error occured.",
+    "sorryNoResultsWithAssets": "No strategies found associated with your assets.",
     "sorryNoResults": "No strategies found.",
     "tryChangingFilters": "Try changing filters",
     "retry": "Retry",
     "manage": "Manage",
     "noLock": "No Lock",
     "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
-    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country."
+    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country.",
+    "instantUnbondOnly": "Instant unbond only",
+    "tooltips": {
+      "apr": {
+        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy.\n\nNote: A strategy's return may fluctuate based on participation and performance.\n\nDisclaimer: These APRs are self-reported by projects themselves and may be inaccurate."
+      },
+      "tvl": {
+        "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."
+      },
+      "reward": {
+        "description": "The type of assets earned through the strategy's operations and/or incentives."
+      },
+      "lock": {
+        "description": "The period of time a position is bonded before it can be exited. Note: Not all strategy unbonding* periods have reward distributions."
+      },
+      "strategy": {
+        "description": "Earning opportunities of various types, hosted by various platforms, are available on Osmosis. Accessing a strategy necessitates the deposit of specific assets."
+      },
+      "risk": {
+        "description": "Risk assessment involves considering a combination of criteria related to a strategy and its underlying assets."
+      }
+    }
   },
   "disclaimer": "Disclaimer",
   "remaining": "remaining",
@@ -1015,5 +1070,9 @@
     "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
     "buttonContinue": "Continue Anyway",
     "buttonCancel": "Cancel"
+  },
+  "transactions": {
+    "noRecent": "No recent transfers",
+    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here."
   }
 }

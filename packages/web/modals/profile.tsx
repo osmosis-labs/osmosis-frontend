@@ -65,7 +65,7 @@ export const ProfileModal: FunctionComponent<
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const { fiatRampSelection } = useBridge();
-  const featureFlag = useFeatureFlags();
+  const featureFlags = useFeatureFlags();
 
   const {
     isOpen: isAvatarSelectOpen,
@@ -136,7 +136,7 @@ export const ProfileModal: FunctionComponent<
         className="relative max-h-screen overflow-hidden"
       >
         <div className="flex flex-col items-center overflow-auto">
-          {featureFlag.oneClickTrading && show1CTSettings ? (
+          {featureFlags.oneClickTrading && show1CTSettings ? (
             <ProfileOneClickTradingSettings
               onGoBack={() => setShow1CTSettings(false)}
               onClose={props.onRequestClose}
@@ -164,7 +164,7 @@ export const ProfileModal: FunctionComponent<
 
                 <DrawerContent>
                   <DrawerOverlay />
-                  <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                  <DrawerPanel className="flex h-fit items-center justify-center pb-7 pt-7">
                     <h6 className="mb-8">Select an avatar</h6>
                     <div className="flex gap-8 xs:gap-3">
                       <div className="text-center">
@@ -245,7 +245,7 @@ export const ProfileModal: FunctionComponent<
                         }
                       )}
                     </h6>
-                    <p className="text-h5 font-h5">
+                    <p className="font-h5 text-h5">
                       {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                         minimumFractionDigits: 2,
                         maximumSignificantDigits: undefined,
@@ -261,7 +261,7 @@ export const ProfileModal: FunctionComponent<
                       props.onRequestClose();
                       fiatRampSelection();
                     }}
-                    className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+                    className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 px-3.5 py-[6px] hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
                   >
                     <CreditCardIcon
                       isAnimated
@@ -274,7 +274,15 @@ export const ProfileModal: FunctionComponent<
                     <span>{t("buyTokens")}</span>
                   </button>
 
-                  <Link href="/assets" passHref legacyBehavior>
+                  <Link
+                    href={
+                      featureFlags.portfolioPageAndNewAssetsPage
+                        ? "/portfolio"
+                        : "/assets"
+                    }
+                    passHref
+                    legacyBehavior
+                  >
                     <ArrowButton isLink>
                       {t("profile.viewAllAssets")}
                     </ArrowButton>
@@ -285,7 +293,7 @@ export const ProfileModal: FunctionComponent<
               <div
                 className={classNames(
                   "mt-5 flex w-full flex-col gap-[30px] border border-osmoverse-700 bg-osmoverse-800 p-5",
-                  featureFlag.oneClickTrading ? "rounded-t-2xl" : "rounded-2xl"
+                  featureFlags.oneClickTrading ? "rounded-t-2xl" : "rounded-2xl"
                 )}
               >
                 <div className="flex items-center gap-1.5">
@@ -372,7 +380,7 @@ export const ProfileModal: FunctionComponent<
 
                       <DrawerContent>
                         <DrawerOverlay />
-                        <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                        <DrawerPanel className="flex h-fit items-center justify-center pb-7 pt-7">
                           <h6 className="mb-8">Cosmos</h6>
                           <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
                             <QRCode value={address} size={260} />
@@ -435,7 +443,7 @@ export const ProfileModal: FunctionComponent<
                   </div>
                 </div>
               </div>
-              {featureFlag.oneClickTrading && (
+              {featureFlags.oneClickTrading && (
                 <>
                   <button
                     onClick={() => {

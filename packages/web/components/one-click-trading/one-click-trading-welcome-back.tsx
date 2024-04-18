@@ -38,7 +38,7 @@ const OneClickTradingWelcomeBack = ({
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <h1 className="text-h5 font-h5">
+      <h1 className="font-h5 text-h5">
         {t("oneClickTrading.welcomeBack.title")}
       </h1>
 
@@ -72,7 +72,7 @@ const OneClickTradingWelcomeBack = ({
                 height={32}
                 className="self-start"
               />
-              <span className="text-button font-button text-osmoverse-100">
+              <span className="font-button text-button text-osmoverse-100">
                 {t("oneClickTrading.welcomeBack.toggleLabel")}
               </span>
             </div>
@@ -92,7 +92,7 @@ const OneClickTradingWelcomeBack = ({
         />
       </div>
 
-      <p className="text-center text-caption font-caption text-osmoverse-300">
+      <p className="text-center font-caption text-caption text-osmoverse-300">
         {t("oneClickTrading.welcomeBack.description")}
       </p>
     </div>

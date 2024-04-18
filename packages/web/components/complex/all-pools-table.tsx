@@ -9,6 +9,7 @@ import {
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { EventEmitter } from "eventemitter3";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -153,8 +154,13 @@ export const AllPoolsTable: FunctionComponent<{
           }
         : undefined,
       // These are all of the pools that we support fetching.
-      // In addiion, to pool filters, there are also general cosmwasm pools and cosmwasm Astroport PCL pools.
-      types: [...filters.poolTypesFilter, "cosmwasm", "cosmwasm-astroport-pcl"],
+      // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      types: [
+        ...filters.poolTypesFilter,
+        "cosmwasm",
+        "cosmwasm-astroport-pcl",
+        "cosmwasm-whitewhale",
+      ],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
         ? {
@@ -200,15 +206,15 @@ export const AllPoolsTable: FunctionComponent<{
     });
     return {
       shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
-      shouldDisplayFeesData: feesPresenceCount > poolsData.length / 2,
+      shouldDisplayFeesData: false, // never show fees in the table
     };
   }, [poolsData]);
 
   // Define columns
-  const columnHelper = createColumnHelper<Pool>();
   const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-
   const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Pool>();
+
     let allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
@@ -315,7 +321,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     return allColumns;
   }, [
-    columnHelper,
     t,
     isLoading,
     sortKey,
@@ -602,7 +607,7 @@ const PoolCompositionCell: PoolCellComponent = ({
             size="sm"
             assetDenoms={reserveCoins.map((coin) => coin.denom)}
           />
-          <span className={classNames("text-sm font-caption opacity-60")}>
+          <span className={classNames("font-caption text-sm opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>
               {t("components.table.poolId", { id })}
               <div>
@@ -624,10 +629,29 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "concentrated" && (
                     <Icon id="concentrated-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-astroport-pcl" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/astroport-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
+                  {type === "cosmwasm-whitewhale" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/whitewhale-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
                   {type === "cosmwasm-transmuter" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
-                  {spreadFactor ? spreadFactor.toString() : ""}
+
+                  {type != "cosmwasm-astroport-pcl" &&
+                    type != "cosmwasm-whitewhale" &&
+                    (spreadFactor ? spreadFactor.toString() : "")}
                 </p>
               </div>
             </p>
@@ -672,12 +696,23 @@ function getPoolLink(pool: Pool): string {
   if (pool.type === "cosmwasm-transmuter") {
     return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
   }
+  if (pool.type === "cosmwasm-astroport-pcl") {
+    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+  }
+
+  if (pool.type === "cosmwasm-whitewhale") {
+    return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
 
   return `/pool/${pool.id}`;
 }
 
 function getPoolTypeTarget(pool: Pool) {
-  if (pool.type === "cosmwasm-transmuter") {
+  if (
+    pool.type === "cosmwasm-transmuter" ||
+    pool.type === "cosmwasm-astroport-pcl" ||
+    pool.type === "cosmwasm-whitewhale"
+  ) {
     return "_blank";
   }
   return "";

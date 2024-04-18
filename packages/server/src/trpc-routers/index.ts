@@ -6,3 +6,4 @@ export * from "./one-click-trading-router";
 export * from "./pools-router";
 export * from "./staking-router";
 export * from "./swap-router";
+export * from "./transactions-router";

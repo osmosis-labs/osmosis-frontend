@@ -48,6 +48,7 @@ import {
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
+import { getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
 
@@ -233,8 +234,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <div className="xl:hidden">
                 <SwapTool
                   isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  outTokenDenom={denom}
+                  initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+                  initialOutTokenDenom={denom}
                   page="Token Info Page"
                 />
               </div>
@@ -348,9 +349,9 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom}</h1>
+        <h1 className="font-h4 text-h4">{denom}</h1>
         {title ? (
-          <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
+          <h2 className="font-h4 text-h4 text-osmoverse-300">{title}</h2>
         ) : (
           false
         )}
@@ -428,10 +429,19 @@ const TokenChartHeader = observer(() => {
     minimumDecimals
   );
 
+  const formatOpts = useMemo(
+    () =>
+      getPriceExtendedFormatOptions(
+        assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)
+      ),
+    [assetInfoConfig.hoverPrice]
+  );
+
   return (
     <header>
       <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
         <PriceChartHeader
+          formatOpts={formatOpts}
           decimal={maxDecimals}
           showAllRange
           hoverPrice={Number(
