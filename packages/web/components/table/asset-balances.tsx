@@ -359,27 +359,38 @@ const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
 export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
-}> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
+}> = ({
+  coinMinimalDenom,
+  amount,
+  transferMethods,
+  counterparty,
+  onDeposit,
+  onWithdraw,
+}) => (
   <div className="flex items-center gap-2 text-wosmongton-200">
-    <button
-      className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onDeposit(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="deposit" width={16} height={16} />
-    </button>
-    {amount?.toDec().isPositive() && (
+    {Boolean(counterparty.length) && Boolean(transferMethods.length) && (
       <button
         className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
         onClick={(e) => {
           e.preventDefault();
-          onWithdraw(coinMinimalDenom);
+          onDeposit(coinMinimalDenom);
         }}
       >
-        <Icon className="m-auto" id="withdraw" width={16} height={16} />
+        <Icon className="m-auto" id="deposit" width={16} height={16} />
       </button>
     )}
+    {amount?.toDec().isPositive() &&
+      Boolean(counterparty.length) &&
+      Boolean(transferMethods.length) && (
+        <button
+          className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+          onClick={(e) => {
+            e.preventDefault();
+            onWithdraw(coinMinimalDenom);
+          }}
+        >
+          <Icon className="m-auto" id="withdraw" width={16} height={16} />
+        </button>
+      )}
   </div>
 );
