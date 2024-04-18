@@ -24,7 +24,12 @@ export const PriceCell: FunctionComponent<
       )}
       {coinDenom && (
         <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
-          {priceChange24h && <PriceChange priceChange={priceChange24h} />}
+          {priceChange24h && (
+            <PriceChange
+              priceChange={priceChange24h}
+              overrideTextClasses="body2"
+            />
+          )}
         </span>
       )}
     </div>
