@@ -11,14 +11,15 @@ import { api } from "~/utils/trpc";
 export const PriceCell: FunctionComponent<
   Partial<{
     coinDenom: string;
+    currentPrice: RatePretty;
     priceChange24h?: RatePretty;
   }>
-> = ({ coinDenom, priceChange24h }) => (
+> = ({ currentPrice, coinDenom, priceChange24h }) => (
   <div className={classNames("flex w-44 items-center gap-4 md:gap-1")}>
     <div className="flex w-full flex-col place-content-center">
       {coinDenom && (
         <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-          {coinDenom}
+          {currentPrice?.toString() ?? "-"}
         </div>
       )}
       {coinDenom && (
