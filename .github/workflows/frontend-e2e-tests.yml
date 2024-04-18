@@ -7,12 +7,8 @@ on:
       - stage
       - chore/add-e2e-pipeline
 
-env:
-  FRONTEND_MAIN: "https://app.osmosis.zone"
-  FRONTEND_STAGE: "https://stage.osmosis.zone"
-
 jobs:
-  fe-e2e-tests:
+  instal-playwright:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -26,7 +22,18 @@ jobs:
           cd packages/web
           yarn install
           npx playwright install
+
+  fe-e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run E2E Tests
+        run: |
+          cd packages/web
           npx playwright test -g "Test Select Swap Pair feature"
+
+  upload-test-results:
+    runs-on: ubuntu-latest
+    steps:
       - name: upload test results
         id: e2e-test-results
         uses: actions/upload-artifact@v4

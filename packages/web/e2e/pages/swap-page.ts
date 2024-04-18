@@ -39,6 +39,8 @@ export class SwapPage {
     expect(request).toBeTruthy();
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
+    const currentUrl = this.page.url();
+    console.log("FE opened at: " + currentUrl);
   }
 
   async connectWallet(promise: Promise<Page>) {
