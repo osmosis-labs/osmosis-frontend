@@ -120,8 +120,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
         <div className="h-72 overflow-x-clip overflow-y-scroll">
           <Table
             className="w-full"
-            tHeadClassName="sticky top-0"
-            headerTrClassName="!h-11"
+            headerTrClassName="!bg-osmoverse-800 top-0 !h-11"
             columnDefs={[
               {
                 display: t("superfluidValidator.columns.validator"),
