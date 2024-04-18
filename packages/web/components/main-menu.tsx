@@ -182,7 +182,7 @@ const MenuItemContent: React.FC<{
   return (
     <div
       className={classNames(
-        "flex h-7 w-full items-center gap-4 transition-all duration-300 ease-in-out",
+        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out",
         selected
           ? "text-white-high"
           : "text-osmoverse-300 hover:text-white-high"
@@ -197,7 +197,7 @@ const MenuItemContent: React.FC<{
         {/* Main Icon */}
         <div
           className={classNames(
-            "transition-all duration-300 ease-in-out",
+            "transition-all duration-100 ease-in-out",
             showSubTitle ? "opacity-0" : "opacity-100"
           )}
         >
@@ -207,7 +207,7 @@ const MenuItemContent: React.FC<{
         {secondaryLogo && (
           <div
             className={classNames(
-              "absolute top-0 left-0 transition-all duration-300 ease-in-out",
+              "absolute top-0 left-0 transition-all duration-100 ease-in-out",
               showSubTitle ? "opacity-100" : "opacity-0"
             )}
           >
@@ -217,7 +217,7 @@ const MenuItemContent: React.FC<{
       </div>
       <div
         className={classNames(
-          "body2 w-full overflow-hidden overflow-x-hidden transition-all duration-300 ease-in-out"
+          "body2 w-full overflow-hidden overflow-x-hidden transition-all duration-100 ease-in-out"
         )}
       >
         {isNew ? (
@@ -231,7 +231,7 @@ const MenuItemContent: React.FC<{
           <>
             <div
               className={classNames(
-                "flex w-full place-content-between items-center transition-transform duration-300 ease-in-out",
+                "flex w-full place-content-between items-center transition-transform duration-100 ease-in-out",
                 { "-translate-y-0.5 transform": showSubTitle && subtext }
               )}
             >
@@ -241,7 +241,7 @@ const MenuItemContent: React.FC<{
             {subtext && (
               <div
                 className={classNames(
-                  "transition-visibility text-white-opacity-70 text-xs font-medium transition-opacity duration-300 ease-in-out",
+                  "transition-visibility text-white-opacity-70 text-xs font-medium transition-opacity duration-100 ease-in-out",
                   showSubTitle && subtext
                     ? "visible h-5 opacity-100"
                     : "invisible h-0 opacity-0"
