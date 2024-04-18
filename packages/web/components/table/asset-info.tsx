@@ -99,13 +99,13 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, sortDirection_]);
   const sort = useMemo(
     () =>
-      !Boolean(searchQuery)
+      !Boolean(search)
         ? {
             keyPath: sortKey,
             direction: sortDirection,
           }
         : undefined,
-    [searchQuery, sortKey, sortDirection]
+    [search, sortKey, sortDirection]
   );
 
   const showUnverifiedAssetsSetting =
