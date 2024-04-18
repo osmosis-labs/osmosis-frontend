@@ -31,7 +31,7 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
-import { HistoricalPriceCell } from "./cells/price";
+import { HistoricalPriceCell, PriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -151,7 +151,7 @@ export const AssetsInfoTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        cell: (cell) => <PriceCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
         id: "historicalPrice",
