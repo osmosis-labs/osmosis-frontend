@@ -4,7 +4,7 @@ import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -31,8 +31,20 @@ export const TransactionDetailsContent = ({
     "MMM DD, YYYY, HH:mm"
   );
 
+  const [conversion, setConversion] = useState({
+    numerator: tokenIn.token,
+    denominator: tokenOut.token,
+  });
+
+  const toggleConversion = () => {
+    setConversion({
+      numerator: conversion.denominator,
+      denominator: conversion.numerator,
+    });
+  };
+
   const conversionRate = formatPretty(
-    tokenIn.token.toDec().quo(tokenOut.token.toDec()),
+    conversion.numerator.toDec().quo(conversion.denominator.toDec()),
     { maxDecimals: 2 }
   );
 
@@ -130,11 +142,13 @@ export const TransactionDetailsContent = ({
         </div>
         <div className="flex flex-col py-3">
           <div className="flex justify-between gap-3 py-3">
-            <div>Execution Price</div>
+            <div onClick={toggleConversion} className="cursor-pointer">
+              Execution Price <span>&#x2194;</span>
+            </div>
             <div className="flex gap-3">
               <div className="text-body1 text-wosmongton-300">
-                1 {tokenOut.token.denom} = {conversionRate}{" "}
-                {tokenIn.token.denom}
+                1 {conversion.denominator.denom} = {conversionRate}{" "}
+                {conversion.numerator.denom}
               </div>
               <CopyIconButton valueToCopy={conversionRate} />
             </div>
