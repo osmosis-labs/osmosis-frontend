@@ -67,7 +67,9 @@
     "@react-spring/web": "^9.6.1",
     "@sentry/nextjs": "^7.109.0",
     "@tanstack/match-sorter-utils": "^8.8.4",
+    "@tanstack/query-async-storage-persister": "^4.36.1",
     "@tanstack/react-query": "^4.32.6",
+    "@tanstack/react-query-persist-client": "^4.36.1",
     "@tanstack/react-table": "^8.10.3",
     "@tanstack/react-virtual": "^3.0.0-beta.63",
     "@tippyjs/react": "^4.2.6",
@@ -132,6 +134,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.41.0",
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
