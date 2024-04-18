@@ -13,36 +13,22 @@ export const PriceCell: FunctionComponent<
     coinDenom: string;
     priceChange24h?: RatePretty;
   }>
-> = ({ coinDenom, priceChange24h }) => {
-  const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
-  const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
-
-  let color: string;
-  if (isBullish) {
-    color = theme.colors.bullish[400];
-  } else if (isBearish) {
-    color = theme.colors.rust[400];
-  } else {
-    color = theme.colors.wosmongton[200];
-  }
-
-  return (
-    <div className={classNames("flex w-44 items-center gap-4 md:gap-1")}>
-      <div className="flex w-full flex-col place-content-center">
-        {coinDenom && (
-          <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-            {coinDenom}
-          </div>
-        )}
-        {coinDenom && (
-          <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
-            {priceChange24h && <PriceChange priceChange={priceChange24h} />}
-          </span>
-        )}
-      </div>
+> = ({ coinDenom, priceChange24h }) => (
+  <div className={classNames("flex w-44 items-center gap-4 md:gap-1")}>
+    <div className="flex w-full flex-col place-content-center">
+      {coinDenom && (
+        <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+          {coinDenom}
+        </div>
+      )}
+      {coinDenom && (
+        <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
+          {priceChange24h && <PriceChange priceChange={priceChange24h} />}
+        </span>
+      )}
     </div>
-  );
-};
+  </div>
+);
 
 export const HistoricalPriceCell: FunctionComponent<{
   coinDenom: string;
