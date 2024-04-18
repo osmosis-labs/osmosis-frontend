@@ -146,7 +146,7 @@ const MorePopover: FunctionComponent<{
           <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-navbar-mobile flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
+          <Popover.Panel className="absolute bottom-full flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
             {secondaryMenus.map((menu: MainLayoutMenu) => {
               const { link, selectionTest, secondaryLogo, showMore } = menu;
               return (
