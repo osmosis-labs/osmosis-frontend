@@ -11,10 +11,9 @@ import { api } from "~/utils/trpc";
 export const PriceCell: FunctionComponent<
   Partial<{
     coinDenom: string;
-    timeFrame: CommonPriceChartTimeFrame;
     priceChange24h?: RatePretty;
   }>
-> = ({ coinDenom, priceChange24h, timeFrame = "1D" }) => {
+> = ({ coinDenom, priceChange24h }) => {
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
 
