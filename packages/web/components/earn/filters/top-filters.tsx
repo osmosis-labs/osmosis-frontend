@@ -147,8 +147,8 @@ export const TopFilters = ({
           allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
-          onChange={(value) =>
-            setFilter("strategyMethod", value as ListOption<string>)
+          onChange={(option) =>
+            setFilter("strategyMethod", option as ListOption<string>)
           }
         />
         <DropdownWithLabel<string>
@@ -156,7 +156,7 @@ export const TopFilters = ({
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
           value={platform}
-          onChange={(value) => setFilter("platform", value)}
+          onChange={(option) => setFilter("platform", option)}
         />
         <div className="flex items-center gap-7">
           <span className="font-subtitle1 font-bold">
@@ -247,14 +247,14 @@ export const TopFilters = ({
           allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
-          onChange={(value) => setFilter("strategyMethod", value)}
+          onChange={(option) => setFilter("strategyMethod", option)}
         />
         <DropdownWithLabel<string>
           label={t("earnPage.platforms")}
           allLabel={t("earnPage.allPlatforms")}
           options={platforms}
           value={platform}
-          onChange={(value) => setFilter("platform", value)}
+          onChange={(option) => setFilter("platform", option)}
         />
         <div className="flex items-center gap-7">
           <span className="font-subtitle1 font-bold">

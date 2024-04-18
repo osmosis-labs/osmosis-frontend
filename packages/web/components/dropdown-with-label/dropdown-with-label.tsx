@@ -8,7 +8,7 @@ import { ListOption } from "~/components/earn/table/types/filters";
 interface DropdownWithLabelProps<T> {
   label: string;
   options: ListOption<T>[];
-  value: ListOption<T>;
+  value: ListOption<T>[];
   onChange: (v: ListOption<T>) => void;
   allLabel?: string;
   buttonClassName?: string;
@@ -19,7 +19,6 @@ export const DropdownWithLabel = <T,>({
   onChange,
   value,
   options,
-  allLabel,
   buttonClassName,
 }: DropdownWithLabelProps<T>) => {
   return (
@@ -27,16 +26,7 @@ export const DropdownWithLabel = <T,>({
       <span className="whitespace-nowrap font-subtitle1 font-bold 2xl:hidden">
         {label}
       </span>
-      <Listbox
-        value={value.value}
-        onChange={(value) => {
-          const selectedOption = options.find((opt) => opt.value === value);
-
-          if (selectedOption) {
-            return onChange(selectedOption);
-          }
-        }}
-      >
+      <Listbox value={options} onChange={() => {}} multiple>
         <div className="relative flex w-full">
           <Listbox.Button
             className={classNames(
@@ -44,13 +34,8 @@ export const DropdownWithLabel = <T,>({
               buttonClassName
             )}
           >
-            <span className="font-subtitle1 leading-6 2xl:hidden">
-              {value.label}
-            </span>
-            <span className="hidden max-w-[100px] truncate font-subtitle1 leading-6 2xl:block">
-              {(value.value as unknown as string) === "" && allLabel
-                ? allLabel
-                : value.label}
+            <span className="max-w-[100px] truncate font-subtitle1 leading-6">
+              {value && value.map(({ label }) => label).join(", ")}
             </span>
             <Icon id="caret-down" />
           </Listbox.Button>
@@ -78,21 +63,19 @@ export const DropdownWithLabel = <T,>({
                       }
                     )
                   }
+                  onClick={() => onChange(option)}
                   key={option.value as unknown as string}
                   value={option.value}
                 >
-                  {({ selected }) => (
-                    <>
-                      <span className="block truncate capitalize">
-                        {option.label}
-                      </span>
-                      {selected ? (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Icon id="check-mark" className="h-4 w-4" />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
+                  <span className="block truncate capitalize">
+                    {option.label}
+                  </span>
+                  {value.findIndex((value) => value.value === option.value) !==
+                  -1 ? (
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Icon id="check-mark" className="h-4 w-4" />
+                    </span>
+                  ) : null}
                 </Listbox.Option>
               ))}
             </Listbox.Options>

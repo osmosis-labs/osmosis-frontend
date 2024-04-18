@@ -72,8 +72,8 @@ function Earn() {
   const defaultFilters: Filters = useMemo(
     () => ({
       tokenHolder: isWalletConnected && holdenDenoms?.length ? "my" : "all",
-      strategyMethod: { label: t("earnPage.rewardTypes.all"), value: "" },
-      platform: { label: t("earnPage.rewardTypes.all"), value: "" },
+      strategyMethod: [{ label: t("earnPage.rewardTypes.all"), value: "" }],
+      platform: [{ label: t("earnPage.rewardTypes.all"), value: "" }],
       lockDurationType: "all",
       search: "",
       specialTokens: [],

@@ -46,13 +46,15 @@ export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   filterValue
 ) => {
   const value = row.getValue(colID) as string;
-  const inputFilter = filterValue as ListOption<string>;
+  const inputFilter = filterValue as ListOption<string>[];
 
-  if (inputFilter.value === "") {
+  // base case -> single value in the array which is all
+  if (inputFilter.length === 1 && inputFilter[0].value === "") {
     return true;
   }
 
-  return inputFilter.value === value;
+  // return inputFilter.includes({ label: value, value });
+  return inputFilter.findIndex((f) => f.value === value) !== -1;
 };
 
 export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
