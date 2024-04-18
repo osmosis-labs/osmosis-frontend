@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
@@ -11,7 +11,7 @@ import { api } from "~/utils/trpc";
 export const PriceCell: FunctionComponent<
   Partial<{
     coinDenom: string;
-    currentPrice: RatePretty;
+    currentPrice: PricePretty;
     priceChange24h?: RatePretty;
   }>
 > = ({ currentPrice, coinDenom, priceChange24h }) => (
