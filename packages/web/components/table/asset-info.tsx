@@ -144,13 +144,14 @@ export const AssetsInfoTable: FunctionComponent<{
         header: () => (
           <SortHeader
             label={t("assets.table.price")}
-            sortKey="currentPrice"
+            sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
             setSortKey={setSortKey}
           />
         ),
+        cell: (cell) => <AssetCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
         id: "historicalPrice",
