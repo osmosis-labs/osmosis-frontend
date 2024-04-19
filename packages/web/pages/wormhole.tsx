@@ -105,7 +105,7 @@ const Wormhole: FunctionComponent = () => {
         },
       },
     },
-    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT"],
+    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT", "WSOL"],
   };
 
   let bridgeDefaults = {
