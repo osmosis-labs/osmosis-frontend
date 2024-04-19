@@ -57,5 +57,5 @@ jobs:
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
 
       - name: Send Slack Alert if last step failed
-        if: ${{ steps.tests.outcome != 'success' }}
+        if: ${{ steps.tests.outcome != 'success' || failure() }}
         run: echo "Send Slack Alert ${{ matrix.env }}"
