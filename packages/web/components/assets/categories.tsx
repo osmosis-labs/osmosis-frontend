@@ -47,7 +47,7 @@ const staticCategoryAssetImageSamples = {
   ],
   bridges: [
     "/tokens/generated/axl.svg",
-    "/tokens/generated/w.svg",
+    "/tokens/generated/w.png",
     "/tokens/generated/pica.svg",
   ],
   dweb: [
@@ -63,7 +63,7 @@ const staticCategoryAssetImageSamples = {
   gaming: [
     "/tokens/generated/saga.svg",
     "/tokens/generated/xpla.svg",
-    "/tokens/generated/pasg.svg",
+    "/tokens/generated/pasg.png",
   ],
   oracles: [
     "/tokens/generated/pyth.svg",
@@ -82,7 +82,7 @@ const staticCategoryAssetImageSamples = {
   ],
   privacy: [
     "/tokens/generated/scrt.svg",
-    "/tokens/generated/nym.svg",
+    "/tokens/generated/nyx.png",
     "/tokens/generated/dvpn.svg",
   ],
   built_on_osmosis: [
@@ -91,8 +91,8 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/mbrn.svg",
   ],
   sail_initiative: [
-    "/tokens/generated/lab.svg",
-    "/tokens/generated/sail.svg",
+    "/tokens/generated/lab.png",
+    "/tokens/generated/sail.png",
     "/tokens/generated/whale.svg",
   ],
 };
