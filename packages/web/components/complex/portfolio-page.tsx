@@ -304,8 +304,7 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
           className="mx-auto flex !w-fit items-center gap-2 !rounded-full"
           onClick={() => router.push("/pools")}
         >
-          <Icon id="deposit" height={16} width={16} />
-          <span className="subtitle1">{t("assets.table.depositButton")}</span>
+          <span className="subtitle1">{t("tokenInfos.explorePools")}</span>
         </Button>
       </div>
     </div>
