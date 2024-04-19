@@ -620,6 +620,10 @@
     "titleHideBalances": "Balanțele de mască pentru confidențialitate",
     "hideBalances": "Balanțe Mascate"
   },
+  "search": {
+    "noResultsFor": "Niciun rezultat pentru \" {query} \"",
+    "adjust": "Încercați să ajustați interogarea de căutare"
+  },
   "stake": {
     "available": "Disponibil",
     "staked": "Mizat",

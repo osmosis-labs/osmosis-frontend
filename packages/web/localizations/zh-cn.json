@@ -620,6 +620,10 @@
     "titleHideBalances": "屏蔽余额以保护隐私",
     "hideBalances": "隐藏余额"
   },
+  "search": {
+    "noResultsFor": "没有找到“ {query} ”的结果",
+    "adjust": "尝试调整您的搜索查询"
+  },
   "stake": {
     "available": "可用的",
     "staked": "固定",

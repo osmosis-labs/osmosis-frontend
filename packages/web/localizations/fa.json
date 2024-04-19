@@ -620,6 +620,10 @@
     "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
     "hideBalances": "تعادل های ماسک شده"
   },
+  "search": {
+    "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
+  },
   "stake": {
     "available": "دسترس",
     "staked": "شرط بندی",

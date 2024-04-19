@@ -35,7 +35,7 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
-import { SearchBox } from "../input";
+import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
@@ -121,6 +121,7 @@ export const AssetBalancesTable: FunctionComponent<{
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
+  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -264,7 +265,7 @@ export const AssetBalancesTable: FunctionComponent<{
         forceShowAgain
       />
       <SearchBox
-        className="my-4"
+        className="my-4 !w-72"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -352,6 +353,12 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {noSearchResults && searchQuery?.query && (
+        <NoSearchResultsSplash
+          className="mx-auto w-fit py-8"
+          query={searchQuery.query}
+        />
+      )}
     </div>
   );
 });

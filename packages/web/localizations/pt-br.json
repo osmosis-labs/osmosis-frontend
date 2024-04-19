@@ -620,6 +620,10 @@
     "titleHideBalances": "Máscara de equilíbrio para privacidade",
     "hideBalances": "Saldos Mascarados"
   },
+  "search": {
+    "noResultsFor": "Nenhum resultado para \" {query} \"",
+    "adjust": "Tente ajustar sua consulta de pesquisa"
+  },
   "stake": {
     "available": "Disponível",
     "staked": "Apostado",

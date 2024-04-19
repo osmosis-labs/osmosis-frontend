@@ -620,6 +620,10 @@
     "titleHideBalances": "Mask balances for privacy",
     "hideBalances": "Masked Balances"
   },
+  "search": {
+    "noResultsFor": "No results for \"{query}\"",
+    "adjust": "Try adjusting your search query"
+  },
   "stake": {
     "available": "Available",
     "staked": "Staked",

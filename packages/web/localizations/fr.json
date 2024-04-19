@@ -620,6 +620,10 @@
     "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
     "hideBalances": "Soldes masqués"
   },
+  "search": {
+    "noResultsFor": "Aucun résultat pour \" {query} \"",
+    "adjust": "Essayez d'ajuster votre requête de recherche"
+  },
   "stake": {
     "available": "Disponible",
     "staked": "Jalonné",

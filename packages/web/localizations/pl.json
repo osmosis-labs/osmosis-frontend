@@ -620,6 +620,10 @@
     "titleHideBalances": "Maskuj salda zapewniające prywatność",
     "hideBalances": "Zamaskowane salda"
   },
+  "search": {
+    "noResultsFor": "Brak wyników dla „ {query} „",
+    "adjust": "Spróbuj dostosować zapytanie"
+  },
   "stake": {
     "available": "Dostępny",
     "staked": "Postawione",

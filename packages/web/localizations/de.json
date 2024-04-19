@@ -620,6 +620,10 @@
     "titleHideBalances": "Maskenbilanzen für Privatsphäre",
     "hideBalances": "Maskierte Salden"
   },
+  "search": {
+    "noResultsFor": "Keine Ergebnisse für \" {query} \"",
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
+  },
   "stake": {
     "available": "Verfügbar",
     "staked": "Abgesteckt",

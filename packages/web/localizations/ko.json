@@ -620,6 +620,10 @@
     "titleHideBalances": "개인정보 보호를 위한 마스크 잔액",
     "hideBalances": "잔액 숨기기"
   },
+  "search": {
+    "noResultsFor": "\" {query} \"에 대한 결과가 없습니다.",
+    "adjust": "검색어를 조정해 보세요."
+  },
   "stake": {
     "available": "사용 가능",
     "staked": "스테이킹된",

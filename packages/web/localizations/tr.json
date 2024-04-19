@@ -620,6 +620,10 @@
     "titleHideBalances": "Gizlilik için maske dengeleri",
     "hideBalances": "Maskeli Bakiyeler"
   },
+  "search": {
+    "noResultsFor": "\" {query} \" için sonuç yok",
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
+  },
   "stake": {
     "available": "Mevcut",
     "staked": "Kazıklı",

@@ -620,6 +620,10 @@
     "titleHideBalances": "プライバシーを考慮したマスクバランス",
     "hideBalances": "マスクされた残高"
   },
+  "search": {
+    "noResultsFor": "「 {query}に該当する結果はありません",
+    "adjust": "検索クエリを調整してみてください"
+  },
   "stake": {
     "available": "利用可能",
     "staked": "杭打ち",
