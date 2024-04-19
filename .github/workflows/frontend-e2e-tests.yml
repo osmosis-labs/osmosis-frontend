@@ -39,7 +39,7 @@ jobs:
         run: |
           cd packages/web
           npx playwright test -g "Test Select Swap Pair feature"
-          npx playwright test -g "Test Swap feature"
+          xvfb-run npx playwright test -g "Test Swap feature"
       - name: upload test results
         id: e2e-test-results
         uses: actions/upload-artifact@v4
