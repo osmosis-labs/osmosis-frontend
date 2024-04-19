@@ -32,8 +32,6 @@ test.describe("Test Swap feature", () => {
         "--headless=new",
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
       ],
     });
     const page = await context.newPage();
