@@ -95,7 +95,8 @@ export const useAssetInfoConfig = (
     Boolean(coingeckoId) &&
     coingeckoId !== undefined &&
     historicalPriceData !== undefined &&
-    historicalPriceData.length === 0;
+    historicalPriceData.length === 0 &&
+    !isLoading;
 
   const {
     data: coingeckoHistoricalPriceData,
