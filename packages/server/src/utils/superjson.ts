@@ -10,7 +10,7 @@ import {
   RatePrettyOptions,
 } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
-import dayjs, { isDuration } from "dayjs";
+import dayjs from "dayjs";
 import duration, { type Duration } from "dayjs/plugin/duration";
 import superjson from "superjson";
 
@@ -112,7 +112,7 @@ superjson.registerCustom<RatePretty, string>(
 
 superjson.registerCustom<Duration, string>(
   {
-    isApplicable: (v): v is Duration => isDuration(v),
+    isApplicable: (v): v is Duration => dayjs.isDuration(v),
     serialize: (v) => v.asMilliseconds().toString(),
     deserialize: (v) => dayjs.duration(parseInt(v)),
   },

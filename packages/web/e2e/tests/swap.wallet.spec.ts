@@ -25,7 +25,6 @@ test.describe("Test Swap feature", () => {
     // Launch Chrome with a Keplr wallet extension
     const extensionId = "ibomioleaahcoaakgginocklpgejhmen";
     const pathToExtension = path.join(__dirname, "../keplr-extension");
-    console.log("pathToExtension" + pathToExtension);
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [

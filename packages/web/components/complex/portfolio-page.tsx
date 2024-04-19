@@ -21,6 +21,7 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import SkeletonLoader from "../loaders/skeleton-loader";
+import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
 
@@ -89,6 +90,11 @@ export const PortfolioPage: FunctionComponent = () => {
               <section>
                 <h6>{t("portfolio.yourLiquidityPools")}</h6>
                 <MyPoolsCardsGrid />
+              </section>
+            </Tab.Panel>
+            <Tab.Panel>
+              <section>
+                <RecentTransfers />
               </section>
             </Tab.Panel>
           </Tab.Panels>

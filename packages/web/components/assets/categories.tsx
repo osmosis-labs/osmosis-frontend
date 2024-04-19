@@ -1,11 +1,13 @@
-import { AssetCategories, Category, isAssetNew } from "@osmosis-labs/server";
+import { isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo, useRef } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
-const categoryAssetSampleImages = {
+import { Icon } from "./icon";
+
+const staticCategoryAssetImageSamples = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
     if (
       asset.verified &&
@@ -38,34 +40,132 @@ const categoryAssetSampleImages = {
     "/tokens/generated/milktia.svg",
     "/tokens/generated/statom.svg",
   ],
+  // ai: [
+  //   "/tokens/generated/akt.svg",
+  //   "/tokens/generated/fet.svg",
+  //   "/tokens/generated/boot.svg",
+  // ],
+  // bridges: [
+  //   "/tokens/generated/axl.svg",
+  //   "/tokens/generated/w.png",
+  //   "/tokens/generated/pica.svg",
+  // ],
+  // dweb: [
+  //   "/tokens/generated/dvpn.svg",
+  //   "/tokens/generated/fil.svg",
+  //   "/tokens/generated/lore.svg",
+  // ],
+  // rwa: [
+  //   "/tokens/generated/hash.svg",
+  //   "/tokens/generated/cmdx.svg",
+  //   "/tokens/generated/regen.svg",
+  // ],
+  gaming: [
+    "/tokens/generated/saga.svg",
+    "/tokens/generated/xpla.svg",
+    "/tokens/generated/pasg.png",
+  ],
+  // oracles: [
+  //   "/tokens/generated/pyth.svg",
+  //   "/tokens/generated/link.svg",
+  //   "/tokens/generated/band.svg",
+  // ],
+  // social: [
+  //   "/tokens/generated/btsg.svg",
+  //   "/tokens/generated/like.svg",
+  //   "/tokens/generated/dsm.svg",
+  // ],
+  nft_protocol: [
+    "/tokens/generated/stars.svg",
+    "/tokens/generated/flix.svg",
+    "/tokens/generated/mntl.svg",
+  ],
+  // privacy: [
+  //   "/tokens/generated/scrt.svg",
+  //   "/tokens/generated/nyx.png",
+  //   "/tokens/generated/dvpn.svg",
+  // ],
+  // built_on_osmosis: [
+  //   "/tokens/generated/lvn.svg",
+  //   "/tokens/generated/mars.svg",
+  //   "/tokens/generated/mbrn.svg",
+  // ],
+  sail_initiative: [
+    "/tokens/generated/lab.png",
+    "/tokens/generated/sail.png",
+    "/tokens/generated/whale.svg",
+  ],
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
-  selectedCategory?: Category;
-  onSelectCategory: (category: Category) => void;
+  selectedCategory?: string;
+  /** Categories that can still be selected, but aren't available from this control. */
+  hiddenCategories?: string[];
+  /** Client side categories need to be queried from client, so image sampled need to be provided. */
+  clientCategoryImageSamples?: Record<string, string[]>;
+  onSelectCategory: (category: string) => void;
   unselectCategory: () => void;
-}> = ({ selectedCategory, onSelectCategory, unselectCategory }) => {
+}> = ({
+  selectedCategory,
+  hiddenCategories,
+  clientCategoryImageSamples = {},
+  onSelectCategory,
+  unselectCategory,
+}) => {
   const { t } = useTranslation();
 
+  const divRef = useRef<HTMLDivElement>(null);
+
+  /** Static sample images combined with dynamic */
+  const categoryAssetSampleImages: Record<string, string[]> = useMemo(
+    () => ({
+      ...staticCategoryAssetImageSamples,
+      ...clientCategoryImageSamples,
+    }),
+    [clientCategoryImageSamples]
+  );
+
+  /** Selected moved to front of list of categories. */
+  const categories = useMemo(
+    () =>
+      selectedCategory
+        ? Object.keys(categoryAssetSampleImages)
+            .slice()
+            .sort((a, b) =>
+              a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+            )
+        : Object.keys(categoryAssetSampleImages).slice(),
+    [categoryAssetSampleImages, selectedCategory]
+  );
+
   return (
-    <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
-      {AssetCategories.map((category) => {
+    <div
+      ref={divRef}
+      className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3"
+    >
+      {categories.map((category) => {
+        const isSelected = selectedCategory === category;
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
+
+        if (hiddenCategories?.includes(category) && !isSelected) return null;
 
         return (
           <button
             key={category}
             className={classNames(
-              "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
+              "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
               {
-                "border-wosmongton-400": selectedCategory === category,
-                "border-osmoverse-600": selectedCategory !== category,
+                "border-osmoverse-800 bg-osmoverse-800": isSelected,
+                "border-osmoverse-700": !isSelected,
               }
             )}
             onClick={() => {
-              if (selectedCategory === category) {
+              if (isSelected) {
                 unselectCategory();
               } else {
+                if (divRef.current) {
+                  divRef.current.scrollLeft = 0;
+                }
                 onSelectCategory(category);
               }
             }}
@@ -113,6 +213,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
+            {isSelected && <Icon id="x-circle" height={16} width={17} />}
           </button>
         );
       })}
