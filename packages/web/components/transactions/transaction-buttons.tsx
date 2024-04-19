@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { Icon } from "~/components/assets";
 import { MenuDropdown } from "~/components/control";
 import { Button } from "~/components/ui/button";
 import { useWindowSize } from "~/hooks";
@@ -74,9 +73,9 @@ export const TransactionButtons = ({
             variant="secondary"
             size="md"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center justify-center"
+            className="!rounded-full text-base"
           >
-            <Icon id="dots" aria-label="dots" height={24} width={24} />
+            &#x22EF;
           </Button>
           <MenuDropdown
             className="top-12 right-0"
