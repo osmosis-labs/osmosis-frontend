@@ -56,6 +56,23 @@ jobs:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
 
-      - name: Send Slack Alert if last step failed
+      - name: Send Slack alert if test fails
+        id: slack
         if: ${{ steps.tests.outcome != 'success' || failure() }}
-        run: echo "Send Slack Alert ${{ matrix.env }}"
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
