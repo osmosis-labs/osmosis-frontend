@@ -2,8 +2,6 @@ import { Dec } from "@keplr-wallet/unit";
 import {
   CoingeckoCoin,
   getTokenInfo,
-  ImperatorToken,
-  queryAllTokens,
   queryCoingeckoCoin,
   RichTweet,
   TokenCMSData,
@@ -52,15 +50,16 @@ import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
+import { api } from "~/utils/trpc";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
-  tokenDenom: string | null;
+  tokenDenom: string;
+  tokenMinimalDenom?: string;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
   coingeckoCoin?: CoingeckoCoin | null;
-  imperatorDenom: string | null;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -96,9 +95,9 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
   ({
     tokenDenom,
+    tokenMinimalDenom,
     tweets,
     tokenDetailsByLanguage,
-    imperatorDenom,
     coingeckoCoin,
   }) => {
     const { t } = useTranslation();
@@ -106,8 +105,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const router = useRouter();
 
     const assetInfoConfig = useAssetInfoConfig(
-      router.query.denom as string,
-      imperatorDenom,
+      tokenDenom,
+      tokenMinimalDenom,
       coingeckoCoin?.id
     );
 
@@ -426,35 +425,51 @@ const TokenChartSection = () => {
 const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
-  const minimumDecimals = 2;
-  const maxDecimals = Math.max(
-    getDecimalCount(
-      (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
-    ),
-    minimumDecimals
+  const { data, isLoading } = api.edge.assets.getAssetPrice.useQuery(
+    {
+      coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
+    },
+    {
+      enabled: assetInfoConfig.coinMinimalDenom !== undefined,
+    }
   );
 
+  const hoverPrice = useMemo(() => {
+    let price = new Dec(0);
+    const decHoverPrice = assetInfoConfig.hoverPrice?.toDec();
+
+    if (decHoverPrice && !decHoverPrice.isZero()) {
+      price = decHoverPrice;
+    } else if (data) {
+      price = data.toDec();
+    }
+
+    return Number(price.toString());
+  }, [assetInfoConfig.hoverPrice, data]);
+
+  const fiatSymbol =
+    assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
+    data?.fiatCurrency.symbol;
+
+  const minimumDecimals = 2;
+  const maxDecimals = Math.max(getDecimalCount(hoverPrice), minimumDecimals);
+
   const formatOpts = useMemo(
-    () =>
-      getPriceExtendedFormatOptions(
-        assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)
-      ),
-    [assetInfoConfig.hoverPrice]
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
   );
 
   return (
     <header>
-      <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
+      <SkeletonLoader isLoaded={!isLoading}>
         <PriceChartHeader
           formatOpts={formatOpts}
           decimal={maxDecimals}
           showAllRange
-          hoverPrice={Number(
-            (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
-          )}
+          hoverPrice={hoverPrice}
           historicalRange={assetInfoConfig.historicalRange}
           setHistoricalRange={assetInfoConfig.setHistoricalRange}
-          fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
+          fiatSymbol={fiatSymbol}
           classes={{
             priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
           }}
@@ -529,11 +544,7 @@ const TokenChart = observer(() => {
             domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
-              if (assetInfoConfig.lastChartPrice) {
-                assetInfoConfig.setHoverPrice(
-                  assetInfoConfig.lastChartPrice.close
-                );
-              }
+              assetInfoConfig.setHoverPrice(0);
             }}
           />
         </>
@@ -545,30 +556,6 @@ const TokenChart = observer(() => {
 });
 
 export default AssetInfoPage;
-
-const findIBCToken = (imperatorToken: ImperatorToken) => {
-  const ibcAsset = AssetLists.flatMap(({ assets }) => assets).find(
-    (asset) => asset.coinMinimalDenom === imperatorToken.denom
-  );
-
-  return ibcAsset;
-};
-
-/* const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
-  const native = !imperatorToken.denom.includes("ibc/");
-
-  if (native) {
-    return imperatorToken.symbol;
-  } else {
-    const token = findIBCToken(imperatorToken);
-
-    if (token) {
-      return token.coinDenom;
-    }
-  }
-}; */
-
-let cachedTokens: ImperatorToken[] = [];
 
 /**
  * Prerender all the denoms, we can also filter this value to reduce
@@ -600,15 +587,6 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
-  let imperatorDenom: string | null = null;
-
-  if (cachedTokens.length === 0) {
-    try {
-      cachedTokens = await queryAllTokens();
-    } catch (e) {
-      console.error("Failed to retrieved tokens from imperator api: ", e);
-    }
-  }
 
   /**
    * Get all the availables currencies
@@ -621,31 +599,8 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
    * Lookup for the current token
    */
   const token = currencies.find(
-    (currency) =>
-      currency.coinDenom.toUpperCase() === tokenDenom.toLocaleUpperCase()
+    (currency) => currency.coinDenom.toUpperCase() === tokenDenom.toUpperCase()
   );
-
-  /**
-   * Lookup token denom on imperator registry
-   *
-   * We'll use it for query such as chart timeframe ecc.
-   */
-  imperatorDenom =
-    cachedTokens.find((cachedToken) => {
-      const ibcToken = findIBCToken(cachedToken);
-
-      return ibcToken?.symbol.toUpperCase() === token?.coinDenom.toUpperCase();
-    })?.symbol ?? null;
-
-  /**
-   * If not found lookup for native asset
-   */
-  if (!imperatorDenom) {
-    imperatorDenom =
-      cachedTokens.find(
-        (el) => el.display.toUpperCase() === tokenDenom.toUpperCase()
-      )?.symbol ?? null;
-  }
 
   if (tokenDenom) {
     try {
@@ -689,11 +644,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom: token?.coinDenom ?? null,
+      tokenDenom: token?.coinDenom ?? tokenDenom,
+      tokenMinimalDenom: token?.base,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
-      imperatorDenom,
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in

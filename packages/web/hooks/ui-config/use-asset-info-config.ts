@@ -4,17 +4,20 @@ import {
   type TokenHistoricalPrice,
 } from "@osmosis-labs/server";
 import dayjs from "dayjs";
-import { action, autorun, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { useEffect, useMemo } from "react";
 
 import { api } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
   denom: string,
-  queryDenom: string | null,
+  coinMinimalDenom?: string,
   coingeckoId?: string
 ) => {
-  const config = useMemo(() => new ObservableAssetInfoConfig(), []);
+  const config = useMemo(
+    () => new ObservableAssetInfoConfig(denom, coinMinimalDenom),
+    [denom, coinMinimalDenom]
+  );
 
   useEffect(
     () => () => {
@@ -67,13 +70,13 @@ export const useAssetInfoConfig = (
     isError,
   } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
-      coinDenom: denom ?? queryDenom,
+      coinDenom: denom,
       timeFrame: {
         custom: customTimeFrame,
       },
     },
     {
-      enabled: Boolean(denom ?? queryDenom),
+      enabled: Boolean(denom),
       staleTime: 1000 * 60 * 3, // 3 minutes
       cacheTime: 1000 * 60 * 6, // 6 minutes
       trpc: {
@@ -212,6 +215,12 @@ export class ObservableAssetInfoConfig {
 
   protected _disposers: (() => void)[] = [];
 
+  @observable
+  denom: string;
+
+  @observable
+  coinMinimalDenom?: string;
+
   @action
   readonly setHistoricalData = (data: TokenHistoricalPrice[]) => {
     this._historicalData = data;
@@ -281,19 +290,11 @@ export class ObservableAssetInfoConfig {
     return this._historicalRange;
   }
 
-  constructor() {
+  constructor(denom: string, coinMinimalDenom?: string) {
     makeObservable(this);
 
-    // Init last hover price to current price in pool once loaded
-    this._disposers.push(
-      autorun(() => {
-        if (this.lastChartPrice) {
-          const { close } = this.lastChartPrice;
-
-          this.setHoverPrice(close);
-        }
-      })
-    );
+    this.denom = denom;
+    this.coinMinimalDenom = coinMinimalDenom;
   }
 
   @action
