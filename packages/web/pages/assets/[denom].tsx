@@ -425,14 +425,15 @@ const TokenChartSection = () => {
 const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
-  const { data, isLoading } = api.edge.assets.getAssetPrice.useQuery(
-    {
-      coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
-    },
-    {
-      enabled: assetInfoConfig.coinMinimalDenom !== undefined,
-    }
-  );
+  const { data: assetPrice, isLoading } =
+    api.edge.assets.getAssetPrice.useQuery(
+      {
+        coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
+      },
+      {
+        enabled: assetInfoConfig.coinMinimalDenom !== undefined,
+      }
+    );
 
   const hoverPrice = useMemo(() => {
     let price = new Dec(0);
@@ -440,16 +441,16 @@ const TokenChartHeader = observer(() => {
 
     if (decHoverPrice && !decHoverPrice.isZero()) {
       price = decHoverPrice;
-    } else if (data) {
-      price = data.toDec();
+    } else if (assetPrice) {
+      price = assetPrice.toDec();
     }
 
     return Number(price.toString());
-  }, [assetInfoConfig.hoverPrice, data]);
+  }, [assetInfoConfig.hoverPrice, assetPrice]);
 
   const fiatSymbol =
     assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
-    data?.fiatCurrency.symbol;
+    assetPrice?.fiatCurrency.symbol;
 
   const minimumDecimals = 2;
   const maxDecimals = Math.max(getDecimalCount(hoverPrice), minimumDecimals);
