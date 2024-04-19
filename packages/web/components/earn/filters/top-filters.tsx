@@ -82,25 +82,14 @@ export const TopFilters = ({
   );
 
   const strategies: ListOption<string>[] = useMemo(
-    () =>
-      getListOptions<string>(
-        cmsData?.strategies ?? [],
-        "type",
-        "type",
-        t("earnPage.rewardTypes.all")
-      ),
-    [cmsData, t]
+    () => getListOptions<string>(cmsData?.strategies ?? [], "type", "type"),
+    [cmsData]
   );
 
   const platforms: ListOption<string>[] = useMemo(
     () =>
-      getListOptions<string>(
-        cmsData?.strategies ?? [],
-        "platform",
-        "platform",
-        t("earnPage.rewardTypes.all")
-      ),
-    [cmsData, t]
+      getListOptions<string>(cmsData?.strategies ?? [], "platform", "platform"),
+    [cmsData]
   );
 
   const categories = useMemo(

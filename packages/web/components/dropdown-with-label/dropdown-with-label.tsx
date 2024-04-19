@@ -20,6 +20,7 @@ export const DropdownWithLabel = <T,>({
   value,
   options,
   buttonClassName,
+  allLabel,
 }: DropdownWithLabelProps<T>) => {
   return (
     <div className="flex items-center gap-7">
@@ -34,7 +35,8 @@ export const DropdownWithLabel = <T,>({
               buttonClassName
             )}
           >
-            <span className="max-w-[100px] truncate font-subtitle1 leading-6">
+            <span className="max-w-[100px] truncate font-subtitle1 leading-6 sm:max-w-none">
+              {value && value.length === 0 && allLabel}
               {value && value.map(({ label }) => label).join(", ")}
             </span>
             <Icon id="caret-down" />

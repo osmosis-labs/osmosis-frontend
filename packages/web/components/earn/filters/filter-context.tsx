@@ -42,22 +42,11 @@ const MULTI_OPTION_ACTIONS: MultiAction[] = [
   "platform",
 ];
 
-const MULTI_OPTION_BASE_VALUE = { label: "All", value: "" };
-
 export const FilterProvider = ({
   children,
   defaultFilters,
 }: PropsWithChildren<{ defaultFilters: Filters }>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-
-  const resetMultiFilter = useCallback(
-    (key: MultiAction) =>
-      setFilters((prev) => ({
-        ...prev,
-        [key]: [MULTI_OPTION_BASE_VALUE],
-      })),
-    []
-  );
 
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {
@@ -73,12 +62,6 @@ export const FilterProvider = ({
 
       const exists = valueIdx !== -1;
 
-      // handle "All" click case
-      if (filterValue.value === "") {
-        // reset to base case
-        resetMultiFilter(key as MultiAction);
-      }
-
       return setFilters((prev) => {
         const prevArray = prev[key] as ListOption<string>[];
         /**
@@ -87,43 +70,20 @@ export const FilterProvider = ({
          *
          * If the incoming value is already present in the state value,
          * then remove it. If it doesn't, then add it.
-         *
-         * In both cases, we are going to remove the base case (which is the
-         * "all" case that opens the filter to everything) in order to not
-         * have it present on the filter when some value exists.
          */
         const newArray = exists
           ? prevArray.filter(
-              (prevOption) =>
-                prevOption.value !== filterValue.value &&
-                prevOption.value !== ""
+              (prevOption) => prevOption.value !== filterValue.value
             )
-          : [...prevArray, filterValue].filter((v) => v.value !== "");
+          : [...prevArray, filterValue];
 
         return {
           ...prev,
-          [key]:
-            /**
-             * Now here, if the filter corresponds to
-             * "specialTokens" (or token type, "specialTokens" is a legacy name),
-             * we just return the new array, which COULD be empty, and that would be nice
-             * for specialTokens, but not for the other multi filters,
-             * because having them empty would break the purpose of the
-             * listOptionValueEquals function, which relies on having
-             * at least the base case on the state array.
-             *
-             * So, to solve this issue, we will always push an array with
-             * the base case if there would be no filters in the new array.
-             */
-            key === "specialTokens"
-              ? newArray
-              : newArray.length === 0
-              ? [MULTI_OPTION_BASE_VALUE]
-              : newArray,
+          [key]: newArray,
         };
       });
     },
-    [filters, resetMultiFilter]
+    [filters]
   );
 
   const resetFilters = useCallback(
