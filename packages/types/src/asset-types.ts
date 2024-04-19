@@ -123,14 +123,6 @@ export interface Price {
   denom: string;
 }
 
-export const AssetCategories = [
-  "stablecoin",
-  "defi",
-  "meme",
-  "liquid_staking",
-] as const;
-export type Category = (typeof AssetCategories)[number];
-
 export interface Asset {
   chainName: string;
   /** Denom as represented on source/origin chain. */
@@ -159,7 +151,7 @@ export interface Asset {
   /** Transfers should not be possible. */
   disabled: boolean;
 
-  categories: Category[];
+  categories: string[];
   /** Data needed for calculating this token's price via Osmosis pools. */
   price?: Price;
   /** The supported methods for transferring this token.
