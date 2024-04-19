@@ -7,14 +7,14 @@
 >
   <path
     d="M4 12H18"
-    stroke="#B3B1FD"
+    stroke="inherit"
     stroke-width="2.5"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
   <path
     d="M14 6L19 12L14 18"
-    stroke="#B3B1FD"
+    stroke="inherit"
     stroke-width="2.5"
     stroke-linecap="round"
     stroke-linejoin="round"

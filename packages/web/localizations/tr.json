@@ -145,7 +145,13 @@
       "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
-      "title": "Transfer Geçmişi"
+      "title": "Transfer Geçmişi",
+      "pendingDeposit": "Bekleyen mevduat",
+      "pendingWithdraw": "Geri çekilme bekleniyor",
+      "successDeposit": "Yatırıldı",
+      "successWithdraw": "Geri çekildi",
+      "failDeposit": "Para yatırma işlemi başarısız oldu",
+      "failWithdraw": "Para çekme işlemi başarısız oldu"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",
@@ -200,7 +206,12 @@
       },
       "title": "Tüm Varlıklar",
       "withdrawButton": "Çek",
-      "activate": "Etkinleştir"
+      "activate": "Etkinleştir",
+      "marketCap": "Piyasa değeri",
+      "volume24h": "Hacim",
+      "priceChange24h": "24 saat değişim",
+      "price": "Fiyat",
+      "name": "İsim"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -284,7 +295,14 @@
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
-      "liquid_staking": "Sıvı esnetme"
+      "liquid_staking": "Sıvı esnetme",
+      "topGainers": "En çok kazananlar"
+    },
+    "seeAll": "Hepsini gör",
+    "highlights": {
+      "new": "Yeni",
+      "topGainers": "En çok kazananlar",
+      "upcoming": "Yaklaşan"
     }
   },
   "portfolio": {
@@ -414,7 +432,9 @@
     "marsSubtext": "Mars tarafından desteklenmektedir",
     "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
-    "new": "YENİ"
+    "new": "YENİ",
+    "settings": "Ayarlar",
+    "notifications": "Bildirimler"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
@@ -692,6 +712,8 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
+    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
+    "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
@@ -719,6 +741,7 @@
     "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
+    "gettingStarted": "Başlarken",
     "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
     "somethingWentWrong": "Bir şeyler yanlış gitti",
     "isNotInstalled": "{walletName} yüklü değil",
@@ -911,6 +934,12 @@
       "risk": {
         "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
       }
+    },
+    "riskLabels": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "veryHigh": "Çok yüksek"
     }
   },
   "disclaimer": "Sorumluluk reddi beyanı",
@@ -920,5 +949,9 @@
     "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
     "buttonContinue": "Her halükarda devam et",
     "buttonCancel": "İptal etmek"
+  },
+  "transactions": {
+    "noRecent": "Yakın zamanda transfer yok",
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
   }
 }

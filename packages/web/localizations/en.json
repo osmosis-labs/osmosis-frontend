@@ -145,7 +145,13 @@
       "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
-      "title": "Transfer History"
+      "title": "Transfer History",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdraw",
+      "successDeposit": "Deposited",
+      "successWithdraw": "Withdrew",
+      "failDeposit": "Deposit failed",
+      "failWithdraw": "Withdraw failed"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",
@@ -200,7 +206,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -295,7 +306,14 @@
       "oracles": "Oracles",
       "dweb": "Decentralized Web",
       "rwa": "Real World Asset Issuance",
-      "gaming": "Gaming"
+      "gaming": "Gaming",
+      "topGainers": "Top gainers"
+    },
+    "seeAll": "See all",
+    "highlights": {
+      "new": "New",
+      "topGainers": "Top gainers",
+      "upcoming": "Upcoming"
     }
   },
   "portfolio": {
@@ -425,7 +443,9 @@
     "marsSubtext": "Powered by Mars",
     "levanaSubtext": "Powered by Levana",
     "more": "More",
-    "new": "NEW"
+    "new": "NEW",
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -703,6 +723,8 @@
       "hide": "Hide",
       "show": "Show"
     },
+    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
+    "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
@@ -730,6 +752,7 @@
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
+    "gettingStarted": "Getting Started",
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",
@@ -922,6 +945,12 @@
       "risk": {
         "description": "Risk assessment involves considering a combination of criteria related to a strategy and its underlying assets."
       }
+    },
+    "riskLabels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
     }
   },
   "disclaimer": "Disclaimer",
@@ -931,5 +960,9 @@
     "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
     "buttonContinue": "Continue Anyway",
     "buttonCancel": "Cancel"
+  },
+  "transactions": {
+    "noRecent": "No recent transfers",
+    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here."
   }
 }

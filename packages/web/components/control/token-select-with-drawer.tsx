@@ -7,7 +7,7 @@ import { FunctionComponent, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
-import { EventName, SwapPage } from "~/config";
+import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
 
@@ -18,7 +18,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
     swapState: SwapState;
     dropdownOpen?: boolean;
     canSelectTokens?: boolean;
-    page?: SwapPage;
+    page?: EventPage;
     onSelect: (tokenDenom: string) => void;
     setDropdownState?: (isOpen: boolean) => void;
   } & Disableable

@@ -145,7 +145,13 @@
       "pendingRefunded": "Falhou: Reembolso pendente",
       "refunded": "Reembolsado",
       "success": "Sucesso",
-      "title": "Histórico de Transferências"
+      "title": "Histórico de Transferências",
+      "pendingDeposit": "Depósito pendente",
+      "pendingWithdraw": "Retirada pendente",
+      "successDeposit": "Depositado",
+      "successWithdraw": "Retirou-se",
+      "failDeposit": "Falha no depósito",
+      "failWithdraw": "Falha na retirada"
     },
     "ibcTransfer": {
       "buttonAdd": "Adicionar",
@@ -200,7 +206,12 @@
       },
       "title": "Todos os ativos",
       "withdrawButton": "Sacar",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "marketCap": "Valor de mercado",
+      "volume24h": "Volume",
+      "priceChange24h": "Mudança de 24h",
+      "price": "Preço",
+      "name": "Nome"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -284,7 +295,14 @@
       "defi": "DeFi",
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
-      "liquid_staking": "Estaqueamento líquido"
+      "liquid_staking": "Estaqueamento líquido",
+      "topGainers": "Principais ganhadores"
+    },
+    "seeAll": "Ver tudo",
+    "highlights": {
+      "new": "Novo",
+      "topGainers": "Principais ganhadores",
+      "upcoming": "Por vir"
     }
   },
   "portfolio": {
@@ -414,7 +432,9 @@
     "marsSubtext": "Alimentado por Marte",
     "levanaSubtext": "Desenvolvido por Levana",
     "more": "Mais",
-    "new": "NOVO"
+    "new": "NOVO",
+    "settings": "Configurações",
+    "notifications": "Notificações"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",
@@ -692,6 +712,8 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
@@ -719,6 +741,7 @@
     "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
+    "gettingStarted": "Começando",
     "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",
     "somethingWentWrong": "Algo deu errado",
     "isNotInstalled": "{walletName} não está instalado",
@@ -911,6 +934,12 @@
       "risk": {
         "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Baixo",
+      "medium": "Médio",
+      "high": "Alto",
+      "veryHigh": "Muito alto"
     }
   },
   "disclaimer": "Isenção de responsabilidade",
@@ -920,5 +949,9 @@
     "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
     "buttonContinue": "Continue de qualquer maneira",
     "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Nenhuma transferência recente",
+    "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui."
   }
 }

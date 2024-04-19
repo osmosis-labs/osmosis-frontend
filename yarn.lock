@@ -8807,10 +8807,31 @@
   dependencies:
     remove-accents "0.4.2"
 
+"@tanstack/query-async-storage-persister@^4.36.1":
+  version "4.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-async-storage-persister/-/query-async-storage-persister-4.36.1.tgz#96e4feb6c5be51a846601148d37a704a5ef792c3"
+  integrity sha512-mk9A/2S3VZ3V6aKW0D3LwIHZqxw1hIL9I+wiB1cG2bftW78pWF9DCTXmON8KGku9bxfRGYEXzIxleh0Ujic0uA==
+  dependencies:
+    "@tanstack/query-persist-client-core" "4.36.1"
+
 "@tanstack/query-core@4.36.1":
   version "4.36.1"
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.36.1.tgz#79f8c1a539d47c83104210be2388813a7af2e524"
   integrity sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==
+
+"@tanstack/query-persist-client-core@4.36.1":
+  version "4.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-persist-client-core/-/query-persist-client-core-4.36.1.tgz#4d7284994bdc2a15fe6cbe7161be21e03033fe12"
+  integrity sha512-eocgCeI7D7TRv1IUUBMfVwOI0wdSmMkBIbkKhqEdTrnUHUQEeOaYac8oeZk2cumAWJdycu6P/wB+WqGynTnzXg==
+  dependencies:
+    "@tanstack/query-core" "4.36.1"
+
+"@tanstack/react-query-persist-client@^4.36.1":
+  version "4.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-persist-client/-/react-query-persist-client-4.36.1.tgz#d96fa44cdc661534379623423da596a7b5dc13a7"
+  integrity sha512-32I5b9aAu4NCiXZ7Te/KEQLfHbYeTNriVPrKYcvEThnZ9tlW01vLcSoxpUIsMYRsembvJUUAkzYBAiZHLOd6pQ==
+  dependencies:
+    "@tanstack/query-persist-client-core" "4.36.1"
 
 "@tanstack/react-query@^4.32.6":
   version "4.36.1"
@@ -15568,6 +15589,11 @@ eyes@^0.1.8:
   resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
   integrity sha512-GipyPsXO1anza0AOZdy69Im7hGFCNB7Y/NGjDlZGJ3GJJLtwNSb2vrzYrTYJRrRloVx7pl+bhUaTB8yiccPvFQ==
 
+fake-indexeddb@5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/fake-indexeddb/-/fake-indexeddb-5.0.2.tgz#8e0b6c75c6dc6639cbb50c1aa948772147d7c93e"
+  integrity sha512-cB507r5T3D55DfclY01GLkninZLfU7HXV/mhVRTnTRm5k2u+fY7Fof2dBkr80p5t7G7dlA/G5dI87QiMdPpMCQ==
+
 fast-deep-equal@3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz"
@@ -19994,6 +20020,11 @@ msafe-wallet@~2.1.3:
     buffer "^6.0.3"
     json-rpc-protocol "^0.13.2"
 
+msw-trpc@1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/msw-trpc/-/msw-trpc-1.3.3.tgz#d327b519f23b769708c431c2bbc3fc3daa745f56"
+  integrity sha512-LeZpx1sWctVgL0POlnmN/tzrHI1AOf9DE2d+Qbdhbub3fLZT02vt6CYavvqqykkORJung8d1RSVCYYnP5PQp3w==
+
 msw@^1.3.3:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/msw/-/msw-1.3.3.tgz#0b6f173db07292e1cf096b435878932dcf78f208"
@@ -20144,6 +20175,11 @@ neo-async@^2.6.0:
   version "2.6.2"
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+next-router-mock@0.9.13:
+  version "0.9.13"
+  resolved "https://registry.yarnpkg.com/next-router-mock/-/next-router-mock-0.9.13.tgz#bdee2011ea6c09e490121c354ef917f339767f72"
+  integrity sha512-906n2RRaE6Y28PfYJbaz5XZeJ6Tw8Xz1S6E31GGwZ0sXB6/XjldD1/2azn1ZmBmRk5PQRkzjg+n+RHZe5xQzWA==
 
 next-seo@^6.0.0:
   version "6.0.0"

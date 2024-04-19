@@ -126,7 +126,13 @@ export const AssetBalancesTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        cell: (cell) => (
+          <AssetCell
+            coinName={cell.row.original.coinName}
+            coinImageUrl={cell.row.original.coinImageUrl}
+            isVerified={cell.row.original.isVerified}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
@@ -291,34 +297,37 @@ export const AssetBalancesTable: FunctionComponent<{
               </td>
             </tr>
           )}
-          {virtualRows.map((virtualRow) => (
-            <tr
-              className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-              key={rows[virtualRow.index].id}
-              onClick={() =>
-                router.push(
-                  `/assets/${rows[virtualRow.index].original.coinDenom}`
-                )
-              }
-            >
-              {rows[virtualRow.index].getVisibleCells().map((cell) => (
-                <td
-                  className="transition-colors duration-200 ease-in-out"
-                  key={cell.id}
-                >
-                  <Link
-                    href={`/assets/${
-                      rows[virtualRow.index].original.coinDenom
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                    passHref
+          {virtualRows.map((virtualRow) => {
+            const pushUrl = `/assets/${
+              rows[virtualRow.index].original.coinDenom
+            }?ref=portfolio`;
+
+            return (
+              <tr
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                key={rows[virtualRow.index].id}
+                onClick={() => router.push(pushUrl)}
+              >
+                {rows[virtualRow.index].getVisibleCells().map((cell) => (
+                  <td
+                    className="transition-colors duration-200 ease-in-out"
+                    key={cell.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Link>
-                </td>
-              ))}
-            </tr>
-          ))}
+                    <Link
+                      href={pushUrl}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
           {isFetchingNextPage && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -342,13 +351,11 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 >;
 
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
-  <div className="ml-auto flex w-28 flex-col">
-    <span>
-      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
-    </span>
-    {usdValue && (
-      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
-    )}
+  <div className="ml-auto flex flex-col">
+    {usdValue && <div>{usdValue.toString()}</div>}
+    <div className="caption whitespace-nowrap text-osmoverse-300">
+      {amount ? formatPretty(amount, { maxDecimals: 8 }) : "0"}
+    </div>
   </div>
 );
 

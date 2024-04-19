@@ -49,7 +49,7 @@ export const SortHeader = <TSortKey extends string | undefined>({
     }}
   >
     {children}
-    <span>{label}</span>
+    {label}
     {currentSortKey === sortKey && (
       <Icon
         width={10}

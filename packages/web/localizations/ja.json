@@ -145,7 +145,13 @@
       "pendingRefunded": "失敗: 返金保留中",
       "refunded": "返金されました",
       "success": "成功",
-      "title": "転送履歴"
+      "title": "転送履歴",
+      "pendingDeposit": "保留中の入金",
+      "pendingWithdraw": "保留中の撤回",
+      "successDeposit": "寄託",
+      "successWithdraw": "撤退",
+      "failDeposit": "入金に失敗しました",
+      "failWithdraw": "引き出しに失敗しました"
     },
     "ibcTransfer": {
       "buttonAdd": "追加",
@@ -200,7 +206,12 @@
       },
       "title": "すべての資産",
       "withdrawButton": "撤回する",
-      "activate": "活性化"
+      "activate": "活性化",
+      "marketCap": "時価総額",
+      "volume24h": "音量",
+      "priceChange24h": "24時間の変更",
+      "price": "価格",
+      "name": "名前"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
@@ -284,7 +295,14 @@
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
-      "liquid_staking": "リキッドステーキング"
+      "liquid_staking": "リキッドステーキング",
+      "topGainers": "上位の利益"
+    },
+    "seeAll": "すべてを見る",
+    "highlights": {
+      "new": "新しい",
+      "topGainers": "上位の利益",
+      "upcoming": "今後の予定"
     }
   },
   "portfolio": {
@@ -414,7 +432,9 @@
     "marsSubtext": "火星の力を借りて",
     "levanaSubtext": "レヴァナが提供する",
     "more": "もっと",
-    "new": "新しい"
+    "new": "新しい",
+    "settings": "設定",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "変更内容を保存",
@@ -692,6 +712,8 @@
       "hide": "隠れる",
       "show": "見せる"
     },
+    "maxButtonError": "最大金額を計算できません。ネットワーク接続を確認するか、ページを更新してください。",
+    "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
     "available": "利用可能",
     "button": "スワップ",
     "buttonError": "とにかく交換する",
@@ -719,6 +741,7 @@
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
+    "gettingStarted": "はじめる",
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",
     "somethingWentWrong": "何か問題が発生しました",
     "isNotInstalled": "{walletName}インストールされていません",
@@ -911,6 +934,12 @@
       "risk": {
         "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
       }
+    },
+    "riskLabels": {
+      "low": "低い",
+      "medium": "中くらい",
+      "high": "高い",
+      "veryHigh": "すごく高い"
     }
   },
   "disclaimer": "免責事項",
@@ -920,5 +949,9 @@
     "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
     "buttonContinue": "とにかく続けます",
     "buttonCancel": "キャンセル"
+  },
+  "transactions": {
+    "noRecent": "最近の送金はありません",
+    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。"
   }
 }

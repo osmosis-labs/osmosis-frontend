@@ -145,7 +145,13 @@
       "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
-      "title": "تاریخ چه انتقال"
+      "title": "تاریخ چه انتقال",
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",
@@ -200,7 +206,12 @@
       },
       "title": "همه دارایی ها",
       "withdrawButton": "برداشت",
-      "activate": "فعال کنید"
+      "activate": "فعال کنید",
+      "marketCap": "ارزش بازار",
+      "volume24h": "جلد",
+      "priceChange24h": "تغییر 24 ساعته",
+      "price": "قیمت",
+      "name": "نام"
     },
     "totalAssets": "کل دارایی ها",
     "totalBalance": "موجودی کل",
@@ -284,7 +295,14 @@
       "defi": "دیفای",
       "stablecoin": "استیبل کوین ها",
       "meme": "میم",
-      "liquid_staking": "استقرار مایع"
+      "liquid_staking": "استقرار مایع",
+      "topGainers": "برترین برندگان"
+    },
+    "seeAll": "همه را ببین",
+    "highlights": {
+      "new": "جدید",
+      "topGainers": "برترین برندگان",
+      "upcoming": "آینده"
     }
   },
   "portfolio": {
@@ -414,7 +432,9 @@
     "marsSubtext": "پشتیبانی شده توسط مریخ",
     "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
-    "new": "جدید"
+    "new": "جدید",
+    "settings": "تنظیمات",
+    "notifications": "اطلاعیه"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
@@ -692,6 +712,8 @@
       "hide": "مخفی",
       "show": "نماید"
     },
+    "maxButtonError": "نمی توان حداکثر مقدار را محاسبه کرد. لطفاً اتصال شبکه خود را بررسی کنید یا صفحه را بازخوانی کنید.",
+    "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
@@ -719,6 +741,7 @@
     "dynamicSpreadFactor": "پویا"
   },
   "walletSelect": {
+    "gettingStarted": "شروع شدن",
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
     "isNotInstalled": "تعریف نشده",
@@ -911,6 +934,12 @@
       "risk": {
         "description": "ارزیابی ریسک شامل در نظر گرفتن ترکیبی از معیارهای مرتبط با یک استراتژی و دارایی های زیربنایی آن است."
       }
+    },
+    "riskLabels": {
+      "low": "کم",
+      "medium": "متوسط",
+      "high": "بالا",
+      "veryHigh": "خیلی بالا"
     }
   },
   "disclaimer": "سلب مسئولیت",
@@ -920,5 +949,9 @@
     "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
     "buttonContinue": "ادامه دادن به هر طریق",
     "buttonCancel": "لغو کنید"
+  },
+  "transactions": {
+    "noRecent": "بدون نقل و انتقالات اخیر",
+    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند."
   }
 }

@@ -1,11 +1,13 @@
-import { AssetCategories, Category, isAssetNew } from "@osmosis-labs/server";
+import { isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
-const categoryAssetSampleImages = {
+import { Icon } from "./icon";
+
+const staticCategoryAssetImageSamples = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
     if (
       asset.verified &&
@@ -96,29 +98,64 @@ const categoryAssetSampleImages = {
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
-  selectedCategory?: Category;
-  onSelectCategory: (category: Category) => void;
+  selectedCategory?: string;
+  /** Categories that can still be selected, but aren't available from this control. */
+  hiddenCategories?: string[];
+  /** Client side categories need to be queried from client, so image sampled need to be provided. */
+  clientCategoryImageSamples?: Record<string, string[]>;
+  onSelectCategory: (category: string) => void;
   unselectCategory: () => void;
-}> = ({ selectedCategory, onSelectCategory, unselectCategory }) => {
+}> = ({
+  selectedCategory,
+  hiddenCategories,
+  clientCategoryImageSamples = {},
+  onSelectCategory,
+  unselectCategory,
+}) => {
   const { t } = useTranslation();
+
+  /** Static sample images combined with dynamic */
+  const categoryAssetSampleImages: Record<string, string[]> = useMemo(
+    () => ({
+      ...staticCategoryAssetImageSamples,
+      ...clientCategoryImageSamples,
+    }),
+    [clientCategoryImageSamples]
+  );
+
+  /** Selected moved to front of list of categories. */
+  const categories = useMemo(
+    () =>
+      selectedCategory
+        ? Object.keys(categoryAssetSampleImages)
+            .slice()
+            .sort((a, b) =>
+              a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+            )
+        : Object.keys(categoryAssetSampleImages).slice(),
+    [categoryAssetSampleImages, selectedCategory]
+  );
 
   return (
     <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
-      {AssetCategories.map((category) => {
+      {categories.map((category) => {
+        const isSelected = selectedCategory === category;
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
+
+        if (hiddenCategories?.includes(category) && !isSelected) return null;
 
         return (
           <button
             key={category}
             className={classNames(
-              "flex shrink-0 items-center gap-4 rounded-full border py-4 px-6",
+              "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
               {
-                "border-wosmongton-400": selectedCategory === category,
-                "border-osmoverse-600": selectedCategory !== category,
+                "border-osmoverse-800 bg-osmoverse-800": isSelected,
+                "border-osmoverse-700": !isSelected,
               }
             )}
             onClick={() => {
-              if (selectedCategory === category) {
+              if (isSelected) {
                 unselectCategory();
               } else {
                 onSelectCategory(category);
@@ -168,6 +205,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
+            {isSelected && <Icon id="x-circle" height={16} width={17} />}
           </button>
         );
       })}

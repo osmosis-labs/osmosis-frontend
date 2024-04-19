@@ -145,7 +145,13 @@
       "pendingRefunded": "विफल: धनवापसी लंबित है",
       "refunded": "वापसी की गई है",
       "success": "सफलता",
-      "title": "स्थानांतरण इतिहास"
+      "title": "स्थानांतरण इतिहास",
+      "pendingDeposit": "लंबित जमा",
+      "pendingWithdraw": "लंबित निकासी",
+      "successDeposit": "जमा किया",
+      "successWithdraw": "वापस ले लिया",
+      "failDeposit": "जमा विफल",
+      "failWithdraw": "निकासी विफल"
     },
     "ibcTransfer": {
       "buttonAdd": "जोड़ना",
@@ -200,7 +206,12 @@
       },
       "title": "सभी संपत्तियां",
       "withdrawButton": "निकालना",
-      "activate": "सक्रिय"
+      "activate": "सक्रिय",
+      "marketCap": "बाज़ार आकार",
+      "volume24h": "आयतन",
+      "priceChange24h": "24 घंटे का परिवर्तन",
+      "price": "कीमत",
+      "name": "नाम"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",
@@ -284,7 +295,14 @@
       "defi": "डेफी",
       "stablecoin": "स्थिर सिक्के",
       "meme": "MEME",
-      "liquid_staking": "तरल दाँव"
+      "liquid_staking": "तरल दाँव",
+      "topGainers": "शीर्ष लाभार्थी"
+    },
+    "seeAll": "सभी देखें",
+    "highlights": {
+      "new": "नया",
+      "topGainers": "शीर्ष लाभार्थी",
+      "upcoming": "आगामी"
     }
   },
   "portfolio": {
@@ -414,7 +432,9 @@
     "marsSubtext": "मंगल द्वारा संचालित",
     "levanaSubtext": "लेवाना द्वारा संचालित",
     "more": "अधिक",
-    "new": "नया"
+    "new": "नया",
+    "settings": "समायोजन",
+    "notifications": "सूचनाएं"
   },
   "notifi": {
     "saveChanges": "परिवर्तनों को सुरक्षित करें",
@@ -692,6 +712,8 @@
       "hide": "छिपाना",
       "show": "दिखाओ"
     },
+    "maxButtonError": "अधिकतम राशि की गणना करने में असमर्थ। कृपया अपना नेटवर्क कनेक्शन जांचें या पेज को रीफ़्रेश करके देखें।",
+    "maxButtonErrorNoBalance": "अधिकतम राशि की गणना करने के लिए पर्याप्त शेष राशि नहीं है।",
     "available": "उपलब्ध",
     "button": "बदलना",
     "buttonError": "वैसे भी स्वैप करें",
@@ -719,6 +741,7 @@
     "dynamicSpreadFactor": "गतिशील"
   },
   "walletSelect": {
+    "gettingStarted": "शुरू करना",
     "connectionInProgress": "वॉलेट कनेक्शन पहले से ही प्रगति पर है. स्थिति जांचने के लिए कृपया अपना एक्सटेंशन खोलें।",
     "somethingWentWrong": "कुछ गलत हो गया",
     "isNotInstalled": "{walletName} स्थापित नहीं है",
@@ -911,6 +934,12 @@
       "risk": {
         "description": "जोखिम मूल्यांकन में एक रणनीति और उसकी अंतर्निहित परिसंपत्तियों से संबंधित मानदंडों के संयोजन पर विचार करना शामिल है।"
       }
+    },
+    "riskLabels": {
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "veryHigh": "बहुत ऊँचा"
     }
   },
   "disclaimer": "अस्वीकरण",
@@ -920,5 +949,9 @@
     "description": "अनिश्चित तकनीकी समस्याओं के कारण, ऑस्मोसिस और {prettyChainName} बीच स्थानांतरण में महत्वपूर्ण देरी या लेनदेन विफलता का अनुभव हो सकता है। अपने जोख़िम पर आगे बढ़ें।",
     "buttonContinue": "फिर भी जारी रखें",
     "buttonCancel": "रद्द करना"
+  },
+  "transactions": {
+    "noRecent": "कोई हालिया स्थानांतरण नहीं",
+    "recentShownHere": "इस डिवाइस पर पिछले 3 दिनों में की गई जमा और निकासी (कुछ नेटवर्कों के बीच) यहां दिखाई देंगी।"
   }
 }
