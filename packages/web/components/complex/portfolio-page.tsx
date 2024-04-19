@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
@@ -28,77 +29,87 @@ import { Button } from "../ui/button";
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
+  const onDeposit = useCallback(
+    (coinMinimalDenom) => {
+      bridgeAsset(coinMinimalDenom, "deposit");
+    },
+    [bridgeAsset]
+  );
+  const onWithdraw = useCallback(
+    (coinMinimalDenom) => {
+      bridgeAsset(coinMinimalDenom, "withdraw");
+    },
+    [bridgeAsset]
+  );
+
   return (
-    <main className="mx-auto flex max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview />
       </section>
 
-      <section className="py-3">
-        <Tab.Group>
-          <Tab.List className="flex gap-6" ref={tabsRef}>
-            <Tab>
-              {({ selected }) => (
-                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
-                  {t("portfolio.yourAssets")}
-                </h5>
-              )}
-            </Tab>
-            <Tab>
-              {({ selected }) => (
-                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
-                  {t("portfolio.yourPositions")}
-                </h5>
-              )}
-            </Tab>
-            <Tab>
-              {({ selected }) => (
-                <h5 className={!selected ? "text-osmoverse-500" : undefined}>
-                  {t("portfolio.recentTransfers")}
-                </h5>
-              )}
-            </Tab>
-          </Tab.List>
-          <Tab.Panels className="py-3">
-            <Tab.Panel>
-              <AssetBalancesTable
-                tableTopPadding={overviewHeight + tabsHeight}
-                onDeposit={useCallback(
-                  (coinMinimalDenom) => {
-                    bridgeAsset(coinMinimalDenom, "deposit");
-                  },
-                  [bridgeAsset]
+      <section className="w-full py-3">
+        {wallet && wallet.isWalletConnected && wallet.address ? (
+          <Tab.Group>
+            <Tab.List className="flex gap-6" ref={tabsRef}>
+              <Tab>
+                {({ selected }) => (
+                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                    {t("portfolio.yourAssets")}
+                  </h5>
                 )}
-                onWithdraw={useCallback(
-                  (coinMinimalDenom) => {
-                    bridgeAsset(coinMinimalDenom, "withdraw");
-                  },
-                  [bridgeAsset]
+              </Tab>
+              <Tab>
+                {({ selected }) => (
+                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                    {t("portfolio.yourPositions")}
+                  </h5>
                 )}
-              />
-            </Tab.Panel>
-            <Tab.Panel>
-              <section>
-                <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
-                <MyPositionsSection />
-              </section>
-              <section>
-                <h6>{t("portfolio.yourLiquidityPools")}</h6>
-                <MyPoolsCardsGrid />
-              </section>
-            </Tab.Panel>
-            <Tab.Panel>
-              <section>
-                <RecentTransfers />
-              </section>
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
+              </Tab>
+              <Tab>
+                {({ selected }) => (
+                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                    {t("portfolio.recentTransfers")}
+                  </h5>
+                )}
+              </Tab>
+            </Tab.List>
+            <Tab.Panels className="py-3">
+              <Tab.Panel>
+                <AssetBalancesTable
+                  tableTopPadding={overviewHeight + tabsHeight}
+                  onDeposit={onDeposit}
+                  onWithdraw={onWithdraw}
+                />
+              </Tab.Panel>
+              <Tab.Panel>
+                <section>
+                  <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+                  <MyPositionsSection />
+                </section>
+                <section>
+                  <h6>{t("portfolio.yourLiquidityPools")}</h6>
+                  <MyPoolsCardsGrid />
+                </section>
+              </Tab.Panel>
+              <Tab.Panel>
+                <section>
+                  <RecentTransfers />
+                </section>
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        ) : isWalletLoading ? null : (
+          <WalletDisconnectedSplash />
+        )}
       </section>
     </main>
   );
@@ -110,7 +121,6 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { t } = useTranslation();
   const router = useRouter();
   const { startBridge } = useBridge();
-
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   if (isWalletLoading) return null;
@@ -245,10 +255,10 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
   const { onOpenWalletSelect } = useWalletSelect();
 
   return (
-    <div className="flex max-w-sm flex-col gap-4">
+    <div className="flex max-w-sm flex-col gap-8">
       <p className="body1 text-osmoverse-400">{t("portfolio.connectWallet")}</p>
       <Button
-        className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1 !px-3"
+        className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
         onClick={() => {
           onOpenWalletSelect(chainStore.osmosis.chainId);
         }}
@@ -258,3 +268,16 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
     </div>
   );
 };
+
+const WalletDisconnectedSplash: FunctionComponent = () => (
+  <div className="relative w-full">
+    <Image alt="home" src="/images/chart.png" fill />
+    <Image
+      className="relative top-10 mx-auto"
+      alt="home"
+      src="/images/osmosis-home-fg-coins.svg"
+      width={624}
+      height={298}
+    />
+  </div>
+);
