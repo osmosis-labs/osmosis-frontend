@@ -216,10 +216,8 @@ export class ObservableAssetInfoConfig {
 
   protected _disposers: (() => void)[] = [];
 
-  @observable
   denom: string;
 
-  @observable
   coinMinimalDenom?: string;
 
   @action
