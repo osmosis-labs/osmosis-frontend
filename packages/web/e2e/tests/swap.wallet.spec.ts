@@ -27,7 +27,7 @@ test.describe("Test Swap feature", () => {
     const pathToExtension = path.join(__dirname, "../keplr-extension");
     console.log("pathToExtension" + pathToExtension);
     context = await chromium.launchPersistentContext("", {
-      headless: false,
+      headless: true,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
