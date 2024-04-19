@@ -3,8 +3,7 @@ import { FormattedTransaction } from "@osmosis-labs/server";
 import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -12,6 +11,7 @@ import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
 export const TransactionDetailsContent = ({
@@ -31,10 +31,24 @@ export const TransactionDetailsContent = ({
     "MMM DD, YYYY, HH:mm"
   );
 
-  const conversionRate = formatPretty(
-    tokenIn.token.toDec().quo(tokenOut.token.toDec()),
-    { maxDecimals: 2 }
-  );
+  const [conversion, setConversion] = useState({
+    numerator: tokenIn.token,
+    denominator: tokenOut.token,
+  });
+
+  const toggleConversion = () => {
+    setConversion({
+      numerator: conversion.denominator,
+      denominator: conversion.numerator,
+    });
+  };
+
+  const conversionRate = useMemo(() => {
+    return formatPretty(
+      conversion.numerator.toDec().quo(conversion.denominator.toDec()),
+      { maxDecimals: 2 }
+    );
+  }, [conversion.numerator, conversion.denominator]);
 
   return (
     <div
@@ -92,12 +106,12 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex h-10 w-12 items-center justify-center p-2">
-            <Image
-              alt="down"
-              src="/icons/arrow-right.svg"
+            <Icon
+              id="arrow-right"
               width={24}
               height={24}
-              className="rotate-90 text-osmoverse-600"
+              className="rotate-90"
+              color={theme.colors.osmoverse[400]}
             />
           </div>
           <div className="flex justify-between p-2">
@@ -130,11 +144,16 @@ export const TransactionDetailsContent = ({
         </div>
         <div className="flex flex-col py-3">
           <div className="flex justify-between gap-3 py-3">
-            <div>Execution Price</div>
-            <div className="flex gap-3">
+            <div
+              onClick={toggleConversion}
+              className="cursor-pointer whitespace-nowrap"
+            >
+              Execution Price <span>&#x2194;</span>
+            </div>
+            <div className="flex gap-3 whitespace-nowrap">
               <div className="text-body1 text-wosmongton-300">
-                1 {tokenOut.token.denom} = {conversionRate}{" "}
-                {tokenIn.token.denom}
+                1 {conversion.denominator.denom} = {conversionRate}{" "}
+                {conversion.numerator.denom}
               </div>
               <CopyIconButton valueToCopy={conversionRate} />
             </div>
@@ -148,7 +167,7 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex justify-between py-3">
-            <div>Transaction Fees</div>
+            <div>Transaction Hash</div>
             <div className="flex gap-3">
               <div className="text-body1 text-wosmongton-300">
                 {getShortAddress(transaction.hash)}

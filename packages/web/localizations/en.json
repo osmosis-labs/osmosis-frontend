@@ -933,6 +933,12 @@
       "risk": {
         "description": "Risk assessment involves considering a combination of criteria related to a strategy and its underlying assets."
       }
+    },
+    "riskLabels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
     }
   },
   "disclaimer": "Disclaimer",

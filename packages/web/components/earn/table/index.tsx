@@ -91,7 +91,10 @@ const StrategiesTable = ({
       <table className="mb-12 w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="bg-transparent" key={headerGroup.id}>
+            <tr
+              className="!static !border-b-0 bg-transparent"
+              key={headerGroup.id}
+            >
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {

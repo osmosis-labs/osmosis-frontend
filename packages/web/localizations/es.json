@@ -933,6 +933,12 @@
       "risk": {
         "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
     }
   },
   "disclaimer": "Descargo de responsabilidad",

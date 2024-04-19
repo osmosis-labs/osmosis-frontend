@@ -933,6 +933,12 @@
       "risk": {
         "description": "風險評估涉及考慮與策略及其基礎資產相關的標準組合。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免責聲明",
