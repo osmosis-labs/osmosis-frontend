@@ -128,6 +128,18 @@ export const AssetCategories = [
   "defi",
   "meme",
   "liquid_staking",
+  "built_on_osmosis",
+  "sail_initiative",
+  "bridges",
+  "nft_protocol",
+  "ai",
+  "stablecoin",
+  "privacy",
+  "social",
+  "oracles",
+  "dweb",
+  "rwa",
+  "gaming",
 ] as const;
 export type Category = (typeof AssetCategories)[number];
 
