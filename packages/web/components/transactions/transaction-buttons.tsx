@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { MenuDropdown } from "~/components/control";
 import { Button } from "~/components/ui/button";
+import { useWindowSize } from "~/hooks";
 
 export const TransactionButtons = ({
   open,
@@ -22,6 +23,8 @@ export const TransactionButtons = ({
     }
   }, [open]);
 
+  const { isLargeDesktop } = useWindowSize();
+
   return (
     <div className="relative flex gap-3">
       <Button variant="secondary" size="md" asChild>
@@ -34,9 +37,9 @@ export const TransactionButtons = ({
           Explorer &#x2197;
         </Link>
       </Button>
-
       <Transition
-        show={!open}
+        // shows full tax reports button when sidebar is closed only on large screen sizes
+        show={isLargeDesktop && !open}
         enter="transition-opacity duration-75"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -57,7 +60,8 @@ export const TransactionButtons = ({
       </Transition>
 
       <Transition
-        show={open}
+        // shows ellipsis when sidebar is open or is smaller screen sizes
+        show={!isLargeDesktop || (isLargeDesktop && open)}
         enter="transition-opacity duration-75"
         enterFrom="opacity-0"
         enterTo="opacity-100"
