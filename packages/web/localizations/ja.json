@@ -322,7 +322,9 @@
     "recentTransfers": "最近の送金",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
     "yourLiquidityPools": "流動性プール",
-    "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。"
+    "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
+    "noAssets": "{osmosis}に残高がありません",
+    "getStarted": "始めるには資産を預けてください"
   },
   "buyTokens": "トークンを購入する",
   "components": {

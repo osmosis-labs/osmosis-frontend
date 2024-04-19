@@ -322,7 +322,9 @@
     "recentTransfers": "Son transferler",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
     "yourLiquidityPools": "Likidite havuzlarınız",
-    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın."
+    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
+    "noAssets": "{osmosis} üzerinde bakiyeniz yok",
+    "getStarted": "Başlamak için varlık yatırın"
   },
   "buyTokens": "jeton satın al",
   "components": {

@@ -322,7 +322,9 @@
     "recentTransfers": "Letzte Übertragungen",
     "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
     "yourLiquidityPools": "Ihre Liquiditätspools",
-    "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen."
+    "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen.",
+    "noAssets": "Sie haben keine Guthaben auf {osmosis}",
+    "getStarted": "Zahlen Sie Guthaben ein, um loszulegen"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

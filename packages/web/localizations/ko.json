@@ -322,7 +322,9 @@
     "recentTransfers": "최근 이적",
     "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
     "yourLiquidityPools": "귀하의 유동성 풀",
-    "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요."
+    "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요.",
+    "noAssets": "{osmosis} 에 잔액이 없습니다.",
+    "getStarted": "시작하려면 자산을 예치하세요"
   },
   "buyTokens": "토큰 구매",
   "components": {

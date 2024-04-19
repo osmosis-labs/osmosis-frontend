@@ -322,7 +322,9 @@
     "recentTransfers": "Ostatnie transfery",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
     "yourLiquidityPools": "Twoje pule płynności",
-    "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie."
+    "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
+    "noAssets": "Nie masz salda na {osmosis}",
+    "getStarted": "Aby rozpocząć, zdeponuj środki"
   },
   "buyTokens": "Kup tokeny",
   "components": {

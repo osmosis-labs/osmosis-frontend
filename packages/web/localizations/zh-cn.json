@@ -322,7 +322,9 @@
     "recentTransfers": "最近转会",
     "yourSuperchargedPositions": "您的超级职位",
     "yourLiquidityPools": "您的流动资金池",
-    "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。"
+    "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
+    "noAssets": "您在{osmosis}上没有余额",
+    "getStarted": "存入资产即可开始"
   },
   "buyTokens": "购买代币",
   "components": {

@@ -322,7 +322,9 @@
     "recentTransfers": "Transferts récents",
     "yourSuperchargedPositions": "Vos positions suralimentées",
     "yourLiquidityPools": "Vos pools de liquidité",
-    "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis."
+    "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis.",
+    "noAssets": "Vous n'avez aucun solde sur {osmosis}",
+    "getStarted": "Déposez des actifs pour commencer"
   },
   "buyTokens": "Acheter jetons",
   "components": {

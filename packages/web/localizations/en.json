@@ -322,7 +322,9 @@
     "recentTransfers": "Recent transfers",
     "yourSuperchargedPositions": "Your Supercharged positions",
     "yourLiquidityPools": "Your liquidity pools",
-    "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis."
+    "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
+    "noAssets": "You have no balances on {osmosis}",
+    "getStarted": "Deposit assets to get started"
   },
   "buyTokens": "Buy tokens",
   "components": {

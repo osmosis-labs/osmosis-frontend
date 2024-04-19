@@ -1,4 +1,5 @@
 import { Tab } from "@headlessui/react";
+import { PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -21,6 +22,7 @@ import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { Spinner } from "../loaders";
 import SkeletonLoader from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
@@ -32,6 +34,25 @@ export const PortfolioPage: FunctionComponent = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { data: totalValue, isFetched: isTotalValueFetched } =
+    api.edge.assets.getUserAssetsTotal.useQuery(
+      {
+        userOsmoAddress: wallet?.address ?? "",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+        select: ({ value }) => value,
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+  const userHasNoAssets = totalValue && totalValue.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -53,28 +74,31 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
-        <AssetsOverview />
+        <AssetsOverview
+          totalValue={totalValue}
+          isTotalValueFetched={isTotalValueFetched}
+        />
       </section>
 
       <section className="w-full py-3">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <Tab.Group>
             <Tab.List className="flex gap-6" ref={tabsRef}>
-              <Tab>
+              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
                   <h5 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourAssets")}
                   </h5>
                 )}
               </Tab>
-              <Tab>
+              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
                   <h5 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourPositions")}
                   </h5>
                 )}
               </Tab>
-              <Tab>
+              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
                   <h5 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.recentTransfers")}
@@ -82,30 +106,38 @@ export const PortfolioPage: FunctionComponent = () => {
                 )}
               </Tab>
             </Tab.List>
-            <Tab.Panels className="py-3">
-              <Tab.Panel>
-                <AssetBalancesTable
-                  tableTopPadding={overviewHeight + tabsHeight}
-                  onDeposit={onDeposit}
-                  onWithdraw={onWithdraw}
-                />
-              </Tab.Panel>
-              <Tab.Panel>
-                <section>
-                  <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
-                  <MyPositionsSection />
-                </section>
-                <section>
-                  <h6>{t("portfolio.yourLiquidityPools")}</h6>
-                  <MyPoolsCardsGrid />
-                </section>
-              </Tab.Panel>
-              <Tab.Panel>
-                <section>
-                  <RecentTransfers />
-                </section>
-              </Tab.Panel>
-            </Tab.Panels>
+            {!isTotalValueFetched ? (
+              <div className="mx-auto w-fit py-3">
+                <Spinner />
+              </div>
+            ) : userHasNoAssets ? (
+              <UserZeroBalanceTableSplash />
+            ) : (
+              <Tab.Panels className="py-3">
+                <Tab.Panel>
+                  <AssetBalancesTable
+                    tableTopPadding={overviewHeight + tabsHeight}
+                    onDeposit={onDeposit}
+                    onWithdraw={onWithdraw}
+                  />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <section>
+                    <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+                    <MyPositionsSection />
+                  </section>
+                  <section>
+                    <h6>{t("portfolio.yourLiquidityPools")}</h6>
+                    <MyPoolsCardsGrid />
+                  </section>
+                </Tab.Panel>
+                <Tab.Panel>
+                  <section>
+                    <RecentTransfers />
+                  </section>
+                </Tab.Panel>
+              </Tab.Panels>
+            )}
           </Tab.Group>
         ) : isWalletLoading ? null : (
           <WalletDisconnectedSplash />
@@ -115,13 +147,16 @@ export const PortfolioPage: FunctionComponent = () => {
   );
 };
 
-const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
+const AssetsOverview: FunctionComponent<
+  { totalValue?: PricePretty; isTotalValueFetched?: boolean } & CustomClasses
+> = observer(({ totalValue, isTotalValueFetched }) => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
   const router = useRouter();
   const { startBridge } = useBridge();
   const { isLoading: isWalletLoading } = useWalletSelect();
+  const { isMobile } = useWindowSize();
 
   if (isWalletLoading) return null;
 
@@ -129,7 +164,25 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
     <div className="flex w-full flex-col gap-4">
       {wallet && wallet.isWalletConnected && wallet.address ? (
         <>
-          <UserAssetsTotal userOsmoAddress={wallet.address} />
+          {totalValue && totalValue.toDec().isZero() ? (
+            <UserZeroBalanceCta currencySymbol={totalValue.symbol} />
+          ) : (
+            <div className="flex flex-col gap-2">
+              <span className="body1 md:caption text-osmoverse-300">
+                {t("assets.totalBalance")}
+              </span>
+              <SkeletonLoader
+                className={classNames(isTotalValueFetched ? null : "h-14 w-48")}
+                isLoaded={isTotalValueFetched}
+              >
+                {isMobile ? (
+                  <h5>{totalValue?.toString()}</h5>
+                ) : (
+                  <h3>{totalValue?.toString()}</h3>
+                )}
+              </SkeletonLoader>
+            </div>
+          )}
           <div className="flex items-center gap-3 py-3">
             <Button
               className="flex items-center gap-2 !rounded-full"
@@ -150,6 +203,7 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
             <Button
               className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
               onClick={() => startBridge("withdraw")}
+              disabled={totalValue && totalValue.toDec().isZero()}
             >
               <Icon id="withdraw" height={16} width={16} />
               <span className="subtitle1">
@@ -165,52 +219,6 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   );
 });
 
-const UserAssetsTotal: FunctionComponent<{ userOsmoAddress: string }> = ({
-  userOsmoAddress,
-}) => {
-  const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
-
-  const { data: totalValue, isFetched } =
-    api.edge.assets.getUserAssetsTotal.useQuery(
-      {
-        userOsmoAddress,
-      },
-      {
-        select: ({ value }) => value,
-
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
-
-  if (totalValue && totalValue.toDec().isZero()) {
-    return <UserZeroBalanceCta currencySymbol={totalValue.symbol} />;
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="body1 md:caption text-osmoverse-300">
-        {t("assets.totalBalance")}
-      </span>
-      <SkeletonLoader
-        className={classNames(isFetched ? null : "h-14 w-48")}
-        isLoaded={isFetched}
-      >
-        {isMobile ? (
-          <h5>{totalValue?.toString()}</h5>
-        ) : (
-          <h3>{totalValue?.toString()}</h3>
-        )}
-      </SkeletonLoader>
-    </div>
-  );
-};
-
 const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
   currencySymbol,
 }) => {
@@ -223,7 +231,7 @@ const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
   } = useDisclosure();
 
   return (
-    <div className="flex flex-col gap-2 px-6">
+    <div className="flex flex-col gap-2">
       <span className="subtitle1 text-osmoverse-300">
         {t("assets.totalBalance")}
       </span>
@@ -244,6 +252,31 @@ const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
         isOpen={isFiatOnrampSelectionOpen}
         onRequestClose={onCloseFiatOnrampSelection}
       />
+    </div>
+  );
+};
+
+const UserZeroBalanceTableSplash: FunctionComponent = () => {
+  const { t } = useTranslation();
+  const { startBridge } = useBridge();
+
+  return (
+    <div className="mx-auto flex w-fit flex-col gap-4 py-3 text-center">
+      <Image
+        alt="no balances"
+        src="/images/coins-and-vial.svg"
+        width={240}
+        height={160}
+      />
+      <h6>{t("portfolio.noAssets", { osmosis: "Osmosis" })}</h6>
+      <p className="body1 text-osmoverse-300">{t("portfolio.getStarted")}</p>
+      <Button
+        className="mx-auto flex !w-fit items-center gap-2 !rounded-full"
+        onClick={() => startBridge("deposit")}
+      >
+        <Icon id="deposit" height={16} width={16} />
+        <span className="subtitle1">{t("assets.table.depositButton")}</span>
+      </Button>
     </div>
   );
 };
