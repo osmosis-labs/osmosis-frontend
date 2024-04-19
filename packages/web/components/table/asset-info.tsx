@@ -29,7 +29,7 @@ import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
-import { AssetCategoriesSelectors, Category } from "../assets/categories";
+import { AssetCategoriesSelectors } from "../assets/categories";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
@@ -53,8 +53,8 @@ export const AssetsInfoTable: FunctionComponent<{
   // State
 
   // category
-  const [selectedCategory, setCategory] = useState<Category | undefined>();
-  const selectCategory = useCallback((category: Category) => {
+  const [selectedCategory, setCategory] = useState<string | undefined>();
+  const selectCategory = useCallback((category: string) => {
     setCategory(category);
   }, []);
   const unselectCategory = useCallback(() => {
