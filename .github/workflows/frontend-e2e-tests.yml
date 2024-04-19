@@ -28,7 +28,7 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install
       - name: Run Select Swap Pair tests on Master
         if: github.ref == 'refs/heads/master'
         run: |
