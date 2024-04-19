@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Tests
         run: yarn test:e2e --filter=server
-        continue-on-error: ${{ matrix.env == 'staging' }}
+        # continue-on-error: ${{ matrix.env == 'staging' }}
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
