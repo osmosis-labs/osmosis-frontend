@@ -73,6 +73,7 @@ jobs:
                   }
                 }
               ]
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
