@@ -263,7 +263,7 @@ const YourBalance = observer(
                   }
                   image={
                     <Image
-                      src={"/images/staking-apr-full.svg"}
+                      src={"/images/coin-ring.svg"}
                       alt={`Stake image`}
                       className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
                       width={224}

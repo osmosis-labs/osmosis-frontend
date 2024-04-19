@@ -324,7 +324,9 @@
     "yourLiquidityPools": "Likidite havuzlarınız",
     "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
     "noAssets": "{osmosis} üzerinde bakiyeniz yok",
-    "getStarted": "Başlamak için varlık yatırın"
+    "getStarted": "Başlamak için varlık yatırın",
+    "noPositions": "Hiç pozisyonunuz yok",
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
   },
   "buyTokens": "jeton satın al",
   "components": {

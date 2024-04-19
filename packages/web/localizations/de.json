@@ -324,7 +324,9 @@
     "yourLiquidityPools": "Ihre Liquiditätspools",
     "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen.",
     "noAssets": "Sie haben keine Guthaben auf {osmosis}",
-    "getStarted": "Zahlen Sie Guthaben ein, um loszulegen"
+    "getStarted": "Zahlen Sie Guthaben ein, um loszulegen",
+    "noPositions": "Sie haben keine Positionen",
+    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

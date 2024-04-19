@@ -324,7 +324,9 @@
     "yourLiquidityPools": "Seus pools de liquidez",
     "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
     "noAssets": "Você não tem saldos em {osmosis}",
-    "getStarted": "Deposite ativos para começar"
+    "getStarted": "Deposite ativos para começar",
+    "noPositions": "Você não tem posições",
+    "unlockPotential": "Desbloqueie todo o seu potencial de ganhos e coloque seus ativos para trabalhar com pools de liquidez"
   },
   "buyTokens": "Comprar tokens",
   "components": {

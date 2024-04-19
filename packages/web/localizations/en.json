@@ -324,7 +324,9 @@
     "yourLiquidityPools": "Your liquidity pools",
     "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
     "noAssets": "You have no balances on {osmosis}",
-    "getStarted": "Deposit assets to get started"
+    "getStarted": "Deposit assets to get started",
+    "noPositions": "You have no positions",
+    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools"
   },
   "buyTokens": "Buy tokens",
   "components": {

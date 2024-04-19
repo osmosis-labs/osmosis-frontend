@@ -93,7 +93,7 @@ function Earn() {
     <div className="relative mx-auto flex max-w-[1508px] flex-col gap-10 py-10 pl-8 pr-9">
       {!isWalletConnected && (
         <Image
-          src={"/images/staking-apr-full.svg"}
+          src={"/images/coin-ring.svg"}
           className="absolute right-36 top-16 z-0 -rotate-[75deg] 1.5md:hidden"
           alt="Staking graphic"
           width={402}
@@ -116,7 +116,7 @@ function Earn() {
               {t("earnPage.lookBelow")}
             </p>
             <Image
-              src={"/images/staking-apr-full.svg"}
+              src={"/images/coin-ring.svg"}
               alt="Staking image"
               width={298}
               height={212}

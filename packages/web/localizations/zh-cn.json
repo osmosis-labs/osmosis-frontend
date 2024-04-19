@@ -324,7 +324,9 @@
     "yourLiquidityPools": "您的流动资金池",
     "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
     "noAssets": "您在{osmosis}上没有余额",
-    "getStarted": "存入资产即可开始"
+    "getStarted": "存入资产即可开始",
+    "noPositions": "您没有职位",
+    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产"
   },
   "buyTokens": "购买代币",
   "components": {

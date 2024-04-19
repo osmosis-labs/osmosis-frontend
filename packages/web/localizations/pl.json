@@ -324,7 +324,9 @@
     "yourLiquidityPools": "Twoje pule płynności",
     "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
     "noAssets": "Nie masz salda na {osmosis}",
-    "getStarted": "Aby rozpocząć, zdeponuj środki"
+    "getStarted": "Aby rozpocząć, zdeponuj środki",
+    "noPositions": "Nie masz żadnych stanowisk",
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
   },
   "buyTokens": "Kup tokeny",
   "components": {

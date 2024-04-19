@@ -324,7 +324,9 @@
     "yourLiquidityPools": "流動性プール",
     "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
     "noAssets": "{osmosis}に残高がありません",
-    "getStarted": "始めるには資産を預けてください"
+    "getStarted": "始めるには資産を預けてください",
+    "noPositions": "ポジションがありません",
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
   },
   "buyTokens": "トークンを購入する",
   "components": {

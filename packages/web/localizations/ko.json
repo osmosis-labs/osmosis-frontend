@@ -324,7 +324,9 @@
     "yourLiquidityPools": "귀하의 유동성 풀",
     "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요.",
     "noAssets": "{osmosis} 에 잔액이 없습니다.",
-    "getStarted": "시작하려면 자산을 예치하세요"
+    "getStarted": "시작하려면 자산을 예치하세요",
+    "noPositions": "직책이 없습니다.",
+    "unlockPotential": "귀하의 수익 잠재력을 최대한 활용하고 자산을 유동성 풀과 함께 활용하세요"
   },
   "buyTokens": "토큰 구매",
   "components": {

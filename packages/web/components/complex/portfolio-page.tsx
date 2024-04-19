@@ -7,8 +7,6 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
-import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
-import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -27,6 +25,8 @@ import SkeletonLoader from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
+import { MyPoolsCardsGrid } from "./my-pools-card-grid";
+import { MyPositionsSection } from "./my-positions-section";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -122,14 +122,7 @@ export const PortfolioPage: FunctionComponent = () => {
                   />
                 </Tab.Panel>
                 <Tab.Panel>
-                  <section>
-                    <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
-                    <MyPositionsSection />
-                  </section>
-                  <section>
-                    <h6>{t("portfolio.yourLiquidityPools")}</h6>
-                    <MyPoolsCardsGrid />
-                  </section>
+                  <UserPositionsSection address={wallet.address} />
                 </Tab.Panel>
                 <Tab.Panel>
                   <section>
@@ -256,6 +249,69 @@ const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
   );
 };
 
+const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
+  address,
+}) => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const {
+    hasPositions,
+    hasPools,
+    isLoading: isLoadingPositions,
+  } = useUserPositionsData(address);
+
+  if (isLoadingPositions) {
+    return (
+      <section className="">
+        <Spinner />
+      </section>
+    );
+  }
+
+  if (hasPositions || hasPools)
+    return (
+      <>
+        {hasPositions && (
+          <section>
+            <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+            <MyPositionsSection />
+          </section>
+        )}
+        {hasPools && (
+          <section>
+            <h6>{t("portfolio.yourLiquidityPools")}</h6>
+            <MyPoolsCardsGrid />
+          </section>
+        )}
+      </>
+    );
+
+  return (
+    <div className="mx-auto my-6 flex max-w-35 flex-col gap-6 text-center">
+      <Image
+        className="mx-auto"
+        src="/images/coin-ring.svg"
+        alt="no positions"
+        width={240}
+        height={160}
+      />
+      <div className="flex flex-col gap-2">
+        <h6>{t("portfolio.noPositions")}</h6>
+        <p className="body1 text-osmoverse-300">
+          {t("portfolio.unlockPotential")}
+        </p>
+        <Button
+          className="mx-auto flex !w-fit items-center gap-2 !rounded-full"
+          onClick={() => router.push("/pools")}
+        >
+          <Icon id="deposit" height={16} width={16} />
+          <span className="subtitle1">{t("assets.table.depositButton")}</span>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const UserZeroBalanceTableSplash: FunctionComponent = () => {
   const { t } = useTranslation();
   const { startBridge } = useBridge();
@@ -314,3 +370,47 @@ const WalletDisconnectedSplash: FunctionComponent = () => (
     />
   </div>
 );
+
+function useUserPositionsData(address: string | undefined) {
+  const { data: positions, isLoading: isLoadingUserPositions } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      {
+        userOsmoAddress: address ?? "",
+      },
+      {
+        enabled: Boolean(address),
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+  const hasPositions = Boolean(positions?.length);
+
+  const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
+    api.edge.pools.getUserPools.useQuery(
+      {
+        userOsmoAddress: address ?? "",
+      },
+      {
+        enabled: Boolean(address),
+
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+  const hasPools = Boolean(allMyPoolDetails?.length);
+
+  return {
+    hasPositions,
+    hasPools,
+    isLoading: isLoadingUserPositions || isLoadingMyPoolDetails,
+  };
+}
