@@ -1,6 +1,6 @@
 import { Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { MenuDropdown } from "~/components/control";
 import { Button } from "~/components/ui/button";
@@ -14,13 +14,6 @@ export const TransactionButtons = ({
   address: string;
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Close the dropdown when the transaction details sidebar / modal is closed
-  useEffect(() => {
-    if (!open) {
-      setIsDropdownOpen(false);
-    }
-  }, [open]);
 
   const { isLargeDesktop } = useWindowSize();
 
