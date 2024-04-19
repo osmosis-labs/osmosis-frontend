@@ -102,7 +102,7 @@ export class Twitter {
    */
   private async internalGetUserTweets(userId: string) {
     const url = new URL(
-      `/tweets/search/recent?query=${encodeURIComponent(
+      `2/tweets/search/recent?query=${encodeURIComponent(
         `from:${userId}`
       )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`,
       TWITTER_API_URL
