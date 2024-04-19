@@ -128,7 +128,7 @@ export const AssetBalancesTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: "Name",
+        header: t("assets.table.name"),
         cell: (cell) => (
           <AssetCell
             coinName={cell.row.original.coinName}
@@ -141,7 +141,7 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "price",
         header: () => (
           <SortHeader
-            label="Price"
+            label={t("assets.table.price")}
             sortKey="currentPrice"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -155,7 +155,7 @@ export const AssetBalancesTable: FunctionComponent<{
         header: () => (
           <SortHeader
             className="mx-auto"
-            label="24h change"
+            label={t("assets.table.priceChange24h")}
             sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -171,7 +171,7 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "balance",
         header: () => (
           <SortHeader
-            label="Balance"
+            label={t("assets.table.balance")}
             sortKey="usdValue"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -194,7 +194,7 @@ export const AssetBalancesTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, onDeposit, onWithdraw, setSortKey]);
+  }, [sortKey, sortDirection, onDeposit, onWithdraw, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {

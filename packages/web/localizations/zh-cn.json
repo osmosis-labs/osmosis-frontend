@@ -211,7 +211,8 @@
       "volume24h": "体积",
       "priceChange24h": "24小时变化",
       "price": "价格",
-      "name": "姓名"
+      "name": "姓名",
+      "balance": "平衡"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -286,8 +287,6 @@
       "reminder": "您始终可以在设置模式中停用此设置。"
     },
     "getStarted": {
-      "title": "开始使用{osmosis}",
-      "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
       "addFunds": "添加资金即可开始"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "您的职位",
     "recentTransfers": "最近转会",
     "yourSuperchargedPositions": "您的超级职位",
-    "yourLiquidityPools": "您的流动资金池"
+    "yourLiquidityPools": "您的流动资金池",
+    "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。"
   },
   "buyTokens": "购买代币",
   "components": {

@@ -211,7 +211,8 @@
       "volume24h": "Hacim",
       "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim"
+      "name": "İsim",
+      "balance": "Denge"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -286,8 +287,6 @@
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
     "getStarted": {
-      "title": "{osmosis} ile başlayın",
-      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
       "addFunds": "Başlamak için para ekleyin"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "Pozisyonlarınız",
     "recentTransfers": "Son transferler",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
-    "yourLiquidityPools": "Likidite havuzlarınız"
+    "yourLiquidityPools": "Likidite havuzlarınız",
+    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın."
   },
   "buyTokens": "jeton satın al",
   "components": {

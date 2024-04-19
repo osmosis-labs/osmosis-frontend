@@ -211,7 +211,8 @@
       "volume24h": "Volumen",
       "priceChange24h": "cambio 24h",
       "price": "Precio",
-      "name": "Nombre"
+      "name": "Nombre",
+      "balance": "Balance"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",
@@ -286,8 +287,6 @@
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     },
     "getStarted": {
-      "title": "Comience con {osmosis}",
-      "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
       "addFunds": "Agregue fondos para comenzar"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "Tus posiciones",
     "recentTransfers": "Transferencias recientes",
     "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
-    "yourLiquidityPools": "Tus fondos de liquidez"
+    "yourLiquidityPools": "Tus fondos de liquidez",
+    "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis."
   },
   "buyTokens": "Comprar fichas",
   "components": {

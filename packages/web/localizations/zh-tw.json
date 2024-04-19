@@ -211,7 +211,8 @@
       "volume24h": "體積",
       "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名"
+      "name": "姓名",
+      "balance": "平衡"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -286,8 +287,6 @@
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
     "getStarted": {
-      "title": "開始使用{osmosis}",
-      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
       "addFunds": "增加資金即可開始"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會",
     "yourSuperchargedPositions": "您的超級職位",
-    "yourLiquidityPools": "您的流動資金池"
+    "yourLiquidityPools": "您的流動資金池",
+    "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。"
   },
   "buyTokens": "購買代幣",
   "components": {

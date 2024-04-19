@@ -118,33 +118,39 @@ const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   return (
     <div className="flex w-full flex-col gap-4">
       {wallet && wallet.isWalletConnected && wallet.address ? (
-        <UserAssetsTotal userOsmoAddress={wallet.address} />
+        <>
+          <UserAssetsTotal userOsmoAddress={wallet.address} />
+          <div className="flex items-center gap-3 py-3">
+            <Button
+              className="flex items-center gap-2 !rounded-full"
+              onClick={() => router.push("/")}
+            >
+              <Icon id="swap-horizontal" height={16} width={16} />
+              <span className="subtitle1">{t("portfolio.trade")}</span>
+            </Button>
+            <Button
+              className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
+              onClick={() => startBridge("deposit")}
+            >
+              <Icon id="deposit" height={16} width={16} />
+              <span className="subtitle1">
+                {t("assets.table.depositButton")}
+              </span>
+            </Button>
+            <Button
+              className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
+              onClick={() => startBridge("withdraw")}
+            >
+              <Icon id="withdraw" height={16} width={16} />
+              <span className="subtitle1">
+                {t("assets.table.withdrawButton")}
+              </span>
+            </Button>
+          </div>
+        </>
       ) : (
         <GetStartedWithOsmosis />
       )}
-      <div className="flex items-center gap-3 py-3">
-        <Button
-          className="flex items-center gap-2 !rounded-full"
-          onClick={() => router.push("/")}
-        >
-          <Icon id="swap-horizontal" height={16} width={16} />
-          <span className="subtitle1">{t("portfolio.trade")}</span>
-        </Button>
-        <Button
-          className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
-          onClick={() => startBridge("deposit")}
-        >
-          <Icon id="deposit" height={16} width={16} />
-          <span className="subtitle1">{t("assets.table.depositButton")}</span>
-        </Button>
-        <Button
-          className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
-          onClick={() => startBridge("withdraw")}
-        >
-          <Icon id="withdraw" height={16} width={16} />
-          <span className="subtitle1">{t("assets.table.withdrawButton")}</span>
-        </Button>
-      </div>
     </div>
   );
 });
@@ -239,19 +245,15 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
   const { onOpenWalletSelect } = useWalletSelect();
 
   return (
-    <div className="flex max-w-sm flex-col gap-4 px-6">
-      <h5>{t("assets.getStarted.title", { osmosis: "Osmosis" })}</h5>
-      <p className="body2 text-osmoverse-300">
-        {t("assets.getStarted.description")}
-      </p>
+    <div className="flex max-w-sm flex-col gap-4">
+      <p className="body1 text-osmoverse-400">{t("portfolio.connectWallet")}</p>
       <Button
-        className="w-fit px-0"
+        className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1 !px-3"
         onClick={() => {
           onOpenWalletSelect(chainStore.osmosis.chainId);
         }}
-        variant="link"
       >
-        <h6 className="text-wosmongton-200">{t("connectWallet")}</h6>
+        {t("connectWallet")}
       </Button>
     </div>
   );

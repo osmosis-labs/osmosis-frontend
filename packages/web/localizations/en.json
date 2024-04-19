@@ -211,7 +211,8 @@
       "volume24h": "Volume",
       "priceChange24h": "24h change",
       "price": "Price",
-      "name": "Name"
+      "name": "Name",
+      "balance": "Balance"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -286,8 +287,6 @@
       "reminder": "You can always deactivate this setting in the settings modal."
     },
     "getStarted": {
-      "title": "Get started with {osmosis}",
-      "description": "Connect and fund your wallet to start trading in just a few steps.",
       "addFunds": "Add funds to get started"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "Your positions",
     "recentTransfers": "Recent transfers",
     "yourSuperchargedPositions": "Your Supercharged positions",
-    "yourLiquidityPools": "Your liquidity pools"
+    "yourLiquidityPools": "Your liquidity pools",
+    "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis."
   },
   "buyTokens": "Buy tokens",
   "components": {

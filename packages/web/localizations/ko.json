@@ -211,7 +211,8 @@
       "volume24h": "용량",
       "priceChange24h": "24시간 변경",
       "price": "가격",
-      "name": "이름"
+      "name": "이름",
+      "balance": "균형"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
@@ -286,8 +287,6 @@
       "reminder": "언제든지 설정 모달에서 이 설정을 비활성화할 수 있습니다."
     },
     "getStarted": {
-      "title": "{osmosis} 시작하기",
-      "description": "몇 단계만 거치면 지갑을 연결하고 자금을 조달하여 거래를 시작할 수 있습니다.",
       "addFunds": "시작하려면 자금을 추가하세요."
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "귀하의 직위",
     "recentTransfers": "최근 이적",
     "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
-    "yourLiquidityPools": "귀하의 유동성 풀"
+    "yourLiquidityPools": "귀하의 유동성 풀",
+    "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요."
   },
   "buyTokens": "토큰 구매",
   "components": {

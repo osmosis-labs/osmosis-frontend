@@ -211,7 +211,8 @@
       "volume24h": "Volum",
       "priceChange24h": "schimbare 24h",
       "price": "Preț",
-      "name": "Nume"
+      "name": "Nume",
+      "balance": "Echilibru"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -286,8 +287,6 @@
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
     "getStarted": {
-      "title": "Începeți cu {osmosis}",
-      "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
       "addFunds": "Adăugați fonduri pentru a începe"
     },
     "categories": {
@@ -322,7 +321,8 @@
     "yourPositions": "Pozițiile tale",
     "recentTransfers": "Transferuri recente",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
-    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate",
+    "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis."
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
