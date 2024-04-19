@@ -27,7 +27,7 @@ export const TransactionContent = ({
 
   return (
     <div className="flex w-full flex-col">
-      <div className="flex w-full justify-between pt-8 pb-4">
+      <div className="flex w-full justify-between gap-0 pt-8 pb-4 lg:flex-col lg:gap-2">
         <h1 className="text-h3 font-h3">Transactions</h1>
         <TransactionButtons open={open} address={address} />
       </div>
