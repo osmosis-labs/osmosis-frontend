@@ -45,8 +45,12 @@ export function handleExternalLink({
 }
 
 export const ExternalLinkModal: FunctionComponent<
-  { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({ url, ...modalBaseProps }) => {
+  {
+    url: string;
+    /** Force the user to see this modal every time, they can't opt out of showing again (saved in localstorage). */
+    forceShowAgain?: boolean;
+  } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = ({ url, forceShowAgain = false, ...modalBaseProps }) => {
   const { t } = useTranslation();
   const [doNotShowAgain, setDoNotShowAgain] = useState(false);
 
@@ -84,10 +88,15 @@ export const ExternalLinkModal: FunctionComponent<
           </p>
         </div>
 
-        <label className="mb-6 flex items-center space-x-2">
-          <Checkbox checked={doNotShowAgain} onClick={onToggleDoNotShowAgain} />
-          <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
-        </label>
+        {!forceShowAgain && (
+          <label className="mb-6 flex items-center space-x-2">
+            <Checkbox
+              checked={doNotShowAgain}
+              onClick={onToggleDoNotShowAgain}
+            />
+            <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
+          </label>
+        )}
 
         <div className="flex w-full justify-between gap-4">
           <Button

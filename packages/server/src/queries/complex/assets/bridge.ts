@@ -2,12 +2,15 @@ import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 
 import { Asset } from ".";
 
+/** A bridgeable asset. */
 export type BridgeAsset = {
   transferMethods: AssetListAsset["transferMethods"];
   counterparty: AssetListAsset["counterparty"];
 };
 
-/** Appends bridge info to a given asset. If asset is not found in asset list, empty bridge info will be returned. */
+/** Appends bridge info to a given asset. If asset is not found in asset list, empty bridge info will be returned.
+ *  @throws if a given asset is not found in asset list.
+ */
 export function getBridgeAsset<TAsset extends Asset>(
   assetLists: AssetList[],
   asset: TAsset
@@ -16,9 +19,12 @@ export function getBridgeAsset<TAsset extends Asset>(
     .flatMap(({ assets }) => assets)
     .find((a) => a.coinMinimalDenom === asset.coinMinimalDenom);
 
+  if (!assetListAsset)
+    throw new Error("Bridge asset not found in asset list: " + asset.coinDenom);
+
   return {
     ...asset,
-    transferMethods: assetListAsset?.transferMethods ?? [],
-    counterparty: assetListAsset?.counterparty ?? [],
+    transferMethods: assetListAsset.transferMethods,
+    counterparty: assetListAsset.counterparty,
   };
 }
