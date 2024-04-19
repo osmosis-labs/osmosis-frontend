@@ -37,7 +37,7 @@ jobs:
       - name: Run Select Swap Pair tests on Stage
         if: github.ref == 'refs/heads/chore/add-e2e-pipeline'
         run: |
-          cd packages/web
+          cd packages/web && ls -ll e2e
           npx playwright test -g "Test Select Swap Pair feature"
           xvfb-run npx playwright test -g "Test Swap feature"
       - name: upload test results
