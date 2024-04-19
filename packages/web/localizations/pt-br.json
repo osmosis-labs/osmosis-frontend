@@ -934,6 +934,12 @@
       "risk": {
         "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Baixo",
+      "medium": "Médio",
+      "high": "Alto",
+      "veryHigh": "Muito alto"
     }
   },
   "disclaimer": "Isenção de responsabilidade",

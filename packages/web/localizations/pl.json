@@ -934,6 +934,12 @@
       "risk": {
         "description": "Ocena ryzyka obejmuje rozważenie kombinacji kryteriów związanych ze strategią i jej aktywami bazowymi."
       }
+    },
+    "riskLabels": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki",
+      "veryHigh": "Bardzo wysoko"
     }
   },
   "disclaimer": "Zastrzeżenie",

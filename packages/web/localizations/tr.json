@@ -934,6 +934,12 @@
       "risk": {
         "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
       }
+    },
+    "riskLabels": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "veryHigh": "Çok yüksek"
     }
   },
   "disclaimer": "Sorumluluk reddi beyanı",

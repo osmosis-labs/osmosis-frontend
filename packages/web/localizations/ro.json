@@ -934,6 +934,12 @@
       "risk": {
         "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
       }
+    },
+    "riskLabels": {
+      "low": "Scăzut",
+      "medium": "Mediu",
+      "high": "Înalt",
+      "veryHigh": "Foarte inalt"
     }
   },
   "disclaimer": "Disclaimer",

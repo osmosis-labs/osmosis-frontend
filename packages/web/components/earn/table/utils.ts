@@ -46,13 +46,14 @@ export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   filterValue
 ) => {
   const value = row.getValue(colID) as string;
-  const inputFilter = filterValue as ListOption<string>;
+  const inputFilter = filterValue as ListOption<string>[];
 
-  if (inputFilter.value === "") {
+  // base case -> no value in the array -> filter open
+  if (inputFilter.length === 0) {
     return true;
   }
 
-  return inputFilter.value === value;
+  return inputFilter.findIndex((f) => f.value === value) !== -1;
 };
 
 export const multiListOptionValueEquals: FilterFn<EarnStrategy> = (
@@ -159,8 +160,7 @@ export const getDefaultFiltersState = (filters: Filters) =>
 export const getListOptions = <T>(
   strategies: StrategyCMSData[],
   valueAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
-  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">,
-  allLabel: string
+  labelAccessor: keyof Pick<StrategyCMSData, "platform" | "type" | "method">
 ) => {
   const uniqueOptionsMap = new Map<string, ListOption<T>>();
 
@@ -175,8 +175,6 @@ export const getListOptions = <T>(
   });
 
   const uniqueOptions = Array.from(uniqueOptionsMap.values());
-
-  uniqueOptions.unshift({ value: "" as unknown as T, label: allLabel });
 
   return uniqueOptions;
 };

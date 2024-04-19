@@ -934,6 +934,12 @@
       "risk": {
         "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免责声明",
