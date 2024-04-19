@@ -26,7 +26,6 @@ import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
@@ -463,20 +462,19 @@ const TokenChartHeader = observer(() => {
 
   return (
     <header>
-      <SkeletonLoader isLoaded={!isLoading}>
-        <PriceChartHeader
-          formatOpts={formatOpts}
-          decimal={maxDecimals}
-          showAllRange
-          hoverPrice={hoverPrice}
-          historicalRange={assetInfoConfig.historicalRange}
-          setHistoricalRange={assetInfoConfig.setHistoricalRange}
-          fiatSymbol={fiatSymbol}
-          classes={{
-            priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
-          }}
-        />
-      </SkeletonLoader>
+      <PriceChartHeader
+        isLoading={isLoading}
+        formatOpts={formatOpts}
+        decimal={maxDecimals}
+        showAllRange
+        hoverPrice={hoverPrice}
+        historicalRange={assetInfoConfig.historicalRange}
+        setHistoricalRange={assetInfoConfig.setHistoricalRange}
+        fiatSymbol={fiatSymbol}
+        classes={{
+          priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
+        }}
+      />
     </header>
   );
 });
