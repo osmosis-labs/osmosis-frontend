@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
-      "liquid_staking": "Mărire lichidă"
+      "liquid_staking": "Mărire lichidă",
+      "topGainers": "Câștigători de top"
     },
     "seeAll": "Vezi toate",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
       }
+    },
+    "riskLabels": {
+      "low": "Scăzut",
+      "medium": "Mediu",
+      "high": "Înalt",
+      "veryHigh": "Foarte inalt"
     }
   },
   "disclaimer": "Disclaimer",

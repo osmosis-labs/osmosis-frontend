@@ -295,7 +295,8 @@
       "defi": "去中心化金融",
       "stablecoin": "稳定币",
       "meme": "模因",
-      "liquid_staking": "流动质押"
+      "liquid_staking": "流动质押",
+      "topGainers": "涨幅最大的股票"
     },
     "seeAll": "查看全部",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免责声明",

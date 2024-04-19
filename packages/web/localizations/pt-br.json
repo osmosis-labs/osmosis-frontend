@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
-      "liquid_staking": "Estaqueamento líquido"
+      "liquid_staking": "Estaqueamento líquido",
+      "topGainers": "Principais ganhadores"
     },
     "seeAll": "Ver tudo",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Baixo",
+      "medium": "Médio",
+      "high": "Alto",
+      "veryHigh": "Muito alto"
     }
   },
   "disclaimer": "Isenção de responsabilidade",

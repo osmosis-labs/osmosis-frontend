@@ -295,7 +295,8 @@
       "defi": "去中心化金融",
       "stablecoin": "穩定幣",
       "meme": "迷因",
-      "liquid_staking": "流動質押"
+      "liquid_staking": "流動質押",
+      "topGainers": "漲幅居前者"
     },
     "seeAll": "看全部",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "風險評估涉及考慮與策略及其基礎資產相關的標準組合。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免責聲明",

@@ -15,6 +15,7 @@ import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
+import { useQueryState } from "nuqs";
 import { FunctionComponent } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -117,6 +118,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       ],
     });
 
+    const [ref] = useQueryState("ref");
+
     useNavBar({
       title: (
         <LinkButton
@@ -130,9 +133,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={t("menu.assets")}
-          ariaLabel={t("menu.assets")}
-          href="/assets"
+          label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+          ariaLabel={
+            ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")
+          }
+          href={ref === "portfolio" ? "/portfolio" : "/assets"}
         />
       ),
       ctas: [],

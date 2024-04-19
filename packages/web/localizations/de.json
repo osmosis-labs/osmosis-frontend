@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",
-      "liquid_staking": "Flüssiges Abstecken"
+      "liquid_staking": "Flüssiges Abstecken",
+      "topGainers": "Top-Gewinner"
     },
     "seeAll": "Alles sehen",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
       }
+    },
+    "riskLabels": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "veryHigh": "Sehr hoch"
     }
   },
   "disclaimer": "Haftungsausschluss",

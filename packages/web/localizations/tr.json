@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
-      "liquid_staking": "Sıvı esnetme"
+      "liquid_staking": "Sıvı esnetme",
+      "topGainers": "En çok kazananlar"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
       }
+    },
+    "riskLabels": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "veryHigh": "Çok yüksek"
     }
   },
   "disclaimer": "Sorumluluk reddi beyanı",

@@ -295,7 +295,8 @@
       "defi": "DéFi",
       "stablecoin": "Pièces stables",
       "meme": "Mème",
-      "liquid_staking": "Jalonnement liquide"
+      "liquid_staking": "Jalonnement liquide",
+      "topGainers": "Meilleurs gagnants"
     },
     "seeAll": "Voir tout",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "L'évaluation des risques consiste à considérer une combinaison de critères liés à une stratégie et à ses actifs sous-jacents."
       }
+    },
+    "riskLabels": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Haut",
+      "veryHigh": "Très haut"
     }
   },
   "disclaimer": "Clause de non-responsabilité",
