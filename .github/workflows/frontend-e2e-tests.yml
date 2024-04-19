@@ -35,7 +35,7 @@ jobs:
           export BASE_URL=https://app.osmosis.zone
           npx playwright test -g "Test Select Swap Pair feature"
       - name: Run Select Swap Pair tests on Stage
-        if: github.ref == 'refs/heads/stage'
+        if: github.ref == 'refs/heads/chore/add-e2e-pipeline'
         run: |
           npx playwright test -g "Test Select Swap Pair feature"
           npx playwright test -g "Test Swap feature"
