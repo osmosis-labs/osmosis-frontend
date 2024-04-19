@@ -1,12 +1,11 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
-import Link from "next/link";
 
+import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import {
   formatDate,
   groupTransactionsByDate,
 } from "~/components/transactions/transaction-utils";
-import { Button } from "~/components/ui/button";
 
 export const TransactionContent = ({
   setSelectedTransaction,
@@ -30,28 +29,7 @@ export const TransactionContent = ({
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">
         <h1 className="text-h3 font-h3">Transactions</h1>
-        <div className="flex gap-3">
-          <Button variant="secondary" size="md" asChild>
-            <Link
-              passHref
-              href={`https://www.mintscan.io/osmosis/address/${address}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Explorer &#x2197;
-            </Link>
-          </Button>
-          <Button variant="secondary" size="md" asChild>
-            <Link
-              passHref
-              href="https://stake.tax/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Tax Reports &#x2197;
-            </Link>
-          </Button>
-        </div>
+        <TransactionButtons open={open} address={address} />
       </div>
 
       <div>
