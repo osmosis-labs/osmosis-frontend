@@ -301,7 +301,7 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
           {t("portfolio.unlockPotential")}
         </p>
         <Button
-          className="mx-auto flex !w-fit items-center gap-2 !rounded-full"
+          className="mx-auto flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
           onClick={() => router.push("/pools")}
         >
           <span className="subtitle1">{t("tokenInfos.explorePools")}</span>
