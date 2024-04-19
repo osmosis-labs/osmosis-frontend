@@ -295,7 +295,8 @@
       "defi": "디파이",
       "stablecoin": "스테이블코인",
       "meme": "나 나",
-      "liquid_staking": "리퀴드 스테이킹"
+      "liquid_staking": "리퀴드 스테이킹",
+      "topGainers": "최고 상승자"
     },
     "seeAll": "모두 보기",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "위험 평가에는 전략 및 기본 자산과 관련된 기준의 조합을 고려하는 것이 포함됩니다."
       }
+    },
+    "riskLabels": {
+      "low": "낮은",
+      "medium": "중간",
+      "high": "높은",
+      "veryHigh": "매우 높음"
     }
   },
   "disclaimer": "부인 성명",

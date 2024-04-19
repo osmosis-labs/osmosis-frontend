@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
-      "liquid_staking": "リキッドステーキング"
+      "liquid_staking": "リキッドステーキング",
+      "topGainers": "上位の利益"
     },
     "seeAll": "すべてを見る",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
       }
+    },
+    "riskLabels": {
+      "low": "低い",
+      "medium": "中くらい",
+      "high": "高い",
+      "veryHigh": "すごく高い"
     }
   },
   "disclaimer": "免責事項",

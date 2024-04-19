@@ -295,7 +295,8 @@
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",
-      "liquid_staking": "Liquid staking"
+      "liquid_staking": "Liquid staking",
+      "topGainers": "Top gainers"
     },
     "seeAll": "See all",
     "highlights": {
@@ -933,6 +934,12 @@
       "risk": {
         "description": "Risk assessment involves considering a combination of criteria related to a strategy and its underlying assets."
       }
+    },
+    "riskLabels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "veryHigh": "Very high"
     }
   },
   "disclaimer": "Disclaimer",

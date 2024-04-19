@@ -1,4 +1,3 @@
-import { Category } from "@osmosis-labs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
@@ -18,7 +17,7 @@ type UpcomingReleaseAsset =
 
 export const HighlightsCategories: FunctionComponent<{
   isCategorySelected: boolean;
-  onSelectCategory: (category: Category) => void;
+  onSelectCategory: (category: string) => void;
   onSelectAllTopGainers: () => void;
 }> = ({ isCategorySelected, onSelectCategory, onSelectAllTopGainers }) => {
   const { t } = useTranslation();
