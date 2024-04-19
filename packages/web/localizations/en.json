@@ -945,6 +945,9 @@
   },
   "transactions": {
     "noRecent": "No recent transfers",
-    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here."
+    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here.",
+    "noTransactions": "No transactions",
+    "pastShownHere": "Your past trades on Osmosis will appear here.",
+    "connect": "Connect to see your transaction history"
   }
 }

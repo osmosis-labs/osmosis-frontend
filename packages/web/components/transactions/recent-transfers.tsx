@@ -1,9 +1,9 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
+import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
@@ -21,7 +21,7 @@ export const RecentTransfers: FunctionComponent = observer(() => {
   if (isWalletLoading) return <Spinner />;
   if (account?.address)
     return <UserRecentTransfers address={account.address} />;
-  return <NoTransfersSplash />;
+  return <NoTransactionsSplash variant="transfers" />;
 });
 
 const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
@@ -30,7 +30,8 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
 
     const recentTransfers = useRecentTransfers(address);
 
-    if (recentTransfers.length === 0) return <NoTransfersSplash />;
+    if (recentTransfers.length === 0)
+      return <NoTransactionsSplash variant="transfers" />;
 
     return (
       <div className="flex w-full flex-col gap-2">
@@ -90,25 +91,3 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
     );
   }
 );
-
-const NoTransfersSplash: FunctionComponent = () => {
-  const { t } = useTranslation();
-
-  return (
-    <div className="mx-auto my-6 flex max-w-35 flex-col gap-6 text-center">
-      <Image
-        className="mx-auto"
-        src="/images/ion-thumbs-up.svg"
-        alt="ion thumbs up"
-        width="260"
-        height="160"
-      />
-      <div className="flex flex-col gap-2">
-        <h6>{t("transactions.noRecent")}</h6>
-        <p className="body1 text-osmoverse-300">
-          {t("transactions.recentShownHere")}
-        </p>
-      </div>
-    </div>
-  );
-};
