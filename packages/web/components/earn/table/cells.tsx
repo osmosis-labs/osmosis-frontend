@@ -176,10 +176,10 @@ function _getRiskLabels(risk: number) {
   const value = +(risk * 10).toPrecision(2);
 
   const thresholds = [
-    { threshold: 7.5, verbalKey: "veryHigh" },
-    { threshold: 5, verbalKey: "high" },
-    { threshold: 2.5, verbalKey: "medium" },
-    { threshold: 0, verbalKey: "low" },
+    { threshold: 7.5, verbalKey: "earnPage.riskLabels.veryHigh" },
+    { threshold: 5, verbalKey: "earnPage.riskLabels.high" },
+    { threshold: 2.5, verbalKey: "earnPage.riskLabels.medium" },
+    { threshold: 0, verbalKey: "earnPage.riskLabels.low" },
   ];
 
   let verbalKey = "low";
@@ -229,7 +229,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
           />
         </RiskLink>
         <p className="flex gap-1 text-caption text-osmoverse-200">
-          <span>{t(`earnPage.riskLabels.${verbalKey}`)}</span>
+          <span>{t(verbalKey)}</span>
           <span>{value}</span>
         </p>
       </div>
