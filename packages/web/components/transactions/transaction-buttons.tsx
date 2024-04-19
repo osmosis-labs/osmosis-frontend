@@ -85,20 +85,20 @@ export const TransactionButtons = ({
               {
                 id: "tax-reports",
                 display: (
-                  <div className="flex gap-2 whitespace-nowrap">
-                    <Link
-                      passHref
-                      href="https://stake.tax/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Tax Reports &#x2197;
-                    </Link>
-                  </div>
+                  <Link
+                    className="whitespace-nowrap"
+                    passHref
+                    href="https://stake.tax/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Tax Reports &#x2197;
+                  </Link>
                 ),
               },
             ]}
-            onSelect={() => undefined}
+            // noop since links are used
+            onSelect={() => {}}
             isFloating
           />
         </div>
