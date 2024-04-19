@@ -1,7 +1,4 @@
-import {
-  Asset,
-  AssetCategories as StaticAssetCategories,
-} from "@osmosis-labs/types";
+import { Asset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -9,14 +6,10 @@ import { DEFAULT_LRU_OPTIONS } from "../../../utils";
 import dayjs from "../../../utils/dayjs";
 import { queryUpcomingAssets } from "../../github";
 
-/** Re-exported static asset categories extended with dynamic categories. */
-export const AssetCategories = ["new", ...StaticAssetCategories] as const;
-export type Category = (typeof AssetCategories)[number];
-
 /** Filters an asset for whether it is included in the given list of categories. */
 export function isAssetInCategories(
   asset: Asset,
-  categories: Category[],
+  categories: string[],
   assetNewness = dayjs.duration(2_629_746_000), // default: 1 month
   now = dayjs()
 ) {

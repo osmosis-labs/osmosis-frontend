@@ -1,7 +1,4 @@
-import {
-  AssetCategories as FixedAssetCategories,
-  isAssetNew,
-} from "@osmosis-labs/server";
+import { isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
@@ -9,16 +6,6 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
 import { Icon } from "./icon";
-
-// reconcile categories calculated on client and statically served from server (likely from asset list)
-const ClientSideCategories = ["topGainers"] as const;
-export const AssetCategories = [
-  ...ClientSideCategories,
-  ...FixedAssetCategories,
-] as const;
-type ClientSideCategory = (typeof ClientSideCategories)[number];
-/** Re-exported type that includes client-side dynamic categories. */
-export type Category = (typeof AssetCategories)[number];
 
 const staticCategoryAssetImageSamples = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
@@ -56,12 +43,12 @@ const staticCategoryAssetImageSamples = {
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
-  selectedCategory?: Category;
+  selectedCategory?: string;
   /** Categories that can still be selected, but aren't available from this control. */
-  hiddenCategories?: Category[];
+  hiddenCategories?: string[];
   /** Client side categories need to be queried from client, so image sampled need to be provided. */
-  clientCategoryImageSamples?: { [category in ClientSideCategory]: string[] };
-  onSelectCategory: (category: Category) => void;
+  clientCategoryImageSamples?: Record<string, string[]>;
+  onSelectCategory: (category: string) => void;
   unselectCategory: () => void;
 }> = ({
   selectedCategory,
@@ -73,10 +60,10 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   const { t } = useTranslation();
 
   /** Static sample images combined with dynamic */
-  const categoryAssetSampleImages = useMemo(
+  const categoryAssetSampleImages: Record<string, string[]> = useMemo(
     () => ({
       ...staticCategoryAssetImageSamples,
-      ...(clientCategoryImageSamples as { [category in Category]: string[] }),
+      ...clientCategoryImageSamples,
     }),
     [clientCategoryImageSamples]
   );
@@ -85,11 +72,13 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   const categories = useMemo(
     () =>
       selectedCategory
-        ? AssetCategories.slice().sort((a, b) =>
-            a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
-          )
-        : AssetCategories.slice(),
-    [selectedCategory]
+        ? Object.keys(categoryAssetSampleImages)
+            .slice()
+            .sort((a, b) =>
+              a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+            )
+        : Object.keys(categoryAssetSampleImages).slice(),
+    [categoryAssetSampleImages, selectedCategory]
   );
 
   return (
