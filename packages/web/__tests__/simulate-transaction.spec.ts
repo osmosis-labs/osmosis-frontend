@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { server } from "~/__tests__/msw";
 import { ChainList } from "~/config/generated/chain-list";
 import simulateTransactionHandler from "~/pages/api/simulate-transaction";
-import { server } from "~/tests/msw";
 
 it("returns 405 for non-POST requests", async () => {
   const mockReq = { method: "GET" } as Request;

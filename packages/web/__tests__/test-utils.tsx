@@ -18,9 +18,9 @@ export const trpcReact = createTRPCReact<AppRouter>();
 
 const queryClient = new QueryClient();
 export const withTRPC = ({ children }: { children: ReactNode }) => (
-  <StoreProvider>
-    <WalletSelectProvider>
-      <MultiLanguageProvider defaultLanguage="en">
+  <MultiLanguageProvider defaultLanguage="en">
+    <StoreProvider>
+      <WalletSelectProvider>
         <trpcReact.Provider
           client={trpcReact.createClient({
             transformer: superjson,
@@ -36,9 +36,9 @@ export const withTRPC = ({ children }: { children: ReactNode }) => (
             {children}
           </QueryClientProvider>
         </trpcReact.Provider>
-      </MultiLanguageProvider>
-    </WalletSelectProvider>
-  </StoreProvider>
+      </WalletSelectProvider>
+    </StoreProvider>
+  </MultiLanguageProvider>
 );
 
 export function renderWithProviders(ui: React.ReactElement) {

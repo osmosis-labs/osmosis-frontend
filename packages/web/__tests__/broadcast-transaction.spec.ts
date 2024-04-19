@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { server } from "~/__tests__/msw";
 import broadcastTransactionHandler from "~/pages/api/broadcast-transaction";
-import { server } from "~/tests/msw";
 
 // Mocking ChainList to control its behavior in tests
 jest.mock("~/config/generated/chain-list", () => ({
