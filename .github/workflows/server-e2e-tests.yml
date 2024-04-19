@@ -56,6 +56,9 @@ jobs:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
 
+      # Send Slack alert if 'tests' job fails
+      # Here we include the 'steps.tests.outcome != 'success'' function to check if the job failed
+      # even after the 'continue-on-error' flag is set to true.
       - name: Send Slack alert if test fails
         id: slack
         if: ${{ steps.tests.outcome != 'success' || failure() }}

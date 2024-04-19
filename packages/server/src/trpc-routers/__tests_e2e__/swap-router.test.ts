@@ -170,9 +170,6 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     preferredRouter,
   });
 
-  // TODO: TEMP VALUE
-  throw new Error("This test is not valid for the stage environment");
-
   assertValidQuote({
     quote: reply,
     tokenInAmount,
