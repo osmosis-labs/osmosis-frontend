@@ -13,6 +13,8 @@ jobs:
     environment:
       name: prod_swap_test
     steps:
+      - name: Check Environment url
+        run: echo ${{ github.event.deployment_status.environment_url }}
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
