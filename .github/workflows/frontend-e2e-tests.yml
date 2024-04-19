@@ -19,9 +19,7 @@ jobs:
           node-version: 20.x
       - name: Install Playwright
         run: |
-          cd packages/web
-          yarn install
-          npx playwright install
+          yarn --cwd packages/web install && npx playwright install
       - name: Run Select Swap Pair tests on Master
         if: github.ref == 'refs/heads/master'
         run: |
