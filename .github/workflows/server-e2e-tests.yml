@@ -49,12 +49,13 @@ jobs:
         run: echo "SQS Server URL:${{ matrix.server-url }}"
 
       - name: Run Tests
+        id: tests
         run: yarn test:e2e --filter=server
-        # continue-on-error: ${{ matrix.env == 'staging' }}
+        continue-on-error: ${{ matrix.env == 'staging' }}
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
 
       - name: Send Slack Alert if is Staging and last step failed
-        if: ${{ failure() && matrix.env == 'staging' }}
+        if: ${{ steps.tests.outcome != 'success' && matrix.env == 'staging' }}
         run: echo "Send Slack Alert"
