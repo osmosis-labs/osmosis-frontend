@@ -86,8 +86,6 @@ const Transactions: React.FC = observer(() => {
     setOpen(false);
   }, [isLargeDesktop]);
 
-  console.log("isWalletConnected", isWalletConnected);
-
   return (
     <main className="relative mx-16 flex gap-4">
       <TransactionContent
