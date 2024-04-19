@@ -31,8 +31,6 @@ const Transactions: React.FC = observer(() => {
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address || "";
 
-  console.log("address", address);
-
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
