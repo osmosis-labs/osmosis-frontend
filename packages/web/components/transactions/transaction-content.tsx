@@ -1,13 +1,28 @@
+import { FormattedTransaction } from "@osmosis-labs/server";
+
 import { TransactionRow } from "~/components/transactions/transaction-row";
+import {
+  formatDate,
+  groupTransactionsByDate,
+} from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 
 export const TransactionContent = ({
+  setSelectedTransaction,
+  transactions,
   setOpen,
   open,
 }: {
+  setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  transactions: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
+  // TODO - add loading state
+  if (!transactions) return null;
+
+  const groupedTransactions = groupTransactionsByDate(transactions);
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">
@@ -22,54 +37,47 @@ export const TransactionContent = ({
         </div>
       </div>
 
-      {/* TODO - parse by date, into groups */}
+      <div>
+        {Object.entries(groupedTransactions).map(([date, transactions]) => (
+          <div key={date} className="flex flex-col gap-4 px-4 pt-8 pb-3">
+            <div className="text-osmoverse-300">{formatDate(date)}</div>
+            <hr className="text-osmoverse-700" />
+            {transactions.map((transaction) => (
+              <TransactionRow
+                key={transaction.id}
+                title={{
+                  // each type of transaction would have a translation for when it's pending, successful, or failed
+                  pending: "Swapping",
+                  success: "Swapped",
+                  failed: "Swap failed",
+                }}
+                effect="swap"
+                status={transaction.code === 0 ? "success" : "failed"}
+                onClick={() => {
+                  setSelectedTransaction(transaction);
 
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Pending</div>
-        <hr className="text-osmoverse-700" />
+                  // delay to ensure the slide over transitions smoothly
+                  if (!open) {
+                    setTimeout(() => setOpen(true), 1);
+                  }
+                }}
+                tokenConversion={{
+                  tokenIn: {
+                    amount:
+                      transaction.metadata[0].value[0].txInfo.tokenIn.token,
+                    value: transaction.metadata[0].value[0].txInfo.tokenIn.usd,
+                  },
+                  tokenOut: {
+                    amount:
+                      transaction.metadata[0].value[0].txInfo.tokenOut.token,
+                    value: transaction.metadata[0].value[0].txInfo.tokenOut.usd,
+                  },
+                }}
+              />
+            ))}
+          </div>
+        ))}
       </div>
-      <TransactionRow status="Pending" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Earlier Today</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">Yesterday</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">March 11</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">February 8</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
-      <TransactionRow status="Failure" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">December 29, 2023</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-
-      <div className="flex flex-col gap-4 px-4 pt-8 pb-3">
-        <div className="text-osmoverse-300">July 7, 2022</div>
-        <hr className="text-osmoverse-700" />
-      </div>
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
-      <TransactionRow status="Success" setOpen={setOpen} open={open} />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { SwapTool } from "~/components/swap-tool";
+import { EventPage } from "~/config";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
@@ -9,6 +10,7 @@ export const TradeTokens: FunctionComponent<
     sendTokenDenom?: string;
     outTokenDenom?: string;
     forceSwapInPoolId?: string;
+    page: EventPage;
   } & ModalBaseProps
 > = (props) => {
   const { showModalBase, accountActionButton, walletConnected } =
@@ -25,9 +27,10 @@ export const TradeTokens: FunctionComponent<
         isInModal
         onRequestModalClose={props.onRequestClose}
         swapButton={!walletConnected ? accountActionButton : undefined}
-        sendTokenDenom={props.sendTokenDenom}
-        outTokenDenom={props.outTokenDenom}
+        initialSendTokenDenom={props.sendTokenDenom}
+        initialOutTokenDenom={props.outTokenDenom}
         forceSwapInPoolId={props.forceSwapInPoolId}
+        page={props.page}
       />
     </ModalBase>
   );

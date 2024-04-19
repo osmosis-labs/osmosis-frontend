@@ -22,7 +22,12 @@ export const useStrategyTableConfig = (
     () => getDefaultFiltersState(filters!),
     [filters]
   );
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      desc: true,
+      id: "tvl_tvlUsd",
+    },
+  ]);
   const { isMobile } = useWindowSize();
 
   const tableConfig: TableOptions<EarnStrategy> = {

@@ -13,8 +13,9 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const config = {
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ["<rootDir>/tests/setup-tests.ts"],
+  setupFilesAfterEnv: ["<rootDir>/__tests__/setup-tests.ts"],
   setupFiles: ["jest-launchdarkly-mock"],
+  testMatch: ["**/__tests__/?(*.)+(spec|test).[jt]s?(x)"],
   moduleNameMapper: {
     // Resolve absolute imports
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
@@ -24,6 +25,7 @@ const config = {
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "../../jsdom-extended.js",
+  testPathIgnorePatterns: ["e2e"],
 };
 
 module.exports = async () => ({

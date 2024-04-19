@@ -145,7 +145,13 @@
       "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
-      "title": "转账记录"
+      "title": "转账记录",
+      "pendingDeposit": "待存款",
+      "pendingWithdraw": "等待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "已退出",
+      "failDeposit": "存款失败",
+      "failWithdraw": "提现失败"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -200,7 +206,12 @@
       },
       "title": "所有资产",
       "withdrawButton": "提币",
-      "activate": "启用"
+      "activate": "启用",
+      "marketCap": "市值",
+      "volume24h": "体积",
+      "priceChange24h": "24小时变化",
+      "price": "价格",
+      "name": "姓名"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -285,6 +296,12 @@
       "stablecoin": "稳定币",
       "meme": "模因",
       "liquid_staking": "流动质押"
+    },
+    "seeAll": "查看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "涨幅最大的股票",
+      "upcoming": "即将推出"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "由火星提供动力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "设置",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -692,6 +711,8 @@
       "hide": "隐藏",
       "show": "节目"
     },
+    "maxButtonError": "无法计算最大金额。请检查您的网络连接或尝试刷新页面。",
+    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
+    "gettingStarted": "入门",
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",
@@ -851,7 +873,6 @@
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
-    "daily": "日常的",
     "reward": "报酬",
     "lock": "解绑",
     "days": "天",
@@ -895,10 +916,7 @@
     "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
-        "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
-      },
-      "daily": {
-        "description": "策略的每日百分比回报 - 类似于 APR，但反映的是每日回报而非年度回报。注意：策略的回报可能会根据参与度和表现而波动。"
+        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
       },
       "tvl": {
         "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"
@@ -924,5 +942,9 @@
     "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
     "buttonCancel": "取消"
+  },
+  "transactions": {
+    "noRecent": "最近没有转会",
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
   }
 }

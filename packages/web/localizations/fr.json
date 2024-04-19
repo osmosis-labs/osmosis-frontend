@@ -145,7 +145,13 @@
       "pendingRefunded": "Échec: remboursement en cours",
       "refunded": "Rembourser",
       "success": "Succès",
-      "title": "Historique des transferts"
+      "title": "Historique des transferts",
+      "pendingDeposit": "Dépôt en attente",
+      "pendingWithdraw": "En attente de retrait",
+      "successDeposit": "Déposé",
+      "successWithdraw": "Retiré",
+      "failDeposit": "Échec du dépôt",
+      "failWithdraw": "Échec du retrait"
     },
     "ibcTransfer": {
       "buttonAdd": "Ajouter",
@@ -200,7 +206,12 @@
       },
       "title": "Tous les actifs",
       "withdrawButton": "Retirer",
-      "activate": "Activer"
+      "activate": "Activer",
+      "marketCap": "Capitalisation boursière",
+      "volume24h": "Volume",
+      "priceChange24h": "changement 24h",
+      "price": "Prix",
+      "name": "Nom"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -285,6 +296,12 @@
       "stablecoin": "Pièces stables",
       "meme": "Mème",
       "liquid_staking": "Jalonnement liquide"
+    },
+    "seeAll": "Voir tout",
+    "highlights": {
+      "new": "Nouveau",
+      "topGainers": "Meilleurs gagnants",
+      "upcoming": "A venir"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "Propulsé par Mars",
     "levanaSubtext": "Propulsé par Levana",
     "more": "Plus",
-    "new": "NOUVEAU"
+    "new": "NOUVEAU",
+    "settings": "Paramètres",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",
@@ -692,6 +711,8 @@
       "hide": "Cacher",
       "show": "Montrer"
     },
+    "maxButtonError": "Impossible de calculer le montant maximum. Veuillez vérifier votre connexion réseau ou essayer d'actualiser la page.",
+    "maxButtonErrorNoBalance": "Solde insuffisant pour calculer le montant maximum.",
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "Dynamique"
   },
   "walletSelect": {
+    "gettingStarted": "Commencer",
     "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
     "somethingWentWrong": "Quelque chose s'est mal passé",
     "isNotInstalled": "{walletName} n'est pas installé",
@@ -851,7 +873,6 @@
     "myStrategies": "Vos stratégies",
     "strategyPlatform": "Stratégie",
     "apy": "AVR",
-    "daily": "Tous les jours",
     "reward": "Récompense",
     "lock": "Dissocier",
     "days": "jours",
@@ -895,10 +916,7 @@
     "instantUnbondOnly": "Décollage instantané uniquement",
     "tooltips": {
       "apr": {
-        "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
-      },
-      "daily": {
-        "description": "Pourcentage de rendement quotidien d'une stratégie - semblable au TAEG, mais reflétant le rendement quotidien au lieu du rendement annuel. Remarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance."
+        "description": "Le taux de pourcentage annuel (TAEG) fait référence au pourcentage de rendement annualisé d'une stratégie.\n\nRemarque : le rendement d'une stratégie peut fluctuer en fonction de la participation et de la performance.\n\nAvertissement : Ces TAEG sont auto-déclarés par les projets eux-mêmes et peuvent être inexacts."
       },
       "tvl": {
         "description": "La valeur totale verrouillée (TVL) fait référence à la valeur totale en dollars américains des actifs déposés dans la stratégie."
@@ -924,5 +942,9 @@
     "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
     "buttonContinue": "Continuer quand même",
     "buttonCancel": "Annuler"
+  },
+  "transactions": {
+    "noRecent": "Aucun transfert récent",
+    "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici."
   }
 }

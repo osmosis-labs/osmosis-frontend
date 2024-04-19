@@ -99,7 +99,7 @@ const StrategiesTable = ({
                       header.index === 1,
                     "sticky left-0 z-30 bg-osmoverse-850 !pl-4 md:!text-left":
                       header.index === 0,
-                    "!text-center": header.index === 7,
+                    "!text-center": header.index === 6,
                   })}
                   key={header.id}
                 >

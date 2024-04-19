@@ -145,7 +145,13 @@
       "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
-      "title": "Transfer History"
+      "title": "Transfer History",
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdraw",
+      "successDeposit": "Deposited",
+      "successWithdraw": "Withdrew",
+      "failDeposit": "Deposit failed",
+      "failWithdraw": "Withdraw failed"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",
@@ -200,7 +206,12 @@
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw",
-      "activate": "Activate"
+      "activate": "Activate",
+      "marketCap": "Market cap",
+      "volume24h": "Volume",
+      "priceChange24h": "24h change",
+      "price": "Price",
+      "name": "Name"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -285,6 +296,12 @@
       "stablecoin": "Stablecoins",
       "meme": "Meme",
       "liquid_staking": "Liquid staking"
+    },
+    "seeAll": "See all",
+    "highlights": {
+      "new": "New",
+      "topGainers": "Top gainers",
+      "upcoming": "Upcoming"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "Powered by Mars",
     "levanaSubtext": "Powered by Levana",
     "more": "More",
-    "new": "NEW"
+    "new": "NEW",
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -692,6 +711,8 @@
       "hide": "Hide",
       "show": "Show"
     },
+    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
+    "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
+    "gettingStarted": "Getting Started",
     "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",
@@ -851,7 +873,6 @@
     "myStrategies": "Your Strategies",
     "strategyPlatform": "Strategy",
     "apy": "APR",
-    "daily": "Daily",
     "reward": "Reward",
     "lock": "Unbond",
     "days": "days",
@@ -895,10 +916,7 @@
     "instantUnbondOnly": "Instant unbond only",
     "tooltips": {
       "apr": {
-        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy. Note: A strategy's return may fluctuate based on participation and performance."
-      },
-      "daily": {
-        "description": "Daily percentage return of a strategy - akin to APR, but reflecting daily return instead of annual. Note: A strategy's return may fluctuate based on participation and performance."
+        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy.\n\nNote: A strategy's return may fluctuate based on participation and performance.\n\nDisclaimer: These APRs are self-reported by projects themselves and may be inaccurate."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."
@@ -924,5 +942,9 @@
     "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
     "buttonContinue": "Continue Anyway",
     "buttonCancel": "Cancel"
+  },
+  "transactions": {
+    "noRecent": "No recent transfers",
+    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here."
   }
 }

@@ -13,3 +13,7 @@ src/styles/index.scss
 .repos
 
 lerna-debug.log
+
+packages/web/playwright-report/index.html
+packages/web/playwright-report/data/*
+packages/web/test-results/*

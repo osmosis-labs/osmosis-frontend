@@ -112,7 +112,7 @@ export const ValidatorSquadCard: React.FC<{
                   <FallbackImg
                     alt={validatorName}
                     src={imageUrl}
-                    fallbacksrc="/icons/superfluid-osmo.svg"
+                    fallbacksrc="/icons/question-mark.svg"
                     height={40}
                     width={40}
                   />

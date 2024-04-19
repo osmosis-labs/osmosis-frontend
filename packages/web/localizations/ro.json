@@ -145,7 +145,13 @@
       "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
-      "title": "Istoric Transferuri"
+      "title": "Istoric Transferuri",
+      "pendingDeposit": "Depunere în așteptare",
+      "pendingWithdraw": "Retragere în așteptare",
+      "successDeposit": "Depunere reușită",
+      "successWithdraw": "Retragere reușită",
+      "failDeposit": "Depunere nereușită",
+      "failWithdraw": "Retragere nereușită"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",
@@ -200,7 +206,12 @@
       },
       "title": "Active",
       "withdrawButton": "Retrage",
-      "activate": "Activati"
+      "activate": "Activati",
+      "marketCap": "Capitalizarea pieței",
+      "volume24h": "Volum",
+      "priceChange24h": "schimbare 24h",
+      "price": "Preț",
+      "name": "Nume"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -285,6 +296,12 @@
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
       "liquid_staking": "Mărire lichidă"
+    },
+    "seeAll": "Vezi toate",
+    "highlights": {
+      "new": "Nou",
+      "topGainers": "Câștigători de top",
+      "upcoming": "În viitor"
     }
   },
   "portfolio": {
@@ -414,7 +431,9 @@
     "marsSubtext": "Alimentat de Marte",
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
-    "new": "NOU"
+    "new": "NOU",
+    "settings": "Setări",
+    "notifications": "Notificări"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -692,6 +711,8 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
+    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
+    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
@@ -719,6 +740,7 @@
     "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
+    "gettingStarted": "Noțiuni de bază",
     "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
     "somethingWentWrong": "Ceva nu a mers bine",
     "isNotInstalled": "{walletName} nu este instalat",
@@ -851,7 +873,6 @@
     "myStrategies": "Strategiile tale",
     "strategyPlatform": "Strategie",
     "apy": "APRILIE",
-    "daily": "Zilnic",
     "reward": "Răsplată",
     "lock": "Dezlegați",
     "days": "zile",
@@ -895,10 +916,7 @@
     "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
-      },
-      "daily": {
-        "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
       },
       "tvl": {
         "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
@@ -924,5 +942,9 @@
     "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
+  },
+  "transactions": {
+    "noRecent": "Fără transferuri recente",
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
   }
 }

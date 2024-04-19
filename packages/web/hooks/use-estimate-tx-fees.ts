@@ -1,4 +1,4 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
+import { Coin, EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
@@ -14,6 +14,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+interface QueryResult {
+  gasUsdValueToPay: PricePretty;
+  gasAmount: CoinPretty;
+  gasLimit: string;
+  amount: readonly Coin[];
+}
+
 async function estimateTxFeesQueryFn({
   wallet,
   messages,
@@ -24,7 +31,7 @@ async function estimateTxFeesQueryFn({
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[] | undefined;
   apiUtils: ReturnType<typeof api.useUtils>;
-}) {
+}): Promise<QueryResult> {
   if (!messages) throw new Error("No messages");
 
   const { amount, gas: gasLimit } = await accountStore.estimateFee({
@@ -68,13 +75,14 @@ export function useEstimateTxFees({
   messages: EncodeObject[] | undefined;
   chainId: string;
   enabled?: boolean;
+  onSuccess?: (data: QueryResult) => void;
 }) {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
   const wallet = accountStore.getWallet(chainId);
 
-  return useQuery({
+  const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
@@ -96,6 +104,8 @@ export function useEstimateTxFees({
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });
+
+  return queryResult;
 }
 
 export function useEstimateTxFeesMutation() {

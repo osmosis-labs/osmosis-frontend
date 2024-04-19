@@ -522,7 +522,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       };
 
       let usedFee: TxFee;
-      if (typeof fee === "undefined" || !fee?.force) {
+      if (typeof fee === "undefined" || fee?.force === false) {
         usedFee = await this.estimateFee({
           wallet,
           messages: msgs,
