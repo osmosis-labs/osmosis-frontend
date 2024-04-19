@@ -260,7 +260,7 @@ export const AssetBalancesTable: FunctionComponent<{
       <ExternalLinkModal
         url={externalUrl ?? ""}
         isOpen={Boolean(externalUrl)}
-        onRequestClose={useCallback(() => setExternalUrl(null), [])}
+        onRequestClose={() => setExternalUrl(null)}
         forceShowAgain
       />
       <SearchBox
