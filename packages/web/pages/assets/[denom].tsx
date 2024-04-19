@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
   CoingeckoCoin,
+  getAsset,
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
@@ -590,18 +591,9 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let coingeckoCoin: CoingeckoCoin | null = null;
 
   /**
-   * Get all the availables currencies
-   */
-  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
-    (a, b) => [...a, ...b]
-  );
-
-  /**
    * Lookup for the current token
    */
-  const token = currencies.find(
-    (currency) => currency.coinDenom.toUpperCase() === tokenDenom.toUpperCase()
-  );
+  const token = getAsset({ anyDenom: tokenDenom, assetLists: AssetLists });
 
   if (tokenDenom) {
     try {
@@ -646,7 +638,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   return {
     props: {
       tokenDenom: token?.coinDenom ?? tokenDenom,
-      tokenMinimalDenom: token?.base,
+      tokenMinimalDenom: token.coinMinimalDenom,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
