@@ -1,4 +1,4 @@
-import type { Category, Search, SortDirection } from "@osmosis-labs/server";
+import { type Search, type SortDirection } from "@osmosis-labs/server";
 import {
   createColumnHelper,
   flexRender,
@@ -21,6 +21,7 @@ import {
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -28,7 +29,7 @@ import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
-import { AssetCategoriesSelectors } from "../assets/categories";
+import { AssetCategoriesSelectors, Category } from "../assets/categories";
 import { SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
@@ -50,22 +51,8 @@ export const AssetsInfoTable: FunctionComponent<{
   const { t } = useTranslation();
 
   // State
-  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
-  const onSearchInput = useCallback((input: string) => {
-    setSearchQuery(input ? { query: input } : undefined);
-  }, []);
 
-  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
-  const sortKey = useMemo(
-    // avoid sorting while searching, as the search results are sorted by relevance
-    () => (searchQuery ? undefined : sortKey_),
-    [searchQuery, sortKey_]
-  );
-  const setSortKey = useCallback((key: SortKey | undefined) => {
-    if (key !== undefined) setSortKey_(key);
-  }, []);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
+  // category
   const [selectedCategory, setCategory] = useState<Category | undefined>();
   const selectCategory = useCallback((category: Category) => {
     setCategory(category);
@@ -74,12 +61,51 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    setSortKey_("priceChange24h");
-    setSortDirection("desc");
+    setCategory("topGainers");
   }, []);
   const categories = useMemo(
-    () => (selectedCategory ? [selectedCategory] : undefined),
+    () =>
+      selectedCategory && selectedCategory !== "topGainers"
+        ? [selectedCategory]
+        : undefined,
     [selectedCategory]
+  );
+
+  // search
+  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+  const onSearchInput = useCallback((input: string) => {
+    setSearchQuery(input ? { query: input } : undefined);
+  }, []);
+  const search = useMemo(
+    () => (Boolean(selectedCategory) ? undefined : searchQuery),
+    [selectedCategory, searchQuery]
+  );
+
+  // sorting
+  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const sortKey = useMemo(() => {
+    // handle topGainers category on client, but other categories can still sort
+    if (selectedCategory === "topGainers") return "priceChange24h";
+    else return sortKey_;
+  }, [selectedCategory, sortKey_]);
+  const setSortKey = useCallback((key: SortKey | undefined) => {
+    if (key !== undefined) setSortKey_(key);
+  }, []);
+  const [sortDirection_, setSortDirection] = useState<SortDirection>("desc");
+  const sortDirection = useMemo(() => {
+    // handle topGainers category on client, but other categories can still sort
+    if (selectedCategory === "topGainers") return "desc";
+    else return sortDirection_;
+  }, [selectedCategory, sortDirection_]);
+  const sort = useMemo(
+    () =>
+      !Boolean(search)
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
+    [search, sortKey, sortDirection]
   );
 
   const showUnverifiedAssetsSetting =
@@ -87,7 +113,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const showUnverifiedAssets =
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
-  const { showPreviewAssets } = useShowPreviewAssets();
+  const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
   // Query
   const {
@@ -101,15 +127,10 @@ export const AssetsInfoTable: FunctionComponent<{
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
       limit: 50,
-      search: searchQuery,
+      search,
       onlyVerified: showUnverifiedAssets === false,
-      includePreview: showPreviewAssets,
-      sort: sortKey
-        ? {
-            keyPath: sortKey,
-            direction: sortDirection,
-          }
-        : undefined,
+      includePreview,
+      sort,
       categories,
     },
     {
@@ -125,10 +146,23 @@ export const AssetsInfoTable: FunctionComponent<{
       },
     }
   );
-  const assetsData = useMemo(
-    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [assetPagesData]
-  );
+  const assetsData = useMemo(() => {
+    const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
+    if (selectedCategory === "topGainers") {
+      return assets.slice(undefined, 10);
+    }
+    return assets;
+  }, [selectedCategory, assetPagesData]);
+  const clientCategoryImageSamples = useMemo(() => {
+    if (selectedCategory === "topGainers") {
+      const topGainers = assetsData.slice(undefined, 3);
+      return {
+        topGainers: topGainers
+          .map((asset) => asset.coinImageUrl)
+          .filter((url): url is string => !!url),
+      };
+    } else return { topGainers: [] };
+  }, [assetsData, selectedCategory]);
 
   // Define columns
   const columns = useMemo(() => {
@@ -290,8 +324,10 @@ export const AssetsInfoTable: FunctionComponent<{
       <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
+          hiddenCategories={useConst(["new", "topGainers"])}
           onSelectCategory={selectCategory}
           unselectCategory={unselectCategory}
+          clientCategoryImageSamples={clientCategoryImageSamples}
         />
       </section>
       <SearchBox
@@ -300,6 +336,7 @@ export const AssetsInfoTable: FunctionComponent<{
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
         debounce={500}
+        disabled={Boolean(selectedCategory)}
       />
       <table
         className={classNames(

@@ -1,13 +1,26 @@
-import { AssetCategories, Category, isAssetNew } from "@osmosis-labs/server";
+import {
+  AssetCategories as FixedAssetCategories,
+  isAssetNew,
+} from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
 
 import { Icon } from "./icon";
 
-const categoryAssetSampleImages = {
+// reconcile categories calculated on client and statically served from server (likely from asset list)
+const ClientSideCategories = ["topGainers"] as const;
+export const AssetCategories = [
+  ...ClientSideCategories,
+  ...FixedAssetCategories,
+] as const;
+type ClientSideCategory = (typeof ClientSideCategories)[number];
+/** Re-exported type that includes client-side dynamic categories. */
+export type Category = (typeof AssetCategories)[number];
+
+const staticCategoryAssetImageSamples = {
   new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
     if (
       asset.verified &&
@@ -44,15 +57,48 @@ const categoryAssetSampleImages = {
 
 export const AssetCategoriesSelectors: FunctionComponent<{
   selectedCategory?: Category;
+  /** Categories that can still be selected, but aren't available from this control. */
+  hiddenCategories?: Category[];
+  /** Client side categories need to be queried from client, so image sampled need to be provided. */
+  clientCategoryImageSamples?: { [category in ClientSideCategory]: string[] };
   onSelectCategory: (category: Category) => void;
   unselectCategory: () => void;
-}> = ({ selectedCategory, onSelectCategory, unselectCategory }) => {
+}> = ({
+  selectedCategory,
+  hiddenCategories,
+  clientCategoryImageSamples = {},
+  onSelectCategory,
+  unselectCategory,
+}) => {
   const { t } = useTranslation();
+
+  /** Static sample images combined with dynamic */
+  const categoryAssetSampleImages = useMemo(
+    () => ({
+      ...staticCategoryAssetImageSamples,
+      ...(clientCategoryImageSamples as { [category in Category]: string[] }),
+    }),
+    [clientCategoryImageSamples]
+  );
+
+  /** Selected moved to front of list of categories. */
+  const categories = useMemo(
+    () =>
+      selectedCategory
+        ? AssetCategories.slice().sort((a, b) =>
+            a === selectedCategory ? -1 : b === selectedCategory ? 1 : 0
+          )
+        : AssetCategories.slice(),
+    [selectedCategory]
+  );
 
   return (
     <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
-      {AssetCategories.map((category) => {
+      {categories.map((category) => {
+        const isSelected = selectedCategory === category;
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
+
+        if (hiddenCategories?.includes(category) && !isSelected) return null;
 
         return (
           <button
@@ -60,13 +106,12 @@ export const AssetCategoriesSelectors: FunctionComponent<{
             className={classNames(
               "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
               {
-                "border-osmoverse-800 bg-osmoverse-800":
-                  selectedCategory === category,
-                "border-osmoverse-700": selectedCategory !== category,
+                "border-osmoverse-800 bg-osmoverse-800": isSelected,
+                "border-osmoverse-700": !isSelected,
               }
             )}
             onClick={() => {
-              if (selectedCategory === category) {
+              if (isSelected) {
                 unselectCategory();
               } else {
                 onSelectCategory(category);
@@ -116,9 +161,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
-            {selectedCategory === category && (
-              <Icon id="x-circle" height={16} width={17} />
-            )}
+            {isSelected && <Icon id="x-circle" height={16} width={17} />}
           </button>
         );
       })}
