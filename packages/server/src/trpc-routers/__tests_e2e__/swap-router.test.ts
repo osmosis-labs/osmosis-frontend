@@ -13,6 +13,7 @@ import {
 } from "@osmosis-labs/utils";
 import { inferRouterInputs, inferRouterOutputs, initTRPC } from "@trpc/server";
 
+import { SIDECAR_BASE_URL } from "../../env";
 import {
   getCachedPoolMarketMetricsMap,
   getPoolsFromIndexer,
@@ -169,6 +170,11 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     tokenOutDenom: tokenOut.coinMinimalDenom,
     preferredRouter,
   });
+
+  // TODO: TEMP VALUE
+  if (SIDECAR_BASE_URL === "https://sqs.stage.osmosis.zone") {
+    throw new Error("This test is not valid for the stage environment");
+  }
 
   assertValidQuote({
     quote: reply,
