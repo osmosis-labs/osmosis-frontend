@@ -106,13 +106,8 @@ export const ExternalLinkModal: FunctionComponent<
           >
             {t("app.banner.backToOsmosis")}
           </Button>
-          <Button className="flex-1" onClick={modalBaseProps.onRequestClose}>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white"
-            >
+          <Button className="flex-1">
+            <a href={url} target="_blank" rel="noopener noreferrer">
               {t("app.banner.goToSite")}
             </a>
           </Button>
