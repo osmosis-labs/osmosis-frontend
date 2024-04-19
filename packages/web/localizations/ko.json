@@ -945,6 +945,10 @@
   },
   "transactions": {
     "noRecent": "최근 이적 없음",
-    "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다."
+    "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다.",
+    "noTransactions": "거래 없음",
+    "pastShownHere": "Osmosis에서의 과거 거래가 여기에 표시됩니다.",
+    "connectToSee": "거래 내역을 보려면 연결하세요.",
+    "connectWallet": "지갑 연결"
   }
 }

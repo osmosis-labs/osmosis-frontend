@@ -945,6 +945,10 @@
   },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",
-    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami)."
+    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami).",
+    "noTransactions": "Żadnych transakcji",
+    "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
+    "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
+    "connectWallet": "Podłącz portfel"
   }
 }

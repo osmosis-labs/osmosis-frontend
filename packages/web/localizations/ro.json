@@ -945,6 +945,10 @@
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",
-    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici.",
+    "noTransactions": "Fără tranzacții",
+    "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
+    "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
+    "connectWallet": "Conectați portofelul"
   }
 }

@@ -945,6 +945,10 @@
   },
   "transactions": {
     "noRecent": "最近の送金はありません",
-    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。"
+    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。",
+    "noTransactions": "取引なし",
+    "pastShownHere": "Osmosis での過去の取引がここに表示されます。",
+    "connectToSee": "取引履歴を表示するには接続してください",
+    "connectWallet": "ウォレットを接続する"
   }
 }

@@ -945,6 +945,10 @@
   },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",
-    "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui."
+    "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui.",
+    "noTransactions": "Nenhuma transação",
+    "pastShownHere": "Suas negociações anteriores no Osmosis aparecerão aqui.",
+    "connectToSee": "Conecte-se para ver seu histórico de transações",
+    "connectWallet": "Conectar carteira"
   }
 }
