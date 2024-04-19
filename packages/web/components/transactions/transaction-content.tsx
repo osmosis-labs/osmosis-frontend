@@ -1,4 +1,5 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
+import Link from "next/link";
 
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import {
@@ -12,11 +13,13 @@ export const TransactionContent = ({
   transactions,
   setOpen,
   open,
+  address,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
+  address: string;
 }) => {
   // TODO - add loading state
   if (!transactions) return null;
@@ -28,11 +31,25 @@ export const TransactionContent = ({
       <div className="flex w-full justify-between pt-8 pb-4">
         <h1 className="text-h3 font-h3">Transactions</h1>
         <div className="flex gap-3">
-          <Button variant="secondary" size="md">
-            Explorer &#x2197;
+          <Button variant="secondary" size="md" asChild>
+            <Link
+              passHref
+              href={`https://www.mintscan.io/osmosis/address/${address}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Explorer &#x2197;
+            </Link>
           </Button>
-          <Button variant="secondary" size="md">
-            Tax Reports &#x2197;
+          <Button variant="secondary" size="md" asChild>
+            <Link
+              passHref
+              href="https://stake.tax/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Tax Reports &#x2197;
+            </Link>
           </Button>
         </div>
       </div>
