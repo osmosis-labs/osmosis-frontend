@@ -1,6 +1,6 @@
 import { isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo, useRef } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
@@ -114,6 +114,8 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 }) => {
   const { t } = useTranslation();
 
+  const divRef = useRef<HTMLDivElement>(null);
+
   /** Static sample images combined with dynamic */
   const categoryAssetSampleImages: Record<string, string[]> = useMemo(
     () => ({
@@ -137,7 +139,10 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   );
 
   return (
-    <div className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3">
+    <div
+      ref={divRef}
+      className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3"
+    >
       {categories.map((category) => {
         const isSelected = selectedCategory === category;
         const sampleAssets = categoryAssetSampleImages[category] ?? [];
@@ -158,6 +163,9 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               if (isSelected) {
                 unselectCategory();
               } else {
+                if (divRef.current) {
+                  divRef.current.scrollLeft = 0;
+                }
                 onSelectCategory(category);
               }
             }}
