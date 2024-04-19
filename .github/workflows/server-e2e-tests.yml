@@ -63,13 +63,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 Front-End Server E2E Test Failure Alert 🚨",
+              "text": "🚨 Frontend Server E2E Tests Failure Alert 🚨",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Front-End Server E2E Test Failure"
+                    "text": "Frontend Server E2E Tests Failure"
                   }
                 },
                 {
