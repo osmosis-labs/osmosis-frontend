@@ -40,56 +40,56 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/milktia.svg",
     "/tokens/generated/statom.svg",
   ],
-  ai: [
-    "/tokens/generated/akt.svg",
-    "/tokens/generated/fet.svg",
-    "/tokens/generated/boot.svg",
-  ],
-  bridges: [
-    "/tokens/generated/axl.svg",
-    "/tokens/generated/w.png",
-    "/tokens/generated/pica.svg",
-  ],
-  dweb: [
-    "/tokens/generated/dvpn.svg",
-    "/tokens/generated/fil.svg",
-    "/tokens/generated/lore.svg",
-  ],
-  rwa: [
-    "/tokens/generated/hash.svg",
-    "/tokens/generated/cmdx.svg",
-    "/tokens/generated/regen.svg",
-  ],
+  // ai: [
+  //   "/tokens/generated/akt.svg",
+  //   "/tokens/generated/fet.svg",
+  //   "/tokens/generated/boot.svg",
+  // ],
+  // bridges: [
+  //   "/tokens/generated/axl.svg",
+  //   "/tokens/generated/w.png",
+  //   "/tokens/generated/pica.svg",
+  // ],
+  // dweb: [
+  //   "/tokens/generated/dvpn.svg",
+  //   "/tokens/generated/fil.svg",
+  //   "/tokens/generated/lore.svg",
+  // ],
+  // rwa: [
+  //   "/tokens/generated/hash.svg",
+  //   "/tokens/generated/cmdx.svg",
+  //   "/tokens/generated/regen.svg",
+  // ],
   gaming: [
     "/tokens/generated/saga.svg",
     "/tokens/generated/xpla.svg",
     "/tokens/generated/pasg.png",
   ],
-  oracles: [
-    "/tokens/generated/pyth.svg",
-    "/tokens/generated/link.svg",
-    "/tokens/generated/band.svg",
-  ],
-  social: [
-    "/tokens/generated/btsg.svg",
-    "/tokens/generated/like.svg",
-    "/tokens/generated/dsm.svg",
-  ],
+  // oracles: [
+  //   "/tokens/generated/pyth.svg",
+  //   "/tokens/generated/link.svg",
+  //   "/tokens/generated/band.svg",
+  // ],
+  // social: [
+  //   "/tokens/generated/btsg.svg",
+  //   "/tokens/generated/like.svg",
+  //   "/tokens/generated/dsm.svg",
+  // ],
   nft_protocol: [
     "/tokens/generated/stars.svg",
     "/tokens/generated/flix.svg",
     "/tokens/generated/mntl.svg",
   ],
-  privacy: [
-    "/tokens/generated/scrt.svg",
-    "/tokens/generated/nyx.png",
-    "/tokens/generated/dvpn.svg",
-  ],
-  built_on_osmosis: [
-    "/tokens/generated/lvn.svg",
-    "/tokens/generated/mars.svg",
-    "/tokens/generated/mbrn.svg",
-  ],
+  // privacy: [
+  //   "/tokens/generated/scrt.svg",
+  //   "/tokens/generated/nyx.png",
+  //   "/tokens/generated/dvpn.svg",
+  // ],
+  // built_on_osmosis: [
+  //   "/tokens/generated/lvn.svg",
+  //   "/tokens/generated/mars.svg",
+  //   "/tokens/generated/mbrn.svg",
+  // ],
   sail_initiative: [
     "/tokens/generated/lab.png",
     "/tokens/generated/sail.png",
