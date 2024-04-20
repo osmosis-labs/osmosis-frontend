@@ -10,16 +10,15 @@ import { Icon } from "~/components/assets";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
-  useDisclosure,
   useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
-import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { CreditCardIcon } from "../assets/credit-card-icon";
 import { Spinner } from "../loaders";
 import SkeletonLoader from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
@@ -146,8 +145,7 @@ const AssetsOverview: FunctionComponent<
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
-  const router = useRouter();
-  const { startBridge } = useBridge();
+  const { startBridge, fiatRampSelection } = useBridge();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize();
 
@@ -157,41 +155,42 @@ const AssetsOverview: FunctionComponent<
     <div className="flex w-full flex-col gap-4">
       {wallet && wallet.isWalletConnected && wallet.address ? (
         <>
-          {totalValue && totalValue.toDec().isZero() ? (
-            <UserZeroBalanceCta currencySymbol={totalValue.symbol} />
-          ) : (
-            <div className="flex flex-col gap-2">
-              <span className="body1 md:caption text-osmoverse-300">
-                {t("assets.totalBalance")}
-              </span>
-              <SkeletonLoader
-                className={classNames(isTotalValueFetched ? null : "h-14 w-48")}
-                isLoaded={isTotalValueFetched}
-              >
-                {isMobile ? (
-                  <h5>{totalValue?.toString()}</h5>
-                ) : (
-                  <h3>{totalValue?.toString()}</h3>
-                )}
-              </SkeletonLoader>
-            </div>
-          )}
+          <div className="flex flex-col gap-2">
+            <span className="body1 md:caption text-osmoverse-300">
+              {t("assets.totalBalance")}
+            </span>
+            <SkeletonLoader
+              className={classNames(isTotalValueFetched ? null : "h-14 w-48")}
+              isLoaded={isTotalValueFetched}
+            >
+              {isMobile ? (
+                <h5>{totalValue?.toString()}</h5>
+              ) : (
+                <h3>{totalValue?.toString()}</h3>
+              )}
+            </SkeletonLoader>
+          </div>
           <div className="flex items-center gap-3 py-3">
             <Button
               className="flex items-center gap-2 !rounded-full"
-              onClick={() => router.push("/")}
-            >
-              <Icon id="swap-horizontal" height={16} width={16} />
-              <span className="subtitle1">{t("portfolio.trade")}</span>
-            </Button>
-            <Button
-              className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
               onClick={() => startBridge("deposit")}
             >
               <Icon id="deposit" height={16} width={16} />
-              <span className="subtitle1">
-                {t("assets.table.depositButton")}
-              </span>
+              <div className="subtitle1">{t("assets.table.depositButton")}</div>
+            </Button>
+            <Button
+              className="group flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+              onClick={fiatRampSelection}
+            >
+              <CreditCardIcon
+                isAnimated
+                classes={{
+                  backCard: "group-hover:stroke-[2]",
+                  frontCard:
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                }}
+              />
+              <span className="subtitle1">{t("portfolio.buy")}</span>
             </Button>
             <Button
               className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
@@ -199,9 +198,9 @@ const AssetsOverview: FunctionComponent<
               disabled={totalValue && totalValue.toDec().isZero()}
             >
               <Icon id="withdraw" height={16} width={16} />
-              <span className="subtitle1">
+              <div className="subtitle1">
                 {t("assets.table.withdrawButton")}
-              </span>
+              </div>
             </Button>
           </div>
         </>
@@ -211,43 +210,6 @@ const AssetsOverview: FunctionComponent<
     </div>
   );
 });
-
-const UserZeroBalanceCta: FunctionComponent<{ currencySymbol: string }> = ({
-  currencySymbol,
-}) => {
-  const { t } = useTranslation();
-
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onClose: onCloseFiatOnrampSelection,
-    onOpen: onOpenFiatOnrampSelection,
-  } = useDisclosure();
-
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="subtitle1 text-osmoverse-300">
-        {t("assets.totalBalance")}
-      </span>
-      <h3 className="text-osmoverse-600">{currencySymbol}0.00</h3>
-      <Button
-        className="!w-fit"
-        onClick={() => {
-          onOpenFiatOnrampSelection();
-        }}
-        variant="link"
-        size="icon"
-      >
-        <h6 className="text-wosmongton-200">
-          {t("assets.getStarted.addFunds")}
-        </h6>
-      </Button>
-      <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
-      />
-    </div>
-  );
-};
 
 const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
   address,
@@ -313,7 +275,7 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
 
 const UserZeroBalanceTableSplash: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { startBridge } = useBridge();
+  const { startBridge, fiatRampSelection } = useBridge();
 
   return (
     <div className="mx-auto flex w-fit flex-col gap-4 py-3 text-center">
@@ -325,13 +287,28 @@ const UserZeroBalanceTableSplash: FunctionComponent = () => {
       />
       <h6>{t("portfolio.noAssets", { osmosis: "Osmosis" })}</h6>
       <p className="body1 text-osmoverse-300">{t("portfolio.getStarted")}</p>
-      <Button
-        className="mx-auto flex !w-fit items-center gap-2 !rounded-full"
-        onClick={() => startBridge("deposit")}
-      >
-        <Icon id="deposit" height={16} width={16} />
-        <span className="subtitle1">{t("assets.table.depositButton")}</span>
-      </Button>
+      <div className="flex items-center justify-center gap-2">
+        <Button
+          className="flex !w-fit items-center gap-2 !rounded-full"
+          onClick={() => startBridge("deposit")}
+        >
+          <Icon id="deposit" height={16} width={16} />
+          <span className="subtitle1">{t("assets.table.depositButton")}</span>
+        </Button>
+        <Button
+          className="group flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+          onClick={fiatRampSelection}
+        >
+          <CreditCardIcon
+            isAnimated
+            classes={{
+              backCard: "group-hover:stroke-[2]",
+              frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+            }}
+          />
+          <span className="subtitle1">{t("portfolio.buy")}</span>
+        </Button>
+      </div>
     </div>
   );
 };

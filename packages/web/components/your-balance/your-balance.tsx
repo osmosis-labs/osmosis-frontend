@@ -71,10 +71,13 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getUserMarketAsset.useQuery({
-      findMinDenomOrSymbol: denom,
-      userOsmoAddress: account?.address,
-    });
+    const { data } = api.edge.assets.getUserMarketAsset.useQuery(
+      {
+        findMinDenomOrSymbol: denom,
+        userOsmoAddress: account?.address,
+      },
+      { enabled: Boolean(account?.address) }
+    );
 
     const details = useMemo(() => {
       return tokenDetailsByLanguage

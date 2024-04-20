@@ -317,6 +317,7 @@
   },
   "portfolio": {
     "trade": "Troca",
+    "buy": "Comprar",
     "yourAssets": "Seus ativos",
     "yourPositions": "Suas posições",
     "recentTransfers": "Transferências recentes",

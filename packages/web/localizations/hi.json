@@ -317,6 +317,7 @@
   },
   "portfolio": {
     "trade": "व्यापार",
+    "buy": "खरीदना",
     "yourAssets": "आपकी संपत्ति",
     "yourPositions": "आपके पद",
     "recentTransfers": "हालिया स्थानांतरण",
