@@ -5,7 +5,10 @@ import {
   NegativeAmountError,
 } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { InsufficientBalanceError } from "@osmosis-labs/stores";
+import {
+  InsufficientBalanceError,
+  InsufficientBalanceForFeeError,
+} from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
@@ -70,8 +73,26 @@ export function useAmountInput({
     if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
   }, [isBalancesFetched, rawCurrencyBalance, currency]);
 
-  const isHalfSelected = useMemo(() => fraction === 0.5, [fraction]);
-  const isMaxSelected = useMemo(() => fraction === 1, [fraction]);
+  const balance = useMemo(
+    () =>
+      currency && rawCurrencyBalance
+        ? new CoinPretty(currency, rawCurrencyBalance)
+        : currency && balances // user has 0 balance
+        ? new CoinPretty(currency, 0)
+        : undefined,
+    [currency, balances, rawCurrencyBalance]
+  );
+
+  const maxAmount = useMemo(() => {
+    if (!currency) return;
+
+    let maxValue: CoinPretty | undefined = balance;
+    if (balance && gasAmount?.denom === currency?.coinDenom && gasAmount) {
+      maxValue = balance.sub(gasAmount);
+    }
+
+    return maxValue;
+  }, [balance, gasAmount, currency]);
 
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
@@ -83,33 +104,37 @@ export function useAmountInput({
               .mul(DecUtils.getTenExponentN(currency.coinDecimals))
               .truncate();
 
-      const shouldSubtractMaxWithFee =
-        isMaxSelected &&
-        gasAmount?.denom === currency?.coinDenom &&
-        !!gasAmount;
-
       if (fraction != null && rawCurrencyBalance) {
         amountInt = new Dec(rawCurrencyBalance)
           .mul(new Dec(fraction))
-          .sub(
-            shouldSubtractMaxWithFee
-              ? new Dec(gasAmount.toCoin().amount)
-              : new Dec(0)
-          )
           .truncate();
+      }
+
+      if (fraction === 1 && !isNil(maxAmount)) {
+        amountInt = new Int(maxAmount.toCoin().amount);
       }
 
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [
-    currency,
-    inputAmount,
-    isMaxSelected,
-    gasAmount,
-    fraction,
-    rawCurrencyBalance,
-  ]);
+  }, [currency, inputAmount, fraction, rawCurrencyBalance, maxAmount]);
+
+  const isHalfValue = useMemo(
+    () =>
+      fraction === 0.5 ||
+      (rawCurrencyBalance && amount
+        ? new Dec(amount.toCoin().amount).equals(
+            new Dec(rawCurrencyBalance).mul(new Dec(0.5))
+          )
+        : false),
+    [amount, fraction, rawCurrencyBalance]
+  );
+  const isMaxValue = useMemo(
+    () =>
+      fraction === 1 ||
+      (amount && maxAmount ? amount.toDec().equals(maxAmount.toDec()) : false),
+    [amount, fraction, maxAmount]
+  );
 
   const inputAmountWithFraction = useMemo(
     () =>
@@ -148,25 +173,23 @@ export function useAmountInput({
     [amount, price]
   );
 
-  const balance = useMemo(
-    () =>
-      currency && rawCurrencyBalance
-        ? new CoinPretty(currency, rawCurrencyBalance)
-        : currency && balances // user has 0 balance
-        ? new CoinPretty(currency, 0)
-        : undefined,
-    [currency, balances, rawCurrencyBalance]
-  );
-
   const error = useMemo(() => {
-    if (!amount) return new EmptyAmountError("Empty amount");
-    if (!isValidNumericalRawInput(inputAmount))
+    if (!amount) {
+      return new EmptyAmountError("Empty amount");
+    }
+    if (!isValidNumericalRawInput(inputAmount)) {
       return new InvalidNumberAmountError("Invalid number amount");
-    if (amount.toDec().isNegative())
+    }
+    if (amount.toDec().isNegative()) {
       return new NegativeAmountError("Negative amount");
-    if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec()))
+    }
+    if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec())) {
       return new InsufficientBalanceError("Insufficient balance");
-  }, [inputAmount, balance, isBalancesFetched, amount]);
+    }
+    if (!isNil(maxAmount) && amount.toDec().gt(maxAmount.toDec())) {
+      return new InsufficientBalanceForFeeError("Insufficient balance for fee");
+    }
+  }, [amount, inputAmount, isBalancesFetched, balance, maxAmount]);
 
   const reset = useCallback(() => {
     setAmount("");
@@ -190,8 +213,8 @@ export function useAmountInput({
     setAmount,
     reset,
     setFraction,
-    isHalfSelected,
-    isMaxSelected,
+    isHalfValue,
+    isMaxValue,
     toggleMax: useCallback(
       () => setFraction(fraction === 1 ? null : 1),
       [fraction]

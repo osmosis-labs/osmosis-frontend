@@ -101,6 +101,16 @@ describe("useAmountInput", () => {
       expect(result.current.inputAmount).toBe("");
     });
     expect(result.current.error).toEqual(new Error("Empty amount"));
+
+    act(() => {
+      result.current.setAmount("-10");
+    });
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
+    expect(result.current.error).toEqual(new Error("Empty amount"));
   });
 
   it("calculates max amount considering gas", async () => {
@@ -127,8 +137,39 @@ describe("useAmountInput", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isMaxSelected).toBe(true);
-      expect(result.current.isHalfSelected).toBe(false);
+      expect(result.current.fraction).toBe(1);
+      expect(result.current.isMaxValue).toBe(true);
+      expect(result.current.isHalfValue).toBe(false);
+      expect(result.current.inputAmount).toBe("999");
+    });
+
+    // if the user inputs the balance greater than the fee, he should see an error
+    act(() => {
+      result.current.setAmount("1000");
+    });
+
+    await waitFor(() => {
+      expect(result.current.fraction).toBe(null);
+      expect(result.current.isMaxValue).toBe(false);
+      expect(result.current.isHalfValue).toBe(false);
+      expect(result.current.inputAmount).toBe("1000");
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toEqual(
+        new Error("Insufficient balance for fee")
+      );
+    });
+
+    // If we set the amount to the max amount manually, isMaxValue should be true
+    act(() => {
+      result.current.setAmount("999");
+    });
+
+    await waitFor(() => {
+      expect(result.current.fraction).toBe(null);
+      expect(result.current.isMaxValue).toBe(true);
+      expect(result.current.isHalfValue).toBe(false);
       expect(result.current.inputAmount).toBe("999");
     });
   });
@@ -157,7 +198,7 @@ describe("useAmountInput", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isMaxSelected).toBe(true);
+      expect(result.current.isMaxValue).toBe(true);
       expect(result.current.inputAmount).toBe("1000");
     });
   });
@@ -186,10 +227,22 @@ describe("useAmountInput", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isMaxSelected).toBe(false);
-      expect(result.current.isHalfSelected).toBe(true);
+      expect(result.current.isMaxValue).toBe(false);
+      expect(result.current.isHalfValue).toBe(true);
 
       // Even though there's gas, half of the remaining balance should be calculated
+      expect(result.current.inputAmount).toBe("500");
+    });
+
+    // If we set the amount to the max amount manually, isHalfValue should be true
+    act(() => {
+      result.current.setAmount("500");
+    });
+
+    await waitFor(() => {
+      expect(result.current.fraction).toBe(null);
+      expect(result.current.isMaxValue).toBe(false);
+      expect(result.current.isHalfValue).toBe(true);
       expect(result.current.inputAmount).toBe("500");
     });
   });
