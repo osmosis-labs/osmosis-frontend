@@ -40,26 +40,26 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/milktia.svg",
     "/tokens/generated/statom.svg",
   ],
-  // ai: [
-  //   "/tokens/generated/akt.svg",
-  //   "/tokens/generated/fet.svg",
-  //   "/tokens/generated/boot.svg",
-  // ],
-  // bridges: [
-  //   "/tokens/generated/axl.svg",
-  //   "/tokens/generated/w.png",
-  //   "/tokens/generated/pica.svg",
-  // ],
-  // dweb: [
-  //   "/tokens/generated/dvpn.svg",
-  //   "/tokens/generated/fil.svg",
-  //   "/tokens/generated/lore.svg",
-  // ],
-  // rwa: [
-  //   "/tokens/generated/hash.svg",
-  //   "/tokens/generated/cmdx.svg",
-  //   "/tokens/generated/regen.svg",
-  // ],
+  ai: [
+    "/tokens/generated/akt.svg",
+    "/tokens/generated/fet.svg",
+    "/tokens/generated/boot.svg",
+  ],
+  bridges: [
+    "/tokens/generated/axl.svg",
+    "/tokens/generated/w.png",
+    "/tokens/generated/pica.svg",
+  ],
+  dweb: [
+    "/tokens/generated/dvpn.svg",
+    "/tokens/generated/fil.svg",
+    "/tokens/generated/lore.svg",
+  ],
+  rwa: [
+    "/tokens/generated/hash.svg",
+    "/tokens/generated/cmdx.svg",
+    "/tokens/generated/regen.svg",
+  ],
   gaming: [
     "/tokens/generated/saga.svg",
     "/tokens/generated/xpla.svg",
