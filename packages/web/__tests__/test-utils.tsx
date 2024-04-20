@@ -4,7 +4,7 @@ import { superjson } from "@osmosis-labs/server";
 import { AccountStore } from "@osmosis-labs/stores";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
 import { createTRPCReact, httpLink } from "@trpc/react-query";
 import { mockFlags } from "jest-launchdarkly-mock";
 import { when } from "mobx";

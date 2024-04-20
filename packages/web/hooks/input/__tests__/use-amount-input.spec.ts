@@ -113,6 +113,10 @@ describe("useAmountInput", () => {
       useAmountInput({ currency: osmoMockCurrency, gasAmount: mockGasAmount })
     );
 
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
     await connectTestWallet({
       accountStore: rootStore.accountStore,
       chainId: ChainList[0].chain_id,
@@ -124,6 +128,7 @@ describe("useAmountInput", () => {
 
     await waitFor(() => {
       expect(result.current.isMaxSelected).toBe(true);
+      expect(result.current.isHalfSelected).toBe(false);
       expect(result.current.inputAmount).toBe("999");
     });
   });
@@ -138,6 +143,10 @@ describe("useAmountInput", () => {
       useAmountInput({ currency: osmoMockCurrency, gasAmount: mockGasAmount })
     );
 
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
     await connectTestWallet({
       accountStore: rootStore.accountStore,
       chainId: ChainList[0].chain_id,
@@ -150,6 +159,140 @@ describe("useAmountInput", () => {
     await waitFor(() => {
       expect(result.current.isMaxSelected).toBe(true);
       expect(result.current.inputAmount).toBe("1000");
+    });
+  });
+
+  it("calculates half amount", async () => {
+    const mockGasAmount = new CoinPretty(
+      osmoMockCurrency,
+      new Dec(1).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+    ); // 1 OSMO for gas
+
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency, gasAmount: mockGasAmount })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
+    await connectTestWallet({
+      accountStore: rootStore.accountStore,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.toggleHalf();
+    });
+
+    await waitFor(() => {
+      expect(result.current.isMaxSelected).toBe(false);
+      expect(result.current.isHalfSelected).toBe(true);
+
+      // Even though there's gas, half of the remaining balance should be calculated
+      expect(result.current.inputAmount).toBe("500");
+    });
+  });
+
+  it("updates isTyping and debouncedInAmount correctly", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
+    act(() => {
+      result.current.setAmount("123");
+    });
+
+    await waitFor(() => {
+      expect(result.current.debouncedInAmount).toEqual(
+        new CoinPretty(
+          osmoMockCurrency,
+          new Dec(123).mul(
+            DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals)
+          )
+        )
+      );
+    });
+
+    act(() => {
+      result.current.setAmount("1234");
+    });
+
+    // Immediately after setting, isTyping should be true
+    await waitFor(() => {
+      expect(result.current.isTyping).toBe(true);
+    });
+
+    // Wait for the debounce to settle
+    await waitFor(() => {
+      expect(result.current.debouncedInAmount).toEqual(
+        new CoinPretty(
+          osmoMockCurrency,
+          new Dec(1234).mul(
+            DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals)
+          )
+        )
+      );
+    });
+
+    // After debounce, isTyping should be false
+    expect(result.current.isTyping).toBe(false);
+  });
+
+  it("calculates fiatValue and price correctly", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency })
+    );
+
+    act(() => {
+      result.current.setAmount("100");
+    });
+
+    await waitFor(() => {
+      expect(result.current.amount).toBeInstanceOf(CoinPretty);
+      expect(result.current.amount?.toDec().toString()).toEqual(
+        "100.000000000000000000"
+      );
+    });
+
+    // Assuming the price of OSMO is 1 in the default vs currency
+    await waitFor(() => {
+      expect(result.current.price?.toString()).toEqual("$1");
+    });
+    // Fiat value should be the amount (100 OSMO) times the price (1)
+    expect(result.current.fiatValue?.toString()).toEqual("$100");
+  });
+
+  it("resets input and fraction correctly", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency })
+    );
+
+    // Set some values first
+    act(() => {
+      result.current.setAmount("50");
+      result.current.setFraction(0.5);
+    });
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("50");
+      expect(result.current.fraction).toBe(0.5);
+    });
+
+    // Now reset
+    act(() => {
+      result.current.reset();
+    });
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+      expect(result.current.fraction).toBeNull();
+      expect(result.current.amount).toBeUndefined();
+      expect(result.current.debouncedInAmount).toBeNull();
     });
   });
 });
