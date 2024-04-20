@@ -85,14 +85,7 @@ export function mockFeatureFlags(
   return mockFlags(flags);
 }
 
-export async function initTestAccount(
-  accountStore: AccountStore<any>,
-  chainId: string
-) {
-  return accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
-}
-
-export async function waitTestAccountLoaded(
+async function waitTestAccountLoaded(
   account: ReturnType<AccountStore["getWallet"]>
 ) {
   if (!account) {
@@ -132,7 +125,7 @@ export async function connectTestWallet({
     new TestWallet(testWalletInfo)
   );
   await walletManager.onMounted();
-  await initTestAccount(accountStore, chainId);
+  await accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
   const account = accountStore.getWallet(chainId);
   await waitTestAccountLoaded(account);
 }
