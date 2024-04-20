@@ -44,7 +44,7 @@ export function useAmountInput({
   )?.amount;
   // manage amounts, with ability to set fraction of the amount
   // `inputAmount` is the raw string input that includes decimals
-  const [inputAmount, _setAmount] = useState("");
+  const [inputAmount, setAmount_] = useState("");
   const [fraction, setFraction] = useState<number | null>(null);
 
   const setAmount = useCallback(
@@ -59,10 +59,11 @@ export function useAmountInput({
         setFraction(null);
       }
 
-      _setAmount(amount);
+      setAmount_(amount);
     },
     [fraction]
   );
+
   // clear fraction when user changes currency
   // and user has no balance
   useEffect(() => {
@@ -201,7 +202,8 @@ export function useAmountInput({
     ),
   };
 }
-function isValidNumericalRawInput(input: string) {
+
+export function isValidNumericalRawInput(input: string) {
   const num = Number(input);
   return !isNaN(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
 }
