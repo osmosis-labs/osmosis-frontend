@@ -963,6 +963,10 @@
   },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",
-    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
+    "noTransactions": "İşlem yok",
+    "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
+    "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
+    "connectWallet": "Cüzdanı bağlayın"
   }
 }

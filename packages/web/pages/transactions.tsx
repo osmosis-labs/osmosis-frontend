@@ -31,6 +31,8 @@ const Transactions: React.FC = observer(() => {
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address || "";
 
+  const isWalletConnected = Boolean(account?.isWalletConnected);
+
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
@@ -40,7 +42,7 @@ const Transactions: React.FC = observer(() => {
         pageSize: EXAMPLE.PAGE_SIZE,
       },
       {
-        // enabled: !!address,
+        enabled: !!address,
       }
     );
 
@@ -85,18 +87,15 @@ const Transactions: React.FC = observer(() => {
 
   return (
     <main className="relative mx-16 flex gap-4">
-      {!isLoading && transactionData && (
-        // TODO - add loading state
-        <>
-          <TransactionContent
-            setSelectedTransaction={setSelectedTransaction}
-            transactions={transactionData}
-            setOpen={setOpen}
-            open={open}
-            address={address}
-          />
-        </>
-      )}
+      <TransactionContent
+        setSelectedTransaction={setSelectedTransaction}
+        transactions={transactionData}
+        setOpen={setOpen}
+        open={open}
+        address={address}
+        isLoading={isLoading}
+        isWalletConnected={isWalletConnected}
+      />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
           onRequestClose={() => setOpen(false)}

@@ -963,6 +963,10 @@
   },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",
-    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt."
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt.",
+    "noTransactions": "Keine Transaktionen",
+    "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
+    "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
+    "connectWallet": "Geldbörse verbinden"
   }
 }

@@ -963,6 +963,10 @@
   },
   "transactions": {
     "noRecent": "Aucun transfert récent",
-    "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici."
+    "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici.",
+    "noTransactions": "Aucune transaction",
+    "pastShownHere": "Vos transactions passées sur Osmosis apparaîtront ici.",
+    "connectToSee": "Connectez-vous pour voir l'historique de vos transactions",
+    "connectWallet": "Connecter le portefeuille"
   }
 }

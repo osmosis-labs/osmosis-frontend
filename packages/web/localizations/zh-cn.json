@@ -963,6 +963,10 @@
   },
   "transactions": {
     "noRecent": "最近没有转会",
-    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
+    "noTransactions": "没有交易",
+    "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
+    "connectToSee": "连接以查看您的交易历史记录",
+    "connectWallet": "连接钱包"
   }
 }
