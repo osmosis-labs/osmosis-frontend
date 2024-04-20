@@ -27,6 +27,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { ExternalLinkModal } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -78,6 +79,8 @@ export const AssetBalancesTable: FunctionComponent<{
     showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
   const { showPreviewAssets } = useShowPreviewAssets();
+
+  const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
   // Query
   const {
@@ -186,6 +189,7 @@ export const AssetBalancesTable: FunctionComponent<{
             {...cell.row.original}
             onDeposit={onDeposit}
             onWithdraw={onWithdraw}
+            onExternalTransferUrl={setExternalUrl}
           />
         ),
       }),
@@ -253,6 +257,12 @@ export const AssetBalancesTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <ExternalLinkModal
+        url={externalUrl ?? ""}
+        isOpen={Boolean(externalUrl)}
+        onRequestClose={() => setExternalUrl(null)}
+        forceShowAgain
+      />
       <SearchBox
         className="my-4"
         currentValue={searchQuery?.query ?? ""}
@@ -362,27 +372,59 @@ const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
 export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
-}> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
-  <div className="flex items-center gap-2 text-wosmongton-200">
-    <button
-      className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onDeposit(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="deposit" width={16} height={16} />
-    </button>
-    {amount?.toDec().isPositive() && (
-      <button
-        className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
-        onClick={(e) => {
-          e.preventDefault();
-          onWithdraw(coinMinimalDenom);
-        }}
-      >
-        <Icon className="m-auto" id="withdraw" width={16} height={16} />
-      </button>
-    )}
-  </div>
-);
+  onExternalTransferUrl: (url: string) => void;
+}> = ({
+  coinMinimalDenom,
+  amount,
+  transferMethods,
+  counterparty,
+  onDeposit,
+  onWithdraw,
+  onExternalTransferUrl,
+}) => {
+  // if it's the first transfer method it's considered the preferred method
+  const externalTransfer =
+    Boolean(transferMethods.length) &&
+    transferMethods[0].type === "external_interface"
+      ? transferMethods[0]
+      : undefined;
+
+  return (
+    <div className="flex items-center gap-2 text-wosmongton-200">
+      {Boolean(counterparty.length) && Boolean(transferMethods.length) && (
+        <button
+          className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+          onClick={(e) => {
+            e.preventDefault();
+
+            if (externalTransfer && externalTransfer.depositUrl) {
+              onExternalTransferUrl(externalTransfer.depositUrl);
+            } else {
+              onDeposit(coinMinimalDenom);
+            }
+          }}
+        >
+          <Icon className="m-auto" id="deposit" width={16} height={16} />
+        </button>
+      )}
+      {amount?.toDec().isPositive() &&
+        Boolean(counterparty.length) &&
+        Boolean(transferMethods.length) && (
+          <button
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            onClick={(e) => {
+              e.preventDefault();
+
+              if (externalTransfer && externalTransfer.withdrawUrl) {
+                onExternalTransferUrl(externalTransfer.withdrawUrl);
+              } else {
+                onWithdraw(coinMinimalDenom);
+              }
+            }}
+          >
+            <Icon className="m-auto" id="withdraw" width={16} height={16} />
+          </button>
+        )}
+    </div>
+  );
+};

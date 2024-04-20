@@ -128,7 +128,8 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       limit: 50,
       search,
-      onlyVerified: showUnverifiedAssets === false,
+      onlyVerified:
+        showUnverifiedAssets === false && !Boolean(selectedCategory),
       includePreview,
       sort,
       categories,

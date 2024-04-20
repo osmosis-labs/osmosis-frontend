@@ -29,7 +29,6 @@ const Transactions: React.FC = observer(() => {
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
-  // @ts-ignore - ignore unused address temporarily
   const address = account?.address || "";
 
   const isWalletConnected = Boolean(account?.isWalletConnected);

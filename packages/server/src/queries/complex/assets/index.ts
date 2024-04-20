@@ -157,6 +157,7 @@ function filterAssetList(
   return assetListAssets.map(makeMinimalAsset);
 }
 
+export * from "./bridge";
 export * from "./categories";
 export * from "./config";
 export * from "./market";

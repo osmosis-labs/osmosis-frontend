@@ -52,7 +52,7 @@ export const HistoricalPriceCell: FunctionComponent<{
           color={color}
         />
       ) : (
-        <div className="w-20" />
+        <div className="h-[3.125rem] w-20" />
       )}
       {priceChange24h && <PriceChange priceChange={priceChange24h} />}
     </div>

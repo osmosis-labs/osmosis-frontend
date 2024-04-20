@@ -28,7 +28,7 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix",
+    "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
     "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores",
     "postinstall": "yarn lint:workspace"
   },
