@@ -286,9 +286,7 @@
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
-    "getStarted": {
-      "addFunds": "Ajoutez des fonds pour commencer"
-    },
+    "getStarted": {},
     "categories": {
       "new": "Le plus récent",
       "defi": "DéFi",

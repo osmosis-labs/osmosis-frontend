@@ -286,9 +286,7 @@
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
-    "getStarted": {
-      "addFunds": "Adăugați fonduri pentru a începe"
-    },
+    "getStarted": {},
     "categories": {
       "new": "Cel mai nou",
       "defi": "DeFi",

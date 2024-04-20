@@ -286,9 +286,7 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {
-      "addFunds": "增加資金即可開始"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",

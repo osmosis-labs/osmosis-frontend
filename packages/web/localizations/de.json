@@ -286,9 +286,7 @@
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     },
-    "getStarted": {
-      "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
-    },
+    "getStarted": {},
     "categories": {
       "new": "Neueste",
       "defi": "DeFi",

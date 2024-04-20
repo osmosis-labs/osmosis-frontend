@@ -286,9 +286,7 @@
       "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
       "reminder": "您始终可以在设置模式中停用此设置。"
     },
-    "getStarted": {
-      "addFunds": "添加资金即可开始"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",

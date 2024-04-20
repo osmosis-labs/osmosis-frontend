@@ -286,9 +286,7 @@
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
-    "getStarted": {
-      "addFunds": "Başlamak için para ekleyin"
-    },
+    "getStarted": {},
     "categories": {
       "new": "En yeni",
       "defi": "DeFi",

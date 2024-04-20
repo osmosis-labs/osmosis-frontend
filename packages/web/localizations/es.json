@@ -286,9 +286,7 @@
       "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     },
-    "getStarted": {
-      "addFunds": "Agregue fondos para comenzar"
-    },
+    "getStarted": {},
     "categories": {
       "new": "El más nuevo",
       "defi": "DeFi",

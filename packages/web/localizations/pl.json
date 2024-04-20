@@ -286,9 +286,7 @@
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
-    "getStarted": {
-      "addFunds": "Dodaj środki, aby rozpocząć"
-    },
+    "getStarted": {},
     "categories": {
       "new": "Najnowsza",
       "defi": "DeFi",

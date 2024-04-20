@@ -286,9 +286,7 @@
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     },
-    "getStarted": {
-      "addFunds": "開始するには資金を追加してください"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "DeFi",
