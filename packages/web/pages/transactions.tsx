@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -20,7 +21,7 @@ const EXAMPLE = {
   PAGE_SIZE: 100,
 };
 
-const Transactions: React.FC = () => {
+const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
 
@@ -28,7 +29,6 @@ const Transactions: React.FC = () => {
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
-  // @ts-ignore - ignore unused address temporarily
   const address = account?.address || "";
 
   const { data: transactionData, isLoading } =
@@ -93,6 +93,7 @@ const Transactions: React.FC = () => {
             transactions={transactionData}
             setOpen={setOpen}
             open={open}
+            address={address}
           />
         </>
       )}
@@ -112,6 +113,6 @@ const Transactions: React.FC = () => {
       <BackToTopButton />
     </main>
   );
-};
+});
 
 export default Transactions;
