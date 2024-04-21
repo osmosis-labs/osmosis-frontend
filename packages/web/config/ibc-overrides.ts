@@ -374,8 +374,8 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "https://app.evmos.org/assets",
   },
   BONK: {
-    depositUrlOverride: "https://portalbridge.com/cosmos/",
-    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+    depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=BONK",
+    withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=BONK",
   },
   SWTH: {
     depositUrlOverride:
