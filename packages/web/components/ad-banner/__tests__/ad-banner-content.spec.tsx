@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 
+import { renderWithProviders } from "~/__tests__/test-utils";
 import { SwapAdBannerResponse } from "~/pages";
-import { renderWithProviders } from "~/tests/test-utils";
 
 import { AdBannerContent } from "../ad-banner";
 

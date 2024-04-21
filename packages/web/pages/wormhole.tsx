@@ -68,12 +68,6 @@ const Wormhole: FunctionComponent = () => {
   const toNetwork = router.query.to as string;
   const token = router.query.token as string;
 
-  console.log("log: ", {
-    fromNetwork,
-    toNetwork,
-    token,
-  });
-
   let config: WormholeConnectConfig = {
     networks: ["solana", "osmosis", "sui", "aptos"],
     rpcs: {

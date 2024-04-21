@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
-import { AssetCategories, isAssetInCategories } from "./categories";
+import { isAssetInCategories } from "./categories";
 
 /** An asset with minimal data that conforms to `Currency` type. */
 export type Asset = {
@@ -23,7 +23,7 @@ export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
   onlyVerified: z.boolean().default(false).optional(),
   includePreview: z.boolean().default(false).optional(),
-  categories: z.array(z.enum(AssetCategories)).optional(),
+  categories: z.array(z.string()).optional(),
 });
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
@@ -157,6 +157,7 @@ function filterAssetList(
   return assetListAssets.map(makeMinimalAsset);
 }
 
+export * from "./bridge";
 export * from "./categories";
 export * from "./config";
 export * from "./market";

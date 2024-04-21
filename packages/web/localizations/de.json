@@ -145,7 +145,13 @@
       "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
-      "title": "Übertragungsverlauf"
+      "title": "Übertragungsverlauf",
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "pendingWithdraw": "Ausstehender Auszug",
+      "successDeposit": "Hinterlegt",
+      "successWithdraw": "Zurückgezogen",
+      "failDeposit": "Einzahlung fehlgeschlagen",
+      "failWithdraw": "Auszahlung fehlgeschlagen"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",
@@ -200,7 +206,12 @@
       },
       "title": "Alle Vermögenswerte",
       "withdrawButton": "Zurückziehen",
-      "activate": "aktivieren Sie"
+      "activate": "aktivieren Sie",
+      "marketCap": "Marktkapitalisierung",
+      "volume24h": "Volumen",
+      "priceChange24h": "24h Wechsel",
+      "price": "Preis",
+      "name": "Name"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -284,7 +295,25 @@
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",
-      "liquid_staking": "Flüssiges Abstecken"
+      "liquid_staking": "Flüssiges Abstecken",
+      "built_on_osmosis": "Auf Osmose aufgebaut",
+      "sail_initiative": "Sail Initiative",
+      "bridges": "Brücken",
+      "nft_protocol": "NFT-Protokoll",
+      "ai": "KI",
+      "privacy": "Privatsphäre",
+      "social": "Sozial",
+      "oracles": "Orakel",
+      "dweb": "Dezentrales Web",
+      "rwa": "Ausgabe realer Vermögenswerte",
+      "gaming": "Spiele",
+      "topGainers": "Top-Gewinner"
+    },
+    "seeAll": "Alles sehen",
+    "highlights": {
+      "new": "Neu",
+      "topGainers": "Top-Gewinner",
+      "upcoming": "Bevorstehende"
     }
   },
   "portfolio": {
@@ -414,7 +443,9 @@
     "marsSubtext": "Angetrieben vom Mars",
     "levanaSubtext": "Unterstützt von Levana",
     "more": "Mehr",
-    "new": "NEU"
+    "new": "NEU",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",
@@ -692,6 +723,8 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
+    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
+    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
@@ -719,6 +752,7 @@
     "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
+    "gettingStarted": "Erste Schritte",
     "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",
     "somethingWentWrong": "Etwas ist schief gelaufen",
     "isNotInstalled": "{walletName} ist nicht installiert",
@@ -911,6 +945,12 @@
       "risk": {
         "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
       }
+    },
+    "riskLabels": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "veryHigh": "Sehr hoch"
     }
   },
   "disclaimer": "Haftungsausschluss",
@@ -920,5 +960,13 @@
     "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
     "buttonContinue": "Mache trotzdem weiter",
     "buttonCancel": "Stornieren"
+  },
+  "transactions": {
+    "noRecent": "Keine aktuellen Transfers",
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt.",
+    "noTransactions": "Keine Transaktionen",
+    "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
+    "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
+    "connectWallet": "Geldbörse verbinden"
   }
 }

@@ -4,3 +4,4 @@ export * from "./earn-router";
 export * from "./pools-router";
 export * from "./staking-router";
 export * from "./swap-router";
+export * from "./transactions-router";

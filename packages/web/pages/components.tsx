@@ -302,8 +302,8 @@ const RadiosWithOptions = () => {
     <FilterProvider
       defaultFilters={{
         tokenHolder: "all",
-        strategyMethod: { label: "All", value: "" },
-        platform: { label: "All", value: "" },
+        strategyMethod: [{ label: "All", value: "" }],
+        platform: [{ label: "All", value: "" }],
         lockDurationType: "all",
         search: "",
         specialTokens: [],

@@ -27,6 +27,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { ExternalLinkModal } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -79,6 +80,8 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const { showPreviewAssets } = useShowPreviewAssets();
 
+  const [externalUrl, setExternalUrl] = useState<string | null>(null);
+
   // Query
   const {
     data: assetPagesData,
@@ -126,7 +129,13 @@ export const AssetBalancesTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: "Name",
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        cell: (cell) => (
+          <AssetCell
+            coinName={cell.row.original.coinName}
+            coinImageUrl={cell.row.original.coinImageUrl}
+            isVerified={cell.row.original.isVerified}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
@@ -180,6 +189,7 @@ export const AssetBalancesTable: FunctionComponent<{
             {...cell.row.original}
             onDeposit={onDeposit}
             onWithdraw={onWithdraw}
+            onExternalTransferUrl={setExternalUrl}
           />
         ),
       }),
@@ -247,6 +257,12 @@ export const AssetBalancesTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <ExternalLinkModal
+        url={externalUrl ?? ""}
+        isOpen={Boolean(externalUrl)}
+        onRequestClose={() => setExternalUrl(null)}
+        forceShowAgain
+      />
       <SearchBox
         className="my-4"
         currentValue={searchQuery?.query ?? ""}
@@ -291,34 +307,37 @@ export const AssetBalancesTable: FunctionComponent<{
               </td>
             </tr>
           )}
-          {virtualRows.map((virtualRow) => (
-            <tr
-              className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-              key={rows[virtualRow.index].id}
-              onClick={() =>
-                router.push(
-                  `/assets/${rows[virtualRow.index].original.coinDenom}`
-                )
-              }
-            >
-              {rows[virtualRow.index].getVisibleCells().map((cell) => (
-                <td
-                  className="transition-colors duration-200 ease-in-out"
-                  key={cell.id}
-                >
-                  <Link
-                    href={`/assets/${
-                      rows[virtualRow.index].original.coinDenom
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                    passHref
+          {virtualRows.map((virtualRow) => {
+            const pushUrl = `/assets/${
+              rows[virtualRow.index].original.coinDenom
+            }?ref=portfolio`;
+
+            return (
+              <tr
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                key={rows[virtualRow.index].id}
+                onClick={() => router.push(pushUrl)}
+              >
+                {rows[virtualRow.index].getVisibleCells().map((cell) => (
+                  <td
+                    className="transition-colors duration-200 ease-in-out"
+                    key={cell.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Link>
-                </td>
-              ))}
-            </tr>
-          ))}
+                    <Link
+                      href={pushUrl}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
           {isFetchingNextPage && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -342,40 +361,70 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 >;
 
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
-  <div className="ml-auto flex w-28 flex-col">
-    <span>
-      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
-    </span>
-    {usdValue && (
-      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
-    )}
+  <div className="ml-auto flex flex-col">
+    {usdValue && <div>{usdValue.toString()}</div>}
+    <div className="caption whitespace-nowrap text-osmoverse-300">
+      {amount ? formatPretty(amount, { maxDecimals: 8 }) : "0"}
+    </div>
   </div>
 );
 
 export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
-}> = ({ coinMinimalDenom, amount, onDeposit, onWithdraw }) => (
-  <div className="flex items-center gap-2 text-wosmongton-200">
-    <button
-      className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
-      onClick={(e) => {
-        e.preventDefault();
-        onDeposit(coinMinimalDenom);
-      }}
-    >
-      <Icon className="m-auto" id="deposit" width={16} height={16} />
-    </button>
-    {amount?.toDec().isPositive() && (
-      <button
-        className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
-        onClick={(e) => {
-          e.preventDefault();
-          onWithdraw(coinMinimalDenom);
-        }}
-      >
-        <Icon className="m-auto" id="withdraw" width={16} height={16} />
-      </button>
-    )}
-  </div>
-);
+  onExternalTransferUrl: (url: string) => void;
+}> = ({
+  coinMinimalDenom,
+  amount,
+  transferMethods,
+  counterparty,
+  onDeposit,
+  onWithdraw,
+  onExternalTransferUrl,
+}) => {
+  // if it's the first transfer method it's considered the preferred method
+  const externalTransfer =
+    Boolean(transferMethods.length) &&
+    transferMethods[0].type === "external_interface"
+      ? transferMethods[0]
+      : undefined;
+
+  return (
+    <div className="flex items-center gap-2 text-wosmongton-200">
+      {Boolean(counterparty.length) && Boolean(transferMethods.length) && (
+        <button
+          className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+          onClick={(e) => {
+            e.preventDefault();
+
+            if (externalTransfer && externalTransfer.depositUrl) {
+              onExternalTransferUrl(externalTransfer.depositUrl);
+            } else {
+              onDeposit(coinMinimalDenom);
+            }
+          }}
+        >
+          <Icon className="m-auto" id="deposit" width={16} height={16} />
+        </button>
+      )}
+      {amount?.toDec().isPositive() &&
+        Boolean(counterparty.length) &&
+        Boolean(transferMethods.length) && (
+          <button
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            onClick={(e) => {
+              e.preventDefault();
+
+              if (externalTransfer && externalTransfer.withdrawUrl) {
+                onExternalTransferUrl(externalTransfer.withdrawUrl);
+              } else {
+                onWithdraw(coinMinimalDenom);
+              }
+            }}
+          >
+            <Icon className="m-auto" id="withdraw" width={16} height={16} />
+          </button>
+        )}
+    </div>
+  );
+};

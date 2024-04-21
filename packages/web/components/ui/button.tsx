@@ -15,6 +15,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
+import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -56,15 +57,51 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
+  classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
+}
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      isLoading,
+      loadingText,
+      classes,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={classNames(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+        disabled={isLoading || props.disabled}
+      >
+        {isLoading ? (
+          <div
+            className={classNames(
+              "flex items-center gap-2",
+              classes?.spinnerContainer
+            )}
+          >
+            <Spinner className={classes?.spinner} />
+            {loadingText && <span>{loadingText}</span>}
+          </div>
+        ) : (
+          props.children
+        )}
+      </Comp>
     );
   }
 );

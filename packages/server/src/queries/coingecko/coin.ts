@@ -77,6 +77,7 @@ export interface CoingeckoCoin {
   sentiment_votes_up_percentage: number;
   sentiment_votes_down_percentage: number;
   watchlist_portfolio_users: number;
+  market_cap: number;
   market_cap_rank: number;
   coingecko_rank: number;
   coingecko_score: number;
