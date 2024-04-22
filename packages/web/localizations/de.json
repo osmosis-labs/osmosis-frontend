@@ -286,7 +286,6 @@
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     },
-    "getStarted": {},
     "categories": {
       "new": "Neueste",
       "defi": "DeFi",
@@ -603,7 +602,8 @@
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
-    "wallet": "Geldbörse"
+    "wallet": "Geldbörse",
+    "transactions": "Transaktionen"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",

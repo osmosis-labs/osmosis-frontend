@@ -273,7 +273,7 @@ export const ProfileModal: FunctionComponent<
                 </div>
                 <Icon
                   id="chevron-right"
-                  className="h-5 w-5 text-osmoverse-300"
+                  className="h-5 w-5 text-osmoverse-500"
                 />
               </div>
             </Link>

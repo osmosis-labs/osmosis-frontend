@@ -286,7 +286,6 @@
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
-    "getStarted": {},
     "categories": {
       "new": "Najnowsza",
       "defi": "DeFi",
@@ -603,7 +602,8 @@
     "balance": "Balansować",
     "modalTitle": "Profil",
     "viewAllAssets": "Ver todos os recursos",
-    "wallet": "Portfel"
+    "wallet": "Portfel",
+    "transactions": "Transakcje"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",

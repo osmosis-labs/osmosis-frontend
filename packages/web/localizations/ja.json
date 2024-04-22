@@ -286,7 +286,6 @@
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     },
-    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "DeFi",
@@ -603,7 +602,8 @@
     "balance": "バランス",
     "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
-    "wallet": "財布"
+    "wallet": "財布",
+    "transactions": "取引"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",

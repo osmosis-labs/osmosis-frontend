@@ -286,7 +286,6 @@
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
-    "getStarted": {},
     "categories": {
       "new": "Cel mai nou",
       "defi": "DeFi",
@@ -603,7 +602,8 @@
     "balance": "Balanta",
     "modalTitle": "Profil",
     "viewAllAssets": "Vedeți toate activele",
-    "wallet": "Portofel"
+    "wallet": "Portofel",
+    "transactions": "Tranzacții"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
