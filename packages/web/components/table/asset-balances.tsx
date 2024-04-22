@@ -74,6 +74,7 @@ export const AssetBalancesTable: FunctionComponent<{
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const sort = useMemo(
     () =>
+      // disable sorting while searching on client to remove sort UI while searching
       !Boolean(searchQuery)
         ? {
             keyPath: sortKey,
