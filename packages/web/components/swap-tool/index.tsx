@@ -456,7 +456,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       size="sm"
                       className={classNames(
                         "text-wosmongton-300",
-                        swapState.inAmountInput.isMaxValue
+                        swapState.inAmountInput.isMaxValue &&
+                          !swapState.inAmountInput
+                            .isLoadingCurrentBalanceNetworkFee &&
+                          !swapState.inAmountInput
+                            .hasErrorWithCurrentBalanceQuote
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
                       )}
