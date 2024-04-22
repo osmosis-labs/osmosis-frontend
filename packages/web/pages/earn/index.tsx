@@ -72,8 +72,18 @@ function Earn() {
   const defaultFilters: Filters = useMemo(
     () => ({
       tokenHolder: isWalletConnected && holdenDenoms?.length ? "my" : "all",
-      strategyMethod: [],
-      platform: [],
+      strategyMethod: [
+        { label: "Staking", value: "Staking" },
+        { label: "LP (Vault)", value: "LP (Vault)" },
+        { label: "Perps LP", value: "Perps LP" },
+        { label: "Lending", value: "Lending" },
+      ],
+      platform: [
+        { label: "Osmosis", value: "Osmosis" },
+        { label: "Quasar", value: "Quasar" },
+        { label: "Levana", value: "Levana" },
+        { label: "Mars", value: "Mars" },
+      ],
       lockDurationType: "all",
       search: "",
       specialTokens: [],

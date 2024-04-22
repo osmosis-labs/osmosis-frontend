@@ -38,8 +38,10 @@ export const DropdownWithLabel = <T,>({
             )}
           >
             <span className="max-w-[100px] truncate font-subtitle1 leading-6 sm:max-w-none">
-              {value && value.length === 0 && allLabel}
-              {value && value.map(({ label }) => label).join(", ")}
+              {value && value.length === options.length && allLabel}
+              {value &&
+                value.length < options.length &&
+                value.map(({ label }) => label).join(", ")}
             </span>
             <Icon id="caret-down" />
           </Listbox.Button>
