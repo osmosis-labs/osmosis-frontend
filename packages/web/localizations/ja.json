@@ -211,7 +211,8 @@
       "volume24h": "音量",
       "priceChange24h": "24時間の変更",
       "price": "価格",
-      "name": "名前"
+      "name": "名前",
+      "balance": "バランス"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
@@ -285,17 +286,25 @@
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     },
-    "getStarted": {
-      "title": "{osmosis}を使ってみましょう",
-      "description": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
-      "addFunds": "開始するには資金を追加してください"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
-      "liquid_staking": "リキッドステーキング"
+      "liquid_staking": "リキッドステーキング",
+      "built_on_osmosis": "浸透に基づいて構築",
+      "sail_initiative": "セイルイニシアチブ",
+      "bridges": "橋",
+      "nft_protocol": "NFT プロトコル",
+      "ai": "人工知能",
+      "privacy": "プライバシー",
+      "social": "社交",
+      "oracles": "オラクル",
+      "dweb": "分散型ウェブ",
+      "rwa": "現実世界の資産発行",
+      "gaming": "ゲーム",
+      "topGainers": "上位の利益"
     },
     "seeAll": "すべてを見る",
     "highlights": {
@@ -306,11 +315,17 @@
   },
   "portfolio": {
     "trade": "貿易",
+    "buy": "買う",
     "yourAssets": "あなたの資産",
     "yourPositions": "あなたの立場",
     "recentTransfers": "最近の送金",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
-    "yourLiquidityPools": "流動性プール"
+    "yourLiquidityPools": "流動性プール",
+    "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
+    "noAssets": "{osmosis}に残高がありません",
+    "getStarted": "始めるには資産を預けてください",
+    "noPositions": "ポジションがありません",
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
   },
   "buyTokens": "トークンを購入する",
   "components": {
@@ -605,6 +620,10 @@
     "titleLanguage": "言語",
     "titleHideBalances": "プライバシーを考慮したマスクバランス",
     "hideBalances": "マスクされた残高"
+  },
+  "search": {
+    "noResultsFor": "「 {query}に該当する結果はありません",
+    "adjust": "検索クエリを調整してみてください"
   },
   "stake": {
     "available": "利用可能",
@@ -933,6 +952,12 @@
       "risk": {
         "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
       }
+    },
+    "riskLabels": {
+      "low": "低い",
+      "medium": "中くらい",
+      "high": "高い",
+      "veryHigh": "すごく高い"
     }
   },
   "disclaimer": "免責事項",
@@ -945,6 +970,10 @@
   },
   "transactions": {
     "noRecent": "最近の送金はありません",
-    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。"
+    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。",
+    "noTransactions": "取引なし",
+    "pastShownHere": "Osmosis での過去の取引がここに表示されます。",
+    "connectToSee": "取引履歴を表示するには接続してください",
+    "connectWallet": "ウォレットを接続する"
   }
 }

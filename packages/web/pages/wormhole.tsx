@@ -69,13 +69,82 @@ const Wormhole: FunctionComponent = () => {
   const token = router.query.token as string;
 
   let config: WormholeConnectConfig = {
-    networks: ["solana", "osmosis"],
+    networks: ["solana", "osmosis", "sui", "aptos"],
     rpcs: {
       solana:
         "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
       wormchain: "https://tncnt-eu-wormchain-main-01.rpc.p2p.world/",
     },
     tokensConfig: {
+      BONK: {
+        key: "BONK",
+        symbol: "BONK",
+        nativeChain: "solana",
+        tokenId: {
+          chain: "solana",
+          address: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+        },
+        icon: "https://assets.coingecko.com/coins/images/28600/standard/bonk.jpg",
+        coinGeckoId: "bonk",
+        color: "#FC8E03",
+        decimals: {
+          default: 5,
+        },
+        foreignAssets: {
+          ethereum: {
+            address: "0x1151CB3d861920e07a38e03eEAd12C32178567F6",
+            decimals: 5,
+          },
+          bsc: {
+            address: "0xA697e272a73744b343528C3Bc4702F2565b2F422",
+            decimals: 5,
+          },
+          polygon: {
+            address: "0xe5B49820e5A1063F6F4DdF851327b5E8B2301048",
+            decimals: 5,
+          },
+          avalanche: {
+            address: "0xC07C98a93591504584738e4569928DDb3b9f12A7",
+            decimals: 5,
+          },
+          sui: {
+            address:
+              "0x6907963ca849faff0957b9a8269a7a07065e3def2eef49cc33b50ab946ea5a9f::coin::COIN",
+            decimals: 5,
+          },
+          aptos: {
+            address:
+              "0x2a90fae71afc7460ee42b20ee49a9c9b29272905ad71fef92fbd8b3905a24b56::coin::T",
+            decimals: 5,
+          },
+          arbitrum: {
+            address: "0x09199d9A5F4448D0848e4395D065e1ad9c4a1F74",
+            decimals: 5,
+          },
+          wormchain: {
+            address:
+              "wormhole10qt8wg0n7z740ssvf3urmvgtjhxpyp74hxqvqt7z226gykuus7eq9mpu8u",
+            decimals: 5,
+          },
+          osmosis: {
+            address:
+              "ibc/CA3733CB0071F480FAE8EF0D9C3D47A49C6589144620A642BBE0D59A293D110E",
+            decimals: 5,
+          },
+          fantom: {
+            address: "0x3fEcdF1248fe7642d29f879a75CFC0339659ab93",
+            decimals: 5,
+          },
+          base: {
+            address: "0xDF1Cf211D38E7762c9691Be4D779A441a17A6cFC",
+            decimals: 5,
+          },
+          celo: {
+            address: "0x3fc50bc066aE2ee280876EeefADfdAbF6cA02894",
+            decimals: 5,
+          },
+        },
+      },
       W: {
         key: "W",
         symbol: "W",
@@ -99,7 +168,7 @@ const Wormhole: FunctionComponent = () => {
         },
       },
     },
-    tokens: ["W", "SOL", "PYTH"],
+    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT", "WSOL"],
   };
 
   let bridgeDefaults = {

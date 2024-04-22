@@ -211,7 +211,8 @@
       "volume24h": "Hacim",
       "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim"
+      "name": "İsim",
+      "balance": "Denge"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -285,17 +286,25 @@
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
-    "getStarted": {
-      "title": "{osmosis} ile başlayın",
-      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
-      "addFunds": "Başlamak için para ekleyin"
-    },
+    "getStarted": {},
     "categories": {
       "new": "En yeni",
       "defi": "DeFi",
       "stablecoin": "Stablecoin'ler",
       "meme": "meme",
-      "liquid_staking": "Sıvı esnetme"
+      "liquid_staking": "Sıvı esnetme",
+      "built_on_osmosis": "Osmoz üzerine inşa edilmiştir",
+      "sail_initiative": "Yelken Girişimi",
+      "bridges": "Köprüler",
+      "nft_protocol": "NFT Protokolü",
+      "ai": "yapay zeka",
+      "privacy": "Mahremiyet",
+      "social": "Sosyal",
+      "oracles": "Kahinler",
+      "dweb": "Merkezi Olmayan Web",
+      "rwa": "Gerçek Dünya Varlık İhracı",
+      "gaming": "Oyun",
+      "topGainers": "En çok kazananlar"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
@@ -306,11 +315,17 @@
   },
   "portfolio": {
     "trade": "Ticaret",
+    "buy": "Satın almak",
     "yourAssets": "Varlıklarınız",
     "yourPositions": "Pozisyonlarınız",
     "recentTransfers": "Son transferler",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
-    "yourLiquidityPools": "Likidite havuzlarınız"
+    "yourLiquidityPools": "Likidite havuzlarınız",
+    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
+    "noAssets": "{osmosis} üzerinde bakiyeniz yok",
+    "getStarted": "Başlamak için varlık yatırın",
+    "noPositions": "Hiç pozisyonunuz yok",
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -605,6 +620,10 @@
     "titleLanguage": "Dil",
     "titleHideBalances": "Gizlilik için maske dengeleri",
     "hideBalances": "Maskeli Bakiyeler"
+  },
+  "search": {
+    "noResultsFor": "\" {query} \" için sonuç yok",
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
   },
   "stake": {
     "available": "Mevcut",
@@ -933,6 +952,12 @@
       "risk": {
         "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
       }
+    },
+    "riskLabels": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "veryHigh": "Çok yüksek"
     }
   },
   "disclaimer": "Sorumluluk reddi beyanı",
@@ -945,6 +970,10 @@
   },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",
-    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
+    "noTransactions": "İşlem yok",
+    "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
+    "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
+    "connectWallet": "Cüzdanı bağlayın"
   }
 }

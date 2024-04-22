@@ -91,7 +91,7 @@
     "@walletconnect/sign-client": "2.11.3",
     "@walletconnect/types": "2.11.3",
     "@walletconnect/utils": "2.11.3",
-    "@wormhole-foundation/wormhole-connect": "^0.3.2",
+    "@wormhole-foundation/wormhole-connect": "^0.3.4",
     "axios": "^0.27.2",
     "bip39-light": "^1.0.7",
     "bitcoin-address-validation": "^2.2.3",
@@ -175,7 +175,6 @@
     "ts-jest": "^29.1.0",
     "tsconfig-paths": "^4.2.0",
     "use-debugger-hooks": "^1.3.0",
-    "@playwright/test": "^1.41.0",
     "fake-indexeddb": "5.0.2",
     "next-router-mock": "0.9.13"
   }

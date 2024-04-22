@@ -211,7 +211,8 @@
       "volume24h": "體積",
       "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名"
+      "name": "姓名",
+      "balance": "平衡"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -285,17 +286,25 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {
-      "title": "開始使用{osmosis}",
-      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
-      "addFunds": "增加資金即可開始"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
       "stablecoin": "穩定幣",
       "meme": "迷因",
-      "liquid_staking": "流動質押"
+      "liquid_staking": "流動質押",
+      "built_on_osmosis": "建立在滲透基礎上",
+      "sail_initiative": "揚帆倡議",
+      "bridges": "橋樑",
+      "nft_protocol": "NFT協議",
+      "ai": "人工智慧",
+      "privacy": "隱私",
+      "social": "社會的",
+      "oracles": "神諭者",
+      "dweb": "去中心化網絡",
+      "rwa": "現實世界的資產發行",
+      "gaming": "賭博",
+      "topGainers": "漲幅居前者"
     },
     "seeAll": "看全部",
     "highlights": {
@@ -306,11 +315,17 @@
   },
   "portfolio": {
     "trade": "交易",
+    "buy": "買",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會",
     "yourSuperchargedPositions": "您的超級職位",
-    "yourLiquidityPools": "您的流動資金池"
+    "yourLiquidityPools": "您的流動資金池",
+    "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。",
+    "noAssets": "您{osmosis}沒有餘額",
+    "getStarted": "存入資產即可開始",
+    "noPositions": "您沒有職位",
+    "unlockPotential": "釋放您的全部盈利潛力，並將您的資產與流動性池結合起來"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -605,6 +620,10 @@
     "titleLanguage": "語言",
     "titleHideBalances": "屏蔽餘額以保護隱私",
     "hideBalances": "隱藏餘額"
+  },
+  "search": {
+    "noResultsFor": "“ {query} ”沒有結果",
+    "adjust": "嘗試調整您的搜尋查詢"
   },
   "stake": {
     "available": "可用的",
@@ -933,6 +952,12 @@
       "risk": {
         "description": "風險評估涉及考慮與策略及其基礎資產相關的標準組合。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免責聲明",
@@ -945,6 +970,10 @@
   },
   "transactions": {
     "noRecent": "最近沒有轉帳",
-    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。"
+    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。",
+    "noTransactions": "沒有交易",
+    "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
+    "connectToSee": "連接以查看您的交易記錄",
+    "connectWallet": "連接錢包"
   }
 }
