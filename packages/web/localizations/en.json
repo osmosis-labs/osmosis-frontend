@@ -603,7 +603,8 @@
     "balance": "Balance",
     "modalTitle": "Profile",
     "viewAllAssets": "View all assets",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "transactions": "Transactions"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",

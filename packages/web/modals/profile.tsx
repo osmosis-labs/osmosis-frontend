@@ -196,73 +196,88 @@ export const ProfileModal: FunctionComponent<
           </p>
         </div>
 
-        <div className="mt-7 flex w-full justify-between rounded-2xl border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
-          <div className="flex flex-col gap-[30px]">
-            <div className="flex items-center gap-1.5">
-              <Image
-                src="/icons/profile-osmo.svg"
-                alt="Osmo icon"
-                width={24}
-                height={24}
-              />
-              <p className="subtitle1 tracking-wide text-osmoverse-300">
-                {t("profile.balance")}
-              </p>
-            </div>
+        <div className="mt-7 flex w-full flex-col rounded-2xl border border-osmoverse-700 bg-osmoverse-800 ">
+          <div className="flex w-full justify-between p-5">
+            <div className="flex flex-col gap-[30px]">
+              <div className="flex items-center gap-1.5">
+                <Image
+                  src="/icons/profile-osmo.svg"
+                  alt="Osmo icon"
+                  width={24}
+                  height={24}
+                />
+                <p className="subtitle1 tracking-wide text-osmoverse-300">
+                  {t("profile.balance")}
+                </p>
+              </div>
 
-            <div>
-              <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {formatPretty(
-                  userOsmoAsset?.usdValue ??
-                    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-                  {
+              <div>
+                <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
+                  {formatPretty(
+                    userOsmoAsset?.usdValue ??
+                      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                    {
+                      minimumFractionDigits: 2,
+                      maximumSignificantDigits: undefined,
+                      notation: "standard",
+                    }
+                  )}
+                </h6>
+                <p className="text-h5 font-h5">
+                  {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                     minimumFractionDigits: 2,
                     maximumSignificantDigits: undefined,
                     notation: "standard",
-                  }
-                )}
-              </h6>
-              <p className="text-h5 font-h5">
-                {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
-                  minimumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
-                  notation: "standard",
-                })}
-              </p>
+                  })}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
+              <button
+                onClick={() => {
+                  props.onRequestClose();
+                  fiatRampSelection();
+                }}
+                className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+              >
+                <CreditCardIcon
+                  isAnimated
+                  classes={{
+                    backCard: "group-hover:stroke-[2]",
+                    frontCard:
+                      "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                  }}
+                />
+                <span>{t("buyTokens")}</span>
+              </button>
+
+              <Link
+                href={
+                  featureFlags.portfolioPageAndNewAssetsPage
+                    ? "/portfolio"
+                    : "/assets"
+                }
+                passHref
+                legacyBehavior
+              >
+                <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
+              </Link>
             </div>
           </div>
-
-          <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
-            <button
-              onClick={() => {
-                props.onRequestClose();
-                fiatRampSelection();
-              }}
-              className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
-            >
-              <CreditCardIcon
-                isAnimated
-                classes={{
-                  backCard: "group-hover:stroke-[2]",
-                  frontCard:
-                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-                }}
-              />
-              <span>{t("buyTokens")}</span>
-            </button>
-
-            <Link
-              href={
-                featureFlags.portfolioPageAndNewAssetsPage
-                  ? "/portfolio"
-                  : "/assets"
-              }
-              passHref
-              legacyBehavior
-            >
-              <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
+          {featureFlags.transactionsPage && (
+            <Link href="/transactions" passHref>
+              <div className="flex w-full  cursor-pointer  items-center justify-between  border-t border-osmoverse-700 py-4 px-[20px] align-middle">
+                <div className="flex items-center gap-2">
+                  <Icon id="history" />
+                  <span className="subtitle1">{t("profile.transactions")}</span>
+                </div>
+                <Icon
+                  id="chevron-right"
+                  className="h-5 w-5 text-osmoverse-300"
+                />
+              </div>
             </Link>
-          </div>
+          )}
         </div>
 
         <div className="mt-5 flex w-full flex-col gap-[30px] rounded-2xl border border-osmoverse-700 bg-osmoverse-800 p-5">
