@@ -266,7 +266,7 @@ export const ProfileModal: FunctionComponent<
           </div>
           {featureFlags.transactionsPage && (
             <Link href="/transactions" passHref>
-              <div className="flex w-full  cursor-pointer  items-center justify-between  border-t border-osmoverse-700 py-4 px-[20px] align-middle">
+              <div className="flex w-full  cursor-pointer  items-center justify-between  border-t border-osmoverse-700 py-3 px-5 align-middle">
                 <div className="flex items-center gap-2">
                   <Icon id="history" />
                   <span className="subtitle1">{t("profile.transactions")}</span>
