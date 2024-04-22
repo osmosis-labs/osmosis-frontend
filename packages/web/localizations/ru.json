@@ -314,7 +314,6 @@
     }
   },
   "portfolio": {
-    "trade": "Торговля",
     "buy": "Купить",
     "yourAssets": "Ваши активы",
     "yourPositions": "Ваши позиции",
