@@ -211,7 +211,8 @@
       "volume24h": "Volume",
       "priceChange24h": "Mudança de 24h",
       "price": "Preço",
-      "name": "Nome"
+      "name": "Nome",
+      "balance": "Saldo"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -285,11 +286,7 @@
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     },
-    "getStarted": {
-      "title": "Comece com {osmosis}",
-      "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
-      "addFunds": "Adicione fundos para começar"
-    },
+    "getStarted": {},
     "categories": {
       "new": "O mais novo",
       "defi": "DeFi",
@@ -318,11 +315,17 @@
   },
   "portfolio": {
     "trade": "Troca",
+    "buy": "Comprar",
     "yourAssets": "Seus ativos",
     "yourPositions": "Suas posições",
     "recentTransfers": "Transferências recentes",
     "yourSuperchargedPositions": "Suas posições sobrecarregadas",
-    "yourLiquidityPools": "Seus pools de liquidez"
+    "yourLiquidityPools": "Seus pools de liquidez",
+    "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
+    "noAssets": "Você não tem saldos em {osmosis}",
+    "getStarted": "Deposite ativos para começar",
+    "noPositions": "Você não tem posições",
+    "unlockPotential": "Desbloqueie todo o seu potencial de ganhos e coloque seus ativos para trabalhar com pools de liquidez"
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -617,6 +620,10 @@
     "titleLanguage": "Idioma",
     "titleHideBalances": "Máscara de equilíbrio para privacidade",
     "hideBalances": "Saldos Mascarados"
+  },
+  "search": {
+    "noResultsFor": "Nenhum resultado para \" {query} \"",
+    "adjust": "Tente ajustar sua consulta de pesquisa"
   },
   "stake": {
     "available": "Disponível",

@@ -211,7 +211,8 @@
       "volume24h": "Volume",
       "priceChange24h": "changement 24h",
       "price": "Prix",
-      "name": "Nom"
+      "name": "Nom",
+      "balance": "Équilibre"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -285,11 +286,7 @@
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
-    "getStarted": {
-      "title": "Commencez avec {osmosis}",
-      "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
-      "addFunds": "Ajoutez des fonds pour commencer"
-    },
+    "getStarted": {},
     "categories": {
       "new": "Le plus récent",
       "defi": "DéFi",
@@ -318,11 +315,17 @@
   },
   "portfolio": {
     "trade": "Commerce",
+    "buy": "Acheter",
     "yourAssets": "Vos atouts",
     "yourPositions": "Vos postes",
     "recentTransfers": "Transferts récents",
     "yourSuperchargedPositions": "Vos positions suralimentées",
-    "yourLiquidityPools": "Vos pools de liquidité"
+    "yourLiquidityPools": "Vos pools de liquidité",
+    "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis.",
+    "noAssets": "Vous n'avez aucun solde sur {osmosis}",
+    "getStarted": "Déposez des actifs pour commencer",
+    "noPositions": "Vous n'avez aucun poste",
+    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités"
   },
   "buyTokens": "Acheter jetons",
   "components": {
@@ -617,6 +620,10 @@
     "titleLanguage": "Langue",
     "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
     "hideBalances": "Soldes masqués"
+  },
+  "search": {
+    "noResultsFor": "Aucun résultat pour \" {query} \"",
+    "adjust": "Essayez d'ajuster votre requête de recherche"
   },
   "stake": {
     "available": "Disponible",

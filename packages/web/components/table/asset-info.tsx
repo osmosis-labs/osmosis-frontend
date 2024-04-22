@@ -30,7 +30,7 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
-import { SearchBox } from "../input";
+import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
@@ -164,6 +164,7 @@ export const AssetsInfoTable: FunctionComponent<{
       };
     } else return { topGainers: [] };
   }, [assetsData, selectedCategory]);
+  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -418,6 +419,12 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {noSearchResults && searchQuery?.query && (
+        <NoSearchResultsSplash
+          className="mx-auto w-fit py-8"
+          query={searchQuery.query}
+        />
+      )}
     </div>
   );
 });

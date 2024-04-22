@@ -460,23 +460,27 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
-                  <div className="space-y-2">
-                    <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.24hrTradingVolume")}
-                    </span>
-                    <SkeletonLoader
-                      className={classNames(
-                        isPoolMarketMetricsLoading ? "h-full w-32" : null
-                      )}
-                      isLoaded={!isPoolMarketMetricsLoading}
-                    >
-                      {poolMarketMetrics?.volume24hUsd && (
-                        <h4 className="text-osmoverse-100">
-                          {poolMarketMetrics.volume24hUsd.toString()}
-                        </h4>
-                      )}
-                    </SkeletonLoader>
-                  </div>
+                  {(poolMarketMetrics?.volume24hUsd ||
+                    isPoolMarketMetricsLoading) && (
+                    <div className="space-y-2">
+                      <span className="body2 gap-2 text-osmoverse-400">
+                        {t("pool.24hrTradingVolume")}
+                      </span>
+                      <SkeletonLoader
+                        className={classNames(
+                          isPoolMarketMetricsLoading ? "h-full w-32" : null
+                        )}
+                        isLoaded={!isPoolMarketMetricsLoading}
+                      >
+                        {poolMarketMetrics?.volume24hUsd && (
+                          <h4 className="text-osmoverse-100">
+                            {poolMarketMetrics.volume24hUsd.toString()}
+                          </h4>
+                        )}
+                      </SkeletonLoader>
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
                       {t("pool.liquidity")}

@@ -211,7 +211,8 @@
       "volume24h": "Hacim",
       "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim"
+      "name": "İsim",
+      "balance": "Denge"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -285,11 +286,7 @@
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
-    "getStarted": {
-      "title": "{osmosis} ile başlayın",
-      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
-      "addFunds": "Başlamak için para ekleyin"
-    },
+    "getStarted": {},
     "categories": {
       "new": "En yeni",
       "defi": "DeFi",
@@ -318,11 +315,17 @@
   },
   "portfolio": {
     "trade": "Ticaret",
+    "buy": "Satın almak",
     "yourAssets": "Varlıklarınız",
     "yourPositions": "Pozisyonlarınız",
     "recentTransfers": "Son transferler",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
-    "yourLiquidityPools": "Likidite havuzlarınız"
+    "yourLiquidityPools": "Likidite havuzlarınız",
+    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
+    "noAssets": "{osmosis} üzerinde bakiyeniz yok",
+    "getStarted": "Başlamak için varlık yatırın",
+    "noPositions": "Hiç pozisyonunuz yok",
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -617,6 +620,10 @@
     "titleLanguage": "Dil",
     "titleHideBalances": "Gizlilik için maske dengeleri",
     "hideBalances": "Maskeli Bakiyeler"
+  },
+  "search": {
+    "noResultsFor": "\" {query} \" için sonuç yok",
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
   },
   "stake": {
     "available": "Mevcut",

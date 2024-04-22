@@ -211,7 +211,8 @@
       "volume24h": "體積",
       "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名"
+      "name": "姓名",
+      "balance": "結餘"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -285,11 +286,7 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {
-      "title": "開始使用{osmosis}",
-      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
-      "addFunds": "增加資金即可開始"
-    },
+    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
@@ -318,11 +315,17 @@
   },
   "portfolio": {
     "trade": "貿易",
+    "buy": "買",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會",
     "yourSuperchargedPositions": "您的超級職位",
-    "yourLiquidityPools": "您的流動資金池"
+    "yourLiquidityPools": "您的流動資金池",
+    "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。",
+    "noAssets": "您{osmosis}沒有餘額",
+    "getStarted": "存入資產即可開始",
+    "noPositions": "您沒有職位",
+    "unlockPotential": "釋放您的全部盈利潛力，並將您的資產與流動性池結合起來"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -617,6 +620,10 @@
     "titleLanguage": "語言",
     "titleHideBalances": "屏蔽餘額以保護隱私",
     "hideBalances": "隱藏餘額"
+  },
+  "search": {
+    "noResultsFor": "沒有“ {query} ”的結果",
+    "adjust": "嘗試調整您的搜尋查詢"
   },
   "stake": {
     "available": "可用的",
