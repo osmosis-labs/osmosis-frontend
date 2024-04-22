@@ -99,6 +99,7 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, sortDirection_]);
   const sort = useMemo(
     () =>
+      // disable sorting while searching on client to remove sort UI while searching
       !Boolean(search)
         ? {
             keyPath: sortKey,
