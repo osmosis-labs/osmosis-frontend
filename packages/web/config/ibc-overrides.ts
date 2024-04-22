@@ -611,6 +611,9 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F884EBC228DFCE8F1304D917A712AA9611427A6C1ECC3179B2E91D7468FB091A2&token1=factory%2Finj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52%2Fuhava",
   },
+  CROWDP: {
+    depositUrlOverride: "https://app.evmos.org/assets",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
