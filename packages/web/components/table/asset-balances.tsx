@@ -72,6 +72,17 @@ export const AssetBalancesTable: FunctionComponent<{
     if (key !== undefined) setSortKey_(key);
   }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const sort = useMemo(
+    () =>
+      // disable sorting while searching on client to remove sort UI while searching
+      !Boolean(searchQuery)
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
+    [searchQuery, sortKey, sortDirection]
+  );
 
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
@@ -98,13 +109,10 @@ export const AssetBalancesTable: FunctionComponent<{
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: {
-        keyPath: sortKey,
-        direction: sortDirection,
-      },
+      sort,
     },
     {
-      enabled: !isLoadingWallet,
+      enabled: !isLoadingWallet && Boolean(account?.address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,

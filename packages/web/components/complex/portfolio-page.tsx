@@ -224,7 +224,7 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
 
   if (isLoadingPositions) {
     return (
-      <section className="">
+      <section className="mx-auto my-6 w-fit">
         <Spinner />
       </section>
     );

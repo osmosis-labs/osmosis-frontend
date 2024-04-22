@@ -221,7 +221,7 @@ export const assetsRouter = createTRPCRouter({
             "currentPrice",
             "priceChange24h",
             "usdValue",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )
