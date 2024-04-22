@@ -78,6 +78,10 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
+    portfolioPageAndNewAssetsPage:
+      isMobile || !isInitialized
+        ? false
+        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     _isInitialized:
       process.env.NODE_ENV === "development" &&
       !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
