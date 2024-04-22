@@ -6,8 +6,10 @@ function createIntersectionObserverMock() {
   };
 }
 
-window.IntersectionObserver = jest
-  .fn()
-  .mockImplementation(createIntersectionObserverMock);
+if (typeof window !== "undefined") {
+  window.IntersectionObserver = jest
+    .fn()
+    .mockImplementation(createIntersectionObserverMock);
+}
 
 export {};
