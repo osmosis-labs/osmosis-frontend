@@ -1,5 +1,4 @@
 const ZERO = "0";
-const DOUBLE_ZERO = "00";
 
 const countZeros = (decimalDigits: string) => {
   // Count the leading zeros
@@ -53,7 +52,7 @@ export const compressZeros = (
   // Extract characters after the punctuation symbol
   const charsAfterPunct = formattedValue.slice(punctIdx + 1);
 
-  if (charsAfterPunct.substring(0, 2) !== DOUBLE_ZERO)
+  if (charsAfterPunct.length <= 4)
     return {
       currencySign,
       significantDigits: formattedValue.substring(
