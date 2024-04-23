@@ -52,7 +52,10 @@ export const compressZeros = (
   // Extract characters after the punctuation symbol
   const charsAfterPunct = formattedValue.slice(punctIdx + 1);
 
-  if (charsAfterPunct.length <= 4)
+  // Count consecutive zeros
+  const zerosCount = countZeros(charsAfterPunct);
+
+  if (zerosCount < 4)
     return {
       currencySign,
       significantDigits: formattedValue.substring(
@@ -63,8 +66,6 @@ export const compressZeros = (
       decimalDigits: charsAfterPunct,
     };
 
-  // Count consecutive zeros
-  const zerosCount = countZeros(charsAfterPunct);
   const otherDigits = charsAfterPunct.substring(zerosCount);
 
   const canDisplayZeros = zerosCount !== 0 || otherDigits.length !== 0;
