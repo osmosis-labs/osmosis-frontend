@@ -16,7 +16,9 @@ const countZeros = (decimalDigits: string) => {
 
 export const compressZeros = (
   formattedValue: string,
-  hasCurrencySymbol: boolean
+  hasCurrencySymbol: boolean,
+  // The threshold of the leading zeros' count after which the compression should trigger
+  zerosThreshold: number = 4
 ) => {
   // Find the punctuation symbol marking the start of the decimal part
   const punctuationSymbol = formattedValue.match(/[.,]/g)?.pop();
@@ -55,7 +57,7 @@ export const compressZeros = (
   // Count consecutive zeros
   const zerosCount = countZeros(charsAfterPunct);
 
-  if (zerosCount < 4)
+  if (zerosCount < zerosThreshold)
     return {
       currencySign,
       significantDigits: formattedValue.substring(
