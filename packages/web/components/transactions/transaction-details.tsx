@@ -99,7 +99,6 @@ export const TransactionDetailsContent = ({
             <Icon id="swap" width={24} height={24} aria-label="swap icon" />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            {/* TODO - add status here */}
             <div className="text-h5">{title[status]}</div>
             <div className="body1 text-osmoverse-300">{formattedDate}</div>
           </div>
