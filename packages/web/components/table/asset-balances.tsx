@@ -301,7 +301,6 @@ export const AssetBalancesTable: FunctionComponent<{
       />
       <table
         className={classNames(
-          "w-full",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
@@ -310,8 +309,16 @@ export const AssetBalancesTable: FunctionComponent<{
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
+              {headerGroup.headers.map((header, index, headers) => (
+                <th
+                  className={classNames({
+                    // defines column width
+                    "w-56 lg:w-36": index !== 0 && index !== headers.length - 1,
+                    "w-36": index === headers.length - 1,
+                  })}
+                  key={header.id}
+                  colSpan={header.colSpan}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(

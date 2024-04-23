@@ -376,7 +376,6 @@ export const AssetsInfoTable: FunctionComponent<{
       />
       <table
         className={classNames(
-          "w-full",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
@@ -385,8 +384,15 @@ export const AssetsInfoTable: FunctionComponent<{
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
+              {headerGroup.headers.map((header, index) => (
+                <th
+                  className={classNames({
+                    // defines column width
+                    "w-36": index !== 0,
+                  })}
+                  key={header.id}
+                  colSpan={header.colSpan}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
