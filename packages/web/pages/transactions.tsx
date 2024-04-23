@@ -1,3 +1,4 @@
+import { FormattedTransaction } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -80,7 +81,9 @@ const Transactions: React.FC = observer(() => {
     ctas: [],
   });
 
-  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<FormattedTransaction | null>(null);
+
   const [open, setOpen] = useState(false);
 
   const { isLargeDesktop } = useWindowSize();
