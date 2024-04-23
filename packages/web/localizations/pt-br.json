@@ -286,7 +286,6 @@
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     },
-    "getStarted": {},
     "categories": {
       "new": "O mais novo",
       "defi": "DeFi",
@@ -602,7 +601,8 @@
     "balance": "Saldo",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos os ativos",
-    "wallet": "Carteira"
+    "wallet": "Carteira",
+    "transactions": "Transações"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",

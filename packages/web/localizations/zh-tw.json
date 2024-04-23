@@ -286,7 +286,6 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
@@ -602,7 +601,8 @@
     "balance": "結餘",
     "modalTitle": "輪廓",
     "viewAllAssets": "查看所有資產",
-    "wallet": "錢包"
+    "wallet": "錢包",
+    "transactions": "交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",

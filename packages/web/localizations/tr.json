@@ -286,7 +286,6 @@
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
-    "getStarted": {},
     "categories": {
       "new": "En yeni",
       "defi": "DeFi",
@@ -602,7 +601,8 @@
     "balance": "denklemek",
     "modalTitle": "Profil",
     "viewAllAssets": "Tüm varlıkları görüntüle",
-    "wallet": "Cüzdan"
+    "wallet": "Cüzdan",
+    "transactions": "İşlemler"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",

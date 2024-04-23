@@ -286,7 +286,6 @@
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
-    "getStarted": {},
     "categories": {
       "new": "Le plus récent",
       "defi": "DéFi",
@@ -602,7 +601,8 @@
     "balance": "Solde",
     "modalTitle": "Le profil",
     "viewAllAssets": "Voir tous les actifs",
-    "wallet": "Portefeuille"
+    "wallet": "Portefeuille",
+    "transactions": "Transactions"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
