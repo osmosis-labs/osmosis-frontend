@@ -184,6 +184,9 @@ export function useSwap(
       !inAmountInput.isEmpty &&
       !precedentError &&
       featureFlags.swapToolSimulateFee,
+    tryToExcludeMinimalDenoms: swapAssets.fromAsset
+      ? [swapAssets.fromAsset?.coinMinimalDenom]
+      : [],
   });
 
   /** Send trade token in transaction. */
@@ -650,6 +653,9 @@ function useSwapAmountInput({
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
+    tryToExcludeMinimalDenoms: swapAssets.fromAsset
+      ? [swapAssets.fromAsset?.coinMinimalDenom]
+      : [],
     enabled:
       featureFlags.swapToolSimulateFee &&
       !!inAmountInput.balance &&

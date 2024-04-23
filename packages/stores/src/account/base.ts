@@ -1019,6 +1019,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param messages - An array of message objects to be encoded and included in the transaction.
    * @param fee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
    * @param memo - A string used as a memo or note with the transaction.
+   * @param signOptions - Optional options for customizing the sign process.
+   * @param excludedFeeMinimalDenoms - An array of minimal denoms to exclude from the fee calculation.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -1174,6 +1176,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param {string} params.gasLimit - The gas limit for the transaction.
    * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
    * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
+   * @param {string[]} [params.excludedFeeMinimalDenoms=[]] - An array of fee tokens to exclude from the fee calculation.
+   * @param {boolean} [params.checkOtherFeeTokens=true] - If true, the function will attempt to find an alternative fee token if the user doesn't have enough balance for the primary fee token.
    * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
    *
    * @example

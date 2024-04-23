@@ -6,6 +6,7 @@ import {
   AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
+  InsufficientFeeError,
   OsmosisAccount,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
@@ -26,24 +27,69 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   accountStore,
+  tryToExcludeMinimalDenoms = [],
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[] | undefined;
   apiUtils: ReturnType<typeof api.useUtils>;
+  tryToExcludeMinimalDenoms?: string[];
 }): Promise<QueryResult> {
   if (!messages) throw new Error("No messages");
 
-  const { amount, gas: gasLimit } = await accountStore.estimateFee({
-    wallet,
-    messages: messages!,
-    signOptions: {
-      ...wallet.walletInfo?.signOptions,
-      preferNoSetFee: true, // this will automatically calculate the amount as well.
-    },
-  });
+  let coin: Coin;
+  let amount: readonly Coin[];
+  let gasLimit: string;
 
-  const coin = amount[0];
+  const baseEstimateFeeOptions: Parameters<typeof accountStore.estimateFee>[0] =
+    {
+      wallet,
+      messages: messages!,
+      signOptions: {
+        ...wallet.walletInfo?.signOptions,
+        preferNoSetFee: true, // this will automatically calculate the amount as well.
+      },
+    };
+
+  /**
+   * Try to exclude minimal denoms to pay for the transaction fee. This is useful
+   * for the case where we are computing the max fee and we don't want to pay with the
+   * same token that we are trying to send.
+   */
+  if (tryToExcludeMinimalDenoms.length > 0) {
+    try {
+      const { amount: amount_, gas } = await accountStore.estimateFee({
+        ...baseEstimateFeeOptions,
+        excludedFeeMinimalDenoms: tryToExcludeMinimalDenoms,
+      });
+      coin = amount_[0];
+      gasLimit = gas;
+      amount = amount_;
+    } catch (e) {
+      const error = e as Error | InsufficientFeeError;
+      /**
+       * If there are no alternative tokens, just return the default estimation.
+       */
+      if (error instanceof InsufficientFeeError) {
+        const { amount: amount_, gas } = await accountStore.estimateFee(
+          baseEstimateFeeOptions
+        );
+
+        coin = amount_[0];
+        gasLimit = gas;
+        amount = amount_;
+      } else {
+        throw error;
+      }
+    }
+  } else {
+    const { amount: amount_, gas } = await accountStore.estimateFee(
+      baseEstimateFeeOptions
+    );
+    coin = amount_[0];
+    gasLimit = gas;
+    amount = amount_;
+  }
 
   const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
     coinMinimalDenom: coin.denom,
@@ -70,10 +116,17 @@ async function estimateTxFeesQueryFn({
 export function useEstimateTxFees({
   messages,
   chainId,
+  tryToExcludeMinimalDenoms = [],
   enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
+  /**
+   * Try to exclude minimal denoms to pay for the transaction fee. This is useful
+   * for the case where we are computing the max fee and we don't want to pay with the
+   * same token that we are trying to send.
+   */
+  tryToExcludeMinimalDenoms?: string[];
   enabled?: boolean;
   onSuccess?: (data: QueryResult) => void;
 }) {
@@ -91,6 +144,7 @@ export function useEstimateTxFees({
         accountStore,
         messages,
         apiUtils,
+        tryToExcludeMinimalDenoms,
       });
     },
     staleTime: 3_000, // 3 seconds
