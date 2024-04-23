@@ -167,7 +167,9 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, assetPagesData]);
   const clientCategoryImageSamples = useMemo(() => {
     if (selectedCategory === "topGainers") {
-      const topGainers = assetsData.slice(undefined, 3);
+      const topGainers = assetsData
+        .filter((asset) => asset.isVerified)
+        .slice(undefined, 3);
       return {
         topGainers: topGainers
           .map((asset) => asset.coinImageUrl)
