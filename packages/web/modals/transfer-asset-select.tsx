@@ -117,6 +117,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               setSelectedTokenDenom(denom);
             }}
             selectedTokenDenom={selectedTokenDenom}
+            sortByBalances={isWithdraw}
           />
         </div>
         {selectedToken?.originBridgeInfo &&
