@@ -247,5 +247,11 @@ export const EventName = {
     joinStrategyClicked: "Earn Page: Join strategy clicked",
     joinStrategyCompleted: "Earn Page: Join strategy completed",
   },
+  TransactionsPage: {
+    pageViewed: "Transactions: Page viewed",
+    swapClicked: "Transactions: Swap clicked",
+    taxReportsClicked: "Transactions: Tax reports clicked",
+    explorerClicked: "Transactions: Explorer clicked",
+  },
   QueryError: "Query error",
 };

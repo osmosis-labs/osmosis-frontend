@@ -10,6 +10,8 @@ import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -49,6 +51,8 @@ export const TransactionDetailsContent = ({
       { maxDecimals: 2 }
     );
   }, [conversion.numerator, conversion.denominator]);
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   return (
     <div
@@ -176,9 +180,21 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
         </div>
-        <Button size="default" variant="secondary" asChild>
+        <Button
+          size="default"
+          variant="secondary"
+          asChild
+          onClick={() =>
+            logEvent([
+              EventName.TransactionsPage.explorerClicked,
+              {
+                source: "modal",
+              },
+            ])
+          }
+        >
           <a
-            rel="noreferrer"
+            rel="noopener noreferrer"
             target="_blank"
             href={`https://www.mintscan.io/cosmos/txs/${transaction.hash}`}
           >

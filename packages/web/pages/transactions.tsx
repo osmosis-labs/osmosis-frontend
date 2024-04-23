@@ -10,8 +10,9 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -51,6 +52,10 @@ const Transactions: React.FC = observer(() => {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
 
   const { t } = useTranslation();
 
