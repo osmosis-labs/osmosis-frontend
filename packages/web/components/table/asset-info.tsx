@@ -474,6 +474,8 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 });
 
+// table cells
+
 type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
