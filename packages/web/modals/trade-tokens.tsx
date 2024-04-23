@@ -10,27 +10,37 @@ export const TradeTokens: FunctionComponent<
     sendTokenDenom?: string;
     outTokenDenom?: string;
     forceSwapInPoolId?: string;
+    useOtherCurrencies?: boolean;
     page: EventPage;
   } & ModalBaseProps
-> = (props) => {
+> = ({
+  sendTokenDenom,
+  outTokenDenom,
+  forceSwapInPoolId,
+  useOtherCurrencies,
+  page,
+  ...modalProps
+}) => {
   const { showModalBase, accountActionButton, walletConnected } =
-    useConnectWalletModalRedirect({}, props.onRequestClose);
+    useConnectWalletModalRedirect({}, modalProps.onRequestClose);
 
   return (
     <ModalBase
-      {...props}
-      isOpen={showModalBase && props.isOpen}
+      {...modalProps}
+      isOpen={showModalBase && modalProps.isOpen}
       hideCloseButton
       className="!w-fit !p-0"
     >
       <SwapTool
-        isInModal
-        onRequestModalClose={props.onRequestClose}
+        fixedWidth
+        useQueryParams={false}
+        useOtherCurrencies={useOtherCurrencies}
+        onRequestModalClose={modalProps.onRequestClose}
         swapButton={!walletConnected ? accountActionButton : undefined}
-        initialSendTokenDenom={props.sendTokenDenom}
-        initialOutTokenDenom={props.outTokenDenom}
-        forceSwapInPoolId={props.forceSwapInPoolId}
-        page={props.page}
+        initialSendTokenDenom={sendTokenDenom}
+        initialOutTokenDenom={outTokenDenom}
+        forceSwapInPoolId={forceSwapInPoolId}
+        page={page}
       />
     </ModalBase>
   );

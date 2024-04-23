@@ -60,6 +60,8 @@ const Home = () => {
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
           <SwapTool
+            useQueryParams
+            useOtherCurrencies
             onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
               setPreviousTrade({ sendTokenDenom, outTokenDenom });
             }}

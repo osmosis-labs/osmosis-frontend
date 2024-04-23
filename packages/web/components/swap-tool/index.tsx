@@ -41,12 +41,14 @@ import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
 export interface SwapToolProps {
-  isInModal?: boolean;
+  fixedWidth?: boolean;
+  useOtherCurrencies: boolean | undefined;
+  useQueryParams: boolean | undefined;
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   initialSendTokenDenom?: string;
   initialOutTokenDenom?: string;
-  page?: EventPage;
+  page: EventPage;
   forceSwapInPoolId?: string;
   onSwapSuccess?: (params: {
     sendTokenDenom: string;
@@ -56,12 +58,14 @@ export interface SwapToolProps {
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
-    isInModal,
+    fixedWidth,
+    useOtherCurrencies,
+    useQueryParams,
     onRequestModalClose,
     swapButton,
-    initialSendTokenDenom: sendTokenDenom,
-    initialOutTokenDenom: outTokenDenom,
-    page = "Swap Page",
+    initialSendTokenDenom,
+    initialOutTokenDenom,
+    page,
     forceSwapInPoolId,
     onSwapSuccess,
   }) => {
@@ -78,10 +82,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const slippageConfig = useSlippageConfig();
     const swapState = useSwap({
-      initialFromDenom: sendTokenDenom,
-      initialToDenom: outTokenDenom,
-      useOtherCurrencies: !isInModal,
-      useQueryParams: !isInModal,
+      initialFromDenom: initialSendTokenDenom,
+      initialToDenom: initialOutTokenDenom,
+      useOtherCurrencies,
+      useQueryParams,
       forceSwapInPoolId,
       maxSlippage: slippageConfig.slippage.toDec(),
     });
@@ -177,7 +181,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         fromToken: swapState.fromAsset?.coinDenom,
         tokenAmount: Number(swapState.inAmountInput.amount),
         toToken: swapState.toAsset?.coinDenom,
-        isOnHome: !isInModal,
+        isOnHome: page === "Swap Page",
         isMultiHop: swapState.quote?.split.some(
           ({ pools }) => pools.length !== 1
         ),
@@ -244,6 +248,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
       !swapState.inAmountInput?.balance?.toDec().isZero() &&
       swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
+
+    const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
+    const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
     return (
       <>
@@ -377,7 +384,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               {
                                 fromToken: swapState.fromAsset?.coinDenom,
                                 toToken: swapState.toAsset?.coinDenom,
-                                isOnHome: !isInModal,
+                                isOnHome: page === "Swap Page",
                                 percentage: slippageConfig.slippage.toString(),
                                 page,
                               },
@@ -501,6 +508,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [swapState, closeTokenSelectDropdowns]
                   )}
+                  showSearchBox={showTokenSelectSearchBox}
+                  showRecommendedTokens={showTokenSelectRecommendedTokens}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -625,6 +634,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setOneTokenSelectOpen, closeTokenSelectDropdowns]
                   )}
+                  showSearchBox={showTokenSelectSearchBox}
+                  showRecommendedTokens={showTokenSelectRecommendedTokens}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
@@ -769,7 +780,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 ref={estimateDetailsContentRef}
                 className={classNames(
                   "absolute flex flex-col gap-4 pt-5 transition-opacity",
-                  isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]",
+                  fixedWidth ? "w-[94%]" : "w-[358px] md:w-[94%]",
                   { "opacity-50": swapState.isQuoteLoading }
                 )}
               >

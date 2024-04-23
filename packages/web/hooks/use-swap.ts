@@ -91,6 +91,7 @@ export function useSwap(
     initialToDenom,
     useQueryParams,
     useOtherCurrencies,
+    poolId: forceSwapInPoolId,
   });
 
   const inAmountInput = useSwapAmountInput({
@@ -468,6 +469,13 @@ export function useSwapAssets({
   initialToDenom = DefaultDenoms[1],
   useQueryParams = true,
   useOtherCurrencies = true,
+  poolId,
+}: {
+  initialFromDenom?: string;
+  initialToDenom?: string;
+  useQueryParams?: boolean;
+  useOtherCurrencies?: boolean;
+  poolId?: string;
 } = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -510,6 +518,7 @@ export function useSwapAssets({
     isFetchingNextPage,
   } = api.edge.assets.getUserAssets.useInfiniteQuery(
     {
+      poolId,
       search: queryInput,
       userOsmoAddress: account?.address,
       includePreview: showPreviewAssets,
@@ -523,8 +532,11 @@ export function useSwapAssets({
   );
 
   const allSelectableAssets = useMemo(
-    () => selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [],
-    [selectableAssetPages?.pages]
+    () =>
+      useOtherCurrencies
+        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        : [],
+    [selectableAssetPages?.pages, useOtherCurrencies]
   );
 
   const { asset: fromAsset } = useSwapAsset({
