@@ -33,18 +33,16 @@ export const TransactionDetailsContent = ({
 
   const formattedMonth = dayjs(transaction.blockTimestamp).format("MMMM");
 
-  const translatedFormattedMonth = t(`date.${formattedMonth.toLowerCase()}`);
+  const translatedFormattedMonth = t(
+    `date.${formattedMonth.toLowerCase()}`
+  ).slice(0, 3);
 
   const formattedDateDayYearHourMinute = dayjs(
     transaction.blockTimestamp
   ).format("DD, YYYY, HH:mm");
 
-  // create a localized formatted date
-  // example: Jan 1, 2022, 12:00
-  const formattedDate = `${translatedFormattedMonth.slice(
-    0,
-    3
-  )} ${formattedDateDayYearHourMinute}`;
+  // create a localized formatted date - example: Jan 1, 2022, 12:00
+  const formattedDate = `${translatedFormattedMonth} ${formattedDateDayYearHourMinute}`;
 
   const [conversion, setConversion] = useState({
     numerator: tokenIn.token,
@@ -66,6 +64,14 @@ export const TransactionDetailsContent = ({
   }, [conversion.numerator, conversion.denominator]);
 
   const { logEvent } = useAmplitudeAnalytics();
+
+  const status = transaction.code === 0 ? "success" : "failed";
+
+  const title = {
+    pending: t("transactions.swapping"),
+    success: t("transactions.swapped"),
+    failed: t("transactions.swapFailed"),
+  };
 
   return (
     <div
@@ -93,7 +99,7 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
             {/* TODO - add status here */}
-            <div className="text-h5">{t("transactions.swapped")}</div>
+            <div className="text-h5">{title[status]}</div>
             <div className="body1 text-osmoverse-300">{formattedDate}</div>
           </div>
         </div>
@@ -227,8 +233,9 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: FormattedTransaction;
+  transaction: FormattedTransaction | null;
 }) => {
+  if (!transaction) return null;
   return (
     <Transition
       show={open}
@@ -249,8 +256,9 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: FormattedTransaction }
+  ModalBaseProps & { transaction: FormattedTransaction | null }
 > = ({ onRequestClose, isOpen, transaction }) => {
+  if (!transaction) return null;
   return (
     <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>
       <TransactionDetailsContent
