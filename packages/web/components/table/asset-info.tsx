@@ -367,7 +367,7 @@ export const AssetsInfoTable: FunctionComponent<{
         />
       </section>
       <SearchBox
-        className="mb-4 h-12 !w-96"
+        className="mb-4 !w-[33.25rem]"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
