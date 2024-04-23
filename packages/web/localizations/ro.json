@@ -212,7 +212,8 @@
       "priceChange24h": "schimbare 24h",
       "price": "Preț",
       "name": "Nume",
-      "balance": "Echilibru"
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",

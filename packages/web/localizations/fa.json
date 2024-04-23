@@ -212,7 +212,8 @@
       "priceChange24h": "تغییر 24 ساعته",
       "price": "قیمت",
       "name": "نام",
-      "balance": "تعادل"
+      "balance": "تعادل",
+      "lastWeek": "7 روز گذشته"
     },
     "totalAssets": "کل دارایی ها",
     "totalBalance": "موجودی کل",

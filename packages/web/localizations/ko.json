@@ -212,7 +212,8 @@
       "priceChange24h": "24시간 변경",
       "price": "가격",
       "name": "이름",
-      "balance": "균형"
+      "balance": "균형",
+      "lastWeek": "지난 7일"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",

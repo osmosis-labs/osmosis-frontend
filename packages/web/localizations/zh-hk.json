@@ -212,7 +212,8 @@
       "priceChange24h": "24小時變化",
       "price": "價格",
       "name": "姓名",
-      "balance": "結餘"
+      "balance": "結餘",
+      "lastWeek": "過去 7 天"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",

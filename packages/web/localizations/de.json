@@ -212,7 +212,8 @@
       "priceChange24h": "24h Wechsel",
       "price": "Preis",
       "name": "Name",
-      "balance": "Gleichgewicht"
+      "balance": "Gleichgewicht",
+      "lastWeek": "Letzten 7 Tage"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",

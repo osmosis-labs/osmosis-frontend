@@ -212,7 +212,8 @@
       "priceChange24h": "Mudança de 24h",
       "price": "Preço",
       "name": "Nome",
-      "balance": "Saldo"
+      "balance": "Saldo",
+      "lastWeek": "Últimos 7 dias"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",

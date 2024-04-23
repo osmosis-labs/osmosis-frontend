@@ -22,7 +22,6 @@ import {
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
@@ -33,10 +32,10 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
+import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { Button } from "../ui/button";
-import { HistoricalPriceCell } from "./cells/price";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -212,8 +211,7 @@ export const AssetsInfoTable: FunctionComponent<{
         id: "historicalPrice",
         header: () => (
           <SortHeader
-            className="mx-auto"
-            label={t("assets.table.priceChange24h")}
+            label="24h"
             sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -221,13 +219,14 @@ export const AssetsInfoTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: (cell) => (
-          <HistoricalPriceCell
-            coinDenom={cell.row.original.coinDenom}
-            priceChange24h={cell.row.original.priceChange24h}
-            timeFrame="1D"
-          />
-        ),
+        cell: ({
+          row: {
+            original: { priceChange24h },
+          },
+        }) =>
+          priceChange24h && (
+            <PriceChange className="justify-end" priceChange={priceChange24h} />
+          ),
       }),
       columnHelper.accessor(
         (row) => (row.volume24h ? formatPretty(row.volume24h) : "-"),
@@ -263,10 +262,10 @@ export const AssetsInfoTable: FunctionComponent<{
       ),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
-        header: "",
-        cell: (cell) => (
+        header: t("assets.table.lastWeek"),
+        cell: ({ row: { original } }) => (
           <AssetActionsCell
-            {...cell.row.original}
+            {...original}
             showUnverifiedAssetsSetting={showUnverifiedAssets}
             confirmUnverifiedAsset={setVerifiedAsset}
           />
@@ -487,14 +486,12 @@ export const AssetActionsCell: AssetCellComponent<{
   }) => void;
 }> = ({
   coinDenom,
-  coinMinimalDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
 }) => {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 
@@ -513,17 +510,7 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       ) : (
-        <Button
-          variant="ghost"
-          className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
-          onClick={(e) => {
-            e.preventDefault();
-
-            bridgeAsset(coinMinimalDenom, "deposit");
-          }}
-        >
-          {t("assets.table.columns.deposit")}
-        </Button>
+        <HistoricalPriceSparkline coinDenom={coinDenom} timeFrame="1W" />
       )}
     </div>
   );

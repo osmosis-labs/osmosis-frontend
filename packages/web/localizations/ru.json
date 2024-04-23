@@ -212,7 +212,8 @@
       "priceChange24h": "24-часовая смена",
       "price": "Цена",
       "name": "Имя",
-      "balance": "Баланс"
+      "balance": "Баланс",
+      "lastWeek": "Последние 7 дней"
     },
     "totalAssets": "Всего активов",
     "totalBalance": "Итоговый баланс",

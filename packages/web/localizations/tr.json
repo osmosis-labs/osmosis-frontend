@@ -212,7 +212,8 @@
       "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
       "name": "İsim",
-      "balance": "Denge"
+      "balance": "Denge",
+      "lastWeek": "Son 7 gün"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",

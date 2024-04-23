@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
 import { Icon } from "~/components/assets/icon";
-import { PriceChange } from "~/components/assets/price-change";
+import { PriceChange } from "~/components/assets/price";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useTranslation } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";

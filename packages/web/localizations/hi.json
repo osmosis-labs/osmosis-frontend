@@ -212,7 +212,8 @@
       "priceChange24h": "24 घंटे का परिवर्तन",
       "price": "कीमत",
       "name": "नाम",
-      "balance": "संतुलन"
+      "balance": "संतुलन",
+      "lastWeek": "पिछले 7 दिन"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",

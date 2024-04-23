@@ -212,7 +212,8 @@
       "priceChange24h": "24時間の変更",
       "price": "価格",
       "name": "名前",
-      "balance": "バランス"
+      "balance": "バランス",
+      "lastWeek": "過去7日間"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
