@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
+import { getMonthTranslation } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -33,9 +34,9 @@ export const TransactionDetailsContent = ({
 
   const formattedMonth = dayjs(transaction.blockTimestamp).format("MMMM");
 
-  const translatedFormattedMonth = t(
-    `date.${formattedMonth.toLowerCase()}`
-  ).slice(0, 3);
+  const monthTranslation = getMonthTranslation(formattedMonth, t);
+
+  const translatedFormattedMonth = monthTranslation.slice(0, 3);
 
   const formattedDateDayYearHourMinute = dayjs(
     transaction.blockTimestamp
