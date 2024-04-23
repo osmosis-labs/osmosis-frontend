@@ -6,7 +6,7 @@ GREEN='\033[0;32m' # Green color
 NC='\033[0m' # No Color
 
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="a4b8a76db5dee884f703fba2b61e3bf9b14403d1"
+OSMOSIS_COMMIT_HASH="32328833d0dc72bc0732bd3b6223c1b997920ac1"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
@@ -39,7 +39,7 @@ git -C .repos/cosmos-sdk checkout $COSMOS_SDK_VERSION
 
 # IBC PROTOS
 
-IBC_GO_VERSION=$(awk '/github.com\/cosmos\/ibc-go/ {print $2}' .repos/osmosis/go.mod)
+IBC_GO_VERSION=$(awk '/github.com\/cosmos\/ibc-go\/v/ {print $2}' .repos/osmosis/go.mod)
 echo -e "${GREEN}IBC_GO_VERSION: $IBC_GO_VERSION${NC}"
 
 git clone --filter=blob:none --sparse https://github.com/cosmos/ibc-go.git .repos/ibc-go

@@ -9,7 +9,7 @@ export const queryAuthenticators = createNodeQuery<
   },
   { address: string }
 >({
-  path: ({ address }) => `osmosis/authenticator/authenticators/${address}`,
+  path: ({ address }) => `osmosis/smartaccount/authenticators/${address}`,
 });
 
 interface AuthenticatorSpendLimitResponse {

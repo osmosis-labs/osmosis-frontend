@@ -1,6 +1,6 @@
 //@ts-nocheck
-import { BinaryReader, BinaryWriter } from "../../binary";
-import { base64FromBytes, bytesFromBase64 } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
+import { base64FromBytes, bytesFromBase64 } from "../../../helpers";
 /**
  * AccountAuthenticator represents a foundational model for all authenticators.
  * It provides extensibility by allowing concrete types to interpret and
@@ -24,7 +24,7 @@ export interface AccountAuthenticator {
   data: Uint8Array;
 }
 export interface AccountAuthenticatorProtoMsg {
-  typeUrl: "/osmosis.authenticator.AccountAuthenticator";
+  typeUrl: "/osmosis.smartaccount.v1beta1.AccountAuthenticator";
   value: Uint8Array;
 }
 /**
@@ -50,7 +50,7 @@ export interface AccountAuthenticatorAmino {
   data?: string;
 }
 export interface AccountAuthenticatorAminoMsg {
-  type: "osmosis/authenticator/account-authenticator";
+  type: "osmosis/smartaccount/account-authenticator";
   value: AccountAuthenticatorAmino;
 }
 /**
@@ -71,7 +71,7 @@ function createBaseAccountAuthenticator(): AccountAuthenticator {
   };
 }
 export const AccountAuthenticator = {
-  typeUrl: "/osmosis.authenticator.AccountAuthenticator",
+  typeUrl: "/osmosis.smartaccount.v1beta1.AccountAuthenticator",
   encode(
     message: AccountAuthenticator,
     writer: BinaryWriter = BinaryWriter.create()
@@ -149,7 +149,7 @@ export const AccountAuthenticator = {
   },
   toAminoMsg(message: AccountAuthenticator): AccountAuthenticatorAminoMsg {
     return {
-      type: "osmosis/authenticator/account-authenticator",
+      type: "osmosis/smartaccount/account-authenticator",
       value: AccountAuthenticator.toAmino(message),
     };
   },
@@ -161,7 +161,7 @@ export const AccountAuthenticator = {
   },
   toProtoMsg(message: AccountAuthenticator): AccountAuthenticatorProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.AccountAuthenticator",
+      typeUrl: "/osmosis.smartaccount.v1beta1.AccountAuthenticator",
       value: AccountAuthenticator.encode(message).finish(),
     };
   },

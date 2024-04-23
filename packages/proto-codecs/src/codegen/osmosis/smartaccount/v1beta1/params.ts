@@ -1,36 +1,68 @@
 //@ts-nocheck
-import { BinaryReader, BinaryWriter } from "../../binary";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 /** Params defines the parameters for the module. */
 export interface Params {
+  /**
+   * MaximumUnauthenticatedGas defines the maximum amount of gas that can be
+   * used to authenticate a transaction in ante handler without having fee payer
+   * authenticated.
+   */
   maximumUnauthenticatedGas: bigint;
-  areSmartAccountsActive: boolean;
+  /**
+   * IsSmartAccountActive defines the state of the authenticator.
+   * If set to false, the authenticator module will not be used
+   * and the classic cosmos sdk authentication will be used instead.
+   */
+  isSmartAccountActive: boolean;
+  /**
+   * CircuitBreakerControllers defines list of addresses that are allowed to
+   * set is_smart_account_active without going through governance.
+   */
+  circuitBreakerControllers: string[];
 }
 export interface ParamsProtoMsg {
-  typeUrl: "/osmosis.authenticator.Params";
+  typeUrl: "/osmosis.smartaccount.v1beta1.Params";
   value: Uint8Array;
 }
 /** Params defines the parameters for the module. */
 export interface ParamsAmino {
+  /**
+   * MaximumUnauthenticatedGas defines the maximum amount of gas that can be
+   * used to authenticate a transaction in ante handler without having fee payer
+   * authenticated.
+   */
   maximum_unauthenticated_gas?: string;
-  are_smart_accounts_active?: boolean;
+  /**
+   * IsSmartAccountActive defines the state of the authenticator.
+   * If set to false, the authenticator module will not be used
+   * and the classic cosmos sdk authentication will be used instead.
+   */
+  is_smart_account_active?: boolean;
+  /**
+   * CircuitBreakerControllers defines list of addresses that are allowed to
+   * set is_smart_account_active without going through governance.
+   */
+  circuit_breaker_controllers?: string[];
 }
 export interface ParamsAminoMsg {
-  type: "osmosis/authenticator/params";
+  type: "osmosis/smartaccount/params";
   value: ParamsAmino;
 }
 /** Params defines the parameters for the module. */
 export interface ParamsSDKType {
   maximum_unauthenticated_gas: bigint;
-  are_smart_accounts_active: boolean;
+  is_smart_account_active: boolean;
+  circuit_breaker_controllers: string[];
 }
 function createBaseParams(): Params {
   return {
     maximumUnauthenticatedGas: BigInt(0),
-    areSmartAccountsActive: false,
+    isSmartAccountActive: false,
+    circuitBreakerControllers: [],
   };
 }
 export const Params = {
-  typeUrl: "/osmosis.authenticator.Params",
+  typeUrl: "/osmosis.smartaccount.v1beta1.Params",
   encode(
     message: Params,
     writer: BinaryWriter = BinaryWriter.create()
@@ -38,8 +70,11 @@ export const Params = {
     if (message.maximumUnauthenticatedGas !== BigInt(0)) {
       writer.uint32(8).uint64(message.maximumUnauthenticatedGas);
     }
-    if (message.areSmartAccountsActive === true) {
-      writer.uint32(16).bool(message.areSmartAccountsActive);
+    if (message.isSmartAccountActive === true) {
+      writer.uint32(16).bool(message.isSmartAccountActive);
+    }
+    for (const v of message.circuitBreakerControllers) {
+      writer.uint32(26).string(v!);
     }
     return writer;
   },
@@ -55,7 +90,10 @@ export const Params = {
           message.maximumUnauthenticatedGas = reader.uint64();
           break;
         case 2:
-          message.areSmartAccountsActive = reader.bool();
+          message.isSmartAccountActive = reader.bool();
+          break;
+        case 3:
+          message.circuitBreakerControllers.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -71,7 +109,9 @@ export const Params = {
       object.maximumUnauthenticatedGas !== null
         ? BigInt(object.maximumUnauthenticatedGas.toString())
         : BigInt(0);
-    message.areSmartAccountsActive = object.areSmartAccountsActive ?? false;
+    message.isSmartAccountActive = object.isSmartAccountActive ?? false;
+    message.circuitBreakerControllers =
+      object.circuitBreakerControllers?.map((e) => e) || [];
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -85,11 +125,13 @@ export const Params = {
       );
     }
     if (
-      object.are_smart_accounts_active !== undefined &&
-      object.are_smart_accounts_active !== null
+      object.is_smart_account_active !== undefined &&
+      object.is_smart_account_active !== null
     ) {
-      message.areSmartAccountsActive = object.are_smart_accounts_active;
+      message.isSmartAccountActive = object.is_smart_account_active;
     }
+    message.circuitBreakerControllers =
+      object.circuit_breaker_controllers?.map((e) => e) || [];
     return message;
   },
   toAmino(message: Params): ParamsAmino {
@@ -98,10 +140,17 @@ export const Params = {
       message.maximumUnauthenticatedGas !== BigInt(0)
         ? message.maximumUnauthenticatedGas.toString()
         : undefined;
-    obj.are_smart_accounts_active =
-      message.areSmartAccountsActive === false
+    obj.is_smart_account_active =
+      message.isSmartAccountActive === false
         ? undefined
-        : message.areSmartAccountsActive;
+        : message.isSmartAccountActive;
+    if (message.circuitBreakerControllers) {
+      obj.circuit_breaker_controllers = message.circuitBreakerControllers.map(
+        (e) => e
+      );
+    } else {
+      obj.circuit_breaker_controllers = message.circuitBreakerControllers;
+    }
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
@@ -109,7 +158,7 @@ export const Params = {
   },
   toAminoMsg(message: Params): ParamsAminoMsg {
     return {
-      type: "osmosis/authenticator/params",
+      type: "osmosis/smartaccount/params",
       value: Params.toAmino(message),
     };
   },
@@ -121,7 +170,7 @@ export const Params = {
   },
   toProtoMsg(message: Params): ParamsProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.Params",
+      typeUrl: "/osmosis.smartaccount.v1beta1.Params",
       value: Params.encode(message).finish(),
     };
   },

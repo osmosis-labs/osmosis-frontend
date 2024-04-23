@@ -834,8 +834,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      */
     const isAuthenticatorMsg = messages.some(
       (message) =>
-        message.typeUrl === osmosis.authenticator.MsgAddAuthenticator.typeUrl ||
-        message.typeUrl === osmosis.authenticator.MsgRemoveAuthenticator.typeUrl
+        message.typeUrl ===
+          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
+        message.typeUrl ===
+          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
     );
 
     const forceSignDirect = isAuthenticatorMsg;
@@ -902,7 +904,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo,
       nonCriticalExtensionOptions: [
         {
-          typeUrl: "/osmosis.authenticator.TxExtension",
+          typeUrl: "/osmosis.smartaccount.v1beta.TxExtension",
           value: TxExtension.encode({
             selectedAuthenticators: [
               BigInt(oneClickTradingInfo.authenticatorId),
@@ -1774,7 +1776,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!oneClickTradingInfo) return undefined;
     return [
       {
-        typeUrl: "/osmosis.authenticator.TxExtension",
+        typeUrl: "/osmosis.smartaccount.v1beta.TxExtension",
         value: TxExtension.encode({
           selectedAuthenticators: [
             BigInt(oneClickTradingInfo?.authenticatorId),

@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { BinaryReader, BinaryWriter } from "../../binary";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   AccountAuthenticator,
   AccountAuthenticatorAmino,
@@ -22,7 +22,7 @@ export interface AuthenticatorData {
   authenticators: AccountAuthenticator[];
 }
 export interface AuthenticatorDataProtoMsg {
-  typeUrl: "/osmosis.authenticator.AuthenticatorData";
+  typeUrl: "/osmosis.smartaccount.v1beta1.AuthenticatorData";
   value: Uint8Array;
 }
 /**
@@ -41,7 +41,7 @@ export interface AuthenticatorDataAmino {
   authenticators?: AccountAuthenticatorAmino[];
 }
 export interface AuthenticatorDataAminoMsg {
-  type: "osmosis/authenticator/authenticator-data";
+  type: "osmosis/smartaccount/authenticator-data";
   value: AuthenticatorDataAmino;
 }
 /**
@@ -66,7 +66,7 @@ export interface GenesisState {
   authenticatorData: AuthenticatorData[];
 }
 export interface GenesisStateProtoMsg {
-  typeUrl: "/osmosis.authenticator.GenesisState";
+  typeUrl: "/osmosis.smartaccount.v1beta1.GenesisState";
   value: Uint8Array;
 }
 /** GenesisState defines the authenticator module's genesis state. */
@@ -82,7 +82,7 @@ export interface GenesisStateAmino {
   authenticator_data?: AuthenticatorDataAmino[];
 }
 export interface GenesisStateAminoMsg {
-  type: "osmosis/authenticator/genesis-state";
+  type: "osmosis/smartaccount/genesis-state";
   value: GenesisStateAmino;
 }
 /** GenesisState defines the authenticator module's genesis state. */
@@ -98,7 +98,7 @@ function createBaseAuthenticatorData(): AuthenticatorData {
   };
 }
 export const AuthenticatorData = {
-  typeUrl: "/osmosis.authenticator.AuthenticatorData",
+  typeUrl: "/osmosis.smartaccount.v1beta1.AuthenticatorData",
   encode(
     message: AuthenticatorData,
     writer: BinaryWriter = BinaryWriter.create()
@@ -169,7 +169,7 @@ export const AuthenticatorData = {
   },
   toAminoMsg(message: AuthenticatorData): AuthenticatorDataAminoMsg {
     return {
-      type: "osmosis/authenticator/authenticator-data",
+      type: "osmosis/smartaccount/authenticator-data",
       value: AuthenticatorData.toAmino(message),
     };
   },
@@ -181,7 +181,7 @@ export const AuthenticatorData = {
   },
   toProtoMsg(message: AuthenticatorData): AuthenticatorDataProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.AuthenticatorData",
+      typeUrl: "/osmosis.smartaccount.v1beta1.AuthenticatorData",
       value: AuthenticatorData.encode(message).finish(),
     };
   },
@@ -194,7 +194,7 @@ function createBaseGenesisState(): GenesisState {
   };
 }
 export const GenesisState = {
-  typeUrl: "/osmosis.authenticator.GenesisState",
+  typeUrl: "/osmosis.smartaccount.v1beta1.GenesisState",
   encode(
     message: GenesisState,
     writer: BinaryWriter = BinaryWriter.create()
@@ -289,7 +289,7 @@ export const GenesisState = {
   },
   toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
     return {
-      type: "osmosis/authenticator/genesis-state",
+      type: "osmosis/smartaccount/genesis-state",
       value: GenesisState.toAmino(message),
     };
   },
@@ -301,7 +301,7 @@ export const GenesisState = {
   },
   toProtoMsg(message: GenesisState): GenesisStateProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.GenesisState",
+      typeUrl: "/osmosis.smartaccount.v1beta1.GenesisState",
       value: GenesisState.encode(message).finish(),
     };
   },

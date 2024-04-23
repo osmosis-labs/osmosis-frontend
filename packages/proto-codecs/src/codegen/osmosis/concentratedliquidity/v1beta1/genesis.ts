@@ -35,7 +35,7 @@ import { Pool as Pool1 } from "./pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";
 import { PoolSDKType as Pool1SDKType } from "./pool";
 import { Position, PositionAmino, PositionSDKType } from "./position";
-import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tickInfo";
+import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tick_info";
 /**
  * FullTick contains tick index and pool id along with other tick model
  * information.

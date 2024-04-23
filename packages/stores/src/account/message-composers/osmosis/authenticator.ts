@@ -9,11 +9,13 @@ export function makeAddAuthenticatorMsg({
   data: Uint8Array;
   sender: string;
 }) {
-  return osmosis.authenticator.MessageComposer.withTypeUrl.addAuthenticator({
-    data,
-    sender,
-    type,
-  });
+  return osmosis.smartaccount.v1beta1.MessageComposer.withTypeUrl.addAuthenticator(
+    {
+      data,
+      sender,
+      type,
+    }
+  );
 }
 
 export function makeRemoveAuthenticatorMsg({
@@ -23,8 +25,10 @@ export function makeRemoveAuthenticatorMsg({
   id: bigint;
   sender: string;
 }) {
-  return osmosis.authenticator.MessageComposer.withTypeUrl.removeAuthenticator({
-    id,
-    sender,
-  });
+  return osmosis.smartaccount.v1beta1.MessageComposer.withTypeUrl.removeAuthenticator(
+    {
+      id,
+      sender,
+    }
+  );
 }

@@ -1,6 +1,6 @@
 //@ts-nocheck
-import { BinaryReader, BinaryWriter } from "../../binary";
-import { base64FromBytes, bytesFromBase64 } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
+import { base64FromBytes, bytesFromBase64 } from "../../../helpers";
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticator {
   sender: string;
@@ -8,7 +8,7 @@ export interface MsgAddAuthenticator {
   data: Uint8Array;
 }
 export interface MsgAddAuthenticatorProtoMsg {
-  typeUrl: "/osmosis.authenticator.MsgAddAuthenticator";
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticator";
   value: Uint8Array;
 }
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
@@ -18,7 +18,7 @@ export interface MsgAddAuthenticatorAmino {
   data?: string;
 }
 export interface MsgAddAuthenticatorAminoMsg {
-  type: "osmosis/authenticator/add-authenticator";
+  type: "osmosis/smartaccount/add-authenticator";
   value: MsgAddAuthenticatorAmino;
 }
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
@@ -33,7 +33,7 @@ export interface MsgAddAuthenticatorResponse {
   success: boolean;
 }
 export interface MsgAddAuthenticatorResponseProtoMsg {
-  typeUrl: "/osmosis.authenticator.MsgAddAuthenticatorResponse";
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticatorResponse";
   value: Uint8Array;
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
@@ -42,7 +42,7 @@ export interface MsgAddAuthenticatorResponseAmino {
   success?: boolean;
 }
 export interface MsgAddAuthenticatorResponseAminoMsg {
-  type: "osmosis/authenticator/add-authenticator-response";
+  type: "osmosis/smartaccount/add-authenticator-response";
   value: MsgAddAuthenticatorResponseAmino;
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
@@ -58,7 +58,7 @@ export interface MsgRemoveAuthenticator {
   id: bigint;
 }
 export interface MsgRemoveAuthenticatorProtoMsg {
-  typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticator";
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator";
   value: Uint8Array;
 }
 /**
@@ -70,7 +70,7 @@ export interface MsgRemoveAuthenticatorAmino {
   id?: string;
 }
 export interface MsgRemoveAuthenticatorAminoMsg {
-  type: "osmosis/authenticator/remove-authenticator";
+  type: "osmosis/smartaccount/remove-authenticator";
   value: MsgRemoveAuthenticatorAmino;
 }
 /**
@@ -93,7 +93,7 @@ export interface MsgRemoveAuthenticatorResponse {
   success: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseProtoMsg {
-  typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticatorResponse";
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticatorResponse";
   value: Uint8Array;
 }
 /**
@@ -108,7 +108,7 @@ export interface MsgRemoveAuthenticatorResponseAmino {
   success?: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseAminoMsg {
-  type: "osmosis/authenticator/remove-authenticator-response";
+  type: "osmosis/smartaccount/remove-authenticator-response";
   value: MsgRemoveAuthenticatorResponseAmino;
 }
 /**
@@ -118,6 +118,37 @@ export interface MsgRemoveAuthenticatorResponseAminoMsg {
 export interface MsgRemoveAuthenticatorResponseSDKType {
   success: boolean;
 }
+export interface MsgSetActiveState {
+  sender: string;
+  active: boolean;
+}
+export interface MsgSetActiveStateProtoMsg {
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveState";
+  value: Uint8Array;
+}
+export interface MsgSetActiveStateAmino {
+  sender?: string;
+  active?: boolean;
+}
+export interface MsgSetActiveStateAminoMsg {
+  type: "osmosis/smartaccount/set-active-state";
+  value: MsgSetActiveStateAmino;
+}
+export interface MsgSetActiveStateSDKType {
+  sender: string;
+  active: boolean;
+}
+export interface MsgSetActiveStateResponse {}
+export interface MsgSetActiveStateResponseProtoMsg {
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveStateResponse";
+  value: Uint8Array;
+}
+export interface MsgSetActiveStateResponseAmino {}
+export interface MsgSetActiveStateResponseAminoMsg {
+  type: "osmosis/smartaccount/set-active-state-response";
+  value: MsgSetActiveStateResponseAmino;
+}
+export interface MsgSetActiveStateResponseSDKType {}
 /**
  * TxExtension allows for additional authenticator-specific data in
  * transactions.
@@ -130,7 +161,7 @@ export interface TxExtension {
   selectedAuthenticators: bigint[];
 }
 export interface TxExtensionProtoMsg {
-  typeUrl: "/osmosis.authenticator.TxExtension";
+  typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension";
   value: Uint8Array;
 }
 /**
@@ -145,7 +176,7 @@ export interface TxExtensionAmino {
   selected_authenticators?: string[];
 }
 export interface TxExtensionAminoMsg {
-  type: "osmosis/authenticator/tx-extension";
+  type: "osmosis/smartaccount/tx-extension";
   value: TxExtensionAmino;
 }
 /**
@@ -163,7 +194,7 @@ function createBaseMsgAddAuthenticator(): MsgAddAuthenticator {
   };
 }
 export const MsgAddAuthenticator = {
-  typeUrl: "/osmosis.authenticator.MsgAddAuthenticator",
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticator",
   encode(
     message: MsgAddAuthenticator,
     writer: BinaryWriter = BinaryWriter.create()
@@ -238,7 +269,7 @@ export const MsgAddAuthenticator = {
   },
   toAminoMsg(message: MsgAddAuthenticator): MsgAddAuthenticatorAminoMsg {
     return {
-      type: "osmosis/authenticator/add-authenticator",
+      type: "osmosis/smartaccount/add-authenticator",
       value: MsgAddAuthenticator.toAmino(message),
     };
   },
@@ -250,7 +281,7 @@ export const MsgAddAuthenticator = {
   },
   toProtoMsg(message: MsgAddAuthenticator): MsgAddAuthenticatorProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.MsgAddAuthenticator",
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticator",
       value: MsgAddAuthenticator.encode(message).finish(),
     };
   },
@@ -261,7 +292,7 @@ function createBaseMsgAddAuthenticatorResponse(): MsgAddAuthenticatorResponse {
   };
 }
 export const MsgAddAuthenticatorResponse = {
-  typeUrl: "/osmosis.authenticator.MsgAddAuthenticatorResponse",
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticatorResponse",
   encode(
     message: MsgAddAuthenticatorResponse,
     writer: BinaryWriter = BinaryWriter.create()
@@ -324,7 +355,7 @@ export const MsgAddAuthenticatorResponse = {
     message: MsgAddAuthenticatorResponse
   ): MsgAddAuthenticatorResponseAminoMsg {
     return {
-      type: "osmosis/authenticator/add-authenticator-response",
+      type: "osmosis/smartaccount/add-authenticator-response",
       value: MsgAddAuthenticatorResponse.toAmino(message),
     };
   },
@@ -340,7 +371,7 @@ export const MsgAddAuthenticatorResponse = {
     message: MsgAddAuthenticatorResponse
   ): MsgAddAuthenticatorResponseProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.MsgAddAuthenticatorResponse",
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgAddAuthenticatorResponse",
       value: MsgAddAuthenticatorResponse.encode(message).finish(),
     };
   },
@@ -352,7 +383,7 @@ function createBaseMsgRemoveAuthenticator(): MsgRemoveAuthenticator {
   };
 }
 export const MsgRemoveAuthenticator = {
-  typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticator",
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator",
   encode(
     message: MsgRemoveAuthenticator,
     writer: BinaryWriter = BinaryWriter.create()
@@ -419,7 +450,7 @@ export const MsgRemoveAuthenticator = {
   },
   toAminoMsg(message: MsgRemoveAuthenticator): MsgRemoveAuthenticatorAminoMsg {
     return {
-      type: "osmosis/authenticator/remove-authenticator",
+      type: "osmosis/smartaccount/remove-authenticator",
       value: MsgRemoveAuthenticator.toAmino(message),
     };
   },
@@ -433,7 +464,7 @@ export const MsgRemoveAuthenticator = {
   },
   toProtoMsg(message: MsgRemoveAuthenticator): MsgRemoveAuthenticatorProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticator",
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator",
       value: MsgRemoveAuthenticator.encode(message).finish(),
     };
   },
@@ -444,7 +475,7 @@ function createBaseMsgRemoveAuthenticatorResponse(): MsgRemoveAuthenticatorRespo
   };
 }
 export const MsgRemoveAuthenticatorResponse = {
-  typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticatorResponse",
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticatorResponse",
   encode(
     message: MsgRemoveAuthenticatorResponse,
     writer: BinaryWriter = BinaryWriter.create()
@@ -507,7 +538,7 @@ export const MsgRemoveAuthenticatorResponse = {
     message: MsgRemoveAuthenticatorResponse
   ): MsgRemoveAuthenticatorResponseAminoMsg {
     return {
-      type: "osmosis/authenticator/remove-authenticator-response",
+      type: "osmosis/smartaccount/remove-authenticator-response",
       value: MsgRemoveAuthenticatorResponse.toAmino(message),
     };
   },
@@ -523,8 +554,166 @@ export const MsgRemoveAuthenticatorResponse = {
     message: MsgRemoveAuthenticatorResponse
   ): MsgRemoveAuthenticatorResponseProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.MsgRemoveAuthenticatorResponse",
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgRemoveAuthenticatorResponse",
       value: MsgRemoveAuthenticatorResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetActiveState(): MsgSetActiveState {
+  return {
+    sender: "",
+    active: false,
+  };
+}
+export const MsgSetActiveState = {
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveState",
+  encode(
+    message: MsgSetActiveState,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    if (message.active === true) {
+      writer.uint32(16).bool(message.active);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetActiveState {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetActiveState();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.active = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgSetActiveState>): MsgSetActiveState {
+    const message = createBaseMsgSetActiveState();
+    message.sender = object.sender ?? "";
+    message.active = object.active ?? false;
+    return message;
+  },
+  fromAmino(object: MsgSetActiveStateAmino): MsgSetActiveState {
+    const message = createBaseMsgSetActiveState();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.active !== undefined && object.active !== null) {
+      message.active = object.active;
+    }
+    return message;
+  },
+  toAmino(message: MsgSetActiveState): MsgSetActiveStateAmino {
+    const obj: any = {};
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.active = message.active === false ? undefined : message.active;
+    return obj;
+  },
+  fromAminoMsg(object: MsgSetActiveStateAminoMsg): MsgSetActiveState {
+    return MsgSetActiveState.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgSetActiveState): MsgSetActiveStateAminoMsg {
+    return {
+      type: "osmosis/smartaccount/set-active-state",
+      value: MsgSetActiveState.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: MsgSetActiveStateProtoMsg): MsgSetActiveState {
+    return MsgSetActiveState.decode(message.value);
+  },
+  toProto(message: MsgSetActiveState): Uint8Array {
+    return MsgSetActiveState.encode(message).finish();
+  },
+  toProtoMsg(message: MsgSetActiveState): MsgSetActiveStateProtoMsg {
+    return {
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveState",
+      value: MsgSetActiveState.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetActiveStateResponse(): MsgSetActiveStateResponse {
+  return {};
+}
+export const MsgSetActiveStateResponse = {
+  typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveStateResponse",
+  encode(
+    _: MsgSetActiveStateResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetActiveStateResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetActiveStateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    _: Partial<MsgSetActiveStateResponse>
+  ): MsgSetActiveStateResponse {
+    const message = createBaseMsgSetActiveStateResponse();
+    return message;
+  },
+  fromAmino(_: MsgSetActiveStateResponseAmino): MsgSetActiveStateResponse {
+    const message = createBaseMsgSetActiveStateResponse();
+    return message;
+  },
+  toAmino(_: MsgSetActiveStateResponse): MsgSetActiveStateResponseAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetActiveStateResponseAminoMsg
+  ): MsgSetActiveStateResponse {
+    return MsgSetActiveStateResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetActiveStateResponse
+  ): MsgSetActiveStateResponseAminoMsg {
+    return {
+      type: "osmosis/smartaccount/set-active-state-response",
+      value: MsgSetActiveStateResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetActiveStateResponseProtoMsg
+  ): MsgSetActiveStateResponse {
+    return MsgSetActiveStateResponse.decode(message.value);
+  },
+  toProto(message: MsgSetActiveStateResponse): Uint8Array {
+    return MsgSetActiveStateResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetActiveStateResponse
+  ): MsgSetActiveStateResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.smartaccount.v1beta1.MsgSetActiveStateResponse",
+      value: MsgSetActiveStateResponse.encode(message).finish(),
     };
   },
 };
@@ -534,7 +723,7 @@ function createBaseTxExtension(): TxExtension {
   };
 }
 export const TxExtension = {
-  typeUrl: "/osmosis.authenticator.TxExtension",
+  typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
   encode(
     message: TxExtension,
     writer: BinaryWriter = BinaryWriter.create()
@@ -599,7 +788,7 @@ export const TxExtension = {
   },
   toAminoMsg(message: TxExtension): TxExtensionAminoMsg {
     return {
-      type: "osmosis/authenticator/tx-extension",
+      type: "osmosis/smartaccount/tx-extension",
       value: TxExtension.toAmino(message),
     };
   },
@@ -611,7 +800,7 @@ export const TxExtension = {
   },
   toProtoMsg(message: TxExtension): TxExtensionProtoMsg {
     return {
-      typeUrl: "/osmosis.authenticator.TxExtension",
+      typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
       value: TxExtension.encode(message).finish(),
     };
   },
