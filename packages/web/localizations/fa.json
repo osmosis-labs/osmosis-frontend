@@ -973,6 +973,35 @@
     "noTransactions": "بدون معامله",
     "pastShownHere": "معاملات گذشته شما در Osmosis در اینجا ظاهر می شود.",
     "connectToSee": "برای مشاهده تاریخچه تراکنش خود وصل شوید",
-    "connectWallet": "کیف پول را وصل کنید"
-  }
+    "connectWallet": "کیف پول را وصل کنید",
+    "title": "معاملات",
+    "swapping": "مبادله",
+    "swapped": "تعویض شد",
+    "swapFailed": "تعویض انجام نشد",
+    "taxReports": "گزارش های مالیاتی",
+    "explorer": "کاوشگر",
+    "sold": "فروخته شد",
+    "bought": "خرید",
+    "executionPrice": "قیمت اجرا",
+    "totalFees": "مجموع هزینه ها",
+    "transactionHash": "هش تراکنش",
+    "viewOnExplorer": "مشاهده در اکسپلورر"
+  },
+  "date": {
+    "earlierToday": "اوایل امروز",
+    "yesterday": "دیروز",
+    "january": "ژانویه",
+    "february": "فوریه",
+    "march": "مارس",
+    "april": "آوریل",
+    "may": "ممکن است",
+    "june": "ژوئن",
+    "july": "جولای",
+    "august": "مرداد",
+    "september": "سپتامبر",
+    "october": "اکتبر",
+    "november": "نوامبر",
+    "december": "دسامبر"
+  },
+  "backToTop": "بازگشت به بالا"
 }

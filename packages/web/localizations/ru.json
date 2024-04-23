@@ -973,6 +973,35 @@
     "noTransactions": "Нет транзакций",
     "pastShownHere": "Здесь появятся ваши прошлые сделки по Osmosis.",
     "connectToSee": "Подключитесь, чтобы просмотреть историю транзакций",
-    "connectWallet": "Подключить кошелек"
-  }
+    "connectWallet": "Подключить кошелек",
+    "title": "Транзакции",
+    "swapping": "Обмен",
+    "swapped": "поменяно местами",
+    "swapFailed": "Замена не удалась",
+    "taxReports": "Налоговые отчеты",
+    "explorer": "Исследователь",
+    "sold": "Продал",
+    "bought": "Купил",
+    "executionPrice": "Цена исполнения",
+    "totalFees": "Общая сумма сборов",
+    "transactionHash": "Хэш транзакции",
+    "viewOnExplorer": "Посмотреть в проводнике"
+  },
+  "date": {
+    "earlierToday": "Ранее сегодня",
+    "yesterday": "Вчера",
+    "january": "январь",
+    "february": "февраль",
+    "march": "Маршировать",
+    "april": "апрель",
+    "may": "Может",
+    "june": "Июнь",
+    "july": "Июль",
+    "august": "Август",
+    "september": "Сентябрь",
+    "october": "Октябрь",
+    "november": "ноябрь",
+    "december": "Декабрь"
+  },
+  "backToTop": "Вернуться наверх"
 }

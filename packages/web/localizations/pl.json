@@ -973,6 +973,35 @@
     "noTransactions": "Żadnych transakcji",
     "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
     "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
-    "connectWallet": "Podłącz portfel"
-  }
+    "connectWallet": "Podłącz portfel",
+    "title": "Transakcje",
+    "swapping": "Zamiana",
+    "swapped": "Zamienione",
+    "swapFailed": "Zamiana nie powiodła się",
+    "taxReports": "Raporty podatkowe",
+    "explorer": "poszukiwacz",
+    "sold": "Sprzedany",
+    "bought": "Kupił",
+    "executionPrice": "Cena wykonania",
+    "totalFees": "Wszystkie koszty",
+    "transactionHash": "Hash transakcji",
+    "viewOnExplorer": "Zobacz w eksploratorze"
+  },
+  "date": {
+    "earlierToday": "Dzisiaj wcześniej",
+    "yesterday": "Wczoraj",
+    "january": "Styczeń",
+    "february": "Luty",
+    "march": "Marsz",
+    "april": "Kwiecień",
+    "may": "Móc",
+    "june": "Czerwiec",
+    "july": "Lipiec",
+    "august": "Sierpień",
+    "september": "Wrzesień",
+    "october": "Październik",
+    "november": "Listopad",
+    "december": "Grudzień"
+  },
+  "backToTop": "Powrót do góry"
 }

@@ -973,6 +973,35 @@
     "noTransactions": "取引なし",
     "pastShownHere": "Osmosis での過去の取引がここに表示されます。",
     "connectToSee": "取引履歴を表示するには接続してください",
-    "connectWallet": "ウォレットを接続する"
-  }
+    "connectWallet": "ウォレットを接続する",
+    "title": "取引",
+    "swapping": "スワッピング",
+    "swapped": "交換",
+    "swapFailed": "スワップに失敗しました",
+    "taxReports": "税務レポート",
+    "explorer": "冒険者",
+    "sold": "販売済み",
+    "bought": "買った",
+    "executionPrice": "執行価格",
+    "totalFees": "合計料金",
+    "transactionHash": "トランザクションハッシュ",
+    "viewOnExplorer": "エクスプローラーで見る"
+  },
+  "date": {
+    "earlierToday": "本日",
+    "yesterday": "昨日",
+    "january": "1月",
+    "february": "2月",
+    "march": "行進",
+    "april": "4月",
+    "may": "5月",
+    "june": "六月",
+    "july": "7月",
+    "august": "8月",
+    "september": "9月",
+    "october": "10月",
+    "november": "11月",
+    "december": "12月"
+  },
+  "backToTop": "トップに戻る"
 }

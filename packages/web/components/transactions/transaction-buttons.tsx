@@ -6,7 +6,7 @@ import { MenuDropdown } from "~/components/control";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useWindowSize } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export const TransactionButtons = ({
   open,
@@ -20,6 +20,8 @@ export const TransactionButtons = ({
   const { isLargeDesktop } = useWindowSize();
 
   const { logEvent } = useAmplitudeAnalytics();
+
+  const { t } = useTranslation();
 
   return (
     <div className="relative flex gap-3">
@@ -38,7 +40,7 @@ export const TransactionButtons = ({
             ]);
           }}
         >
-          Explorer &#x2197;
+          {t("transactions.explorer")} &#x2197;
         </Link>
       </Button>
       <Transition
@@ -61,7 +63,7 @@ export const TransactionButtons = ({
               logEvent([EventName.TransactionsPage.taxReportsClicked]);
             }}
           >
-            Tax Reports &#x2197;
+            {t("transactions.taxReports")} &#x2197;
           </Link>
         </Button>
       </Transition>
@@ -99,7 +101,7 @@ export const TransactionButtons = ({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Tax Reports &#x2197;
+                    {t("transactions.taxReports")} &#x2197;
                   </Link>
                 ),
               },

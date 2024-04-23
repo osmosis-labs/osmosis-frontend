@@ -973,6 +973,35 @@
     "noTransactions": "沒有交易",
     "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
     "connectToSee": "連接以查看您的交易記錄",
-    "connectWallet": "連接錢包"
-  }
+    "connectWallet": "連接錢包",
+    "title": "交易",
+    "swapping": "交換",
+    "swapped": "交換了",
+    "swapFailed": "兌換失敗",
+    "taxReports": "稅務報告",
+    "explorer": "探險家",
+    "sold": "賣",
+    "bought": "買",
+    "executionPrice": "執行價格",
+    "totalFees": "總費用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在資源管理器上查看"
+  },
+  "date": {
+    "earlierToday": "今天早些時候",
+    "yesterday": "昨天",
+    "january": "一月",
+    "february": "二月",
+    "march": "行進",
+    "april": "四月",
+    "may": "可能",
+    "june": "六月",
+    "july": "七月",
+    "august": "八月",
+    "september": "九月",
+    "october": "十月",
+    "november": "十一月",
+    "december": "十二月"
+  },
+  "backToTop": "回到頂部"
 }

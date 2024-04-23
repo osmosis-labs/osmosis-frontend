@@ -973,6 +973,35 @@
     "noTransactions": "İşlem yok",
     "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
     "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
-    "connectWallet": "Cüzdanı bağlayın"
-  }
+    "connectWallet": "Cüzdanı bağlayın",
+    "title": "İşlemler",
+    "swapping": "Değiştirme",
+    "swapped": "Değiştirildi",
+    "swapFailed": "Değiştirme başarısız oldu",
+    "taxReports": "Vergi Raporları",
+    "explorer": "Kaşif",
+    "sold": "Satılmış",
+    "bought": "Satın alınmış",
+    "executionPrice": "Uygulama Fiyatı",
+    "totalFees": "Toplam ücretler",
+    "transactionHash": "İşlem Karması",
+    "viewOnExplorer": "Explorer'da görüntüle"
+  },
+  "date": {
+    "earlierToday": "Bugün erken saatlerde",
+    "yesterday": "Dün",
+    "january": "Ocak",
+    "february": "Şubat",
+    "march": "Mart",
+    "april": "Nisan",
+    "may": "Mayıs",
+    "june": "Haziran",
+    "july": "Temmuz",
+    "august": "Ağustos",
+    "september": "Eylül",
+    "october": "Ekim",
+    "november": "Kasım",
+    "december": "Aralık"
+  },
+  "backToTop": "Başa dönüş"
 }
