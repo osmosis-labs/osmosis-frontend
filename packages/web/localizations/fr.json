@@ -211,7 +211,8 @@
       "volume24h": "Volume",
       "priceChange24h": "changement 24h",
       "price": "Prix",
-      "name": "Nom"
+      "name": "Nom",
+      "balance": "Équilibre"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -285,17 +286,24 @@
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
-    "getStarted": {
-      "title": "Commencez avec {osmosis}",
-      "description": "Connectez-vous et approvisionnez votre portefeuille pour commencer à trader en quelques étapes seulement.",
-      "addFunds": "Ajoutez des fonds pour commencer"
-    },
     "categories": {
       "new": "Le plus récent",
       "defi": "DéFi",
       "stablecoin": "Pièces stables",
       "meme": "Mème",
-      "liquid_staking": "Jalonnement liquide"
+      "liquid_staking": "Jalonnement liquide",
+      "built_on_osmosis": "Construit sur l'osmose",
+      "sail_initiative": "Initiative de voile",
+      "bridges": "Des ponts",
+      "nft_protocol": "Protocole NFT",
+      "ai": "IA",
+      "privacy": "Confidentialité",
+      "social": "Sociale",
+      "oracles": "Oracles",
+      "dweb": "Web décentralisé",
+      "rwa": "Émission d'actifs du monde réel",
+      "gaming": "Jeux",
+      "topGainers": "Meilleurs gagnants"
     },
     "seeAll": "Voir tout",
     "highlights": {
@@ -305,12 +313,17 @@
     }
   },
   "portfolio": {
-    "trade": "Commerce",
+    "buy": "Acheter",
     "yourAssets": "Vos atouts",
     "yourPositions": "Vos postes",
     "recentTransfers": "Transferts récents",
     "yourSuperchargedPositions": "Vos positions suralimentées",
-    "yourLiquidityPools": "Vos pools de liquidité"
+    "yourLiquidityPools": "Vos pools de liquidité",
+    "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis.",
+    "noAssets": "Vous n'avez aucun solde sur {osmosis}",
+    "getStarted": "Déposez des actifs pour commencer",
+    "noPositions": "Vous n'avez aucun poste",
+    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités"
   },
   "buyTokens": "Acheter jetons",
   "components": {
@@ -694,6 +707,7 @@
     "modalTitle": "Le profil",
     "viewAllAssets": "Voir tous les actifs",
     "wallet": "Portefeuille",
+    "transactions": "Transactions",
     "oneClickTrading": "Trading en 1 clic"
   },
   "removeLiquidity": {
@@ -711,6 +725,10 @@
     "titleLanguage": "Langue",
     "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
     "hideBalances": "Soldes masqués"
+  },
+  "search": {
+    "noResultsFor": "Aucun résultat pour \" {query} \"",
+    "adjust": "Essayez d'ajuster votre requête de recherche"
   },
   "stake": {
     "available": "Disponible",
@@ -1052,6 +1070,12 @@
       "risk": {
         "description": "L'évaluation des risques consiste à considérer une combinaison de critères liés à une stratégie et à ses actifs sous-jacents."
       }
+    },
+    "riskLabels": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Haut",
+      "veryHigh": "Très haut"
     }
   },
   "disclaimer": "Clause de non-responsabilité",
@@ -1073,6 +1097,10 @@
   },
   "transactions": {
     "noRecent": "Aucun transfert récent",
-    "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici."
+    "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici.",
+    "noTransactions": "Aucune transaction",
+    "pastShownHere": "Vos transactions passées sur Osmosis apparaîtront ici.",
+    "connectToSee": "Connectez-vous pour voir l'historique de vos transactions",
+    "connectWallet": "Connecter le portefeuille"
   }
 }

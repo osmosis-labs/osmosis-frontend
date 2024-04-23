@@ -229,7 +229,7 @@ export const NavBar: FunctionComponent<
                         }
                       />
                     </Popover.Button>
-                    <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 px-3 py-4">
+                    <Popover.Panel className="absolute top-navbar-mobile top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
                       <MainMenu
                         menus={mobileMenus}
                         secondaryMenuItems={secondaryMenuItems}

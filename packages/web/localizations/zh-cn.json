@@ -211,7 +211,8 @@
       "volume24h": "体积",
       "priceChange24h": "24小时变化",
       "price": "价格",
-      "name": "姓名"
+      "name": "姓名",
+      "balance": "余额"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -285,17 +286,24 @@
       "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
       "reminder": "您始终可以在设置模式中停用此设置。"
     },
-    "getStarted": {
-      "title": "开始使用{osmosis}",
-      "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
-      "addFunds": "添加资金即可开始"
-    },
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
       "stablecoin": "稳定币",
       "meme": "模因",
-      "liquid_staking": "流动质押"
+      "liquid_staking": "流动质押",
+      "built_on_osmosis": "建立在 Osmosis 之上",
+      "sail_initiative": "扬帆计划",
+      "bridges": "桥梁",
+      "nft_protocol": "NFT 协议",
+      "ai": "人工智能",
+      "privacy": "隐私",
+      "social": "社会的",
+      "oracles": "预言机",
+      "dweb": "去中心化网络",
+      "rwa": "现实世界资产发行",
+      "gaming": "赌博",
+      "topGainers": "涨幅最大的股票"
     },
     "seeAll": "查看全部",
     "highlights": {
@@ -305,12 +313,17 @@
     }
   },
   "portfolio": {
-    "trade": "贸易",
+    "buy": "买",
     "yourAssets": "您的资产",
     "yourPositions": "您的职位",
     "recentTransfers": "最近转会",
     "yourSuperchargedPositions": "您的超级职位",
-    "yourLiquidityPools": "您的流动资金池"
+    "yourLiquidityPools": "您的流动资金池",
+    "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
+    "noAssets": "您在{osmosis}上没有余额",
+    "getStarted": "存入资产即可开始",
+    "noPositions": "您没有职位",
+    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -694,6 +707,7 @@
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有资产",
     "wallet": "钱包",
+    "transactions": "交易",
     "oneClickTrading": "一键交易"
   },
   "removeLiquidity": {
@@ -711,6 +725,10 @@
     "titleLanguage": "语言",
     "titleHideBalances": "屏蔽余额以保护隐私",
     "hideBalances": "隐藏余额"
+  },
+  "search": {
+    "noResultsFor": "没有找到“ {query} ”的结果",
+    "adjust": "尝试调整您的搜索查询"
   },
   "stake": {
     "available": "可用的",
@@ -1052,6 +1070,12 @@
       "risk": {
         "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免责声明",
@@ -1073,6 +1097,10 @@
   },
   "transactions": {
     "noRecent": "最近没有转会",
-    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。"
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
+    "noTransactions": "没有交易",
+    "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
+    "connectToSee": "连接以查看您的交易历史记录",
+    "connectWallet": "连接钱包"
   }
 }

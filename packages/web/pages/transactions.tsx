@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -9,8 +10,9 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -20,7 +22,7 @@ const EXAMPLE = {
   PAGE_SIZE: 100,
 };
 
-const Transactions: React.FC = () => {
+const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
   const router = useRouter();
 
@@ -28,8 +30,9 @@ const Transactions: React.FC = () => {
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
-  // @ts-ignore - ignore unused address temporarily
   const address = account?.address || "";
+
+  const isWalletConnected = Boolean(account?.isWalletConnected);
 
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
@@ -40,7 +43,7 @@ const Transactions: React.FC = () => {
         pageSize: EXAMPLE.PAGE_SIZE,
       },
       {
-        // enabled: !!address,
+        enabled: !!address,
       }
     );
 
@@ -49,6 +52,10 @@ const Transactions: React.FC = () => {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
 
   const { t } = useTranslation();
 
@@ -85,17 +92,15 @@ const Transactions: React.FC = () => {
 
   return (
     <main className="relative mx-16 flex gap-4">
-      {!isLoading && transactionData && (
-        // TODO - add loading state
-        <>
-          <TransactionContent
-            setSelectedTransaction={setSelectedTransaction}
-            transactions={transactionData}
-            setOpen={setOpen}
-            open={open}
-          />
-        </>
-      )}
+      <TransactionContent
+        setSelectedTransaction={setSelectedTransaction}
+        transactions={transactionData}
+        setOpen={setOpen}
+        open={open}
+        address={address}
+        isLoading={isLoading}
+        isWalletConnected={isWalletConnected}
+      />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
           onRequestClose={() => setOpen(false)}
@@ -112,6 +117,6 @@ const Transactions: React.FC = () => {
       <BackToTopButton />
     </main>
   );
-};
+});
 
 export default Transactions;

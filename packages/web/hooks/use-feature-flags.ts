@@ -25,6 +25,7 @@ export type AvailableFlags =
   | "positionRoi"
   | "swapToolSimulateFee"
   | "portfolioPageAndNewAssetsPage"
+  | "displayDailyEarn"
   | "oneClickTrading";
 
 type ModifiedFlags =
@@ -52,6 +53,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
+  displayDailyEarn: false,
   oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,
@@ -78,6 +80,10 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
+    portfolioPageAndNewAssetsPage:
+      isMobile || !isInitialized
+        ? false
+        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     oneClickTrading:
       !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag

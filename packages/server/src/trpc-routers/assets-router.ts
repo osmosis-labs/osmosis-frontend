@@ -16,6 +16,7 @@ import {
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
 } from "../queries/complex/assets";
+import { getBridgeAsset } from "../queries/complex/assets/bridge";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
@@ -220,7 +221,7 @@ export const assetsRouter = createTRPCRouter({
             "currentPrice",
             "priceChange24h",
             "usdValue",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )
@@ -248,9 +249,10 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
             });
 
-            assets = assets.filter((asset) =>
-              asset.amount?.toDec().isPositive()
-            );
+            if (!search)
+              assets = assets.filter((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
 
             let priceAssets = await Promise.all(
               assets.map(async (asset) => {
@@ -281,7 +283,11 @@ export const assetsRouter = createTRPCRouter({
               );
             }
 
-            return priceAssets;
+            const bridgeAssets = priceAssets.map((asset) =>
+              getBridgeAsset(ctx.assetLists, asset)
+            );
+
+            return bridgeAssets;
           },
           cacheKey: JSON.stringify({
             search,

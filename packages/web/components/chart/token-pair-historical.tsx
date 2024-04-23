@@ -21,6 +21,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, memo } from "react";
 
 import { Icon } from "~/components/assets";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
@@ -257,6 +258,7 @@ export const PriceChartHeader: FunctionComponent<{
   quoteDenom?: string;
   hideButtons?: boolean;
   showAllRange?: boolean;
+  isLoading?: boolean;
   classes?: {
     buttons?: string;
     priceHeaderClass?: string;
@@ -277,6 +279,7 @@ export const PriceChartHeader: FunctionComponent<{
     classes,
     fiatSymbol,
     showAllRange = false,
+    isLoading = false,
   }) => {
     const { t } = useTranslation();
 
@@ -293,19 +296,21 @@ export const PriceChartHeader: FunctionComponent<{
             classes?.pricesHeaderContainerClass
           )}
         >
-          <h4
-            className={classNames(
-              "row-span-2 pr-1 font-caption sm:text-h5",
-              classes?.priceHeaderClass
-            )}
-          >
-            {fiatSymbol}
-            {formatPretty(new Dec(hoverPrice), {
-              maxDecimals: decimal,
-              notation: "compact",
-              ...formatOpts,
-            }) || ""}
-          </h4>
+          <SkeletonLoader isLoaded={!isLoading}>
+            <h4
+              className={classNames(
+                "row-span-2 pr-1 font-caption sm:text-h5",
+                classes?.priceHeaderClass
+              )}
+            >
+              {fiatSymbol}
+              {formatPretty(new Dec(hoverPrice), {
+                maxDecimals: decimal,
+                notation: "compact",
+                ...formatOpts,
+              }) || ""}
+            </h4>
+          </SkeletonLoader>
           {baseDenom && quoteDenom ? (
             <div
               className={classNames(
