@@ -863,7 +863,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"

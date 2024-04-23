@@ -863,7 +863,6 @@
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",
     "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"

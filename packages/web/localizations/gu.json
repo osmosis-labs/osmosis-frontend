@@ -863,7 +863,6 @@
     "marketCap": "માર્કેટ કેપ",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
     "tvl": "ટીવીએલ",
-    "noData": "એનડી",
     "buyToken": "{coinDenom} ખરીદો",
     "staking": "સ્ટેકિંગ",
     "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"

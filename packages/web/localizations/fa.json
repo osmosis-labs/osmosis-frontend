@@ -863,7 +863,6 @@
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "خرید {coinDenom}",
     "staking": "شرط بندی",
     "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
