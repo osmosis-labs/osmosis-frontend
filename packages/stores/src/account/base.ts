@@ -47,7 +47,7 @@ import {
   osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
-import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/authenticator/tx";
+import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
 import {
   queryBalances,
   queryFeesBaseDenom,
