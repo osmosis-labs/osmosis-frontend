@@ -8,6 +8,8 @@ import {
   formatDate,
   groupTransactionsByDate,
 } from "~/components/transactions/transaction-utils";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 
 export const TransactionContent = ({
   setSelectedTransaction,
@@ -26,6 +28,8 @@ export const TransactionContent = ({
   isLoading: boolean;
   isWalletConnected: boolean;
 }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">
@@ -58,6 +62,19 @@ export const TransactionContent = ({
                     effect="swap"
                     status={transaction.code === 0 ? "success" : "failed"}
                     onClick={() => {
+                      // TODO - once there are more transaction types, we can add more event names
+                      logEvent([
+                        EventName.TransactionsPage.swapClicked,
+                        {
+                          tokenIn:
+                            transaction.metadata[0].value[0].txInfo.tokenIn
+                              .token.denom,
+                          tokenOut:
+                            transaction.metadata[0].value[0].txInfo.tokenOut
+                              .token.denom,
+                        },
+                      ]);
+
                       setSelectedTransaction(transaction);
 
                       // delay to ensure the slide over transitions smoothly

@@ -4,7 +4,9 @@ import { useState } from "react";
 
 import { MenuDropdown } from "~/components/control";
 import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
 import { useWindowSize } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 
 export const TransactionButtons = ({
   open,
@@ -17,6 +19,8 @@ export const TransactionButtons = ({
 
   const { isLargeDesktop } = useWindowSize();
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
     <div className="relative flex gap-3">
       <Button variant="secondary" size="md" asChild>
@@ -25,6 +29,14 @@ export const TransactionButtons = ({
           href={`https://www.mintscan.io/osmosis/address/${address}`}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {
+            logEvent([
+              EventName.TransactionsPage.explorerClicked,
+              {
+                source: "top",
+              },
+            ]);
+          }}
         >
           Explorer &#x2197;
         </Link>
@@ -45,6 +57,9 @@ export const TransactionButtons = ({
             href="https://stake.tax/"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              logEvent([EventName.TransactionsPage.taxReportsClicked]);
+            }}
           >
             Tax Reports &#x2197;
           </Link>
