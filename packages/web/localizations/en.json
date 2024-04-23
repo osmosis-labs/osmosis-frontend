@@ -973,6 +973,19 @@
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
     "connectToSee": "Connect to see your transaction history",
-    "connectWallet": "Connect wallet"
-  }
+    "connectWallet": "Connect wallet",
+    "title": "Transactions",
+    "swapping": "Swapping",
+    "swapped": "Swapped",
+    "swapFailed": "Swap failed",
+    "taxReports": "Tax Reports",
+    "explorer": "Explorer",
+    "sold": "Sold",
+    "bought": "Bought",
+    "executionPrice": "Execution Price",
+    "totalFees": "Total Fees",
+    "transactionHash": "Transaction Hash",
+    "viewOnExplorer": "View on explorer"
+  },
+  "backToTop": "Back to top"
 }

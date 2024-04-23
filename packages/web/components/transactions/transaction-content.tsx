@@ -9,7 +9,7 @@ import {
   groupTransactionsByDate,
 } from "~/components/transactions/transaction-utils";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export const TransactionContent = ({
   setSelectedTransaction,
@@ -30,10 +30,12 @@ export const TransactionContent = ({
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
+  const { t } = useTranslation();
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3 font-h3">Transactions</h1>
+        <h1 className="text-h3 font-h3">{t("transactions.title")}</h1>
         <TransactionButtons open={open} address={address} />
       </div>
 
@@ -55,9 +57,9 @@ export const TransactionContent = ({
                     key={transaction.id}
                     title={{
                       // each type of transaction would have a translation for when it's pending, successful, or failed
-                      pending: "Swapping",
-                      success: "Swapped",
-                      failed: "Swap failed",
+                      pending: t("transactions.swapping"),
+                      success: t("transactions.swapped"),
+                      failed: t("transactions.swapFailed"),
                     }}
                     effect="swap"
                     status={transaction.code === 0 ? "success" : "failed"}

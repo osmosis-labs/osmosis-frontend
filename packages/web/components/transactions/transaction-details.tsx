@@ -11,7 +11,7 @@ import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -54,6 +54,8 @@ export const TransactionDetailsContent = ({
 
   const { logEvent } = useAmplitudeAnalytics();
 
+  const { t } = useTranslation();
+
   return (
     <div
       className={classNames(
@@ -79,7 +81,8 @@ export const TransactionDetailsContent = ({
             <Icon id="swap" width={24} height={24} aria-label="swap icon" />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">Swapped</div>
+            {/* TODO - add status here */}
+            <div className="text-h5">{t("transactions.swapped")}</div>
             <div className="body1 text-osmoverse-300">{formattedDate}</div>
           </div>
         </div>
@@ -94,7 +97,7 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="subtitle1">Sold</div>
+                <div className="subtitle1">{t("trasactions.sold")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenIn.token.denom}
                 </div>
@@ -128,7 +131,7 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="text-subtitle1">Bought</div>
+                <div className="text-subtitle1">{t("transactions.bought")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenOut.token.denom}
                 </div>
@@ -152,7 +155,7 @@ export const TransactionDetailsContent = ({
               onClick={toggleConversion}
               className="cursor-pointer whitespace-nowrap"
             >
-              Execution Price <span>&#x2194;</span>
+              {t("transactions.totalFees")} <span>&#x2194;</span>
             </div>
             <div className="flex gap-3 whitespace-nowrap">
               <div className="text-body1 text-wosmongton-300">
@@ -171,7 +174,7 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex justify-between py-3">
-            <div>Transaction Hash</div>
+            <div>{t("transactions.transactionHash")}</div>
             <div className="flex gap-3">
               <div className="text-body1 text-wosmongton-300">
                 {getShortAddress(transaction.hash)}
@@ -198,7 +201,7 @@ export const TransactionDetailsContent = ({
             target="_blank"
             href={`https://www.mintscan.io/cosmos/txs/${transaction.hash}`}
           >
-            <span>View on Explorer &#x2197;</span>
+            <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
           </a>
         </Button>
       </div>
