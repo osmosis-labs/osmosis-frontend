@@ -314,7 +314,6 @@
     }
   },
   "portfolio": {
-    "trade": "Trade",
     "buy": "Buy",
     "yourAssets": "Your assets",
     "yourPositions": "Your positions",
