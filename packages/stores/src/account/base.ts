@@ -1043,12 +1043,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     initialFee = { amount: [] },
     memo = "",
     signOptions = {},
+    excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     initialFee?: Optional<TxFee, "gas">;
     memo?: string;
     signOptions?: SignOptions;
+    excludedFeeMinimalDenoms?: string[];
   }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
@@ -1123,6 +1125,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
               gasLimit,
               chainId: wallet.chainId,
               address: wallet.address,
+              excludedFeeMinimalDenoms,
             }),
           ],
         };
@@ -1185,10 +1188,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     gasLimit,
     chainId,
     address,
+    checkOtherFeeTokens = true,
+    excludedFeeMinimalDenoms: excludedFeeTokens = [],
   }: {
     gasLimit: string;
     chainId: string;
     address: string | undefined;
+    checkOtherFeeTokens?: boolean;
+    excludedFeeMinimalDenoms?: string[];
   }) {
     const chain = getChain({ chainList: this.chains, chainId });
 
@@ -1237,7 +1244,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain doesn't support the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise throw an error.
      */
-    if (!chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+    if (
+      (!chainHasOsmosisFeeModule || !checkOtherFeeTokens) &&
+      isUserBalanceInsufficientForBaseChainFee
+    ) {
       console.error(
         `Insufficient balance for the base fee token (${fee.denom}).`
       );
@@ -1250,11 +1260,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain supports the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise find another fee token to use.
      */
-    if (chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+    if (
+      chainHasOsmosisFeeModule &&
+      (isUserBalanceInsufficientForBaseChainFee ||
+        excludedFeeTokens.includes(fee.denom))
+    ) {
       const { feeTokens } = await this.queryFeeTokens({ chainId });
 
-      const feeTokenUserBalances = balances.filter((balance) =>
-        feeTokens.includes(balance.denom)
+      const feeTokenUserBalances = balances.filter(
+        (balance) =>
+          feeTokens.includes(balance.denom) &&
+          !excludedFeeTokens.includes(balance.denom)
       );
 
       if (!feeTokenUserBalances.length) {
@@ -1302,6 +1318,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       fee = alternateFee;
+    }
+
+    if (!fee) {
+      throw new Error("Fee not found");
     }
 
     return fee;
