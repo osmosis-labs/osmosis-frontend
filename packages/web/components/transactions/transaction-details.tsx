@@ -25,13 +25,26 @@ export const TransactionDetailsContent = ({
   isModal: boolean;
   transaction: FormattedTransaction;
 }) => {
+  const { t } = useTranslation();
+
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
-  const formattedDate = dayjs(transaction.blockTimestamp).format(
-    "MMM DD, YYYY, HH:mm"
-  );
+  const formattedMonth = dayjs(transaction.blockTimestamp).format("MMMM");
+
+  const translatedFormattedMonth = t(`date.${formattedMonth.toLowerCase()}`);
+
+  const formattedDateDayYearHourMinute = dayjs(
+    transaction.blockTimestamp
+  ).format("DD, YYYY, HH:mm");
+
+  // create a localized formatted date
+  // example: Jan 1, 2022, 12:00
+  const formattedDate = `${translatedFormattedMonth.slice(
+    0,
+    3
+  )} ${formattedDateDayYearHourMinute}`;
 
   const [conversion, setConversion] = useState({
     numerator: tokenIn.token,
@@ -53,8 +66,6 @@ export const TransactionDetailsContent = ({
   }, [conversion.numerator, conversion.denominator]);
 
   const { logEvent } = useAmplitudeAnalytics();
-
-  const { t } = useTranslation();
 
   return (
     <div
@@ -155,7 +166,7 @@ export const TransactionDetailsContent = ({
               onClick={toggleConversion}
               className="cursor-pointer whitespace-nowrap"
             >
-              {t("transactions.totalFees")} <span>&#x2194;</span>
+              {t("transactions.executionPrice")} <span>&#x2194;</span>
             </div>
             <div className="flex gap-3 whitespace-nowrap">
               <div className="text-body1 text-wosmongton-300">
@@ -166,7 +177,7 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex justify-between gap-3 py-3">
-            <div>Total Fees</div>
+            <div>{t("transactions.totalFees")}</div>
             <div className="text-body1 text-wosmongton-300">
               {formatPretty(txFee.token, {
                 maxDecimals: 2,
