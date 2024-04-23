@@ -11,6 +11,15 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "~/components/ui/pagination";
 import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
@@ -38,8 +47,8 @@ const Transactions: React.FC = observer(() => {
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        address,
-        // address: EXAMPLE.ADDRESS,
+        // address,
+        address: EXAMPLE.ADDRESS,
         page: EXAMPLE.PAGE,
         pageSize: EXAMPLE.PAGE_SIZE,
       },
@@ -94,7 +103,7 @@ const Transactions: React.FC = observer(() => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="relative mx-16 flex gap-4">
+    <main className="relative mx-16 flex flex-col gap-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
         transactions={transactionData}
@@ -118,6 +127,30 @@ const Transactions: React.FC = observer(() => {
         />
       )}
       <BackToTopButton />
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 });
