@@ -47,7 +47,7 @@ export const TokenSelectModal: FunctionComponent<
           size="large"
         />
       </div>
-      <ul className="flex max-h-96 flex-col overflow-y-auto md:max-h-64">
+      <ul className="flex max-h-128 flex-col overflow-y-auto md:max-h-64">
         {props.tokens.map((t) => {
           const currency =
             t.token instanceof CoinPretty ? t.token.currency : t.token;
