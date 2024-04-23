@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
-import { Icon } from "~/components/assets";
 import { TokenSelect } from "~/components/control";
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
@@ -135,20 +134,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               <span className="subtitle2 text-white-mid">
                 {t("assets.transferAssetSelect.network")}
               </span>
-              <div
-                className={classNames("flex items-center gap-2", {
-                  "cursor-pointer":
-                    selectedToken?.originBridgeInfo &&
-                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
-                })}
-                onClick={() => {
-                  if (
-                    selectedToken?.originBridgeInfo &&
-                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1
-                  )
-                    setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
-                }}
-              >
+              <div className="flex items-center gap-2">
                 <Network {...selectedNetwork} />
                 {selectedToken?.originBridgeInfo &&
                   selectedToken.originBridgeInfo.sourceChainTokens.length >
@@ -157,14 +143,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                       className={classNames("flex items-center transition", {
                         "rotate-180": isSourceChainDropdownOpen,
                       })}
-                    >
-                      <Icon
-                        id="chevron-down"
-                        height={22}
-                        width={12}
-                        className="text-osmoverse-400"
-                      />
-                    </div>
+                    ></div>
                   )}
               </div>
               {isSourceChainDropdownOpen && (
