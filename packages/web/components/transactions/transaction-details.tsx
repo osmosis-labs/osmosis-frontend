@@ -97,7 +97,7 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="subtitle1">{t("trasactions.sold")}</div>
+                <div className="subtitle1">{t("transactions.sold")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenIn.token.denom}
                 </div>

@@ -5,8 +5,8 @@ import { NoTransactionsSplash } from "~/components/transactions/no-transactions-
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import {
-  formatDate,
   groupTransactionsByDate,
+  useFormatDate,
 } from "~/components/transactions/transaction-utils";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -31,6 +31,8 @@ export const TransactionContent = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   const { t } = useTranslation();
+
+  const formatDate = useFormatDate();
 
   return (
     <div className="flex w-full flex-col">
