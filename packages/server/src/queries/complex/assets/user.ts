@@ -56,12 +56,16 @@ export async function mapGetAssetsWithUserBalances<TAsset extends Asset>({
   assets?: TAsset[];
   userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
+  /**
+   * If poolId is provided, only include assets that are part of the pool.
+   */
   poolId?: string;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
 
+  // If poolId is provided, only include assets that are part of the pool.
   if (assets && !isNil(poolId)) {
     const { reserveCoins } = await getPool({
       assetLists: params.assetLists,
