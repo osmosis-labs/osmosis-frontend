@@ -864,7 +864,6 @@
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
     "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"

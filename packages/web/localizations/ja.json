@@ -864,7 +864,6 @@
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom}を購入する",
     "staking": "ステーキング",
     "liquidityInOSMOPools": "{number} {denom}プールの流動性"

@@ -864,7 +864,6 @@
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
     "tvl": "टी वी लाइनों",
-    "noData": "रा",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
     "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"

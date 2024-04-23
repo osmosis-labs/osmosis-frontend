@@ -864,7 +864,6 @@
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
-    "noData": "-",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",
     "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"

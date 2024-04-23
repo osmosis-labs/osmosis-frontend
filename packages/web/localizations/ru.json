@@ -864,7 +864,6 @@
     "marketCap": "Рыночная капитализация",
     "circulatingSupply": "Оборотное снабжение",
     "tvl": "ТВЛ",
-    "noData": "без даты",
     "buyToken": "Купить {coinDenom}",
     "staking": "Стейкинг",
     "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}"

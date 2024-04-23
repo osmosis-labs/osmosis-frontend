@@ -864,7 +864,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"

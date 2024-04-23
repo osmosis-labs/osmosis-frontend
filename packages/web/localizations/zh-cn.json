@@ -864,7 +864,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",
     "liquidityInOSMOPools": "{number} {denom}池中的流动性"
