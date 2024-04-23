@@ -973,6 +973,35 @@
     "noTransactions": "કોઈ વ્યવહારો નથી",
     "pastShownHere": "ઓસ્મોસિસ પરના તમારા ભૂતકાળના સોદા અહીં દેખાશે.",
     "connectToSee": "તમારો વ્યવહાર ઇતિહાસ જોવા માટે કનેક્ટ થાઓ",
-    "connectWallet": "વૉલેટ કનેક્ટ કરો"
-  }
+    "connectWallet": "વૉલેટ કનેક્ટ કરો",
+    "title": "વ્યવહારો",
+    "swapping": "અદલાબદલી",
+    "swapped": "અદલાબદલી",
+    "swapFailed": "સ્વેપ નિષ્ફળ",
+    "taxReports": "ટેક્સ રિપોર્ટ્સ",
+    "explorer": "એક્સપ્લોરર",
+    "sold": "વેચાય છે",
+    "bought": "ખરીદ્યું",
+    "executionPrice": "અમલની કિંમત",
+    "totalFees": "કુલ ફી",
+    "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
+    "viewOnExplorer": "એક્સપ્લોરર પર જુઓ"
+  },
+  "date": {
+    "earlierToday": "આજેવહેલા",
+    "yesterday": "ગઇકાલે",
+    "january": "જાન્યુઆરી",
+    "february": "ફેબ્રુઆરી",
+    "march": "કુચ",
+    "april": "એપ્રિલ",
+    "may": "મે",
+    "june": "જૂન",
+    "july": "જુલાઈ",
+    "august": "ઓગસ્ટ",
+    "september": "સપ્ટેમ્બર",
+    "october": "ઓક્ટોબર",
+    "november": "નવેમ્બર",
+    "december": "ડિસેમ્બર"
+  },
+  "backToTop": "ટોચ પર પાછા"
 }

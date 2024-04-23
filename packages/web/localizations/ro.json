@@ -973,6 +973,35 @@
     "noTransactions": "Fără tranzacții",
     "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
     "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
-    "connectWallet": "Conectați portofelul"
-  }
+    "connectWallet": "Conectați portofelul",
+    "title": "Tranzacții",
+    "swapping": "Schimbarea",
+    "swapped": "Schimbat",
+    "swapFailed": "Schimbarea a eșuat",
+    "taxReports": "Rapoarte fiscale",
+    "explorer": "Explorator",
+    "sold": "Vândut",
+    "bought": "Cumparat",
+    "executionPrice": "Pretul de executie",
+    "totalFees": "Taxe totale",
+    "transactionHash": "Hash de tranzacție",
+    "viewOnExplorer": "Vizualizare pe explorer"
+  },
+  "date": {
+    "earlierToday": "Mai devreme astazi",
+    "yesterday": "Ieri",
+    "january": "ianuarie",
+    "february": "februarie",
+    "march": "Martie",
+    "april": "Aprilie",
+    "may": "Mai",
+    "june": "iunie",
+    "july": "iulie",
+    "august": "August",
+    "september": "Septembrie",
+    "october": "octombrie",
+    "november": "noiembrie",
+    "december": "decembrie"
+  },
+  "backToTop": "Inapoi sus"
 }

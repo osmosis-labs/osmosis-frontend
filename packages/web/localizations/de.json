@@ -973,6 +973,35 @@
     "noTransactions": "Keine Transaktionen",
     "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
     "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
-    "connectWallet": "Geldbörse verbinden"
-  }
+    "connectWallet": "Geldbörse verbinden",
+    "title": "Transaktionen",
+    "swapping": "Austauschen",
+    "swapped": "Ausgetauscht",
+    "swapFailed": "Austausch fehlgeschlagen",
+    "taxReports": "Steuerberichte",
+    "explorer": "Forscher",
+    "sold": "Verkauft",
+    "bought": "Gekauft",
+    "executionPrice": "Ausführungspreis",
+    "totalFees": "Gesamtkosten",
+    "transactionHash": "Transaktions-Hash",
+    "viewOnExplorer": "Im Explorer anzeigen"
+  },
+  "date": {
+    "earlierToday": "Heute früh",
+    "yesterday": "Gestern",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "Marsch",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
+  },
+  "backToTop": "Zurück nach oben"
 }
