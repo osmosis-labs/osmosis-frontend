@@ -4,10 +4,10 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { getAsset } from "../../../queries/complex/assets";
-import { Metadata } from "../../../queries/data-services";
+import { Metadata, queryTransactions } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
-import { EXAMPLE_TRANSACTION_DATA_BY_DATE } from "./example-transaction-data";
+// import { EXAMPLE_TRANSACTION_DATA_BY_DATE } from "./example-transaction-data";
 
 export interface FormattedMetadata {
   value: {
@@ -111,13 +111,13 @@ export async function getTransactions({
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
       // TODO - remove this once testing is complete
-      const data = EXAMPLE_TRANSACTION_DATA_BY_DATE as FormattedTransaction[];
+      // const data = EXAMPLE_TRANSACTION_DATA_BY_DATE as FormattedTransaction[];
 
-      // const data = await queryTransactions({
-      //   address,
-      //   page: page.toString(),
-      //   pageSize: pageSize.toString(),
-      // });
+      const data = await queryTransactions({
+        address,
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      });
 
       // v1 only display swap transactions
       const filteredSwapTransactions = data.filter((transaction) =>
