@@ -372,6 +372,7 @@
     "highSwapFee": "Комиссия за своп слишком высока",
     "insufficientAmount": "Недостаточная сумма",
     "insufficientBal": "Недостаточный баланс",
+    "insufficientBalForFee": "Недостаточно баланса для оплаты",
     "insufficientLiquidity": "Недостаточная ликвидность",
     "invalidNumberAmount": "Неверная форма номера",
     "invalidScalingFactorControllerAddress": "Неверный адрес контроллера коэффициента масштабирования.",

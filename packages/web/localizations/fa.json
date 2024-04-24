@@ -372,6 +372,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",

@@ -372,6 +372,7 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",

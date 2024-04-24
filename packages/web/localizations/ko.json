@@ -372,6 +372,7 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
+    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",

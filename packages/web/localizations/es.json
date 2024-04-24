@@ -372,6 +372,7 @@
     "highSwapFee": "Cuota de intercambio demasiado alta",
     "insufficientAmount": "Cantidad insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para la tarifa",
     "insufficientLiquidity": "Liquidez insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Dirección de controlador de factor de escala no válida",

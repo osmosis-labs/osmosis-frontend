@@ -372,6 +372,7 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",

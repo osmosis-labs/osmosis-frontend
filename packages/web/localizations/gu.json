@@ -372,6 +372,7 @@
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
     "insufficientAmount": "અપૂરતી રકમ",
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
+    "insufficientBalForFee": "ફી માટે અપર્યાપ્ત બેલેન્સ",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
     "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",

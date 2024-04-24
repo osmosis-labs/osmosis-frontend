@@ -372,6 +372,7 @@
     "highSwapFee": "兌換費太高啦",
     "insufficientAmount": "幣額唔夠喎",
     "insufficientBal": "結餘唔夠喎",
+    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",

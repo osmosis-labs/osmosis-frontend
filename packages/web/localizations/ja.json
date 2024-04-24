@@ -372,6 +372,7 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
+    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
