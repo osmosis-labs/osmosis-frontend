@@ -863,7 +863,6 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "TVL",
-    "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
     "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"

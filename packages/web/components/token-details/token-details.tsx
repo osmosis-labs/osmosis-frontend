@@ -290,7 +290,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
             {t("tokenInfos.marketCapRank")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
-            {marketCapRank ? `#${marketCapRank}` : t("tokenInfos.noData")}
+            {marketCapRank ? `#${marketCapRank}` : "-"}
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
@@ -300,7 +300,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
           <h5 className="text-xl font-h5 leading-8">
             {marketCap && usdFiat
               ? formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))
-              : t("tokenInfos.noData")}
+              : "-"}
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
@@ -314,7 +314,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
                   notation: "compact",
                   compactDisplay: "short",
                 })
-              : t("tokenInfos.noData")}
+              : "-"}
           </h5>
         </li>
         {/* <li className="flex flex-col items-start gap-3">
@@ -326,7 +326,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
               ? formatPretty(
                   new PricePretty(usdFiat, new Dec(totalValueLocked))
                 )
-              : t("tokenInfos.noData")}
+              : "-"}
           </h5>
         </li> */}
       </ul>
