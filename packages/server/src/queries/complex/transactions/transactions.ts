@@ -120,9 +120,9 @@ export async function getTransactions({
       });
 
       // v1 only display swap transactions
-      const filteredSwapTransactions = data.filter((transaction) =>
-        transaction.metadata.some((metadataItem) =>
-          metadataItem.value.some((valueItem) => valueItem.txType === "swap")
+      const filteredSwapTransactions = data?.filter((transaction) =>
+        transaction?.metadata?.some((metadataItem) =>
+          metadataItem?.value?.some((valueItem) => valueItem.txType === "swap")
         )
       );
 

@@ -14,9 +14,7 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "~/components/ui/pagination";
@@ -34,7 +32,11 @@ const EXAMPLE = {
 
 const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
+
   const router = useRouter();
+  const { page = "1", pageSize = "100" } = router.query;
+  const currentPage = parseInt(page.toString());
+  const currentPageSize = parseInt(pageSize.toString());
 
   const { accountStore, chainStore } = useStore();
 
@@ -49,8 +51,9 @@ const Transactions: React.FC = observer(() => {
       {
         // address,
         address: EXAMPLE.ADDRESS,
-        page: EXAMPLE.PAGE,
-        pageSize: EXAMPLE.PAGE_SIZE,
+        // page: EXAMPLE.PAGE,
+        page: currentPage,
+        pageSize: currentPageSize,
       },
       {
         enabled: !!address,
@@ -102,6 +105,13 @@ const Transactions: React.FC = observer(() => {
     setOpen(false);
   }, [isLargeDesktop]);
 
+  // const handlePaginationChange = (newPage) => {
+  //   router.push(`/?page=${newPage}`);
+  // };
+
+  console.log("transactionData: ", transactionData);
+  console.log("!transactionData: ", !transactionData);
+
   return (
     <main className="relative mx-16 flex flex-col gap-4">
       <TransactionContent
@@ -126,33 +136,51 @@ const Transactions: React.FC = observer(() => {
           transaction={selectedTransaction}
         />
       )}
+      <div className="pt-4 pb-20">
+        {/* TODO - only show pagination if there transactions */}
+        {!isLoading && (
+          <TransactionsPaginaton
+            showPrevious={currentPage > 1}
+            showNext={
+              transactionData !== undefined && transactionData?.length > 0
+            }
+            previousHref={`?page=${Math.max(1, currentPage - 1)}`}
+            nextHref={`?page=${currentPage + 1}`}
+          />
+        )}
+      </div>
       <BackToTopButton />
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </main>
   );
 });
+
+const TransactionsPaginaton = ({
+  showPrevious,
+  showNext,
+  previousHref,
+  nextHref,
+}: {
+  showPrevious: boolean;
+  showNext: boolean;
+  previousHref: string;
+  nextHref: string;
+}) => {
+  return (
+    <Pagination>
+      <PaginationContent>
+        {showPrevious && (
+          <PaginationItem>
+            <PaginationPrevious href={previousHref} />
+          </PaginationItem>
+        )}
+        {showNext && (
+          <PaginationItem>
+            <PaginationNext href={nextHref} />
+          </PaginationItem>
+        )}
+      </PaginationContent>
+    </Pagination>
+  );
+};
 
 export default Transactions;
