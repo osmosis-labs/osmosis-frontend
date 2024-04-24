@@ -209,10 +209,10 @@
       "activate": "Activer",
       "marketCap": "Capitalisation boursière",
       "volume24h": "Volume",
-      "priceChange24h": "changement 24h",
       "price": "Prix",
-      "name": "Nom",
-      "balance": "Équilibre"
+      "balance": "Équilibre",
+      "lastWeek": "Les 7 derniers jours",
+      "asset": "Actif"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",

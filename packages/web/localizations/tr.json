@@ -209,10 +209,10 @@
       "activate": "Etkinleştir",
       "marketCap": "Piyasa değeri",
       "volume24h": "Hacim",
-      "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim",
-      "balance": "Denge"
+      "balance": "Denge",
+      "lastWeek": "Son 7 gün",
+      "asset": "Varlık"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",

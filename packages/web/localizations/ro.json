@@ -209,10 +209,10 @@
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
       "volume24h": "Volum",
-      "priceChange24h": "schimbare 24h",
       "price": "Preț",
-      "name": "Nume",
-      "balance": "Echilibru"
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",

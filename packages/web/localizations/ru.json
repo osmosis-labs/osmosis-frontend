@@ -209,10 +209,10 @@
       "activate": "Активировать",
       "marketCap": "Рыночная капитализация",
       "volume24h": "Объем",
-      "priceChange24h": "24-часовая смена",
       "price": "Цена",
-      "name": "Имя",
-      "balance": "Баланс"
+      "balance": "Баланс",
+      "lastWeek": "Последние 7 дней",
+      "asset": "Объект"
     },
     "totalAssets": "Всего активов",
     "totalBalance": "Итоговый баланс",

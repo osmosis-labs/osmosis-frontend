@@ -209,10 +209,10 @@
       "activate": "启用",
       "marketCap": "市值",
       "volume24h": "体积",
-      "priceChange24h": "24小时变化",
       "price": "价格",
-      "name": "姓名",
-      "balance": "余额"
+      "balance": "余额",
+      "lastWeek": "过去 7 天",
+      "asset": "资产"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",

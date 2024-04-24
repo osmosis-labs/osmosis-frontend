@@ -85,28 +85,28 @@ export const PortfolioPage: FunctionComponent = () => {
             <Tab.List className="flex gap-6" ref={tabsRef}>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourAssets")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourPositions")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.recentTransfers")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
             </Tab.List>
             {!isTotalValueFetched ? (
-              <div className="mx-auto w-fit py-3">
+              <div className="mx-auto my-6 w-fit">
                 <Spinner />
               </div>
             ) : userHasNoAssets ? (

@@ -209,10 +209,10 @@
       "activate": "Activar",
       "marketCap": "Tapa del mercado",
       "volume24h": "Volumen",
-      "priceChange24h": "cambio 24h",
       "price": "Precio",
-      "name": "Nombre",
-      "balance": "Balance"
+      "balance": "Balance",
+      "lastWeek": "Los últimos 7 días",
+      "asset": "Activo"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",

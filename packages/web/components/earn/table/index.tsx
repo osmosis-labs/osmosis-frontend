@@ -88,7 +88,7 @@ const StrategiesTable = ({
       }}
       className="no-scrollbar mb-11 overflow-x-auto overflow-y-hidden"
     >
-      <table className="mb-12 w-full">
+      <table className="mb-12 table-auto">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr

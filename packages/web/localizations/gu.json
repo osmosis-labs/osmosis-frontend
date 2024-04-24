@@ -209,10 +209,10 @@
       "activate": "સક્રિય કરો",
       "marketCap": "માર્કેટ કેપ",
       "volume24h": "વોલ્યુમ",
-      "priceChange24h": "24 કલાક ફેરફાર",
       "price": "કિંમત",
-      "name": "નામ",
-      "balance": "સંતુલન"
+      "balance": "સંતુલન",
+      "lastWeek": "છેલ્લા 7 દિવસ",
+      "asset": "એસેટ"
     },
     "totalAssets": "કુલ સંપતિ",
     "totalBalance": "કુલ બેલેન્સ",

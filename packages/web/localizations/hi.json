@@ -209,10 +209,10 @@
       "activate": "सक्रिय",
       "marketCap": "बाज़ार आकार",
       "volume24h": "आयतन",
-      "priceChange24h": "24 घंटे का परिवर्तन",
       "price": "कीमत",
-      "name": "नाम",
-      "balance": "संतुलन"
+      "balance": "संतुलन",
+      "lastWeek": "पिछले 7 दिन",
+      "asset": "संपत्ति"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",

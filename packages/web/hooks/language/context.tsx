@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { PropsWithChildren, useCallback, useState } from "react";
 
 import en from "~/localizations/en.json";
@@ -47,6 +48,8 @@ export const MultiLanguageProvider = (
 
   const changeLanguage = useCallback((language: string) => {
     globalLanguage = language;
+    // set global locale in dayjs
+    dayjs.locale(language);
     setLanguage(language);
   }, []);
 

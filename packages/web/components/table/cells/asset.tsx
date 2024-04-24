@@ -5,6 +5,7 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 
+/** Width should be defined by parent elements. */
 export const AssetCell: FunctionComponent<
   Partial<{
     coinDenom: string;
@@ -16,8 +17,8 @@ export const AssetCell: FunctionComponent<
   const { t } = useTranslation();
 
   return (
-    <div className="flex w-44 items-center gap-4 md:gap-1">
-      <div className="h-10 w-10 shrink-0">
+    <div className="min-w-44 flex w-full items-center gap-4 md:gap-1">
+      <div className="h-10 w-10 flex-shrink-0">
         {coinImageUrl && (
           <Image
             alt={coinDenom ?? "coin image"}
@@ -27,10 +28,20 @@ export const AssetCell: FunctionComponent<
           />
         )}
       </div>
-      <div className="flex w-full flex-col place-content-center">
+      <div className="flex min-w-0 flex-grow flex-col">
         {coinName && (
-          <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-            {coinName}
+          <div className="flex items-center gap-2">
+            <div className="subtitle1 min-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {coinName}
+            </div>
+            {warnUnverified && (
+              <Tooltip content={t("components.selectToken.unverifiedAsset")}>
+                <Icon
+                  id="alert-triangle"
+                  className="h-5 w-5 text-osmoverse-300"
+                />
+              </Tooltip>
+            )}
           </div>
         )}
         {coinDenom && (
@@ -39,11 +50,6 @@ export const AssetCell: FunctionComponent<
           </span>
         )}
       </div>
-      {warnUnverified && (
-        <Tooltip content={t("components.selectToken.unverifiedAsset")}>
-          <Icon id="alert-triangle" className="h-5 w-5 text-osmoverse-300" />
-        </Tooltip>
-      )}
     </div>
   );
 };
