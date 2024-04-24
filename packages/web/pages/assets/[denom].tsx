@@ -476,6 +476,7 @@ const TokenChartHeader = observer(() => {
         classes={{
           priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
         }}
+        compactZeros
       />
     </header>
   );
