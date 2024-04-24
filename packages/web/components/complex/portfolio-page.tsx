@@ -112,7 +112,7 @@ export const PortfolioPage: FunctionComponent = () => {
             ) : userHasNoAssets ? (
               <UserZeroBalanceTableSplash />
             ) : (
-              <Tab.Panels className="py-3">
+              <Tab.Panels className="py-6">
                 <Tab.Panel>
                   <AssetBalancesTable
                     tableTopPadding={overviewHeight + tabsHeight}
@@ -235,13 +235,17 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
       <>
         {hasPositions && (
           <section>
-            <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+            <span className="body2 text-osmoverse-200">
+              {t("portfolio.yourSuperchargedPositions")}
+            </span>
             <MyPositionsSection />
           </section>
         )}
         {hasPools && (
           <section>
-            <h6>{t("portfolio.yourLiquidityPools")}</h6>
+            <span className="body2 text-osmoverse-200">
+              {t("portfolio.yourLiquidityPools")}
+            </span>
             <MyPoolsCardsGrid />
           </section>
         )}
