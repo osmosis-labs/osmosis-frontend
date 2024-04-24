@@ -6,7 +6,6 @@ import {
   AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
-  InsufficientFeeError,
   OsmosisAccount,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
@@ -27,18 +26,21 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   accountStore,
-  tryToExcludeMinimalDenoms = [],
+  sendToken,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[] | undefined;
   apiUtils: ReturnType<typeof api.useUtils>;
-  tryToExcludeMinimalDenoms?: string[];
+  sendToken?: {
+    balance: CoinPretty;
+    amount: CoinPretty;
+  };
 }): Promise<QueryResult> {
   if (!messages) throw new Error("No messages");
 
-  let coin: Coin;
-  let amount: readonly Coin[];
+  let feeCoin: Coin;
+  let feeAmount: readonly Coin[];
   let gasLimit: string;
 
   const baseEstimateFeeOptions: Parameters<typeof accountStore.estimateFee>[0] =
@@ -51,55 +53,43 @@ async function estimateTxFeesQueryFn({
       },
     };
 
-  /**
-   * Try to exclude minimal denoms to pay for the transaction fee. This is useful
-   * for the case where we are computing the max fee and we don't want to pay with the
-   * same token that we are trying to send.
-   */
-  if (tryToExcludeMinimalDenoms.length > 0) {
-    try {
-      const { amount: amount_, gas } = await accountStore.estimateFee({
-        ...baseEstimateFeeOptions,
-        excludedFeeMinimalDenoms: tryToExcludeMinimalDenoms,
-      });
-      coin = amount_[0];
-      gasLimit = gas;
-      amount = amount_;
-    } catch (e) {
-      const error = e as Error | InsufficientFeeError;
-      /**
-       * If there are no alternative tokens, just return the default estimation.
-       */
-      if (error instanceof InsufficientFeeError) {
-        const { amount: amount_, gas } = await accountStore.estimateFee(
-          baseEstimateFeeOptions
-        );
+  const { amount, gas } = await accountStore.estimateFee(
+    baseEstimateFeeOptions
+  );
 
-        coin = amount_[0];
-        gasLimit = gas;
-        amount = amount_;
-      } else {
-        throw error;
-      }
-    }
-  } else {
-    const { amount: amount_, gas } = await accountStore.estimateFee(
-      baseEstimateFeeOptions
-    );
-    coin = amount_[0];
+  feeCoin = amount[0];
+  gasLimit = gas;
+  feeAmount = amount;
+
+  /**
+   * If the send token is provided and send token does not have enough balance to pay for the fee, it will
+   * try to prevent the fee token to be the same as the send token.
+   */
+  if (
+    sendToken &&
+    feeCoin.denom === sendToken.balance.toCoin().denom &&
+    new Dec(sendToken.amount.toCoin().amount).gt(
+      new Dec(sendToken.balance.toCoin().amount).sub(new Dec(feeCoin.amount))
+    )
+  ) {
+    const { amount, gas } = await accountStore.estimateFee({
+      ...baseEstimateFeeOptions,
+      excludedFeeMinimalDenoms: [sendToken.balance.currency.coinMinimalDenom],
+    });
+    feeCoin = amount[0];
     gasLimit = gas;
-    amount = amount_;
+    feeAmount = amount;
   }
 
   const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
-    coinMinimalDenom: coin.denom,
+    coinMinimalDenom: feeCoin.denom,
   });
 
-  if (!coin || !asset?.currentPrice) {
+  if (!feeCoin || !asset?.currentPrice) {
     throw new Error("Failed to estimate fees");
   }
 
-  const coinAmountDec = new Dec(coin.amount);
+  const coinAmountDec = new Dec(feeCoin.amount);
   const usdValue = coinAmountDec
     .quo(DecUtils.getTenExponentN(asset.coinDecimals))
     .mul(asset.currentPrice.toDec());
@@ -109,26 +99,27 @@ async function estimateTxFeesQueryFn({
     gasUsdValueToPay,
     gasAmount: new CoinPretty(asset, coinAmountDec),
     gasLimit,
-    amount,
+    amount: feeAmount,
   };
 }
 
 export function useEstimateTxFees({
   messages,
   chainId,
-  tryToExcludeMinimalDenoms = [],
+  sendToken,
   enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
   /**
-   * Try to exclude minimal denoms to pay for the transaction fee. This is useful
-   * for the case where we are computing the max fee and we don't want to pay with the
-   * same token that we are trying to send.
+   * If the send token is provided and send token does not have enough balance to pay for the fee, it will
+   * try to prevent the fee token to be the same as the send token.
    */
-  tryToExcludeMinimalDenoms?: string[];
+  sendToken?: {
+    balance: CoinPretty;
+    amount: CoinPretty;
+  };
   enabled?: boolean;
-  onSuccess?: (data: QueryResult) => void;
 }) {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
@@ -144,7 +135,7 @@ export function useEstimateTxFees({
         accountStore,
         messages,
         apiUtils,
-        tryToExcludeMinimalDenoms,
+        sendToken,
       });
     },
     staleTime: 3_000, // 3 seconds

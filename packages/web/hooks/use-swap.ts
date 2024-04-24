@@ -180,13 +180,17 @@ export function useSwap(
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
+    sendToken:
+      inAmountInput.balance && inAmountInput.amount
+        ? {
+            amount: inAmountInput.amount,
+            balance: inAmountInput.balance,
+          }
+        : undefined,
     enabled:
       !inAmountInput.isEmpty &&
       !precedentError &&
       featureFlags.swapToolSimulateFee,
-    tryToExcludeMinimalDenoms: swapAssets.fromAsset
-      ? [swapAssets.fromAsset?.coinMinimalDenom]
-      : [],
   });
 
   /** Send trade token in transaction. */
@@ -653,9 +657,12 @@ function useSwapAmountInput({
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
-    tryToExcludeMinimalDenoms: swapAssets.fromAsset
-      ? [swapAssets.fromAsset?.coinMinimalDenom]
-      : [],
+    sendToken: inAmountInput.balance
+      ? {
+          amount: inAmountInput.balance,
+          balance: inAmountInput.balance,
+        }
+      : undefined,
     enabled:
       featureFlags.swapToolSimulateFee &&
       !!inAmountInput.balance &&
