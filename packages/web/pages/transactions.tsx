@@ -105,12 +105,7 @@ const Transactions: React.FC = observer(() => {
     setOpen(false);
   }, [isLargeDesktop]);
 
-  // const handlePaginationChange = (newPage) => {
-  //   router.push(`/?page=${newPage}`);
-  // };
-
-  console.log("transactionData: ", transactionData);
-  console.log("!transactionData: ", !transactionData);
+  const showPagination = isWalletConnected && !isLoading;
 
   return (
     <main className="relative mx-16 flex flex-col gap-4">
@@ -137,8 +132,7 @@ const Transactions: React.FC = observer(() => {
         />
       )}
       <div className="pt-4 pb-20">
-        {/* TODO - only show pagination if there transactions */}
-        {!isLoading && (
+        {showPagination && (
           <TransactionsPaginaton
             showPrevious={currentPage > 1}
             showNext={
