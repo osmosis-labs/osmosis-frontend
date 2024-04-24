@@ -209,10 +209,10 @@
       "activate": "Активировать",
       "marketCap": "Рыночная капитализация",
       "volume24h": "Объем",
-      "priceChange24h": "24-часовая смена",
       "price": "Цена",
-      "name": "Имя",
-      "balance": "Баланс"
+      "balance": "Баланс",
+      "lastWeek": "Последние 7 дней",
+      "asset": "Объект"
     },
     "totalAssets": "Всего активов",
     "totalBalance": "Итоговый баланс",
@@ -286,7 +286,6 @@
       "description": "является непроверенным токеном. Вы хотите активировать его? Обязательно тщательно изучите рынок перед торговлей.",
       "reminder": "Вы всегда можете отключить эту настройку в модальном окне настроек."
     },
-    "getStarted": {},
     "categories": {
       "new": "Новейший",
       "defi": "DeFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Торговля",
     "buy": "Купить",
     "yourAssets": "Ваши активы",
     "yourPositions": "Ваши позиции",
@@ -603,7 +601,8 @@
     "balance": "Баланс",
     "modalTitle": "Профиль",
     "viewAllAssets": "Посмотреть все активы",
-    "wallet": "Кошелек"
+    "wallet": "Кошелек",
+    "transactions": "Транзакции"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} общие ресурсы",
@@ -864,7 +863,6 @@
     "marketCap": "Рыночная капитализация",
     "circulatingSupply": "Оборотное снабжение",
     "tvl": "ТВЛ",
-    "noData": "без даты",
     "buyToken": "Купить {coinDenom}",
     "staking": "Стейкинг",
     "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}"
@@ -974,6 +972,35 @@
     "noTransactions": "Нет транзакций",
     "pastShownHere": "Здесь появятся ваши прошлые сделки по Osmosis.",
     "connectToSee": "Подключитесь, чтобы просмотреть историю транзакций",
-    "connectWallet": "Подключить кошелек"
-  }
+    "connectWallet": "Подключить кошелек",
+    "title": "Транзакции",
+    "swapping": "Обмен",
+    "swapped": "поменяно местами",
+    "swapFailed": "Замена не удалась",
+    "taxReports": "Налоговые отчеты",
+    "explorer": "Исследователь",
+    "sold": "Продал",
+    "bought": "Купил",
+    "executionPrice": "Цена исполнения",
+    "totalFees": "Общая сумма сборов",
+    "transactionHash": "Хэш транзакции",
+    "viewOnExplorer": "Посмотреть в проводнике"
+  },
+  "date": {
+    "earlierToday": "Ранее сегодня",
+    "yesterday": "Вчера",
+    "january": "январь",
+    "february": "февраль",
+    "march": "Маршировать",
+    "april": "апрель",
+    "may": "Может",
+    "june": "Июнь",
+    "july": "Июль",
+    "august": "Август",
+    "september": "Сентябрь",
+    "october": "Октябрь",
+    "november": "ноябрь",
+    "december": "Декабрь"
+  },
+  "backToTop": "Вернуться наверх"
 }

@@ -388,7 +388,7 @@ export const AllPoolsTable: FunctionComponent<{
       <TableControls />
       <table
         className={classNames(
-          "w-full",
+          "table-auto",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"

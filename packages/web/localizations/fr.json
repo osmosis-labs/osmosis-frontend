@@ -209,10 +209,10 @@
       "activate": "Activer",
       "marketCap": "Capitalisation boursière",
       "volume24h": "Volume",
-      "priceChange24h": "changement 24h",
       "price": "Prix",
-      "name": "Nom",
-      "balance": "Équilibre"
+      "balance": "Équilibre",
+      "lastWeek": "Les 7 derniers jours",
+      "asset": "Actif"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
@@ -286,7 +286,6 @@
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
       "reminder": "Vous pouvez toujours désactiver ce paramètre dans la modale des paramètres."
     },
-    "getStarted": {},
     "categories": {
       "new": "Le plus récent",
       "defi": "DéFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Commerce",
     "buy": "Acheter",
     "yourAssets": "Vos atouts",
     "yourPositions": "Vos postes",
@@ -603,7 +601,8 @@
     "balance": "Solde",
     "modalTitle": "Le profil",
     "viewAllAssets": "Voir tous les actifs",
-    "wallet": "Portefeuille"
+    "wallet": "Portefeuille",
+    "transactions": "Transactions"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
@@ -864,7 +863,6 @@
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",
     "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
@@ -974,6 +972,35 @@
     "noTransactions": "Aucune transaction",
     "pastShownHere": "Vos transactions passées sur Osmosis apparaîtront ici.",
     "connectToSee": "Connectez-vous pour voir l'historique de vos transactions",
-    "connectWallet": "Connecter le portefeuille"
-  }
+    "connectWallet": "Connecter le portefeuille",
+    "title": "Transactions",
+    "swapping": "Échange",
+    "swapped": "Échangé",
+    "swapFailed": "Échec de l'échange",
+    "taxReports": "Rapports fiscaux",
+    "explorer": "Explorateur",
+    "sold": "Vendu",
+    "bought": "Acheté",
+    "executionPrice": "Prix d'exécution",
+    "totalFees": "Total des frais",
+    "transactionHash": "Hachage des transactions",
+    "viewOnExplorer": "Afficher sur l'explorateur"
+  },
+  "date": {
+    "earlierToday": "Plus tôt aujourd'hui",
+    "yesterday": "Hier",
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Peut",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre"
+  },
+  "backToTop": "Retour au sommet"
 }

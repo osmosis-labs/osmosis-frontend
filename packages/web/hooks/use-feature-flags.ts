@@ -24,7 +24,8 @@ export type AvailableFlags =
   | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
-  | "portfolioPageAndNewAssetsPage";
+  | "portfolioPageAndNewAssetsPage"
+  | "displayDailyEarn";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -51,6 +52,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
+  displayDailyEarn: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
@@ -76,6 +78,10 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
+    portfolioPageAndNewAssetsPage:
+      isMobile || !isInitialized
+        ? false
+        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     _isInitialized:
       process.env.NODE_ENV === "development" &&
       !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID

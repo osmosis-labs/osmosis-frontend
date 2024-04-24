@@ -209,10 +209,10 @@
       "activate": "aktivieren Sie",
       "marketCap": "Marktkapitalisierung",
       "volume24h": "Volumen",
-      "priceChange24h": "24h Wechsel",
       "price": "Preis",
-      "name": "Name",
-      "balance": "Gleichgewicht"
+      "balance": "Gleichgewicht",
+      "lastWeek": "Letzten 7 Tage",
+      "asset": "Vermögenswert"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -286,7 +286,6 @@
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     },
-    "getStarted": {},
     "categories": {
       "new": "Neueste",
       "defi": "DeFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Handel",
     "buy": "Kaufen",
     "yourAssets": "Ihr Vermögen",
     "yourPositions": "Ihre Positionen",
@@ -603,7 +601,8 @@
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
-    "wallet": "Geldbörse"
+    "wallet": "Geldbörse",
+    "transactions": "Transaktionen"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",
@@ -864,7 +863,6 @@
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kaufen Sie {coinDenom}",
     "staking": "Abstecken",
     "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools"
@@ -974,6 +972,35 @@
     "noTransactions": "Keine Transaktionen",
     "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
     "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
-    "connectWallet": "Geldbörse verbinden"
-  }
+    "connectWallet": "Geldbörse verbinden",
+    "title": "Transaktionen",
+    "swapping": "Austauschen",
+    "swapped": "Ausgetauscht",
+    "swapFailed": "Austausch fehlgeschlagen",
+    "taxReports": "Steuerberichte",
+    "explorer": "Forscher",
+    "sold": "Verkauft",
+    "bought": "Gekauft",
+    "executionPrice": "Ausführungspreis",
+    "totalFees": "Gesamtkosten",
+    "transactionHash": "Transaktions-Hash",
+    "viewOnExplorer": "Im Explorer anzeigen"
+  },
+  "date": {
+    "earlierToday": "Heute früh",
+    "yesterday": "Gestern",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "Marsch",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
+  },
+  "backToTop": "Zurück nach oben"
 }

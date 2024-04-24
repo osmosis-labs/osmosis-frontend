@@ -209,10 +209,10 @@
       "activate": "啟用",
       "marketCap": "市值",
       "volume24h": "體積",
-      "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名",
-      "balance": "結餘"
+      "balance": "結餘",
+      "lastWeek": "過去 7 天",
+      "asset": "資產"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -286,7 +286,6 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {},
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "貿易",
     "buy": "買",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
@@ -603,7 +601,8 @@
     "balance": "结余",
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有資產",
-    "wallet": "钱包"
+    "wallet": "钱包",
+    "transactions": "交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
@@ -864,7 +863,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "購買{coinDenom}",
     "staking": "質押",
     "liquidityInOSMOPools": "{number} {denom}池中的流動性"
@@ -974,6 +972,35 @@
     "noTransactions": "沒有交易",
     "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
     "connectToSee": "連接以查看您的交易記錄",
-    "connectWallet": "連接錢包"
-  }
+    "connectWallet": "連接錢包",
+    "title": "交易",
+    "swapping": "交換",
+    "swapped": "交換了",
+    "swapFailed": "兌換失敗",
+    "taxReports": "稅務報告",
+    "explorer": "探險家",
+    "sold": "賣",
+    "bought": "買",
+    "executionPrice": "執行價格",
+    "totalFees": "總費用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在資源管理器上查看"
+  },
+  "date": {
+    "earlierToday": "今天早些時候",
+    "yesterday": "昨天",
+    "january": "一月",
+    "february": "二月",
+    "march": "行進",
+    "april": "四月",
+    "may": "可能",
+    "june": "六月",
+    "july": "七月",
+    "august": "八月",
+    "september": "九月",
+    "october": "十月",
+    "november": "十一月",
+    "december": "十二月"
+  },
+  "backToTop": "回到頂部"
 }

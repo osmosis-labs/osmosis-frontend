@@ -1,3 +1,4 @@
+import { FormattedTransaction } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -10,8 +11,9 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -36,8 +38,8 @@ const Transactions: React.FC = observer(() => {
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        // address,
-        address: EXAMPLE.ADDRESS,
+        address,
+        // address: EXAMPLE.ADDRESS,
         page: EXAMPLE.PAGE,
         pageSize: EXAMPLE.PAGE_SIZE,
       },
@@ -51,6 +53,10 @@ const Transactions: React.FC = observer(() => {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
 
   const { t } = useTranslation();
 
@@ -75,7 +81,9 @@ const Transactions: React.FC = observer(() => {
     ctas: [],
   });
 
-  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<FormattedTransaction | null>(null);
+
   const [open, setOpen] = useState(false);
 
   const { isLargeDesktop } = useWindowSize();

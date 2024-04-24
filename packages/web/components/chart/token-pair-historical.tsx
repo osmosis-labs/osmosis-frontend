@@ -18,9 +18,10 @@ import {
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, memo } from "react";
+import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { compressZeros } from "~/components/chart/compress-zeros";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
@@ -266,6 +267,7 @@ export const PriceChartHeader: FunctionComponent<{
     pricesHeaderContainerClass?: string;
     pricesHeaderRootContainer?: string;
   };
+  compactZeros?: boolean;
 }> = observer(
   ({
     historicalRange,
@@ -280,8 +282,30 @@ export const PriceChartHeader: FunctionComponent<{
     fiatSymbol,
     showAllRange = false,
     isLoading = false,
+    compactZeros = false,
   }) => {
     const { t } = useTranslation();
+
+    const getFormattedPrice = useCallback(
+      (
+        additionalFormatOpts?: Partial<
+          Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+        >
+      ) =>
+        formatPretty(new Dec(hoverPrice), {
+          maxDecimals: decimal,
+          notation: "compact",
+          ...formatOpts,
+          ...additionalFormatOpts,
+        }) || "",
+      [decimal, formatOpts, hoverPrice]
+    );
+
+    const { decimalDigits, significantDigits, zeros } = useMemo(
+      () =>
+        compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+      [getFormattedPrice]
+    );
 
     return (
       <div
@@ -304,11 +328,19 @@ export const PriceChartHeader: FunctionComponent<{
               )}
             >
               {fiatSymbol}
-              {formatPretty(new Dec(hoverPrice), {
-                maxDecimals: decimal,
-                notation: "compact",
-                ...formatOpts,
-              }) || ""}
+              {compactZeros ? (
+                <>
+                  {significantDigits}.
+                  {Boolean(zeros) && (
+                    <>
+                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                    </>
+                  )}
+                  {decimalDigits}
+                </>
+              ) : (
+                getFormattedPrice()
+              )}
             </h4>
           </SkeletonLoader>
           {baseDenom && quoteDenom ? (

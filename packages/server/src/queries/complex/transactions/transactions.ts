@@ -7,6 +7,7 @@ import { getAsset } from "../../../queries/complex/assets";
 import { Metadata, queryTransactions } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
+// import { EXAMPLE_TRANSACTION_DATA_BY_DATE } from "./example-transaction-data";
 
 export interface FormattedMetadata {
   value: {
@@ -110,7 +111,7 @@ export async function getTransactions({
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
       // TODO - remove this once testing is complete
-      // const data = EXAMPLE_TRANSACTION_DATA as Transaction[];
+      // const data = EXAMPLE_TRANSACTION_DATA_BY_DATE as FormattedTransaction[];
 
       const data = await queryTransactions({
         address,

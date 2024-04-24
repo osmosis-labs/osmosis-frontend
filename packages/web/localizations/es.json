@@ -209,10 +209,10 @@
       "activate": "Activar",
       "marketCap": "Tapa del mercado",
       "volume24h": "Volumen",
-      "priceChange24h": "cambio 24h",
       "price": "Precio",
-      "name": "Nombre",
-      "balance": "Balance"
+      "balance": "Balance",
+      "lastWeek": "Los últimos 7 días",
+      "asset": "Activo"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",
@@ -286,7 +286,6 @@
       "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     },
-    "getStarted": {},
     "categories": {
       "new": "El más nuevo",
       "defi": "DeFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Comercio",
     "buy": "Comprar",
     "yourAssets": "Tus activos",
     "yourPositions": "Tus posiciones",
@@ -603,7 +601,8 @@
     "balance": "Balance",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos los activos",
-    "wallet": "Billetera"
+    "wallet": "Billetera",
+    "transactions": "Actas"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participaciones",
@@ -864,7 +863,6 @@
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
     "tvl": "TVL",
-    "noData": "N.D.",
     "buyToken": "Comprar {coinDenom}",
     "staking": "Replanteo",
     "liquidityInOSMOPools": "Liquidez en pools {number} {denom}"
@@ -974,6 +972,35 @@
     "noTransactions": "Sin transacciones",
     "pastShownHere": "Tus operaciones anteriores en Osmosis aparecerán aquí.",
     "connectToSee": "Conéctese para ver su historial de transacciones",
-    "connectWallet": "Conectar billetera"
-  }
+    "connectWallet": "Conectar billetera",
+    "title": "Actas",
+    "swapping": "Intercambio",
+    "swapped": "Intercambiado",
+    "swapFailed": "El intercambio falló",
+    "taxReports": "Informes de impuestos",
+    "explorer": "Explorador",
+    "sold": "Vendido",
+    "bought": "Compró",
+    "executionPrice": "Precio de ejecución",
+    "totalFees": "Tarifas totales",
+    "transactionHash": "Hash de transacción",
+    "viewOnExplorer": "Ver en el explorador"
+  },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer",
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Puede",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre"
+  },
+  "backToTop": "Volver arriba"
 }

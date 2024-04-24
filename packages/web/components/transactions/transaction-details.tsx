@@ -9,7 +9,10 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
+import { getMonthTranslation } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -23,13 +26,24 @@ export const TransactionDetailsContent = ({
   isModal: boolean;
   transaction: FormattedTransaction;
 }) => {
+  const { t } = useTranslation();
+
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
-  const formattedDate = dayjs(transaction.blockTimestamp).format(
-    "MMM DD, YYYY, HH:mm"
-  );
+  const formattedMonth = dayjs(transaction.blockTimestamp).format("MMMM");
+
+  const monthTranslation = getMonthTranslation(formattedMonth, t);
+
+  const translatedFormattedMonth = monthTranslation.slice(0, 3);
+
+  const formattedDateDayYearHourMinute = dayjs(
+    transaction.blockTimestamp
+  ).format("DD, YYYY, HH:mm");
+
+  // create a localized formatted date - example: Jan 1, 2022, 12:00
+  const formattedDate = `${translatedFormattedMonth} ${formattedDateDayYearHourMinute}`;
 
   const [conversion, setConversion] = useState({
     numerator: tokenIn.token,
@@ -49,6 +63,16 @@ export const TransactionDetailsContent = ({
       { maxDecimals: 2 }
     );
   }, [conversion.numerator, conversion.denominator]);
+
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const status = transaction.code === 0 ? "success" : "failed";
+
+  const title = {
+    pending: t("transactions.swapping"),
+    success: t("transactions.swapped"),
+    failed: t("transactions.swapFailed"),
+  };
 
   return (
     <div
@@ -75,7 +99,7 @@ export const TransactionDetailsContent = ({
             <Icon id="swap" width={24} height={24} aria-label="swap icon" />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">Swapped</div>
+            <div className="text-h5">{title[status]}</div>
             <div className="body1 text-osmoverse-300">{formattedDate}</div>
           </div>
         </div>
@@ -90,7 +114,7 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="subtitle1">Sold</div>
+                <div className="subtitle1">{t("transactions.sold")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenIn.token.denom}
                 </div>
@@ -124,7 +148,7 @@ export const TransactionDetailsContent = ({
                 width={32}
               />
               <div className="flex flex-col">
-                <div className="text-subtitle1">Bought</div>
+                <div className="text-subtitle1">{t("transactions.bought")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenOut.token.denom}
                 </div>
@@ -148,7 +172,7 @@ export const TransactionDetailsContent = ({
               onClick={toggleConversion}
               className="cursor-pointer whitespace-nowrap"
             >
-              Execution Price <span>&#x2194;</span>
+              {t("transactions.executionPrice")} <span>&#x2194;</span>
             </div>
             <div className="flex gap-3 whitespace-nowrap">
               <div className="text-body1 text-wosmongton-300">
@@ -159,7 +183,7 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex justify-between gap-3 py-3">
-            <div>Total Fees</div>
+            <div>{t("transactions.totalFees")}</div>
             <div className="text-body1 text-wosmongton-300">
               {formatPretty(txFee.token, {
                 maxDecimals: 2,
@@ -167,7 +191,7 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
           <div className="flex justify-between py-3">
-            <div>Transaction Hash</div>
+            <div>{t("transactions.transactionHash")}</div>
             <div className="flex gap-3">
               <div className="text-body1 text-wosmongton-300">
                 {getShortAddress(transaction.hash)}
@@ -176,13 +200,25 @@ export const TransactionDetailsContent = ({
             </div>
           </div>
         </div>
-        <Button size="default" variant="secondary" asChild>
+        <Button
+          size="default"
+          variant="secondary"
+          asChild
+          onClick={() =>
+            logEvent([
+              EventName.TransactionsPage.explorerClicked,
+              {
+                source: "modal",
+              },
+            ])
+          }
+        >
           <a
-            rel="noreferrer"
+            rel="noopener noreferrer"
             target="_blank"
             href={`https://www.mintscan.io/cosmos/txs/${transaction.hash}`}
           >
-            <span>View on Explorer &#x2197;</span>
+            <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
           </a>
         </Button>
       </div>
@@ -197,8 +233,9 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: FormattedTransaction;
+  transaction: FormattedTransaction | null;
 }) => {
+  if (!transaction) return null;
   return (
     <Transition
       show={open}
@@ -219,8 +256,9 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: FormattedTransaction }
+  ModalBaseProps & { transaction: FormattedTransaction | null }
 > = ({ onRequestClose, isOpen, transaction }) => {
+  if (!transaction) return null;
   return (
     <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>
       <TransactionDetailsContent

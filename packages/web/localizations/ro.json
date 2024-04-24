@@ -209,10 +209,10 @@
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
       "volume24h": "Volum",
-      "priceChange24h": "schimbare 24h",
       "price": "Preț",
-      "name": "Nume",
-      "balance": "Echilibru"
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -286,7 +286,6 @@
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
-    "getStarted": {},
     "categories": {
       "new": "Cel mai nou",
       "defi": "DeFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Comerț",
     "buy": "Cumpără",
     "yourAssets": "Activele tale",
     "yourPositions": "Pozițiile tale",
@@ -603,7 +601,8 @@
     "balance": "Balanta",
     "modalTitle": "Profil",
     "viewAllAssets": "Vedeți toate activele",
-    "wallet": "Portofel"
+    "wallet": "Portofel",
+    "transactions": "Tranzacții"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
@@ -864,7 +863,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
@@ -974,6 +972,35 @@
     "noTransactions": "Fără tranzacții",
     "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
     "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
-    "connectWallet": "Conectați portofelul"
-  }
+    "connectWallet": "Conectați portofelul",
+    "title": "Tranzacții",
+    "swapping": "Schimbarea",
+    "swapped": "Schimbat",
+    "swapFailed": "Schimbarea a eșuat",
+    "taxReports": "Rapoarte fiscale",
+    "explorer": "Explorator",
+    "sold": "Vândut",
+    "bought": "Cumparat",
+    "executionPrice": "Pretul de executie",
+    "totalFees": "Taxe totale",
+    "transactionHash": "Hash de tranzacție",
+    "viewOnExplorer": "Vizualizare pe explorer"
+  },
+  "date": {
+    "earlierToday": "Mai devreme astazi",
+    "yesterday": "Ieri",
+    "january": "ianuarie",
+    "february": "februarie",
+    "march": "Martie",
+    "april": "Aprilie",
+    "may": "Mai",
+    "june": "iunie",
+    "july": "iulie",
+    "august": "August",
+    "september": "Septembrie",
+    "october": "octombrie",
+    "november": "noiembrie",
+    "december": "decembrie"
+  },
+  "backToTop": "Inapoi sus"
 }

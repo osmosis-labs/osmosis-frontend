@@ -209,10 +209,10 @@
       "activate": "सक्रिय",
       "marketCap": "बाज़ार आकार",
       "volume24h": "आयतन",
-      "priceChange24h": "24 घंटे का परिवर्तन",
       "price": "कीमत",
-      "name": "नाम",
-      "balance": "संतुलन"
+      "balance": "संतुलन",
+      "lastWeek": "पिछले 7 दिन",
+      "asset": "संपत्ति"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",
@@ -286,7 +286,6 @@
       "description": "एक असत्यापित टोकन है. क्या आप इसे सक्रिय करना चाहते हैं? ट्रेडिंग से पहले अच्छी तरह से शोध अवश्य कर लें।",
       "reminder": "आप सेटिंग मोडल में इस सेटिंग को हमेशा निष्क्रिय कर सकते हैं।"
     },
-    "getStarted": {},
     "categories": {
       "new": "नवीनतम",
       "defi": "डेफी",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "व्यापार",
     "buy": "खरीदना",
     "yourAssets": "आपकी संपत्ति",
     "yourPositions": "आपके पद",
@@ -603,7 +601,8 @@
     "balance": "संतुलन",
     "modalTitle": "प्रोफ़ाइल",
     "viewAllAssets": "सभी संपत्तियां देखें",
-    "wallet": "बटुआ"
+    "wallet": "बटुआ",
+    "transactions": "लेनदेन"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",
@@ -864,7 +863,6 @@
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
     "tvl": "टी वी लाइनों",
-    "noData": "रा",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
     "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"
@@ -974,6 +972,35 @@
     "noTransactions": "कोई लेनदेन नहीं",
     "pastShownHere": "ओस्मोसिस पर आपके पिछले ट्रेड यहां दिखाई देंगे।",
     "connectToSee": "अपना लेन-देन इतिहास देखने के लिए कनेक्ट करें",
-    "connectWallet": "वॉलेट कनेक्ट करें"
-  }
+    "connectWallet": "वॉलेट कनेक्ट करें",
+    "title": "लेनदेन",
+    "swapping": "अदला-बदली",
+    "swapped": "बदली",
+    "swapFailed": "स्वैप विफल",
+    "taxReports": "कर रिपोर्ट",
+    "explorer": "एक्सप्लोरर",
+    "sold": "बिका हुआ",
+    "bought": "खरीदा",
+    "executionPrice": "निष्पादन मूल्य",
+    "totalFees": "कुल शुल्क",
+    "transactionHash": "लेनदेन हैश",
+    "viewOnExplorer": "एक्सप्लोरर पर देखें"
+  },
+  "date": {
+    "earlierToday": "आज पहले",
+    "yesterday": "कल",
+    "january": "जनवरी",
+    "february": "फ़रवरी",
+    "march": "मार्च",
+    "april": "अप्रैल",
+    "may": "मई",
+    "june": "जून",
+    "july": "जुलाई",
+    "august": "अगस्त",
+    "september": "सितम्बर",
+    "october": "अक्टूबर",
+    "november": "नवंबर",
+    "december": "दिसंबर"
+  },
+  "backToTop": "वापस शीर्ष पर"
 }

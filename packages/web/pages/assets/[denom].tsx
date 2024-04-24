@@ -237,7 +237,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">
                 <SwapTool
-                  isInModal
+                  fixedWidth
+                  useQueryParams={false}
+                  useOtherCurrencies={false}
                   initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   initialOutTokenDenom={denom}
                   page="Token Info Page"
@@ -474,6 +476,7 @@ const TokenChartHeader = observer(() => {
         classes={{
           priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
         }}
+        compactZeros
       />
     </header>
   );

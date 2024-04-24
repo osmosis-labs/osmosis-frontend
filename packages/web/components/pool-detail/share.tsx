@@ -25,6 +25,7 @@ import { EventName } from "~/config";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
+  useFeatureFlags,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
@@ -56,6 +57,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading } = useWalletSelect();
+    const { displayDailyEarn } = useFeatureFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -596,43 +598,46 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     ]}
                   />
                 </div>
-
-                <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
-                  <div className="flex flex-col gap-2">
-                    <span className="body2 text-osmoverse-300">
-                      {t("pool.currentDailyEarn")}
-                    </span>
-                    <h4 className="text-osmoverse-100">
-                      {t("pool.dailyEarnAmount", {
-                        amount:
-                          queryAccountPoolRewards
-                            .getUsdRewardsForPool(pool.id)
-                            ?.day.toString() ?? "$0",
-                      })}
-                    </h4>
-                  </div>
-
-                  {userSharePool.availableValue.toDec().isPositive() &&
-                    bondDurations.some((duration) => duration.bondable) && (
-                      <ArrowButton
-                        className="text-left"
-                        onClick={() => {
-                          logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
-                          setShowLockLPTokenModal(true);
-                        }}
-                      >
-                        {t("pool.earnMore", {
-                          amount: additionalRewardsByBonding
-                            ?.toDec()
-                            .gte(new Dec(0.001))
-                            ? `$${additionalRewardsByBonding?.toString()}/${t(
-                                "pool.day"
-                              )}`
-                            : "",
+                {displayDailyEarn && (
+                  <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+                    <div className="flex flex-col gap-2">
+                      <span className="body2 text-osmoverse-300">
+                        {t("pool.currentDailyEarn")}
+                      </span>
+                      <h4 className="text-osmoverse-100">
+                        {t("pool.dailyEarnAmount", {
+                          amount:
+                            queryAccountPoolRewards
+                              .getUsdRewardsForPool(pool.id)
+                              ?.day.toString() ?? "$0",
                         })}
-                      </ArrowButton>
-                    )}
-                </div>
+                      </h4>
+                    </div>
+                    {userSharePool.availableValue.toDec().isPositive() &&
+                      bondDurations.some((duration) => duration.bondable) && (
+                        <ArrowButton
+                          className="text-left"
+                          onClick={() => {
+                            logEvent([
+                              E.earnMoreByBondingClicked,
+                              baseEventInfo,
+                            ]);
+                            setShowLockLPTokenModal(true);
+                          }}
+                        >
+                          {t("pool.earnMore", {
+                            amount: additionalRewardsByBonding
+                              ?.toDec()
+                              .gte(new Dec(0.001))
+                              ? `$${additionalRewardsByBonding?.toString()}/${t(
+                                  "pool.day"
+                                )}`
+                              : "",
+                          })}
+                        </ArrowButton>
+                      )}
+                  </div>
+                )}
               </div>
             </div>
           )}

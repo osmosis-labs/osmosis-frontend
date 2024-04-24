@@ -209,10 +209,10 @@
       "activate": "Aktywuj",
       "marketCap": "Kapitalizacja rynkowa",
       "volume24h": "Tom",
-      "priceChange24h": "Zmiana 24h",
       "price": "Cena",
-      "name": "Nazwa",
-      "balance": "Saldo"
+      "balance": "Saldo",
+      "lastWeek": "Ostatnie 7 dni",
+      "asset": "Zaleta"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -286,7 +286,6 @@
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
-    "getStarted": {},
     "categories": {
       "new": "Najnowsza",
       "defi": "DeFi",
@@ -314,7 +313,6 @@
     }
   },
   "portfolio": {
-    "trade": "Handel",
     "buy": "Kupić",
     "yourAssets": "Twoje aktywa",
     "yourPositions": "Twoje pozycje",
@@ -603,7 +601,8 @@
     "balance": "Balansować",
     "modalTitle": "Profil",
     "viewAllAssets": "Ver todos os recursos",
-    "wallet": "Portfel"
+    "wallet": "Portfel",
+    "transactions": "Transakcje"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
@@ -864,7 +863,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
@@ -974,6 +972,35 @@
     "noTransactions": "Żadnych transakcji",
     "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
     "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
-    "connectWallet": "Podłącz portfel"
-  }
+    "connectWallet": "Podłącz portfel",
+    "title": "Transakcje",
+    "swapping": "Zamiana",
+    "swapped": "Zamienione",
+    "swapFailed": "Zamiana nie powiodła się",
+    "taxReports": "Raporty podatkowe",
+    "explorer": "poszukiwacz",
+    "sold": "Sprzedany",
+    "bought": "Kupił",
+    "executionPrice": "Cena wykonania",
+    "totalFees": "Wszystkie koszty",
+    "transactionHash": "Hash transakcji",
+    "viewOnExplorer": "Zobacz w eksploratorze"
+  },
+  "date": {
+    "earlierToday": "Dzisiaj wcześniej",
+    "yesterday": "Wczoraj",
+    "january": "Styczeń",
+    "february": "Luty",
+    "march": "Marsz",
+    "april": "Kwiecień",
+    "may": "Móc",
+    "june": "Czerwiec",
+    "july": "Lipiec",
+    "august": "Sierpień",
+    "september": "Wrzesień",
+    "october": "Październik",
+    "november": "Listopad",
+    "december": "Grudzień"
+  },
+  "backToTop": "Powrót do góry"
 }
