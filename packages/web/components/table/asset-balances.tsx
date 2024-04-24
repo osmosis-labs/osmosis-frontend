@@ -151,7 +151,7 @@ export const AssetBalancesTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: t("assets.table.name"),
+        header: t("assets.table.asset"),
         cell: ({ row: { original: asset } }) => (
           <AssetCell
             {...asset}

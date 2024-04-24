@@ -210,9 +210,9 @@
       "marketCap": "市值",
       "volume24h": "體積",
       "price": "價格",
-      "name": "姓名",
       "balance": "結餘",
-      "lastWeek": "過去 7 天"
+      "lastWeek": "過去 7 天",
+      "asset": "資產"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",

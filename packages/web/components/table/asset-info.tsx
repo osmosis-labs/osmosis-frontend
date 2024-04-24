@@ -184,7 +184,7 @@ export const AssetsInfoTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: t("assets.table.name"),
+        header: t("assets.table.asset"),
         cell: (cell) => (
           <AssetCell
             {...cell.row.original}

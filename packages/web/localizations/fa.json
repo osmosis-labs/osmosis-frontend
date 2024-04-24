@@ -210,9 +210,9 @@
       "marketCap": "ارزش بازار",
       "volume24h": "جلد",
       "price": "قیمت",
-      "name": "نام",
       "balance": "تعادل",
-      "lastWeek": "7 روز گذشته"
+      "lastWeek": "7 روز گذشته",
+      "asset": "دارایی"
     },
     "totalAssets": "کل دارایی ها",
     "totalBalance": "موجودی کل",

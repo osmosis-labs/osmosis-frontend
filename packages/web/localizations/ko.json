@@ -210,9 +210,9 @@
       "marketCap": "시가총액",
       "volume24h": "용량",
       "price": "가격",
-      "name": "이름",
       "balance": "균형",
-      "lastWeek": "지난 7일"
+      "lastWeek": "지난 7일",
+      "asset": "유산"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",

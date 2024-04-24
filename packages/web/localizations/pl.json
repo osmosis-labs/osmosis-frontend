@@ -210,9 +210,9 @@
       "marketCap": "Kapitalizacja rynkowa",
       "volume24h": "Tom",
       "price": "Cena",
-      "name": "Nazwa",
       "balance": "Saldo",
-      "lastWeek": "Ostatnie 7 dni"
+      "lastWeek": "Ostatnie 7 dni",
+      "asset": "Zaleta"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",

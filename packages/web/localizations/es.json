@@ -210,9 +210,9 @@
       "marketCap": "Tapa del mercado",
       "volume24h": "Volumen",
       "price": "Precio",
-      "name": "Nombre",
       "balance": "Balance",
-      "lastWeek": "Los últimos 7 días"
+      "lastWeek": "Los últimos 7 días",
+      "asset": "Activo"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",

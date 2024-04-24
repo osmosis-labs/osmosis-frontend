@@ -210,9 +210,9 @@
       "marketCap": "Capitalisation boursière",
       "volume24h": "Volume",
       "price": "Prix",
-      "name": "Nom",
       "balance": "Équilibre",
-      "lastWeek": "Les 7 derniers jours"
+      "lastWeek": "Les 7 derniers jours",
+      "asset": "Actif"
     },
     "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",

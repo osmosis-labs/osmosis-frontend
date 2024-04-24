@@ -210,9 +210,9 @@
       "marketCap": "Marktkapitalisierung",
       "volume24h": "Volumen",
       "price": "Preis",
-      "name": "Name",
       "balance": "Gleichgewicht",
-      "lastWeek": "Letzten 7 Tage"
+      "lastWeek": "Letzten 7 Tage",
+      "asset": "Vermögenswert"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",

@@ -210,9 +210,9 @@
       "marketCap": "बाज़ार आकार",
       "volume24h": "आयतन",
       "price": "कीमत",
-      "name": "नाम",
       "balance": "संतुलन",
-      "lastWeek": "पिछले 7 दिन"
+      "lastWeek": "पिछले 7 दिन",
+      "asset": "संपत्ति"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",

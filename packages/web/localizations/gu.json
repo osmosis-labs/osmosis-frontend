@@ -210,9 +210,9 @@
       "marketCap": "માર્કેટ કેપ",
       "volume24h": "વોલ્યુમ",
       "price": "કિંમત",
-      "name": "નામ",
       "balance": "સંતુલન",
-      "lastWeek": "છેલ્લા 7 દિવસ"
+      "lastWeek": "છેલ્લા 7 દિવસ",
+      "asset": "એસેટ"
     },
     "totalAssets": "કુલ સંપતિ",
     "totalBalance": "કુલ બેલેન્સ",

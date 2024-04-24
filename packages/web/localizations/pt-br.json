@@ -210,9 +210,9 @@
       "marketCap": "Valor de mercado",
       "volume24h": "Volume",
       "price": "Preço",
-      "name": "Nome",
       "balance": "Saldo",
-      "lastWeek": "Últimos 7 dias"
+      "lastWeek": "Últimos 7 dias",
+      "asset": "Ativo"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",

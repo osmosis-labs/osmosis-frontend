@@ -210,9 +210,9 @@
       "marketCap": "Capitalizarea pieței",
       "volume24h": "Volum",
       "price": "Preț",
-      "name": "Nume",
       "balance": "Echilibru",
-      "lastWeek": "Ultimele 7 zile"
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",

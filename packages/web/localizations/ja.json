@@ -210,9 +210,9 @@
       "marketCap": "時価総額",
       "volume24h": "音量",
       "price": "価格",
-      "name": "名前",
       "balance": "バランス",
-      "lastWeek": "過去7日間"
+      "lastWeek": "過去7日間",
+      "asset": "資産"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
