@@ -15,6 +15,8 @@ import { ChainList } from "~/config/generated/chain-list";
 
 import { isValidNumericalRawInput, useAmountInput } from "../use-amount-input";
 
+const osmosisLcdUrl = ChainList[0].apis.rest[0].address;
+
 describe("useAmountInput", () => {
   const osmoMockCurrency: Currency = {
     coinDenom: "OSMO",
@@ -32,7 +34,7 @@ describe("useAmountInput", () => {
         );
       }),
       rest.get(
-        "https://lcd-osmosis.keplr.app/cosmos/bank/v1beta1/balances/osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks",
+        `${osmosisLcdUrl}/cosmos/bank/v1beta1/balances/osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks`,
         (_req, res, ctx) => {
           return res(
             ctx.status(200),

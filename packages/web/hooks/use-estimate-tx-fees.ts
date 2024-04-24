@@ -112,7 +112,7 @@ export function useEstimateTxFees({
   messages: EncodeObject[] | undefined;
   chainId: string;
   /**
-   * If the send token is provided and send token does not have enough balance to pay for the fee, it will
+   * If the send token is provided and does not have enough balance to pay for the fee, it will
    * try to prevent the fee token to be the same as the send token.
    */
   sendToken?: {
