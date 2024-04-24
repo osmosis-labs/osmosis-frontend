@@ -28,7 +28,7 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
@@ -199,7 +199,7 @@ export const AssetsInfoTable: FunctionComponent<{
           (row.currentPrice &&
             formatPretty(
               row.currentPrice,
-              getPriceExtendedFormatOptions(row.currentPrice.toDec())
+              getPriceTableFormatOptions(row.currentPrice.toDec())
             )) ??
           "-",
         {

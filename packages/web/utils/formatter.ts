@@ -270,3 +270,43 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
     disabledTrimZeros: true,
   };
 }
+
+export function getPriceTableFormatOptions(value: Dec): FormatOptions {
+  /**
+   * We need to know how long the integer part of the number is in order to calculate then how many decimal places.
+   */
+  const integerPartLength = value.truncate().toString().length ?? 0;
+
+  /**
+   * If a number is less then $10, we only show 3 significant digits, examples:
+   *  OSMO: $1.61
+   *  AXL: $0.903
+   *  STARS: $0.0367
+   *  HUAHUA: $0.0000123
+   *
+   * If a number is greater or equal to $10, we show a dynamic significant digits based on it's integer part, examples:
+   * BTC: $47,334.21
+   * ETH: $3,441.15
+   * ATOM: $12.11
+   */
+  const maximumSignificantDigits = value.lt(new Dec(10))
+    ? 3
+    : integerPartLength + 2;
+
+  const minimumDecimals = 2;
+
+  const maxDecimals = Math.max(
+    getDecimalCount(parseFloat(value.toString())),
+    minimumDecimals
+  );
+
+  return {
+    maxDecimals,
+    notation: "standard",
+    maximumSignificantDigits,
+    minimumSignificantDigits: maximumSignificantDigits,
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+    disabledTrimZeros: true,
+  };
+}
