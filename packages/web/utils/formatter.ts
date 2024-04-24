@@ -289,9 +289,14 @@ export function getPriceTableFormatOptions(value: Dec): FormatOptions {
    * ETH: $3,441.15
    * ATOM: $12.11
    */
-  const maximumSignificantDigits = value.lt(new Dec(10))
-    ? 3
-    : integerPartLength + 2;
+
+  var maximumSignificantDigits = 3;
+  if (value.gte(new Dec(10))) {
+    maximumSignificantDigits = integerPartLength + 2;
+  }
+  if (value.gte(new Dec(1000))) {
+    maximumSignificantDigits = integerPartLength;
+  }
 
   const minimumDecimals = 2;
 
