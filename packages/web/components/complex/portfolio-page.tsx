@@ -106,7 +106,7 @@ export const PortfolioPage: FunctionComponent = () => {
               </Tab>
             </Tab.List>
             {!isTotalValueFetched ? (
-              <div className="mx-auto w-fit py-3">
+              <div className="mx-auto my-6 w-fit">
                 <Spinner />
               </div>
             ) : userHasNoAssets ? (
