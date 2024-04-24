@@ -724,7 +724,6 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
     "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",

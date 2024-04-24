@@ -9,7 +9,7 @@ import {
   OsmosisAccount,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -30,7 +30,7 @@ async function estimateTxFeesQueryFn({
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
-  messages: EncodeObject[] | undefined;
+  messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
   sendToken?: {
     balance: CoinPretty;
@@ -72,13 +72,20 @@ async function estimateTxFeesQueryFn({
       new Dec(sendToken.balance.toCoin().amount).sub(new Dec(feeCoin.amount))
     )
   ) {
-    const { amount, gas } = await accountStore.estimateFee({
-      ...baseEstimateFeeOptions,
-      excludedFeeMinimalDenoms: [sendToken.balance.currency.coinMinimalDenom],
-    });
-    feeCoin = amount[0];
-    gasLimit = gas;
-    feeAmount = amount;
+    try {
+      const { amount, gas } = await accountStore.estimateFee({
+        ...baseEstimateFeeOptions,
+        excludedFeeMinimalDenoms: [sendToken.balance.currency.coinMinimalDenom],
+      });
+      feeCoin = amount[0];
+      gasLimit = gas;
+      feeAmount = amount;
+    } catch (error) {
+      console.warn(
+        "Failed to estimate fees with excluded fee minimal denom. Using the original fee.",
+        error
+      );
+    }
   }
 
   const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
@@ -127,13 +134,16 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
-    queryKey: ["simulate-swap-tx", superjson.stringify(messages)],
+    queryKey: [
+      "estimate-tx-fees",
+      superjson.stringify({ ...messages, sendToken }),
+    ],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({
         wallet,
         accountStore,
-        messages,
+        messages: messages!,
         apiUtils,
         sendToken,
       });
@@ -151,29 +161,4 @@ export function useEstimateTxFees({
   });
 
   return queryResult;
-}
-
-export function useEstimateTxFeesMutation() {
-  const { accountStore } = useStore();
-  const apiUtils = api.useUtils();
-
-  return useMutation({
-    mutationFn: async ({
-      messages,
-      chainId,
-    }: {
-      messages: EncodeObject[];
-      chainId: string;
-    }) => {
-      const wallet = accountStore.getWallet(chainId);
-      if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-
-      return estimateTxFeesQueryFn({
-        wallet,
-        accountStore,
-        messages,
-        apiUtils,
-      });
-    },
-  });
 }

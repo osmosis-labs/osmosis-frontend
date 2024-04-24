@@ -724,7 +724,6 @@
       "hide": "隠れる",
       "show": "見せる"
     },
-    "maxButtonError": "最大金額を計算できません。ネットワーク接続を確認するか、ページを更新してください。",
     "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
     "available": "利用可能",
     "button": "スワップ",

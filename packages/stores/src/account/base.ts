@@ -1177,7 +1177,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
    * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
    * @param {string[]} [params.excludedFeeMinimalDenoms=[]] - An array of fee tokens to exclude from the fee calculation.
-   * @param {boolean} [params.checkOtherFeeTokens=true] - If true, the function will attempt to find an alternative fee token if the user doesn't have enough balance for the primary fee token.
    * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
    *
    * @example
@@ -1192,13 +1191,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     gasLimit,
     chainId,
     address,
-    checkOtherFeeTokens = true,
     excludedFeeMinimalDenoms: excludedFeeTokens = [],
   }: {
     gasLimit: string;
     chainId: string;
     address: string | undefined;
-    checkOtherFeeTokens?: boolean;
     excludedFeeMinimalDenoms?: string[];
   }) {
     const chain = getChain({ chainList: this.chains, chainId });
@@ -1248,10 +1245,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain doesn't support the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise throw an error.
      */
-    if (
-      (!chainHasOsmosisFeeModule || !checkOtherFeeTokens) &&
-      isUserBalanceInsufficientForBaseChainFee
-    ) {
+    if (!chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
       console.error(
         `Insufficient balance for the base fee token (${fee.denom}).`
       );

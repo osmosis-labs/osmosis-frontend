@@ -724,7 +724,6 @@
       "hide": "Ocultar",
       "show": "Mostrar"
     },
-    "maxButtonError": "No se puede calcular el importe máximo. Verifique su conexión de red o intente actualizar la página.",
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
