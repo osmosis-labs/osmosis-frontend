@@ -67,7 +67,9 @@
     "@react-spring/web": "^9.6.1",
     "@sentry/nextjs": "^7.109.0",
     "@tanstack/match-sorter-utils": "^8.8.4",
+    "@tanstack/query-async-storage-persister": "^4.36.1",
     "@tanstack/react-query": "^4.32.6",
+    "@tanstack/react-query-persist-client": "^4.36.1",
     "@tanstack/react-table": "^8.10.3",
     "@tanstack/react-virtual": "^3.0.0-beta.63",
     "@tippyjs/react": "^4.2.6",
@@ -86,7 +88,7 @@
     "@walletconnect/sign-client": "2.11.3",
     "@walletconnect/types": "2.11.3",
     "@walletconnect/utils": "2.11.3",
-    "@wormhole-foundation/wormhole-connect": "^0.3.2",
+    "@wormhole-foundation/wormhole-connect": "^0.3.4",
     "axios": "^0.27.2",
     "bip39-light": "^1.0.7",
     "bitcoin-address-validation": "^2.2.3",
@@ -132,6 +134,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.41.0",
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
@@ -159,6 +162,7 @@
     "glob": "^9.3.4",
     "jest-in-case": "^1.0.2",
     "jest-launchdarkly-mock": "^2.1.0",
+    "msw-trpc": "1.3.3",
     "postcss": "^8.4.5",
     "prettier": "^2.8.7",
     "prettier-plugin-tailwindcss": "^0.2.0",
@@ -168,6 +172,7 @@
     "ts-jest": "^29.1.0",
     "tsconfig-paths": "^4.2.0",
     "use-debugger-hooks": "^1.3.0",
-    "@playwright/test": "^1.41.0"
+    "fake-indexeddb": "5.0.2",
+    "next-router-mock": "0.9.13"
   }
 }

@@ -36,8 +36,8 @@ type AppStoreProps = {
   };
 };
 
-export const OsmosisAppListRepoName = "osmosis-labs/apps-list";
-export const OsmosisAppListFilePath = "applications.json";
+export const OsmosisAppListRepoName = "osmosis-labs/fe-content";
+export const OsmosisAppListFilePath = "cms/apps/applications.json";
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -158,7 +158,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         <div className="flex w-48 items-center justify-center pl-6">
           <Button variant="outline" asChild>
             <a
-              href="https://tally.so/r/wge9xO"
+              href="https://github.com/osmosis-labs/fe-content/tree/main/cms/apps"
               target="_blank"
               rel="noreferrer noopener"
               onClick={handleApplyClick}

@@ -7,7 +7,7 @@
 
 export type AmountDefault = "half" | "max" | "input";
 
-export type SwapPage = "Swap Page" | "Token Info Page";
+export type EventPage = "Swap Page" | "Token Info Page" | "Pool Details Page";
 
 export type EventProperties = {
   fromToken: string;
@@ -47,7 +47,7 @@ export type EventProperties = {
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
   title: "Stake" | "Explore Pools";
-  page: SwapPage;
+  page: EventPage;
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;
@@ -246,6 +246,12 @@ export const EventName = {
     rewardsClaimStarted: "Earn Page: Rewards claim started",
     joinStrategyClicked: "Earn Page: Join strategy clicked",
     joinStrategyCompleted: "Earn Page: Join strategy completed",
+  },
+  TransactionsPage: {
+    pageViewed: "Transactions: Page viewed",
+    swapClicked: "Transactions: Swap clicked",
+    taxReportsClicked: "Transactions: Tax reports clicked",
+    explorerClicked: "Transactions: Explorer clicked",
   },
   QueryError: "Query error",
 };

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { Button } from "~/components/ui/button";
+import { useTranslation } from "~/hooks";
 
 function subscribe(callback: () => void) {
   window.addEventListener("scroll", callback);
@@ -32,13 +33,15 @@ export const BackToTopButton = () => {
     });
   };
 
+  const { t } = useTranslation();
+
   return isVisible ? (
     <Button
       onClick={scrollToTop}
       className="z-99 fixed inset-x-1/2 bottom-6 m-auto w-32 !rounded-full transition duration-200 ease-in"
       aria-label="Go to top"
     >
-      Back to top
+      {t("backToTop")}
     </Button>
   ) : null;
 };

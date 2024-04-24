@@ -7,13 +7,16 @@ import {
   getAssetHistoricalPrice,
   getAssetMarketActivity,
   getAssetPrice,
+  getAssets,
   getAssetWithUserBalance,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
+  getUpcomingAssets,
   getUserAssetsTotal,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
 } from "../queries/complex/assets";
+import { getBridgeAsset } from "../queries/complex/assets/bridge";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
 import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
@@ -56,7 +59,14 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          // Optional poolId to filter assets by pool
+          poolId: z.string().optional(),
+        })
+      )
+    )
     .query(
       async ({
         input: {
@@ -67,6 +77,7 @@ export const assetsRouter = createTRPCRouter({
           onlyVerified,
           includePreview,
           categories,
+          poolId,
         },
         ctx,
       }) =>
@@ -80,6 +91,7 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: "desc",
               includePreview,
               categories,
+              poolId,
             }),
           cacheKey: JSON.stringify({
             search,
@@ -87,6 +99,7 @@ export const assetsRouter = createTRPCRouter({
             onlyVerified,
             includePreview,
             categories,
+            poolId,
           }),
           cursor,
           limit,
@@ -165,7 +178,7 @@ export const assetsRouter = createTRPCRouter({
             "priceChange24h",
             "marketCap",
             "volume24h",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )
@@ -218,7 +231,7 @@ export const assetsRouter = createTRPCRouter({
             "currentPrice",
             "priceChange24h",
             "usdValue",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )
@@ -246,9 +259,10 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
             });
 
-            assets = assets.filter((asset) =>
-              asset.amount?.toDec().isPositive()
-            );
+            if (!search)
+              assets = assets.filter((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
 
             let priceAssets = await Promise.all(
               assets.map(async (asset) => {
@@ -258,9 +272,9 @@ export const assetsRouter = createTRPCRouter({
                       (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
                     )
                     .catch((e) => captureErrorAndReturn(e, undefined)),
-                  getAssetMarketActivity({
-                    coinDenom: asset.coinDenom,
-                  }).then((activity) => activity?.price24hChange),
+                  getAssetMarketActivity(asset).then(
+                    (activity) => activity?.price24hChange
+                  ),
                 ]);
 
                 return {
@@ -271,7 +285,7 @@ export const assetsRouter = createTRPCRouter({
               })
             );
 
-            if (sortInput && sortInput.keyPath !== "usdValue") {
+            if (sortInput) {
               priceAssets = sort(
                 priceAssets,
                 sortInput.keyPath,
@@ -279,7 +293,11 @@ export const assetsRouter = createTRPCRouter({
               );
             }
 
-            return priceAssets;
+            const bridgeAssets = priceAssets.map((asset) =>
+              getBridgeAsset(ctx.assetLists, asset)
+            );
+
+            return bridgeAssets;
           },
           cacheKey: JSON.stringify({
             search,
@@ -376,5 +394,77 @@ export const assetsRouter = createTRPCRouter({
         }).catch((e) =>
           captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
         )
+    ),
+  getTopNewAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+        categories: ["new"],
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return marketAssets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(0, topN);
+    }),
+  getTopGainerAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(async ({ input: { topN }, ctx }) => {
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+      });
+
+      const marketAssets = await Promise.all(
+        assets.map(async (asset) => {
+          const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
+            captureErrorAndReturn(e, undefined)
+          );
+
+          return {
+            ...asset,
+            priceChange24h: marketAsset?.price24hChange,
+          };
+        })
+      );
+
+      return sort(
+        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        "priceChange24h",
+        "desc"
+      ).slice(0, topN);
+    }),
+  getTopUpcomingAssets: publicProcedure
+    .input(
+      z.object({
+        topN: z.number().int().positive().default(3),
+      })
+    )
+    .query(({ input: { topN } }) =>
+      getUpcomingAssets().then((upcomingAssets) =>
+        upcomingAssets.slice(0, topN)
+      )
     ),
 });

@@ -526,16 +526,16 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             />
           </div>
           <div
-            className="h-screen max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
+            className="overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
             ref={tableContainerRef}
           >
-            <table className="w-full border-separate border-spacing-y-1">
-              <thead className="sticky top-0 z-50 m-0">
+            <table className="w-full table-auto">
+              <thead>
                 {table
                   .getHeaderGroups()
                   .slice(1)
                   .map((headerGroup) => (
-                    <tr key={headerGroup.id}>
+                    <tr className="top-0 bg-osmoverse-800" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
                           <th key={header.id} colSpan={header.colSpan}>

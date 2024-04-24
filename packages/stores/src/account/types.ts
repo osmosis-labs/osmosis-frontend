@@ -102,9 +102,9 @@ export interface StdSignDoc {
 }
 
 // The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
+// 60 heights * 3 second block time = 180 seconds before transaction
 // timeout and mempool eviction.
-const defaultTimeoutHeightOffset = 30;
+const defaultTimeoutHeightOffset = 60;
 
 export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
   process.env.TIMEOUT_HEIGHT_OFFSET

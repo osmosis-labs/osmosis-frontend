@@ -625,7 +625,7 @@ const RightModalContent: FunctionComponent<
     return (
       <div className="flex flex-col px-8">
         <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
-          {t("Getting Started")}
+          {t("walletSelect.gettingStarted")}
         </h1>
 
         <Stepper

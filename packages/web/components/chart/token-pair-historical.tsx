@@ -18,9 +18,11 @@ import {
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, memo } from "react";
+import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { compressZeros } from "~/components/chart/compress-zeros";
+import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
@@ -257,6 +259,7 @@ export const PriceChartHeader: FunctionComponent<{
   quoteDenom?: string;
   hideButtons?: boolean;
   showAllRange?: boolean;
+  isLoading?: boolean;
   classes?: {
     buttons?: string;
     priceHeaderClass?: string;
@@ -264,6 +267,7 @@ export const PriceChartHeader: FunctionComponent<{
     pricesHeaderContainerClass?: string;
     pricesHeaderRootContainer?: string;
   };
+  compactZeros?: boolean;
 }> = observer(
   ({
     historicalRange,
@@ -277,8 +281,31 @@ export const PriceChartHeader: FunctionComponent<{
     classes,
     fiatSymbol,
     showAllRange = false,
+    isLoading = false,
+    compactZeros = false,
   }) => {
     const { t } = useTranslation();
+
+    const getFormattedPrice = useCallback(
+      (
+        additionalFormatOpts?: Partial<
+          Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+        >
+      ) =>
+        formatPretty(new Dec(hoverPrice), {
+          maxDecimals: decimal,
+          notation: "compact",
+          ...formatOpts,
+          ...additionalFormatOpts,
+        }) || "",
+      [decimal, formatOpts, hoverPrice]
+    );
+
+    const { decimalDigits, significantDigits, zeros } = useMemo(
+      () =>
+        compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+      [getFormattedPrice]
+    );
 
     return (
       <div
@@ -293,19 +320,29 @@ export const PriceChartHeader: FunctionComponent<{
             classes?.pricesHeaderContainerClass
           )}
         >
-          <h4
-            className={classNames(
-              "row-span-2 pr-1 font-caption sm:text-h5",
-              classes?.priceHeaderClass
-            )}
-          >
-            {fiatSymbol}
-            {formatPretty(new Dec(hoverPrice), {
-              maxDecimals: decimal,
-              notation: "compact",
-              ...formatOpts,
-            }) || ""}
-          </h4>
+          <SkeletonLoader isLoaded={!isLoading}>
+            <h4
+              className={classNames(
+                "row-span-2 pr-1 font-caption sm:text-h5",
+                classes?.priceHeaderClass
+              )}
+            >
+              {fiatSymbol}
+              {compactZeros ? (
+                <>
+                  {significantDigits}.
+                  {Boolean(zeros) && (
+                    <>
+                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                    </>
+                  )}
+                  {decimalDigits}
+                </>
+              ) : (
+                getFormattedPrice()
+              )}
+            </h4>
+          </SkeletonLoader>
           {baseDenom && quoteDenom ? (
             <div
               className={classNames(

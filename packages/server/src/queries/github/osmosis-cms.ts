@@ -1,5 +1,5 @@
-import { FE_CONTENT_COMMIT_HASH } from "../../../env";
-import { queryGithubFile } from "../../../queries/github";
+import { FE_CONTENT_COMMIT_HASH } from "../../env";
+import { queryGithubFile } from ".";
 
 export async function queryOsmosisCMS<T>({
   commitHash = FE_CONTENT_COMMIT_HASH,

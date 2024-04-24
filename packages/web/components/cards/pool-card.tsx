@@ -8,9 +8,6 @@ import { CustomClasses } from "~/components/types";
 import { Metric } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
-// <Link /> notes: turn off prefetch to avoid loading tons of pools and lagging the client, many pools will be in viewport. They will still be fetched on hover.
-// See : https://nextjs.org/docs/api-reference/next/link
-
 export const PoolCard: FunctionComponent<
   {
     poolId: string;
@@ -35,7 +32,6 @@ export const PoolCard: FunctionComponent<
     <Link
       href={`/pool/${poolId}`}
       passHref
-      prefetch={false}
       className={classNames(
         "rounded-4xl p-[2px] text-left hover:bg-wosmongton-200",
         {

@@ -88,10 +88,13 @@ const StrategiesTable = ({
       }}
       className="no-scrollbar mb-11 overflow-x-auto overflow-y-hidden"
     >
-      <table className="mb-12 w-full">
+      <table className="mb-12 table-auto">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="bg-transparent" key={headerGroup.id}>
+            <tr
+              className="!static !border-b-0 bg-transparent"
+              key={headerGroup.id}
+            >
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {

@@ -15,7 +15,7 @@ import {
   StrategyCMSData,
   StrategyTVL,
 } from "../../../queries/data-services/earn";
-import { queryOsmosisCMS } from "../../../queries/osmosis/cms";
+import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import dayjs from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";

@@ -678,7 +678,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return BigInt(callResult);
     } catch (err) {
-      console.log("failed to estimate gas:", err);
+      console.error("failed to estimate gas:", err);
       return BigInt(0);
     }
   }

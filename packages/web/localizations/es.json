@@ -145,7 +145,13 @@
       "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
-      "title": "Historial de transferencias"
+      "title": "Historial de transferencias",
+      "pendingDeposit": "Deposito pendiente",
+      "pendingWithdraw": "A la espera de Retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -200,7 +206,13 @@
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
-      "activate": "Activar"
+      "activate": "Activar",
+      "marketCap": "Tapa del mercado",
+      "volume24h": "Volumen",
+      "price": "Precio",
+      "balance": "Balance",
+      "lastWeek": "Los últimos 7 días",
+      "asset": "Activo"
     },
     "totalAssets": "Los activos totales",
     "totalBalance": "Balance total",
@@ -274,26 +286,44 @@
       "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
       "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
     },
-    "getStarted": {
-      "title": "Comience con {osmosis}",
-      "description": "Conéctese y deposite fondos en su billetera para comenzar a operar en solo unos pocos pasos.",
-      "addFunds": "Agregue fondos para comenzar"
-    },
     "categories": {
       "new": "El más nuevo",
       "defi": "DeFi",
       "stablecoin": "Monedas estables",
       "meme": "meme",
-      "liquid_staking": "Estaca liquida"
+      "liquid_staking": "Estaca liquida",
+      "built_on_osmosis": "Construido sobre ósmosis",
+      "sail_initiative": "Iniciativa de vela",
+      "bridges": "Puentes",
+      "nft_protocol": "Protocolo NFT",
+      "ai": "AI",
+      "privacy": "Privacidad",
+      "social": "Social",
+      "oracles": "Oráculos",
+      "dweb": "Web descentralizada",
+      "rwa": "Emisión de activos en el mundo real",
+      "gaming": "Juego de azar",
+      "topGainers": "Principales ganadores"
+    },
+    "seeAll": "Ver todo",
+    "highlights": {
+      "new": "Nuevo",
+      "topGainers": "Principales ganadores",
+      "upcoming": "Próximo"
     }
   },
   "portfolio": {
-    "trade": "Comercio",
+    "buy": "Comprar",
     "yourAssets": "Tus activos",
     "yourPositions": "Tus posiciones",
     "recentTransfers": "Transferencias recientes",
     "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
-    "yourLiquidityPools": "Tus fondos de liquidez"
+    "yourLiquidityPools": "Tus fondos de liquidez",
+    "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis.",
+    "noAssets": "No tienes saldos en {osmosis}",
+    "getStarted": "Deposite activos para comenzar",
+    "noPositions": "no tienes posiciones",
+    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez"
   },
   "buyTokens": "Comprar fichas",
   "components": {
@@ -414,7 +444,9 @@
     "marsSubtext": "Impulsado por Marte",
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
-    "new": "NUEVO"
+    "new": "NUEVO",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -569,7 +601,8 @@
     "balance": "Balance",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos los activos",
-    "wallet": "Billetera"
+    "wallet": "Billetera",
+    "transactions": "Actas"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participaciones",
@@ -586,6 +619,10 @@
     "titleLanguage": "Idioma",
     "titleHideBalances": "Saldos de máscaras para la privacidad",
     "hideBalances": "Saldos enmascarados"
+  },
+  "search": {
+    "noResultsFor": "No hay resultados para \" {query} \"",
+    "adjust": "Intente ajustar su consulta de búsqueda"
   },
   "stake": {
     "available": "Disponible",
@@ -692,6 +729,8 @@
       "hide": "Ocultar",
       "show": "Mostrar"
     },
+    "maxButtonError": "No se puede calcular el importe máximo. Verifique su conexión de red o intente actualizar la página.",
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
@@ -719,6 +758,7 @@
     "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
+    "gettingStarted": "Empezando",
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
@@ -823,7 +863,6 @@
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
     "tvl": "TVL",
-    "noData": "N.D.",
     "buyToken": "Comprar {coinDenom}",
     "staking": "Replanteo",
     "liquidityInOSMOPools": "Liquidez en pools {number} {denom}"
@@ -911,6 +950,12 @@
       "risk": {
         "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
     }
   },
   "disclaimer": "Descargo de responsabilidad",
@@ -920,5 +965,42 @@
     "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
     "buttonContinue": "De todas maneras, continúe",
     "buttonCancel": "Cancelar"
-  }
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí.",
+    "noTransactions": "Sin transacciones",
+    "pastShownHere": "Tus operaciones anteriores en Osmosis aparecerán aquí.",
+    "connectToSee": "Conéctese para ver su historial de transacciones",
+    "connectWallet": "Conectar billetera",
+    "title": "Actas",
+    "swapping": "Intercambio",
+    "swapped": "Intercambiado",
+    "swapFailed": "El intercambio falló",
+    "taxReports": "Informes de impuestos",
+    "explorer": "Explorador",
+    "sold": "Vendido",
+    "bought": "Compró",
+    "executionPrice": "Precio de ejecución",
+    "totalFees": "Tarifas totales",
+    "transactionHash": "Hash de transacción",
+    "viewOnExplorer": "Ver en el explorador"
+  },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer",
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Puede",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre"
+  },
+  "backToTop": "Volver arriba"
 }

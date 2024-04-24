@@ -96,6 +96,8 @@ export const publicProcedure = t.procedure
     return result;
   });
 
+export const createCallerFactory = t.createCallerFactory;
+
 /**
  * Creates a local link for tRPC operations.
  * This function is used to create a custom TRPCLink that intercepts operations and

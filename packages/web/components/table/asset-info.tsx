@@ -1,9 +1,4 @@
-import type {
-  Category,
-  CommonPriceChartTimeFrame,
-  Search,
-  SortDirection,
-} from "@osmosis-labs/server";
+import { type Search, type SortDirection } from "@osmosis-labs/server";
 import {
   CellContext,
   createColumnHelper,
@@ -24,10 +19,12 @@ import {
   useState,
 } from "react";
 
+import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -35,10 +32,10 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
-import { SelectMenu } from "../control/select-menu";
-import { SearchBox } from "../input";
+import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
+import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
-import { HistoricalPriceCell } from "./cells/price";
+import { Button } from "../ui/button";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -57,38 +54,76 @@ export const AssetsInfoTable: FunctionComponent<{
   const { t } = useTranslation();
 
   // State
-  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
-  const onSearchInput = useCallback((input: string) => {
-    setSearchQuery(input ? { query: input } : undefined);
-  }, []);
 
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
-
-  const [sortKey, setSortKey_] = useState<SortKey>("volume24h");
-  const setSortKey = useCallback((key: SortKey | undefined) => {
-    if (key !== undefined) setSortKey_(key);
-  }, []);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  const [selectedCategory, setCategory] = useState<Category | undefined>();
-  const selectCategory = useCallback((category: Category) => {
+  // category
+  const [selectedCategory, setCategory] = useState<string | undefined>();
+  const selectCategory = useCallback((category: string) => {
     setCategory(category);
   }, []);
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
   }, []);
+  const onSelectTopGainers = useCallback(() => {
+    setCategory("topGainers");
+  }, []);
   const categories = useMemo(
-    () => (selectedCategory ? [selectedCategory] : undefined),
+    () =>
+      selectedCategory && selectedCategory !== "topGainers"
+        ? [selectedCategory]
+        : undefined,
     [selectedCategory]
   );
 
+  // search
+  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
+  const onSearchInput = useCallback((input: string) => {
+    setSearchQuery(input ? { query: input } : undefined);
+  }, []);
+  const search = useMemo(
+    () => (Boolean(selectedCategory) ? undefined : searchQuery),
+    [selectedCategory, searchQuery]
+  );
+
+  // sorting
+  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const sortKey = useMemo(() => {
+    // handle topGainers category on client, but other categories can still sort
+    if (selectedCategory === "topGainers") return "priceChange24h";
+    else return sortKey_;
+  }, [selectedCategory, sortKey_]);
+  const setSortKey = useCallback((key: SortKey | undefined) => {
+    if (key !== undefined) setSortKey_(key);
+  }, []);
+  const [sortDirection_, setSortDirection] = useState<SortDirection>("desc");
+  const sortDirection = useMemo(() => {
+    // handle topGainers category on client, but other categories can still sort
+    if (selectedCategory === "topGainers") return "desc";
+    else return sortDirection_;
+  }, [selectedCategory, sortDirection_]);
+  const sort = useMemo(
+    () =>
+      // disable sorting while searching on client to remove sort UI while searching
+      !Boolean(search)
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
+    [search, sortKey, sortDirection]
+  );
+
+  // unverified assets
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
-  const showUnverifiedAssets =
-    showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
+  const showUnverifiedAssets = Boolean(
+    showUnverifiedAssetsSetting?.state.showUnverifiedAssets
+  );
+  const [verifyAsset, setVerifiedAsset] = useState<{
+    coinDenom: string;
+    coinImageUrl?: string;
+  } | null>(null);
 
-  const { showPreviewAssets } = useShowPreviewAssets();
+  const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
   // Query
   const {
@@ -102,13 +137,11 @@ export const AssetsInfoTable: FunctionComponent<{
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
       limit: 50,
-      search: searchQuery,
-      onlyVerified: showUnverifiedAssets === false,
-      includePreview: showPreviewAssets,
-      sort: {
-        keyPath: sortKey,
-        direction: sortDirection,
-      },
+      search,
+      onlyVerified:
+        showUnverifiedAssets === false && !Boolean(selectedCategory) && !search,
+      includePreview,
+      sort,
       categories,
     },
     {
@@ -124,10 +157,26 @@ export const AssetsInfoTable: FunctionComponent<{
       },
     }
   );
-  const assetsData = useMemo(
-    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [assetPagesData]
-  );
+  const assetsData = useMemo(() => {
+    const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
+    if (selectedCategory === "topGainers") {
+      return assets.slice(undefined, 10);
+    }
+    return assets;
+  }, [selectedCategory, assetPagesData]);
+  const clientCategoryImageSamples = useMemo(() => {
+    if (selectedCategory === "topGainers") {
+      const topGainers = assetsData
+        .filter((asset) => asset.isVerified)
+        .slice(undefined, 3);
+      return {
+        topGainers: topGainers
+          .map((asset) => asset.coinImageUrl)
+          .filter((url): url is string => !!url),
+      };
+    } else return { topGainers: [] };
+  }, [assetsData, selectedCategory]);
+  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -135,14 +184,21 @@ export const AssetsInfoTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: "Name",
-        cell: (cell) => <AssetCell {...cell.row.original} />,
+        header: t("assets.table.asset"),
+        cell: (cell) => (
+          <AssetCell
+            {...cell.row.original}
+            warnUnverified={
+              showUnverifiedAssets && !cell.row.original.isVerified
+            }
+          />
+        ),
       }),
       columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
         id: "price",
         header: () => (
           <SortHeader
-            label="Price"
+            label={t("assets.table.price")}
             sortKey="currentPrice"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -155,8 +211,7 @@ export const AssetsInfoTable: FunctionComponent<{
         id: "historicalPrice",
         header: () => (
           <SortHeader
-            className="mx-auto"
-            label="24h change"
+            label="24h"
             sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -164,13 +219,14 @@ export const AssetsInfoTable: FunctionComponent<{
             setSortKey={setSortKey}
           />
         ),
-        cell: (cell) => (
-          <HistoricalPriceCell
-            coinDenom={cell.row.original.coinDenom}
-            priceChange24h={cell.row.original.priceChange24h}
-            timeFrame={selectedTimeFrame}
-          />
-        ),
+        cell: ({
+          row: {
+            original: { priceChange24h },
+          },
+        }) =>
+          priceChange24h && (
+            <PriceChange className="justify-end" priceChange={priceChange24h} />
+          ),
       }),
       columnHelper.accessor(
         (row) => (row.volume24h ? formatPretty(row.volume24h) : "-"),
@@ -178,7 +234,7 @@ export const AssetsInfoTable: FunctionComponent<{
           id: "volume24h",
           header: () => (
             <SortHeader
-              label="Volume (24h)"
+              label={t("assets.table.volume24h")}
               sortKey="volume24h"
               currentSortKey={sortKey}
               currentDirection={sortDirection}
@@ -188,27 +244,35 @@ export const AssetsInfoTable: FunctionComponent<{
           ),
         }
       ),
-      columnHelper.accessor((row) => row, {
-        id: "marketCap",
-        header: () => (
-          <SortHeader
-            label="Market Cap"
-            sortKey="marketCap"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: (cell) => <MarketCapCell {...cell.row.original} />,
-      }),
+      columnHelper.accessor(
+        (row) => (row.marketCap ? formatPretty(row.marketCap) : "-"),
+        {
+          id: "marketCap",
+          header: () => (
+            <SortHeader
+              label={t("assets.table.marketCap")}
+              sortKey="marketCap"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "assetActions",
-        header: "",
-        cell: (cell) => <AssetActionsCell {...cell.row.original} />,
+        header: t("assets.table.lastWeek"),
+        cell: ({ row: { original } }) => (
+          <AssetActionsCell
+            {...original}
+            showUnverifiedAssetsSetting={showUnverifiedAssets}
+            confirmUnverifiedAsset={setVerifiedAsset}
+          />
+        ),
       }),
     ];
-  }, [selectedTimeFrame, sortKey, sortDirection, setSortKey]);
+  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -273,39 +337,45 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
+      <ActivateUnverifiedTokenConfirmation
+        {...verifyAsset}
+        isOpen={Boolean(verifyAsset)}
+        onConfirm={() => {
+          if (!verifyAsset) return;
+          showUnverifiedAssetsSetting?.setState({
+            showUnverifiedAssets: true,
+          });
+        }}
+        onRequestClose={() => {
+          setVerifiedAsset(null);
+        }}
+      />
+      <section className="mb-4">
+        <HighlightsCategories
+          isCategorySelected={!!selectedCategory}
+          onSelectCategory={selectCategory}
+          onSelectAllTopGainers={onSelectTopGainers}
+        />
+      </section>
       <section className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
+          hiddenCategories={useConst(["new", "topGainers"])}
           onSelectCategory={selectCategory}
           unselectCategory={unselectCategory}
+          clientCategoryImageSamples={clientCategoryImageSamples}
         />
       </section>
-      <div className="mb-4 flex h-12 w-full place-content-between items-center gap-5 md:h-fit md:flex-col md:justify-end">
-        <SearchBox
-          currentValue={searchQuery?.query ?? ""}
-          onInput={onSearchInput}
-          placeholder={t("assets.table.search")}
-          debounce={500}
-        />
-        <SelectMenu
-          classes={useConst({ container: "h-full 1.5lg:hidden" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-            [setSelectedTimeFrame]
-          )}
-        />
-      </div>
+      <SearchBox
+        className="mb-4 !w-[33.25rem]"
+        currentValue={searchQuery?.query ?? ""}
+        onInput={onSearchInput}
+        placeholder={t("assets.table.search")}
+        debounce={500}
+        disabled={Boolean(selectedCategory)}
+      />
       <table
         className={classNames(
-          "w-full",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
@@ -314,8 +384,15 @@ export const AssetsInfoTable: FunctionComponent<{
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
+              {headerGroup.headers.map((header, index) => (
+                <th
+                  className={classNames({
+                    // defines column width
+                    "w-36": index !== 0,
+                  })}
+                  key={header.id}
+                  colSpan={header.colSpan}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -340,34 +417,45 @@ export const AssetsInfoTable: FunctionComponent<{
               </td>
             </tr>
           )}
-          {virtualRows.map((virtualRow) => (
-            <tr
-              className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-              key={rows[virtualRow.index].id}
-              onClick={() =>
-                router.push(
-                  `/assets/${rows[virtualRow.index].original.coinDenom}`
-                )
-              }
-            >
-              {rows[virtualRow.index].getVisibleCells().map((cell) => (
-                <td
-                  className="transition-colors duration-200 ease-in-out"
-                  key={cell.id}
-                >
-                  <Link
-                    href={`/assets/${
-                      rows[virtualRow.index].original.coinDenom
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                    passHref
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+            const unverified =
+              !row.original.isVerified && !showUnverifiedAssets;
+
+            return (
+              <tr
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                key={row.id}
+                onClick={() => router.push(`/assets/${row.original.coinDenom}`)}
+              >
+                {row.getVisibleCells().map((cell, index, cells) => (
+                  <td
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      {
+                        // unverified assets: opaque except for last cell with asset actions
+                        "opacity-40": unverified && index !== cells.length - 1,
+                      }
+                    )}
+                    key={cell.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Link>
-                </td>
-              ))}
-            </tr>
-          ))}
+                    <Link
+                      href={`/assets/${
+                        rows[virtualRow.index].original.coinDenom
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
           {isFetchingNextPage && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -382,25 +470,56 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {noSearchResults && searchQuery?.query && (
+        <NoSearchResultsSplash
+          className="mx-auto w-fit py-8"
+          query={searchQuery.query}
+        />
+      )}
     </div>
   );
 });
+
+// table cells
 
 type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-const MarketCapCell: AssetCellComponent = ({ marketCap, marketCapRank }) => (
-  <div className="ml-auto flex w-20 flex-col text-right">
-    {marketCap && <span>{formatPretty(marketCap)}</span>}
-    {marketCapRank && (
-      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
-    )}
-  </div>
-);
+export const AssetActionsCell: AssetCellComponent<{
+  showUnverifiedAssetsSetting?: boolean;
+  confirmUnverifiedAsset: (asset: {
+    coinDenom: string;
+    coinImageUrl?: string;
+  }) => void;
+}> = ({
+  coinDenom,
+  coinImageUrl,
+  isVerified,
+  showUnverifiedAssetsSetting,
+  confirmUnverifiedAsset,
+}) => {
+  const { t } = useTranslation();
 
-export const AssetActionsCell: AssetCellComponent = () => (
-  <button>
-    <span className="text-wosmongton-200">Trade</span>
-  </button>
-);
+  const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
+
+  return (
+    <div className="flex items-center gap-2 text-wosmongton-200">
+      {needsActivation ? (
+        <Button
+          variant="ghost"
+          className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+          onClick={(e) => {
+            e.preventDefault();
+
+            confirmUnverifiedAsset({ coinDenom, coinImageUrl });
+          }}
+        >
+          {t("assets.table.activate")}
+        </Button>
+      ) : (
+        <HistoricalPriceSparkline coinDenom={coinDenom} timeFrame="1W" />
+      )}
+    </div>
+  );
+};
