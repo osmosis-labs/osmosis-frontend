@@ -388,7 +388,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 <th
                   className={classNames({
                     // defines column width
-                    "w-36": index !== 0,
+                    "w-36 xl:w-25": index !== 0,
                   })}
                   key={header.id}
                   colSpan={header.colSpan}

@@ -313,7 +313,7 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames({
                     // defines column width
-                    "w-56 lg:w-36": index !== 0 && index !== headers.length - 1,
+                    "w-56 xl:w-36": index !== 0 && index !== headers.length - 1,
                     "w-36": index === headers.length - 1,
                   })}
                   key={header.id}
