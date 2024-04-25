@@ -38,7 +38,7 @@ export const BackToTopButton = () => {
   return isVisible ? (
     <Button
       onClick={scrollToTop}
-      className="z-99 fixed inset-x-1/2 bottom-6 m-auto w-32 !rounded-full transition duration-200 ease-in"
+      className="z-99 sticky bottom-6 m-auto w-32 !rounded-full transition duration-200 ease-in"
       aria-label="Go to top"
     >
       {t("backToTop")}

@@ -10,13 +10,6 @@ import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "~/components/ui/pagination";
 import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
@@ -104,10 +97,8 @@ const Transactions: React.FC = observer(() => {
     setOpen(false);
   }, [isLargeDesktop]);
 
-  const showPagination = isWalletConnected && !isLoading;
-
   return (
-    <main className="relative mx-16 flex flex-col gap-4">
+    <main className="mx-16 flex gap-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
         transactions={transactionData}
@@ -116,6 +107,7 @@ const Transactions: React.FC = observer(() => {
         address={address}
         isLoading={isLoading}
         isWalletConnected={isWalletConnected}
+        currentPage={currentPage}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
@@ -130,50 +122,8 @@ const Transactions: React.FC = observer(() => {
           transaction={selectedTransaction}
         />
       )}
-      <div className="pt-4 pb-20">
-        {showPagination && (
-          <TransactionsPaginaton
-            showPrevious={currentPage > 0}
-            showNext={
-              transactionData !== undefined && transactionData?.length > 0
-            }
-            previousHref={`?page=${Math.max(0, currentPage - 1)}`}
-            nextHref={`?page=${currentPage + 1}`}
-          />
-        )}
-      </div>
-      {/* <BackToTopButton /> */}
     </main>
   );
 });
-
-const TransactionsPaginaton = ({
-  showPrevious,
-  showNext,
-  previousHref,
-  nextHref,
-}: {
-  showPrevious: boolean;
-  showNext: boolean;
-  previousHref: string;
-  nextHref: string;
-}) => {
-  return (
-    <Pagination>
-      <PaginationContent>
-        {showPrevious && (
-          <PaginationItem>
-            <PaginationPrevious href={previousHref} />
-          </PaginationItem>
-        )}
-        {showNext && (
-          <PaginationItem>
-            <PaginationNext href={nextHref} />
-          </PaginationItem>
-        )}
-      </PaginationContent>
-    </Pagination>
-  );
-};
 
 export default Transactions;
