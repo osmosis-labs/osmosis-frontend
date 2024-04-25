@@ -25,7 +25,8 @@ export type AvailableFlags =
   | "positionRoi"
   | "swapToolSimulateFee"
   | "portfolioPageAndNewAssetsPage"
-  | "displayDailyEarn";
+  | "displayDailyEarn"
+  | "newAssetsPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -52,6 +53,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
+  newAssetsPage: false,
   displayDailyEarn: false,
   _isInitialized: false,
   _isClientIDPresent: false,
@@ -69,24 +71,23 @@ export const useFeatureFlags = () => {
       client.waitForInitialization().then(() => setIsInitialized(true));
   }, [isInitialized, client]);
 
+  const isDevModeWithoutClientID =
+    process.env.NODE_ENV === "development" &&
+    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
-    ...(process.env.NODE_ENV === "development" &&
-    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-      ? defaultFlags
-      : {}),
+    ...(isDevModeWithoutClientID ? defaultFlags : {}),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
+    newAssetsPage:
+      isMobile || !isInitialized ? false : launchdarklyFlags.newAssetsPage,
     portfolioPageAndNewAssetsPage:
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
-    _isInitialized:
-      process.env.NODE_ENV === "development" &&
-      !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-        ? true
-        : isInitialized,
+    _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;
 };
