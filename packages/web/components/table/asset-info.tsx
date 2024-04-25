@@ -33,6 +33,7 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
+import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -374,8 +375,10 @@ export const AssetsInfoTable: FunctionComponent<{
         debounce={500}
         disabled={Boolean(selectedCategory)}
       />
+      <BalancesMoved className="my-3" />
       <table
         className={classNames(
+          "mt-3",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"

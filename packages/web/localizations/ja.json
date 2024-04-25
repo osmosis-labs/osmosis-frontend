@@ -310,7 +310,9 @@
       "new": "新しい",
       "topGainers": "上位の利益",
       "upcoming": "今後の予定"
-    }
+    },
+    "balancesMovedTitle": "残高をお探しですか?",
+    "balancesMovedDescription": "残高などを確認するための新しいホームであるポートフォリオ ページに移動します。"
   },
   "portfolio": {
     "buy": "買う",

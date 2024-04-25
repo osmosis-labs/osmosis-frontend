@@ -310,7 +310,9 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "balancesMovedTitle": "Îți cauți soldurile?",
+    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
   },
   "portfolio": {
     "buy": "Cumpără",
