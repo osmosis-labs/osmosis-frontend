@@ -418,12 +418,7 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
   <div className="ml-auto flex flex-col">
-    {usdValue && (
-      <div>
-        {usdValue.symbol}
-        {Number(usdValue.toDec().toString()).toFixed(2)}
-      </div>
-    )}
+    {usdValue && <div>{usdValue.toString()}</div>}
     <div className="body2 whitespace-nowrap text-osmoverse-300">
       {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
     </div>
