@@ -102,6 +102,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const fromChainAxelarId = this.getAxelarChainId(fromChain);
           const toChainAxelarId = this.getAxelarChainId(toChain);
 
+          console.log({
+            fromChainAxelarId,
+            toChainAxelarId,
+          });
+
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
