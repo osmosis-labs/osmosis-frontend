@@ -335,10 +335,16 @@ export function useSwap(
     () =>
       getTokenOutMinusSwapFee({
         tokenOut: quote?.amount,
+        tokenInAsset: swapAssets.fromAsset,
         tokenInFeeAmount: quote?.tokenInFeeAmount,
         quoteBaseOutSpotPrice,
       }),
-    [quote, quoteBaseOutSpotPrice]
+    [
+      quote?.amount,
+      quote?.tokenInFeeAmount,
+      quoteBaseOutSpotPrice,
+      swapAssets.fromAsset,
+    ]
   );
 
   // Calculate token in fee amount fiat value from token in fee amount returned by quote and token in price
@@ -417,21 +423,33 @@ const DefaultDenoms = ["ATOM", "OSMO"];
 // Returns the output token amount minus the calculated swap fee.
 export function getTokenOutMinusSwapFee({
   tokenOut,
+  tokenInAsset,
   tokenInFeeAmount,
   quoteBaseOutSpotPrice,
 }: {
   tokenOut: CoinPretty | undefined;
+  tokenInAsset: Currency | undefined;
   tokenInFeeAmount: Int | undefined;
   quoteBaseOutSpotPrice: CoinPretty | undefined;
 }) {
-  if (!tokenOut || !tokenInFeeAmount || !quoteBaseOutSpotPrice)
-    return undefined;
+  if (!tokenOut) return undefined;
+  if (!tokenInFeeAmount || !quoteBaseOutSpotPrice || !tokenInAsset)
+    return tokenOut;
+
+  // Get precision exponent.
+  const coinDecimals = tokenInAsset.coinDecimals;
+  const precisionExponent = DecUtils.getTenExponentN(coinDecimals);
+
+  // Prevent division by zero
+  if (precisionExponent.isZero()) {
+    return tokenOut;
+  }
 
   // Swap Fee = Token In Fee Amount × Quote Base Out Spot Price
-  const outTokenSwapFee = new CoinPretty(
-    tokenOut.currency,
-    tokenInFeeAmount.toDec().mul(quoteBaseOutSpotPrice.toDec())
-  );
+  const outTokenSwapFee = tokenInFeeAmount
+    .toDec()
+    .quo(precisionExponent)
+    .mul(quoteBaseOutSpotPrice.toDec());
 
   /**
    *  Formula
