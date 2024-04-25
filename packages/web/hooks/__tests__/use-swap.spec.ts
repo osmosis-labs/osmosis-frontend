@@ -128,19 +128,13 @@ describe("getTokenOutMinusSwapFee", () => {
     coinDecimals: 12,
   };
 
-  it("returns undefined if any input is undefined", () => {
+  it("returns undefined when token out is undefined otherwise, return token out without subtracting fee", () => {
     const tokenOut = new CoinPretty(osmoMockCurrency, new Dec(100));
     const tokenInFeeAmount = new Int(10);
     expect(
       getTokenOutMinusSwapFee({
-        tokenOut,
-        tokenInFeeAmount,
-        quoteBaseOutSpotPrice: undefined,
-      })
-    ).toBeUndefined();
-    expect(
-      getTokenOutMinusSwapFee({
         tokenOut: undefined,
+        tokenInAsset: atomMockCurrency,
         tokenInFeeAmount,
         quoteBaseOutSpotPrice: undefined,
       })
@@ -148,17 +142,33 @@ describe("getTokenOutMinusSwapFee", () => {
     expect(
       getTokenOutMinusSwapFee({
         tokenOut,
+        tokenInAsset: atomMockCurrency,
+        tokenInFeeAmount,
+        quoteBaseOutSpotPrice: undefined,
+      })
+    ).toBe(tokenOut);
+    expect(
+      getTokenOutMinusSwapFee({
+        tokenOut,
+        tokenInAsset: atomMockCurrency,
         tokenInFeeAmount: undefined,
         quoteBaseOutSpotPrice: undefined,
       })
-    ).toBeUndefined();
+    ).toBe(tokenOut);
   });
 
   it("calculates the token out amount minus the swap fee correctly", () => {
-    // We get 87930.043 OSMO
+    const tokenIn = new CoinPretty(
+      atomMockCurrency,
+      new Dec(10000).mul(
+        DecUtils.getTenExponentN(atomMockCurrency.coinDecimals)
+      )
+    );
+
+    // We get 87,951.48 OSMO
     const tokenOut = new CoinPretty(
       osmoMockCurrency,
-      new Dec(87930.043).mul(
+      new Dec(87951.48).mul(
         DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals)
       )
     );
@@ -178,6 +188,7 @@ describe("getTokenOutMinusSwapFee", () => {
 
     const result = getTokenOutMinusSwapFee({
       tokenOut,
+      tokenInAsset: tokenIn.currency,
       tokenInFeeAmount,
       quoteBaseOutSpotPrice,
     });
@@ -188,39 +199,47 @@ describe("getTokenOutMinusSwapFee", () => {
      *
      * Token In = 10000 ATOM
      * Swap Fee = 0.0023 or 0.23%
-     * Token Out = 87930.043 OSMO
+     * Token Out = 87951.48 OSMO
      * Token In Fee Amount = 23 ATOM
      * Quote Base Out Spot Price = 8.795148 OSMO/ATOM
      *
-     * Token Out Minus Swap Fee = 87930.043 - (23 * 8.795148)
-     * Token Out Minus Swap Fee = 87930.043 OSMO - 202.288404 OSMO
-     * Token Out Minus Swap Fee = 87727.754596 OSMO
+     * Token Out Minus Swap Fee = 87951.48 - (23/10^6) * 8.795148 * 10^6
+     * Token Out Minus Swap Fee = 87951.48 - 202.288404
+     * Token Out Minus Swap Fee = 87749.1915960000000000 OSMO
      */
-    expect(result?.toDec().toString()).toBe("87727.754596000000000000");
+    expect(result?.toDec().toString()).toBe("87749.191596000000000000");
   });
 
   it("calculates the token out amount minus the swap fee correctly for a currency with different decimals", () => {
-    // Assume we get 500000.123456789012 RANDOM
+    const tokenIn = new CoinPretty(
+      osmoMockCurrency,
+      new Dec(100).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+    );
+
+    // We'll get 75 RANDOM before the fee
     const tokenOut = new CoinPretty(
       randomDecimalsMockCurrency,
-      new Dec(500000.123456789012).mul(
+      new Dec(75).mul(
         DecUtils.getTenExponentN(randomDecimalsMockCurrency.coinDecimals)
       )
     );
 
-    // 15 RANDOM = 11.25 OSMO
-    const tokenInFeeAmount = new Dec(15)
-      .mul(DecUtils.getTenExponentN(randomDecimalsMockCurrency.coinDecimals))
+    // 5 OSMO fee = 3.75 RANDOM
+    const tokenInFeeAmount = new Dec(5)
+      .mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
       .truncate();
 
-    // 1 RANDOM = 0.75 OSMO
+    // 1 OSMO = 0.75 RANDOM
     const quoteBaseOutSpotPrice = new CoinPretty(
-      osmoMockCurrency,
-      new Dec(0.75).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+      randomDecimalsMockCurrency,
+      new Dec(0.75).mul(
+        DecUtils.getTenExponentN(randomDecimalsMockCurrency.coinDecimals)
+      )
     );
 
     const result = getTokenOutMinusSwapFee({
       tokenOut,
+      tokenInAsset: tokenIn.currency,
       tokenInFeeAmount,
       quoteBaseOutSpotPrice,
     });
@@ -229,32 +248,51 @@ describe("getTokenOutMinusSwapFee", () => {
      * Using the formula
      * Token Out Minus Swap Fee = Token Out − (Token In Fee Amount × Quote Base Out Spot Price)
      *
-     * Token Out = 500000.123456789012 RANDOM
-     * Token In Fee Amount = 15 RANDOM
+     * Token In = 100 OSMO
+     * Token Out = 75 RANDOM
+     * Token In Fee Amount = 5 OSMO
      * Quote Base Out Spot Price = 0.75 OSMO/RANDOM
      *
-     * Token Out Minus Swap Fee = 500000.123456789012 - (15 * 0.75)
-     * Token Out Minus Swap Fee = 500000.123456789012 - 11.25
-     * Token Out Minus Swap Fee = 499988.873456789012 RANDOM
+     * Token Out Minus Swap Fee =  75 - (5/10^6) * 0.75 * 10^12
+     * Token Out Minus Swap Fee = 75 - 3.75
+     * Token Out Minus Swap Fee = 71.25 RANDOM
      */
-    expect(result?.toDec().toString()).toBe("499988.873456789000000000");
+    expect(result?.toDec().toString()).toBe("71.250000000000000000");
   });
 
-  it("returns zero if the swap fee is greater than the output token amount", () => {
-    const tokenOut = new CoinPretty(osmoMockCurrency, new Dec(100));
-    const tokenInFeeAmount = new Dec(60)
+  it("returns amount without fee subtraction if the swap fee is greater than the output token amount", () => {
+    const tokenIn = new CoinPretty(
+      osmoMockCurrency,
+      new Dec(100).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+    );
+
+    // We'll get 75 RANDOM before the fee
+    const tokenOut = new CoinPretty(
+      randomDecimalsMockCurrency,
+      new Dec(75).mul(
+        DecUtils.getTenExponentN(randomDecimalsMockCurrency.coinDecimals)
+      )
+    );
+
+    // 110 OSMO fee = 82.5 RANDOM
+    const tokenInFeeAmount = new Dec(110)
       .mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
       .truncate();
-    const quoteBaseOutSpotPrice = new Dec(2);
+
+    // 1 OSMO = 0.75 RANDOM
+    const quoteBaseOutSpotPrice = new CoinPretty(
+      randomDecimalsMockCurrency,
+      new Dec(0.75).mul(
+        DecUtils.getTenExponentN(randomDecimalsMockCurrency.coinDecimals)
+      )
+    );
 
     const result = getTokenOutMinusSwapFee({
       tokenOut,
+      tokenInAsset: tokenIn.currency,
       tokenInFeeAmount,
-      quoteBaseOutSpotPrice: new CoinPretty(
-        osmoMockCurrency,
-        quoteBaseOutSpotPrice
-      ),
+      quoteBaseOutSpotPrice,
     });
-    expect(result?.toDec().toString()).toBe("0.000000000000000000"); // 100 - (60 * 2) = -20, but returns 0 since it's negative
+    expect(result).toBe(tokenOut);
   });
 });

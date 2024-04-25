@@ -445,7 +445,9 @@ export function getTokenOutMinusSwapFee({
     return tokenOut;
   }
 
-  // Swap Fee = Token In Fee Amount × Quote Base Out Spot Price
+  /**
+   * Swap Fee calculation = (Token In Fee Amount / Precision Exponent) × Quote Base Out Spot Price × 10^Coin Decimals
+   */
   const outTokenSwapFee = tokenInFeeAmount
     .toDec()
     .quo(precisionExponent)
@@ -454,7 +456,7 @@ export function getTokenOutMinusSwapFee({
 
   /**
    *  Formula
-   *  Token Out Minus Swap Fee = Token Out − (Token In Fee Amount × Quote Base Out Spot Price)
+   *  Token Out Minus Swap Fee = Token Out − Swap Fee
    */
   const outTokenMinusSwapFee = tokenOut.sub(outTokenSwapFee);
 
