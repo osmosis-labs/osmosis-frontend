@@ -103,8 +103,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
-        swapState.quote && swapState.toAsset
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+        swapState.tokenOutAmountMinusSwapFee && swapState.toAsset
+          ? new IntPretty(
+              swapState.tokenOutAmountMinusSwapFee.toDec().mul(oneMinusSlippage)
+            )
           : undefined;
 
       // Compute out fiat amount less slippage
@@ -117,9 +119,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       return { outAmountLessSlippage, outFiatAmountLessSlippage };
     }, [
-      swapState.quote,
-      swapState.toAsset,
       slippageConfig.slippage,
+      swapState.tokenOutAmountMinusSwapFee,
+      swapState.toAsset,
       swapState.tokenOutFiatValue,
     ]);
 
@@ -641,7 +643,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <h5
                     className={classNames(
                       "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive() &&
+                      swapState.tokenOutAmountMinusSwapFee
+                        ?.toDec()
+                        .isPositive() &&
                         !swapState.inAmountInput.isTyping &&
                         !swapState.isQuoteLoading
                         ? "text-white-full"
@@ -655,8 +659,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {`≈ ${formatPretty(
-                      swapState.quote?.amount
-                        ? swapState.quote.amount.toDec()
+                      swapState.tokenOutAmountMinusSwapFee
+                        ? swapState.tokenOutAmountMinusSwapFee.toDec()
                         : new Dec(0),
                       {
                         maxDecimals: 8,
@@ -860,8 +864,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     <span className="caption whitespace-nowrap text-osmoverse-200">
                       {`≈ ${
-                        swapState.quote?.amount
-                          ? formatPretty(swapState.quote.amount, {
+                        swapState.tokenOutAmountMinusSwapFee
+                          ? formatPretty(swapState.tokenOutAmountMinusSwapFee, {
                               maxDecimals: 8,
                             })
                           : ""
