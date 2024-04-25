@@ -128,7 +128,7 @@ describe("getTokenOutMinusSwapFee", () => {
     coinDecimals: 12,
   };
 
-  it("returns undefined when token out is undefined otherwise, return token out without subtracting fee", () => {
+  it("returns undefined when token out is undefined. Otherwise, return token out without subtracting fee", () => {
     const tokenOut = new CoinPretty(osmoMockCurrency, new Dec(100));
     const tokenInFeeAmount = new Int(10);
     expect(
@@ -165,7 +165,7 @@ describe("getTokenOutMinusSwapFee", () => {
       )
     );
 
-    // We get 87,951.48 OSMO
+    // We get 87,951.48 OSMO before the fee
     const tokenOut = new CoinPretty(
       osmoMockCurrency,
       new Dec(87951.48).mul(
@@ -194,8 +194,8 @@ describe("getTokenOutMinusSwapFee", () => {
     });
 
     /**
-     *  Using the formula
-     *  Token Out Minus Swap Fee = Token Out − (Token In Fee Amount × Quote Base Out Spot Price)
+     * Using the formula
+     * Token Out Minus Swap Fee = Token Out − (Token In Fee Amount × Quote Base Out Spot Price)
      *
      * Token In = 10000 ATOM
      * Swap Fee = 0.0023 or 0.23%
@@ -216,7 +216,7 @@ describe("getTokenOutMinusSwapFee", () => {
       new Dec(100).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
     );
 
-    // We'll get 75 RANDOM before the fee
+    // We get 75 RANDOM before the fee
     const tokenOut = new CoinPretty(
       randomDecimalsMockCurrency,
       new Dec(75).mul(
