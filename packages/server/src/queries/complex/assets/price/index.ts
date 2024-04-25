@@ -9,14 +9,16 @@ import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getPriceFromSidecar } from "./providers/sidecar";
 
+export interface PriceProviderParams {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: Asset;
+  currency?: CoingeckoVsCurrencies;
+}
+
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
-export type PriceProvider = (
-  assetLists: AssetList[],
-  chainList: Chain[],
-  asset: Asset,
-  currency?: CoingeckoVsCurrencies
-) => Promise<Dec>;
+export type PriceProvider = (params: PriceProviderParams) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
@@ -63,7 +65,7 @@ export async function getAssetPrice({
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () =>
-      priceProvider(assetLists, chainList, foundAsset, currency),
+      priceProvider({ assetLists, chainList, asset: foundAsset, currency }),
   });
 }
 

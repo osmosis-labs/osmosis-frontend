@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -10,24 +9,20 @@ import {
 import { EdgeDataLoader } from "../../../../../utils/batching";
 import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
 import { captureError } from "../../../../../utils/error";
-import { getPriceFromPools } from "./pools";
+import { PriceProviderParams } from "..";
 
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
-/** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to pools then querying CoinGecko if not available.
+/** Gets price from SQS query server. Currently only supports prices in USDC with decimals.
  *  @throws if there's an issue getting the price. */
-export function getPriceFromSidecar(
-  assetLists: AssetList[],
-  chainList: Chain[],
-  asset: Asset
-) {
+export function getPriceFromSidecar({ asset }: PriceProviderParams) {
   return getBatchLoader().then((loader) =>
     loader
       .load(asset.coinMinimalDenom)
       .then((price) => new Dec(price))
       .catch((e) => {
         captureError(e);
-        return getPriceFromPools(assetLists, chainList, asset);
+        throw e;
       })
   );
 }
