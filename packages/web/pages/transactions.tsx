@@ -35,6 +35,7 @@ const Transactions: React.FC = observer(() => {
 
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
+  // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
   const pageString = Array.isArray(page) ? page[0] : page;
   const pageSizeString = Array.isArray(pageSize) ? pageSize[0] : pageSize;
 
@@ -43,7 +44,6 @@ const Transactions: React.FC = observer(() => {
       {
         address: EXAMPLE.ADDRESS,
         // address,
-        // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
         page: pageString,
         pageSize: pageSizeString,
       },
