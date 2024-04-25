@@ -293,7 +293,7 @@ export const AssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-4 !w-[33.25rem]"
+        className="my-4 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -313,7 +313,7 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames({
                     // defines column width
-                    "w-56 lg:w-36": index !== 0 && index !== headers.length - 1,
+                    "w-56 xl:w-36": index !== 0 && index !== headers.length - 1,
                     "w-36": index === headers.length - 1,
                   })}
                   key={header.id}
@@ -496,7 +496,7 @@ export const AssetActionsCell: AssetCellComponent<{
         Boolean(counterparty.length) &&
         Boolean(transferMethods.length) && (
           <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
             onClick={(e) => {
               e.preventDefault();
 
@@ -507,7 +507,7 @@ export const AssetActionsCell: AssetCellComponent<{
               }
             }}
           >
-            <Icon className="m-auto" id="deposit" width={16} height={16} />
+            <Icon className="m-auto " id="deposit" width={16} height={16} />
           </button>
         )}
       {!needsActivation &&
@@ -515,7 +515,7 @@ export const AssetActionsCell: AssetCellComponent<{
         Boolean(counterparty.length) &&
         Boolean(transferMethods.length) && (
           <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
             onClick={(e) => {
               e.preventDefault();
 
