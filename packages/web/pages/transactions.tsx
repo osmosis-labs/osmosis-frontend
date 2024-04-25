@@ -16,10 +16,9 @@ import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+// @ts-ignore
 const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
-  PAGE: 0,
-  PAGE_SIZE: 100,
 };
 
 const Transactions: React.FC = observer(() => {
@@ -39,11 +38,11 @@ const Transactions: React.FC = observer(() => {
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        // address,
-        address: EXAMPLE.ADDRESS,
-        // page: EXAMPLE.PAGE,
-        page,
-        pageSize,
+        address,
+        // address: EXAMPLE.ADDRESS,
+        // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
+        page: typeof page === "string" ? page : page[0],
+        pageSize: typeof pageSize === "string" ? pageSize : pageSize[0],
       },
       {
         enabled: !!address,
