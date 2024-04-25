@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import LinkButton from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import {
@@ -26,7 +25,7 @@ import { api } from "~/utils/trpc";
 
 const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
-  PAGE: 1,
+  PAGE: 0,
   PAGE_SIZE: 100,
 };
 
@@ -34,7 +33,7 @@ const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
 
   const router = useRouter();
-  const { page = "1", pageSize = "100" } = router.query;
+  const { page = "0", pageSize = "100" } = router.query;
   const currentPage = parseInt(page.toString());
   const currentPageSize = parseInt(pageSize.toString());
 
@@ -134,16 +133,16 @@ const Transactions: React.FC = observer(() => {
       <div className="pt-4 pb-20">
         {showPagination && (
           <TransactionsPaginaton
-            showPrevious={currentPage > 1}
+            showPrevious={currentPage > 0}
             showNext={
               transactionData !== undefined && transactionData?.length > 0
             }
-            previousHref={`?page=${Math.max(1, currentPage - 1)}`}
+            previousHref={`?page=${Math.max(0, currentPage - 1)}`}
             nextHref={`?page=${currentPage + 1}`}
           />
         )}
       </div>
-      <BackToTopButton />
+      {/* <BackToTopButton /> */}
     </main>
   );
 });
