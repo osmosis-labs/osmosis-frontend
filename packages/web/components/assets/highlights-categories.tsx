@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
@@ -5,8 +6,11 @@ import { FunctionComponent, ReactNode } from "react";
 import { Icon } from "~/components/assets/icon";
 import { PriceChange } from "~/components/assets/price";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
+
+import { Step, Stepper, StepsIndicator } from "../stepper";
+import { CustomClasses } from "../types";
 
 type PriceChange24hAsset =
   | RouterOutputs["edge"]["assets"]["getTopNewAssets"][number]
@@ -15,24 +19,52 @@ type PriceChange24hAsset =
 type UpcomingReleaseAsset =
   RouterOutputs["edge"]["assets"]["getTopUpcomingAssets"][number];
 
-export const HighlightsCategories: FunctionComponent<{
+type HighlightsProps = {
   isCategorySelected: boolean;
   onSelectCategory: (category: string) => void;
   onSelectAllTopGainers: () => void;
-}> = ({ isCategorySelected, onSelectCategory, onSelectAllTopGainers }) => {
+};
+
+export const HighlightsCategories: FunctionComponent<HighlightsProps> = (
+  props
+) => {
+  const { width } = useWindowSize();
+
+  if (props.isCategorySelected) return null;
+
+  const isTablet = width < Breakpoint.lg;
+
+  return isTablet ? (
+    <PaginatedHighlights {...props} />
+  ) : (
+    <HighlightsGrid {...props} />
+  );
+};
+
+const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
+  onSelectCategory,
+  onSelectAllTopGainers,
+}) => {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
+
+  const isLargeTablet = width < Breakpoint.xl;
 
   const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
-    api.edge.assets.getTopNewAssets.useQuery({});
+    api.edge.assets.getTopNewAssets.useQuery({
+      topN: isLargeTablet ? 3 : undefined,
+    });
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({});
+    api.edge.assets.getTopGainerAssets.useQuery({
+      topN: isLargeTablet ? 8 : undefined,
+    });
   const { data: topUpcomingAssets, isLoading: isTopUpcomingAssetsLoading } =
-    api.edge.assets.getTopUpcomingAssets.useQuery({});
-
-  if (isCategorySelected) return null;
+    api.edge.assets.getTopUpcomingAssets.useQuery({
+      topN: isLargeTablet ? 3 : undefined,
+    });
 
   return (
-    <div className="flex gap-6">
+    <div className="grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8">
       <AssetHighlights
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
@@ -40,6 +72,7 @@ export const HighlightsCategories: FunctionComponent<{
         onClickSeeAll={() => onSelectCategory("new")}
       />
       <AssetHighlights
+        className="xl:row-span-2"
         title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
@@ -85,31 +118,85 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
   };
 }
 
-export const AssetHighlights: FunctionComponent<{
-  title: string;
-  onClickSeeAll?: () => void;
-  assets: {
-    asset: {
-      coinDenom: string;
-      coinName: string;
-      coinImageUrl?: string;
-    };
-    extraInfo: ReactNode;
-  }[];
-  isLoading?: boolean;
-  disableLinking?: boolean;
-}> = ({
+/** Swipe through highlights on tablet and smaller screens. */
+const PaginatedHighlights: FunctionComponent<HighlightsProps> = ({
+  onSelectAllTopGainers,
+  onSelectCategory,
+}) => {
+  const { t } = useTranslation();
+
+  const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
+    api.edge.assets.getTopNewAssets.useQuery({});
+  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
+    api.edge.assets.getTopGainerAssets.useQuery({});
+  const { data: topUpcomingAssets, isLoading: isTopUpcomingAssetsLoading } =
+    api.edge.assets.getTopUpcomingAssets.useQuery({});
+
+  return (
+    <Stepper>
+      <Step>
+        <AssetHighlights
+          title={t("assets.highlights.new")}
+          isLoading={isTopNewAssetsLoading}
+          assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
+          onClickSeeAll={() => onSelectCategory("new")}
+        />
+      </Step>
+      <Step>
+        <AssetHighlights
+          className="xl:row-span-2"
+          title={t("assets.highlights.topGainers")}
+          isLoading={isTopGainerAssetsLoading}
+          assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
+          onClickSeeAll={onSelectAllTopGainers}
+        />
+      </Step>
+      <Step>
+        <AssetHighlights
+          title={t("assets.highlights.upcoming")}
+          isLoading={isTopUpcomingAssetsLoading}
+          assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
+          disableLinking
+        />
+      </Step>
+      <StepsIndicator className="py-2" />
+    </Stepper>
+  );
+};
+
+export const AssetHighlights: FunctionComponent<
+  {
+    title: string;
+    onClickSeeAll?: () => void;
+    assets: {
+      asset: {
+        coinDenom: string;
+        coinName: string;
+        coinImageUrl?: string;
+      };
+      extraInfo: ReactNode;
+    }[];
+    isLoading?: boolean;
+    disableLinking?: boolean;
+  } & CustomClasses
+> = ({
   title,
   onClickSeeAll,
   assets,
   isLoading = false,
   disableLinking = false,
+  className,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex w-full flex-col border-t border-osmoverse-700">
-      <div className="flex place-content-between py-3">
+    <div
+      className={classNames(
+        "flex w-full flex-col border-t border-osmoverse-700 py-3",
+        className
+      )}
+    >
+      <div className="flex place-content-between pt-1 pb-3">
         <h6>{title}</h6>
         {onClickSeeAll && (
           <button className="body2 text-wosmongton-300" onClick={onClickSeeAll}>
@@ -117,7 +204,7 @@ export const AssetHighlights: FunctionComponent<{
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
         {isLoading ? (
           <>
             {new Array(3).fill(0).map((_, i) => (
@@ -170,14 +257,14 @@ const AssetHighlightRow: FunctionComponent<{
   );
 
   return disableLinking ? (
-    <div className="flex items-center justify-between gap-4 rounded-lg p-2">
+    <div className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2">
       {AssetContent}
     </div>
   ) : (
     <Link
       href={`/assets/${coinDenom}`}
       passHref
-      className="flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+      className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
     >
       {AssetContent}
     </Link>

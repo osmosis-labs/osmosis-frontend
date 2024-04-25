@@ -373,6 +373,7 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -729,7 +730,6 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
-    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
     "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",

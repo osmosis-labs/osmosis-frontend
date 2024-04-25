@@ -12,7 +12,7 @@ import type { AppCurrency } from "@osmosis-labs/types";
 class Throttler {
   protected fns: (() => void)[] = [];
 
-  private timeoutId?: NodeJS.Timeout;
+  private timeoutId?: number;
 
   constructor(public readonly duration: number) {}
 
