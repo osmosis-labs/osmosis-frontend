@@ -449,7 +449,8 @@ export function getTokenOutMinusSwapFee({
   const outTokenSwapFee = tokenInFeeAmount
     .toDec()
     .quo(precisionExponent)
-    .mul(quoteBaseOutSpotPrice.toDec());
+    .mul(quoteBaseOutSpotPrice.toDec())
+    .mul(DecUtils.getTenExponentN(quoteBaseOutSpotPrice.currency.coinDecimals));
 
   /**
    *  Formula
@@ -459,7 +460,7 @@ export function getTokenOutMinusSwapFee({
 
   // If the swap fee is greater than the output token amount, return 0
   if (outTokenMinusSwapFee.toDec().isNegative()) {
-    return new CoinPretty(tokenOut.currency, new Dec(0));
+    return tokenOut;
   }
 
   return outTokenMinusSwapFee;
