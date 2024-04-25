@@ -266,7 +266,7 @@ describe("getTokenOutMinusSwapFee", () => {
       new Dec(100).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
     );
 
-    // We'll get 75 RANDOM before the fee
+    // We get 75 RANDOM before the fee
     const tokenOut = new CoinPretty(
       randomDecimalsMockCurrency,
       new Dec(75).mul(
