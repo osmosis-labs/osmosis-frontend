@@ -373,6 +373,7 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -729,7 +730,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
     "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",

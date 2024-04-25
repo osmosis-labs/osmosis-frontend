@@ -449,28 +449,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <Tooltip
                     content={
                       <div className="text-center">
-                        {swapState.inAmountInput.notEnoughBalanceForMax
-                          ? t("swap.maxButtonErrorNoBalance")
-                          : t("swap.maxButtonError")}
+                        {t("swap.maxButtonErrorNoBalance")}
                       </div>
                     }
-                    disabled={
-                      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
-                    }
+                    disabled={!swapState.inAmountInput.notEnoughBalanceForMax}
                   >
                     <Button
                       variant="outline"
                       size="sm"
                       className={classNames(
                         "text-wosmongton-300",
-                        swapState.inAmountInput.isMaxSelected
+                        swapState.inAmountInput.isMaxValue &&
+                          !swapState.inAmountInput
+                            .isLoadingCurrentBalanceNetworkFee &&
+                          !swapState.inAmountInput
+                            .hasErrorWithCurrentBalanceQuote
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
                       )}
                       disabled={
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
-                        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
+                        swapState.inAmountInput.notEnoughBalanceForMax
                       }
                       isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}

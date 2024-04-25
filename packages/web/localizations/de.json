@@ -373,6 +373,7 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -729,7 +730,6 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
-    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
     "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",

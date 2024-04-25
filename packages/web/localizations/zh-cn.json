@@ -373,6 +373,7 @@
     "highSwapFee": "交易费太高",
     "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
+    "insufficientBalForFee": "余额不足，无法支付费用",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
@@ -729,7 +730,6 @@
       "hide": "隐藏",
       "show": "节目"
     },
-    "maxButtonError": "无法计算最大金额。请检查您的网络连接或尝试刷新页面。",
     "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
