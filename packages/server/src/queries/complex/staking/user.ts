@@ -23,6 +23,8 @@ export async function getUserTotalDelegatedCoin({
     })
   ).delegation_responses;
 
+  console.log({ delegations });
+
   const stakeDenom = getChainStakeTokenSourceDenom({
     chainId: chainList[0].chain_id,
     chainList,

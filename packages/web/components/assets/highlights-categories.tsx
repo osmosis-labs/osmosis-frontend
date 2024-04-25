@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
-import { Icon } from "~/components/assets/icon";
 import { PriceChange } from "~/components/assets/price";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { useTranslation } from "~/hooks";
@@ -76,7 +75,6 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
     },
     extraInfo: asset.estimatedLaunchDateUtc ? (
       <div className="flex items-center gap-2">
-        {asset.osmosisAirdrop && <Icon id="present" height={20} width={20} />}
         <span className="body2 text-osmoverse-400">
           Est. {asset.estimatedLaunchDateUtc}
         </span>
