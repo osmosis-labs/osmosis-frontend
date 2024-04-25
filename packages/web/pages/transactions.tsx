@@ -42,8 +42,8 @@ const Transactions: React.FC = observer(() => {
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        address: EXAMPLE.ADDRESS,
-        // address,
+        // address: EXAMPLE.ADDRESS,
+        address,
         page: pageString,
         pageSize: pageSizeString,
       },
