@@ -413,10 +413,12 @@ export function useSwap(
 const DefaultDenoms = ["ATOM", "OSMO"];
 
 // getTokenOutAmountMinusSwapFee calculates the token out amount after subtracting the swap fee.
-// If any of the input values are undefined, it returns undefined.
+// If the token out is undefined, it returns undefined.
+// If any of the input values are undefined, it return the token out.
 // This function is used to determine the net amount of tokens received after accounting for the swap fee.
 //
 // - outToken: the token being output from the swap
+// - tokenInAsset: the input token asset
 // - tokenInFeeAmount: the fee amount in the input token
 // - quoteBaseOutSpotPrice: the spot price of the output token in terms of the base token
 //
