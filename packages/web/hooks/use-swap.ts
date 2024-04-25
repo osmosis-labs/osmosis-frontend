@@ -181,6 +181,13 @@ export function useSwap(
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
+    sendToken:
+      inAmountInput.balance && inAmountInput.amount
+        ? {
+            amount: inAmountInput.amount,
+            balance: inAmountInput.balance,
+          }
+        : undefined,
     enabled:
       !inAmountInput.isEmpty &&
       !precedentError &&
@@ -662,6 +669,12 @@ function useSwapAmountInput({
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
+    sendToken: inAmountInput.balance
+      ? {
+          amount: inAmountInput.balance,
+          balance: inAmountInput.balance,
+        }
+      : undefined,
     enabled:
       featureFlags.swapToolSimulateFee &&
       !!inAmountInput.balance &&

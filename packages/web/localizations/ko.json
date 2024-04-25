@@ -373,6 +373,7 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
+    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
@@ -729,7 +730,6 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
-    "maxButtonError": "최대 금액을 계산할 수 없습니다. 네트워크 연결을 확인하거나 페이지를 새로 고쳐보세요.",
     "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
     "available": "거래 가능수량",
     "button": "거래",

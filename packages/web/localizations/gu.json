@@ -373,6 +373,7 @@
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
     "insufficientAmount": "અપૂરતી રકમ",
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
+    "insufficientBalForFee": "ફી માટે અપર્યાપ્ત બેલેન્સ",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
     "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",
@@ -729,7 +730,6 @@
       "hide": "છુપાવો",
       "show": "બતાવો"
     },
-    "maxButtonError": "મહત્તમ રકમની ગણતરી કરવામાં અસમર્થ. કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અથવા પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો.",
     "maxButtonErrorNoBalance": "મહત્તમ રકમની ગણતરી કરવા માટે પર્યાપ્ત બેલેન્સ નથી.",
     "available": "ઉપલબ્ધ છે",
     "button": "સ્વેપ",

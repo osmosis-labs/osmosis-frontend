@@ -373,6 +373,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -729,7 +730,6 @@
       "hide": "مخفی",
       "show": "نماید"
     },
-    "maxButtonError": "نمی توان حداکثر مقدار را محاسبه کرد. لطفاً اتصال شبکه خود را بررسی کنید یا صفحه را بازخوانی کنید.",
     "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
