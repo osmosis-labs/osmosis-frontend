@@ -373,6 +373,7 @@
     "highSwapFee": "Swap fee too high",
     "insufficientAmount": "Insufficient amount",
     "insufficientBal": "Insufficient balance",
+    "insufficientBalForFee": "Insufficient balance for fee",
     "insufficientLiquidity": "Insufficient liquidity",
     "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
@@ -729,7 +730,6 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
     "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",

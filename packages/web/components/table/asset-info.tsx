@@ -376,7 +376,7 @@ export const AssetsInfoTable: FunctionComponent<{
         />
       </section>
       <SearchBox
-        className="mb-4 !w-[33.25rem]"
+        className="my-4 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -397,7 +397,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 <th
                   className={classNames({
                     // defines column width
-                    "w-36": index !== 0,
+                    "w-36 xl:w-25": index !== 0,
                   })}
                   key={header.id}
                   colSpan={header.colSpan}

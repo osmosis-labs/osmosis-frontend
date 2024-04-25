@@ -373,6 +373,7 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
+    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
@@ -729,7 +730,6 @@
       "hide": "隠れる",
       "show": "見せる"
     },
-    "maxButtonError": "最大金額を計算できません。ネットワーク接続を確認するか、ページを更新してください。",
     "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
     "available": "利用可能",
     "button": "スワップ",

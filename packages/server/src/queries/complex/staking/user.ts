@@ -2,7 +2,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { getChainStakeTokenSourceDenom } from "@osmosis-labs/utils";
 
-import { queryDelegations } from "../../cosmos/staking/delegations";
+import { queryDelegations, queryUndelegations } from "../../cosmos";
 import { getAsset } from "../assets";
 
 /** Gets total amount of stake token across all delegations.
@@ -37,5 +37,36 @@ export async function getUserTotalDelegatedCoin({
         throw new Error("Unexpected non-stake denom in delegation");
       return new CoinPretty(stakeAsset, amount);
     })
+    .reduce((sum, coin) => sum.add(coin), new CoinPretty(stakeAsset, 0));
+}
+
+/** Gets total amount of stake token across all delegations.
+ *  Returns 0 coin if there's no delegations. */
+export async function getUserTotalUndelegations({
+  assetLists,
+  chainList,
+  userOsmoAddress,
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  userOsmoAddress: string;
+}): Promise<CoinPretty> {
+  const undelegations = (
+    await queryUndelegations({
+      chainList,
+      bech32Address: userOsmoAddress,
+    })
+  ).unbonding_responses;
+
+  const stakeDenom = getChainStakeTokenSourceDenom({
+    chainId: chainList[0].chain_id,
+    chainList,
+  });
+  if (!stakeDenom) throw new Error("No stake denom in chain list");
+  const stakeAsset = getAsset({ assetLists, anyDenom: stakeDenom });
+
+  return undelegations
+    .flatMap(({ entries }) => entries)
+    .map(({ balance }) => new CoinPretty(stakeAsset, balance))
     .reduce((sum, coin) => sum.add(coin), new CoinPretty(stakeAsset, 0));
 }

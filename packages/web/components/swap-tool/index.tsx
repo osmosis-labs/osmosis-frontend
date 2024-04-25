@@ -103,8 +103,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
-        swapState.quote && swapState.toAsset
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+        swapState.tokenOutAmountMinusSwapFee && swapState.toAsset
+          ? new IntPretty(
+              swapState.tokenOutAmountMinusSwapFee.toDec().mul(oneMinusSlippage)
+            )
           : undefined;
 
       // Compute out fiat amount less slippage
@@ -117,9 +119,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       return { outAmountLessSlippage, outFiatAmountLessSlippage };
     }, [
-      swapState.quote,
-      swapState.toAsset,
       slippageConfig.slippage,
+      swapState.tokenOutAmountMinusSwapFee,
+      swapState.toAsset,
       swapState.tokenOutFiatValue,
     ]);
 
@@ -449,28 +451,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <Tooltip
                     content={
                       <div className="text-center">
-                        {swapState.inAmountInput.notEnoughBalanceForMax
-                          ? t("swap.maxButtonErrorNoBalance")
-                          : t("swap.maxButtonError")}
+                        {t("swap.maxButtonErrorNoBalance")}
                       </div>
                     }
-                    disabled={
-                      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
-                    }
+                    disabled={!swapState.inAmountInput.notEnoughBalanceForMax}
                   >
                     <Button
                       variant="outline"
                       size="sm"
                       className={classNames(
                         "text-wosmongton-300",
-                        swapState.inAmountInput.isMaxSelected
+                        swapState.inAmountInput.isMaxValue &&
+                          !swapState.inAmountInput
+                            .isLoadingCurrentBalanceNetworkFee &&
+                          !swapState.inAmountInput
+                            .hasErrorWithCurrentBalanceQuote
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
                       )}
                       disabled={
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
-                        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
+                        swapState.inAmountInput.notEnoughBalanceForMax
                       }
                       isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
@@ -641,7 +643,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <h5
                     className={classNames(
                       "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive() &&
+                      swapState.tokenOutAmountMinusSwapFee
+                        ?.toDec()
+                        .isPositive() &&
                         !swapState.inAmountInput.isTyping &&
                         !swapState.isQuoteLoading
                         ? "text-white-full"
@@ -655,8 +659,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {`≈ ${formatPretty(
-                      swapState.quote?.amount
-                        ? swapState.quote.amount.toDec()
+                      swapState.tokenOutAmountMinusSwapFee
+                        ? swapState.tokenOutAmountMinusSwapFee.toDec()
                         : new Dec(0),
                       {
                         maxDecimals: 8,
@@ -860,8 +864,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     <span className="caption whitespace-nowrap text-osmoverse-200">
                       {`≈ ${
-                        swapState.quote?.amount
-                          ? formatPretty(swapState.quote.amount, {
+                        swapState.tokenOutAmountMinusSwapFee
+                          ? formatPretty(swapState.tokenOutAmountMinusSwapFee, {
                               maxDecimals: 8,
                             })
                           : ""

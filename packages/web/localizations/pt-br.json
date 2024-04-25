@@ -373,6 +373,7 @@
     "highSwapFee": "Taxa de troca está muito alta",
     "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para taxa",
     "insufficientLiquidity": "Liquidez Insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
@@ -729,7 +730,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",

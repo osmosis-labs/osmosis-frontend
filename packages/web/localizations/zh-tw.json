@@ -373,6 +373,7 @@
     "highSwapFee": "兌換費太高",
     "insufficientAmount": "幣額不足",
     "insufficientBal": "結餘不足",
+    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
@@ -729,7 +730,6 @@
       "hide": "隱藏",
       "show": "顯示"
     },
-    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
     "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",

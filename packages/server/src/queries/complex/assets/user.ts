@@ -9,7 +9,10 @@ import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coi
 import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";
 import { getPool } from "../pools";
 import { getGammShareUnderlyingCoins } from "../pools/share";
-import { getUserTotalDelegatedCoin } from "../staking/user";
+import {
+  getUserTotalDelegatedCoin,
+  getUserTotalUndelegations,
+} from "../staking/user";
 import { Asset, AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
@@ -153,6 +156,7 @@ export async function getUserAssetsTotal(params: {
     getUserUnderlyingCoinsFromClPositions(params),
     getUserShareUnderlyingCoinsFromLocks(params),
     getUserTotalDelegatedCoin(params),
+    getUserTotalUndelegations(params),
   ]);
 
   const { underlyingGammShareCoins, available } = coins[0];
@@ -160,12 +164,20 @@ export async function getUserAssetsTotal(params: {
   const clCoins = coins[1];
   const lockedCoins = coins[2];
   const delegatedCoin = coins[3];
+  const undelegatingCoin = coins[4];
 
-  const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
+  const allCoins = [
+    ...bankCoins,
+    ...clCoins,
+    ...lockedCoins,
+    delegatedCoin,
+    undelegatingCoin,
+  ];
 
-  const [aggregatedValue] = await Promise.all([
-    calcSumCoinsValue({ ...params, coins: allCoins }),
-  ]);
+  const aggregatedValue = await calcSumCoinsValue({
+    ...params,
+    coins: allCoins,
+  });
 
   return {
     value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
