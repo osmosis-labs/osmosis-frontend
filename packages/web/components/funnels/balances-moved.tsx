@@ -43,7 +43,9 @@ export const BalancesMoved: FunctionComponent<CustomClasses> = ({
         <div className="flex flex-col gap-2">
           <h6>{t("assets.balancesMovedTitle")}</h6>
           <Link className="text-osmoverse-300" href="/portfolio">
-            <p className="body2">{t("assets.balancesMovedDescription")} →</p>
+            <p className="body2 group transition-colors duration-100 ease-out hover:text-white-full">
+              {t("assets.balancesMovedDescription")} →
+            </p>
           </Link>
         </div>
         <button
