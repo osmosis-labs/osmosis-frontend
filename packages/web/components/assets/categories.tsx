@@ -141,7 +141,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   return (
     <div
       ref={divRef}
-      className="no-scrollbar flex w-full items-center gap-3 overflow-scroll py-3"
+      className="flex w-full items-center gap-3 overflow-scroll py-3"
     >
       {categories.map((category) => {
         const isSelected = selectedCategory === category;
