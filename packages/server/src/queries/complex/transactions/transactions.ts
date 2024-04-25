@@ -96,13 +96,13 @@ function mapMetadata(
 
 export async function getTransactions({
   address,
-  page = 1,
-  pageSize = 100,
+  page = "0",
+  pageSize = "100",
   assetLists,
 }: {
   address: string;
-  page?: number;
-  pageSize?: number;
+  page?: string;
+  pageSize?: string;
   assetLists: AssetList[];
 }): Promise<FormattedTransaction[]> {
   return await cachified({
@@ -115,8 +115,8 @@ export async function getTransactions({
 
       const data = await queryTransactions({
         address,
-        page: page.toString(),
-        pageSize: pageSize.toString(),
+        page,
+        pageSize,
       });
 
       // v1 only display swap transactions

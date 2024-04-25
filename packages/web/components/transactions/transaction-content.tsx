@@ -21,7 +21,7 @@ export const TransactionContent = ({
   address,
   isLoading,
   isWalletConnected,
-  currentPage,
+  page,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions?: FormattedTransaction[];
@@ -30,7 +30,7 @@ export const TransactionContent = ({
   address: string;
   isLoading: boolean;
   isWalletConnected: boolean;
-  currentPage: number;
+  page: string;
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -43,7 +43,7 @@ export const TransactionContent = ({
   return (
     <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3 font-h3">{t("transactions.title")}</h1>
+        <h1 className="text-h3">{t("transactions.title")}</h1>
         <TransactionButtons open={open} address={address} />
       </div>
 
@@ -118,10 +118,10 @@ export const TransactionContent = ({
       <div className="py-6">
         {showPagination && (
           <TransactionsPaginaton
-            showPrevious={currentPage > 0}
+            showPrevious={+page > 0}
             showNext={transactions !== undefined && transactions?.length > 0}
-            previousHref={`?page=${Math.max(0, currentPage - 1)}`}
-            nextHref={`?page=${currentPage + 1}`}
+            previousHref={`?page=${Math.max(0, +page - 1)}`}
+            nextHref={`?page=${+page + 1}`}
           />
         )}
       </div>

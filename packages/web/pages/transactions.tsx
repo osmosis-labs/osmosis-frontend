@@ -27,8 +27,6 @@ const Transactions: React.FC = observer(() => {
 
   const router = useRouter();
   const { page = "0", pageSize = "100" } = router.query;
-  const currentPage = parseInt(page.toString());
-  const currentPageSize = parseInt(pageSize.toString());
 
   const { accountStore, chainStore } = useStore();
 
@@ -44,8 +42,8 @@ const Transactions: React.FC = observer(() => {
         // address,
         address: EXAMPLE.ADDRESS,
         // page: EXAMPLE.PAGE,
-        page: currentPage,
-        pageSize: currentPageSize,
+        page,
+        pageSize,
       },
       {
         enabled: !!address,
@@ -107,7 +105,7 @@ const Transactions: React.FC = observer(() => {
         address={address}
         isLoading={isLoading}
         isWalletConnected={isWalletConnected}
-        currentPage={currentPage}
+        page={page}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
