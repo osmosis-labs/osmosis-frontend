@@ -28,7 +28,7 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
@@ -194,19 +194,28 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-      columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
-        id: "price",
-        header: () => (
-          <SortHeader
-            label={t("assets.table.price")}
-            sortKey="currentPrice"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+      columnHelper.accessor(
+        (row) =>
+          (row.currentPrice &&
+            formatPretty(
+              row.currentPrice,
+              getPriceTableFormatOptions(row.currentPrice.toDec())
+            )) ??
+          "-",
+        {
+          id: "price",
+          header: () => (
+            <SortHeader
+              label={t("assets.table.price")}
+              sortKey="currentPrice"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "historicalPrice",
         header: () => (

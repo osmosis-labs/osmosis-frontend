@@ -34,7 +34,7 @@ import {
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
@@ -435,7 +435,12 @@ const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
 const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   <div className="flex flex-col">
     {currentPrice ? (
-      <div>{currentPrice.toString()}</div>
+      <div>
+        {formatPretty(
+          currentPrice,
+          getPriceTableFormatOptions(currentPrice.toDec())
+        )}
+      </div>
     ) : (
       <div className="text-osmoverse-400">–</div>
     )}
