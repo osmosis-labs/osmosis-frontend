@@ -1,4 +1,4 @@
-import { getDeepValue, isNil } from "@osmosis-labs/utils";
+import { isNil } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { CommonCompareType, compareCommon } from "./compare";
@@ -45,10 +45,10 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
     .filter((item) => !isNil(getValueAtPath(item, keyPath)))
     .sort((a, b) => {
       const aValue = keyPath.includes(".")
-        ? getDeepValue(a, keyPath)
+        ? getValueAtPath(a, keyPath)
         : a[keyPath];
       const bValue = keyPath.includes(".")
-        ? getDeepValue(b, keyPath)
+        ? getValueAtPath(b, keyPath)
         : b[keyPath];
 
       if (compare) return compare(a, b);
