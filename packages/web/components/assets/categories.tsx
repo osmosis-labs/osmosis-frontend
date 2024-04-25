@@ -152,8 +152,12 @@ export const AssetCategoriesSelectors: FunctionComponent<{
         return (
           <button
             key={category}
+            aria-label={category.replace("_", " ").replace("-", " ")}
             className={classNames(
-              "flex shrink-0 items-center gap-3 rounded-full border py-4 px-6",
+              "group flex shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150",
+              "hover:border-osmoverse-200 hover:text-white-high",
+              "focus:border-wosmongton-400 focus:text-osmoverse-200",
+              "active:opacity-50",
               {
                 "border-osmoverse-800 bg-osmoverse-800": isSelected,
                 "border-osmoverse-700": !isSelected,
@@ -213,7 +217,14 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 </div>
               ))}
             </div>
-            {isSelected && <Icon id="x-circle" height={16} width={17} />}
+            {isSelected && (
+              <Icon
+                className="text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
+                id="x-circle"
+                height={16}
+                width={17}
+              />
+            )}
           </button>
         );
       })}
