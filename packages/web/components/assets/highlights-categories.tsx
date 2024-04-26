@@ -57,26 +57,26 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   return (
     <div
       className={classNames(
-        "lg:no-scrollbar grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8 lg:flex lg:overflow-x-scroll",
+        "lg:no-scrollbar grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-scroll",
         className
       )}
     >
       <AssetHighlights
-        className="lg:w-[90%] lg:shrink-0"
+        className="lg:w-[90%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={() => onSelectCategory("new")}
       />
       <AssetHighlights
-        className="xl:row-span-2 lg:row-auto lg:w-[90%] lg:shrink-0"
+        className="xl:row-span-2 lg:row-auto lg:w-[90%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
       />
       <AssetHighlights
-        className="lg:w-[90%] lg:shrink-0"
+        className="lg:w-[90%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
