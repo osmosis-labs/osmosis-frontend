@@ -237,43 +237,63 @@ const CategoriesDropdown: FunctionComponent<{
 
   return (
     <Popover className="relative">
-      <Popover.Button className="flex items-center gap-2 rounded-full bg-osmoverse-850 px-6 py-4">
-        {t("assets.categories.more")}
-        <Icon id="chevron-up" width={16} height={16} />
-      </Popover.Button>
+      {({ open }) => (
+        <>
+          <Popover.Button
+            className={classNames(
+              "flex items-center gap-2 rounded-full bg-osmoverse-850 px-6 py-4",
+              "text-wosmongton-200 transition-colors duration-150 ease-out hover:text-white-full",
+              {
+                "text-white-full": open,
+              }
+            )}
+          >
+            {t("assets.categories.more")}
+            <Icon
+              className={classNames(
+                "transition-transform duration-150 ease-out",
+                open && "rotate-180"
+              )}
+              id="chevron-up"
+              width={16}
+              height={16}
+            />
+          </Popover.Button>
 
-      <Popover.Panel className="absolute right-0 z-50 mt-1">
-        {({ close }) => (
-          <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
-            {selectableCategoryKeys.map((category) => {
-              const isSelected = selectedCategoryKey === category;
-              const sampleImages = getSampleImages(
-                categoryAssetSampleImages,
-                category
-              );
+          <Popover.Panel className="absolute right-0 z-50 mt-1">
+            {({ close }) => (
+              <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
+                {selectableCategoryKeys.map((category) => {
+                  const isSelected = selectedCategoryKey === category;
+                  const sampleImages = getSampleImages(
+                    categoryAssetSampleImages,
+                    category
+                  );
 
-              if (hiddenCategories?.includes(category) && !isSelected)
-                return null;
+                  if (hiddenCategories?.includes(category) && !isSelected)
+                    return null;
 
-              return (
-                <button
-                  key={category}
-                  className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
-                  onClick={() => {
-                    onSelectCategory(category);
-                    close();
-                  }}
-                >
-                  <span className="whitespace-nowrap">
-                    {t(`assets.categories.${category}`)}
-                  </span>
-                  <OverlappingAssetImages imageUrls={sampleImages} />
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </Popover.Panel>
+                  return (
+                    <button
+                      key={category}
+                      className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
+                      onClick={() => {
+                        onSelectCategory(category);
+                        close();
+                      }}
+                    >
+                      <span className="whitespace-nowrap">
+                        {t(`assets.categories.${category}`)}
+                      </span>
+                      <OverlappingAssetImages imageUrls={sampleImages} />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </Popover.Panel>
+        </>
+      )}
     </Popover>
   );
 };
