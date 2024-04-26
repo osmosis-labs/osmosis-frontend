@@ -21,18 +21,25 @@ import {
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
-import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  Breakpoint,
+  useAmplitudeAnalytics,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
+import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -52,14 +59,24 @@ export const AssetsInfoTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   // State
 
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
-  const selectCategory = useCallback((category: string) => {
-    setCategory(category);
-  }, []);
+  const selectCategory = useCallback(
+    (category: string) => {
+      setCategory(category);
+      logEvent([
+        EventName.Assets.categorySelected,
+        {
+          assetCategory: category,
+        },
+      ]);
+    },
+    [logEvent]
+  );
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
   }, []);
@@ -91,15 +108,27 @@ export const AssetsInfoTable: FunctionComponent<{
     if (selectedCategory === "topGainers") return "priceChange24h";
     else return sortKey_;
   }, [selectedCategory, sortKey_]);
-  const setSortKey = useCallback((key: SortKey | undefined) => {
-    if (key !== undefined) setSortKey_(key);
-  }, []);
   const [sortDirection_, setSortDirection] = useState<SortDirection>("desc");
   const sortDirection = useMemo(() => {
     // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "desc";
     else return sortDirection_;
   }, [selectedCategory, sortDirection_]);
+  const setSortKey = useCallback(
+    (key: SortKey | undefined) => {
+      if (key !== undefined) {
+        setSortKey_(key);
+        logEvent([
+          EventName.Assets.assetsListSorted,
+          {
+            sortedBy: key,
+            sortDirection,
+          },
+        ]);
+      }
+    },
+    [logEvent, sortDirection]
+  );
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
@@ -138,8 +167,7 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       limit: 50,
       search,
-      onlyVerified:
-        showUnverifiedAssets === false && !Boolean(selectedCategory) && !search,
+      onlyVerified: showUnverifiedAssets === false && !search,
       includePreview,
       sort,
       categories,
@@ -194,19 +222,28 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-      columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
-        id: "price",
-        header: () => (
-          <SortHeader
-            label={t("assets.table.price")}
-            sortKey="currentPrice"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
+      columnHelper.accessor(
+        (row) =>
+          (row.currentPrice &&
+            formatPretty(
+              row.currentPrice,
+              getPriceTableFormatOptions(row.currentPrice.toDec())
+            )) ??
+          "-",
+        {
+          id: "price",
+          header: () => (
+            <SortHeader
+              label={t("assets.table.price")}
+              sortKey="currentPrice"
+              currentSortKey={sortKey}
+              currentDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "historicalPrice",
         header: () => (
@@ -374,8 +411,10 @@ export const AssetsInfoTable: FunctionComponent<{
         debounce={500}
         disabled={Boolean(selectedCategory)}
       />
+      <BalancesMoved className="my-3" />
       <table
         className={classNames(
+          "mt-3",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
@@ -419,14 +458,20 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {virtualRows.map((virtualRow) => {
             const row = rows[virtualRow.index];
-            const unverified =
-              !row.original.isVerified && !showUnverifiedAssets;
+            const { coinDenom, isVerified } = row.original;
+            const unverified = !isVerified && !showUnverifiedAssets;
 
             return (
               <tr
                 className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
                 key={row.id}
-                onClick={() => router.push(`/assets/${row.original.coinDenom}`)}
+                onClick={() => {
+                  router.push(`/assets/${coinDenom}`);
+                  logEvent([
+                    EventName.Assets.assetClicked,
+                    { tokenName: coinDenom },
+                  ]);
+                }}
               >
                 {row.getVisibleCells().map((cell, index, cells) => (
                   <td
@@ -440,10 +485,14 @@ export const AssetsInfoTable: FunctionComponent<{
                     key={cell.id}
                   >
                     <Link
-                      href={`/assets/${
-                        rows[virtualRow.index].original.coinDenom
-                      }`}
-                      onClick={(e) => e.stopPropagation()}
+                      href={`/assets/${coinDenom}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        logEvent([
+                          EventName.Assets.assetClicked,
+                          { tokenName: coinDenom },
+                        ]);
+                      }}
                       passHref
                     >
                       {flexRender(

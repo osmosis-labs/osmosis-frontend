@@ -303,14 +303,17 @@
       "dweb": "Merkezi Olmayan Web",
       "rwa": "Gerçek Dünya Varlık İhracı",
       "gaming": "Oyun",
-      "topGainers": "En çok kazananlar"
+      "topGainers": "En çok kazananlar",
+      "more": "Daha fazla kategori"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
+    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
   },
   "portfolio": {
     "buy": "Satın almak",

@@ -303,14 +303,17 @@
       "dweb": "Zdecentralizowana sieć",
       "rwa": "Emisja aktywów w świecie rzeczywistym",
       "gaming": "Hazard",
-      "topGainers": "Najlepsi zdobywcy"
+      "topGainers": "Najlepsi zdobywcy",
+      "more": "Więcej kategorii"
     },
     "seeAll": "Widzieć wszystko",
     "highlights": {
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "balancesMovedTitle": "Szukasz salda?",
+    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
   },
   "portfolio": {
     "buy": "Kupić",

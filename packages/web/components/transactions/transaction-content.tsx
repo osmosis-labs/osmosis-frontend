@@ -1,8 +1,10 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
 
+import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
+import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import {
   groupTransactionsByDate,
@@ -19,6 +21,7 @@ export const TransactionContent = ({
   address,
   isLoading,
   isWalletConnected,
+  page,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions?: FormattedTransaction[];
@@ -27,6 +30,7 @@ export const TransactionContent = ({
   address: string;
   isLoading: boolean;
   isWalletConnected: boolean;
+  page: string;
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -34,10 +38,12 @@ export const TransactionContent = ({
 
   const formatDate = useFormatDate();
 
+  const showPagination = isWalletConnected && !isLoading;
+
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3 font-h3">{t("transactions.title")}</h1>
+        <h1 className="text-h3">{t("transactions.title")}</h1>
         <TransactionButtons open={open} address={address} />
       </div>
 
@@ -108,6 +114,18 @@ export const TransactionContent = ({
           )
         )}
       </div>
+
+      <div className="py-6">
+        {showPagination && (
+          <TransactionsPaginaton
+            showPrevious={+page > 0}
+            showNext={transactions !== undefined && transactions?.length > 0}
+            previousHref={`?page=${Math.max(0, +page - 1)}`}
+            nextHref={`?page=${+page + 1}`}
+          />
+        )}
+      </div>
+      <BackToTopButton />
     </div>
   );
 };

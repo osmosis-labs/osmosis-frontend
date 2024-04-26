@@ -228,11 +228,6 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
     return (child as ReactElement)?.props?.__TYPE === "Step";
   });
 
-  const otherElements = Children.toArray(children).filter((child) => {
-    if (!child) return false;
-    return (child as ReactElement)?.props?.__TYPE !== "Step";
-  });
-
   const stepsContext = useSteps({ count: stepElements.length });
   const [isHovering, setIsHovering] = useState(false);
 
@@ -306,8 +301,7 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        {otherElements}
-        {stepElements.map((child, index) => (
+        {Children.toArray(children).map((child, index) => (
           <StepContextProvider
             key={index}
             value={{

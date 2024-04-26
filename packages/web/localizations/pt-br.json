@@ -303,14 +303,17 @@
       "dweb": "Web descentralizada",
       "rwa": "Emissão de ativos do mundo real",
       "gaming": "Jogos",
-      "topGainers": "Principais ganhadores"
+      "topGainers": "Principais ganhadores",
+      "more": "Mais categorias"
     },
     "seeAll": "Ver tudo",
     "highlights": {
       "new": "Novo",
       "topGainers": "Principais ganhadores",
       "upcoming": "Por vir"
-    }
+    },
+    "balancesMovedTitle": "Procurando seus saldos?",
+    "balancesMovedDescription": "Acesse a página do Portfólio, a nova página para seus saldos e muito mais."
   },
   "portfolio": {
     "buy": "Comprar",

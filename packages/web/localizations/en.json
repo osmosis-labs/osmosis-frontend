@@ -303,14 +303,17 @@
       "dweb": "Decentralized Web",
       "rwa": "Real World Asset Issuance",
       "gaming": "Gaming",
-      "topGainers": "Top gainers"
+      "topGainers": "Top gainers",
+      "more": "More categories"
     },
     "seeAll": "See all",
     "highlights": {
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    }
+    },
+    "balancesMovedTitle": "Looking for your balances?",
+    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
   },
   "portfolio": {
     "buy": "Buy",
