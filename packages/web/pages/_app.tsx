@@ -204,6 +204,7 @@ const MainLayoutWrapper: FunctionComponent<{
             {
               label: t("menu.assets"),
               link: "/assets",
+              isNew: true,
               icon: <Icon id="assets" className="h-6 w-6" />,
               selectionTest: /\/assets/,
             },
@@ -221,7 +222,6 @@ const MainLayoutWrapper: FunctionComponent<{
             label: t("earnPage.title"),
             link: "/earn",
             icon: <Icon id="earn" className="h-6 w-6" />,
-            isNew: true,
             selectionTest: /\/earn/,
           }
         : null,
