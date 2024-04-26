@@ -49,12 +49,9 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 
   return (
     <div
-      className={classNames(
-        "flex h-20 w-full justify-between rounded-2xl p-4",
-        {
-          "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
-        }
-      )}
+      className={classNames("-mx-4 flex h-20 justify-between rounded-2xl p-4", {
+        "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
+      })}
       onClick={() => onClick?.()}
     >
       <div className="flex items-center gap-4">

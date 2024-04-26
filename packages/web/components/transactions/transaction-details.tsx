@@ -9,7 +9,6 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
-import { getMonthTranslation } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -32,18 +31,16 @@ export const TransactionDetailsContent = ({
 
   const txFee = transaction.metadata[0].value[0].txFee[0];
 
-  const formattedMonth = dayjs(transaction.blockTimestamp).format("MMMM");
-
-  const monthTranslation = getMonthTranslation(formattedMonth, t);
-
-  const translatedFormattedMonth = monthTranslation.slice(0, 3);
+  const formattedMonth = dayjs(transaction.blockTimestamp)
+    .format("MMMM")
+    .slice(0, 3);
 
   const formattedDateDayYearHourMinute = dayjs(
     transaction.blockTimestamp
   ).format("DD, YYYY, HH:mm");
 
   // create a localized formatted date - example: Jan 1, 2022, 12:00
-  const formattedDate = `${translatedFormattedMonth} ${formattedDateDayYearHourMinute}`;
+  const formattedDate = `${formattedMonth} ${formattedDateDayYearHourMinute}`;
 
   const [conversion, setConversion] = useState({
     numerator: tokenIn.token,
@@ -77,11 +74,13 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames(
-        "flex min-h-full flex-col",
-        !isModal && "border-l-[1px] border-osmoverse-700 bg-osmoverse-900"
+        "flex w-[452px] flex-col overflow-y-auto",
+        !isModal &&
+          "sticky top-[4.5rem] h-[calc(100vh_-_4.5rem)] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4"
       )}
     >
-      <div className={classNames("mx-4 flex flex-col", !isModal && "fixed")}>
+      <div className={classNames("flex flex-col px-4 pb-8")}>
+        {/* <div className={classNames("mx-4 flex flex-col", !isModal && "sticky")}> */}
         {!isModal && (
           <div className="py-4">
             <IconButton
@@ -100,7 +99,9 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
             <div className="text-h5">{title[status]}</div>
-            <div className="body1 text-osmoverse-300">{formattedDate}</div>
+            <div className="body1 capitalize text-osmoverse-300">
+              {formattedDate}
+            </div>
           </div>
         </div>
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
@@ -125,7 +126,7 @@ export const TransactionDetailsContent = ({
                 ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="text-body1 text-osmoverse-300">
-                {formatPretty(tokenIn.token, { maxDecimals: 2 })?.toString()}
+                {Number(tokenIn.token.toDec().toString()).toFixed(2)}
               </div>
             </div>
           </div>
@@ -151,6 +152,7 @@ export const TransactionDetailsContent = ({
                 <div className="text-subtitle1">{t("transactions.bought")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenOut.token.denom}
+                  {/* solana.USDC.wh */}
                 </div>
               </div>
             </div>
@@ -159,9 +161,7 @@ export const TransactionDetailsContent = ({
                 ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="text-body1 text-osmoverse-300">
-                {formatPretty(tokenOut.token, {
-                  maxDecimals: 2,
-                })?.toString()}
+                {Number(tokenOut.token.toDec().toString()).toFixed(2)}
               </div>
             </div>
           </div>
@@ -184,7 +184,7 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="flex justify-between gap-3 py-3">
             <div>{t("transactions.totalFees")}</div>
-            <div className="text-body1 text-wosmongton-300">
+            <div className="text-body1 text-osmoverse-300">
               {formatPretty(txFee.token, {
                 maxDecimals: 2,
               })?.toString()}
@@ -239,12 +239,12 @@ export const TransactionDetailsSlideover = ({
   return (
     <Transition
       show={open}
-      enter="transition-width ease-out duration-300"
-      enterFrom="w-0"
-      enterTo="w-[452px]"
-      leave="transition-width ease-out duration-300"
-      leaveFrom="w-[452px]"
-      leaveTo="w-0"
+      enter="transition-all	ease-out duration-300"
+      enterFrom="w-0 opacity-0"
+      enterTo="w-[452px] opacity-100"
+      leave="transition-all	ease-out duration-300"
+      leaveFrom="w-[452px] opacity-100"
+      leaveTo="w-0 opacity-0"
     >
       <TransactionDetailsContent
         onRequestClose={onRequestClose}
@@ -260,7 +260,11 @@ export const TransactionDetailsModal: FunctionComponent<
 > = ({ onRequestClose, isOpen, transaction }) => {
   if (!transaction) return null;
   return (
-    <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>
+    <ModalBase
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      className="w-[516px]"
+    >
       <TransactionDetailsContent
         onRequestClose={onRequestClose}
         isModal={true}

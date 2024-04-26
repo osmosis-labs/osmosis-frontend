@@ -47,7 +47,7 @@ export const TransactionContent = ({
         <TransactionButtons open={open} address={address} />
       </div>
 
-      <div className="flex flex-col">
+      <div className="-mx-4 flex flex-col">
         {!isWalletConnected ? (
           <NoTransactionsSplash variant="connect" />
         ) : isLoading ? (
@@ -57,9 +57,11 @@ export const TransactionContent = ({
         ) : (
           Object.entries(groupTransactionsByDate(transactions)).map(
             ([date, transactions]) => (
-              <div key={date} className="flex flex-col gap-4 px-4 pt-8 pb-3">
-                <div className="text-osmoverse-300">{formatDate(date)}</div>
-                <hr className="text-osmoverse-700" />
+              <div key={date} className="flex flex-col px-4 pt-8">
+                <div className="pb-3 capitalize text-osmoverse-300">
+                  {formatDate(date)}
+                </div>
+                <hr className="mb-3 text-osmoverse-700" />
                 {transactions.map((transaction) => (
                   <TransactionRow
                     key={transaction.id}
