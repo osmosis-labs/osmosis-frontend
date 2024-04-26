@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -13,6 +13,7 @@ export const BalancesMoved: FunctionComponent<CustomClasses> = ({
   className,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [isClosed, setIsClosed] = useLocalStorage(
     "assets-page-balances-moved-user-ack",
@@ -26,9 +27,10 @@ export const BalancesMoved: FunctionComponent<CustomClasses> = ({
   return (
     <div
       className={classNames(
-        "grid h-32 w-full grid-cols-2 overflow-clip rounded-[1.25rem] bg-osmoverse-800 1.5lg:grid-cols-1",
+        "grid h-32 w-full cursor-pointer grid-cols-2 overflow-clip rounded-[1.25rem] bg-osmoverse-800 1.5lg:grid-cols-1",
         className
       )}
+      onClick={() => router.push("/portfolio")}
     >
       <div className="relative 1.5lg:hidden">
         <Image
@@ -42,15 +44,18 @@ export const BalancesMoved: FunctionComponent<CustomClasses> = ({
       <div className="flex items-start gap-2 p-6 1.5lg:place-content-between">
         <div className="flex flex-col gap-2">
           <h6>{t("assets.balancesMovedTitle")}</h6>
-          <Link className="text-osmoverse-300" href="/portfolio">
-            <p className="body2 group transition-colors duration-100 ease-out hover:text-white-full">
-              {t("assets.balancesMovedDescription")} →
-            </p>
-          </Link>
+          <p className="body2 group text-osmoverse-300 transition-colors duration-100 ease-out hover:text-white-full">
+            {t("assets.balancesMovedDescription")} →
+          </p>
         </div>
         <button
           className="p-1.5 text-osmoverse-500"
-          onClick={() => setIsClosed(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            setIsClosed(true);
+          }}
         >
           <Icon id="thin-x" height={24} width={24} />
         </button>
