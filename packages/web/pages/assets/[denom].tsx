@@ -239,7 +239,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 <SwapTool
                   fixedWidth
                   useQueryParams={false}
-                  useOtherCurrencies={false}
+                  useOtherCurrencies={true}
                   initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   initialOutTokenDenom={denom}
                   page="Token Info Page"
