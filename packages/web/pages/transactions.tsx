@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import LinkButton from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import {
@@ -17,15 +16,16 @@ import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+// @ts-ignore
 const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
-  PAGE: 1,
-  PAGE_SIZE: 100,
 };
 
 const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
+
   const router = useRouter();
+  const { page = "0", pageSize = "100" } = router.query;
 
   const { accountStore, chainStore } = useStore();
 
@@ -35,13 +35,17 @@ const Transactions: React.FC = observer(() => {
 
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
+  // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
+  const pageString = Array.isArray(page) ? page[0] : page;
+  const pageSizeString = Array.isArray(pageSize) ? pageSize[0] : pageSize;
+
   const { data: transactionData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        address,
         // address: EXAMPLE.ADDRESS,
-        page: EXAMPLE.PAGE,
-        pageSize: EXAMPLE.PAGE_SIZE,
+        address,
+        page: pageString,
+        pageSize: pageSizeString,
       },
       {
         enabled: !!address,
@@ -94,7 +98,7 @@ const Transactions: React.FC = observer(() => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="relative mx-16 flex gap-4">
+    <main className="mx-16 flex gap-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
         transactions={transactionData}
@@ -103,6 +107,7 @@ const Transactions: React.FC = observer(() => {
         address={address}
         isLoading={isLoading}
         isWalletConnected={isWalletConnected}
+        page={pageString}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
@@ -117,7 +122,6 @@ const Transactions: React.FC = observer(() => {
           transaction={selectedTransaction}
         />
       )}
-      <BackToTopButton />
     </main>
   );
 });
