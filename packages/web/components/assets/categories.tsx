@@ -118,8 +118,6 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 
   const divRef = useRef<HTMLDivElement>(null);
 
-  console.log({ clientCategoryImageSamples });
-
   /** Static sample images combined with dynamic */
   const categoryAssetSampleImages: Record<string, string[]> = useMemo(
     () => ({
