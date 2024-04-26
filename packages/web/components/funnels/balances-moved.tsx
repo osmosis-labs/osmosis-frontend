@@ -34,7 +34,7 @@ export const BalancesMoved: FunctionComponent<CustomClasses> = ({
         <Image
           className="absolute left-0"
           alt="portfolio page screenshot"
-          src="/images/new-portfolio-page.png"
+          src="/images/new-portfolio-page.svg"
           width={526}
           height={128}
         />
