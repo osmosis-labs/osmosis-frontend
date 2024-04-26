@@ -271,33 +271,7 @@ export const BridgeProvider: FunctionComponent = observer(({ children }) => {
           <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
         ))}
       {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal
-          transakModalProps={{
-            onCreateOrder: (data) => {
-              logEvent([
-                EventName.Assets.buyOsmoStarted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
-            },
-            onSuccessfulOrder: (data) => {
-              logEvent([
-                EventName.Assets.buyOsmoCompleted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
-            },
-          }}
-          {...transferConfig.fiatRampsModal}
-        />
+        <FiatRampsModal {...transferConfig.fiatRampsModal} />
       )}
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
