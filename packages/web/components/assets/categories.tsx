@@ -244,7 +244,7 @@ const CategoriesDropdown: FunctionComponent<{
         <Icon id="chevron-up" width={16} height={16} />
       </Popover.Button>
 
-      <Popover.Panel className="absolute right-0 z-[9999] mt-1">
+      <Popover.Panel className="absolute right-0 z-50 mt-1">
         {({ close }) => (
           <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
             {selectableCategoryKeys.map((category) => {
