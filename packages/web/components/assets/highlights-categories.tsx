@@ -8,7 +8,6 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
 
-import { Step, Stepper, StepsIndicator } from "../stepper";
 import { CustomClasses } from "../types";
 
 type PriceChange24hAsset =
@@ -22,32 +21,25 @@ type HighlightsProps = {
   isCategorySelected: boolean;
   onSelectCategory: (category: string) => void;
   onSelectAllTopGainers: () => void;
-};
+} & CustomClasses;
 
 export const HighlightsCategories: FunctionComponent<HighlightsProps> = (
   props
 ) => {
-  const { width } = useWindowSize();
-
   if (props.isCategorySelected) return null;
 
-  const isTablet = width < Breakpoint.lg;
-
-  return isTablet ? (
-    <PaginatedHighlights {...props} />
-  ) : (
-    <HighlightsGrid {...props} />
-  );
+  return <HighlightsGrid {...props} />;
 };
 
 const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   onSelectCategory,
   onSelectAllTopGainers,
+  className,
 }) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
 
-  const isLargeTablet = width < Breakpoint.xl;
+  const isLargeTablet = width < Breakpoint.xl && width > Breakpoint.lg;
 
   const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
     api.edge.assets.getTopNewAssets.useQuery({
@@ -63,21 +55,28 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
     });
 
   return (
-    <div className="grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8">
+    <div
+      className={classNames(
+        "lg:no-scrollbar grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8 lg:flex lg:overflow-x-scroll",
+        className
+      )}
+    >
       <AssetHighlights
+        className="lg:w-[90%] lg:shrink-0"
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={() => onSelectCategory("new")}
       />
       <AssetHighlights
-        className="xl:row-span-2"
+        className="xl:row-span-2 lg:row-auto lg:w-[90%] lg:shrink-0"
         title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
       />
       <AssetHighlights
+        className="lg:w-[90%] lg:shrink-0"
         title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
@@ -116,52 +115,6 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
   };
 }
 
-/** Swipe through highlights on tablet and smaller screens. */
-const PaginatedHighlights: FunctionComponent<HighlightsProps> = ({
-  onSelectAllTopGainers,
-  onSelectCategory,
-}) => {
-  const { t } = useTranslation();
-
-  const { data: topNewAssets, isLoading: isTopNewAssetsLoading } =
-    api.edge.assets.getTopNewAssets.useQuery({});
-  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({});
-  const { data: topUpcomingAssets, isLoading: isTopUpcomingAssetsLoading } =
-    api.edge.assets.getTopUpcomingAssets.useQuery({});
-
-  return (
-    <Stepper>
-      <Step>
-        <AssetHighlights
-          title={t("assets.highlights.new")}
-          isLoading={isTopNewAssetsLoading}
-          assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-          onClickSeeAll={() => onSelectCategory("new")}
-        />
-      </Step>
-      <Step>
-        <AssetHighlights
-          className="xl:row-span-2"
-          title={t("assets.highlights.topGainers")}
-          isLoading={isTopGainerAssetsLoading}
-          assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
-          onClickSeeAll={onSelectAllTopGainers}
-        />
-      </Step>
-      <Step>
-        <AssetHighlights
-          title={t("assets.highlights.upcoming")}
-          isLoading={isTopUpcomingAssetsLoading}
-          assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
-          disableLinking
-        />
-      </Step>
-      <StepsIndicator className="py-2" />
-    </Stepper>
-  );
-};
-
 export const AssetHighlights: FunctionComponent<
   {
     title: string;
@@ -190,7 +143,7 @@ export const AssetHighlights: FunctionComponent<
   return (
     <div
       className={classNames(
-        "flex w-full flex-col border-t border-osmoverse-700 py-3",
+        "flex flex-col border-t border-osmoverse-700 py-3",
         className
       )}
     >
