@@ -27,7 +27,7 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
       <div
         ref={ref}
         className={classNames(
-          "grid h-32 w-full cursor-pointer grid-cols-2 overflow-clip rounded-[1.25rem] bg-osmoverse-800 1.5lg:grid-cols-1",
+          "grid h-32 w-full cursor-pointer grid-cols-2 overflow-clip rounded-[1.25rem] bg-osmoverse-800 1.5lg:grid-cols-1 md:h-fit",
           className
         )}
         onClick={() => router.push("/portfolio")}
@@ -48,25 +48,17 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
               {t("assets.balancesMovedDescription")} →
             </p>
           </div>
-          <div className="flex items-start gap-2 p-6 1.5lg:place-content-between">
-            <div className="flex flex-col gap-2">
-              <h6>{t("assets.balancesMovedTitle")}</h6>
-              <p className="body2 group text-osmoverse-300 transition-colors duration-100 ease-out hover:text-white-full">
-                {t("assets.balancesMovedDescription")} →
-              </p>
-            </div>
-            <button
-              className="p-1.5 text-osmoverse-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
+          <button
+            className="p-1.5 text-osmoverse-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
 
-                setIsClosed(true);
-              }}
-            >
-              <Icon id="thin-x" height={24} width={24} />
-            </button>
-          </div>
+              setIsClosed(true);
+            }}
+          >
+            <Icon id="thin-x" height={24} width={24} />
+          </button>
         </div>
       </div>
     );
