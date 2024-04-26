@@ -79,8 +79,7 @@ export const TransactionDetailsContent = ({
           "sticky top-[4.5rem] h-[calc(100vh_-_4.5rem)] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4"
       )}
     >
-      <div className={classNames("flex flex-col px-4 pb-8")}>
-        {/* <div className={classNames("mx-4 flex flex-col", !isModal && "sticky")}> */}
+      <div className="flex flex-col px-4 pb-8">
         {!isModal && (
           <div className="py-4">
             <IconButton
@@ -239,10 +238,10 @@ export const TransactionDetailsSlideover = ({
   return (
     <Transition
       show={open}
-      enter="transition-all	ease-out duration-300"
+      enter="transition-all ease-out duration-300"
       enterFrom="w-0 opacity-0"
       enterTo="w-[452px] opacity-100"
-      leave="transition-all	ease-out duration-300"
+      leave="transition-all ease-out duration-300"
       leaveFrom="w-[452px] opacity-100"
       leaveTo="w-0 opacity-0"
     >
@@ -263,7 +262,7 @@ export const TransactionDetailsModal: FunctionComponent<
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="w-[516px]"
+      className="w-[32.25rem]"
     >
       <TransactionDetailsContent
         onRequestClose={onRequestClose}

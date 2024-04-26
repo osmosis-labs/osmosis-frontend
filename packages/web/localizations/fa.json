@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "اوایل امروز",
-    "yesterday": "دیروز",
-    "january": "ژانویه",
-    "february": "فوریه",
-    "march": "مارس",
-    "april": "آوریل",
-    "may": "ممکن است",
-    "june": "ژوئن",
-    "july": "جولای",
-    "august": "مرداد",
-    "september": "سپتامبر",
-    "october": "اکتبر",
-    "november": "نوامبر",
-    "december": "دسامبر"
+    "yesterday": "دیروز"
   },
   "backToTop": "بازگشت به بالا"
 }

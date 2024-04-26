@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "आज पहले",
-    "yesterday": "कल",
-    "january": "जनवरी",
-    "february": "फ़रवरी",
-    "march": "मार्च",
-    "april": "अप्रैल",
-    "may": "मई",
-    "june": "जून",
-    "july": "जुलाई",
-    "august": "अगस्त",
-    "september": "सितम्बर",
-    "october": "अक्टूबर",
-    "november": "नवंबर",
-    "december": "दिसंबर"
+    "yesterday": "कल"
   },
   "backToTop": "वापस शीर्ष पर"
 }

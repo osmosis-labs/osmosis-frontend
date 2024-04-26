@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "આજેવહેલા",
-    "yesterday": "ગઇકાલે",
-    "january": "જાન્યુઆરી",
-    "february": "ફેબ્રુઆરી",
-    "march": "કુચ",
-    "april": "એપ્રિલ",
-    "may": "મે",
-    "june": "જૂન",
-    "july": "જુલાઈ",
-    "august": "ઓગસ્ટ",
-    "september": "સપ્ટેમ્બર",
-    "october": "ઓક્ટોબર",
-    "november": "નવેમ્બર",
-    "december": "ડિસેમ્બર"
+    "yesterday": "ગઇકાલે"
   },
   "backToTop": "ટોચ પર પાછા"
 }

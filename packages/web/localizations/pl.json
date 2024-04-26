@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
-    "yesterday": "Wczoraj",
-    "january": "Styczeń",
-    "february": "Luty",
-    "march": "Marsz",
-    "april": "Kwiecień",
-    "may": "Móc",
-    "june": "Czerwiec",
-    "july": "Lipiec",
-    "august": "Sierpień",
-    "september": "Wrzesień",
-    "october": "Październik",
-    "november": "Listopad",
-    "december": "Grudzień"
+    "yesterday": "Wczoraj"
   },
   "backToTop": "Powrót do góry"
 }

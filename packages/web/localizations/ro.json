@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
-    "yesterday": "Ieri",
-    "january": "ianuarie",
-    "february": "februarie",
-    "march": "Martie",
-    "april": "Aprilie",
-    "may": "Mai",
-    "june": "iunie",
-    "july": "iulie",
-    "august": "August",
-    "september": "Septembrie",
-    "october": "octombrie",
-    "november": "noiembrie",
-    "december": "decembrie"
+    "yesterday": "Ieri"
   },
   "backToTop": "Inapoi sus"
 }

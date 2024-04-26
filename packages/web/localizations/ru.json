@@ -990,19 +990,7 @@
   },
   "date": {
     "earlierToday": "Ранее сегодня",
-    "yesterday": "Вчера",
-    "january": "январь",
-    "february": "февраль",
-    "march": "Маршировать",
-    "april": "апрель",
-    "may": "Может",
-    "june": "Июнь",
-    "july": "Июль",
-    "august": "Август",
-    "september": "Сентябрь",
-    "october": "Октябрь",
-    "november": "ноябрь",
-    "december": "Декабрь"
+    "yesterday": "Вчера"
   },
   "backToTop": "Вернуться наверх"
 }
