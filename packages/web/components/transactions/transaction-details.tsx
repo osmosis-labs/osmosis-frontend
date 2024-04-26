@@ -151,7 +151,6 @@ export const TransactionDetailsContent = ({
                 <div className="text-subtitle1">{t("transactions.bought")}</div>
                 <div className="text-body1 text-osmoverse-300">
                   {tokenOut.token.denom}
-                  {/* solana.USDC.wh */}
                 </div>
               </div>
             </div>
