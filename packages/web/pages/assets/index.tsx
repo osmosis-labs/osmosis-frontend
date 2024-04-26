@@ -3,7 +3,12 @@ import { NextSeo } from "next-seo";
 
 import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
 import { AssetsPageV2 } from "~/components/complex/assets-page-v2";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 
 // New assets and portfolio page launches are controlled by 2 separate flags:
 // * New assets page: replace assets page with new assets page, move old assets page to new portfolio page
@@ -12,6 +17,10 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 const Assets: NextPage = () => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
 
   if (!featureFlags._isInitialized) {
     return (
