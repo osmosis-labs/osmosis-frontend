@@ -405,7 +405,7 @@ export const AssetsInfoTable: FunctionComponent<{
       />
       <section ref={highlightsRef} className="mb-4">
         <HighlightsCategories
-          className="lg:-mx-4 lg:pl-4"
+          className="lg:-mx-4 lg:px-4"
           isCategorySelected={!!selectedCategory}
           onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
