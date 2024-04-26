@@ -34,7 +34,7 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
       >
         <div className="relative 1.5lg:hidden">
           <Image
-            className="absolute left-0 -top-1/3"
+            className="absolute left-0"
             alt="portfolio page screenshot"
             src="/images/new-portfolio-page.svg"
             width={526}
@@ -48,17 +48,25 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
               {t("assets.balancesMovedDescription")} →
             </p>
           </div>
-          <button
-            className="p-1.5 text-osmoverse-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
+          <div className="flex items-start gap-2 p-6 1.5lg:place-content-between">
+            <div className="flex flex-col gap-2">
+              <h6>{t("assets.balancesMovedTitle")}</h6>
+              <p className="body2 group text-osmoverse-300 transition-colors duration-100 ease-out hover:text-white-full">
+                {t("assets.balancesMovedDescription")} →
+              </p>
+            </div>
+            <button
+              className="p-1.5 text-osmoverse-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
 
-              setIsClosed(true);
-            }}
-          >
-            <Icon id="thin-x" height={24} width={24} />
-          </button>
+                setIsClosed(true);
+              }}
+            >
+              <Icon id="thin-x" height={24} width={24} />
+            </button>
+          </div>
         </div>
       </div>
     );

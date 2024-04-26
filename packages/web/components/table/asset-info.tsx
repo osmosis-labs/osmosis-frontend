@@ -222,7 +222,7 @@ export const AssetsInfoTable: FunctionComponent<{
         }
       ),
       columnHelper.accessor((row) => row, {
-        id: "historicalPrice",
+        id: "priceChange24h",
         header: () => (
           <SortHeader
             label="24h"
@@ -293,8 +293,9 @@ export const AssetsInfoTable: FunctionComponent<{
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
+    if (width < Breakpoint.lg) collapsedColIds.push("priceChange24h");
     if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.sm) collapsedColIds.push("volume24h");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
@@ -396,7 +397,7 @@ export const AssetsInfoTable: FunctionComponent<{
       </section>
       <SearchBox
         ref={searchRef}
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        className="my-4 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -412,15 +413,19 @@ export const AssetsInfoTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => (
                 <th
-                  className={classNames({
-                    // defines column width
-                    "w-36 xl:w-25": index !== 0,
-                  })}
+                  className={classNames(
+                    // apply to all columns
+                    "sm:w-fit",
+                    {
+                      // defines column widths after first column
+                      "w-36 xl:w-28": index !== 0,
+                    }
+                  )}
                   key={header.id}
                   colSpan={header.colSpan}
                 >

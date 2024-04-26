@@ -103,7 +103,7 @@
   /* Global table style */
 
   table {
-    @apply w-full table-fixed border-collapse text-left md:w-screen;
+    @apply w-full table-fixed border-collapse text-left md:w-full;
   }
 
   thead > tr {

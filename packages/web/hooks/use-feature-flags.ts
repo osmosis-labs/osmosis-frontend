@@ -81,8 +81,6 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-    newAssetsPage:
-      isMobile || !isInitialized ? false : launchdarklyFlags.newAssetsPage,
     portfolioPageAndNewAssetsPage:
       isMobile || !isInitialized
         ? false
