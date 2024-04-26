@@ -21,7 +21,12 @@ import {
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
-import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import {
+  Breakpoint,
+  useDimension,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
@@ -306,12 +311,26 @@ export const AssetsInfoTable: FunctionComponent<{
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
-  const topOffset =
-    Number(
-      isMobile
-        ? theme.extend.height["navbar-mobile"].replace("px", "")
-        : theme.extend.height.navbar.replace("px", "")
-    ) + tableTopPadding;
+  // collect height of elements above table to inform virtualizer
+  const [highlightsRef, { height: highlightsHeight }] =
+    useDimension<HTMLDivElement>();
+  const [categoriesRef, { height: categoriesHeight }] =
+    useDimension<HTMLDivElement>();
+  const [searchRef, { height: searchBoxHeight }] =
+    useDimension<HTMLInputElement>();
+  const [bannerRef, { height: bannerHeight }] = useDimension<HTMLDivElement>();
+  const totalTopOffset =
+    highlightsHeight +
+    categoriesHeight +
+    searchBoxHeight +
+    bannerHeight +
+    tableTopPadding;
+  const navBarOffset = Number(
+    isMobile
+      ? theme.extend.height["navbar-mobile"].replace("px", "")
+      : theme.extend.height.navbar.replace("px", "")
+  );
+  const topOffset = navBarOffset + totalTopOffset;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
@@ -359,14 +378,14 @@ export const AssetsInfoTable: FunctionComponent<{
           setVerifiedAsset(null);
         }}
       />
-      <section className="mb-4">
+      <section ref={highlightsRef} className="mb-4">
         <HighlightsCategories
           isCategorySelected={!!selectedCategory}
           onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>
-      <section className="mb-4">
+      <section ref={categoriesRef} className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
           hiddenCategories={useConst(["new", "topGainers"])}
@@ -376,6 +395,7 @@ export const AssetsInfoTable: FunctionComponent<{
         />
       </section>
       <SearchBox
+        ref={searchRef}
         className="my-4 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
@@ -383,7 +403,7 @@ export const AssetsInfoTable: FunctionComponent<{
         debounce={500}
         disabled={Boolean(selectedCategory)}
       />
-      <BalancesMoved className="my-3" />
+      <BalancesMoved ref={bannerRef} className="my-3" />
       <table
         className={classNames(
           "mt-3",
