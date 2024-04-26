@@ -132,28 +132,14 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
         _onDeposit(...depositParams);
-        logEvent([
-          EventName.Assets.assetsItemDepositClicked,
-          {
-            tokenName: depositParams[1],
-            hasExternalUrl: !!depositParams[2],
-          },
-        ]);
       },
-      [_onDeposit, logEvent]
+      [_onDeposit]
     );
     const onWithdraw = useCallback(
       (...withdrawParams: Parameters<typeof _onWithdraw>) => {
         _onWithdraw(...withdrawParams);
-        logEvent([
-          EventName.Assets.assetsItemWithdrawClicked,
-          {
-            tokenName: withdrawParams[1],
-            hasExternalUrl: !!withdrawParams[2],
-          },
-        ]);
       },
-      [_onWithdraw, logEvent]
+      [_onWithdraw]
     );
 
     const mergeWithdrawCol = width < 1000 && !isMobile;
@@ -461,14 +447,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   checked={hideZeroBalances}
                   disabled={!canHideZeroBalances}
                   onCheckedChange={() => {
-                    logEvent([
-                      EventName.Assets.assetsListFiltered,
-                      {
-                        filteredBy: "Hide zero balances",
-                        isFilterOn: !hideZeroBalances,
-                      },
-                    ]);
-
                     setHideZeroBalances(!hideZeroBalances);
                   }}
                 />
@@ -736,12 +714,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               className="m-auto"
               isOn={showAllAssets}
               onToggle={() => {
-                logEvent([
-                  EventName.Assets.assetsListMoreClicked,
-                  {
-                    isOn: !showAllAssets,
-                  },
-                ]);
                 setShowAllAssets(!showAllAssets);
               }}
             />
