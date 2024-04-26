@@ -62,21 +62,21 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
       )}
     >
       <AssetHighlights
-        className="lg:w-[90%] lg:shrink-0 lg:snap-center"
+        className="lg:w-[80%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={() => onSelectCategory("new")}
       />
       <AssetHighlights
-        className="xl:row-span-2 lg:row-auto lg:w-[90%] lg:shrink-0 lg:snap-center"
+        className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.topGainers")}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
       />
       <AssetHighlights
-        className="lg:w-[90%] lg:shrink-0 lg:snap-center"
+        className="lg:w-[80%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
