@@ -310,7 +310,9 @@
       "new": "Nuevo",
       "topGainers": "Principales ganadores",
       "upcoming": "Próximo"
-    }
+    },
+    "balancesMovedTitle": "¿Buscas tus saldos?",
+    "balancesMovedDescription": "Dirígete a la página Portafolio, el nuevo hogar para tus saldos y más."
   },
   "portfolio": {
     "buy": "Comprar",

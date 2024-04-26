@@ -310,7 +310,9 @@
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
+    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
   },
   "portfolio": {
     "buy": "Satın almak",

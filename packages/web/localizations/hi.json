@@ -310,7 +310,9 @@
       "new": "नया",
       "topGainers": "शीर्ष लाभार्थी",
       "upcoming": "आगामी"
-    }
+    },
+    "balancesMovedTitle": "क्या आप अपना बैलेंस खोज रहे हैं?",
+    "balancesMovedDescription": "पोर्टफोलियो पेज पर जाएं, जो आपके शेष राशि और अन्य जानकारी का नया घर है।"
   },
   "portfolio": {
     "buy": "खरीदना",

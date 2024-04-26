@@ -310,7 +310,9 @@
       "new": "Nouveau",
       "topGainers": "Meilleurs gagnants",
       "upcoming": "A venir"
-    }
+    },
+    "balancesMovedTitle": "Vous recherchez vos soldes ?",
+    "balancesMovedDescription": "Rendez-vous sur la page Portfolio, le nouvel espace pour vos soldes et plus encore."
   },
   "portfolio": {
     "buy": "Acheter",
