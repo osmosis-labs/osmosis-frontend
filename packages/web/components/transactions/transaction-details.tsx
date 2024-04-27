@@ -168,9 +168,9 @@ export const TransactionDetailsContent = ({
           <div className="flex justify-between gap-3 py-3">
             <div
               onClick={toggleConversion}
-              className="cursor-pointer whitespace-nowrap"
+              className="flex cursor-pointer gap-1 whitespace-nowrap"
             >
-              {t("transactions.executionPrice")} <span>&#x2194;</span>
+              {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
             <div className="flex gap-3 whitespace-nowrap">
               <div className="text-body1 text-wosmongton-300">
