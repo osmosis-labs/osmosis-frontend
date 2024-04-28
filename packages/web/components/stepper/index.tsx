@@ -299,12 +299,15 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
   // to the active Step (with inactive steps hidden by CSS).
   const stepIndices = useMemo(
     () =>
-      Children.toArray(children).reduce((map, child, index) => {
-        if ((child as ReactElement)?.props?.__TYPE === "Step") {
-          map.set(index, map.size);
-        }
-        return map;
-      }, new Map<number, number>()),
+      Children.toArray(children).reduce(
+        (map: Map<number, number>, child, index) => {
+          if ((child as ReactElement)?.props?.__TYPE === "Step") {
+            return map.set(index, map.size);
+          }
+          return map;
+        },
+        new Map<number, number>()
+      ),
     [children]
   );
 
