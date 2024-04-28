@@ -23,8 +23,8 @@ const staticCategoryAssetImageSamples = {
   }, [] as string[]),
   defi: [
     "/tokens/generated/osmo.svg",
-    "/tokens/generated/ion.svg",
     "/tokens/generated/mars.svg",
+    "/tokens/generated/lvn.svg",
   ],
   stablecoin: [
     "/tokens/generated/usdc.svg",
@@ -36,15 +36,15 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/shib.svg",
     "/tokens/generated/huahua.svg",
   ],
-  liquid_staking: [
-    "/tokens/generated/stosmo.svg",
-    "/tokens/generated/milktia.svg",
-    "/tokens/generated/statom.svg",
-  ],
   ai: [
     "/tokens/generated/akt.svg",
     "/tokens/generated/fet.svg",
     "/tokens/generated/boot.svg",
+  ],
+  liquid_staking: [
+    "/tokens/generated/stosmo.svg",
+    "/tokens/generated/milktia.svg",
+    "/tokens/generated/statom.svg",
   ],
   bridges: [
     "/tokens/generated/axl.svg",
