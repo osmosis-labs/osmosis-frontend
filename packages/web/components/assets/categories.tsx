@@ -254,7 +254,7 @@ const CategoriesDropdown: FunctionComponent<{
                 "transition-transform duration-150 ease-out",
                 open && "rotate-180"
               )}
-              id="chevron-up"
+              id="chevron-down"
               width={16}
               height={16}
             />
