@@ -23,7 +23,6 @@ test.describe("Test Swap feature", () => {
       "Before tests setup Wallet Extension. This will be extracted to a separate fixture"
     );
     // Launch Chrome with a Keplr wallet extension
-    const extensionId = "ibomioleaahcoaakgginocklpgejhmen";
     const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
       headless: false,
@@ -33,10 +32,12 @@ test.describe("Test Swap feature", () => {
         `--load-extension=${pathToExtension}`,
       ],
     });
-    const page = await context.newPage();
+    // Get all new pages (including Extension) in the context and wait
+    const emptyPage = context.pages()[0];
+    await emptyPage.waitForTimeout(2000);
+    const page = context.pages()[1];
     const walletPage = new WalletPage(page);
-    await walletPage.goto(extensionId);
-    // Import existing Wallet (also could be aggregated in one function.
+    // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
     await walletPage.setWalletNameAndPassword("Test", password);
     await walletPage.selectChainsAndSave();
