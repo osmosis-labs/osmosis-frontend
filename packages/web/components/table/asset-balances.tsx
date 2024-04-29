@@ -34,11 +34,12 @@ import {
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
+import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { PriceChange } from "../assets/price";
+import { SubscriptDecimal } from "../chart";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -436,10 +437,8 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   <div className="flex flex-col">
     {currentPrice ? (
       <div>
-        {formatPretty(
-          currentPrice,
-          getPriceTableFormatOptions(currentPrice.toDec())
-        )}
+        {currentPrice.symbol}
+        <SubscriptDecimal decimal={currentPrice.toDec()} />
       </div>
     ) : (
       <div className="text-osmoverse-400">–</div>

@@ -103,11 +103,11 @@
   /* Global table style */
 
   table {
-    @apply w-full table-fixed border-collapse text-left md:w-screen;
+    @apply w-full table-fixed border-collapse text-left md:w-full;
   }
 
   thead > tr {
-    @apply sticky top-navbar z-50 border-b border-osmoverse-700 bg-osmoverse-900 text-body2 font-semibold text-osmoverse-300 md:top-navbar-mobile;
+    @apply sticky top-navbar z-40 border-b border-osmoverse-700 bg-osmoverse-900 text-body2 font-semibold text-osmoverse-300 md:top-navbar-mobile;
   }
 
   thead > tr > th:first-child {

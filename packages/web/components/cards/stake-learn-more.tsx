@@ -97,7 +97,6 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
       className="relative flex flex-1 flex-col text-center text-osmoverse-100"
       autoplay={{ stopOnHover: true, delayInMs: 4000, stopOnLastSlide: true }}
     >
-      <StepsIndicator className="order-1 mt-8" />
       {steps.map(({ title, bodyText, image }, index) => {
         const isFirstStep = index === 0;
         const isLastStep = index === steps.length - 1;
@@ -122,6 +121,7 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
           </Step>
         );
       })}
+      <StepsIndicator className="mt-8" />
     </Stepper>
   );
 

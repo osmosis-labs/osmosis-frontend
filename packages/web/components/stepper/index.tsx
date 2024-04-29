@@ -199,7 +199,7 @@ export const StepperLeftChevronNavigation: FunctionComponent<{
  * It includes an autoplay feature, which allows automatic progression to the
  * next step after a specified delay, providing a smooth, hands-free navigation experience.
  *
- * The Stepper is a headless component and requires multiple children to work:
+ * The Stepper is a headless component and requires multiple direct children to work:
  *  - the `Step` serves to identify and render individual steps within the Stepper.
  *    Each instance of Step corresponds to one stage in the sequential navigation.
  *  - the `StepsIndicator` is responsible for generating a series of navigation buttons.
@@ -221,16 +221,9 @@ export const StepperLeftChevronNavigation: FunctionComponent<{
 const Stepper: FunctionComponent<StepsProps> = (props) => {
   const { children, autoplay } = props;
 
-  const timerTimeInMs = useRef(0);
-
   const stepElements = Children.toArray(children).filter((child) => {
     if (!child) return false;
     return (child as ReactElement)?.props?.__TYPE === "Step";
-  });
-
-  const otherElements = Children.toArray(children).filter((child) => {
-    if (!child) return false;
-    return (child as ReactElement)?.props?.__TYPE !== "Step";
   });
 
   const stepsContext = useSteps({ count: stepElements.length });
@@ -241,6 +234,7 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
     [autoplay?.isStopped, autoplay?.stopOnHover, isHovering]
   );
 
+  const timerTimeInMs = useRef(0);
   useEffect(() => {
     if (autoplay && Boolean(autoplay?.delayInMs)) {
       const IntervalTimeIncrements = 1000;
@@ -299,6 +293,24 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
     [autoplay, isStopped, stepsContext]
   );
 
+  // Since child indices includes non-Step children, convert
+  // child index to only the index relative to other Steps.
+  // This allows us to headlessly support the given order of children relative
+  // to the active Step (with inactive steps hidden by CSS).
+  const stepIndices = useMemo(
+    () =>
+      Children.toArray(children).reduce(
+        (map: Map<number, number>, child, index) => {
+          if ((child as ReactElement)?.props?.__TYPE === "Step") {
+            return map.set(index, map.size);
+          }
+          return map;
+        },
+        new Map<number, number>()
+      ),
+    [children]
+  );
+
   return (
     <StepperContextProvider value={context}>
       <div
@@ -306,12 +318,13 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        {otherElements}
-        {stepElements.map((child, index) => (
+        {Children.toArray(children).map((child, index) => (
           <StepContextProvider
             key={index}
             value={{
-              index,
+              // only relevant indices of Steps will match the values returned
+              // from the context
+              index: stepIndices.get(index) ?? -1,
             }}
           >
             {child}

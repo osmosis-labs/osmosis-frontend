@@ -9,7 +9,6 @@ import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { ShowMoreButton } from "~/components/ui/button";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
-import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -34,21 +33,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     unverifiedNativeBalances,
   } = assetsStore;
   const { t } = useTranslation();
-
   const { startBridge, bridgeAsset } = useBridge();
-
-  const { setUserProperty, logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Assets.pageViewed],
-  });
-
-  useEffect(() => {
-    setUserProperty(
-      "osmoBalance",
-      Number(
-        nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
-      )
-    );
-  }, [nativeBalances, setUserProperty]);
 
   // set nav bar ctas
   useNavBar({
@@ -57,14 +42,12 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
         label: t("assets.table.depositButton"),
         onClick: () => {
           startBridge("deposit");
-          logEvent([EventName.Assets.depositClicked]);
         },
       },
       {
         label: t("assets.table.withdrawButton"),
         onClick: () => {
           startBridge("withdraw");
-          logEvent([EventName.Assets.withdrawClicked]);
         },
       },
     ],
@@ -130,41 +113,6 @@ const AssetsOverview: FunctionComponent = observer(() => {
   const stakedAssetsValue = priceStore.calculateTotalPrice([
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
-  ]);
-
-  // set up user analytics
-  const { setUserProperty } = useAmplitudeAnalytics();
-  useEffect(() => {
-    if (totalAssetsValue) {
-      setUserProperty(
-        "totalAssetsPrice",
-        Number(totalAssetsValue.trim(true).toDec().toString(2))
-      );
-    }
-    if (availableAssetsValue) {
-      setUserProperty(
-        "unbondedAssetsPrice",
-        Number(availableAssetsValue.trim(true).toDec().toString(2))
-      );
-    }
-    if (bondedAssetsValue) {
-      setUserProperty(
-        "bondedAssetsPrice",
-        Number(bondedAssetsValue.trim(true).toDec().toString(2))
-      );
-    }
-    if (stakedAssetsValue) {
-      setUserProperty(
-        "stakedOsmoPrice",
-        Number(stakedAssetsValue.trim(true).toDec().toString(2))
-      );
-    }
-  }, [
-    availableAssetsValue,
-    bondedAssetsValue,
-    setUserProperty,
-    stakedAssetsValue,
-    totalAssetsValue,
   ]);
 
   const format = (price?: PricePretty): string => {
@@ -254,37 +202,28 @@ const PoolCards: FunctionComponent<{
   showAllPools: boolean;
   ownedPoolIds: string[];
   setShowAllPools: (show: boolean) => void;
-}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => {
-  const { logEvent } = useAmplitudeAnalytics();
-  return (
-    <>
-      <div className="grid-cards my-5 grid">
-        <PoolCardsDisplayer
-          poolIds={
-            showAllPools
-              ? ownedPoolIds
-              : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
-          }
-        />
-      </div>
-      {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
-        <ShowMoreButton
-          className="m-auto"
-          isOn={showAllPools}
-          onToggle={() => {
-            logEvent([
-              EventName.Assets.assetsListMoreClicked,
-              {
-                isOn: !showAllPools,
-              },
-            ]);
-            setShowAllPools(!showAllPools);
-          }}
-        />
-      )}
-    </>
-  );
-});
+}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => (
+  <>
+    <div className="grid-cards my-5 grid">
+      <PoolCardsDisplayer
+        poolIds={
+          showAllPools
+            ? ownedPoolIds
+            : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
+        }
+      />
+    </div>
+    {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
+      <ShowMoreButton
+        className="m-auto"
+        isOn={showAllPools}
+        onToggle={() => {
+          setShowAllPools(!showAllPools);
+        }}
+      />
+    )}
+  </>
+));
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
@@ -370,7 +309,6 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         if (aFiatValue.toDec().lt(bFiatValue.toDec())) return 1;
         return 0;
       });
-    const { logEvent } = useAmplitudeAnalytics();
 
     return (
       <>
@@ -383,22 +321,6 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
               pool.id
             )}
-            onClick={() =>
-              logEvent([
-                EventName.Assets.myPoolsCardClicked,
-                {
-                  poolId: pool.id,
-                  poolName: pool.poolAssets
-                    .map((poolAsset) => poolAsset.amount.denom)
-                    .join(" / "),
-                  poolWeight: pool.weightedPoolInfo?.assets
-                    .map((poolAsset) => poolAsset.weightFraction?.toString())
-                    .join(" / "),
-                  isSuperfluidPool:
-                    queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
-                },
-              ])
-            }
           />
         ))}
       </>

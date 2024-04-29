@@ -1,4 +1,4 @@
-import { compressZeros } from "~/components/chart/compress-zeros";
+import { compressZeros } from "../formatter";
 
 describe("compressZeros function", () => {
   it("should not compress zeros with and handle the absence of currency symbol", () => {
