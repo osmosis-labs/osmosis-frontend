@@ -409,7 +409,6 @@ export const AssetsInfoTable: FunctionComponent<{
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
         debounce={500}
-        disabled={Boolean(selectedCategory)}
       />
       <BalancesMoved className="my-3" />
       <table
