@@ -158,9 +158,9 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   return (
     <div
       ref={divRef}
-      className="flex w-full place-content-between items-center py-3"
+      className="flex w-full place-content-between items-center gap-1 py-3"
     >
-      <div className="flex items-center gap-3">
+      <div className="no-scrollbar flex w-full items-center gap-3 overflow-x-scroll">
         {visibleCategories.map((category) => {
           const isSelected = selectedCategory === category;
           const sampleImages = getSampleImages(
@@ -236,7 +236,7 @@ const CategoriesDropdown: FunctionComponent<{
   const { t } = useTranslation();
 
   return (
-    <Popover className="relative">
+    <Popover className="relative shrink-0">
       {({ open }) => (
         <>
           <Popover.Button
