@@ -6,6 +6,7 @@ import { FunctionComponent, useMemo, useRef } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
+import { CustomClasses } from "../types";
 import { Icon } from "./icon";
 
 const staticCategoryAssetImageSamples = {
@@ -196,7 +197,10 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               }}
             >
               <span>{t(`assets.categories.${category}`)}</span>
-              <OverlappingAssetImages imageUrls={sampleImages} />
+              <OverlappingAssetImages
+                className="md:hidden"
+                imageUrls={sampleImages}
+              />
               {isSelected && (
                 <Icon
                   className="text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
@@ -298,14 +302,14 @@ const CategoriesDropdown: FunctionComponent<{
   );
 };
 
-const OverlappingAssetImages: FunctionComponent<{ imageUrls: string[] }> = ({
-  imageUrls,
-}) => (
+const OverlappingAssetImages: FunctionComponent<
+  { imageUrls: string[] } & CustomClasses
+> = ({ imageUrls, className }) => (
   <div
     style={{
       width: `${imageUrls.slice(undefined, 4).length * 28}px`,
     }}
-    className="relative flex h-fit items-center"
+    className={classNames("relative flex h-fit items-center", className)}
   >
     {imageUrls.map((url, index, urls) => (
       <div
