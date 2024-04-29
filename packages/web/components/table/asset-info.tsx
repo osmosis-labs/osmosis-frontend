@@ -25,6 +25,7 @@ import { EventName } from "~/config";
 import {
   Breakpoint,
   useAmplitudeAnalytics,
+  useDimension,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -245,7 +246,7 @@ export const AssetsInfoTable: FunctionComponent<{
         }
       ),
       columnHelper.accessor((row) => row, {
-        id: "historicalPrice",
+        id: "priceChange24h",
         header: () => (
           <SortHeader
             label="24h"
@@ -316,8 +317,9 @@ export const AssetsInfoTable: FunctionComponent<{
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
+    if (width < Breakpoint.lg) collapsedColIds.push("priceChange24h");
     if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.sm) collapsedColIds.push("volume24h");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
@@ -334,12 +336,26 @@ export const AssetsInfoTable: FunctionComponent<{
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
-  const topOffset =
-    Number(
-      isMobile
-        ? theme.extend.height["navbar-mobile"].replace("px", "")
-        : theme.extend.height.navbar.replace("px", "")
-    ) + tableTopPadding;
+  // collect height of elements above table to inform virtualizer
+  const [highlightsRef, { height: highlightsHeight }] =
+    useDimension<HTMLDivElement>();
+  const [categoriesRef, { height: categoriesHeight }] =
+    useDimension<HTMLDivElement>();
+  const [searchRef, { height: searchBoxHeight }] =
+    useDimension<HTMLInputElement>();
+  const [bannerRef, { height: bannerHeight }] = useDimension<HTMLDivElement>();
+  const totalTopOffset =
+    highlightsHeight +
+    categoriesHeight +
+    searchBoxHeight +
+    bannerHeight +
+    tableTopPadding;
+  const navBarOffset = Number(
+    isMobile
+      ? theme.extend.height["navbar-mobile"].replace("px", "")
+      : theme.extend.height.navbar.replace("px", "")
+  );
+  const topOffset = navBarOffset + totalTopOffset;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
@@ -387,14 +403,15 @@ export const AssetsInfoTable: FunctionComponent<{
           setVerifiedAsset(null);
         }}
       />
-      <section className="mb-4">
+      <section ref={highlightsRef} className="mb-4">
         <HighlightsCategories
+          className="lg:-mx-4 lg:px-4"
           isCategorySelected={!!selectedCategory}
           onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>
-      <section className="mb-4">
+      <section ref={categoriesRef} className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
           hiddenCategories={useConst(["new", "topGainers"])}
@@ -404,14 +421,15 @@ export const AssetsInfoTable: FunctionComponent<{
         />
       </section>
       <SearchBox
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        ref={searchRef}
+        className="my-4 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
         debounce={500}
         disabled={Boolean(selectedCategory)}
       />
-      <BalancesMoved className="my-3" />
+      <BalancesMoved ref={bannerRef} className="my-3" />
       <table
         className={classNames(
           "mt-3",
@@ -420,15 +438,19 @@ export const AssetsInfoTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => (
                 <th
-                  className={classNames({
-                    // defines column width
-                    "w-36 xl:w-25": index !== 0,
-                  })}
+                  className={classNames(
+                    // apply to all columns
+                    "sm:w-fit",
+                    {
+                      // defines column widths after first column
+                      "w-36 xl:w-28": index !== 0,
+                    }
+                  )}
                   key={header.id}
                   colSpan={header.colSpan}
                 >
