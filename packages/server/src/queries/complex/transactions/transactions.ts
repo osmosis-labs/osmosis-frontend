@@ -120,11 +120,17 @@ export async function getTransactions({
       });
 
       // v1 only display swap transactions
-      const filteredSwapTransactions = data?.filter((transaction) =>
-        transaction?.metadata?.some((metadataItem) =>
-          metadataItem?.value?.some((valueItem) => valueItem.txType === "swap")
-        )
-      );
+      const filteredSwapTransactions = data?.filter((transaction) => {
+        return transaction?.metadata?.some((metadataItem) => {
+          // only filter if metadata type is "osmosis-ui"
+          if (metadataItem?.type === "osmosis-ui") {
+            return metadataItem?.value?.some(
+              (valueItem) => valueItem.txType === "swap"
+            );
+          }
+          return false;
+        });
+      });
 
       // TODO - wrap getAsset with captureIfError
 

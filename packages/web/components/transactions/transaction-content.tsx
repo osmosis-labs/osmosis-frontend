@@ -1,4 +1,5 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
+import { useRouter } from "next/router";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { Spinner } from "~/components/loaders";
@@ -39,6 +40,8 @@ export const TransactionContent = ({
   const formatDate = useFormatDate();
 
   const showPagination = isWalletConnected && !isLoading;
+
+  const router = useRouter();
 
   return (
     <div className="flex w-full flex-col pb-16">
@@ -122,8 +125,14 @@ export const TransactionContent = ({
           <TransactionsPaginaton
             showPrevious={+page > 0}
             showNext={transactions !== undefined && transactions?.length > 0}
-            previousHref={`?page=${Math.max(0, +page - 1)}`}
-            nextHref={`?page=${+page + 1}`}
+            previousHref={{
+              pathname: router.pathname,
+              query: { ...router.query, page: Math.max(0, +page - 1) },
+            }}
+            nextHref={{
+              pathname: router.pathname,
+              query: { ...router.query, page: +page + 1 },
+            }}
           />
         )}
       </div>
