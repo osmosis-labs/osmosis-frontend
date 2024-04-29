@@ -107,6 +107,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
       coinName: asset.assetName,
       coinImageUrl: asset.images[0].png ?? asset.images[0].svg,
       href: asset.airdropInfoUrl,
+      externalLink: true,
     },
     extraInfo: asset.estimatedLaunchDateUtc ? (
       <div className="flex items-center gap-2">
@@ -180,9 +181,13 @@ const AssetHighlightRow: FunctionComponent<{
     coinName: string;
     coinImageUrl?: string;
     href?: string;
+    externalLink?: boolean;
   };
   extraInfo: ReactNode;
-}> = ({ asset: { coinDenom, coinName, coinImageUrl, href }, extraInfo }) => {
+}> = ({
+  asset: { coinDenom, coinName, coinImageUrl, href, externalLink },
+  extraInfo,
+}) => {
   const AssetContent = (
     <>
       <div className="flex items-center gap-2">
@@ -206,6 +211,7 @@ const AssetHighlightRow: FunctionComponent<{
     <Link
       href={href}
       passHref
+      target={externalLink ? "_blank" : "_self"}
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
     >
       {AssetContent}
