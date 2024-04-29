@@ -50,6 +50,8 @@ export class SwapPage {
     // Handle Pop-up page ->
     const newPage = await promise;
     await newPage.waitForLoadState();
+    const pageTitle = await newPage.title();
+    console.log("Title of the page: " + pageTitle);
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
