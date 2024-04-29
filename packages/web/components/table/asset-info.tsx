@@ -96,10 +96,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
-  const search = useMemo(
-    () => (Boolean(selectedCategory) ? undefined : searchQuery),
-    [selectedCategory, searchQuery]
-  );
 
   // sorting
   const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
@@ -132,13 +128,13 @@ export const AssetsInfoTable: FunctionComponent<{
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
-      !Boolean(search)
+      !Boolean(searchQuery)
         ? {
             keyPath: sortKey,
             direction: sortDirection,
           }
         : undefined,
-    [search, sortKey, sortDirection]
+    [searchQuery, sortKey, sortDirection]
   );
 
   // unverified assets
@@ -166,8 +162,8 @@ export const AssetsInfoTable: FunctionComponent<{
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
       limit: 50,
-      search,
-      onlyVerified: showUnverifiedAssets === false && !search,
+      search: searchQuery,
+      onlyVerified: showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
       categories,
