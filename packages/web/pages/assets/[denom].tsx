@@ -22,10 +22,10 @@ import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import LinkButton from "~/components/buttons/link-button";
-import TokenPairHistoricalChart, {
+import HistoricalPriceChart, {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
@@ -536,7 +536,7 @@ const TokenChart = observer(() => {
         </div>
       ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <TokenPairHistoricalChart
+          <HistoricalPriceChart
             minimal
             showTooltip
             showGradient

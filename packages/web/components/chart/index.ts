@@ -3,3 +3,4 @@ export * from "./generate-series";
 export * from "./gradients";
 export * from "./pie-chart";
 export * from "./price-breakdown";
+export * from "./price-historical";
