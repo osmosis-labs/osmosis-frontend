@@ -23,6 +23,7 @@ export const TransactionContent = ({
   isLoading,
   isWalletConnected,
   page,
+  hasNextPage,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions?: FormattedTransaction[];
@@ -32,6 +33,7 @@ export const TransactionContent = ({
   isLoading: boolean;
   isWalletConnected: boolean;
   page: string;
+  hasNextPage: boolean;
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -124,7 +126,7 @@ export const TransactionContent = ({
         {showPagination && (
           <TransactionsPaginaton
             showPrevious={+page > 0}
-            showNext={transactions !== undefined && transactions?.length > 0}
+            showNext={hasNextPage}
             previousHref={{
               pathname: router.pathname,
               query: { ...router.query, page: Math.max(0, +page - 1) },

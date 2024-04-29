@@ -47,18 +47,22 @@ const Transactions: React.FC = observer(() => {
 
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
-  const { data: transactionData, isLoading } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        // address: EXAMPLE.ADDRESS,
-        address,
-        page: pageString,
-        pageSize: pageSizeString,
-      },
-      {
-        enabled: !!address,
-      }
-    );
+  const { data, isLoading } = api.edge.transactions.getTransactions.useQuery(
+    {
+      // address: EXAMPLE.ADDRESS,
+      address,
+      page: pageString,
+      pageSize: pageSizeString,
+    },
+    {
+      enabled: !!address,
+    }
+  );
+
+  const { transactions, hasNextPage } = data ?? {
+    transactions: [],
+    hasNextPage: false,
+  };
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -109,13 +113,14 @@ const Transactions: React.FC = observer(() => {
     <main className="mx-auto flex max-w-7xl gap-8 px-16">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
-        transactions={transactionData}
+        transactions={transactions}
         setOpen={setOpen}
         open={open}
         address={address}
         isLoading={isLoading}
         isWalletConnected={isWalletConnected}
         page={pageString}
+        hasNextPage={hasNextPage}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
