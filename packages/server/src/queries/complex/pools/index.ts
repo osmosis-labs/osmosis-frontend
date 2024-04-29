@@ -5,8 +5,8 @@ import { z } from "zod";
 import { IS_TESTNET } from "../../../env";
 import { search, SearchSchema } from "../../../utils/search";
 import { PoolRawResponse } from "../../osmosis";
-import { getPoolsFromIndexer } from "./providers/indexer";
 import { getPoolsFromSidecar } from "./providers";
+import { getPoolsFromIndexer } from "./providers/indexer";
 
 const allPooltypes = [
   "concentrated",
