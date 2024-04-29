@@ -123,8 +123,8 @@ const MenuLink: FunctionComponent<{
       href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
-      className={classNames("w-full", {
-        "h-12 px-5 py-3": !showMore,
+      className={classNames("flex w-full items-center", {
+        "h-12 px-5 py-3 md:px-3 md:py-2": !showMore,
       })}
       onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
       onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
@@ -182,7 +182,7 @@ const MenuItemContent: React.FC<{
   return (
     <div
       className={classNames(
-        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out",
+        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out md:gap-2",
         selected
           ? "text-white-high"
           : "text-osmoverse-300 hover:text-white-high"
