@@ -35,11 +35,12 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
+import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
+import { SubscriptDecimal } from "../chart";
 import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
@@ -219,28 +220,30 @@ export const AssetsInfoTable: FunctionComponent<{
           />
         ),
       }),
-      columnHelper.accessor(
-        (row) =>
-          (row.currentPrice &&
-            formatPretty(
-              row.currentPrice,
-              getPriceTableFormatOptions(row.currentPrice.toDec())
-            )) ??
-          "-",
-        {
-          id: "price",
-          header: () => (
-            <SortHeader
-              label={t("assets.table.price")}
-              sortKey="currentPrice"
-              currentSortKey={sortKey}
-              currentDirection={sortDirection}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            />
+      columnHelper.accessor((row) => row, {
+        id: "price",
+        header: () => (
+          <SortHeader
+            label={t("assets.table.price")}
+            sortKey="currentPrice"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { currentPrice },
+          },
+        }) =>
+          currentPrice && (
+            <div>
+              {currentPrice.symbol}
+              <SubscriptDecimal decimal={currentPrice.toDec()} />
+            </div>
           ),
-        }
-      ),
+      }),
       columnHelper.accessor((row) => row, {
         id: "priceChange24h",
         header: () => (
