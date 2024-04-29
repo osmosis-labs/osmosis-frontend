@@ -46,6 +46,7 @@ export class SwapPage {
   async connectWallet(promise: Promise<Page>) {
     await this.connectWalletBtn.click();
     await this.kepltWalletBtn.click();
+    await this.page.waitForTimeout(2000);
     // Handle Pop-up page ->
     const newPage = await promise;
     await newPage.waitForLoadState();
