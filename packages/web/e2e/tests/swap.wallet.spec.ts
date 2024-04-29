@@ -19,9 +19,7 @@ test.describe("Test Swap feature", () => {
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
 
   test.beforeEach(async () => {
-    console.log(
-      "Before tests setup Wallet Extension. This will be extracted to a separate fixture"
-    );
+    console.log("Before test setup Wallet Extension.");
     // Launch Chrome with a Keplr wallet extension
     const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
@@ -45,9 +43,7 @@ test.describe("Test Swap feature", () => {
     // Switch to Application
     swapPage = new SwapPage(await context.newPage());
     await swapPage.goto();
-    // This is needed to handle a wallet popup
-    const pagePromise = context.waitForEvent("page");
-    await swapPage.connectWallet(pagePromise);
+    await swapPage.connectWallet();
   });
 
   test.afterEach(async () => {

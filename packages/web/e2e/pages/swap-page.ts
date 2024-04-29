@@ -43,15 +43,17 @@ export class SwapPage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async connectWallet(promise: Promise<Page>) {
+  async connectWallet() {
     await this.connectWalletBtn.click();
+    // This is needed to handle a wallet popup
+    const pagePromise = this.page.context().waitForEvent("page");
     await this.kepltWalletBtn.click();
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(1000);
     // Handle Pop-up page ->
-    const newPage = await promise;
+    const newPage = await pagePromise;
     await newPage.waitForLoadState();
     const pageTitle = await newPage.title();
-    console.log("Title of the page: " + pageTitle);
+    console.log("Title of the new page: " + pageTitle);
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
@@ -73,7 +75,8 @@ export class SwapPage {
     // Handle Pop-up page ->
     const approvePage = await promise;
     await approvePage.waitForLoadState();
-    console.log(approvePage.url());
+    const approvePageTitle = approvePage.url();
+    console.log("Approve page is opened at: " + approvePageTitle);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
@@ -81,7 +84,7 @@ export class SwapPage {
     const msgContentAmount = await approvePage
       .getByText("type: osmosis/poolmanager/")
       .textContent();
-    console.log("Wallet is approving: " + msgContentAmount);
+    console.log("Wallet is approving this msg: \n" + msgContentAmount);
     // Approve trx
     await approveBtn.click();
     // wait for trx confirmation
