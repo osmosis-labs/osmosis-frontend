@@ -3,7 +3,7 @@ import { FormattedTransaction } from "@osmosis-labs/server";
 import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -46,6 +46,13 @@ export const TransactionDetailsContent = ({
     numerator: tokenIn.token,
     denominator: tokenOut.token,
   });
+
+  useEffect(() => {
+    setConversion({
+      numerator: tokenIn.token,
+      denominator: tokenOut.token,
+    });
+  }, [tokenIn.token, tokenOut.token, transaction.hash]);
 
   const toggleConversion = () => {
     setConversion({
