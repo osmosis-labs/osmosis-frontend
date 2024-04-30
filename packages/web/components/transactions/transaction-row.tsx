@@ -60,7 +60,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
       )}
       onClick={() => onClick?.()}
     >
-      <div className="flex items-center gap-4 md:gap-2">
+      <div className="flex w-1/3 items-center gap-4 md:gap-2">
         {status === "pending" ? (
           <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
         ) : (
@@ -122,15 +122,7 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
   <>
-    <div className="flex w-60 items-center justify-end gap-4 md:hidden md:w-auto">
-      <FallbackImg
-        alt={tokenIn.amount.denom}
-        src={tokenIn.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
+    <div className="flex w-1/3 items-center justify-end gap-4 md:hidden md:w-auto">
       <div className="flex flex-col text-right md:hidden">
         {tokenIn.value && (
           <div
@@ -147,6 +139,14 @@ const TokenConversion: FunctionComponent<
           {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
         </div>
       </div>
+      <FallbackImg
+        alt={tokenIn.amount.denom}
+        src={tokenIn.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+        className="block md:hidden"
+      />
       <Icon
         id="arrow-right"
         width={24}
@@ -154,15 +154,7 @@ const TokenConversion: FunctionComponent<
         className="block text-osmoverse-600 md:hidden"
       />
     </div>
-    <div className="flex w-60 items-center justify-end gap-4 md:w-auto">
-      <FallbackImg
-        alt={tokenOut.amount.denom}
-        src={tokenOut.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
+    <div className="flex w-1/3 items-center justify-end gap-4 md:w-auto">
       <div className="text-right text-osmoverse-400">
         {tokenOut.value && (
           <div
@@ -183,6 +175,14 @@ const TokenConversion: FunctionComponent<
           {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
         </div>
       </div>
+      <FallbackImg
+        alt={tokenOut.amount.denom}
+        src={tokenOut.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+        className="block md:hidden"
+      />
     </div>
   </>
 );
