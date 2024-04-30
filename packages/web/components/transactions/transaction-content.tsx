@@ -47,7 +47,8 @@ export const TransactionContent = ({
 
   return (
     <div className="flex w-full flex-col pb-16">
-      <div className="flex w-full justify-between pt-8 pb-4">
+      {/* // TODO - remove hidden */}
+      <div className="flex hidden w-full justify-between pt-8 pb-4">
         <h1 className="text-h3">{t("transactions.title")}</h1>
         <TransactionButtons open={open} address={address} />
       </div>
