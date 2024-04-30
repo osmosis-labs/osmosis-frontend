@@ -5,7 +5,7 @@ on:
 
 jobs:
   fe-e2e-tests:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/stage')
     runs-on: macos-latest
     environment:
       name: prod_swap_test
@@ -27,17 +27,20 @@ jobs:
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Select Swap Pair tests on Master
-        if: github.ref == 'refs/heads/master'
-        run: |
-          export BASE_URL=https://app.osmosis.zone
-          npx playwright test -g "Test Select Swap Pair feature"
-      - name: Run Select Swap Pair tests on Stage
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        if: github.ref == 'refs/heads/master'
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Swap feature"
+      - name: Run Select Swap Pair tests on Stage
+        env:
+          BASE_URL: "https://stage.osmosis.zone"
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         if: github.ref == 'refs/heads/stage'
         run: |
-          cd packages/web && ls -ll e2e
+          cd packages/web
           npx playwright test -g "Test Swap feature"
       - name: upload test results
         if: always()
