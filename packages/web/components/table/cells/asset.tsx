@@ -17,7 +17,7 @@ export const AssetCell: FunctionComponent<
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-44 flex w-full items-center gap-4 md:gap-1">
+    <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
       <div className="h-10 w-10 flex-shrink-0">
         {coinImageUrl && (
           <Image

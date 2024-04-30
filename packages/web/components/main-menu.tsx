@@ -123,8 +123,8 @@ const MenuLink: FunctionComponent<{
       href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
-      className={classNames("w-full", {
-        "h-12 px-5 py-3": !showMore,
+      className={classNames("flex w-full items-center", {
+        "h-12 px-5 py-3 md:px-3 md:py-2": !showMore,
       })}
       onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
       onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
@@ -140,13 +140,13 @@ const MorePopover: FunctionComponent<{
   secondaryMenus: MainLayoutMenu[];
 }> = ({ item, secondaryMenus }) => {
   return (
-    <Popover className="relative flex">
+    <Popover className="relative flex h-full w-full items-center px-5 py-3">
       {({ open }) => (
         <>
-          <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
+          <Popover.Button className="focus:outline-none">
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-full flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
+          <Popover.Panel className="absolute bottom-full -left-1 flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
             {secondaryMenus.map((menu: MainLayoutMenu) => {
               const { link, selectionTest, secondaryLogo, showMore } = menu;
               return (
@@ -182,7 +182,7 @@ const MenuItemContent: React.FC<{
   return (
     <div
       className={classNames(
-        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out",
+        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out md:gap-2",
         selected
           ? "text-white-high"
           : "text-osmoverse-300 hover:text-white-high"

@@ -303,14 +303,17 @@
       "dweb": "分散型ウェブ",
       "rwa": "現実世界の資産発行",
       "gaming": "ゲーム",
-      "topGainers": "上位の利益"
+      "topGainers": "上位の利益",
+      "more": "その他のカテゴリー"
     },
     "seeAll": "すべてを見る",
     "highlights": {
       "new": "新しい",
       "topGainers": "上位の利益",
       "upcoming": "今後の予定"
-    }
+    },
+    "balancesMovedTitle": "残高をお探しですか?",
+    "balancesMovedDescription": "残高などを確認するための新しいホームであるポートフォリオ ページに移動します。"
   },
   "portfolio": {
     "buy": "買う",
@@ -373,6 +376,7 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
+    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
@@ -729,7 +733,6 @@
       "hide": "隠れる",
       "show": "見せる"
     },
-    "maxButtonError": "最大金額を計算できません。ネットワーク接続を確認するか、ページを更新してください。",
     "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
     "available": "利用可能",
     "button": "スワップ",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "本日",
-    "yesterday": "昨日",
-    "january": "1月",
-    "february": "2月",
-    "march": "行進",
-    "april": "4月",
-    "may": "5月",
-    "june": "六月",
-    "july": "7月",
-    "august": "8月",
-    "september": "9月",
-    "october": "10月",
-    "november": "11月",
-    "december": "12月"
+    "yesterday": "昨日"
   },
   "backToTop": "トップに戻る"
 }

@@ -303,14 +303,17 @@
       "dweb": "विकेन्द्रीकृत वेब",
       "rwa": "वास्तविक विश्व परिसंपत्ति निर्गमन",
       "gaming": "जुआ",
-      "topGainers": "शीर्ष लाभार्थी"
+      "topGainers": "शीर्ष लाभार्थी",
+      "more": "अधिक श्रेणियाँ"
     },
     "seeAll": "सभी देखें",
     "highlights": {
       "new": "नया",
       "topGainers": "शीर्ष लाभार्थी",
       "upcoming": "आगामी"
-    }
+    },
+    "balancesMovedTitle": "क्या आप अपना बैलेंस खोज रहे हैं?",
+    "balancesMovedDescription": "पोर्टफोलियो पेज पर जाएं, जो आपके शेष राशि और अन्य जानकारी का नया घर है।"
   },
   "portfolio": {
     "buy": "खरीदना",
@@ -373,6 +376,7 @@
     "highSwapFee": "स्वैप शुल्क बहुत अधिक है",
     "insufficientAmount": "अपर्याप्त राशि",
     "insufficientBal": "अपर्याप्त शेषराशि",
+    "insufficientBalForFee": "शुल्क के लिए अपर्याप्त शेष राशि",
     "insufficientLiquidity": "अपर्याप्त तरलता",
     "invalidNumberAmount": "संख्या का अमान्य रूप",
     "invalidScalingFactorControllerAddress": "अमान्य स्केलिंग फ़ैक्टर नियंत्रक पता",
@@ -729,7 +733,6 @@
       "hide": "छिपाना",
       "show": "दिखाओ"
     },
-    "maxButtonError": "अधिकतम राशि की गणना करने में असमर्थ। कृपया अपना नेटवर्क कनेक्शन जांचें या पेज को रीफ़्रेश करके देखें।",
     "maxButtonErrorNoBalance": "अधिकतम राशि की गणना करने के लिए पर्याप्त शेष राशि नहीं है।",
     "available": "उपलब्ध",
     "button": "बदलना",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "आज पहले",
-    "yesterday": "कल",
-    "january": "जनवरी",
-    "february": "फ़रवरी",
-    "march": "मार्च",
-    "april": "अप्रैल",
-    "may": "मई",
-    "june": "जून",
-    "july": "जुलाई",
-    "august": "अगस्त",
-    "september": "सितम्बर",
-    "october": "अक्टूबर",
-    "november": "नवंबर",
-    "december": "दिसंबर"
+    "yesterday": "कल"
   },
   "backToTop": "वापस शीर्ष पर"
 }

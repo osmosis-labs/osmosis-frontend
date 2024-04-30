@@ -303,14 +303,17 @@
       "dweb": "Decentralized Web",
       "rwa": "Real World Asset Issuance",
       "gaming": "Gaming",
-      "topGainers": "Top gainers"
+      "topGainers": "Top gainers",
+      "more": "More categories"
     },
     "seeAll": "See all",
     "highlights": {
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    }
+    },
+    "balancesMovedTitle": "Looking for your balances?",
+    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
   },
   "portfolio": {
     "buy": "Buy",
@@ -373,6 +376,7 @@
     "highSwapFee": "Swap fee too high",
     "insufficientAmount": "Insufficient amount",
     "insufficientBal": "Insufficient balance",
+    "insufficientBalForFee": "Insufficient balance for fee",
     "insufficientLiquidity": "Insufficient liquidity",
     "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
@@ -729,7 +733,6 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
     "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Earlier today",
-    "yesterday": "Yesterday",
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December"
+    "yesterday": "Yesterday"
   },
   "backToTop": "Back to top"
 }

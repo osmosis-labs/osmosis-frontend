@@ -94,17 +94,22 @@ function mapMetadata(
   }));
 }
 
+export interface GetTransactionsResponse {
+  transactions: FormattedTransaction[];
+  hasNextPage: boolean;
+}
+
 export async function getTransactions({
   address,
-  page = 1,
-  pageSize = 100,
+  page = "0",
+  pageSize = "100",
   assetLists,
 }: {
   address: string;
-  page?: number;
-  pageSize?: number;
+  page?: string;
+  pageSize?: string;
   assetLists: AssetList[];
-}): Promise<FormattedTransaction[]> {
+}): Promise<GetTransactionsResponse> {
   return await cachified({
     cache: transactionsCache,
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
@@ -115,16 +120,25 @@ export async function getTransactions({
 
       const data = await queryTransactions({
         address,
-        page: page.toString(),
-        pageSize: pageSize.toString(),
+        page,
+        pageSize,
       });
 
+      // if the length of the data is equal to the page size, there is a next page
+      const hasNextPage = data?.length === parseInt(pageSize, 10);
+
       // v1 only display swap transactions
-      const filteredSwapTransactions = data.filter((transaction) =>
-        transaction.metadata.some((metadataItem) =>
-          metadataItem.value.some((valueItem) => valueItem.txType === "swap")
-        )
-      );
+      const filteredSwapTransactions = data?.filter((transaction) => {
+        return transaction?.metadata?.some((metadataItem) => {
+          // only filter if metadata type is "osmosis-ui"
+          if (metadataItem?.type === "osmosis-ui") {
+            return metadataItem?.value?.some(
+              (valueItem) => valueItem.txType === "swap"
+            );
+          }
+          return false;
+        });
+      });
 
       // TODO - wrap getAsset with captureIfError
 
@@ -140,7 +154,10 @@ export async function getTransactions({
         }
       );
 
-      return mappedSwapTransactions;
+      return {
+        transactions: mappedSwapTransactions,
+        hasNextPage,
+      };
     },
   });
 }

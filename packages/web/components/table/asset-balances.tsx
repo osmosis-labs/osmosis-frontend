@@ -39,6 +39,7 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { PriceChange } from "../assets/price";
+import { SubscriptDecimal } from "../chart";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -163,6 +164,7 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "balance",
         header: () => (
           <SortHeader
+            className="mr-auto ml-0"
             label={t("assets.table.balance")}
             sortKey="usdValue"
             currentSortKey={sortKey}
@@ -177,8 +179,9 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "price",
         header: () => (
           <SortHeader
+            className="mr-auto ml-0"
             label={t("assets.table.price")}
-            sortKey="currentPrice"
+            sortKey="priceChange24h"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
             setSortDirection={setSortDirection}
@@ -293,7 +296,7 @@ export const AssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-4 !w-[33.25rem]"
+        className="my-4 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -311,11 +314,15 @@ export const AssetBalancesTable: FunctionComponent<{
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index, headers) => (
                 <th
-                  className={classNames({
-                    // defines column width
-                    "w-56 lg:w-36": index !== 0 && index !== headers.length - 1,
-                    "w-36": index === headers.length - 1,
-                  })}
+                  className={classNames(
+                    {
+                      // defines column width
+                      "w-56 lg:w-36":
+                        index !== 0 && index !== headers.length - 1,
+                      "w-36": index === headers.length - 1,
+                    },
+                    index === headers.length - 1 ? "text-right" : "text-left"
+                  )}
                   key={header.id}
                   colSpan={header.colSpan}
                 >
@@ -367,7 +374,8 @@ export const AssetBalancesTable: FunctionComponent<{
                           // unverified assets: opaque except for last cell with asset actions
                           "opacity-40":
                             unverified && index !== cells.length - 1,
-                        }
+                        },
+                        index === cells.length - 1 ? "text-right" : "text-left"
                       )}
                       key={cell.id}
                     >
@@ -418,12 +426,7 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
   <div className="ml-auto flex flex-col">
-    {usdValue && (
-      <div>
-        {usdValue.symbol}
-        {Number(usdValue.toDec().toString()).toFixed(2)}
-      </div>
-    )}
+    {usdValue && <div>{usdValue.toString()}</div>}
     <div className="body2 whitespace-nowrap text-osmoverse-300">
       {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
     </div>
@@ -432,13 +435,22 @@ const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
 
 const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   <div className="flex flex-col">
-    {currentPrice && <div>{currentPrice.toString()}</div>}
-    {priceChange24h && (
+    {currentPrice ? (
+      <div>
+        {currentPrice.symbol}
+        <SubscriptDecimal decimal={currentPrice.toDec()} />
+      </div>
+    ) : (
+      <div className="text-osmoverse-400">–</div>
+    )}
+    {priceChange24h ? (
       <PriceChange
-        className="justify-end"
+        className="justify-start"
         overrideTextClasses="body2"
         priceChange={priceChange24h}
       />
+    ) : (
+      <div className="h-5" />
     )}
   </div>
 );
@@ -496,7 +508,7 @@ export const AssetActionsCell: AssetCellComponent<{
         Boolean(counterparty.length) &&
         Boolean(transferMethods.length) && (
           <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
             onClick={(e) => {
               e.preventDefault();
 
@@ -507,7 +519,7 @@ export const AssetActionsCell: AssetCellComponent<{
               }
             }}
           >
-            <Icon className="m-auto" id="deposit" width={16} height={16} />
+            <Icon className="m-auto " id="deposit" width={16} height={16} />
           </button>
         )}
       {!needsActivation &&
@@ -515,7 +527,7 @@ export const AssetActionsCell: AssetCellComponent<{
         Boolean(counterparty.length) &&
         Boolean(transferMethods.length) && (
           <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
             onClick={(e) => {
               e.preventDefault();
 

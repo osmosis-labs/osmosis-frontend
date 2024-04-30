@@ -303,14 +303,17 @@
       "dweb": "去中心化網絡",
       "rwa": "現實世界的資產發行",
       "gaming": "賭博",
-      "topGainers": "漲幅居前者"
+      "topGainers": "漲幅居前者",
+      "more": "更多類別"
     },
     "seeAll": "看全部",
     "highlights": {
       "new": "新的",
       "topGainers": "漲幅居前者",
       "upcoming": "即將推出"
-    }
+    },
+    "balancesMovedTitle": "尋找您的餘額？",
+    "balancesMovedDescription": "前往作品集頁面，這是您餘額等的新家。"
   },
   "portfolio": {
     "buy": "買",
@@ -373,6 +376,7 @@
     "highSwapFee": "兌換費太高啦",
     "insufficientAmount": "幣額唔夠喎",
     "insufficientBal": "結餘唔夠喎",
+    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
@@ -729,7 +733,6 @@
       "hide": "隱藏",
       "show": "顯示"
     },
-    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
     "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "今天早些時候",
-    "yesterday": "昨天",
-    "january": "一月",
-    "february": "二月",
-    "march": "行進",
-    "april": "四月",
-    "may": "可能",
-    "june": "六月",
-    "july": "七月",
-    "august": "八月",
-    "september": "九月",
-    "october": "十月",
-    "november": "十一月",
-    "december": "十二月"
+    "yesterday": "昨天"
   },
   "backToTop": "回到頂部"
 }

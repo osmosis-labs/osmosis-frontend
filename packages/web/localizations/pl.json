@@ -303,14 +303,17 @@
       "dweb": "Zdecentralizowana sieć",
       "rwa": "Emisja aktywów w świecie rzeczywistym",
       "gaming": "Hazard",
-      "topGainers": "Najlepsi zdobywcy"
+      "topGainers": "Najlepsi zdobywcy",
+      "more": "Więcej kategorii"
     },
     "seeAll": "Widzieć wszystko",
     "highlights": {
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "balancesMovedTitle": "Szukasz salda?",
+    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
   },
   "portfolio": {
     "buy": "Kupić",
@@ -373,6 +376,7 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -729,7 +733,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
     "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
-    "yesterday": "Wczoraj",
-    "january": "Styczeń",
-    "february": "Luty",
-    "march": "Marsz",
-    "april": "Kwiecień",
-    "may": "Móc",
-    "june": "Czerwiec",
-    "july": "Lipiec",
-    "august": "Sierpień",
-    "september": "Wrzesień",
-    "october": "Październik",
-    "november": "Listopad",
-    "december": "Grudzień"
+    "yesterday": "Wczoraj"
   },
   "backToTop": "Powrót do góry"
 }

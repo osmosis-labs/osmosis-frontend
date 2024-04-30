@@ -8,8 +8,8 @@ export const transactionsRouter = createTRPCRouter({
     .input(
       z.object({
         address: z.string(),
-        page: z.number().optional(),
-        pageSize: z.number().optional(),
+        page: z.string().optional(),
+        pageSize: z.string().optional(),
       })
     )
     .query(async ({ input: { address, page, pageSize }, ctx }) => {

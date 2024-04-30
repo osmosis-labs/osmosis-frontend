@@ -20,7 +20,7 @@ import IconButton from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
@@ -48,8 +48,8 @@ const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () => import("~/components/chart/price-historical"),
   { ssr: false }
 );
 
@@ -740,7 +740,7 @@ const Chart: FunctionComponent<{
     chartConfig;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={
         fullRange
@@ -976,7 +976,7 @@ const PriceInputBox: FunctionComponent<{
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
   /** to allow decimals, display the raw string value while typing
-   otherwise, display the nearest tick rounded price. 
+   otherwise, display the nearest tick rounded price.
     All values have currency decimals adjusted for display. */
   const currentValue = isFocused
     ? addConcLiquidityConfig.rangeRaw[forPriceIndex]

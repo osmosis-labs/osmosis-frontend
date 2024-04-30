@@ -303,14 +303,17 @@
       "dweb": "Dezentrales Web",
       "rwa": "Ausgabe realer Vermögenswerte",
       "gaming": "Spiele",
-      "topGainers": "Top-Gewinner"
+      "topGainers": "Top-Gewinner",
+      "more": "Weitere Kategorien"
     },
     "seeAll": "Alles sehen",
     "highlights": {
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    }
+    },
+    "balancesMovedTitle": "Suchen Sie nach Ihren Guthaben?",
+    "balancesMovedDescription": "Gehen Sie zur Portfolio-Seite, dem neuen Zuhause für Ihre Guthaben und mehr."
   },
   "portfolio": {
     "buy": "Kaufen",
@@ -373,6 +376,7 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -729,7 +733,6 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
-    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
     "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Heute früh",
-    "yesterday": "Gestern",
-    "january": "Januar",
-    "february": "Februar",
-    "march": "Marsch",
-    "april": "April",
-    "may": "Mai",
-    "june": "Juni",
-    "july": "Juli",
-    "august": "August",
-    "september": "September",
-    "october": "Oktober",
-    "november": "November",
-    "december": "Dezember"
+    "yesterday": "Gestern"
   },
   "backToTop": "Zurück nach oben"
 }

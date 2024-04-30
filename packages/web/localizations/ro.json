@@ -303,14 +303,17 @@
       "dweb": "Web descentralizat",
       "rwa": "Emiterea de active din lumea reală",
       "gaming": "Jocuri",
-      "topGainers": "Câștigători de top"
+      "topGainers": "Câștigători de top",
+      "more": "Mai multe categorii"
     },
     "seeAll": "Vezi toate",
     "highlights": {
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "balancesMovedTitle": "Îți cauți soldurile?",
+    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
   },
   "portfolio": {
     "buy": "Cumpără",
@@ -373,6 +376,7 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
@@ -729,7 +733,6 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
-    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
     "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
-    "yesterday": "Ieri",
-    "january": "ianuarie",
-    "february": "februarie",
-    "march": "Martie",
-    "april": "Aprilie",
-    "may": "Mai",
-    "june": "iunie",
-    "july": "iulie",
-    "august": "August",
-    "september": "Septembrie",
-    "october": "octombrie",
-    "november": "noiembrie",
-    "december": "decembrie"
+    "yesterday": "Ieri"
   },
   "backToTop": "Inapoi sus"
 }

@@ -303,14 +303,17 @@
       "dweb": "Web descentralizada",
       "rwa": "Emissão de ativos do mundo real",
       "gaming": "Jogos",
-      "topGainers": "Principais ganhadores"
+      "topGainers": "Principais ganhadores",
+      "more": "Mais categorias"
     },
     "seeAll": "Ver tudo",
     "highlights": {
       "new": "Novo",
       "topGainers": "Principais ganhadores",
       "upcoming": "Por vir"
-    }
+    },
+    "balancesMovedTitle": "Procurando seus saldos?",
+    "balancesMovedDescription": "Acesse a página do Portfólio, a nova página para seus saldos e muito mais."
   },
   "portfolio": {
     "buy": "Comprar",
@@ -373,6 +376,7 @@
     "highSwapFee": "Taxa de troca está muito alta",
     "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para taxa",
     "insufficientLiquidity": "Liquidez Insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
@@ -729,7 +733,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Hoje mais cedo",
-    "yesterday": "Ontem",
-    "january": "Janeiro",
-    "february": "Fevereiro",
-    "march": "Marchar",
-    "april": "abril",
-    "may": "Poderia",
-    "june": "Junho",
-    "july": "Julho",
-    "august": "Agosto",
-    "september": "Setembro",
-    "october": "Outubro",
-    "november": "novembro",
-    "december": "dezembro"
+    "yesterday": "Ontem"
   },
   "backToTop": "De volta ao topo"
 }

@@ -303,14 +303,17 @@
       "dweb": "Merkezi Olmayan Web",
       "rwa": "Gerçek Dünya Varlık İhracı",
       "gaming": "Oyun",
-      "topGainers": "En çok kazananlar"
+      "topGainers": "En çok kazananlar",
+      "more": "Daha fazla kategori"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
+    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
   },
   "portfolio": {
     "buy": "Satın almak",
@@ -373,6 +376,7 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -729,7 +733,6 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
-    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
     "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
-    "yesterday": "Dün",
-    "january": "Ocak",
-    "february": "Şubat",
-    "march": "Mart",
-    "april": "Nisan",
-    "may": "Mayıs",
-    "june": "Haziran",
-    "july": "Temmuz",
-    "august": "Ağustos",
-    "september": "Eylül",
-    "october": "Ekim",
-    "november": "Kasım",
-    "december": "Aralık"
+    "yesterday": "Dün"
   },
   "backToTop": "Başa dönüş"
 }

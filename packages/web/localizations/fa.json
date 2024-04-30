@@ -303,14 +303,17 @@
       "dweb": "وب غیرمتمرکز",
       "rwa": "صدور دارایی دنیای واقعی",
       "gaming": "بازی",
-      "topGainers": "برترین برندگان"
+      "topGainers": "برترین برندگان",
+      "more": "دسته های بیشتر"
     },
     "seeAll": "همه را ببین",
     "highlights": {
       "new": "جدید",
       "topGainers": "برترین برندگان",
       "upcoming": "آینده"
-    }
+    },
+    "balancesMovedTitle": "به دنبال تعادل خود هستید؟",
+    "balancesMovedDescription": "به صفحه نمونه کارها بروید، خانه جدید موجودی های خود و موارد دیگر."
   },
   "portfolio": {
     "buy": "خرید کنید",
@@ -373,6 +376,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -729,7 +733,6 @@
       "hide": "مخفی",
       "show": "نماید"
     },
-    "maxButtonError": "نمی توان حداکثر مقدار را محاسبه کرد. لطفاً اتصال شبکه خود را بررسی کنید یا صفحه را بازخوانی کنید.",
     "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "اوایل امروز",
-    "yesterday": "دیروز",
-    "january": "ژانویه",
-    "february": "فوریه",
-    "march": "مارس",
-    "april": "آوریل",
-    "may": "ممکن است",
-    "june": "ژوئن",
-    "july": "جولای",
-    "august": "مرداد",
-    "september": "سپتامبر",
-    "october": "اکتبر",
-    "november": "نوامبر",
-    "december": "دسامبر"
+    "yesterday": "دیروز"
   },
   "backToTop": "بازگشت به بالا"
 }

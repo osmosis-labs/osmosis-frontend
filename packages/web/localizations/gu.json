@@ -303,14 +303,17 @@
       "dweb": "વિકેન્દ્રિત વેબ",
       "rwa": "રિયલ વર્લ્ડ એસેટ ઇશ્યુ",
       "gaming": "ગેમિંગ",
-      "topGainers": "ટોચના લાભાર્થીઓ"
+      "topGainers": "ટોચના લાભાર્થીઓ",
+      "more": "વધુ શ્રેણીઓ"
     },
     "seeAll": "બધા જુઓ",
     "highlights": {
       "new": "નવી",
       "topGainers": "ટોચના લાભાર્થીઓ",
       "upcoming": "આગામી"
-    }
+    },
+    "balancesMovedTitle": "તમારા બેલેન્સ શોધી રહ્યાં છો?",
+    "balancesMovedDescription": "પોર્ટફોલિયો પૃષ્ઠ પર જાઓ, તમારા બેલેન્સ અને વધુ માટે નવું ઘર."
   },
   "portfolio": {
     "buy": "ખરીદો",
@@ -373,6 +376,7 @@
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
     "insufficientAmount": "અપૂરતી રકમ",
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
+    "insufficientBalForFee": "ફી માટે અપર્યાપ્ત બેલેન્સ",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
     "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",
@@ -729,7 +733,6 @@
       "hide": "છુપાવો",
       "show": "બતાવો"
     },
-    "maxButtonError": "મહત્તમ રકમની ગણતરી કરવામાં અસમર્થ. કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અથવા પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો.",
     "maxButtonErrorNoBalance": "મહત્તમ રકમની ગણતરી કરવા માટે પર્યાપ્ત બેલેન્સ નથી.",
     "available": "ઉપલબ્ધ છે",
     "button": "સ્વેપ",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "આજેવહેલા",
-    "yesterday": "ગઇકાલે",
-    "january": "જાન્યુઆરી",
-    "february": "ફેબ્રુઆરી",
-    "march": "કુચ",
-    "april": "એપ્રિલ",
-    "may": "મે",
-    "june": "જૂન",
-    "july": "જુલાઈ",
-    "august": "ઓગસ્ટ",
-    "september": "સપ્ટેમ્બર",
-    "october": "ઓક્ટોબર",
-    "november": "નવેમ્બર",
-    "december": "ડિસેમ્બર"
+    "yesterday": "ગઇકાલે"
   },
   "backToTop": "ટોચ પર પાછા"
 }

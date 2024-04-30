@@ -303,14 +303,17 @@
       "dweb": "분산형 웹",
       "rwa": "실물자산 발행",
       "gaming": "노름",
-      "topGainers": "최고 상승자"
+      "topGainers": "최고 상승자",
+      "more": "카테고리 더보기"
     },
     "seeAll": "모두 보기",
     "highlights": {
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    }
+    },
+    "balancesMovedTitle": "잔액을 찾고 계십니까?",
+    "balancesMovedDescription": "귀하의 저울 등을 위한 새로운 홈인 포트폴리오 페이지로 이동하십시오."
   },
   "portfolio": {
     "buy": "구입하다",
@@ -373,6 +376,7 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
+    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
@@ -729,7 +733,6 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
-    "maxButtonError": "최대 금액을 계산할 수 없습니다. 네트워크 연결을 확인하거나 페이지를 새로 고쳐보세요.",
     "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
     "available": "거래 가능수량",
     "button": "거래",
@@ -988,19 +991,7 @@
   },
   "date": {
     "earlierToday": "오늘 일찍",
-    "yesterday": "어제",
-    "january": "1월",
-    "february": "2월",
-    "march": "3월",
-    "april": "4월",
-    "may": "5월",
-    "june": "6월",
-    "july": "칠월",
-    "august": "팔월",
-    "september": "구월",
-    "october": "십월",
-    "november": "십일월",
-    "december": "12월"
+    "yesterday": "어제"
   },
   "backToTop": "맨 위로"
 }
