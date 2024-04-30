@@ -71,10 +71,13 @@ const YourBalance = observer(
       account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
     );
 
-    const { data } = api.edge.assets.getUserMarketAsset.useQuery({
-      findMinDenomOrSymbol: denom,
-      userOsmoAddress: account?.address,
-    });
+    const { data } = api.edge.assets.getUserMarketAsset.useQuery(
+      {
+        findMinDenomOrSymbol: denom,
+        userOsmoAddress: account?.address,
+      },
+      { enabled: Boolean(account?.address) }
+    );
 
     const details = useMemo(() => {
       return tokenDetailsByLanguage
@@ -263,7 +266,7 @@ const YourBalance = observer(
                   }
                   image={
                     <Image
-                      src={"/images/staking-apr-full.svg"}
+                      src={"/images/coin-ring.svg"}
                       alt={`Stake image`}
                       className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
                       width={224}

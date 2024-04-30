@@ -5,12 +5,14 @@ import {
   type ChangeEvent,
   type DOMAttributes,
   forwardRef,
+  FunctionComponent,
   useCallback,
   useMemo,
 } from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
+import { useTranslation } from "~/hooks";
 
 const searchBoxClasses = cva(
   "flex flex-nowrap items-center justify-between gap-2 bg-osmoverse-850 relative transition-colors [&_input]:placeholder:font-medium",
@@ -133,3 +135,24 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     );
   }
 );
+
+export const NoSearchResultsSplash: FunctionComponent<
+  { query: string } & CustomClasses
+> = ({ query, className }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={classNames(
+        "flex flex-col items-center gap-6 text-center",
+        className
+      )}
+    >
+      <Icon className="text-osmoverse-700" id="search" height={48} width={48} />
+      <div className="flex flex-col gap-2">
+        <h6>{t("search.noResultsFor", { query })}</h6>
+        <p className="body1 text-osmoverse-300">{t("search.adjust")}</p>
+      </div>
+    </div>
+  );
+};

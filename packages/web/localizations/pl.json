@@ -209,9 +209,10 @@
       "activate": "Aktywuj",
       "marketCap": "Kapitalizacja rynkowa",
       "volume24h": "Tom",
-      "priceChange24h": "Zmiana 24h",
       "price": "Cena",
-      "name": "Nazwa"
+      "balance": "Saldo",
+      "lastWeek": "Ostatnie 7 dni",
+      "asset": "Zaleta"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -285,11 +286,6 @@
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
-    "getStarted": {
-      "title": "Zacznij od {osmosis}",
-      "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
-      "addFunds": "Dodaj środki, aby rozpocząć"
-    },
     "categories": {
       "new": "Najnowsza",
       "defi": "DeFi",
@@ -307,22 +303,30 @@
       "dweb": "Zdecentralizowana sieć",
       "rwa": "Emisja aktywów w świecie rzeczywistym",
       "gaming": "Hazard",
-      "topGainers": "Najlepsi zdobywcy"
+      "topGainers": "Najlepsi zdobywcy",
+      "more": "Więcej kategorii"
     },
     "seeAll": "Widzieć wszystko",
     "highlights": {
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "balancesMovedTitle": "Szukasz salda?",
+    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
   },
   "portfolio": {
-    "trade": "Handel",
+    "buy": "Kupić",
     "yourAssets": "Twoje aktywa",
     "yourPositions": "Twoje pozycje",
     "recentTransfers": "Ostatnie transfery",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
-    "yourLiquidityPools": "Twoje pule płynności"
+    "yourLiquidityPools": "Twoje pule płynności",
+    "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
+    "noAssets": "Nie masz salda na {osmosis}",
+    "getStarted": "Aby rozpocząć, zdeponuj środki",
+    "noPositions": "Nie masz żadnych stanowisk",
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -600,7 +605,8 @@
     "balance": "Balansować",
     "modalTitle": "Profil",
     "viewAllAssets": "Ver todos os recursos",
-    "wallet": "Portfel"
+    "wallet": "Portfel",
+    "transactions": "Transakcje"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
@@ -617,6 +623,10 @@
     "titleLanguage": "Język",
     "titleHideBalances": "Maskuj salda zapewniające prywatność",
     "hideBalances": "Zamaskowane salda"
+  },
+  "search": {
+    "noResultsFor": "Brak wyników dla „ {query} „",
+    "adjust": "Spróbuj dostosować zapytanie"
   },
   "stake": {
     "available": "Dostępny",
@@ -723,7 +733,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
     "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
@@ -857,7 +866,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",
-    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami)."
-  }
+    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami).",
+    "noTransactions": "Żadnych transakcji",
+    "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
+    "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
+    "connectWallet": "Podłącz portfel",
+    "title": "Transakcje",
+    "swapping": "Zamiana",
+    "swapped": "Zamienione",
+    "swapFailed": "Zamiana nie powiodła się",
+    "taxReports": "Raporty podatkowe",
+    "explorer": "poszukiwacz",
+    "sold": "Sprzedany",
+    "bought": "Kupił",
+    "executionPrice": "Cena wykonania",
+    "totalFees": "Wszystkie koszty",
+    "transactionHash": "Hash transakcji",
+    "viewOnExplorer": "Zobacz w eksploratorze"
+  },
+  "date": {
+    "earlierToday": "Dzisiaj wcześniej",
+    "yesterday": "Wczoraj"
+  },
+  "backToTop": "Powrót do góry"
 }

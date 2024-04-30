@@ -209,9 +209,10 @@
       "activate": "啟用",
       "marketCap": "市值",
       "volume24h": "體積",
-      "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名"
+      "balance": "平衡",
+      "lastWeek": "過去 7 天",
+      "asset": "資產"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -285,11 +286,6 @@
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
       "reminder": "您始終可以在設定模式中停用此設定。"
     },
-    "getStarted": {
-      "title": "開始使用{osmosis}",
-      "description": "只需幾個步驟即可連接您的錢包並為其註入資金，即可開始交易。",
-      "addFunds": "增加資金即可開始"
-    },
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
@@ -307,22 +303,30 @@
       "dweb": "去中心化網絡",
       "rwa": "現實世界的資產發行",
       "gaming": "賭博",
-      "topGainers": "漲幅居前者"
+      "topGainers": "漲幅居前者",
+      "more": "更多類別"
     },
     "seeAll": "看全部",
     "highlights": {
       "new": "新的",
       "topGainers": "漲幅居前者",
       "upcoming": "即將推出"
-    }
+    },
+    "balancesMovedTitle": "尋找您的餘額？",
+    "balancesMovedDescription": "前往作品集頁面，這是您餘額等的新家。"
   },
   "portfolio": {
-    "trade": "交易",
+    "buy": "買",
     "yourAssets": "您的資產",
     "yourPositions": "您的職位",
     "recentTransfers": "最近轉會",
     "yourSuperchargedPositions": "您的超級職位",
-    "yourLiquidityPools": "您的流動資金池"
+    "yourLiquidityPools": "您的流動資金池",
+    "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。",
+    "noAssets": "您{osmosis}沒有餘額",
+    "getStarted": "存入資產即可開始",
+    "noPositions": "您沒有職位",
+    "unlockPotential": "釋放您的全部盈利潛力，並將您的資產與流動性池結合起來"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "兌換費太高",
     "insufficientAmount": "幣額不足",
     "insufficientBal": "結餘不足",
+    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
@@ -600,7 +605,8 @@
     "balance": "結餘",
     "modalTitle": "輪廓",
     "viewAllAssets": "查看所有資產",
-    "wallet": "錢包"
+    "wallet": "錢包",
+    "transactions": "交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
@@ -617,6 +623,10 @@
     "titleLanguage": "語言",
     "titleHideBalances": "屏蔽餘額以保護隱私",
     "hideBalances": "隱藏餘額"
+  },
+  "search": {
+    "noResultsFor": "“ {query} ”沒有結果",
+    "adjust": "嘗試調整您的搜尋查詢"
   },
   "stake": {
     "available": "可用的",
@@ -723,7 +733,6 @@
       "hide": "隱藏",
       "show": "顯示"
     },
-    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
     "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
@@ -857,7 +866,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "購買{coinDenom}",
     "staking": "質押",
     "liquidityInOSMOPools": "{number} {denom}池中的流動性"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "最近沒有轉帳",
-    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。"
-  }
+    "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。",
+    "noTransactions": "沒有交易",
+    "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
+    "connectToSee": "連接以查看您的交易記錄",
+    "connectWallet": "連接錢包",
+    "title": "交易",
+    "swapping": "交換",
+    "swapped": "交換了",
+    "swapFailed": "兌換失敗",
+    "taxReports": "稅務報告",
+    "explorer": "探險家",
+    "sold": "賣",
+    "bought": "買",
+    "executionPrice": "執行價格",
+    "totalFees": "總費用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在資源管理器上查看"
+  },
+  "date": {
+    "earlierToday": "今天早些時候",
+    "yesterday": "昨天"
+  },
+  "backToTop": "回到頂部"
 }

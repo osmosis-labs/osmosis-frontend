@@ -209,9 +209,10 @@
       "activate": "فعال کنید",
       "marketCap": "ارزش بازار",
       "volume24h": "جلد",
-      "priceChange24h": "تغییر 24 ساعته",
       "price": "قیمت",
-      "name": "نام"
+      "balance": "تعادل",
+      "lastWeek": "7 روز گذشته",
+      "asset": "دارایی"
     },
     "totalAssets": "کل دارایی ها",
     "totalBalance": "موجودی کل",
@@ -285,11 +286,6 @@
       "description": "یک توکن تایید نشده است. آیا می خواهید آن را فعال کنید؟ حتما قبل از معامله به طور کامل تحقیق کنید.",
       "reminder": "همیشه می توانید این تنظیم را در حالت تنظیمات غیرفعال کنید."
     },
-    "getStarted": {
-      "title": "با {osmosis} شروع کنید",
-      "description": "برای شروع تجارت فقط در چند مرحله، کیف پول خود را وصل کنید و سرمایه گذاری کنید.",
-      "addFunds": "برای شروع کار پول اضافه کنید"
-    },
     "categories": {
       "new": "جدیدترین",
       "defi": "دیفای",
@@ -307,22 +303,30 @@
       "dweb": "وب غیرمتمرکز",
       "rwa": "صدور دارایی دنیای واقعی",
       "gaming": "بازی",
-      "topGainers": "برترین برندگان"
+      "topGainers": "برترین برندگان",
+      "more": "دسته های بیشتر"
     },
     "seeAll": "همه را ببین",
     "highlights": {
       "new": "جدید",
       "topGainers": "برترین برندگان",
       "upcoming": "آینده"
-    }
+    },
+    "balancesMovedTitle": "به دنبال تعادل خود هستید؟",
+    "balancesMovedDescription": "به صفحه نمونه کارها بروید، خانه جدید موجودی های خود و موارد دیگر."
   },
   "portfolio": {
-    "trade": "تجارت",
+    "buy": "خرید کنید",
     "yourAssets": "دارایی های شما",
     "yourPositions": "موقعیت های شما",
     "recentTransfers": "نقل و انتقالات اخیر",
     "yourSuperchargedPositions": "موقعیت های سوپرشارژ شما",
-    "yourLiquidityPools": "استخرهای نقدینگی شما"
+    "yourLiquidityPools": "استخرهای نقدینگی شما",
+    "connectWallet": "کیف پول خود را وصل کنید تا ردیابی موجودی ها و موقعیت های خود را در اسموز شروع کنید.",
+    "noAssets": "هیچ موجودی در {osmosis} ندارید",
+    "getStarted": "برای شروع، دارایی ها را سپرده گذاری کنید",
+    "noPositions": "شما هیچ مقامی ندارید",
+    "unlockPotential": "پتانسیل درآمد کامل خود را باز کنید و دارایی های خود را با استخرهای نقدینگی کار کنید"
   },
   "buyTokens": "خرید توکن",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -600,7 +605,8 @@
     "balance": "موجودی",
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
-    "wallet": "کیف پول"
+    "wallet": "کیف پول",
+    "transactions": "معاملات"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
@@ -617,6 +623,10 @@
     "titleLanguage": "زبان",
     "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
     "hideBalances": "تعادل های ماسک شده"
+  },
+  "search": {
+    "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
   },
   "stake": {
     "available": "دسترس",
@@ -723,7 +733,6 @@
       "hide": "مخفی",
       "show": "نماید"
     },
-    "maxButtonError": "نمی توان حداکثر مقدار را محاسبه کرد. لطفاً اتصال شبکه خود را بررسی کنید یا صفحه را بازخوانی کنید.",
     "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
@@ -857,7 +866,6 @@
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "خرید {coinDenom}",
     "staking": "شرط بندی",
     "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "بدون نقل و انتقالات اخیر",
-    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند."
-  }
+    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند.",
+    "noTransactions": "بدون معامله",
+    "pastShownHere": "معاملات گذشته شما در Osmosis در اینجا ظاهر می شود.",
+    "connectToSee": "برای مشاهده تاریخچه تراکنش خود وصل شوید",
+    "connectWallet": "کیف پول را وصل کنید",
+    "title": "معاملات",
+    "swapping": "مبادله",
+    "swapped": "تعویض شد",
+    "swapFailed": "تعویض انجام نشد",
+    "taxReports": "گزارش های مالیاتی",
+    "explorer": "کاوشگر",
+    "sold": "فروخته شد",
+    "bought": "خرید",
+    "executionPrice": "قیمت اجرا",
+    "totalFees": "مجموع هزینه ها",
+    "transactionHash": "هش تراکنش",
+    "viewOnExplorer": "مشاهده در اکسپلورر"
+  },
+  "date": {
+    "earlierToday": "اوایل امروز",
+    "yesterday": "دیروز"
+  },
+  "backToTop": "بازگشت به بالا"
 }

@@ -209,9 +209,10 @@
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
       "volume24h": "Volum",
-      "priceChange24h": "schimbare 24h",
       "price": "Preț",
-      "name": "Nume"
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -285,11 +286,6 @@
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
-    "getStarted": {
-      "title": "Începeți cu {osmosis}",
-      "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
-      "addFunds": "Adăugați fonduri pentru a începe"
-    },
     "categories": {
       "new": "Cel mai nou",
       "defi": "DeFi",
@@ -307,22 +303,30 @@
       "dweb": "Web descentralizat",
       "rwa": "Emiterea de active din lumea reală",
       "gaming": "Jocuri",
-      "topGainers": "Câștigători de top"
+      "topGainers": "Câștigători de top",
+      "more": "Mai multe categorii"
     },
     "seeAll": "Vezi toate",
     "highlights": {
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "balancesMovedTitle": "Îți cauți soldurile?",
+    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
   },
   "portfolio": {
-    "trade": "Comerț",
+    "buy": "Cumpără",
     "yourAssets": "Activele tale",
     "yourPositions": "Pozițiile tale",
     "recentTransfers": "Transferuri recente",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
-    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate",
+    "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis.",
+    "noAssets": "Nu aveți solduri pe {osmosis}",
+    "getStarted": "Depuneți active pentru a începe",
+    "noPositions": "Nu ai posturi",
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
@@ -600,7 +605,8 @@
     "balance": "Balanta",
     "modalTitle": "Profil",
     "viewAllAssets": "Vedeți toate activele",
-    "wallet": "Portofel"
+    "wallet": "Portofel",
+    "transactions": "Tranzacții"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
@@ -617,6 +623,10 @@
     "titleLanguage": "Limba",
     "titleHideBalances": "Balanțele de mască pentru confidențialitate",
     "hideBalances": "Balanțe Mascate"
+  },
+  "search": {
+    "noResultsFor": "Niciun rezultat pentru \" {query} \"",
+    "adjust": "Încercați să ajustați interogarea de căutare"
   },
   "stake": {
     "available": "Disponibil",
@@ -723,7 +733,6 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
-    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
     "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
@@ -857,7 +866,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",
-    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici."
-  }
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici.",
+    "noTransactions": "Fără tranzacții",
+    "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
+    "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
+    "connectWallet": "Conectați portofelul",
+    "title": "Tranzacții",
+    "swapping": "Schimbarea",
+    "swapped": "Schimbat",
+    "swapFailed": "Schimbarea a eșuat",
+    "taxReports": "Rapoarte fiscale",
+    "explorer": "Explorator",
+    "sold": "Vândut",
+    "bought": "Cumparat",
+    "executionPrice": "Pretul de executie",
+    "totalFees": "Taxe totale",
+    "transactionHash": "Hash de tranzacție",
+    "viewOnExplorer": "Vizualizare pe explorer"
+  },
+  "date": {
+    "earlierToday": "Mai devreme astazi",
+    "yesterday": "Ieri"
+  },
+  "backToTop": "Inapoi sus"
 }

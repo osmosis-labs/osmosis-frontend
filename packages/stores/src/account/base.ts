@@ -1019,6 +1019,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param messages - An array of message objects to be encoded and included in the transaction.
    * @param fee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
    * @param memo - A string used as a memo or note with the transaction.
+   * @param signOptions - Optional options for customizing the sign process.
+   * @param excludedFeeMinimalDenoms - An array of minimal denoms to exclude from the fee calculation.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -1043,12 +1045,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     initialFee = { amount: [] },
     memo = "",
     signOptions = {},
+    excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     initialFee?: Optional<TxFee, "gas">;
     memo?: string;
     signOptions?: SignOptions;
+    excludedFeeMinimalDenoms?: string[];
   }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
@@ -1123,6 +1127,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
               gasLimit,
               chainId: wallet.chainId,
               address: wallet.address,
+              excludedFeeMinimalDenoms,
             }),
           ],
         };
@@ -1171,6 +1176,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param {string} params.gasLimit - The gas limit for the transaction.
    * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
    * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
+   * @param {string[]} [params.excludedFeeMinimalDenoms=[]] - An array of fee tokens to exclude from the fee calculation.
    * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
    *
    * @example
@@ -1185,10 +1191,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     gasLimit,
     chainId,
     address,
+    excludedFeeMinimalDenoms: excludedFeeTokens = [],
   }: {
     gasLimit: string;
     chainId: string;
     address: string | undefined;
+    excludedFeeMinimalDenoms?: string[];
   }) {
     const chain = getChain({ chainList: this.chains, chainId });
 
@@ -1250,11 +1258,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain supports the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise find another fee token to use.
      */
-    if (chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+    if (
+      chainHasOsmosisFeeModule &&
+      (isUserBalanceInsufficientForBaseChainFee ||
+        excludedFeeTokens.includes(fee.denom))
+    ) {
       const { feeTokens } = await this.queryFeeTokens({ chainId });
 
-      const feeTokenUserBalances = balances.filter((balance) =>
-        feeTokens.includes(balance.denom)
+      const feeTokenUserBalances = balances.filter(
+        (balance) =>
+          feeTokens.includes(balance.denom) &&
+          !excludedFeeTokens.includes(balance.denom)
       );
 
       if (!feeTokenUserBalances.length) {
@@ -1302,6 +1316,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       fee = alternateFee;
+    }
+
+    if (!fee) {
+      throw new Error("Fee not found");
     }
 
     return fee;

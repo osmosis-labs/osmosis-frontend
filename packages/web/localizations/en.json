@@ -209,9 +209,10 @@
       "activate": "Activate",
       "marketCap": "Market cap",
       "volume24h": "Volume",
-      "priceChange24h": "24h change",
       "price": "Price",
-      "name": "Name"
+      "balance": "Balance",
+      "lastWeek": "Last 7 days",
+      "asset": "Asset"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -285,11 +286,6 @@
       "description": "is an unverified token. Do you wish to activate it? Be sure to research thoroughly before trading.",
       "reminder": "You can always deactivate this setting in the settings modal."
     },
-    "getStarted": {
-      "title": "Get started with {osmosis}",
-      "description": "Connect and fund your wallet to start trading in just a few steps.",
-      "addFunds": "Add funds to get started"
-    },
     "categories": {
       "new": "Newest",
       "defi": "DeFi",
@@ -307,22 +303,30 @@
       "dweb": "Decentralized Web",
       "rwa": "Real World Asset Issuance",
       "gaming": "Gaming",
-      "topGainers": "Top gainers"
+      "topGainers": "Top gainers",
+      "more": "More categories"
     },
     "seeAll": "See all",
     "highlights": {
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    }
+    },
+    "balancesMovedTitle": "Looking for your balances?",
+    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
   },
   "portfolio": {
-    "trade": "Trade",
+    "buy": "Buy",
     "yourAssets": "Your assets",
     "yourPositions": "Your positions",
     "recentTransfers": "Recent transfers",
     "yourSuperchargedPositions": "Your Supercharged positions",
-    "yourLiquidityPools": "Your liquidity pools"
+    "yourLiquidityPools": "Your liquidity pools",
+    "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
+    "noAssets": "You have no balances on {osmosis}",
+    "getStarted": "Deposit assets to get started",
+    "noPositions": "You have no positions",
+    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "Swap fee too high",
     "insufficientAmount": "Insufficient amount",
     "insufficientBal": "Insufficient balance",
+    "insufficientBalForFee": "Insufficient balance for fee",
     "insufficientLiquidity": "Insufficient liquidity",
     "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
@@ -600,7 +605,8 @@
     "balance": "Balance",
     "modalTitle": "Profile",
     "viewAllAssets": "View all assets",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "transactions": "Transactions"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
@@ -617,6 +623,10 @@
     "titleLanguage": "Language",
     "titleHideBalances": "Mask balances for privacy",
     "hideBalances": "Masked Balances"
+  },
+  "search": {
+    "noResultsFor": "No results for \"{query}\"",
+    "adjust": "Try adjusting your search query"
   },
   "stake": {
     "available": "Available",
@@ -723,7 +733,6 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
     "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
@@ -857,7 +866,6 @@
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
-    "noData": "N.D.",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",
     "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "No recent transfers",
-    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here."
-  }
+    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here.",
+    "noTransactions": "No transactions",
+    "pastShownHere": "Your past trades on Osmosis will appear here.",
+    "connectToSee": "Connect to see your transaction history",
+    "connectWallet": "Connect wallet",
+    "title": "Transactions",
+    "swapping": "Swapping",
+    "swapped": "Swapped",
+    "swapFailed": "Swap failed",
+    "taxReports": "Tax Reports",
+    "explorer": "Explorer",
+    "sold": "Sold",
+    "bought": "Bought",
+    "executionPrice": "Execution Price",
+    "totalFees": "Total Fees",
+    "transactionHash": "Transaction Hash",
+    "viewOnExplorer": "View on explorer"
+  },
+  "date": {
+    "earlierToday": "Earlier today",
+    "yesterday": "Yesterday"
+  },
+  "backToTop": "Back to top"
 }

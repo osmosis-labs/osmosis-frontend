@@ -209,9 +209,10 @@
       "activate": "aktivieren Sie",
       "marketCap": "Marktkapitalisierung",
       "volume24h": "Volumen",
-      "priceChange24h": "24h Wechsel",
       "price": "Preis",
-      "name": "Name"
+      "balance": "Gleichgewicht",
+      "lastWeek": "Letzten 7 Tage",
+      "asset": "Vermögenswert"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -285,11 +286,6 @@
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     },
-    "getStarted": {
-      "title": "Beginnen Sie mit {osmosis}",
-      "description": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
-      "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
-    },
     "categories": {
       "new": "Neueste",
       "defi": "DeFi",
@@ -307,22 +303,30 @@
       "dweb": "Dezentrales Web",
       "rwa": "Ausgabe realer Vermögenswerte",
       "gaming": "Spiele",
-      "topGainers": "Top-Gewinner"
+      "topGainers": "Top-Gewinner",
+      "more": "Weitere Kategorien"
     },
     "seeAll": "Alles sehen",
     "highlights": {
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    }
+    },
+    "balancesMovedTitle": "Suchen Sie nach Ihren Guthaben?",
+    "balancesMovedDescription": "Gehen Sie zur Portfolio-Seite, dem neuen Zuhause für Ihre Guthaben und mehr."
   },
   "portfolio": {
-    "trade": "Handel",
+    "buy": "Kaufen",
     "yourAssets": "Ihr Vermögen",
     "yourPositions": "Ihre Positionen",
     "recentTransfers": "Letzte Übertragungen",
     "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
-    "yourLiquidityPools": "Ihre Liquiditätspools"
+    "yourLiquidityPools": "Ihre Liquiditätspools",
+    "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen.",
+    "noAssets": "Sie haben keine Guthaben auf {osmosis}",
+    "getStarted": "Zahlen Sie Guthaben ein, um loszulegen",
+    "noPositions": "Sie haben keine Positionen",
+    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -600,7 +605,8 @@
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
-    "wallet": "Geldbörse"
+    "wallet": "Geldbörse",
+    "transactions": "Transaktionen"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",
@@ -617,6 +623,10 @@
     "titleLanguage": "Sprache",
     "titleHideBalances": "Maskenbilanzen für Privatsphäre",
     "hideBalances": "Maskierte Salden"
+  },
+  "search": {
+    "noResultsFor": "Keine Ergebnisse für \" {query} \"",
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
   },
   "stake": {
     "available": "Verfügbar",
@@ -723,7 +733,6 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
-    "maxButtonError": "Der Höchstbetrag konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Netzwerkverbindung oder versuchen Sie, die Seite zu aktualisieren.",
     "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
@@ -857,7 +866,6 @@
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kaufen Sie {coinDenom}",
     "staking": "Abstecken",
     "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",
-    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt."
-  }
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt.",
+    "noTransactions": "Keine Transaktionen",
+    "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
+    "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
+    "connectWallet": "Geldbörse verbinden",
+    "title": "Transaktionen",
+    "swapping": "Austauschen",
+    "swapped": "Ausgetauscht",
+    "swapFailed": "Austausch fehlgeschlagen",
+    "taxReports": "Steuerberichte",
+    "explorer": "Forscher",
+    "sold": "Verkauft",
+    "bought": "Gekauft",
+    "executionPrice": "Ausführungspreis",
+    "totalFees": "Gesamtkosten",
+    "transactionHash": "Transaktions-Hash",
+    "viewOnExplorer": "Im Explorer anzeigen"
+  },
+  "date": {
+    "earlierToday": "Heute früh",
+    "yesterday": "Gestern"
+  },
+  "backToTop": "Zurück nach oben"
 }

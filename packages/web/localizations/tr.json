@@ -209,9 +209,10 @@
       "activate": "Etkinleştir",
       "marketCap": "Piyasa değeri",
       "volume24h": "Hacim",
-      "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim"
+      "balance": "Denge",
+      "lastWeek": "Son 7 gün",
+      "asset": "Varlık"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -285,11 +286,6 @@
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
       "reminder": "Bu ayarı her zaman ayarlar modundan devre dışı bırakabilirsiniz."
     },
-    "getStarted": {
-      "title": "{osmosis} ile başlayın",
-      "description": "Sadece birkaç adımda ticarete başlamak için cüzdanınızı bağlayın ve fonlayın.",
-      "addFunds": "Başlamak için para ekleyin"
-    },
     "categories": {
       "new": "En yeni",
       "defi": "DeFi",
@@ -307,22 +303,30 @@
       "dweb": "Merkezi Olmayan Web",
       "rwa": "Gerçek Dünya Varlık İhracı",
       "gaming": "Oyun",
-      "topGainers": "En çok kazananlar"
+      "topGainers": "En çok kazananlar",
+      "more": "Daha fazla kategori"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
+    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
   },
   "portfolio": {
-    "trade": "Ticaret",
+    "buy": "Satın almak",
     "yourAssets": "Varlıklarınız",
     "yourPositions": "Pozisyonlarınız",
     "recentTransfers": "Son transferler",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
-    "yourLiquidityPools": "Likidite havuzlarınız"
+    "yourLiquidityPools": "Likidite havuzlarınız",
+    "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
+    "noAssets": "{osmosis} üzerinde bakiyeniz yok",
+    "getStarted": "Başlamak için varlık yatırın",
+    "noPositions": "Hiç pozisyonunuz yok",
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -372,6 +376,7 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -600,7 +605,8 @@
     "balance": "denklemek",
     "modalTitle": "Profil",
     "viewAllAssets": "Tüm varlıkları görüntüle",
-    "wallet": "Cüzdan"
+    "wallet": "Cüzdan",
+    "transactions": "İşlemler"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
@@ -617,6 +623,10 @@
     "titleLanguage": "Dil",
     "titleHideBalances": "Gizlilik için maske dengeleri",
     "hideBalances": "Maskeli Bakiyeler"
+  },
+  "search": {
+    "noResultsFor": "\" {query} \" için sonuç yok",
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
   },
   "stake": {
     "available": "Mevcut",
@@ -723,7 +733,6 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
-    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
     "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",
@@ -857,7 +866,6 @@
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",
     "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"
@@ -963,6 +971,27 @@
   },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",
-    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir."
-  }
+    "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
+    "noTransactions": "İşlem yok",
+    "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
+    "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
+    "connectWallet": "Cüzdanı bağlayın",
+    "title": "İşlemler",
+    "swapping": "Değiştirme",
+    "swapped": "Değiştirildi",
+    "swapFailed": "Değiştirme başarısız oldu",
+    "taxReports": "Vergi Raporları",
+    "explorer": "Kaşif",
+    "sold": "Satılmış",
+    "bought": "Satın alınmış",
+    "executionPrice": "Uygulama Fiyatı",
+    "totalFees": "Toplam ücretler",
+    "transactionHash": "İşlem Karması",
+    "viewOnExplorer": "Explorer'da görüntüle"
+  },
+  "date": {
+    "earlierToday": "Bugün erken saatlerde",
+    "yesterday": "Dün"
+  },
+  "backToTop": "Başa dönüş"
 }

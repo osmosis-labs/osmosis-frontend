@@ -13,20 +13,20 @@ Sentry.init({
   environment:
     process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
 
-  // Only send 25% of error events to Sentry
-  sampleRate: 0.25,
+  // Only send 5% of error events to Sentry
+  sampleRate: 0.05,
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampler: (samplingContext) => {
     const validTrpcRoutes = getValidSwapTRPCRoutesForSentry();
 
-    // Log 10% of transactions of pools, root page and trpc methods related to swap
+    // Log 0.5% of transactions related to swap
     if (validTrpcRoutes.includes(samplingContext.transactionContext.name)) {
-      return 0.1;
+      return 0.005;
     }
 
-    // Log 1% of all other transactions
-    return 0.01;
+    // Log 0.01% of all other transactions
+    return 0.0001;
   },
 
   enabled:

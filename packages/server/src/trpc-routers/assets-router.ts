@@ -59,7 +59,14 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          // Optional poolId to filter assets by pool
+          poolId: z.string().optional(),
+        })
+      )
+    )
     .query(
       async ({
         input: {
@@ -70,6 +77,7 @@ export const assetsRouter = createTRPCRouter({
           onlyVerified,
           includePreview,
           categories,
+          poolId,
         },
         ctx,
       }) =>
@@ -83,6 +91,7 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: "desc",
               includePreview,
               categories,
+              poolId,
             }),
           cacheKey: JSON.stringify({
             search,
@@ -90,6 +99,7 @@ export const assetsRouter = createTRPCRouter({
             onlyVerified,
             includePreview,
             categories,
+            poolId,
           }),
           cursor,
           limit,
@@ -221,7 +231,7 @@ export const assetsRouter = createTRPCRouter({
             "currentPrice",
             "priceChange24h",
             "usdValue",
-          ] as const),
+          ] as const).optional(),
         })
       )
     )

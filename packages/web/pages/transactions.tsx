@@ -1,54 +1,78 @@
+import { FormattedTransaction } from "@osmosis-labs/server";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import LinkButton from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import {
   TransactionDetailsModal,
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+// @ts-ignore
 const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
-  PAGE: 1,
-  PAGE_SIZE: 100,
 };
 
-const Transactions: React.FC = () => {
+const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
+
   const router = useRouter();
+  const {
+    page = "0",
+    pageSize = "100",
+    address: addressFromQuery,
+  } = router.query;
+
+  // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
+  const pageString = Array.isArray(page) ? page[0] : page;
+  const pageSizeString = Array.isArray(pageSize) ? pageSize[0] : pageSize;
+  const addressFromQueryString = Array.isArray(addressFromQuery)
+    ? addressFromQuery[0]
+    : addressFromQuery;
 
   const { accountStore, chainStore } = useStore();
-
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
-  // @ts-ignore - ignore unused address temporarily
-  const address = account?.address || "";
+  // for easy testing, pass in an optional address query string to override connected address
+  // /transactions?page=0&address=osmoADDRESS
+  const address = addressFromQueryString || account?.address || "";
 
-  const { data: transactionData, isLoading } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        // address,
-        address: EXAMPLE.ADDRESS,
-        page: EXAMPLE.PAGE,
-        pageSize: EXAMPLE.PAGE_SIZE,
-      },
-      {
-        // enabled: !!address,
-      }
-    );
+  const isWalletConnected = Boolean(account?.isWalletConnected);
+
+  const { data, isLoading } = api.edge.transactions.getTransactions.useQuery(
+    {
+      // address: EXAMPLE.ADDRESS,
+      address,
+      page: pageString,
+      pageSize: pageSizeString,
+    },
+    {
+      enabled: !!address,
+    }
+  );
+
+  const { transactions, hasNextPage } = data ?? {
+    transactions: [],
+    hasNextPage: false,
+  };
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
 
   const { t } = useTranslation();
 
@@ -73,7 +97,9 @@ const Transactions: React.FC = () => {
     ctas: [],
   });
 
-  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<FormattedTransaction | null>(null);
+
   const [open, setOpen] = useState(false);
 
   const { isLargeDesktop } = useWindowSize();
@@ -84,18 +110,18 @@ const Transactions: React.FC = () => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="relative mx-16 flex gap-4">
-      {!isLoading && transactionData && (
-        // TODO - add loading state
-        <>
-          <TransactionContent
-            setSelectedTransaction={setSelectedTransaction}
-            transactions={transactionData}
-            setOpen={setOpen}
-            open={open}
-          />
-        </>
-      )}
+    <main className="mx-auto flex max-w-7xl gap-8 px-16 lg:px-8">
+      <TransactionContent
+        setSelectedTransaction={setSelectedTransaction}
+        transactions={transactions}
+        setOpen={setOpen}
+        open={open}
+        address={address}
+        isLoading={isLoading}
+        isWalletConnected={isWalletConnected}
+        page={pageString}
+        hasNextPage={hasNextPage}
+      />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
           onRequestClose={() => setOpen(false)}
@@ -109,9 +135,8 @@ const Transactions: React.FC = () => {
           transaction={selectedTransaction}
         />
       )}
-      <BackToTopButton />
     </main>
   );
-};
+});
 
 export default Transactions;

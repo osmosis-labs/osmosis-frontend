@@ -48,9 +48,9 @@ export const listOptionValueEquals: FilterFn<EarnStrategy> = (
   const value = row.getValue(colID) as string;
   const inputFilter = filterValue as ListOption<string>[];
 
-  // base case -> no value in the array -> filter open
+  // base case -> no value in the array -> filter closed
   if (inputFilter.length === 0) {
-    return true;
+    return false;
   }
 
   return inputFilter.findIndex((f) => f.value === value) !== -1;

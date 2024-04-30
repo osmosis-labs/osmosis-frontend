@@ -61,7 +61,7 @@ export const Table = <TCell extends BaseCell>({
   );
 
   return (
-    <table className={classNames("overflow-y-scroll", className)}>
+    <table className={classNames("table-auto overflow-y-scroll", className)}>
       <thead className={tHeadClassName}>
         <tr className={classNames("px-10 py-5", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => {

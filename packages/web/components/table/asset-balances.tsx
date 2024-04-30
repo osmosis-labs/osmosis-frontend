@@ -27,7 +27,10 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import { ExternalLinkModal } from "~/modals";
+import {
+  ActivateUnverifiedTokenConfirmation,
+  ExternalLinkModal,
+} from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -35,9 +38,11 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
-import { SearchBox } from "../input";
+import { PriceChange } from "../assets/price";
+import { SubscriptDecimal } from "../chart";
+import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
-import { HistoricalPriceCell } from "./cells/price";
+import { Button } from "../ui/button";
 import { SortHeader } from "./headers/sort";
 
 type AssetRow =
@@ -62,24 +67,45 @@ export const AssetBalancesTable: FunctionComponent<{
   const { t } = useTranslation();
 
   // State
+
+  // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
+  // sort
   const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
   }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const sort = useMemo(
+    () =>
+      // disable sorting while searching on client to remove sort UI while searching
+      !Boolean(searchQuery)
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
+    [searchQuery, sortKey, sortDirection]
+  );
 
+  // unverified assets
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
-  const showUnverifiedAssets =
-    showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
+  const showUnverifiedAssets = Boolean(
+    showUnverifiedAssetsSetting?.state.showUnverifiedAssets
+  );
+  const [verifyAsset, setVerifiedAsset] = useState<{
+    coinDenom: string;
+    coinImageUrl?: string;
+  } | null>(null);
 
   const { showPreviewAssets } = useShowPreviewAssets();
 
+  // external deposit withdraw transfer method
   const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
   // Query
@@ -96,15 +122,12 @@ export const AssetBalancesTable: FunctionComponent<{
       userOsmoAddress: account?.address,
       limit: 50,
       search: searchQuery,
-      onlyVerified: showUnverifiedAssets === false,
+      onlyVerified: !searchQuery && showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
-      sort: {
-        keyPath: sortKey,
-        direction: sortDirection,
-      },
+      sort,
     },
     {
-      enabled: !isLoadingWallet,
+      enabled: !isLoadingWallet && Boolean(account?.address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
@@ -121,6 +144,7 @@ export const AssetBalancesTable: FunctionComponent<{
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
+  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -128,50 +152,20 @@ export const AssetBalancesTable: FunctionComponent<{
     return [
       columnHelper.accessor((row) => row, {
         id: "asset",
-        header: "Name",
-        cell: (cell) => (
+        header: t("assets.table.asset"),
+        cell: ({ row: { original: asset } }) => (
           <AssetCell
-            coinName={cell.row.original.coinName}
-            coinImageUrl={cell.row.original.coinImageUrl}
-            isVerified={cell.row.original.isVerified}
+            {...asset}
+            warnUnverified={showUnverifiedAssets && !asset.isVerified}
           />
-        ),
-      }),
-      columnHelper.accessor((row) => row.currentPrice?.toString() ?? "-", {
-        id: "price",
-        header: () => (
-          <SortHeader
-            label="Price"
-            sortKey="currentPrice"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-      }),
-      columnHelper.accessor((row) => row, {
-        id: "historicalPrice",
-        header: () => (
-          <SortHeader
-            className="mx-auto"
-            label="24h change"
-            sortKey="priceChange24h"
-            currentSortKey={sortKey}
-            currentDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
-          />
-        ),
-        cell: (cell) => (
-          <HistoricalPriceCell {...cell.row.original} timeFrame="1D" />
         ),
       }),
       columnHelper.accessor((row) => row, {
         id: "balance",
         header: () => (
           <SortHeader
-            label="Balance"
+            className="mr-auto ml-0"
+            label={t("assets.table.balance")}
             sortKey="usdValue"
             currentSortKey={sortKey}
             currentDirection={sortDirection}
@@ -182,19 +176,44 @@ export const AssetBalancesTable: FunctionComponent<{
         cell: (cell) => <BalanceCell {...cell.row.original} />,
       }),
       columnHelper.accessor((row) => row, {
+        id: "price",
+        header: () => (
+          <SortHeader
+            className="mr-auto ml-0"
+            label={t("assets.table.price")}
+            sortKey="priceChange24h"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({ row: { original: asset } }) => <PriceCell {...asset} />,
+      }),
+      columnHelper.accessor((row) => row, {
         id: "assetActions",
         header: "",
-        cell: (cell) => (
+        cell: ({ row: { original: asset } }) => (
           <AssetActionsCell
-            {...cell.row.original}
+            {...asset}
             onDeposit={onDeposit}
             onWithdraw={onWithdraw}
             onExternalTransferUrl={setExternalUrl}
+            showUnverifiedAssetsSetting={showUnverifiedAssets}
+            confirmUnverifiedAsset={setVerifiedAsset}
           />
         ),
       }),
     ];
-  }, [sortKey, sortDirection, onDeposit, onWithdraw, setSortKey]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    onDeposit,
+    onWithdraw,
+    setSortKey,
+    t,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -263,8 +282,21 @@ export const AssetBalancesTable: FunctionComponent<{
         onRequestClose={() => setExternalUrl(null)}
         forceShowAgain
       />
+      <ActivateUnverifiedTokenConfirmation
+        {...verifyAsset}
+        isOpen={Boolean(verifyAsset)}
+        onConfirm={() => {
+          if (!verifyAsset) return;
+          showUnverifiedAssetsSetting?.setState({
+            showUnverifiedAssets: true,
+          });
+        }}
+        onRequestClose={() => {
+          setVerifiedAsset(null);
+        }}
+      />
       <SearchBox
-        className="my-4"
+        className="my-4 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -272,7 +304,6 @@ export const AssetBalancesTable: FunctionComponent<{
       />
       <table
         className={classNames(
-          "w-full",
           isPreviousData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
@@ -281,8 +312,20 @@ export const AssetBalancesTable: FunctionComponent<{
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
+              {headerGroup.headers.map((header, index, headers) => (
+                <th
+                  className={classNames(
+                    {
+                      // defines column width
+                      "w-56 lg:w-36":
+                        index !== 0 && index !== headers.length - 1,
+                      "w-36": index === headers.length - 1,
+                    },
+                    index === headers.length - 1 ? "text-right" : "text-left"
+                  )}
+                  key={header.id}
+                  colSpan={header.colSpan}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -311,6 +354,9 @@ export const AssetBalancesTable: FunctionComponent<{
             const pushUrl = `/assets/${
               rows[virtualRow.index].original.coinDenom
             }?ref=portfolio`;
+            const unverified =
+              !rows[virtualRow.index].original.isVerified &&
+              !showUnverifiedAssets;
 
             return (
               <tr
@@ -318,23 +364,33 @@ export const AssetBalancesTable: FunctionComponent<{
                 key={rows[virtualRow.index].id}
                 onClick={() => router.push(pushUrl)}
               >
-                {rows[virtualRow.index].getVisibleCells().map((cell) => (
-                  <td
-                    className="transition-colors duration-200 ease-in-out"
-                    key={cell.id}
-                  >
-                    <Link
-                      href={pushUrl}
-                      onClick={(e) => e.stopPropagation()}
-                      passHref
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                {rows[virtualRow.index]
+                  .getVisibleCells()
+                  .map((cell, index, cells) => (
+                    <td
+                      className={classNames(
+                        "transition-colors duration-200 ease-in-out",
+                        {
+                          // unverified assets: opaque except for last cell with asset actions
+                          "opacity-40":
+                            unverified && index !== cells.length - 1,
+                        },
+                        index === cells.length - 1 ? "text-right" : "text-left"
                       )}
-                    </Link>
-                  </td>
-                ))}
+                      key={cell.id}
+                    >
+                      <Link
+                        href={pushUrl}
+                        onClick={(e) => e.stopPropagation()}
+                        passHref
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Link>
+                    </td>
+                  ))}
               </tr>
             );
           })}
@@ -352,9 +408,17 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {noSearchResults && searchQuery?.query && (
+        <NoSearchResultsSplash
+          className="mx-auto w-fit py-8"
+          query={searchQuery.query}
+        />
+      )}
     </div>
   );
 });
+
+// table cells
 
 type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
@@ -363,9 +427,31 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
 const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
   <div className="ml-auto flex flex-col">
     {usdValue && <div>{usdValue.toString()}</div>}
-    <div className="caption whitespace-nowrap text-osmoverse-300">
-      {amount ? formatPretty(amount, { maxDecimals: 8 }) : "0"}
+    <div className="body2 whitespace-nowrap text-osmoverse-300">
+      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
     </div>
+  </div>
+);
+
+const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
+  <div className="flex flex-col">
+    {currentPrice ? (
+      <div>
+        {currentPrice.symbol}
+        <SubscriptDecimal decimal={currentPrice.toDec()} />
+      </div>
+    ) : (
+      <div className="text-osmoverse-400">–</div>
+    )}
+    {priceChange24h ? (
+      <PriceChange
+        className="justify-start"
+        overrideTextClasses="body2"
+        priceChange={priceChange24h}
+      />
+    ) : (
+      <div className="h-5" />
+    )}
   </div>
 );
 
@@ -373,7 +459,14 @@ export const AssetActionsCell: AssetCellComponent<{
   onDeposit: (coinMinimalDenom: string) => void;
   onWithdraw: (coinMinimalDenom: string) => void;
   onExternalTransferUrl: (url: string) => void;
+  showUnverifiedAssetsSetting?: boolean;
+  confirmUnverifiedAsset: (asset: {
+    coinDenom: string;
+    coinImageUrl?: string;
+  }) => void;
 }> = ({
+  coinDenom,
+  coinImageUrl,
   coinMinimalDenom,
   amount,
   transferMethods,
@@ -381,7 +474,12 @@ export const AssetActionsCell: AssetCellComponent<{
   onDeposit,
   onWithdraw,
   onExternalTransferUrl,
+  isVerified,
+  showUnverifiedAssetsSetting,
+  confirmUnverifiedAsset,
 }) => {
+  const { t } = useTranslation();
+
   // if it's the first transfer method it's considered the preferred method
   const externalTransfer =
     Boolean(transferMethods.length) &&
@@ -389,29 +487,47 @@ export const AssetActionsCell: AssetCellComponent<{
       ? transferMethods[0]
       : undefined;
 
+  const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
+
   return (
     <div className="flex items-center gap-2 text-wosmongton-200">
-      {Boolean(counterparty.length) && Boolean(transferMethods.length) && (
-        <button
-          className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+      {needsActivation && (
+        <Button
+          variant="ghost"
+          className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
             e.preventDefault();
 
-            if (externalTransfer && externalTransfer.depositUrl) {
-              onExternalTransferUrl(externalTransfer.depositUrl);
-            } else {
-              onDeposit(coinMinimalDenom);
-            }
+            confirmUnverifiedAsset({ coinDenom, coinImageUrl });
           }}
         >
-          <Icon className="m-auto" id="deposit" width={16} height={16} />
-        </button>
+          {t("assets.table.activate")}
+        </Button>
       )}
-      {amount?.toDec().isPositive() &&
+      {!needsActivation &&
         Boolean(counterparty.length) &&
         Boolean(transferMethods.length) && (
           <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1"
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
+            onClick={(e) => {
+              e.preventDefault();
+
+              if (externalTransfer && externalTransfer.depositUrl) {
+                onExternalTransferUrl(externalTransfer.depositUrl);
+              } else {
+                onDeposit(coinMinimalDenom);
+              }
+            }}
+          >
+            <Icon className="m-auto " id="deposit" width={16} height={16} />
+          </button>
+        )}
+      {!needsActivation &&
+        amount?.toDec().isPositive() &&
+        Boolean(counterparty.length) &&
+        Boolean(transferMethods.length) && (
+          <button
+            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
             onClick={(e) => {
               e.preventDefault();
 

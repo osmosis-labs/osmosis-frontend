@@ -22,10 +22,10 @@ import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import LinkButton from "~/components/buttons/link-button";
-import TokenPairHistoricalChart, {
+import HistoricalPriceChart, {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
@@ -237,7 +237,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">
                 <SwapTool
-                  isInModal
+                  fixedWidth
+                  useQueryParams={false}
+                  useOtherCurrencies={true}
                   initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   initialOutTokenDenom={denom}
                   page="Token Info Page"
@@ -474,6 +476,7 @@ const TokenChartHeader = observer(() => {
         classes={{
           priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
         }}
+        compactZeros
       />
     </header>
   );
@@ -533,7 +536,7 @@ const TokenChart = observer(() => {
         </div>
       ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <TokenPairHistoricalChart
+          <HistoricalPriceChart
             minimal
             showTooltip
             showGradient

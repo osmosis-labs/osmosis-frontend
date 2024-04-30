@@ -1,4 +1,4 @@
-import { sort } from "../sort";
+import { getValueAtPath, sort } from "../sort";
 
 describe("sort function", () => {
   it("should sort an array of objects in ascending order", () => {
@@ -116,5 +116,66 @@ describe("sort function", () => {
 
     const result = sort(list, "address", "asc");
     expect(result).toEqual(list);
+  });
+
+  it("should filter nil elements at the key path from sorting", () => {
+    const list = [
+      { name: "John", age: 30 },
+      { name: "Alice", age: 20 },
+      { name: "Bob", age: 25 },
+      // these two should get filtered
+      { name: "Bob", age: null },
+      { name: "Bob", age: undefined },
+      { name: "Bob", age: 0 },
+    ];
+    const result = sort(list, "age", "asc");
+    expect(result).toEqual([
+      // 0 is not nil, and should still be included with numeric values
+      { name: "Bob", age: 0 },
+      { name: "Alice", age: 20 },
+      { name: "Bob", age: 25 },
+      { name: "John", age: 30 },
+    ]);
+  });
+});
+
+describe("getValueAtPath", () => {
+  it("retrieves a top-level property value", () => {
+    const record = { name: "Alice", age: 30 };
+    const value = getValueAtPath(record, "age");
+    expect(value).toBe(30);
+  });
+
+  it("retrieves a nested property value", () => {
+    const record = {
+      person: { name: "Bob", details: { age: 25, city: "New York" } },
+    };
+    const value = getValueAtPath(record, "person.details.city");
+    expect(value).toBe("New York");
+  });
+
+  it("returns undefined for a non-existent top-level property", () => {
+    const record = { name: "Charlie" };
+    const value = getValueAtPath(record, "age");
+    expect(value).toBeUndefined();
+  });
+
+  it("returns undefined for a non-existent nested property", () => {
+    const record = { person: { name: "Diana" } };
+    const value = getValueAtPath(record, "person.details.age");
+    expect(value).toBeUndefined();
+  });
+
+  it("handles an empty key path", () => {
+    const record = { name: "Eve" };
+    // Assuming an empty key path should return undefined. Adjust based on intended functionality.
+    const value = getValueAtPath(record, "");
+    expect(value).toBeUndefined();
+  });
+
+  it("handles arrays within the structure", () => {
+    const record = { users: [{ name: "Frank" }, { name: "Grace" }] };
+    const value = getValueAtPath(record, "users.1.name");
+    expect(value).toBe("Grace");
   });
 });
