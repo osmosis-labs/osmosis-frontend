@@ -53,33 +53,33 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
     <div
       // update padding on mobile
       className={classNames(
-        "-mx-4 flex h-20 justify-between gap-4 rounded-2xl p-4",
+        "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:p-2 ",
         {
           "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
         }
       )}
       onClick={() => onClick?.()}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 md:gap-2">
         {status === "pending" ? (
           <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825 p-3 md:h-8 md:w-8 md:p-2">
             {status === "success" ? (
               effect === "withdraw" ? (
                 <Icon
                   className="rotate-180 transform"
                   id={effectIconId}
-                  width={24}
-                  height={24}
+                  width="100%"
+                  height="100%"
                 />
               ) : (
-                <Icon id={effectIconId} width={24} height={24} />
+                <Icon id={effectIconId} width="100%" height="100%" />
               )
             ) : (
               <Icon
-                width={24}
-                height={24}
+                width="100%"
+                height="100%"
                 id="alert-circle"
                 color={theme.colors.rust[400]}
               />
@@ -87,16 +87,24 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
           </div>
         )}
 
-        <div className="flex flex-col">
-          <p className="text-osmoverse-100">{title[status]}</p>
+        <div className="flex flex-col gap-1">
+          <p className="subtitle1 md:body2 text-osmoverse-100">
+            {title[status]}
+          </p>
           {tokenConversion && (
-            <div className="hidden flex-row items-center gap-1 whitespace-nowrap text-osmoverse-300 md:flex">
-              <p>
-                {formatPretty(tokenConversion.tokenOut.amount, {
+            <div className="hidden items-center gap-1 whitespace-nowrap text-osmoverse-300 md:block">
+              <span className="caption">
+                0.09464 solana.USDC.wh
+                {/* {formatPretty(tokenConversion.tokenOut.amount, {
                   maxDecimals: 6,
-                })}
-              </p>
-              <Icon id="arrow-right" width={12} height={12} />
+                })} */}
+              </span>
+              <Icon
+                id="arrow-right"
+                width={12}
+                height={12}
+                className="inline-block"
+              />
             </div>
           )}
         </div>
@@ -117,7 +125,7 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
   <>
-    <div className="flex w-60 items-center justify-end gap-4">
+    <div className="flex w-60 items-center justify-end gap-4 md:hidden">
       <FallbackImg
         alt={tokenIn.amount.denom}
         src={tokenIn.amount.currency.coinImageUrl}
@@ -146,10 +154,10 @@ const TokenConversion: FunctionComponent<
         id="arrow-right"
         width={24}
         height={24}
-        className="block text-osmoverse-600 md:block md:hidden"
+        className="block text-osmoverse-600 md:hidden"
       />
     </div>
-    <div className="flex w-60 items-center justify-end gap-4">
+    <div className="flex w-60 items-center justify-end gap-4 whitespace-nowrap">
       <FallbackImg
         alt={tokenOut.amount.denom}
         src={tokenOut.amount.currency.coinImageUrl}
@@ -158,10 +166,10 @@ const TokenConversion: FunctionComponent<
         width={32}
         className="block md:hidden"
       />
-      <div className="flex flex-col text-right text-osmoverse-400">
+      <div className="flex flex-col gap-1 text-right text-osmoverse-400">
         {tokenOut.value && (
           <div
-            className={classNames("text-subtitle1", {
+            className={classNames("text-subtitle1 md:text-body2", {
               "text-osmoverse-400": status === "pending",
               "text-bullish-400": effect === "swap" && status === "success",
               "text-osmoverse-100":
@@ -171,10 +179,10 @@ const TokenConversion: FunctionComponent<
             })}
           >
             + {tokenOut.value.symbol}
-            {Number(tokenOut.value.toDec().toString()).toFixed(2)}
+            {Number(tokenOut.value.toDec().toString()).toFixed(2)} asdf
           </div>
         )}
-        <div className="body2">
+        <div className="md:caption text-body2">
           {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
         </div>
       </div>
