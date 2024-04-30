@@ -35,7 +35,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        if: github.ref == 'refs/heads/chore/add-e2e-pipeline'
+        if: github.ref == 'refs/heads/stage'
         run: |
           cd packages/web && ls -ll e2e
           npx playwright test -g "Test Swap feature"
