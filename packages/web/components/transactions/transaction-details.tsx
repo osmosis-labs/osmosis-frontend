@@ -126,7 +126,8 @@ export const TransactionDetailsContent = ({
                 ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="text-body1 text-osmoverse-300">
-                {Number(tokenIn.token.toDec().toString()).toFixed(2)}
+                {/* // TODO - clean this up to match tokenConversion */}
+                {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
             </div>
           </div>
@@ -162,7 +163,8 @@ export const TransactionDetailsContent = ({
                 ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="text-body1 text-osmoverse-300">
-                {Number(tokenOut.token.toDec().toString()).toFixed(2)}
+                {/* // TODO - clean this up to match tokenConversion */}
+                {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
             </div>
           </div>
