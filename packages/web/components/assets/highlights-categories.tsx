@@ -106,7 +106,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
       coinDenom: asset.symbol,
       coinName: asset.assetName,
       coinImageUrl: asset.images[0].png ?? asset.images[0].svg,
-      href: asset.airdropInfoUrl,
+      href: asset.socials?.website,
       externalLink: true,
     },
     extraInfo: asset.estimatedLaunchDateUtc ? (
