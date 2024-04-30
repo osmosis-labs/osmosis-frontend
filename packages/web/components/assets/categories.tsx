@@ -176,7 +176,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               key={category}
               aria-label={category.replace("_", " ").replace("-", " ")}
               className={classNames(
-                "group flex shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150",
+                "group flex max-w-full shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150 md:gap-2",
                 "hover:border-osmoverse-200 hover:text-white-high",
                 "focus:border-wosmongton-400 focus:text-osmoverse-200",
                 "active:opacity-50",
@@ -196,14 +196,16 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 }
               }}
             >
-              <span>{t(`assets.categories.${category}`)}</span>
+              <span className="w-full overflow-x-hidden text-ellipsis whitespace-nowrap">
+                {t(`assets.categories.${category}`)}
+              </span>
               <OverlappingAssetImages
                 className="md:hidden"
                 imageUrls={sampleImages}
               />
               {isSelected && (
                 <Icon
-                  className="text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
+                  className="w-fit shrink-0 text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
                   id="x-circle"
                   height={16}
                   width={17}
