@@ -87,23 +87,20 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-1">
+        <div>
           <p className="subtitle1 md:body2 text-osmoverse-100">
             {title[status]}
           </p>
           {tokenConversion && (
-            <div className="hidden items-center gap-1 whitespace-nowrap text-osmoverse-300 md:block">
-              <span className="caption">
-                0.09464 solana.USDC.wh
-                {/* {formatPretty(tokenConversion.tokenOut.amount, {
-                  maxDecimals: 6,
-                })} */}
-              </span>
+            <div className="caption mt-1 hidden text-osmoverse-300 md:block">
+              {formatPretty(tokenConversion.tokenOut.amount, {
+                maxDecimals: 6,
+              })}
               <Icon
                 id="arrow-right"
                 width={12}
                 height={12}
-                className="inline-block"
+                className="ml-1 inline-block"
               />
             </div>
           )}
@@ -125,7 +122,7 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
   <>
-    <div className="flex w-60 items-center justify-end gap-4 md:hidden">
+    <div className="flex w-60 items-center justify-end gap-4 md:hidden md:w-auto">
       <FallbackImg
         alt={tokenIn.amount.denom}
         src={tokenIn.amount.currency.coinImageUrl}
@@ -157,7 +154,7 @@ const TokenConversion: FunctionComponent<
         className="block text-osmoverse-600 md:hidden"
       />
     </div>
-    <div className="flex w-60 items-center justify-end gap-4 whitespace-nowrap">
+    <div className="flex w-60 items-center justify-end gap-4 md:w-auto">
       <FallbackImg
         alt={tokenOut.amount.denom}
         src={tokenOut.amount.currency.coinImageUrl}
@@ -166,7 +163,7 @@ const TokenConversion: FunctionComponent<
         width={32}
         className="block md:hidden"
       />
-      <div className="flex flex-col gap-1 text-right text-osmoverse-400">
+      <div className="text-right text-osmoverse-400">
         {tokenOut.value && (
           <div
             className={classNames("text-subtitle1 md:text-body2", {
@@ -179,10 +176,10 @@ const TokenConversion: FunctionComponent<
             })}
           >
             + {tokenOut.value.symbol}
-            {Number(tokenOut.value.toDec().toString()).toFixed(2)} asdf
+            {Number(tokenOut.value.toDec().toString()).toFixed(2)}
           </div>
         )}
-        <div className="md:caption text-body2">
+        <div className="md:caption mt-1 text-body2">
           {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
         </div>
       </div>
