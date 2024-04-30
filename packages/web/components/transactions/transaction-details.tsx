@@ -73,11 +73,10 @@ export const TransactionDetailsContent = ({
 
   return (
     <div
-      className={classNames(
-        "flex w-[452px] flex-col overflow-y-auto",
-        !isModal &&
-          "sticky top-[4.5rem] h-[calc(100vh_-_4.5rem)] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4"
-      )}
+      className={classNames("flex w-full flex-col overflow-y-auto", {
+        "sticky top-[4.5rem] h-[calc(100vh_-_4.5rem)] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4":
+          !isModal,
+      })}
     >
       <div className="flex flex-col px-4 pb-8">
         {!isModal && (
@@ -261,7 +260,7 @@ export const TransactionDetailsModal: FunctionComponent<
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="w-[32.25rem]"
+      className="max-w-[32.25rem]" // 516px
     >
       <TransactionDetailsContent
         onRequestClose={onRequestClose}

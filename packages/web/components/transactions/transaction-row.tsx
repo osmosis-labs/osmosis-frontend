@@ -52,9 +52,12 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   return (
     <div
       // update padding on mobile
-      className={classNames("-mx-4 flex h-20 justify-between rounded-2xl p-4", {
-        "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
-      })}
+      className={classNames(
+        "-mx-4 flex h-20 justify-between gap-4 rounded-2xl p-4",
+        {
+          "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
+        }
+      )}
       onClick={() => onClick?.()}
     >
       <div className="flex items-center gap-4">
@@ -122,7 +125,7 @@ const TokenConversion: FunctionComponent<
       width={32}
       className="block md:hidden"
     />
-    <div className="block flex-col text-right md:flex md:hidden">
+    <div className="flex flex-col text-right md:hidden">
       {tokenIn.value && (
         <div
           className={classNames("text-subtitle1", {
