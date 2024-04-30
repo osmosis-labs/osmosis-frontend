@@ -29,7 +29,8 @@ export function createSortSchema<
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
  *  Filters elements at the given `keyPath` that are `null` or `undefined`.
  *  Includes a custom compare function for sorting any other types which will override
- *  default behavior including the sort direction. */
+ *  default behavior including the sort direction.
+ *  Default `direction` is `"desc"`. */
 export function sort<TItem extends Record<string, CommonCompareType | any>>(
   list: TItem[],
   keyPath: string,
