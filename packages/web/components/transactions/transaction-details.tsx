@@ -85,7 +85,7 @@ export const TransactionDetailsContent = ({
           !isModal,
       })}
     >
-      <div className="flex flex-col px-4 pb-8">
+      <div className="flex flex-col px-4 pb-8 md:p-0">
         {!isModal && (
           <div className="py-4">
             <IconButton
@@ -184,7 +184,8 @@ export const TransactionDetailsContent = ({
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
-            <div className="flex gap-3 whitespace-nowrap">
+            {/* // TODO - onClick={toggleConversion} whole container */}
+            <div className="flex items-center gap-3 text-right">
               <div className="text-body1 text-wosmongton-300">
                 1 {conversion.denominator.denom} = {conversionRate}{" "}
                 {conversion.numerator.denom}

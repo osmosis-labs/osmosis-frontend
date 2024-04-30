@@ -53,7 +53,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
     <div
       // update padding on mobile
       className={classNames(
-        "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:p-2 ",
+        "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
         {
           "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
         }
