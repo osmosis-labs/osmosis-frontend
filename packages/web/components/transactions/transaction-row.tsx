@@ -116,66 +116,70 @@ const TokenConversion: FunctionComponent<
     Transaction["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
-  <div className="flex items-center gap-4">
-    <FallbackImg
-      alt={tokenIn.amount.denom}
-      src={tokenIn.amount.currency.coinImageUrl}
-      fallbacksrc="/icons/question-mark.svg"
-      height={32}
-      width={32}
-      className="block md:hidden"
-    />
-    <div className="flex flex-col text-right md:hidden">
-      {tokenIn.value && (
-        <div
-          className={classNames("text-subtitle1", {
-            "text-osmoverse-400": status === "pending",
-            "text-osmoverse-100": status === "success",
-            "text-rust-400": status === "failed",
-          })}
-        >
-          - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
+  <>
+    <div className="min-w-60 flex w-60 items-center justify-end gap-4">
+      <FallbackImg
+        alt={tokenIn.amount.denom}
+        src={tokenIn.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+        className="block md:hidden"
+      />
+      <div className="flex flex-col text-right md:hidden">
+        {tokenIn.value && (
+          <div
+            className={classNames("text-subtitle1", {
+              "text-osmoverse-400": status === "pending",
+              "text-osmoverse-100": status === "success",
+              "text-rust-400": status === "failed",
+            })}
+          >
+            - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
+          </div>
+        )}
+        <div className="text-body2 text-osmoverse-400">
+          {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
         </div>
-      )}
-      <div className="text-body2 text-osmoverse-400">
-        {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
+      </div>
+      <Icon
+        id="arrow-right"
+        width={24}
+        height={24}
+        className="block text-osmoverse-600 md:block md:hidden"
+      />
+    </div>
+    <div className="min-w-60 flex w-60 items-center justify-end gap-4">
+      <FallbackImg
+        alt={tokenOut.amount.denom}
+        src={tokenOut.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+        className="block md:hidden"
+      />
+      <div className="flex flex-col text-right text-osmoverse-400">
+        {tokenOut.value && (
+          <div
+            className={classNames("text-subtitle1", {
+              "text-osmoverse-400": status === "pending",
+              "text-bullish-400": effect === "swap" && status === "success",
+              "text-osmoverse-100":
+                (effect === "deposit" || effect === "withdraw") &&
+                status === "success",
+              "text-rust-400": status === "failed",
+            })}
+          >
+            + {tokenOut.value.symbol}
+            {Number(tokenOut.value.toDec().toString()).toFixed(2)}
+          </div>
+        )}
+        <div className="body2">
+          {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
+        </div>
       </div>
     </div>
-    <Icon
-      id="arrow-right"
-      width={24}
-      height={24}
-      className="block text-osmoverse-600 md:block md:hidden"
-    />
-    <FallbackImg
-      alt={tokenOut.amount.denom}
-      src={tokenOut.amount.currency.coinImageUrl}
-      fallbacksrc="/icons/question-mark.svg"
-      height={32}
-      width={32}
-      className="block md:hidden"
-    />
-    <div className="flex flex-col text-right text-osmoverse-400">
-      {tokenOut.value && (
-        <div
-          className={classNames("text-subtitle1", {
-            "text-osmoverse-400": status === "pending",
-            "text-bullish-400": effect === "swap" && status === "success",
-            "text-osmoverse-100":
-              (effect === "deposit" || effect === "withdraw") &&
-              status === "success",
-            "text-rust-400": status === "failed",
-          })}
-        >
-          + {tokenOut.value.symbol}
-          {Number(tokenOut.value.toDec().toString()).toFixed(2)}
-        </div>
-      )}
-      <div className="body2">
-        {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
-      </div>
-    </div>
-  </div>
+  </>
 );
 
 /** UI for displaying a token being deposited or withdrawn from Osmosis. */
