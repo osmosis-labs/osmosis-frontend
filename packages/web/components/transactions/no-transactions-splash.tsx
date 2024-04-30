@@ -29,7 +29,7 @@ export const NoTransactionsSplash: FunctionComponent<{
   };
 
   return (
-    <div className="mx-auto my-6 flex flex-col gap-6 text-center">
+    <div className="mx-auto my-6 flex flex-col gap-6 px-4 text-center">
       <Image
         className="mx-auto"
         src="/images/ion-thumbs-up.svg"
