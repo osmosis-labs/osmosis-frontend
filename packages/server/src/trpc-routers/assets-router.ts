@@ -5,7 +5,6 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
-  getAssetListingDate,
   getAssetMarketActivity,
   getAssetPrice,
   getAssets,
@@ -415,27 +414,16 @@ export const assetsRouter = createTRPCRouter({
             captureErrorAndReturn(e, undefined)
           );
 
-          const listingDate = getAssetListingDate({
-            assetLists: ctx.assetLists,
-            coinMinimalDenom: asset.coinMinimalDenom,
-          });
-
-          if (listingDate) {
-            console.log("listingDate", asset.coinDenom, listingDate);
-          }
-
           return {
             ...asset,
-            listingDate,
             priceChange24h: marketAsset?.price24hChange,
           };
         })
       );
 
-      return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
-        "listingDate"
-      ).slice(0, topN);
+      return marketAssets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(0, topN);
     }),
   getTopGainerAssets: publicProcedure
     .input(
@@ -464,7 +452,8 @@ export const assetsRouter = createTRPCRouter({
 
       return sort(
         marketAssets.filter((asset) => asset.priceChange24h !== undefined),
-        "priceChange24h"
+        "priceChange24h",
+        "desc"
       ).slice(0, topN);
     }),
   getTopUpcomingAssets: publicProcedure

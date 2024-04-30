@@ -226,7 +226,7 @@ export const TransactionDetailsContent = ({
           <a
             rel="noopener noreferrer"
             target="_blank"
-            href={`https://www.mintscan.io/osmosis/txs/${transaction.hash}`}
+            href={`https://www.mintscan.io/cosmos/txs/${transaction.hash}`}
           >
             <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
           </a>
