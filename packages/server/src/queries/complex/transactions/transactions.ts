@@ -125,7 +125,7 @@ export async function getTransactions({
       });
 
       // if the length of the data is equal to the page size, there is a next page
-      const hasNextPage = data.length === parseInt(pageSize, 10);
+      const hasNextPage = data?.length === parseInt(pageSize, 10);
 
       // v1 only display swap transactions
       const filteredSwapTransactions = data?.filter((transaction) => {
