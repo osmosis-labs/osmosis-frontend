@@ -110,7 +110,7 @@ const Transactions: React.FC = observer(() => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="mx-auto flex max-w-7xl gap-8 px-16 lg:px-8 md:px-4">
+    <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
         transactions={transactions}
