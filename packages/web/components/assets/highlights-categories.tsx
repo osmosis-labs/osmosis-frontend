@@ -80,7 +80,6 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
-        disableLinking
       />
     </div>
   );
@@ -88,7 +87,10 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
 
 function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
   return {
-    asset,
+    asset: {
+      ...asset,
+      href: `/assets/${asset.coinDenom}`,
+    },
     extraInfo: asset.priceChange24h ? (
       <PriceChange
         priceChange={asset.priceChange24h}
@@ -104,6 +106,8 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
       coinDenom: asset.symbol,
       coinName: asset.assetName,
       coinImageUrl: asset.images[0].png ?? asset.images[0].svg,
+      href: asset.airdropInfoUrl,
+      externalLink: true,
     },
     extraInfo: asset.estimatedLaunchDateUtc ? (
       <div className="flex items-center gap-2">
@@ -130,14 +134,7 @@ export const AssetHighlights: FunctionComponent<
     isLoading?: boolean;
     disableLinking?: boolean;
   } & CustomClasses
-> = ({
-  title,
-  onClickSeeAll,
-  assets,
-  isLoading = false,
-  disableLinking = false,
-  className,
-}) => {
+> = ({ title, onClickSeeAll, assets, isLoading = false, className }) => {
   const { t } = useTranslation();
 
   return (
@@ -155,7 +152,7 @@ export const AssetHighlights: FunctionComponent<
           </button>
         )}
       </div>
-      <div className="flex flex-col">
+      <div className={classNames("flex flex-col", { "gap-1": isLoading })}>
         {isLoading ? (
           <>
             {new Array(3).fill(0).map((_, i) => (
@@ -169,7 +166,6 @@ export const AssetHighlights: FunctionComponent<
                 key={asset.coinDenom}
                 asset={asset}
                 extraInfo={extraInfo}
-                disableLinking={disableLinking}
               />
             ))}
           </>
@@ -184,13 +180,13 @@ const AssetHighlightRow: FunctionComponent<{
     coinDenom: string;
     coinName: string;
     coinImageUrl?: string;
+    href?: string;
+    externalLink?: boolean;
   };
   extraInfo: ReactNode;
-  disableLinking?: boolean;
 }> = ({
-  asset: { coinDenom, coinName, coinImageUrl },
+  asset: { coinDenom, coinName, coinImageUrl, href, externalLink },
   extraInfo,
-  disableLinking = false,
 }) => {
   const AssetContent = (
     <>
@@ -207,14 +203,15 @@ const AssetHighlightRow: FunctionComponent<{
     </>
   );
 
-  return disableLinking ? (
+  return !href ? (
     <div className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2">
       {AssetContent}
     </div>
   ) : (
     <Link
-      href={`/assets/${coinDenom}`}
+      href={href}
       passHref
+      target={externalLink ? "_blank" : "_self"}
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
     >
       {AssetContent}
