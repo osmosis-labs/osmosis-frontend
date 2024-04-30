@@ -196,7 +196,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 }
               }}
             >
-              <span className="w-full overflow-x-hidden text-ellipsis whitespace-nowrap">
+              <span className="overflow-x-hidden text-ellipsis whitespace-nowrap md:w-full">
                 {t(`assets.categories.${category}`)}
               </span>
               <OverlappingAssetImages
@@ -205,7 +205,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               />
               {isSelected && (
                 <Icon
-                  className="w-fit shrink-0 text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
+                  className="shrink-0 text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
                   id="x-circle"
                   height={16}
                   width={17}
