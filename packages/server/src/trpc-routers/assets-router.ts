@@ -420,10 +420,6 @@ export const assetsRouter = createTRPCRouter({
             coinMinimalDenom: asset.coinMinimalDenom,
           });
 
-          if (listingDate) {
-            console.log("listingDate", asset.coinDenom, listingDate);
-          }
-
           return {
             ...asset,
             listingDate,
