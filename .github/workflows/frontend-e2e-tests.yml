@@ -1,14 +1,11 @@
 name: Frontend E2E Workflow
 
 on:
-  push:
-    branches:
-      - master
-      - stage
-      - chore/add-e2e-pipeline
+  deployment_status:
 
 jobs:
   fe-e2e-tests:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     runs-on: macos-latest
     environment:
       name: prod_swap_test
