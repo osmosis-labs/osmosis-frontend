@@ -3,6 +3,7 @@ import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import { CopyIcon, Icon } from "~/components/assets";
 
+// TODO migrate from profile
 export const CopyIconButton = ({ valueToCopy }: { valueToCopy: string }) => {
   const [hasCopied, setHasCopied] = useState(false);
   const [, copyToClipboard] = useCopyToClipboard();
