@@ -991,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Hoje mais cedo",
-    "yesterday": "Ontem",
-    "january": "Janeiro",
-    "february": "Fevereiro",
-    "march": "Marchar",
-    "april": "abril",
-    "may": "Poderia",
-    "june": "Junho",
-    "july": "Julho",
-    "august": "Agosto",
-    "september": "Setembro",
-    "october": "Outubro",
-    "november": "novembro",
-    "december": "dezembro"
+    "yesterday": "Ontem"
   },
   "backToTop": "De volta ao topo"
 }

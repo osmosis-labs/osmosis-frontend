@@ -25,32 +25,44 @@ const Transactions: React.FC = observer(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
 
   const router = useRouter();
-  const { page = "0", pageSize = "100" } = router.query;
-
-  const { accountStore, chainStore } = useStore();
-
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address || "";
-
-  const isWalletConnected = Boolean(account?.isWalletConnected);
+  const {
+    page = "0",
+    pageSize = "100",
+    address: addressFromQuery,
+  } = router.query;
 
   // page=0&page=1 will return [0, 1] from router.query, check if type is string or array and return first element if array
   const pageString = Array.isArray(page) ? page[0] : page;
   const pageSizeString = Array.isArray(pageSize) ? pageSize[0] : pageSize;
+  const addressFromQueryString = Array.isArray(addressFromQuery)
+    ? addressFromQuery[0]
+    : addressFromQuery;
 
-  const { data: transactionData, isLoading } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        // address: EXAMPLE.ADDRESS,
-        address,
-        page: pageString,
-        pageSize: pageSizeString,
-      },
-      {
-        enabled: !!address,
-      }
-    );
+  const { accountStore, chainStore } = useStore();
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
+  // for easy testing, pass in an optional address query string to override connected address
+  // /transactions?page=0&address=osmoADDRESS
+  const address = addressFromQueryString || account?.address || "";
+
+  const isWalletConnected = Boolean(account?.isWalletConnected);
+
+  const { data, isLoading } = api.edge.transactions.getTransactions.useQuery(
+    {
+      // address: EXAMPLE.ADDRESS,
+      address,
+      page: pageString,
+      pageSize: pageSizeString,
+    },
+    {
+      enabled: !!address,
+    }
+  );
+
+  const { transactions, hasNextPage } = data ?? {
+    transactions: [],
+    hasNextPage: false,
+  };
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -98,16 +110,17 @@ const Transactions: React.FC = observer(() => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="mx-16 flex gap-4">
+    <main className="mx-auto flex max-w-7xl gap-8 px-16 lg:px-8">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
-        transactions={transactionData}
+        transactions={transactions}
         setOpen={setOpen}
         open={open}
         address={address}
         isLoading={isLoading}
         isWalletConnected={isWalletConnected}
         page={pageString}
+        hasNextPage={hasNextPage}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover

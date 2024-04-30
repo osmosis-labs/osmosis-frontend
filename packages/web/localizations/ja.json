@@ -991,19 +991,7 @@
   },
   "date": {
     "earlierToday": "本日",
-    "yesterday": "昨日",
-    "january": "1月",
-    "february": "2月",
-    "march": "行進",
-    "april": "4月",
-    "may": "5月",
-    "june": "六月",
-    "july": "7月",
-    "august": "8月",
-    "september": "9月",
-    "october": "10月",
-    "november": "11月",
-    "december": "12月"
+    "yesterday": "昨日"
   },
   "backToTop": "トップに戻る"
 }

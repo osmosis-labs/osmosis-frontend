@@ -1,4 +1,5 @@
 import { Transition } from "@headlessui/react";
+import classNames from "classnames";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -23,9 +24,10 @@ export const TransactionButtons = ({
 
   const { t } = useTranslation();
 
-  return (
-    <div className="relative flex gap-3">
-      <Button variant="secondary" size="md" asChild>
+  const options = [
+    {
+      id: "explorer",
+      display: (
         <Link
           passHref
           href={`https://www.mintscan.io/osmosis/address/${address}`}
@@ -42,7 +44,51 @@ export const TransactionButtons = ({
         >
           {t("transactions.explorer")} &#x2197;
         </Link>
-      </Button>
+      ),
+    },
+    {
+      id: "tax-reports",
+      display: (
+        <Link
+          className="whitespace-nowrap"
+          passHref
+          href="https://stake.tax/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t("transactions.taxReports")} &#x2197;
+        </Link>
+      ),
+    },
+  ];
+
+  return (
+    <div
+      className={classNames("relative flex gap-3", {
+        "items-center": !isLargeDesktop,
+        "items-start": isLargeDesktop,
+      })}
+    >
+      {isLargeDesktop && (
+        <Button variant="secondary" size="md" asChild>
+          <Link
+            passHref
+            href={`https://www.mintscan.io/osmosis/address/${address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              logEvent([
+                EventName.TransactionsPage.explorerClicked,
+                {
+                  source: "top",
+                },
+              ]);
+            }}
+          >
+            {t("transactions.explorer")} &#x2197;
+          </Link>
+        </Button>
+      )}
       <Transition
         // shows full tax reports button when sidebar is closed only on large screen sizes
         show={isLargeDesktop && !open}
@@ -88,24 +134,13 @@ export const TransactionButtons = ({
             &#x22EF;
           </Button>
           <MenuDropdown
-            className="top-12 right-0"
+            className="top-12 right-0 !z-0"
             isOpen={isDropdownOpen}
-            options={[
-              {
-                id: "tax-reports",
-                display: (
-                  <Link
-                    className="whitespace-nowrap"
-                    passHref
-                    href="https://stake.tax/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t("transactions.taxReports")} &#x2197;
-                  </Link>
-                ),
-              },
-            ]}
+            options={
+              open
+                ? options.filter((option) => option.id !== "explorer")
+                : options
+            }
             // noop since links are used
             onSelect={() => {}}
             isFloating

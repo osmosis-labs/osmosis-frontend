@@ -991,19 +991,7 @@
   },
   "date": {
     "earlierToday": "Earlier today",
-    "yesterday": "Yesterday",
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December"
+    "yesterday": "Yesterday"
   },
   "backToTop": "Back to top"
 }

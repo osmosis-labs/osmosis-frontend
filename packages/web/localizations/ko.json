@@ -991,19 +991,7 @@
   },
   "date": {
     "earlierToday": "오늘 일찍",
-    "yesterday": "어제",
-    "january": "1월",
-    "february": "2월",
-    "march": "3월",
-    "april": "4월",
-    "may": "5월",
-    "june": "6월",
-    "july": "칠월",
-    "august": "팔월",
-    "september": "구월",
-    "october": "십월",
-    "november": "십일월",
-    "december": "12월"
+    "yesterday": "어제"
   },
   "backToTop": "맨 위로"
 }
