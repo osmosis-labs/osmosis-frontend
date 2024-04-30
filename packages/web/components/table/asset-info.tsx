@@ -342,7 +342,8 @@ export const AssetsInfoTable: FunctionComponent<{
     useDimension<HTMLDivElement>();
   const [searchRef, { height: searchBoxHeight }] =
     useDimension<HTMLInputElement>();
-  const [bannerRef, { height: bannerHeight }] = useDimension<HTMLDivElement>();
+  const [bannerRef, { height: bannerHeight }] =
+    useDimension<HTMLAnchorElement>();
   const totalTopOffset =
     highlightsHeight +
     categoriesHeight +
