@@ -104,14 +104,16 @@ export const TransactionDetailsContent = ({
         </div>
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
           <div className="flex justify-between p-2">
-            <div className="flex gap-4">
-              <FallbackImg
-                alt={tokenIn.token.denom}
-                src={tokenIn.token.currency.coinImageUrl}
-                fallbacksrc="/icons/question-mark.svg"
-                height={32}
-                width={32}
-              />
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10">
+                <FallbackImg
+                  alt={tokenIn.token.denom}
+                  src={tokenIn.token.currency.coinImageUrl}
+                  fallbacksrc="/icons/question-mark.svg"
+                  height={40}
+                  width={40}
+                />
+              </div>
               <div className="flex flex-col">
                 <div className="subtitle1">{t("transactions.sold")}</div>
                 <div className="text-body1 text-osmoverse-300">
@@ -128,7 +130,7 @@ export const TransactionDetailsContent = ({
               </div>
             </div>
           </div>
-          <div className="flex h-10 w-12 items-center justify-center p-2">
+          <div className="flex h-10 w-14 items-center justify-center p-2">
             <Icon
               id="arrow-right"
               width={24}
@@ -138,14 +140,16 @@ export const TransactionDetailsContent = ({
             />
           </div>
           <div className="flex justify-between p-2">
-            <div className="flex gap-4">
-              <FallbackImg
-                alt={tokenOut.token.denom}
-                src={tokenOut.token.currency.coinImageUrl}
-                fallbacksrc="/icons/question-mark.svg"
-                height={32}
-                width={32}
-              />
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10">
+                <FallbackImg
+                  alt={tokenOut.token.denom}
+                  src={tokenOut.token.currency.coinImageUrl}
+                  fallbacksrc="/icons/question-mark.svg"
+                  height={40}
+                  width={40}
+                />
+              </div>
               <div className="flex flex-col">
                 <div className="text-subtitle1">{t("transactions.bought")}</div>
                 <div className="text-body1 text-osmoverse-300">
