@@ -100,7 +100,7 @@ export const ValidatorSquadCard: React.FC<{
                 <Tooltip
                   content={
                     <div className="flex flex-col gap-1 p-1">
-                      <span className="text-osmoverse-white-100">
+                      <span className="text-osmoverse-100">
                         {validatorName}
                       </span>
                       <span className="text-xs text-osmoverse-200">

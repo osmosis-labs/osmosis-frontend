@@ -1,13 +1,15 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
-import { ShowMoreButton } from "~/components/ui/button";
+import { Button, ShowMoreButton } from "~/components/ui/button";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { useTranslation } from "~/hooks";
 import {
@@ -22,6 +24,23 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const INIT_POOL_CARD_COUNT = 6;
+
+const TransactionsLink = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex h-12 items-center justify-between rounded-3xl bg-osmoverse-850 px-4">
+      <div className="flex items-center gap-3 p-3">
+        <Icon id="history" />
+        <div className="subtitle1 text-osmoverse-100">
+          {t("transactions.title")}
+        </div>
+      </div>
+      <Button variant="ghost" asChild className="text-wosmongton-200" size="md">
+        <Link href="/transactions">View All</Link>
+      </Button>
+    </div>
+  );
+};
 
 export const AssetsPageV1: FunctionComponent = observer(() => {
   const { isMobile } = useWindowSize();
@@ -70,9 +89,15 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     [bridgeAsset]
   );
 
+  const flags = useFeatureFlags();
+
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <AssetsOverview />
+      <div className="flex flex-col gap-3">
+        <AssetsOverview />
+        {flags.transactionsPage && <TransactionsLink />}
+      </div>
+
       <AssetsTableV1
         nativeBalances={nativeBalances}
         unverifiedNativeBalances={unverifiedNativeBalances}
