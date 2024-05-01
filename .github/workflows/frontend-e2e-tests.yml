@@ -2,6 +2,7 @@ name: Frontend E2E tests Workflow
 
 on:
   deployment_status:
+  workflow_dispatch:
 
 jobs:
   verify-environment:
