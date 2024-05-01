@@ -76,3 +76,10 @@ jobs:
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: packages/web/playwright-report
