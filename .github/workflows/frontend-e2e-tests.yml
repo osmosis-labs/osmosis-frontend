@@ -4,6 +4,17 @@ on:
   deployment_status:
 
 jobs:
+  verify-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify App url
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          DEPLOYMENT_STATUS: ${{toJson(github.event.deployment_status)}}
+        run: |
+          echo "$BASE_URL"
+          echo "$DEPLOYMENT_STATUS"
+
   master-e2e-tests:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.ref == 'refs/heads/master'
     runs-on: macos-latest
