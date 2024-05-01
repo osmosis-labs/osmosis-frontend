@@ -75,7 +75,9 @@ const Pool: FunctionComponent<Props> = ({
           }}
           sendTokenDenom={pool.reserveCoins[0].denom}
           outTokenDenom={pool.reserveCoins[1].denom}
+          useOtherCurrencies={pool.reserveCoins.length > 2}
           forceSwapInPoolId={poolId}
+          page="Pool Details Page"
         />
       )}
       {!pool ? (

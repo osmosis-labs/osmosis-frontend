@@ -145,7 +145,13 @@
       "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
-      "title": "转账记录"
+      "title": "转账记录",
+      "pendingDeposit": "待存款",
+      "pendingWithdraw": "等待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "已退出",
+      "failDeposit": "存款失败",
+      "failWithdraw": "提现失败"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -200,7 +206,13 @@
       },
       "title": "所有资产",
       "withdrawButton": "提币",
-      "activate": "启用"
+      "activate": "启用",
+      "marketCap": "市值",
+      "volume24h": "体积",
+      "price": "价格",
+      "balance": "余额",
+      "lastWeek": "过去 7 天",
+      "asset": "资产"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -274,26 +286,47 @@
       "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
       "reminder": "您始终可以在设置模式中停用此设置。"
     },
-    "getStarted": {
-      "title": "开始使用{osmosis}",
-      "description": "只需几个步骤即可连接您的钱包并为其注入资金，即可开始交易。",
-      "addFunds": "添加资金即可开始"
-    },
     "categories": {
       "new": "最新",
       "defi": "去中心化金融",
       "stablecoin": "稳定币",
       "meme": "模因",
-      "liquid_staking": "流动质押"
-    }
+      "liquid_staking": "流动质押",
+      "built_on_osmosis": "建立在 Osmosis 之上",
+      "sail_initiative": "扬帆计划",
+      "bridges": "桥梁",
+      "nft_protocol": "NFT 协议",
+      "ai": "人工智能",
+      "privacy": "隐私",
+      "social": "社会的",
+      "oracles": "预言机",
+      "dweb": "去中心化网络",
+      "rwa": "现实世界资产发行",
+      "gaming": "赌博",
+      "topGainers": "涨幅最大的股票",
+      "more": "更多类别"
+    },
+    "seeAll": "查看全部",
+    "highlights": {
+      "new": "新的",
+      "topGainers": "涨幅最大的股票",
+      "upcoming": "即将推出"
+    },
+    "balancesMovedTitle": "正在查找您的余额？",
+    "balancesMovedDescription": "前往投资组合页面，这是您的余额和更多信息的新家。"
   },
   "portfolio": {
-    "trade": "贸易",
+    "buy": "买",
     "yourAssets": "您的资产",
     "yourPositions": "您的职位",
     "recentTransfers": "最近转会",
     "yourSuperchargedPositions": "您的超级职位",
-    "yourLiquidityPools": "您的流动资金池"
+    "yourLiquidityPools": "您的流动资金池",
+    "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
+    "noAssets": "您在{osmosis}上没有余额",
+    "getStarted": "存入资产即可开始",
+    "noPositions": "您没有职位",
+    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "交易费太高",
     "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
+    "insufficientBalForFee": "余额不足，无法支付费用",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
@@ -414,7 +448,9 @@
     "marsSubtext": "由火星提供动力",
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
-    "new": "新的"
+    "new": "新的",
+    "settings": "设置",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -569,7 +605,8 @@
     "balance": "结余",
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有资产",
-    "wallet": "钱包"
+    "wallet": "钱包",
+    "transactions": "交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份额",
@@ -586,6 +623,10 @@
     "titleLanguage": "语言",
     "titleHideBalances": "屏蔽余额以保护隐私",
     "hideBalances": "隐藏余额"
+  },
+  "search": {
+    "noResultsFor": "没有找到“ {query} ”的结果",
+    "adjust": "尝试调整您的搜索查询"
   },
   "stake": {
     "available": "可用的",
@@ -692,6 +733,7 @@
       "hide": "隐藏",
       "show": "节目"
     },
+    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
+    "gettingStarted": "入门",
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",
@@ -823,7 +866,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",
     "liquidityInOSMOPools": "{number} {denom}池中的流动性"
@@ -851,7 +893,6 @@
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",
     "apy": "年利率",
-    "daily": "日常的",
     "reward": "报酬",
     "lock": "解绑",
     "days": "天",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "仅限即时解绑",
     "tooltips": {
       "apr": {
-        "description": "年利率（APR）是指策略的年化百分比回报。注意：策略的回报可能会根据参与度和表现而波动。"
-      },
-      "daily": {
-        "description": "策略的每日百分比回报 - 类似于 APR，但反映的是每日回报而非年度回报。注意：策略的回报可能会根据参与度和表现而波动。"
+        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
       },
       "tvl": {
         "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"
@@ -915,6 +953,12 @@
       "risk": {
         "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
       }
+    },
+    "riskLabels": {
+      "low": "低的",
+      "medium": "中等的",
+      "high": "高的",
+      "veryHigh": "很高"
     }
   },
   "disclaimer": "免责声明",
@@ -924,5 +968,30 @@
     "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
     "buttonContinue": "无论如何继续",
     "buttonCancel": "取消"
-  }
+  },
+  "transactions": {
+    "noRecent": "最近没有转会",
+    "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
+    "noTransactions": "没有交易",
+    "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
+    "connectToSee": "连接以查看您的交易历史记录",
+    "connectWallet": "连接钱包",
+    "title": "交易",
+    "swapping": "交换",
+    "swapped": "已交换",
+    "swapFailed": "交换失败",
+    "taxReports": "税务报告",
+    "explorer": "探索者",
+    "sold": "卖",
+    "bought": "买",
+    "executionPrice": "执行价格",
+    "totalFees": "总费用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在资源管理器中查看"
+  },
+  "date": {
+    "earlierToday": "今天早些时候",
+    "yesterday": "昨天"
+  },
+  "backToTop": "回到顶部"
 }

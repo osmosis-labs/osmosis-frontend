@@ -70,7 +70,10 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
 
       const errorMessage = error.data?.message;
 
-      if (errorMessage?.includes("no routes were provided")) {
+      if (
+        errorMessage?.includes("no routes were provided") ||
+        errorMessage?.includes("no candidate routes found")
+      ) {
         throw new NoRouteError();
       }
 

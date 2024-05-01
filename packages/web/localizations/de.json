@@ -145,7 +145,13 @@
       "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
-      "title": "Übertragungsverlauf"
+      "title": "Übertragungsverlauf",
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "pendingWithdraw": "Ausstehender Auszug",
+      "successDeposit": "Hinterlegt",
+      "successWithdraw": "Zurückgezogen",
+      "failDeposit": "Einzahlung fehlgeschlagen",
+      "failWithdraw": "Auszahlung fehlgeschlagen"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",
@@ -200,7 +206,13 @@
       },
       "title": "Alle Vermögenswerte",
       "withdrawButton": "Zurückziehen",
-      "activate": "aktivieren Sie"
+      "activate": "aktivieren Sie",
+      "marketCap": "Marktkapitalisierung",
+      "volume24h": "Volumen",
+      "price": "Preis",
+      "balance": "Gleichgewicht",
+      "lastWeek": "Letzten 7 Tage",
+      "asset": "Vermögenswert"
     },
     "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
@@ -274,26 +286,47 @@
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
       "reminder": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren."
     },
-    "getStarted": {
-      "title": "Beginnen Sie mit {osmosis}",
-      "description": "Verbinden Sie Ihr Wallet und finanzieren Sie es, um in nur wenigen Schritten mit dem Handel zu beginnen.",
-      "addFunds": "Fügen Sie Geld hinzu, um loszulegen"
-    },
     "categories": {
       "new": "Neueste",
       "defi": "DeFi",
       "stablecoin": "Stablecoins",
       "meme": "Meme",
-      "liquid_staking": "Flüssiges Abstecken"
-    }
+      "liquid_staking": "Flüssiges Abstecken",
+      "built_on_osmosis": "Auf Osmose aufgebaut",
+      "sail_initiative": "Sail Initiative",
+      "bridges": "Brücken",
+      "nft_protocol": "NFT-Protokoll",
+      "ai": "KI",
+      "privacy": "Privatsphäre",
+      "social": "Sozial",
+      "oracles": "Orakel",
+      "dweb": "Dezentrales Web",
+      "rwa": "Ausgabe realer Vermögenswerte",
+      "gaming": "Spiele",
+      "topGainers": "Top-Gewinner",
+      "more": "Weitere Kategorien"
+    },
+    "seeAll": "Alles sehen",
+    "highlights": {
+      "new": "Neu",
+      "topGainers": "Top-Gewinner",
+      "upcoming": "Bevorstehende"
+    },
+    "balancesMovedTitle": "Suchen Sie nach Ihren Guthaben?",
+    "balancesMovedDescription": "Gehen Sie zur Portfolio-Seite, dem neuen Zuhause für Ihre Guthaben und mehr."
   },
   "portfolio": {
-    "trade": "Handel",
+    "buy": "Kaufen",
     "yourAssets": "Ihr Vermögen",
     "yourPositions": "Ihre Positionen",
     "recentTransfers": "Letzte Übertragungen",
     "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
-    "yourLiquidityPools": "Ihre Liquiditätspools"
+    "yourLiquidityPools": "Ihre Liquiditätspools",
+    "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen.",
+    "noAssets": "Sie haben keine Guthaben auf {osmosis}",
+    "getStarted": "Zahlen Sie Guthaben ein, um loszulegen",
+    "noPositions": "Sie haben keine Positionen",
+    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
+    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -414,7 +448,9 @@
     "marsSubtext": "Angetrieben vom Mars",
     "levanaSubtext": "Unterstützt von Levana",
     "more": "Mehr",
-    "new": "NEU"
+    "new": "NEU",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",
@@ -569,7 +605,8 @@
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
-    "wallet": "Geldbörse"
+    "wallet": "Geldbörse",
+    "transactions": "Transaktionen"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",
@@ -586,6 +623,10 @@
     "titleLanguage": "Sprache",
     "titleHideBalances": "Maskenbilanzen für Privatsphäre",
     "hideBalances": "Maskierte Salden"
+  },
+  "search": {
+    "noResultsFor": "Keine Ergebnisse für \" {query} \"",
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
   },
   "stake": {
     "available": "Verfügbar",
@@ -692,6 +733,7 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
+    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
     "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
+    "gettingStarted": "Erste Schritte",
     "connectionInProgress": "Die Wallet-Verbindung ist bereits im Gange. Bitte öffnen Sie Ihre Erweiterung, um den Status zu überprüfen.",
     "somethingWentWrong": "Etwas ist schief gelaufen",
     "isNotInstalled": "{walletName} ist nicht installiert",
@@ -823,7 +866,6 @@
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kaufen Sie {coinDenom}",
     "staking": "Abstecken",
     "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools"
@@ -851,7 +893,6 @@
     "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",
     "apy": "APR",
-    "daily": "Täglich",
     "reward": "Belohnen",
     "lock": "Bindung lösen",
     "days": "Tage",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "Nur sofortiges Lösen",
     "tooltips": {
       "apr": {
-        "description": "Der effektive Jahreszins (APR) bezieht sich auf die jährliche prozentuale Rendite einer Strategie. Hinweis: Die Rendite einer Strategie kann je nach Beteiligung und Leistung schwanken."
-      },
-      "daily": {
-        "description": "Tägliche prozentuale Rendite einer Strategie – ähnlich dem effektiven Jahreszins, spiegelt jedoch die tägliche statt der jährlichen Rendite wider. Hinweis: Die Rendite einer Strategie kann je nach Teilnahme und Leistung schwanken."
+        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
@@ -915,6 +953,12 @@
       "risk": {
         "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
       }
+    },
+    "riskLabels": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "veryHigh": "Sehr hoch"
     }
   },
   "disclaimer": "Haftungsausschluss",
@@ -924,5 +968,30 @@
     "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
     "buttonContinue": "Mache trotzdem weiter",
     "buttonCancel": "Stornieren"
-  }
+  },
+  "transactions": {
+    "noRecent": "Keine aktuellen Transfers",
+    "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt.",
+    "noTransactions": "Keine Transaktionen",
+    "pastShownHere": "Ihre vergangenen Trades auf Osmosis werden hier angezeigt.",
+    "connectToSee": "Stellen Sie eine Verbindung her, um Ihren Transaktionsverlauf anzuzeigen",
+    "connectWallet": "Geldbörse verbinden",
+    "title": "Transaktionen",
+    "swapping": "Austauschen",
+    "swapped": "Ausgetauscht",
+    "swapFailed": "Austausch fehlgeschlagen",
+    "taxReports": "Steuerberichte",
+    "explorer": "Forscher",
+    "sold": "Verkauft",
+    "bought": "Gekauft",
+    "executionPrice": "Ausführungspreis",
+    "totalFees": "Gesamtkosten",
+    "transactionHash": "Transaktions-Hash",
+    "viewOnExplorer": "Im Explorer anzeigen"
+  },
+  "date": {
+    "earlierToday": "Heute früh",
+    "yesterday": "Gestern"
+  },
+  "backToTop": "Zurück nach oben"
 }

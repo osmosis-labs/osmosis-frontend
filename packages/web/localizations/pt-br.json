@@ -145,7 +145,13 @@
       "pendingRefunded": "Falhou: Reembolso pendente",
       "refunded": "Reembolsado",
       "success": "Sucesso",
-      "title": "Histórico de Transferências"
+      "title": "Histórico de Transferências",
+      "pendingDeposit": "Depósito pendente",
+      "pendingWithdraw": "Retirada pendente",
+      "successDeposit": "Depositado",
+      "successWithdraw": "Retirou-se",
+      "failDeposit": "Falha no depósito",
+      "failWithdraw": "Falha na retirada"
     },
     "ibcTransfer": {
       "buttonAdd": "Adicionar",
@@ -200,7 +206,13 @@
       },
       "title": "Todos os ativos",
       "withdrawButton": "Sacar",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "marketCap": "Valor de mercado",
+      "volume24h": "Volume",
+      "price": "Preço",
+      "balance": "Saldo",
+      "lastWeek": "Últimos 7 dias",
+      "asset": "Ativo"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -274,26 +286,47 @@
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
       "reminder": "Você sempre pode desativar esta configuração no modal de configurações."
     },
-    "getStarted": {
-      "title": "Comece com {osmosis}",
-      "description": "Conecte-se e financie sua carteira para começar a negociar em apenas algumas etapas.",
-      "addFunds": "Adicione fundos para começar"
-    },
     "categories": {
       "new": "O mais novo",
       "defi": "DeFi",
       "stablecoin": "Moedas estáveis",
       "meme": "Memes",
-      "liquid_staking": "Estaqueamento líquido"
-    }
+      "liquid_staking": "Estaqueamento líquido",
+      "built_on_osmosis": "Construído em Osmose",
+      "sail_initiative": "Iniciativa Vela",
+      "bridges": "Pontes",
+      "nft_protocol": "Protocolo NFT",
+      "ai": "IA",
+      "privacy": "Privacidade",
+      "social": "Social",
+      "oracles": "Oráculos",
+      "dweb": "Web descentralizada",
+      "rwa": "Emissão de ativos do mundo real",
+      "gaming": "Jogos",
+      "topGainers": "Principais ganhadores",
+      "more": "Mais categorias"
+    },
+    "seeAll": "Ver tudo",
+    "highlights": {
+      "new": "Novo",
+      "topGainers": "Principais ganhadores",
+      "upcoming": "Por vir"
+    },
+    "balancesMovedTitle": "Procurando seus saldos?",
+    "balancesMovedDescription": "Acesse a página do Portfólio, a nova página para seus saldos e muito mais."
   },
   "portfolio": {
-    "trade": "Troca",
+    "buy": "Comprar",
     "yourAssets": "Seus ativos",
     "yourPositions": "Suas posições",
     "recentTransfers": "Transferências recentes",
     "yourSuperchargedPositions": "Suas posições sobrecarregadas",
-    "yourLiquidityPools": "Seus pools de liquidez"
+    "yourLiquidityPools": "Seus pools de liquidez",
+    "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
+    "noAssets": "Você não tem saldos em {osmosis}",
+    "getStarted": "Deposite ativos para começar",
+    "noPositions": "Você não tem posições",
+    "unlockPotential": "Desbloqueie todo o seu potencial de ganhos e coloque seus ativos para trabalhar com pools de liquidez"
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "Taxa de troca está muito alta",
     "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para taxa",
     "insufficientLiquidity": "Liquidez Insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
@@ -414,7 +448,9 @@
     "marsSubtext": "Alimentado por Marte",
     "levanaSubtext": "Desenvolvido por Levana",
     "more": "Mais",
-    "new": "NOVO"
+    "new": "NOVO",
+    "settings": "Configurações",
+    "notifications": "Notificações"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",
@@ -569,7 +605,8 @@
     "balance": "Saldo",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos os ativos",
-    "wallet": "Carteira"
+    "wallet": "Carteira",
+    "transactions": "Transações"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",
@@ -586,6 +623,10 @@
     "titleLanguage": "Idioma",
     "titleHideBalances": "Máscara de equilíbrio para privacidade",
     "hideBalances": "Saldos Mascarados"
+  },
+  "search": {
+    "noResultsFor": "Nenhum resultado para \" {query} \"",
+    "adjust": "Tente ajustar sua consulta de pesquisa"
   },
   "stake": {
     "available": "Disponível",
@@ -692,6 +733,7 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
+    "gettingStarted": "Começando",
     "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",
     "somethingWentWrong": "Algo deu errado",
     "isNotInstalled": "{walletName} não está instalado",
@@ -823,7 +866,6 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "TVL",
-    "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
     "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
@@ -851,7 +893,6 @@
     "myStrategies": "Suas estratégias",
     "strategyPlatform": "Estratégia",
     "apy": "ABRIL",
-    "daily": "Diário",
     "reward": "Recompensa",
     "lock": "Desvincular",
     "days": "dias",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "Somente desvinculação instantânea",
     "tooltips": {
       "apr": {
-        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
-      },
-      "daily": {
-        "description": "Retorno percentual diário de uma estratégia - semelhante à TAEG, mas refletindo o retorno diário em vez do anual. Nota: O retorno de uma estratégia pode variar com base na participação e no desempenho."
+        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia.\n\nNota: O retorno de uma estratégia pode variar com base na participação e no desempenho.\n\nIsenção de responsabilidade: essas APRs são relatadas pelos próprios projetos e podem ser imprecisas."
       },
       "tvl": {
         "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."
@@ -915,6 +953,12 @@
       "risk": {
         "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
       }
+    },
+    "riskLabels": {
+      "low": "Baixo",
+      "medium": "Médio",
+      "high": "Alto",
+      "veryHigh": "Muito alto"
     }
   },
   "disclaimer": "Isenção de responsabilidade",
@@ -924,5 +968,30 @@
     "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
     "buttonContinue": "Continue de qualquer maneira",
     "buttonCancel": "Cancelar"
-  }
+  },
+  "transactions": {
+    "noRecent": "Nenhuma transferência recente",
+    "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui.",
+    "noTransactions": "Nenhuma transação",
+    "pastShownHere": "Suas negociações anteriores no Osmosis aparecerão aqui.",
+    "connectToSee": "Conecte-se para ver seu histórico de transações",
+    "connectWallet": "Conectar carteira",
+    "title": "Transações",
+    "swapping": "Troca",
+    "swapped": "Trocado",
+    "swapFailed": "Falha na troca",
+    "taxReports": "Relatórios fiscais",
+    "explorer": "Explorador",
+    "sold": "Vendido",
+    "bought": "Comprado",
+    "executionPrice": "Preço de Execução",
+    "totalFees": "Taxas totais",
+    "transactionHash": "Hash de transação",
+    "viewOnExplorer": "Ver no explorador"
+  },
+  "date": {
+    "earlierToday": "Hoje mais cedo",
+    "yesterday": "Ontem"
+  },
+  "backToTop": "De volta ao topo"
 }

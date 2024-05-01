@@ -20,10 +20,7 @@ import React, {
 } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import {
-  ChartUnavailable,
-  PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
@@ -40,15 +37,15 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () => import("~/components/chart/price-historical"),
   { ssr: false }
 );
 
@@ -514,8 +511,15 @@ const ChartHeader: FunctionComponent<{
     quoteDenom,
     hoverPrice,
   } = config;
+
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDenom}
@@ -537,7 +541,7 @@ const Chart: FunctionComponent<{
     config;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={
         isFullRange

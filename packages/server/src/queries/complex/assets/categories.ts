@@ -1,22 +1,20 @@
-import {
-  Asset,
-  AssetCategories as StaticAssetCategories,
-} from "@osmosis-labs/types";
+import { Asset, AssetList } from "@osmosis-labs/types";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "../../../utils";
 import dayjs from "../../../utils/dayjs";
-
-/** Re-exported static asset categories extended with dynamic categories. */
-export const AssetCategories = ["new", ...StaticAssetCategories] as const;
-export type Category = (typeof AssetCategories)[number];
+import { queryUpcomingAssets } from "../../github";
 
 /** Filters an asset for whether it is included in the given list of categories. */
 export function isAssetInCategories(
   asset: Asset,
-  categories: Category[],
+  categories: string[],
   assetNewness = dayjs.duration(2_629_746_000), // default: 1 month
   now = dayjs()
 ) {
   return categories.some((category) => {
+    // "new" category is dynamically determined from listing date
     if (category === "new") {
       if (asset.listingDate) {
         return isAssetNew(asset.listingDate, assetNewness, now);
@@ -29,6 +27,22 @@ export function isAssetInCategories(
   });
 }
 
+export function getAssetListingDate({
+  assetLists,
+  coinMinimalDenom,
+}: {
+  assetLists: AssetList[];
+  coinMinimalDenom: string;
+}): Date | undefined {
+  const assets = assetLists.flatMap(({ assets }) => assets);
+
+  const date = assets.find(
+    (asset) => asset.coinMinimalDenom === coinMinimalDenom
+  )?.listingDate;
+
+  if (date) return new Date(date);
+}
+
 /** Determines if an asset is new if it has a `listingDate` member. Default: within past month. */
 export function isAssetNew(
   listingDate: NonNullable<Asset["listingDate"]>,
@@ -36,4 +50,17 @@ export function isAssetNew(
   now = dayjs()
 ) {
   return now.diff(listingDate) < assetNewness.asMilliseconds();
+}
+
+const upcomingAssetsCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+export function getUpcomingAssets() {
+  return cachified({
+    cache: upcomingAssetsCache,
+    key: "upcoming-assets",
+    ttl: 1000 * 60 * 5, // 5 minutes
+    getFreshValue: () =>
+      queryUpcomingAssets().then(({ upcomingAssets }) => upcomingAssets),
+  });
 }

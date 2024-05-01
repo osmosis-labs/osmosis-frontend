@@ -5,9 +5,9 @@ import { resetLDMocks } from "jest-launchdarkly-mock";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { server } from "~/__tests__/msw";
+import { mockFeatureFlags, renderWithProviders } from "~/__tests__/test-utils";
 import NavbarOsmosisUpdate from "~/components/navbar-osmosis-update";
-import { server } from "~/tests/msw";
-import { mockFeatureFlags, renderWithProviders } from "~/tests/test-utils";
 
 beforeEach(() => {
   resetLDMocks();

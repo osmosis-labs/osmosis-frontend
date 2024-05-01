@@ -1,14 +1,18 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
+import { aggregateCoinsByDenom, isNil } from "@osmosis-labs/utils";
 
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import { SortDirection } from "../../../utils/sort";
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
 import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";
+import { getPool } from "../pools";
 import { getGammShareUnderlyingCoins } from "../pools/share";
-import { getUserTotalDelegatedCoin } from "../staking/user";
+import {
+  getUserTotalDelegatedCoin,
+  getUserTotalUndelegations,
+} from "../staking/user";
 import { Asset, AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
@@ -46,18 +50,38 @@ export async function getAssetWithUserBalance<TAsset extends Asset>({
 /** Maps user coin data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
-export async function mapGetAssetsWithUserBalances<TAsset extends Asset>(
-  params: {
-    assetLists: AssetList[];
-    chainList: Chain[];
-    assets?: TAsset[];
-    userOsmoAddress?: string;
-    sortFiatValueDirection?: SortDirection;
-  } & AssetFilter
-): Promise<(TAsset & MaybeUserAssetCoin)[]> {
+export async function mapGetAssetsWithUserBalances<TAsset extends Asset>({
+  poolId,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  assets?: TAsset[];
+  userOsmoAddress?: string;
+  sortFiatValueDirection?: SortDirection;
+  /**
+   * If poolId is provided, only include assets that are part of the pool.
+   */
+  poolId?: string;
+} & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
-  if (!assets) assets = getAssets({ ...params }) as TAsset[];
+  if (!assets) assets = getAssets(params) as TAsset[];
+
+  // If poolId is provided, only include assets that are part of the pool.
+  if (assets && !isNil(poolId)) {
+    const { reserveCoins } = await getPool({
+      assetLists: params.assetLists,
+      chainList: params.chainList,
+      poolId,
+    });
+    assets = assets.filter((asset) =>
+      reserveCoins.some(
+        (coin) => coin.currency.coinMinimalDenom === asset.coinMinimalDenom
+      )
+    ) as TAsset[];
+  }
+
   if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({
@@ -132,6 +156,7 @@ export async function getUserAssetsTotal(params: {
     getUserUnderlyingCoinsFromClPositions(params),
     getUserShareUnderlyingCoinsFromLocks(params),
     getUserTotalDelegatedCoin(params),
+    getUserTotalUndelegations(params),
   ]);
 
   const { underlyingGammShareCoins, available } = coins[0];
@@ -139,12 +164,20 @@ export async function getUserAssetsTotal(params: {
   const clCoins = coins[1];
   const lockedCoins = coins[2];
   const delegatedCoin = coins[3];
+  const undelegatingCoin = coins[4];
 
-  const allCoins = [...bankCoins, ...clCoins, ...lockedCoins, delegatedCoin];
+  const allCoins = [
+    ...bankCoins,
+    ...clCoins,
+    ...lockedCoins,
+    delegatedCoin,
+    undelegatingCoin,
+  ];
 
-  const [aggregatedValue] = await Promise.all([
-    calcSumCoinsValue({ ...params, coins: allCoins }),
-  ]);
+  const aggregatedValue = await calcSumCoinsValue({
+    ...params,
+    coins: allCoins,
+  });
 
   return {
     value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),

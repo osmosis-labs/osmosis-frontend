@@ -145,7 +145,13 @@
       "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
-      "title": "Historia Transferów"
+      "title": "Historia Transferów",
+      "pendingDeposit": "Oczekujący depozyt",
+      "pendingWithdraw": "Oczekuje na wycofanie",
+      "successDeposit": "Zdeponowane",
+      "successWithdraw": "Wycofał się",
+      "failDeposit": "Wpłata nie powiodła się",
+      "failWithdraw": "Wypłata nie powiodła się"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",
@@ -200,7 +206,13 @@
       },
       "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać",
-      "activate": "Aktywuj"
+      "activate": "Aktywuj",
+      "marketCap": "Kapitalizacja rynkowa",
+      "volume24h": "Tom",
+      "price": "Cena",
+      "balance": "Saldo",
+      "lastWeek": "Ostatnie 7 dni",
+      "asset": "Zaleta"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -274,26 +286,47 @@
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
       "reminder": "Zawsze możesz dezaktywować to ustawienie w trybie ustawień."
     },
-    "getStarted": {
-      "title": "Zacznij od {osmosis}",
-      "description": "Połącz się i zasil swój portfel, aby rozpocząć handel w zaledwie kilku krokach.",
-      "addFunds": "Dodaj środki, aby rozpocząć"
-    },
     "categories": {
       "new": "Najnowsza",
       "defi": "DeFi",
       "stablecoin": "Stablecoiny",
       "meme": "Ja ja",
-      "liquid_staking": "Płynna stawka"
-    }
+      "liquid_staking": "Płynna stawka",
+      "built_on_osmosis": "Zbudowany na osmozie",
+      "sail_initiative": "Inicjatywa Żaglowa",
+      "bridges": "Mosty",
+      "nft_protocol": "Protokół NFT",
+      "ai": "sztuczna inteligencja",
+      "privacy": "Prywatność",
+      "social": "Społeczny",
+      "oracles": "Wyrocznie",
+      "dweb": "Zdecentralizowana sieć",
+      "rwa": "Emisja aktywów w świecie rzeczywistym",
+      "gaming": "Hazard",
+      "topGainers": "Najlepsi zdobywcy",
+      "more": "Więcej kategorii"
+    },
+    "seeAll": "Widzieć wszystko",
+    "highlights": {
+      "new": "Nowy",
+      "topGainers": "Najlepsi zdobywcy",
+      "upcoming": "Nadchodzące"
+    },
+    "balancesMovedTitle": "Szukasz salda?",
+    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
   },
   "portfolio": {
-    "trade": "Handel",
+    "buy": "Kupić",
     "yourAssets": "Twoje aktywa",
     "yourPositions": "Twoje pozycje",
     "recentTransfers": "Ostatnie transfery",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
-    "yourLiquidityPools": "Twoje pule płynności"
+    "yourLiquidityPools": "Twoje pule płynności",
+    "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
+    "noAssets": "Nie masz salda na {osmosis}",
+    "getStarted": "Aby rozpocząć, zdeponuj środki",
+    "noPositions": "Nie masz żadnych stanowisk",
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -414,7 +448,9 @@
     "marsSubtext": "Zasilany przez Marsa",
     "levanaSubtext": "Obsługiwane przez Levanę",
     "more": "Więcej",
-    "new": "NOWY"
+    "new": "NOWY",
+    "settings": "Ustawienia",
+    "notifications": "Powiadomienia"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",
@@ -569,7 +605,8 @@
     "balance": "Balansować",
     "modalTitle": "Profil",
     "viewAllAssets": "Ver todos os recursos",
-    "wallet": "Portfel"
+    "wallet": "Portfel",
+    "transactions": "Transakcje"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
@@ -586,6 +623,10 @@
     "titleLanguage": "Język",
     "titleHideBalances": "Maskuj salda zapewniające prywatność",
     "hideBalances": "Zamaskowane salda"
+  },
+  "search": {
+    "noResultsFor": "Brak wyników dla „ {query} „",
+    "adjust": "Spróbuj dostosować zapytanie"
   },
   "stake": {
     "available": "Dostępny",
@@ -692,6 +733,7 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
+    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
+    "gettingStarted": "Pierwsze kroki",
     "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
@@ -823,7 +866,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
@@ -851,7 +893,6 @@
     "myStrategies": "Twoje strategie",
     "strategyPlatform": "Strategia",
     "apy": "KWIECIEŃ",
-    "daily": "Codziennie",
     "reward": "Nagroda",
     "lock": "Rozłącz",
     "days": "dni",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "Tylko natychmiastowe rozłączenie",
     "tooltips": {
       "apr": {
-        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
-      },
-      "daily": {
-        "description": "Dzienny procentowy zwrot strategii - podobny do RRSO, ale odzwierciedlający dzienny zwrot, a nie roczny. Uwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników."
+        "description": "Roczna stopa procentowa (APR) odnosi się do rocznej procentowej stopy zwrotu ze strategii.\n\nUwaga: zwrot ze strategii może się zmieniać w zależności od udziału i wyników.\n\nZastrzeżenie: Te RRSO są zgłaszane przez same projekty i mogą być niedokładne."
       },
       "tvl": {
         "description": "Total Value Locked (TVL) odnosi się do całkowitej wartości aktywów zdeponowanych w strategii w dolarach amerykańskich."
@@ -915,6 +953,12 @@
       "risk": {
         "description": "Ocena ryzyka obejmuje rozważenie kombinacji kryteriów związanych ze strategią i jej aktywami bazowymi."
       }
+    },
+    "riskLabels": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki",
+      "veryHigh": "Bardzo wysoko"
     }
   },
   "disclaimer": "Zastrzeżenie",
@@ -924,5 +968,30 @@
     "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
     "buttonContinue": "Kontynuować mimo to",
     "buttonCancel": "Anulować"
-  }
+  },
+  "transactions": {
+    "noRecent": "Brak ostatnich transferów",
+    "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami).",
+    "noTransactions": "Żadnych transakcji",
+    "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
+    "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
+    "connectWallet": "Podłącz portfel",
+    "title": "Transakcje",
+    "swapping": "Zamiana",
+    "swapped": "Zamienione",
+    "swapFailed": "Zamiana nie powiodła się",
+    "taxReports": "Raporty podatkowe",
+    "explorer": "poszukiwacz",
+    "sold": "Sprzedany",
+    "bought": "Kupił",
+    "executionPrice": "Cena wykonania",
+    "totalFees": "Wszystkie koszty",
+    "transactionHash": "Hash transakcji",
+    "viewOnExplorer": "Zobacz w eksploratorze"
+  },
+  "date": {
+    "earlierToday": "Dzisiaj wcześniej",
+    "yesterday": "Wczoraj"
+  },
+  "backToTop": "Powrót do góry"
 }

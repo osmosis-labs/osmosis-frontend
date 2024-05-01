@@ -625,14 +625,13 @@ const RightModalContent: FunctionComponent<
     return (
       <div className="flex flex-col px-8">
         <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
-          {t("Getting Started")}
+          {t("walletSelect.gettingStarted")}
         </h1>
 
         <Stepper
           className="relative flex flex-col gap-2"
           autoplay={{ stopOnHover: true, delayInMs: 4000 }}
         >
-          <StepsIndicator className="order-1 mt-16" />
           <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
           {OnboardingSteps(t).map(({ title, content }) => (
             <Step key={title}>
@@ -654,6 +653,7 @@ const RightModalContent: FunctionComponent<
             </Step>
           ))}
           <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
+          <StepsIndicator className="mt-16" />
         </Stepper>
       </div>
     );

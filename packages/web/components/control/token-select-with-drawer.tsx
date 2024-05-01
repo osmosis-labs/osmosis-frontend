@@ -7,7 +7,7 @@ import { FunctionComponent, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
-import { EventName, SwapPage } from "~/config";
+import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
 
@@ -18,9 +18,11 @@ export const TokenSelectWithDrawer: FunctionComponent<
     swapState: SwapState;
     dropdownOpen?: boolean;
     canSelectTokens?: boolean;
-    page?: SwapPage;
+    page?: EventPage;
     onSelect: (tokenDenom: string) => void;
     setDropdownState?: (isOpen: boolean) => void;
+    showRecommendedTokens?: boolean;
+    showSearchBox?: boolean;
   } & Disableable
 > = observer(
   ({
@@ -32,6 +34,8 @@ export const TokenSelectWithDrawer: FunctionComponent<
     page = "Swap Page",
     onSelect: onSelectProp,
     setDropdownState,
+    showRecommendedTokens = true,
+    showSearchBox = true,
   }) => {
     const { isMobile } = useWindowSize();
     const router = useRouter();
@@ -51,7 +55,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
       : swapState.toAsset;
 
     const tokenSelectionAvailable =
-      canSelectTokens && preSortedTokens.length > 1;
+      canSelectTokens && preSortedTokens.length >= 1;
 
     const onSelect = (tokenDenom: string) => {
       logEvent([
@@ -79,6 +83,9 @@ export const TokenSelectWithDrawer: FunctionComponent<
                 setIsSelectOpen(!isSelectOpen);
               }
             }}
+            aria-label={`Select ${
+              isFromSelect ? "'from'" : "'to'"
+            } token. Current token is ${selectedToken.coinDenom}`}
           >
             {selectedToken.coinImageUrl && (
               <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
@@ -127,6 +134,8 @@ export const TokenSelectWithDrawer: FunctionComponent<
             swapState={swapState}
             onClose={() => setIsSelectOpen(false)}
             onSelect={onSelect}
+            showSearchBox={showSearchBox}
+            showRecommendedTokens={showRecommendedTokens}
           />
         </div>
       </div>

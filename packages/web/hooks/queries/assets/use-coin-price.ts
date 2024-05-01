@@ -9,8 +9,8 @@ export function useCoinPrice(coin?: CoinPretty) {
     },
     {
       enabled: Boolean(coin?.currency),
-      cacheTime: 1000 * 5, // 5 seconds
-      staleTime: 1000 * 5, // 5 seconds
+      cacheTime: 1000 * 3, // 3 second
+      staleTime: 1000 * 3, // 3 second
     }
   );
 

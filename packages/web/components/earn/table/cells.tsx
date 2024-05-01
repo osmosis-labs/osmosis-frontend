@@ -172,16 +172,38 @@ export const LockCell = (item: CellContext<EarnStrategy, string>) => {
   );
 };
 
-function _getRiskLabel(risk: number) {
-  return `${Math.floor(risk * 100)}%`;
+function _getRiskLabels(risk: number) {
+  const value = +(risk * 10).toPrecision(2);
+
+  const thresholds = [
+    { threshold: 7.5, verbalKey: "earnPage.riskLabels.veryHigh" },
+    { threshold: 5, verbalKey: "earnPage.riskLabels.high" },
+    { threshold: 2.5, verbalKey: "earnPage.riskLabels.medium" },
+    { threshold: 0, verbalKey: "earnPage.riskLabels.low" },
+  ];
+
+  let verbalKey = "low";
+
+  for (const { threshold, verbalKey: key } of thresholds) {
+    if (value > threshold) {
+      verbalKey = key;
+      break;
+    }
+  }
+
+  return { value, verbalKey };
 }
 
 export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
+  const { t } = useTranslation();
+
   const RiskLink =
     item.row.original.riskReportUrl &&
     item.row.original.riskReportUrl.length > 0
       ? Link
       : "div";
+
+  const { value, verbalKey } = _getRiskLabels(item.getValue());
 
   return (
     <div className="flex items-center justify-center">
@@ -199,15 +221,16 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
           />
           <Image
             src={"/images/risk-indicator-dial.svg"}
-            alt="Risk indicator background"
+            alt="Risk indicator tick"
             width={44}
             height={8}
             className="absolute left-3.5 -top-1 h-11 w-2"
             style={{ rotate: `${item.getValue() * 180 - 90}deg` }}
           />
         </RiskLink>
-        <p className="text-caption text-osmoverse-200">
-          {_getRiskLabel(item.getValue())}
+        <p className="flex gap-1 text-caption text-osmoverse-200">
+          <span className="whitespace-nowrap">{t(verbalKey)}</span>
+          <span>{value}</span>
         </p>
       </div>
     </div>

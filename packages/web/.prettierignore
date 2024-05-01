@@ -3,6 +3,8 @@
 .eslintignore
 
 /.next
+/e2e/keplr-extension
+coverage
 
 *.ico
 *.svg

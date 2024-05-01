@@ -4,6 +4,7 @@ import {
   earnRouter,
   poolsRouter,
   stakingRouter,
+  transactionsRouter,
 } from "@osmosis-labs/server";
 
 /** Contains tRPC functions running on Vercel's edge network. */
@@ -12,4 +13,5 @@ export const edgeRouter = createTRPCRouter({
   pools: poolsRouter,
   staking: stakingRouter,
   earn: earnRouter,
+  transactions: transactionsRouter,
 });

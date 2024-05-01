@@ -66,6 +66,7 @@ module.exports = {
       rust: {
         200: "#F8C2B0",
         300: "#F5A68C",
+        400: "#F99575",
         500: "#FA825D",
         600: "#E06640",
         700: "#C6451C",
@@ -138,8 +139,8 @@ module.exports = {
       h6: 600,
       subtitle1: 600,
       subtitle2: 400,
-      body1: 400,
-      body2: 400,
+      body1: 500,
+      body2: 500,
       button: 600,
       caption: 400,
       overline: 400,
@@ -239,6 +240,8 @@ module.exports = {
         },
       },
       spacing: {
+        navbar: "72px",
+        "navbar-mobile": "65px",
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         "rewards-w": "108px",

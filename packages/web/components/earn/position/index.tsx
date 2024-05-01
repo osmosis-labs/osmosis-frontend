@@ -195,7 +195,7 @@ export const EarnPosition = ({
 //           selected={false}
 //         />
 //       </div>
-//       <TokenPairHistoricalChart
+//       <HistoricalPriceChart
 //         minimal
 //         showTooltip
 //         showGradient

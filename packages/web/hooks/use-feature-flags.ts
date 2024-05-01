@@ -24,7 +24,9 @@ export type AvailableFlags =
   | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
-  | "portfolioPageAndNewAssetsPage";
+  | "portfolioPageAndNewAssetsPage"
+  | "displayDailyEarn"
+  | "newAssetsPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -51,6 +53,8 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
+  newAssetsPage: false,
+  displayDailyEarn: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
@@ -67,20 +71,25 @@ export const useFeatureFlags = () => {
       client.waitForInitialization().then(() => setIsInitialized(true));
   }, [isInitialized, client]);
 
+  const isDevModeWithoutClientID =
+    process.env.NODE_ENV === "development" &&
+    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
-    ...(process.env.NODE_ENV === "development" &&
-    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-      ? defaultFlags
-      : {}),
+    ...(isDevModeWithoutClientID ? defaultFlags : {}),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-    _isInitialized:
-      process.env.NODE_ENV === "development" &&
-      !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-        ? true
-        : isInitialized,
+    portfolioPageAndNewAssetsPage:
+      // don't want to use either on mobile
+      // as this flag bundles the 2 pages,
+      // and the portfolio page not be mobile responsive yet
+      // (even thought the assets page is)
+      isMobile || !isInitialized
+        ? false
+        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
+    _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;
 };

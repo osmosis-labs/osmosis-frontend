@@ -145,7 +145,13 @@
       "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
-      "title": "تاریخ چه انتقال"
+      "title": "تاریخ چه انتقال",
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",
@@ -200,7 +206,13 @@
       },
       "title": "همه دارایی ها",
       "withdrawButton": "برداشت",
-      "activate": "فعال کنید"
+      "activate": "فعال کنید",
+      "marketCap": "ارزش بازار",
+      "volume24h": "جلد",
+      "price": "قیمت",
+      "balance": "تعادل",
+      "lastWeek": "7 روز گذشته",
+      "asset": "دارایی"
     },
     "totalAssets": "کل دارایی ها",
     "totalBalance": "موجودی کل",
@@ -274,26 +286,47 @@
       "description": "یک توکن تایید نشده است. آیا می خواهید آن را فعال کنید؟ حتما قبل از معامله به طور کامل تحقیق کنید.",
       "reminder": "همیشه می توانید این تنظیم را در حالت تنظیمات غیرفعال کنید."
     },
-    "getStarted": {
-      "title": "با {osmosis} شروع کنید",
-      "description": "برای شروع تجارت فقط در چند مرحله، کیف پول خود را وصل کنید و سرمایه گذاری کنید.",
-      "addFunds": "برای شروع کار پول اضافه کنید"
-    },
     "categories": {
       "new": "جدیدترین",
       "defi": "دیفای",
       "stablecoin": "استیبل کوین ها",
       "meme": "میم",
-      "liquid_staking": "استقرار مایع"
-    }
+      "liquid_staking": "استقرار مایع",
+      "built_on_osmosis": "ساخته شده بر روی اسمز",
+      "sail_initiative": "ابتکار بادبان",
+      "bridges": "پل ها",
+      "nft_protocol": "پروتکل NFT",
+      "ai": "هوش مصنوعی",
+      "privacy": "حریم خصوصی",
+      "social": "اجتماعی",
+      "oracles": "اوراکلز",
+      "dweb": "وب غیرمتمرکز",
+      "rwa": "صدور دارایی دنیای واقعی",
+      "gaming": "بازی",
+      "topGainers": "برترین برندگان",
+      "more": "دسته های بیشتر"
+    },
+    "seeAll": "همه را ببین",
+    "highlights": {
+      "new": "جدید",
+      "topGainers": "برترین برندگان",
+      "upcoming": "آینده"
+    },
+    "balancesMovedTitle": "به دنبال تعادل خود هستید؟",
+    "balancesMovedDescription": "به صفحه نمونه کارها بروید، خانه جدید موجودی های خود و موارد دیگر."
   },
   "portfolio": {
-    "trade": "تجارت",
+    "buy": "خرید کنید",
     "yourAssets": "دارایی های شما",
     "yourPositions": "موقعیت های شما",
     "recentTransfers": "نقل و انتقالات اخیر",
     "yourSuperchargedPositions": "موقعیت های سوپرشارژ شما",
-    "yourLiquidityPools": "استخرهای نقدینگی شما"
+    "yourLiquidityPools": "استخرهای نقدینگی شما",
+    "connectWallet": "کیف پول خود را وصل کنید تا ردیابی موجودی ها و موقعیت های خود را در اسموز شروع کنید.",
+    "noAssets": "هیچ موجودی در {osmosis} ندارید",
+    "getStarted": "برای شروع، دارایی ها را سپرده گذاری کنید",
+    "noPositions": "شما هیچ مقامی ندارید",
+    "unlockPotential": "پتانسیل درآمد کامل خود را باز کنید و دارایی های خود را با استخرهای نقدینگی کار کنید"
   },
   "buyTokens": "خرید توکن",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -414,7 +448,9 @@
     "marsSubtext": "پشتیبانی شده توسط مریخ",
     "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
-    "new": "جدید"
+    "new": "جدید",
+    "settings": "تنظیمات",
+    "notifications": "اطلاعیه"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
@@ -569,7 +605,8 @@
     "balance": "موجودی",
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
-    "wallet": "کیف پول"
+    "wallet": "کیف پول",
+    "transactions": "معاملات"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
@@ -586,6 +623,10 @@
     "titleLanguage": "زبان",
     "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
     "hideBalances": "تعادل های ماسک شده"
+  },
+  "search": {
+    "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
   },
   "stake": {
     "available": "دسترس",
@@ -692,6 +733,7 @@
       "hide": "مخفی",
       "show": "نماید"
     },
+    "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "پویا"
   },
   "walletSelect": {
+    "gettingStarted": "شروع شدن",
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
     "isNotInstalled": "تعریف نشده",
@@ -823,7 +866,6 @@
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "خرید {coinDenom}",
     "staking": "شرط بندی",
     "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
@@ -851,7 +893,6 @@
     "myStrategies": "استراتژی های شما",
     "strategyPlatform": "استراتژی",
     "apy": "آوریل",
-    "daily": "روزانه",
     "reward": "جایزه",
     "lock": "بی بند و باری",
     "days": "روزها",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "فقط بی بند و باری فوری",
     "tooltips": {
       "apr": {
-        "description": "نرخ درصدی سالانه (APR) به درصد بازده سالانه یک استراتژی اشاره دارد. توجه: بازده یک استراتژی ممکن است بر اساس مشارکت و عملکرد نوسان داشته باشد."
-      },
-      "daily": {
-        "description": "درصد بازده روزانه یک استراتژی - مشابه APR، اما منعکس کننده بازده روزانه به جای سالانه. توجه: بازده یک استراتژی ممکن است بر اساس مشارکت و عملکرد نوسان داشته باشد."
+        "description": "نرخ درصدی سالانه (APR) به درصد بازده سالانه یک استراتژی اشاره دارد.\n\nتوجه: بازده یک استراتژی ممکن است بر اساس مشارکت و عملکرد نوسان داشته باشد.\n\nسلب مسئولیت: این APR ها توسط خود پروژه ها گزارش می شوند و ممکن است نادرست باشند."
       },
       "tvl": {
         "description": "ارزش کل قفل شده (TVL) به کل ارزش دلاری دارایی های سپرده شده در استراتژی اشاره دارد."
@@ -915,6 +953,12 @@
       "risk": {
         "description": "ارزیابی ریسک شامل در نظر گرفتن ترکیبی از معیارهای مرتبط با یک استراتژی و دارایی های زیربنایی آن است."
       }
+    },
+    "riskLabels": {
+      "low": "کم",
+      "medium": "متوسط",
+      "high": "بالا",
+      "veryHigh": "خیلی بالا"
     }
   },
   "disclaimer": "سلب مسئولیت",
@@ -924,5 +968,30 @@
     "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
     "buttonContinue": "ادامه دادن به هر طریق",
     "buttonCancel": "لغو کنید"
-  }
+  },
+  "transactions": {
+    "noRecent": "بدون نقل و انتقالات اخیر",
+    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند.",
+    "noTransactions": "بدون معامله",
+    "pastShownHere": "معاملات گذشته شما در Osmosis در اینجا ظاهر می شود.",
+    "connectToSee": "برای مشاهده تاریخچه تراکنش خود وصل شوید",
+    "connectWallet": "کیف پول را وصل کنید",
+    "title": "معاملات",
+    "swapping": "مبادله",
+    "swapped": "تعویض شد",
+    "swapFailed": "تعویض انجام نشد",
+    "taxReports": "گزارش های مالیاتی",
+    "explorer": "کاوشگر",
+    "sold": "فروخته شد",
+    "bought": "خرید",
+    "executionPrice": "قیمت اجرا",
+    "totalFees": "مجموع هزینه ها",
+    "transactionHash": "هش تراکنش",
+    "viewOnExplorer": "مشاهده در اکسپلورر"
+  },
+  "date": {
+    "earlierToday": "اوایل امروز",
+    "yesterday": "دیروز"
+  },
+  "backToTop": "بازگشت به بالا"
 }

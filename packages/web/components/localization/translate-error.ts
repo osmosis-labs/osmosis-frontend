@@ -15,6 +15,7 @@ import {
   DepositNoBalanceError,
   HighSwapFeeError,
   InsufficientBalanceError,
+  InsufficientBalanceForFeeError,
   InvalidScalingFactorControllerAddress,
   InvalidSlippageError,
   InvalidSwapFeeError,
@@ -73,6 +74,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.noSendCurrency"];
   } else if (e instanceof InsufficientBalanceError) {
     return ["errors.insufficientBal"];
+  } else if (e instanceof InsufficientBalanceForFeeError) {
+    return ["errors.insufficientBalForFee"];
   } else if (e instanceof NotInitializedError) {
     return ["errors.notInitialized"];
   } else if (e instanceof CalculatingShareOutAmountError) {

@@ -11,7 +11,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/loaders/spinner";
@@ -27,8 +27,7 @@ import {
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { getNumberMagnitude } from "~/utils/number";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -39,8 +38,8 @@ const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () => import("~/components/chart/price-historical"),
   { ssr: false }
 );
 
@@ -133,6 +132,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         removeQueryParam(OpenCreatePositionSearchParam);
       }
     }, [openCreatePosition]);
+
+    const formatOpts = useMemo(
+      () => getPriceExtendedFormatOptions(currentPrice),
+      [currentPrice]
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -290,14 +294,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       }
                     )}
                   >
-                    {formatPretty(currentPrice, {
-                      maxDecimals:
-                        getNumberMagnitude(Number(currentPrice.toString())) <=
-                        -3
-                          ? 0
-                          : 2,
-                      scientificMagnitudeThreshold: 3,
-                    })}
+                    {formatPretty(currentPrice, formatOpts)}
                   </h6>
                 )}
               </div>
@@ -397,8 +394,14 @@ const ChartHeader: FunctionComponent<{
     hoverPrice,
   } = config;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDenom}
@@ -422,7 +425,7 @@ const Chart: FunctionComponent<{
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={[]}
       domain={yRange}

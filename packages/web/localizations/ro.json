@@ -145,7 +145,13 @@
       "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
-      "title": "Istoric Transferuri"
+      "title": "Istoric Transferuri",
+      "pendingDeposit": "Depunere în așteptare",
+      "pendingWithdraw": "Retragere în așteptare",
+      "successDeposit": "Depunere reușită",
+      "successWithdraw": "Retragere reușită",
+      "failDeposit": "Depunere nereușită",
+      "failWithdraw": "Retragere nereușită"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",
@@ -200,7 +206,13 @@
       },
       "title": "Active",
       "withdrawButton": "Retrage",
-      "activate": "Activati"
+      "activate": "Activati",
+      "marketCap": "Capitalizarea pieței",
+      "volume24h": "Volum",
+      "price": "Preț",
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -274,26 +286,47 @@
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
       "reminder": "Puteți dezactiva oricând această setare în modal de setări."
     },
-    "getStarted": {
-      "title": "Începeți cu {osmosis}",
-      "description": "Conectați-vă și finanțați-vă portofelul pentru a începe tranzacționarea în doar câțiva pași.",
-      "addFunds": "Adăugați fonduri pentru a începe"
-    },
     "categories": {
       "new": "Cel mai nou",
       "defi": "DeFi",
       "stablecoin": "Monede stabile",
       "meme": "Eu eu",
-      "liquid_staking": "Mărire lichidă"
-    }
+      "liquid_staking": "Mărire lichidă",
+      "built_on_osmosis": "Construit pe osmoză",
+      "sail_initiative": "Inițiativa Sail",
+      "bridges": "Poduri",
+      "nft_protocol": "Protocolul NFT",
+      "ai": "AI",
+      "privacy": "Confidențialitate",
+      "social": "Social",
+      "oracles": "Oracole",
+      "dweb": "Web descentralizat",
+      "rwa": "Emiterea de active din lumea reală",
+      "gaming": "Jocuri",
+      "topGainers": "Câștigători de top",
+      "more": "Mai multe categorii"
+    },
+    "seeAll": "Vezi toate",
+    "highlights": {
+      "new": "Nou",
+      "topGainers": "Câștigători de top",
+      "upcoming": "În viitor"
+    },
+    "balancesMovedTitle": "Îți cauți soldurile?",
+    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
   },
   "portfolio": {
-    "trade": "Comerț",
+    "buy": "Cumpără",
     "yourAssets": "Activele tale",
     "yourPositions": "Pozițiile tale",
     "recentTransfers": "Transferuri recente",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
-    "yourLiquidityPools": "Fondurile dvs. de lichiditate"
+    "yourLiquidityPools": "Fondurile dvs. de lichiditate",
+    "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis.",
+    "noAssets": "Nu aveți solduri pe {osmosis}",
+    "getStarted": "Depuneți active pentru a începe",
+    "noPositions": "Nu ai posturi",
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
@@ -414,7 +448,9 @@
     "marsSubtext": "Alimentat de Marte",
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
-    "new": "NOU"
+    "new": "NOU",
+    "settings": "Setări",
+    "notifications": "Notificări"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -569,7 +605,8 @@
     "balance": "Balanta",
     "modalTitle": "Profil",
     "viewAllAssets": "Vedeți toate activele",
-    "wallet": "Portofel"
+    "wallet": "Portofel",
+    "transactions": "Tranzacții"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",
@@ -586,6 +623,10 @@
     "titleLanguage": "Limba",
     "titleHideBalances": "Balanțele de mască pentru confidențialitate",
     "hideBalances": "Balanțe Mascate"
+  },
+  "search": {
+    "noResultsFor": "Niciun rezultat pentru \" {query} \"",
+    "adjust": "Încercați să ajustați interogarea de căutare"
   },
   "stake": {
     "available": "Disponibil",
@@ -692,6 +733,7 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
+    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
+    "gettingStarted": "Noțiuni de bază",
     "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
     "somethingWentWrong": "Ceva nu a mers bine",
     "isNotInstalled": "{walletName} nu este instalat",
@@ -823,7 +866,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
@@ -851,7 +893,6 @@
     "myStrategies": "Strategiile tale",
     "strategyPlatform": "Strategie",
     "apy": "APRILIE",
-    "daily": "Zilnic",
     "reward": "Răsplată",
     "lock": "Dezlegați",
     "days": "zile",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "Dezlegarea instantanee numai",
     "tooltips": {
       "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
-      },
-      "daily": {
-        "description": "Randamentul procentual zilnic al unei strategii - asemănător cu DAE, dar care reflectă randamentul zilnic în loc de anual. Notă: rentabilitatea unei strategii poate varia în funcție de participare și performanță."
+        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
       },
       "tvl": {
         "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
@@ -915,6 +953,12 @@
       "risk": {
         "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
       }
+    },
+    "riskLabels": {
+      "low": "Scăzut",
+      "medium": "Mediu",
+      "high": "Înalt",
+      "veryHigh": "Foarte inalt"
     }
   },
   "disclaimer": "Disclaimer",
@@ -924,5 +968,30 @@
     "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
     "buttonContinue": "Continua oricum",
     "buttonCancel": "Anulare"
-  }
+  },
+  "transactions": {
+    "noRecent": "Fără transferuri recente",
+    "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici.",
+    "noTransactions": "Fără tranzacții",
+    "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
+    "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
+    "connectWallet": "Conectați portofelul",
+    "title": "Tranzacții",
+    "swapping": "Schimbarea",
+    "swapped": "Schimbat",
+    "swapFailed": "Schimbarea a eșuat",
+    "taxReports": "Rapoarte fiscale",
+    "explorer": "Explorator",
+    "sold": "Vândut",
+    "bought": "Cumparat",
+    "executionPrice": "Pretul de executie",
+    "totalFees": "Taxe totale",
+    "transactionHash": "Hash de tranzacție",
+    "viewOnExplorer": "Vizualizare pe explorer"
+  },
+  "date": {
+    "earlierToday": "Mai devreme astazi",
+    "yesterday": "Ieri"
+  },
+  "backToTop": "Inapoi sus"
 }

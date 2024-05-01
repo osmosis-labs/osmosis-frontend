@@ -4,11 +4,9 @@ import { FunctionComponent, useCallback, useState } from "react";
 
 import { Transfer } from "~/components/complex/transfer";
 import { UnstableAssetWarning } from "~/components/complex/unstable-assets-warning";
-import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   IbcTransfer,
-  useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useIbcTransfer,
 } from "~/hooks";
@@ -32,8 +30,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const { onOpenWalletSelect, isLoading: isWalletSelectLoading } =
       useWalletSelect();
-
-    const { logEvent } = useAmplitudeAnalytics();
 
     const [
       account,
@@ -80,30 +76,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             inTransit ||
             !isCustomWithdrawValid,
           onClick: () => {
-            logEvent([
-              isWithdraw
-                ? EventName.Assets.withdrawAssetStarted
-                : EventName.Assets.depositAssetStarted,
-              {
-                tokenName: amountConfig.sendCurrency.coinDenom,
-                tokenAmount: Number(amountConfig.amount),
-                bridge: "IBC",
-              },
-            ]);
             // failure events are handled by the root store
             transfer(
               (txFullfillEvent) => {
                 // success
-                logEvent([
-                  isWithdraw
-                    ? EventName.Assets.withdrawAssetCompleted
-                    : EventName.Assets.depositAssetCompleted,
-                  {
-                    tokenName: amountConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(amountConfig.amount),
-                    bridge: "IBC",
-                  },
-                ]);
                 ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
                 props.onRequestClose();
               },
@@ -135,6 +111,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const areWalletsConnected =
       walletConnected &&
       counterpartyAccount?.walletStatus === WalletStatus.Connected;
+
+    const chainInfo = chainStore.getChain(osmosisChainId);
+
+    /**
+     * If the currency is not found in the chain info, query the balance
+     * of OSMO to trigger the ibc registrar and add all missing currencies
+     */
+    if (
+      !chainInfo.currencies.find(
+        (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
+      )
+    ) {
+      queriesStore
+        .get(osmosisChainId)
+        .queryBalances.getQueryBech32Address(account?.address ?? "")
+        .getBalanceFromCurrency(chainInfo.currencies[0]);
+    }
 
     const availableBalance = isWithdraw
       ? queriesStore

@@ -7,7 +7,7 @@
 
 export type AmountDefault = "half" | "max" | "input";
 
-export type SwapPage = "Swap Page" | "Token Info Page";
+export type EventPage = "Swap Page" | "Token Info Page" | "Pool Details Page";
 
 export type EventProperties = {
   fromToken: string;
@@ -36,8 +36,6 @@ export type EventProperties = {
   validatorCommission: number;
   isOn: boolean;
   tokenName: string;
-  tokenAmount: number;
-  bridge: string;
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
   strategy: string;
@@ -47,7 +45,7 @@ export type EventProperties = {
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
   title: "Stake" | "Explore Pools";
-  page: SwapPage;
+  page: EventPage;
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;
@@ -60,16 +58,12 @@ export type EventProperties = {
   router: string;
   errorMessage: string | undefined;
   valueUsd: number;
+  assetCategory: string;
 };
 
 export type UserProperties = {
   isWalletConnected: boolean;
   connectedWallet: string;
-  totalAssetsPrice: number;
-  unbondedAssetsPrice: number;
-  bondedAssetsPrice: number;
-  stakedOsmoPrice: number;
-  osmoBalance: number;
   myPoolsCount: number;
 };
 
@@ -156,22 +150,9 @@ export const EventName = {
   // Events in assets page
   Assets: {
     pageViewed: "Assets: Page viewed",
-    depositClicked: "Assets: Deposit clicked",
-    withdrawClicked: "Assets: Withdraw clicked",
     assetClicked: "Assets: Asset clicked",
-    myPoolsCardClicked: "Assets: My pools card clicked",
-    myPoolsMoreClicked: "Assets: My pools more clicked",
-    assetsListFiltered: "Assets: Assets list filtered",
     assetsListSorted: "Assets: Assets list sorted",
-    assetsListMoreClicked: "Assets: Assets list more clicked",
-    assetsItemDepositClicked: "Assets: Assets item deposit clicked",
-    assetsItemWithdrawClicked: "Assets: Assets item withdraw clicked",
-    depositAssetStarted: "Deposit asset: Deposit started",
-    depositAssetCompleted: "Deposit asset: Deposit completed",
-    withdrawAssetStarted: "Withdraw asset: Withdraw started",
-    withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
-    buyOsmoStarted: "Assets: Buy OSMO started",
-    buyOsmoCompleted: "Assets: Buy OSMO completed",
+    categorySelected: "Assets: Category selected",
   },
   // Events in profile modal
   ProfileModal: {
@@ -246,6 +227,12 @@ export const EventName = {
     rewardsClaimStarted: "Earn Page: Rewards claim started",
     joinStrategyClicked: "Earn Page: Join strategy clicked",
     joinStrategyCompleted: "Earn Page: Join strategy completed",
+  },
+  TransactionsPage: {
+    pageViewed: "Transactions: Page viewed",
+    swapClicked: "Transactions: Swap clicked",
+    taxReportsClicked: "Transactions: Tax reports clicked",
+    explorerClicked: "Transactions: Explorer clicked",
   },
   QueryError: "Query error",
 };

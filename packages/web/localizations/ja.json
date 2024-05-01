@@ -145,7 +145,13 @@
       "pendingRefunded": "失敗: 返金保留中",
       "refunded": "返金されました",
       "success": "成功",
-      "title": "転送履歴"
+      "title": "転送履歴",
+      "pendingDeposit": "保留中の入金",
+      "pendingWithdraw": "保留中の撤回",
+      "successDeposit": "寄託",
+      "successWithdraw": "撤退",
+      "failDeposit": "入金に失敗しました",
+      "failWithdraw": "引き出しに失敗しました"
     },
     "ibcTransfer": {
       "buttonAdd": "追加",
@@ -200,7 +206,13 @@
       },
       "title": "すべての資産",
       "withdrawButton": "撤回する",
-      "activate": "活性化"
+      "activate": "活性化",
+      "marketCap": "時価総額",
+      "volume24h": "音量",
+      "price": "価格",
+      "balance": "バランス",
+      "lastWeek": "過去7日間",
+      "asset": "資産"
     },
     "totalAssets": "総資産",
     "totalBalance": "総合収支",
@@ -274,26 +286,47 @@
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
       "reminder": "この設定は、設定モーダルでいつでも無効にできます。"
     },
-    "getStarted": {
-      "title": "{osmosis}を使ってみましょう",
-      "description": "ウォレットに接続して資金を投入すると、わずか数ステップで取引を開始できます。",
-      "addFunds": "開始するには資金を追加してください"
-    },
     "categories": {
       "new": "最新",
       "defi": "DeFi",
       "stablecoin": "ステーブルコイン",
       "meme": "ミーム",
-      "liquid_staking": "リキッドステーキング"
-    }
+      "liquid_staking": "リキッドステーキング",
+      "built_on_osmosis": "浸透に基づいて構築",
+      "sail_initiative": "セイルイニシアチブ",
+      "bridges": "橋",
+      "nft_protocol": "NFT プロトコル",
+      "ai": "人工知能",
+      "privacy": "プライバシー",
+      "social": "社交",
+      "oracles": "オラクル",
+      "dweb": "分散型ウェブ",
+      "rwa": "現実世界の資産発行",
+      "gaming": "ゲーム",
+      "topGainers": "上位の利益",
+      "more": "その他のカテゴリー"
+    },
+    "seeAll": "すべてを見る",
+    "highlights": {
+      "new": "新しい",
+      "topGainers": "上位の利益",
+      "upcoming": "今後の予定"
+    },
+    "balancesMovedTitle": "残高をお探しですか?",
+    "balancesMovedDescription": "残高などを確認するための新しいホームであるポートフォリオ ページに移動します。"
   },
   "portfolio": {
-    "trade": "貿易",
+    "buy": "買う",
     "yourAssets": "あなたの資産",
     "yourPositions": "あなたの立場",
     "recentTransfers": "最近の送金",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
-    "yourLiquidityPools": "流動性プール"
+    "yourLiquidityPools": "流動性プール",
+    "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
+    "noAssets": "{osmosis}に残高がありません",
+    "getStarted": "始めるには資産を預けてください",
+    "noPositions": "ポジションがありません",
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
   },
   "buyTokens": "トークンを購入する",
   "components": {
@@ -343,6 +376,7 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
+    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
@@ -414,7 +448,9 @@
     "marsSubtext": "火星の力を借りて",
     "levanaSubtext": "レヴァナが提供する",
     "more": "もっと",
-    "new": "新しい"
+    "new": "新しい",
+    "settings": "設定",
+    "notifications": "通知"
   },
   "notifi": {
     "saveChanges": "変更内容を保存",
@@ -569,7 +605,8 @@
     "balance": "バランス",
     "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
-    "wallet": "財布"
+    "wallet": "財布",
+    "transactions": "取引"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",
@@ -586,6 +623,10 @@
     "titleLanguage": "言語",
     "titleHideBalances": "プライバシーを考慮したマスクバランス",
     "hideBalances": "マスクされた残高"
+  },
+  "search": {
+    "noResultsFor": "「 {query}に該当する結果はありません",
+    "adjust": "検索クエリを調整してみてください"
   },
   "stake": {
     "available": "利用可能",
@@ -692,6 +733,7 @@
       "hide": "隠れる",
       "show": "見せる"
     },
+    "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
     "available": "利用可能",
     "button": "スワップ",
     "buttonError": "とにかく交換する",
@@ -719,6 +761,7 @@
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
+    "gettingStarted": "はじめる",
     "connectionInProgress": "ウォレット接続はすでに進行中です。拡張機能を開いてステータスを確認してください。",
     "somethingWentWrong": "何か問題が発生しました",
     "isNotInstalled": "{walletName}インストールされていません",
@@ -823,7 +866,6 @@
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom}を購入する",
     "staking": "ステーキング",
     "liquidityInOSMOPools": "{number} {denom}プールの流動性"
@@ -851,7 +893,6 @@
     "myStrategies": "あなたの戦略",
     "strategyPlatform": "戦略",
     "apy": "4月",
-    "daily": "毎日",
     "reward": "褒美",
     "lock": "結合を解除する",
     "days": "日々",
@@ -895,10 +936,7 @@
     "instantUnbondOnly": "即時結合解除のみ",
     "tooltips": {
       "apr": {
-        "description": "年間パーセンテージ レート (APR) は、戦略の年率リターンを指します。注: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。"
-      },
-      "daily": {
-        "description": "戦略の毎日のパーセンテージ収益 - APR に似ていますが、年間ではなく毎日の収益を反映します。注: 戦略の収益は、参加とパフォーマンスに基づいて変動する場合があります。"
+        "description": "年率 (APR) は、戦略の年間パーセンテージ収益を指します。<inlang-LineFeed><inlang-LineFeed>注意: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。<inlang-LineFeed><inlang-LineFeed>免責事項: これらの APR はプロジェクト自体によって自己報告されたものであり、不正確な可能性があります。"
       },
       "tvl": {
         "description": "Total Value Locked (TVL) は、ストラテジーに入金された資産の米ドル総額を指します。"
@@ -915,6 +953,12 @@
       "risk": {
         "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
       }
+    },
+    "riskLabels": {
+      "low": "低い",
+      "medium": "中くらい",
+      "high": "高い",
+      "veryHigh": "すごく高い"
     }
   },
   "disclaimer": "免責事項",
@@ -924,5 +968,30 @@
     "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
     "buttonContinue": "とにかく続けます",
     "buttonCancel": "キャンセル"
-  }
+  },
+  "transactions": {
+    "noRecent": "最近の送金はありません",
+    "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。",
+    "noTransactions": "取引なし",
+    "pastShownHere": "Osmosis での過去の取引がここに表示されます。",
+    "connectToSee": "取引履歴を表示するには接続してください",
+    "connectWallet": "ウォレットを接続する",
+    "title": "取引",
+    "swapping": "スワッピング",
+    "swapped": "交換",
+    "swapFailed": "スワップに失敗しました",
+    "taxReports": "税務レポート",
+    "explorer": "冒険者",
+    "sold": "販売済み",
+    "bought": "買った",
+    "executionPrice": "執行価格",
+    "totalFees": "合計料金",
+    "transactionHash": "トランザクションハッシュ",
+    "viewOnExplorer": "エクスプローラーで見る"
+  },
+  "date": {
+    "earlierToday": "本日",
+    "yesterday": "昨日"
+  },
+  "backToTop": "トップに戻る"
 }
