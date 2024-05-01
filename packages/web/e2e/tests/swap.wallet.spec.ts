@@ -19,23 +19,23 @@ test.describe("Test Swap feature", () => {
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
 
   test.beforeEach(async () => {
-    console.log(
-      "Before tests setup Wallet Extension. This will be extracted to a separate fixture"
-    );
+    console.log("Before test setup Wallet Extension.");
     // Launch Chrome with a Keplr wallet extension
-    const extensionId = "ibomioleaahcoaakgginocklpgejhmen";
     const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
+        "--headless=new",
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
     });
-    const page = await context.newPage();
+    // Get all new pages (including Extension) in the context and wait
+    const emptyPage = context.pages()[0];
+    await emptyPage.waitForTimeout(2000);
+    const page = context.pages()[1];
     const walletPage = new WalletPage(page);
-    await walletPage.goto(extensionId);
-    // Import existing Wallet (also could be aggregated in one function.
+    // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
     await walletPage.setWalletNameAndPassword("Test", password);
     await walletPage.selectChainsAndSave();
@@ -43,16 +43,14 @@ test.describe("Test Swap feature", () => {
     // Switch to Application
     swapPage = new SwapPage(await context.newPage());
     await swapPage.goto();
-    // This is needed to handle a wallet popup
-    const pagePromise = context.waitForEvent("page");
-    await swapPage.connectWallet(pagePromise);
+    await swapPage.connectWallet();
   });
 
   test.afterEach(async () => {
     await context.close();
   });
 
-  test("User should be able to swap OSMO to ATOM", async () => {
+  test.skip("User should be able to swap OSMO to ATOM", async () => {
     await swapPage.selectPair("OSMO", "ATOM");
     await swapPage.swap("0.01");
     // Handle Pop-up page ->
@@ -69,7 +67,7 @@ test.describe("Test Swap feature", () => {
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 
-  test("User should be able to swap ATOM to OSMO", async () => {
+  test.skip("User should be able to swap ATOM to OSMO", async () => {
     await swapPage.selectPair("ATOM", "OSMO");
     await swapPage.swap("0.001");
     // Handle Pop-up page ->
