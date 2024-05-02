@@ -19,6 +19,7 @@ jobs:
           echo "$DEPLOYMENT_STATUS"
 
   master-e2e-tests:
+    needs: verify-environment
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production – osmosis-frontend'
     runs-on: macos-latest
     environment:
@@ -62,6 +63,7 @@ jobs:
           path: packages/web/test-results/test-results.xml
 
   stage-e2e-tests:
+    needs: verify-environment
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
     runs-on: macos-latest
     environment:
