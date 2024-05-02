@@ -2,24 +2,9 @@ name: Frontend E2E tests Workflow
 
 on:
   deployment_status:
-  workflow_dispatch:
 
 jobs:
-  verify-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify App url and environment
-        env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
-          DEPLOYMENT_STATUS_ENVIRONMENT: ${{ github.event.deployment_status.environment }}
-          DEPLOYMENT_STATUS: ${{toJson(github.event.deployment_status)}}
-        run: |
-          echo "$BASE_URL"
-          echo "$DEPLOYMENT_STATUS_ENVIRONMENT"
-          echo "$DEPLOYMENT_STATUS"
-
   master-e2e-tests:
-    needs: verify-environment
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production – osmosis-frontend'
     runs-on: macos-latest
     environment:
@@ -62,8 +47,7 @@ jobs:
           name: main-e2e-junit-results
           path: packages/web/test-results/test-results.xml
 
-  stage-e2e-tests:
-    needs: verify-environment
+  preview-e2e-tests:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
     runs-on: macos-latest
     environment:
@@ -87,7 +71,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Select Swap Pair tests on Stage
         env:
-          BASE_URL: "https://stage.osmosis.zone"
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
@@ -97,5 +81,5 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: stage-e2e-test-results
+          name: preview-e2e-test-results
           path: packages/web/playwright-report
