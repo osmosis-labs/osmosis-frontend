@@ -48,50 +48,71 @@ function mapMetadata(
   metadataArray: Metadata[],
   assetLists: AssetList[]
 ): FormattedMetadata[] {
-  return metadataArray.map((metadata) => ({
-    ...metadata,
-    value: metadata.value.map((valueItem) => ({
-      ...valueItem,
-      txFee: valueItem.txFee.map((fee) => ({
-        token: new CoinPretty(
-          getAsset({
-            assetLists,
-            anyDenom: fee?.denom,
-          }),
-          fee?.amount
-        ),
-        usd: new PricePretty(DEFAULT_VS_CURRENCY, fee?.usd),
-      })),
-      txInfo: {
-        tokenIn: {
-          token: new CoinPretty(
-            getAsset({
-              assetLists,
-              anyDenom: valueItem.txInfo.tokenIn?.denom,
-            }),
-            valueItem.txInfo.tokenIn?.amount
-          ),
-          usd: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            valueItem.txInfo.tokenIn?.usd
-          ),
-        },
-        tokenOut: {
-          token: new CoinPretty(
-            getAsset({
-              assetLists,
-              anyDenom: valueItem.txInfo.tokenOut?.denom,
-            }),
-            valueItem.txInfo.tokenOut?.amount
-          ),
-          usd: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            valueItem.txInfo.tokenOut?.usd
-          ),
-        },
-      },
-    })),
-  }));
+  return (
+    metadataArray
+      .map((metadata) => {
+        try {
+          return {
+            ...metadata,
+            value: metadata.value.map((valueItem) => ({
+              ...valueItem,
+              txFee: valueItem.txFee.map((fee) => {
+                try {
+                  return {
+                    token: new CoinPretty(
+                      getAsset({
+                        assetLists,
+                        anyDenom: fee?.denom,
+                      }),
+                      fee?.amount
+                    ),
+                    usd: new PricePretty(DEFAULT_VS_CURRENCY, fee?.usd),
+                  };
+                } catch (error) {
+                  throw new Error("Error mapping txFee");
+                }
+              }),
+              txInfo: {
+                tokenIn: {
+                  token: new CoinPretty(
+                    getAsset({
+                      assetLists,
+                      anyDenom: valueItem.txInfo.tokenIn?.denom,
+                    }),
+                    valueItem.txInfo.tokenIn?.amount
+                  ),
+                  usd: new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    valueItem.txInfo.tokenIn?.usd
+                  ),
+                },
+                tokenOut: {
+                  token: new CoinPretty(
+                    getAsset({
+                      assetLists,
+                      anyDenom: valueItem.txInfo.tokenOut?.denom,
+                    }),
+                    valueItem.txInfo.tokenOut?.amount
+                  ),
+                  usd: new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    valueItem.txInfo.tokenOut?.usd
+                  ),
+                },
+              },
+            })),
+          };
+        } catch (error) {
+          console.log("Error mapping metadata: ", error);
+          return null;
+        }
+      })
+      // filter out any null values or values with empty arrays, indicating an error with getAsset
+      .filter((metadata) => {
+        console.log("metadata: ", metadata);
+        return metadata !== null;
+      }) as FormattedMetadata[]
+  );
 }
 
 export interface GetTransactionsResponse {
@@ -142,8 +163,8 @@ export async function getTransactions({
 
       // TODO - wrap getAsset with captureIfError
 
-      const mappedSwapTransactions = filteredSwapTransactions.map(
-        (transaction) => {
+      const mappedSwapTransactions = filteredSwapTransactions
+        .map((transaction) => {
           return {
             id: transaction._id,
             hash: transaction.hash,
@@ -151,8 +172,11 @@ export async function getTransactions({
             code: transaction.code,
             metadata: mapMetadata(transaction.metadata, assetLists),
           };
-        }
-      );
+        })
+        .filter(
+          (transaction) =>
+            transaction.metadata && transaction.metadata.length > 0
+        );
 
       return {
         transactions: mappedSwapTransactions,
