@@ -130,12 +130,12 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                {tokenIn?.usd?.symbol}
-                {Number(tokenIn.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {tokenIn?.usd?.symbol}
+                {Number(tokenIn.usd.toDec().toString()).toFixed(2)}
               </div>
             </div>
           </div>
@@ -168,12 +168,12 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                {tokenOut?.usd?.symbol}
-                {Number(tokenOut.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {tokenOut?.usd?.symbol}
+                {Number(tokenOut.usd.toDec().toString()).toFixed(2)}
               </div>
             </div>
           </div>
