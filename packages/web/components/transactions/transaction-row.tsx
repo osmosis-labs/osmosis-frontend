@@ -121,22 +121,22 @@ const TokenConversion: FunctionComponent<
     Transaction["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
-  <>
-    <div className="flex w-1/3 items-center justify-end gap-4 md:hidden md:w-auto">
+  <div className="flex w-2/3 items-center justify-end gap-4 md:hidden md:w-auto">
+    <div className="flex w-48 items-center justify-end gap-4">
       <div className="flex flex-col text-right md:hidden">
         {tokenIn.value && (
           <div
             className={classNames("text-subtitle1", {
-              "text-osmoverse-400": status === "pending",
+              "text-osmoverse-480": status === "pending",
               "text-osmoverse-100": status === "success",
               "text-rust-400": status === "failed",
             })}
           >
-            - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
+            {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
           </div>
         )}
         <div className="text-body2 text-osmoverse-400">
-          {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
+          - ${Number(tokenIn?.value?.toDec().toString()).toFixed(2) || 0}
         </div>
       </div>
       <FallbackImg
@@ -147,34 +147,14 @@ const TokenConversion: FunctionComponent<
         width={32}
         className="block md:hidden"
       />
-      <Icon
-        id="arrow-right"
-        width={24}
-        height={24}
-        className="block text-osmoverse-600 md:hidden"
-      />
     </div>
-    <div className="flex w-1/3 items-center justify-end gap-4 md:w-auto">
-      <div className="text-right text-osmoverse-400">
-        {tokenOut.value && (
-          <div
-            className={classNames("text-subtitle1 md:text-body2", {
-              "text-osmoverse-400": status === "pending",
-              "text-bullish-400": effect === "swap" && status === "success",
-              "text-osmoverse-100":
-                (effect === "deposit" || effect === "withdraw") &&
-                status === "success",
-              "text-rust-400": status === "failed",
-            })}
-          >
-            + {tokenOut.value.symbol}
-            {Number(tokenOut.value.toDec().toString()).toFixed(2)}
-          </div>
-        )}
-        <div className="md:caption mt-1 text-body2">
-          {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
-        </div>
-      </div>
+    <Icon
+      id="arrow-right"
+      width={24}
+      height={24}
+      className="block text-osmoverse-600 md:hidden"
+    />
+    <div className="flex w-48 items-center justify-start gap-4">
       <FallbackImg
         alt={tokenOut.amount.denom}
         src={tokenOut.amount.currency.coinImageUrl}
@@ -183,8 +163,24 @@ const TokenConversion: FunctionComponent<
         width={32}
         className="block md:hidden"
       />
+      <div className="text-left text-osmoverse-400">
+        {tokenOut.value && (
+          <div
+            className={classNames("text-subtitle1 md:text-body2", {
+              "text-osmoverse-400": status === "pending",
+              "text-osmoverse-100": effect === "swap" && status === "success",
+              "text-rust-400": status === "failed",
+            })}
+          >
+            {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
+          </div>
+        )}
+        <div className="md:caption mt-0 text-body2 md:mt-1">
+          + {Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
+        </div>
+      </div>
     </div>
-  </>
+  </div>
 );
 
 /** UI for displaying a token being deposited or withdrawn from Osmosis. */

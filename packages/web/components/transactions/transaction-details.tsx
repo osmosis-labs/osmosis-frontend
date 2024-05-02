@@ -81,7 +81,7 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
-        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4":
+        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4":
           !isModal,
       })}
     >
