@@ -188,6 +188,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
+        valueUsd: Number(
+          swapState.tokenOutFiatValue?.toDec().toString() ?? "0"
+        ),
+        page,
       };
       logEvent([
         EventName.Swap.swapStarted,
@@ -195,9 +199,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           ...baseEvent,
           quoteTimeMilliseconds: swapState.quote?.timeMs,
           router: swapState.quote?.name,
-          page,
         },
       ]);
+      console.log({
+        valueUsd: swapState.tokenOutFiatValue?.toDec().toString(),
+      });
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
@@ -209,8 +215,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isMultiHop: result === "multihop",
               quoteTimeMilliseconds: swapState.quote?.timeMs,
               router: swapState.quote?.name,
-              page,
-              valueUsd: Number(swapState.tokenOutFiatValue?.toString() ?? "0"),
             },
           ]);
 
@@ -917,7 +921,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <Button
               disabled={
                 isWalletLoading ||
-                swapState.isQuoteLoading ||
+                !Boolean(swapState.quote) ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     Boolean(swapState.error) ||
