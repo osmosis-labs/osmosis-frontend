@@ -64,8 +64,6 @@ const Transactions: React.FC = observer(() => {
     hasNextPage: false,
   };
 
-  console.log("transactions: ", transactions);
-
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
       router.push("/");

@@ -42,8 +42,8 @@ export interface FormattedTransaction {
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-// TODO - try / catch the getAssets - for v1 omit a specific trx if getAsset fails
-// TODO - try / catch in the map
+// TODO - v2 try / catch the getAssets when there's more data
+//  for v1 omit a specific trx if getAsset fails
 function mapMetadata(
   metadataArray: Metadata[],
   assetLists: AssetList[]
@@ -69,6 +69,7 @@ function mapMetadata(
                     usd: new PricePretty(DEFAULT_VS_CURRENCY, fee?.usd),
                   };
                 } catch (error) {
+                  // TODO - clean up in v2
                   throw new Error("Error mapping txFee");
                 }
               }),
@@ -108,10 +109,7 @@ function mapMetadata(
         }
       })
       // filter out any null values or values with empty arrays, indicating an error with getAsset
-      .filter((metadata) => {
-        console.log("metadata: ", metadata);
-        return metadata !== null;
-      }) as FormattedMetadata[]
+      .filter((metadata) => metadata !== null) as FormattedMetadata[]
   );
 }
 
@@ -173,6 +171,7 @@ export async function getTransactions({
             metadata: mapMetadata(transaction.metadata, assetLists),
           };
         })
+        // filter out transactions with no metadata / empty metadata
         .filter(
           (transaction) =>
             transaction.metadata && transaction.metadata.length > 0
