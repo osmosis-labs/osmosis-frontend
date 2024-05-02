@@ -53,8 +53,7 @@ export const TransactionContent = ({
             {t("transactions.title")}
           </h1>
           <p className="body2 text-osmoverse-200 opacity-50">
-            Currently only trade history is displayed. Support for more
-            transaction types coming soon.
+            {t("transactions.launchAlert")}
           </p>
         </div>
         <TransactionButtons open={open} address={address} />

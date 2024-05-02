@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { Icon } from "~/components/assets";
 import { ButtonProps, buttonVariants } from "~/components/ui/button";
+import { useTranslation } from "~/hooks";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -64,33 +65,40 @@ PaginationLink.displayName = "PaginationLink";
 const PaginationPrevious = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size="default"
-    className={classNames("gap-1", className)}
-    {...props}
-  >
-    <Icon id="arrow-right" height={16} width={16} className="rotate-180" />
-    Newer
-  </PaginationLink>
-);
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+  return (
+    <PaginationLink
+      aria-label="Go to previous page"
+      size="default"
+      className={classNames("gap-1", className)}
+      {...props}
+    >
+      <Icon id="arrow-right" height={16} width={16} className="rotate-180" />
+      {t("pagination.newer")}
+    </PaginationLink>
+  );
+};
 PaginationPrevious.displayName = "PaginationPrevious";
 
 const PaginationNext = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size="default"
-    className={classNames("gap-1", className)}
-    {...props}
-  >
-    Older
-    <Icon id="arrow-right" height={16} width={16} />
-  </PaginationLink>
-);
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+
+  return (
+    <PaginationLink
+      aria-label="Go to next page"
+      size="default"
+      className={classNames("gap-1", className)}
+      {...props}
+    >
+      {t("pagination.older")}
+      <Icon id="arrow-right" height={16} width={16} />
+    </PaginationLink>
+  );
+};
 PaginationNext.displayName = "PaginationNext";
 
 const PaginationEllipsis = ({
