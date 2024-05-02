@@ -987,11 +987,16 @@
     "executionPrice": "执行价格",
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
-    "viewOnExplorer": "在资源管理器中查看"
+    "viewOnExplorer": "在资源管理器中查看",
+    "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。"
   },
   "date": {
     "earlierToday": "今天早些时候",
     "yesterday": "昨天"
   },
-  "backToTop": "回到顶部"
+  "backToTop": "回到顶部",
+  "pagination": {
+    "older": "较旧",
+    "newer": "较新"
+  }
 }

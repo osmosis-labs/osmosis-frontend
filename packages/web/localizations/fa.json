@@ -987,11 +987,16 @@
     "executionPrice": "قیمت اجرا",
     "totalFees": "مجموع هزینه ها",
     "transactionHash": "هش تراکنش",
-    "viewOnExplorer": "مشاهده در اکسپلورر"
+    "viewOnExplorer": "مشاهده در اکسپلورر",
+    "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی."
   },
   "date": {
     "earlierToday": "اوایل امروز",
     "yesterday": "دیروز"
   },
-  "backToTop": "بازگشت به بالا"
+  "backToTop": "بازگشت به بالا",
+  "pagination": {
+    "older": "مسن تر",
+    "newer": "جدیدتر"
+  }
 }

@@ -987,11 +987,16 @@
     "executionPrice": "Ausführungspreis",
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
-    "viewOnExplorer": "Im Explorer anzeigen"
+    "viewOnExplorer": "Im Explorer anzeigen",
+    "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze."
   },
   "date": {
     "earlierToday": "Heute früh",
     "yesterday": "Gestern"
   },
-  "backToTop": "Zurück nach oben"
+  "backToTop": "Zurück nach oben",
+  "pagination": {
+    "older": "Älter",
+    "newer": "Neuere"
+  }
 }
