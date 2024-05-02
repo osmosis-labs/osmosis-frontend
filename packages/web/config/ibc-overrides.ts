@@ -542,7 +542,11 @@ const MainnetIBCAdditionalData: Partial<
   },
   DYM: {
     depositUrlOverride:
-      "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
+      "https://portal.dymension.xyz/ibc/transfer?sourceId=dymension_1100-1&destinationId=osmosis-1",
+  },
+  NIM: {
+    depositUrlOverride:
+      "https://portal.dymension.xyz/ibc/transfer?sourceId=dymension_1100-1&destinationId=osmosis-1",
   },
   "injective.GLTO": {
     depositUrlOverride:
