@@ -176,7 +176,7 @@ const TokenConversion: FunctionComponent<
           </div>
         )}
         <div className="md:caption body2 mt-0 md:mt-1">
-          + {Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
+          + ${Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
         </div>
       </div>
     </div>
