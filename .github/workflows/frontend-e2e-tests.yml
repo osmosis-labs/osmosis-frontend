@@ -53,13 +53,13 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
+          name: main-e2e-test-results
           path: packages/web/playwright-report
       - name: upload junit test results
         id: e2e-junit-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-junit-results
+          name: main-e2e-junit-results
           path: packages/web/test-results/test-results.xml
 
   stage-e2e-tests:
@@ -97,5 +97,5 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
+          name: stage-e2e-test-results
           path: packages/web/playwright-report
