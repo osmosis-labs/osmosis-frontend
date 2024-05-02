@@ -104,7 +104,7 @@ function mapMetadata(
             })),
           };
         } catch (error) {
-          console.log("Error mapping metadata: ", error);
+          // TODO - v2 add potential handler for error, v1 omit row
           return null;
         }
       })
