@@ -83,8 +83,8 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    setCategory("topGainers");
-  }, []);
+    selectCategory("topGainers");
+  }, [selectCategory]);
   const categories = useMemo(
     () =>
       selectedCategory && selectedCategory !== "topGainers"
