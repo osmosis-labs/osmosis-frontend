@@ -122,7 +122,7 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
   <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
-    <div className="flex w-48 items-center justify-end gap-4 md:hidden">
+    <div className="flex w-60 items-center justify-end gap-4 md:hidden">
       <div className="flex flex-col text-right md:hidden">
         {tokenIn.value && (
           <div
@@ -154,7 +154,7 @@ const TokenConversion: FunctionComponent<
       height={24}
       className="block text-osmoverse-600 md:hidden"
     />
-    <div className="flex w-48 items-center justify-start gap-4 md:justify-end">
+    <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
       <FallbackImg
         alt={tokenOut.amount.denom}
         src={tokenOut.amount.currency.coinImageUrl}

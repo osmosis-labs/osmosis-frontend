@@ -71,7 +71,8 @@ const PaginationPrevious = ({
     className={classNames("gap-1", className)}
     {...props}
   >
-    <Icon id="arrow-right" height={24} width={24} className="rotate-180" />
+    <Icon id="arrow-right" height={16} width={16} className="rotate-180" />
+    Newer
   </PaginationLink>
 );
 PaginationPrevious.displayName = "PaginationPrevious";
@@ -86,7 +87,8 @@ const PaginationNext = ({
     className={classNames("gap-1", className)}
     {...props}
   >
-    <Icon id="arrow-right" height={24} width={24} />
+    Older
+    <Icon id="arrow-right" height={16} width={16} />
   </PaginationLink>
 );
 PaginationNext.displayName = "PaginationNext";

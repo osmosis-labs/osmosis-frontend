@@ -81,7 +81,7 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
-        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4":
+        "sticky top-0 ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
       })}
     >
@@ -92,8 +92,8 @@ export const TransactionDetailsContent = ({
               aria-label="Close"
               mode="unstyled"
               size="unstyled"
-              className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
-              icon={<Icon id="close" width={48} height={48} />}
+              className="h-12 w-12 cursor-pointer py-0 text-osmoverse-400 hover:rounded-full hover:bg-osmoverse-850 hover:text-white-full"
+              icon={<Icon id="close-small" width={24} height={24} />}
               onClick={onRequestClose}
             />
           </div>
@@ -180,7 +180,7 @@ export const TransactionDetailsContent = ({
           <div className="body2 flex justify-between gap-3 py-3">
             <div
               onClick={toggleConversion}
-              className="body2 flex cursor-pointer gap-1 whitespace-nowrap"
+              className="body2 flex cursor-pointer items-center gap-1 whitespace-nowrap"
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
@@ -201,9 +201,9 @@ export const TransactionDetailsContent = ({
               })?.toString()}
             </div>
           </div>
-          <div className="body2 flex justify-between py-3">
+          <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <div className="text-wosmongton-300">
                 {getShortAddress(transaction.hash)}
               </div>

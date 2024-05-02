@@ -51,8 +51,8 @@ export const TransactionContent = ({
         <div className="flex flex-col gap-4">
           <h1 className="text-h3 md:text-h5">{t("transactions.title")}</h1>
           <p className="body2 text-osmoverse-200 opacity-50">
-            Currently only swap history is displayed. Support for more
-            transaction types is coming soon.
+            Currently only trade history is displayed. Support for more
+            transaction types coming soon.
           </p>
         </div>
         <TransactionButtons open={open} address={address} />
