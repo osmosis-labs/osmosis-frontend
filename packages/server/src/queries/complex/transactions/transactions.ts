@@ -56,37 +56,37 @@ function mapMetadata(
         token: new CoinPretty(
           getAsset({
             assetLists,
-            anyDenom: fee.denom,
+            anyDenom: fee?.denom,
           }),
-          fee.amount
+          fee?.amount
         ),
-        usd: new PricePretty(DEFAULT_VS_CURRENCY, fee.usd),
+        usd: new PricePretty(DEFAULT_VS_CURRENCY, fee?.usd),
       })),
       txInfo: {
         tokenIn: {
           token: new CoinPretty(
             getAsset({
               assetLists,
-              anyDenom: valueItem.txInfo.tokenIn.denom,
+              anyDenom: valueItem.txInfo.tokenIn?.denom,
             }),
-            valueItem.txInfo.tokenIn.amount
+            valueItem.txInfo.tokenIn?.amount
           ),
           usd: new PricePretty(
             DEFAULT_VS_CURRENCY,
-            valueItem.txInfo.tokenIn.usd
+            valueItem.txInfo.tokenIn?.usd
           ),
         },
         tokenOut: {
           token: new CoinPretty(
             getAsset({
               assetLists,
-              anyDenom: valueItem.txInfo.tokenOut.denom,
+              anyDenom: valueItem.txInfo.tokenOut?.denom,
             }),
-            valueItem.txInfo.tokenOut.amount
+            valueItem.txInfo.tokenOut?.amount
           ),
           usd: new PricePretty(
             DEFAULT_VS_CURRENCY,
-            valueItem.txInfo.tokenOut.usd
+            valueItem.txInfo.tokenOut?.usd
           ),
         },
       },
