@@ -988,7 +988,8 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon."
+    "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
+    "noPriceData": "No price data"
   },
   "date": {
     "earlierToday": "Earlier today",

@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -134,8 +135,7 @@ export const TransactionDetailsContent = ({
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
               <div className="body1 text-osmoverse-300">
-                {tokenIn?.usd?.symbol}
-                {Number(tokenIn.usd.toDec().toString()).toFixed(2)}
+                {displayFiatPrice(tokenIn?.usd, "", t)}
               </div>
             </div>
           </div>
@@ -172,8 +172,7 @@ export const TransactionDetailsContent = ({
                 {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
               <div className="body1 text-osmoverse-300">
-                {tokenOut?.usd?.symbol}
-                {Number(tokenOut.usd.toDec().toString()).toFixed(2)}
+                {displayFiatPrice(tokenOut?.usd, "", t)}
               </div>
             </div>
           </div>

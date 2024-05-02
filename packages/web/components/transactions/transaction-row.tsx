@@ -3,6 +3,8 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -120,70 +122,71 @@ const TokenConversion: FunctionComponent<
   { status: TransactionStatus; effect: Effect } & NonNullable<
     Transaction["tokenConversion"]
   >
-> = ({ status, tokenIn, tokenOut, effect }) => (
-  <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
-    <div className="flex w-60 items-center justify-end gap-4 md:hidden">
-      <div className="flex flex-col text-right md:hidden">
-        {tokenIn.value && (
-          <div
-            className={classNames("subtitle1", {
-              "text-osmoverse-480": status === "pending",
-              "text-osmoverse-100": status === "success",
-              "text-rust-400": status === "failed",
-            })}
-          >
-            {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
+> = ({ status, tokenIn, tokenOut, effect }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
+      <div className="flex w-60 items-center justify-end gap-4 md:hidden">
+        <div className="flex flex-col text-right md:hidden">
+          {tokenIn.value && (
+            <div
+              className={classNames("subtitle1", {
+                "text-osmoverse-480": status === "pending",
+                "text-osmoverse-100": status === "success",
+                "text-rust-400": status === "failed",
+              })}
+            >
+              {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
+            </div>
+          )}
+          <div className="body2 text-osmoverse-400">
+            {displayFiatPrice(tokenIn?.value, "-", t)}
           </div>
-        )}
-        <div className="body2 text-osmoverse-400">
-          - {tokenIn?.value?.symbol}
-          {Number(tokenIn?.value?.toDec().toString()).toFixed(2) || 0}
+        </div>
+        <FallbackImg
+          alt={tokenIn.amount.denom}
+          src={tokenIn.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+          className="block md:hidden"
+        />
+      </div>
+      <Icon
+        id="arrow-right"
+        width={24}
+        height={24}
+        className="block text-osmoverse-600 md:hidden"
+      />
+      <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
+        <FallbackImg
+          alt={tokenOut.amount.denom}
+          src={tokenOut.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+          className="block md:hidden"
+        />
+        <div className="text-left text-osmoverse-400 md:text-right">
+          {tokenOut.value && (
+            <div
+              className={classNames("subtitle1 md:body2", {
+                "text-osmoverse-400": status === "pending",
+                "text-osmoverse-100": effect === "swap" && status === "success",
+                "text-rust-400": status === "failed",
+              })}
+            >
+              {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
+            </div>
+          )}
+          <div className="md:caption body2 mt-0 md:mt-1">
+            {displayFiatPrice(tokenOut?.value, "+", t)}
+          </div>
         </div>
       </div>
-      <FallbackImg
-        alt={tokenIn.amount.denom}
-        src={tokenIn.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
     </div>
-    <Icon
-      id="arrow-right"
-      width={24}
-      height={24}
-      className="block text-osmoverse-600 md:hidden"
-    />
-    <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
-      <FallbackImg
-        alt={tokenOut.amount.denom}
-        src={tokenOut.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
-      <div className="text-left text-osmoverse-400 md:text-right">
-        {tokenOut.value && (
-          <div
-            className={classNames("subtitle1 md:body2", {
-              "text-osmoverse-400": status === "pending",
-              "text-osmoverse-100": effect === "swap" && status === "success",
-              "text-rust-400": status === "failed",
-            })}
-          >
-            {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
-          </div>
-        )}
-        <div className="md:caption body2 mt-0 md:mt-1">
-          + {tokenOut?.value?.symbol}
-          {Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 /** UI for displaying a token being deposited or withdrawn from Osmosis. */
 export const TokenTransfer: FunctionComponent<
