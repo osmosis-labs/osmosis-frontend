@@ -988,7 +988,8 @@
     "totalFees": "총 수수료",
     "transactionHash": "거래 해시",
     "viewOnExplorer": "탐색기에서 보기",
-    "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다."
+    "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다.",
+    "noPriceData": "가격 데이터를 사용할 수 없습니다."
   },
   "date": {
     "earlierToday": "오늘 일찍",

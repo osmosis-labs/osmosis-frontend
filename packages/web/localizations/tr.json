@@ -988,7 +988,8 @@
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
-    "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak."
+    "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
+    "noPriceData": "Fiyat verileri mevcut değil"
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
