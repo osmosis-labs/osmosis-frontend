@@ -110,7 +110,7 @@ export interface NonCosmosCounterparty {
   sourceDenom: string;
   decimals: number;
   symbol: string;
-  logoURIs: LogoURIs;
+  logoURIs?: LogoURIs;
 }
 
 export type Counterparty =
