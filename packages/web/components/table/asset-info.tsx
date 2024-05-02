@@ -27,6 +27,7 @@ import {
   useAmplitudeAnalytics,
   useDimension,
   useTranslation,
+  useUserWatchlist,
   useWindowSize,
 } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
@@ -152,6 +153,8 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
+  const { watchListSymbols, toggleWatchAssetSymbol } = useUserWatchlist();
+
   // Query
   const {
     data: assetPagesData,
@@ -211,12 +214,12 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: t("assets.table.asset"),
-        cell: (cell) => (
+        cell: ({ row: { original } }) => (
           <AssetCell
-            {...cell.row.original}
-            warnUnverified={
-              showUnverifiedAssets && !cell.row.original.isVerified
-            }
+            {...original}
+            warnUnverified={showUnverifiedAssets && !original.isVerified}
+            isInUserWatchlist={watchListSymbols.includes(original.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetSymbol(original.coinDenom)}
           />
         ),
       }),
@@ -309,7 +312,15 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    watchListSymbols,
+    toggleWatchAssetSymbol,
+    setSortKey,
+    t,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {

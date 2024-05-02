@@ -180,6 +180,7 @@ export const assetsRouter = createTRPCRouter({
             "marketCap",
             "volume24h",
           ] as const).optional(),
+          watchListDenoms: z.array(z.string()).optional(),
         })
       )
     )
@@ -189,6 +190,7 @@ export const assetsRouter = createTRPCRouter({
           search,
           onlyVerified,
           sort: sortInput,
+          watchListDenoms,
           categories,
           cursor,
           limit,
@@ -217,6 +219,7 @@ export const assetsRouter = createTRPCRouter({
             search,
             onlyVerified,
             sort: sortInput,
+            watchListDenoms,
             categories,
             includePreview,
           }),
