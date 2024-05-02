@@ -5,7 +5,7 @@ on:
 
 jobs:
   master-e2e-tests:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production – osmosis-frontend'
     runs-on: macos-latest
     environment:
       name: prod_swap_test
@@ -38,17 +38,17 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
+          name: main-e2e-test-results
           path: packages/web/playwright-report
       - name: upload junit test results
         id: e2e-junit-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-junit-results
+          name: main-e2e-junit-results
           path: packages/web/test-results/test-results.xml
 
-  stage-e2e-tests:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.ref == 'refs/heads/stage'
+  preview-e2e-tests:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
     runs-on: macos-latest
     environment:
       name: prod_swap_test
@@ -71,7 +71,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Select Swap Pair tests on Stage
         env:
-          BASE_URL: "https://stage.osmosis.zone"
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
@@ -81,5 +81,5 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
+          name: preview-e2e-test-results
           path: packages/web/playwright-report
