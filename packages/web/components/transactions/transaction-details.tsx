@@ -130,7 +130,8 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
+                {tokenIn?.usd?.symbol}
+                {Number(tokenIn.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}
@@ -167,7 +168,8 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
+                {tokenOut?.usd?.symbol}
+                {Number(tokenOut.usd.toDec().toString()).toFixed(2)}
               </div>
               <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}

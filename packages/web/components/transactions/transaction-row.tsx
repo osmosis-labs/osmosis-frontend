@@ -136,7 +136,8 @@ const TokenConversion: FunctionComponent<
           </div>
         )}
         <div className="body2 text-osmoverse-400">
-          - ${Number(tokenIn?.value?.toDec().toString()).toFixed(2) || 0}
+          - {tokenIn?.value?.symbol}
+          {Number(tokenIn?.value?.toDec().toString()).toFixed(2) || 0}
         </div>
       </div>
       <FallbackImg
@@ -176,7 +177,8 @@ const TokenConversion: FunctionComponent<
           </div>
         )}
         <div className="md:caption body2 mt-0 md:mt-1">
-          + ${Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
+          + {tokenOut?.value?.symbol}
+          {Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
         </div>
       </div>
     </div>
