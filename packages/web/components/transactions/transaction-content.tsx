@@ -49,7 +49,9 @@ export const TransactionContent = ({
     <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
         <div className="flex flex-col gap-4">
-          <h1 className="text-h3 md:text-h5">{t("transactions.title")}</h1>
+          <h1 className="text-h3 font-h3 md:text-h5 md:font-h5">
+            {t("transactions.title")}
+          </h1>
           <p className="body2 text-osmoverse-200 opacity-50">
             Currently only trade history is displayed. Support for more
             transaction types coming soon.
