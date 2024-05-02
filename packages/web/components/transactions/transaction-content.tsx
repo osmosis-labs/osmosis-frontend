@@ -48,7 +48,7 @@ export const TransactionContent = ({
   return (
     <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3">{t("transactions.title")}</h1>
+        <h1 className="text-h3 md:text-h5">{t("transactions.title")}</h1>
         <TransactionButtons open={open} address={address} />
       </div>
 
@@ -63,7 +63,7 @@ export const TransactionContent = ({
           Object.entries(groupTransactionsByDate(transactions)).map(
             ([date, transactions]) => (
               <div key={date} className="flex flex-col px-4 pt-8">
-                <div className="pb-3 capitalize text-osmoverse-300">
+                <div className="subtitle1 md:body2 pb-3 capitalize text-osmoverse-300">
                   {formatDate(date)}
                 </div>
                 <hr className="mb-3 text-osmoverse-700" />
