@@ -60,7 +60,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
       )}
       onClick={() => onClick?.()}
     >
-      <div className="flex w-1/3 items-center gap-4 md:gap-2">
+      <div className="flex w-1/3 items-center gap-4 md:w-1/2 md:gap-2">
         {status === "pending" ? (
           <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
         ) : (
@@ -121,8 +121,8 @@ const TokenConversion: FunctionComponent<
     Transaction["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => (
-  <div className="flex w-2/3 items-center justify-end gap-4 md:hidden md:w-auto">
-    <div className="flex w-48 items-center justify-end gap-4">
+  <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
+    <div className="flex w-48 items-center justify-end gap-4 md:hidden">
       <div className="flex flex-col text-right md:hidden">
         {tokenIn.value && (
           <div
@@ -154,7 +154,7 @@ const TokenConversion: FunctionComponent<
       height={24}
       className="block text-osmoverse-600 md:hidden"
     />
-    <div className="flex w-48 items-center justify-start gap-4">
+    <div className="flex w-48 items-center justify-start gap-4 md:justify-end">
       <FallbackImg
         alt={tokenOut.amount.denom}
         src={tokenOut.amount.currency.coinImageUrl}
@@ -163,7 +163,7 @@ const TokenConversion: FunctionComponent<
         width={32}
         className="block md:hidden"
       />
-      <div className="text-left text-osmoverse-400">
+      <div className="text-left text-osmoverse-400 md:text-right">
         {tokenOut.value && (
           <div
             className={classNames("text-subtitle1 md:text-body2", {
