@@ -90,7 +90,7 @@ export interface CosmosCounterparty {
   sourceDenom: string;
   symbol: string;
   decimals: number;
-  logoURIs: LogoURIs;
+  logoURIs?: LogoURIs;
 }
 
 export interface EVMCounterparty {
@@ -101,7 +101,7 @@ export interface EVMCounterparty {
   address: string;
   symbol: string;
   decimals: number;
-  logoURIs: LogoURIs;
+  logoURIs?: LogoURIs;
 }
 
 export interface NonCosmosCounterparty {
