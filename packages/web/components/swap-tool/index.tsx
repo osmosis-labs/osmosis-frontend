@@ -201,9 +201,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           router: swapState.quote?.name,
         },
       ]);
-      console.log({
-        valueUsd: swapState.tokenOutFiatValue?.toDec().toString(),
-      });
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
