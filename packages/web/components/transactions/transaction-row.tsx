@@ -92,7 +92,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
             {title[status]}
           </p>
           {tokenConversion && (
-            <div className="caption mt-1 hidden text-osmoverse-300 md:block">
+            <div className="caption mt-1 hidden text-osmoverse-300 md:flex md:items-center">
               {formatPretty(tokenConversion.tokenOut.amount, {
                 maxDecimals: 6,
               })}
@@ -126,7 +126,7 @@ const TokenConversion: FunctionComponent<
       <div className="flex flex-col text-right md:hidden">
         {tokenIn.value && (
           <div
-            className={classNames("text-subtitle1", {
+            className={classNames("subtitle1", {
               "text-osmoverse-480": status === "pending",
               "text-osmoverse-100": status === "success",
               "text-rust-400": status === "failed",
@@ -135,7 +135,7 @@ const TokenConversion: FunctionComponent<
             {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
           </div>
         )}
-        <div className="text-body2 text-osmoverse-400">
+        <div className="body2 text-osmoverse-400">
           - ${Number(tokenIn?.value?.toDec().toString()).toFixed(2) || 0}
         </div>
       </div>
@@ -166,7 +166,7 @@ const TokenConversion: FunctionComponent<
       <div className="text-left text-osmoverse-400 md:text-right">
         {tokenOut.value && (
           <div
-            className={classNames("text-subtitle1 md:text-body2", {
+            className={classNames("subtitle1 md:body2", {
               "text-osmoverse-400": status === "pending",
               "text-osmoverse-100": effect === "swap" && status === "success",
               "text-rust-400": status === "failed",
@@ -175,7 +175,7 @@ const TokenConversion: FunctionComponent<
             {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
           </div>
         )}
-        <div className="md:caption mt-0 text-body2 md:mt-1">
+        <div className="md:caption body2 mt-0 md:mt-1">
           + {Number(tokenOut?.value?.toDec().toString()).toFixed(2)}
         </div>
       </div>
@@ -202,7 +202,7 @@ export const TokenTransfer: FunctionComponent<
     </div>
     {value && (
       <div
-        className={classNames("text-subtitle1", {
+        className={classNames("subtitle1", {
           "text-osmoverse-400": status === "pending",
           "text-osmoverse-100": status === "success",
           "text-rust-400": status === "failed",
