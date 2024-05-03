@@ -173,10 +173,12 @@ export class ObservableAssets {
         const cosmosCounterparty = ibcAsset.counterparty[0] as
           | CosmosCounterparty
           | undefined;
-        const chainInfo = this.chainStore.getChain(
-          // first counterparty should be cosmos counterparty where it is bridged
-          cosmosCounterparty?.chainId ?? "no-counterparty-found"
-        );
+
+        if (!cosmosCounterparty)
+          throw new Error("Counterparty chain information not found");
+
+        // first counterparty should be cosmos counterparty where it is bridged
+        const chainInfo = this.chainStore.getChain(cosmosCounterparty.chainId);
 
         const ibcAssetSourceDenom = ibcAsset.sourceDenom;
         const originCurrency = chainInfo.currencies.find((cur) => {
