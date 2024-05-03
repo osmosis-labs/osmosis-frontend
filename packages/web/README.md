@@ -116,8 +116,11 @@ Tests can be executed locally in a browser by changing `headless: true` to `head
 
 ## GitHub E2E Tests workflow
 
-[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on deployment_status event from the Vercel bot.
+[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on `deployment_status` event from the Vercel bot.
 It contains 2 jobs:
 
 - Mainnet tests on condition `github.event.deployment_status.environment == 'Production – osmosis-frontend'`
 - Preview tests on condition `github.event.deployment_status.environment == 'Preview – osmosis-frontend'`
+- Test report is uploaded as Artifact
+  
+![Screenshot 2024-05-03 at 20 06 53](https://github.com/osmosis-labs/osmosis-frontend/assets/62520712/ce00bfac-24a6-429d-ac4e-7dacbbcb8efd)
