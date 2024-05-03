@@ -705,7 +705,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
             ])}
-            headerTrClassName="!h-12 !body2"
+            headerTrClassName="!h-12 !body2 !top-0 z-50"
           />
         )}
         <div className="relative flex h-12 justify-center">

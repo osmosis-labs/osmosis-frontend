@@ -36,7 +36,7 @@ const TransactionsLink = () => {
         </div>
       </div>
       <Button variant="ghost" asChild className="text-wosmongton-200" size="md">
-        <Link href="/transactions">View All</Link>
+        <Link href="/transactions">{t("transactions.viewAll")}</Link>
       </Button>
     </div>
   );

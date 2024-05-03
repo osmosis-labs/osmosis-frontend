@@ -989,7 +989,8 @@
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
     "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。",
-    "noPriceData": "价格数据不可用"
+    "noPriceData": "价格数据不可用",
+    "viewAll": "查看全部"
   },
   "date": {
     "earlierToday": "今天早些时候",
