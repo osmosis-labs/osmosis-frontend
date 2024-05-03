@@ -396,9 +396,9 @@ export const AllPoolsTable: FunctionComponent<{
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="!top-0 z-50">
               {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
+                <th key={header.id} colSpan={header.colSpan} className="z-50">
                   {header.isPlaceholder
                     ? null
                     : flexRender(

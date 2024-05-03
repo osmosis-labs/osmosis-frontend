@@ -989,7 +989,8 @@
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
-    "noPriceData": "Preisdaten nicht verfügbar"
+    "noPriceData": "Preisdaten nicht verfügbar",
+    "viewAll": "Alle ansehen"
   },
   "date": {
     "earlierToday": "Heute früh",
