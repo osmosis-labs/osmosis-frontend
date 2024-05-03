@@ -987,11 +987,17 @@
     "executionPrice": "Pretul de executie",
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
-    "viewOnExplorer": "Vizualizare pe explorer"
+    "viewOnExplorer": "Vizualizare pe explorer",
+    "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "noPriceData": "Datele de preț nu sunt disponibile"
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
     "yesterday": "Ieri"
   },
-  "backToTop": "Inapoi sus"
+  "backToTop": "Inapoi sus",
+  "pagination": {
+    "older": "Mai batran",
+    "newer": "Mai nou"
+  }
 }

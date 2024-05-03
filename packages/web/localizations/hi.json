@@ -987,11 +987,17 @@
     "executionPrice": "निष्पादन मूल्य",
     "totalFees": "कुल शुल्क",
     "transactionHash": "लेनदेन हैश",
-    "viewOnExplorer": "एक्सप्लोरर पर देखें"
+    "viewOnExplorer": "एक्सप्लोरर पर देखें",
+    "launchAlert": "वर्तमान में केवल व्यापार इतिहास प्रदर्शित किया जाता है। जल्द ही अधिक लेनदेन प्रकारों के लिए सहायता उपलब्ध होगी।",
+    "noPriceData": "मूल्य डेटा उपलब्ध नहीं है"
   },
   "date": {
     "earlierToday": "आज पहले",
     "yesterday": "कल"
   },
-  "backToTop": "वापस शीर्ष पर"
+  "backToTop": "वापस शीर्ष पर",
+  "pagination": {
+    "older": "पुराने",
+    "newer": "नई"
+  }
 }

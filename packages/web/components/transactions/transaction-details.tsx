@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -81,7 +82,7 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
-        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4":
+        "sticky top-0 ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
       })}
     >
@@ -92,8 +93,8 @@ export const TransactionDetailsContent = ({
               aria-label="Close"
               mode="unstyled"
               size="unstyled"
-              className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
-              icon={<Icon id="close" width={48} height={48} />}
+              className="h-12 w-12 cursor-pointer py-0 text-osmoverse-400 hover:rounded-full hover:bg-osmoverse-850 hover:text-white-full"
+              icon={<Icon id="close-small" width={24} height={24} />}
               onClick={onRequestClose}
             />
           </div>
@@ -130,11 +131,11 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {displayFiatPrice(tokenIn?.usd, "", t)}
               </div>
             </div>
           </div>
@@ -167,11 +168,11 @@ export const TransactionDetailsContent = ({
             </div>
             <div className="flex-end flex flex-col text-right">
               <div className="subtitle1">
-                ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="body1 text-osmoverse-300">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {displayFiatPrice(tokenOut?.usd, "", t)}
               </div>
             </div>
           </div>
@@ -180,7 +181,7 @@ export const TransactionDetailsContent = ({
           <div className="body2 flex justify-between gap-3 py-3">
             <div
               onClick={toggleConversion}
-              className="body2 flex cursor-pointer gap-1 whitespace-nowrap"
+              className="body2 flex cursor-pointer items-center gap-1 whitespace-nowrap"
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
@@ -201,9 +202,9 @@ export const TransactionDetailsContent = ({
               })?.toString()}
             </div>
           </div>
-          <div className="body2 flex justify-between py-3">
+          <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <div className="text-wosmongton-300">
                 {getShortAddress(transaction.hash)}
               </div>

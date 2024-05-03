@@ -3,6 +3,8 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -60,7 +62,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
       )}
       onClick={() => onClick?.()}
     >
-      <div className="flex w-1/3 items-center gap-4 md:gap-2">
+      <div className="flex w-1/3 items-center gap-4 md:w-1/2 md:gap-2">
         {status === "pending" ? (
           <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
         ) : (
@@ -92,7 +94,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
             {title[status]}
           </p>
           {tokenConversion && (
-            <div className="caption mt-1 hidden text-osmoverse-300 md:block">
+            <div className="caption mt-1 hidden text-osmoverse-300 md:flex md:items-center">
               {formatPretty(tokenConversion.tokenOut.amount, {
                 maxDecimals: 6,
               })}
@@ -120,72 +122,71 @@ const TokenConversion: FunctionComponent<
   { status: TransactionStatus; effect: Effect } & NonNullable<
     Transaction["tokenConversion"]
   >
-> = ({ status, tokenIn, tokenOut, effect }) => (
-  <>
-    <div className="flex w-1/3 items-center justify-end gap-4 md:hidden md:w-auto">
-      <div className="flex flex-col text-right md:hidden">
-        {tokenIn.value && (
-          <div
-            className={classNames("text-subtitle1", {
-              "text-osmoverse-400": status === "pending",
-              "text-osmoverse-100": status === "success",
-              "text-rust-400": status === "failed",
-            })}
-          >
-            - ${Number(tokenIn.value.toDec().toString()).toFixed(2)}
+> = ({ status, tokenIn, tokenOut, effect }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
+      <div className="flex w-60 items-center justify-end gap-4 md:hidden">
+        <div className="flex flex-col text-right md:hidden">
+          {tokenIn.value && (
+            <div
+              className={classNames("subtitle1", {
+                "text-osmoverse-480": status === "pending",
+                "text-osmoverse-100": status === "success",
+                "text-rust-400": status === "failed",
+              })}
+            >
+              {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
+            </div>
+          )}
+          <div className="body2 text-osmoverse-400">
+            {displayFiatPrice(tokenIn?.value, "-", t)}
           </div>
-        )}
-        <div className="text-body2 text-osmoverse-400">
-          {formatPretty(tokenIn.amount, { maxDecimals: 6 })}
         </div>
+        <FallbackImg
+          alt={tokenIn.amount.denom}
+          src={tokenIn.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+          className="block md:hidden"
+        />
       </div>
-      <FallbackImg
-        alt={tokenIn.amount.denom}
-        src={tokenIn.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
       <Icon
         id="arrow-right"
         width={24}
         height={24}
         className="block text-osmoverse-600 md:hidden"
       />
-    </div>
-    <div className="flex w-1/3 items-center justify-end gap-4 md:w-auto">
-      <div className="text-right text-osmoverse-400">
-        {tokenOut.value && (
-          <div
-            className={classNames("text-subtitle1 md:text-body2", {
-              "text-osmoverse-400": status === "pending",
-              "text-bullish-400": effect === "swap" && status === "success",
-              "text-osmoverse-100":
-                (effect === "deposit" || effect === "withdraw") &&
-                status === "success",
-              "text-rust-400": status === "failed",
-            })}
-          >
-            + {tokenOut.value.symbol}
-            {Number(tokenOut.value.toDec().toString()).toFixed(2)}
+      <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
+        <FallbackImg
+          alt={tokenOut.amount.denom}
+          src={tokenOut.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+          className="block md:hidden"
+        />
+        <div className="text-left text-osmoverse-400 md:text-right">
+          {tokenOut.value && (
+            <div
+              className={classNames("subtitle1 md:body2", {
+                "text-osmoverse-400": status === "pending",
+                "text-osmoverse-100": effect === "swap" && status === "success",
+                "text-rust-400": status === "failed",
+              })}
+            >
+              {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
+            </div>
+          )}
+          <div className="md:caption body2 mt-0 md:mt-1">
+            {displayFiatPrice(tokenOut?.value, "+", t)}
           </div>
-        )}
-        <div className="md:caption mt-1 text-body2">
-          {formatPretty(tokenOut.amount, { maxDecimals: 6 })}
         </div>
       </div>
-      <FallbackImg
-        alt={tokenOut.amount.denom}
-        src={tokenOut.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-        className="block md:hidden"
-      />
     </div>
-  </>
-);
+  );
+};
 
 /** UI for displaying a token being deposited or withdrawn from Osmosis. */
 export const TokenTransfer: FunctionComponent<
@@ -206,7 +207,7 @@ export const TokenTransfer: FunctionComponent<
     </div>
     {value && (
       <div
-        className={classNames("text-subtitle1", {
+        className={classNames("subtitle1", {
           "text-osmoverse-400": status === "pending",
           "text-osmoverse-100": status === "success",
           "text-rust-400": status === "failed",
