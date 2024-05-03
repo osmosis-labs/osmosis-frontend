@@ -156,7 +156,10 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.assets
-      .filter((asset) => asset.transferMethods.length > 0) // Filter osmosis native assets
+      .filter((asset) =>
+        // Filter osmosis native assets
+        asset.transferMethods.some(({ type }) => type === "ibc")
+      )
       .filter((asset) => {
         // Remove preview assets if preview assets is disabled
         if (typeof window === "undefined") return true;
@@ -167,11 +170,12 @@ export class ObservableAssets {
         return !asset.preview;
       })
       .map((ibcAsset) => {
-        const cosmosCounterparty = ibcAsset
-          .counterparty[0] as CosmosCounterparty;
+        const cosmosCounterparty = ibcAsset.counterparty[0] as
+          | CosmosCounterparty
+          | undefined;
         const chainInfo = this.chainStore.getChain(
           // first counterparty should be cosmos counterparty where it is bridged
-          cosmosCounterparty?.chainId ?? ""
+          cosmosCounterparty?.chainId ?? "no-counterparty-found"
         );
 
         const ibcAssetSourceDenom = ibcAsset.sourceDenom;

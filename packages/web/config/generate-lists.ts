@@ -187,11 +187,8 @@ async function generateAssetListFile({
   const osmosisChainId = getOsmosisChainId(environment);
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
-    /** If there are no traces, assume it's an Osmosis asset */
-    if (
-      asset.transferMethods.length === 0 ||
-      !asset.transferMethods.some(({ type }) => type === "ibc")
-    ) {
+    /** If it's from the first chain, assume it's an Osmosis asset */
+    if (asset.chainName === chains[0].chain_name) {
       const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
 
       if (!chain) {
