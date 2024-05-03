@@ -989,7 +989,8 @@
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
-    "noPriceData": "Price data unavailable"
+    "noPriceData": "Price data unavailable",
+    "viewAll": "View all"
   },
   "date": {
     "earlierToday": "Earlier today",

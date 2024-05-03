@@ -989,7 +989,8 @@
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
     "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
-    "noPriceData": "Dane cenowe niedostępne"
+    "noPriceData": "Dane cenowe niedostępne",
+    "viewAll": "Pokaż wszystkie"
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",

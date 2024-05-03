@@ -439,12 +439,12 @@ export const AssetsInfoTable: FunctionComponent<{
       >
         <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="top-0 z-50">
               {headerGroup.headers.map((header, index) => (
                 <th
                   className={classNames(
                     // apply to all columns
-                    "sm:w-fit",
+                    "sm:w-fit ",
                     {
                       // defines column widths after first column
                       "w-36 xl:w-28": index !== 0,
