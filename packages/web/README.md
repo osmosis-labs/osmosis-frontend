@@ -109,6 +109,15 @@ It returns `unknown` types, so you may need to type cast to resolve TS errors.
 
 To install Playwright, please execute `npx playwright install` from the /web folder.
 
-To run E2E tests, please execute `npx playwright test -g "Test Select Swap Pair feature"` from the /web folder.
+To run Select pair tests, please execute `npx playwright test -g "Test Select Swap Pair feature"` from the /web folder.
+To run Swap E2E tests, please execute `npx playwright test -g "Test Swap feature"` from the /web folder.
 
 Tests can be executed locally in a browser by changing `headless: true` to `headless: false`.
+
+## GitHub E2E Tests workflow
+
+[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on deployment_status event from the Vercel bot.
+It contains 2 jobs:
+
+- Mainnet tests on condition `github.event.deployment_status.environment == 'Production – osmosis-frontend'`
+- Preview tests on condition `github.event.deployment_status.environment == 'Preview – osmosis-frontend'`
