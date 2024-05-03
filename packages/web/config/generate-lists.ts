@@ -11,7 +11,13 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
-import type { Asset, AssetList, Chain, ChainList } from "@osmosis-labs/types";
+import type {
+  Asset,
+  AssetList,
+  Chain,
+  ChainList,
+  IbcTransferMethod,
+} from "@osmosis-labs/types";
 
 import { generateTsFile } from "~/utils/codegen";
 
@@ -182,7 +188,10 @@ async function generateAssetListFile({
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
     /** If there are no traces, assume it's an Osmosis asset */
-    if (asset.transferMethods.length === 0) {
+    if (
+      asset.transferMethods.length === 0 ||
+      !asset.transferMethods.some(({ type }) => type === "ibc")
+    ) {
       const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
 
       if (!chain) {
@@ -193,11 +202,17 @@ async function generateAssetListFile({
     }
 
     /** Otherwise, assume IBC asset 1 hop counterparty. */
-    const counterpartyChainName = asset.counterparty[0]?.chainName;
+    const cosmosCounterparty = [...asset.transferMethods]
+      .reverse()
+      .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
 
-    if (!counterpartyChainName) {
-      throw new Error("Failed to find counterparty for asset: " + asset.symbol);
+    if (!cosmosCounterparty) {
+      throw new Error(
+        "Failed to find cosmos counterparty for IBC asset: " + asset.symbol
+      );
     }
+
+    const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
 
     const chain = chains.find(
       (chain) => chain.chain_name === counterpartyChainName
