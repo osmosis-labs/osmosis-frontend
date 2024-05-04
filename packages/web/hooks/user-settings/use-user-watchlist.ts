@@ -3,43 +3,43 @@ import { useLocalStorage } from "react-use";
 
 /** List of user's watched tokens, by symbol. */
 export function useUserWatchlist() {
-  const [watchListSymbols = [], setWatchlistSymbols] = useLocalStorage(
+  const [watchListDenoms = [], setWatchlistDenoms] = useLocalStorage(
     "favoritesList",
     ["OSMO", "ATOM", "TIA"]
   );
 
-  const onWatchAssetSymbol = useCallback(
+  const onWatchAssetDenom = useCallback(
     (denom: string) => {
-      if (watchListSymbols.includes(denom)) return;
-      setWatchlistSymbols([...watchListSymbols, denom]);
+      if (watchListDenoms.includes(denom)) return;
+      setWatchlistDenoms([...watchListDenoms, denom]);
     },
-    [watchListSymbols, setWatchlistSymbols]
+    [watchListDenoms, setWatchlistDenoms]
   );
 
-  const onUnwatchAssetSymbol = useCallback(
+  const onUnwatchAssetDenom = useCallback(
     (denom: string) => {
-      if (!watchListSymbols.includes(denom)) return;
-      setWatchlistSymbols(watchListSymbols.filter((d) => d !== denom));
+      if (!watchListDenoms.includes(denom)) return;
+      setWatchlistDenoms(watchListDenoms.filter((d) => d !== denom));
     },
-    [watchListSymbols, setWatchlistSymbols]
+    [watchListDenoms, setWatchlistDenoms]
   );
 
-  const toggleWatchAssetSymbol = useCallback(
+  const toggleWatchAssetDenom = useCallback(
     (denom: string) => {
-      if (watchListSymbols.includes(denom)) {
-        onUnwatchAssetSymbol(denom);
+      if (watchListDenoms.includes(denom)) {
+        onUnwatchAssetDenom(denom);
       } else {
-        onWatchAssetSymbol(denom);
+        onWatchAssetDenom(denom);
       }
     },
-    [watchListSymbols, onUnwatchAssetSymbol, onWatchAssetSymbol]
+    [watchListDenoms, onUnwatchAssetDenom, onWatchAssetDenom]
   );
 
   return {
-    watchListSymbols,
-    onWatchAssetSymbol,
-    onUnwatchAssetSymbol,
-    toggleWatchAssetSymbol,
-    setWatchlistSymbols,
+    watchListDenoms,
+    onWatchAssetDenom,
+    onUnwatchAssetDenom,
+    toggleWatchAssetDenom,
+    setWatchlistDenoms,
   };
 }

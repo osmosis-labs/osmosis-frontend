@@ -50,9 +50,11 @@ import { SortHeader } from "./headers/sort";
 
 type AssetRow =
   RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
-type SortKey = NonNullable<
-  RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
->["keyPath"];
+type SortKey =
+  | NonNullable<
+      RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+    >["keyPath"]
+  | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -101,7 +103,7 @@ export const AssetsInfoTable: FunctionComponent<{
   }, []);
 
   // sorting
-  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey_, setSortKey_] = useState<SortKey>(undefined);
   const sortKey = useMemo(() => {
     // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "priceChange24h";
@@ -115,8 +117,8 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, sortDirection_]);
   const setSortKey = useCallback(
     (key: SortKey | undefined) => {
+      setSortKey_(key);
       if (key !== undefined) {
-        setSortKey_(key);
         logEvent([
           EventName.Assets.assetsListSorted,
           {
@@ -131,7 +133,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
-      !Boolean(searchQuery)
+      !Boolean(searchQuery) && sortKey
         ? {
             keyPath: sortKey,
             direction: sortDirection,
@@ -153,7 +155,7 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
-  const { watchListSymbols, toggleWatchAssetSymbol } = useUserWatchlist();
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   // Query
   const {
@@ -171,6 +173,7 @@ export const AssetsInfoTable: FunctionComponent<{
       onlyVerified: showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
+      watchListDenoms,
       categories,
     },
     {
@@ -218,8 +221,8 @@ export const AssetsInfoTable: FunctionComponent<{
           <AssetCell
             {...original}
             warnUnverified={showUnverifiedAssets && !original.isVerified}
-            isInUserWatchlist={watchListSymbols.includes(original.coinDenom)}
-            onClickWatchlist={() => toggleWatchAssetSymbol(original.coinDenom)}
+            isInUserWatchlist={watchListDenoms.includes(original.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetDenom(original.coinDenom)}
           />
         ),
       }),
@@ -316,8 +319,8 @@ export const AssetsInfoTable: FunctionComponent<{
     sortKey,
     sortDirection,
     showUnverifiedAssets,
-    watchListSymbols,
-    toggleWatchAssetSymbol,
+    watchListDenoms,
+    toggleWatchAssetDenom,
     setSortKey,
     t,
   ]);

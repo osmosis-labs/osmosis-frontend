@@ -28,10 +28,14 @@ import {
 } from "../queries/data-services";
 import { TimeDuration } from "../queries/data-services";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { captureErrorAndReturn } from "../utils/error";
-import { maybeCachePaginatedItems } from "../utils/pagination";
-import { createSortSchema, sort } from "../utils/sort";
-import { InfiniteQuerySchema } from "../utils/zod-types";
+import {
+  captureErrorAndReturn,
+  compareCommon,
+  createSortSchema,
+  InfiniteQuerySchema,
+  maybeCachePaginatedItems,
+  sort,
+} from "../utils";
 
 const GetInfiniteAssetsInputSchema =
   InfiniteQuerySchema.merge(AssetFilterSchema);
@@ -200,7 +204,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            let assets = await mapGetMarketAssets({
+            const assets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -208,12 +212,34 @@ export const assetsRouter = createTRPCRouter({
               categories,
             });
 
+            // sorting
             if (sortInput) {
-              assets = sort(assets, sortInput.keyPath, sortInput.direction);
-            }
+              // user sorting
 
-            // Can be searching and/or sorting
-            return assets;
+              return sort(assets, sortInput.keyPath, sortInput.direction);
+            } else {
+              // default sorting, maybe with watchlist
+
+              if (watchListDenoms) {
+                // default sort watchlist to top
+                return assets.sort((a, b) => {
+                  // 1. watchlist denoms sorted by volume 24h desc
+                  if (
+                    watchListDenoms.includes(a.coinDenom) &&
+                    watchListDenoms.includes(b.coinDenom)
+                  )
+                    return compareCommon(a.volume24h, b.volume24h);
+                  if (watchListDenoms.includes(a.coinDenom)) return -1;
+                  if (watchListDenoms.includes(b.coinDenom)) return 1;
+
+                  // 2. rest of the assets by volume 24h desc
+                  return compareCommon(a.volume24h, b.volume24h);
+                });
+              } else {
+                // default sort by volume24h desc
+                return sort(assets, "volume24h");
+              }
+            }
           },
           cacheKey: JSON.stringify({
             search,

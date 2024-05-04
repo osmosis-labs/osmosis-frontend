@@ -268,7 +268,7 @@ const Navigation = observer((props: NavigationProps) => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
-  const { watchListSymbols, toggleWatchAssetSymbol } = useUserWatchlist();
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -367,12 +367,12 @@ const Navigation = observer((props: NavigationProps) => {
           variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={() => toggleWatchAssetSymbol(denom)}
+          onClick={() => toggleWatchAssetDenom(denom)}
         >
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              watchListSymbols.includes(denom)
+              watchListDenoms.includes(denom)
                 ? ""
                 : "opacity-30 group-hover:opacity-100"
             } `}

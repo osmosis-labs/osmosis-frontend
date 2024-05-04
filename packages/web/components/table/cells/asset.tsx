@@ -32,6 +32,8 @@ export const AssetCell: FunctionComponent<
         <Icon
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
+
             onClickWatchlist();
           }}
           className={classNames(

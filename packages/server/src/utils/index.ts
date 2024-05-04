@@ -1,5 +1,6 @@
 export * from "./async";
 export * from "./cache";
+export * from "./compare";
 export * from "./error";
 export * from "./pagination";
 export * from "./search";
