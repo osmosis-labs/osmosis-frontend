@@ -987,11 +987,18 @@
     "executionPrice": "Execution Price",
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
-    "viewOnExplorer": "View on explorer"
+    "viewOnExplorer": "View on explorer",
+    "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
+    "noPriceData": "Price data unavailable",
+    "viewAll": "View all"
   },
   "date": {
     "earlierToday": "Earlier today",
     "yesterday": "Yesterday"
   },
-  "backToTop": "Back to top"
+  "backToTop": "Back to top",
+  "pagination": {
+    "older": "Older",
+    "newer": "Newer"
+  }
 }

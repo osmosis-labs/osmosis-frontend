@@ -987,11 +987,18 @@
     "executionPrice": "執行価格",
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
-    "viewOnExplorer": "エクスプローラーで見る"
+    "viewOnExplorer": "エクスプローラーで見る",
+    "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
+    "noPriceData": "価格データは利用できません",
+    "viewAll": "すべて表示"
   },
   "date": {
     "earlierToday": "本日",
     "yesterday": "昨日"
   },
-  "backToTop": "トップに戻る"
+  "backToTop": "トップに戻る",
+  "pagination": {
+    "older": "古い",
+    "newer": "新しい"
+  }
 }

@@ -71,7 +71,7 @@ const Transactions: React.FC = observer(() => {
   }, [transactionsPage, router, _isInitialized]);
 
   useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Stake.pageViewed],
+    onLoadEvent: [EventName.TransactionsPage.pageViewed],
   });
 
   const { t } = useTranslation();

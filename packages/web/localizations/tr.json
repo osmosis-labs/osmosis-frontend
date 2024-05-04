@@ -987,11 +987,18 @@
     "executionPrice": "Uygulama Fiyatı",
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
-    "viewOnExplorer": "Explorer'da görüntüle"
+    "viewOnExplorer": "Explorer'da görüntüle",
+    "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
+    "noPriceData": "Fiyat verileri mevcut değil",
+    "viewAll": "Hepsini gör"
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
     "yesterday": "Dün"
   },
-  "backToTop": "Başa dönüş"
+  "backToTop": "Başa dönüş",
+  "pagination": {
+    "older": "Daha eski",
+    "newer": "Daha yeni"
+  }
 }

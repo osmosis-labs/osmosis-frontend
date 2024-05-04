@@ -987,11 +987,18 @@
     "executionPrice": "અમલની કિંમત",
     "totalFees": "કુલ ફી",
     "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
-    "viewOnExplorer": "એક્સપ્લોરર પર જુઓ"
+    "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
+    "launchAlert": "હાલમાં માત્ર વેપાર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
+    "noPriceData": "કિંમત ડેટા ઉપલબ્ધ નથી",
+    "viewAll": "બધુજ જુઓ"
   },
   "date": {
     "earlierToday": "આજેવહેલા",
     "yesterday": "ગઇકાલે"
   },
-  "backToTop": "ટોચ પર પાછા"
+  "backToTop": "ટોચ પર પાછા",
+  "pagination": {
+    "older": "જૂની",
+    "newer": "નવું"
+  }
 }

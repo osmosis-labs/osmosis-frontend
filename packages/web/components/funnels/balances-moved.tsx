@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import { forwardRef } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -9,10 +9,9 @@ import { useTranslation } from "~/hooks";
 import { Icon } from "../assets";
 import { CustomClasses } from "../types";
 
-export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
+export const BalancesMoved = forwardRef<HTMLAnchorElement, CustomClasses>(
   function BalancesMoved({ className }, ref) {
     const { t } = useTranslation();
-    const router = useRouter();
 
     const [isClosed, setIsClosed] = useLocalStorage(
       "assets-page-balances-moved-user-ack",
@@ -24,13 +23,13 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
     }
 
     return (
-      <div
+      <Link
+        href="/portfolio"
         ref={ref}
         className={classNames(
           "grid h-32 w-full cursor-pointer grid-cols-2 overflow-clip rounded-[1.25rem] bg-osmoverse-800 1.5lg:grid-cols-1 md:h-fit",
           className
         )}
-        onClick={() => router.push("/portfolio")}
       >
         <div className="relative 1.5lg:hidden">
           <Image
@@ -60,7 +59,7 @@ export const BalancesMoved = forwardRef<HTMLDivElement, CustomClasses>(
             <Icon id="thin-x" height={24} width={24} />
           </button>
         </div>
-      </div>
+      </Link>
     );
   }
 );

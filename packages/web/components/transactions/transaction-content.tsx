@@ -48,7 +48,14 @@ export const TransactionContent = ({
   return (
     <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3 md:text-h5">{t("transactions.title")}</h1>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-h3 font-h3 md:text-h5 md:font-h5">
+            {t("transactions.title")}
+          </h1>
+          <p className="body2 text-osmoverse-200 opacity-50">
+            {t("transactions.launchAlert")}
+          </p>
+        </div>
         <TransactionButtons open={open} address={address} />
       </div>
 
@@ -67,55 +74,64 @@ export const TransactionContent = ({
                   {formatDate(date)}
                 </div>
                 <hr className="mb-3 text-osmoverse-700" />
-                {transactions.map((transaction) => (
-                  <TransactionRow
-                    key={transaction.id}
-                    title={{
-                      // each type of transaction would have a translation for when it's pending, successful, or failed
-                      pending: t("transactions.swapping"),
-                      success: t("transactions.swapped"),
-                      failed: t("transactions.swapFailed"),
-                    }}
-                    effect="swap"
-                    status={transaction.code === 0 ? "success" : "failed"}
-                    onClick={() => {
-                      // TODO - once there are more transaction types, we can add more event names
-                      logEvent([
-                        EventName.TransactionsPage.swapClicked,
-                        {
-                          tokenIn:
-                            transaction.metadata[0].value[0].txInfo.tokenIn
-                              .token.denom,
-                          tokenOut:
-                            transaction.metadata[0].value[0].txInfo.tokenOut
-                              .token.denom,
-                        },
-                      ]);
+                {transactions
+                  .map((transaction) => {
+                    return (
+                      <TransactionRow
+                        key={transaction.id}
+                        title={{
+                          // each type of transaction would have a translation for when it's pending, successful, or failed
+                          pending: t("transactions.swapping"),
+                          success: t("transactions.swapped"),
+                          failed: t("transactions.swapFailed"),
+                        }}
+                        effect="swap"
+                        status={transaction.code === 0 ? "success" : "failed"}
+                        onClick={() => {
+                          // TODO - once there are more transaction types, we can add more event names
+                          logEvent([
+                            EventName.TransactionsPage.swapClicked,
+                            {
+                              tokenIn:
+                                transaction.metadata[0].value[0].txInfo.tokenIn
+                                  .token.denom,
+                              tokenOut:
+                                transaction.metadata[0].value[0].txInfo.tokenOut
+                                  .token.denom,
+                            },
+                          ]);
 
-                      setSelectedTransaction(transaction);
+                          setSelectedTransaction(transaction);
 
-                      // delay to ensure the slide over transitions smoothly
-                      if (!open) {
-                        setTimeout(() => setOpen(true), 1);
-                      }
-                    }}
-                    tokenConversion={{
-                      tokenIn: {
-                        amount:
-                          transaction.metadata[0].value[0].txInfo.tokenIn.token,
-                        value:
-                          transaction.metadata[0].value[0].txInfo.tokenIn.usd,
-                      },
-                      tokenOut: {
-                        amount:
-                          transaction.metadata[0].value[0].txInfo.tokenOut
-                            .token,
-                        value:
-                          transaction.metadata[0].value[0].txInfo.tokenOut.usd,
-                      },
-                    }}
-                  />
-                ))}
+                          // delay to ensure the slide over transitions smoothly
+                          if (!open) {
+                            setTimeout(() => setOpen(true), 1);
+                          }
+                        }}
+                        tokenConversion={{
+                          tokenIn: {
+                            amount:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenIn?.token,
+                            value:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenIn?.usd,
+                          },
+                          tokenOut: {
+                            amount:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenOut?.token,
+
+                            value:
+                              transaction.metadata[0].value[0].txInfo.tokenOut
+                                .usd,
+                          },
+                        }}
+                      />
+                    );
+                  })
+                  // filters out any transactions with missing metadata
+                  .filter(Boolean)}
               </div>
             )
           )
