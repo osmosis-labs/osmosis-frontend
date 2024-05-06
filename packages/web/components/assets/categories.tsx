@@ -318,7 +318,7 @@ const OverlappingAssetImages: FunctionComponent<
         key={url}
         style={{
           marginLeft: `${index * 24}px`,
-          zIndex: 50 + index,
+          zIndex: 40 + index,
         }}
         className={classNames(
           "absolute flex h-8 w-8 items-center justify-center",
