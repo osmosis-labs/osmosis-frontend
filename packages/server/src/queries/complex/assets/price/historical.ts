@@ -36,7 +36,7 @@ export function getAssetHistoricalPrice({
   /**
    * Major (symbol) denom to fetch historical price data for.
    *
-   * Note: this can be both a symbol or a denom (coinMinimaldenom)
+   * Note: this can be both a symbol or a denom (coinMinimalDenom)
    * */
   coinDenom: string;
   /** Number of minutes per bar. So 60 refers to price every hour. */
