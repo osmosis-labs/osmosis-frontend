@@ -79,7 +79,7 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
       />
       <AssetHighlights
         className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
-        title={t("assets.highlights.topGainers")}
+        title={t("assets.highlights.topGainers") + " (24h)"}
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
