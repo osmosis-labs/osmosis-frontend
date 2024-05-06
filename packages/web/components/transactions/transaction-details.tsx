@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import IconButton from "~/components/buttons/icon-button";
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -80,20 +81,20 @@ export const TransactionDetailsContent = ({
 
   return (
     <div
-      className={classNames("flex w-full flex-col overflow-y-auto", {
-        "sticky top-[4.5rem] h-[calc(100vh_-_4.5rem)] border-l-[1px] border-osmoverse-700 bg-osmoverse-900 pl-4":
+      className={classNames("flex flex-col overflow-y-auto", {
+        "sticky top-0 ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
       })}
     >
-      <div className="flex flex-col px-4 pb-8">
+      <div className="flex flex-col px-4 pb-8 md:p-0">
         {!isModal && (
           <div className="py-4">
             <IconButton
               aria-label="Close"
               mode="unstyled"
               size="unstyled"
-              className="w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full"
-              icon={<Icon id="close" width={48} height={48} />}
+              className="h-12 w-12 cursor-pointer rounded-full py-0 text-osmoverse-400 hover:rounded-full hover:bg-osmoverse-850 hover:text-white-full"
+              icon={<Icon id="close-small" width={24} height={24} />}
               onClick={onRequestClose}
             />
           </div>
@@ -123,18 +124,18 @@ export const TransactionDetailsContent = ({
               </div>
               <div className="flex flex-col">
                 <div className="subtitle1">{t("transactions.sold")}</div>
-                <div className="text-body1 text-osmoverse-300">
+                <div className="body1 text-osmoverse-300">
                   {tokenIn.token.denom}
                 </div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">
-                ${Number(tokenIn.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="text-body1 text-osmoverse-300">
+              <div className="subtitle1">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {displayFiatPrice(tokenIn?.usd, "", t)}
               </div>
             </div>
           </div>
@@ -159,51 +160,52 @@ export const TransactionDetailsContent = ({
                 />
               </div>
               <div className="flex flex-col">
-                <div className="text-subtitle1">{t("transactions.bought")}</div>
-                <div className="text-body1 text-osmoverse-300">
+                <div className="subtitle1">{t("transactions.bought")}</div>
+                <div className="body1 text-osmoverse-300">
                   {tokenOut.token.denom}
                 </div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="text-subtitle1">
-                ${Number(tokenOut.usd.toDec().toString()).toFixed(2)}
-              </div>
-              <div className="text-body1 text-osmoverse-300">
+              <div className="subtitle1">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
+              </div>
+              <div className="body1 text-osmoverse-300">
+                {displayFiatPrice(tokenOut?.usd, "", t)}
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-col py-3">
-          <div className="flex justify-between gap-3 py-3">
+          <div className="body2 flex justify-between gap-3 py-3">
             <div
               onClick={toggleConversion}
-              className="flex cursor-pointer gap-1 whitespace-nowrap"
+              className="body2 flex cursor-pointer items-center gap-1 whitespace-nowrap"
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
-            <div className="flex gap-3 whitespace-nowrap">
-              <div className="text-body1 text-wosmongton-300">
+            {/* // TODO - onClick={toggleConversion} whole container */}
+            <div className="body2 flex items-center gap-3 text-right">
+              <div className="text-wosmongton-300">
                 1 {conversion.denominator.denom} = {conversionRate}{" "}
                 {conversion.numerator.denom}
               </div>
               <CopyIconButton valueToCopy={conversionRate} />
             </div>
           </div>
-          <div className="flex justify-between gap-3 py-3">
+          <div className="body2 flex justify-between gap-3 py-3">
             <div>{t("transactions.totalFees")}</div>
-            <div className="text-body1 text-osmoverse-300">
+            <div className="text-osmoverse-300">
               {formatPretty(txFee.token, {
                 maxDecimals: 2,
               })?.toString()}
             </div>
           </div>
-          <div className="flex justify-between py-3">
+          <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
-            <div className="flex gap-3">
-              <div className="text-body1 text-wosmongton-300">
+            <div className="flex items-center gap-3">
+              <div className="text-wosmongton-300">
                 {getShortAddress(transaction.hash)}
               </div>
               <CopyIconButton valueToCopy={transaction.hash} />
@@ -251,9 +253,9 @@ export const TransactionDetailsSlideover = ({
       show={open}
       enter="transition-all ease-out duration-300"
       enterFrom="w-0 opacity-0"
-      enterTo="w-[452px] opacity-100"
+      enterTo="w-[512px] opacity-100"
       leave="transition-all ease-out duration-300"
-      leaveFrom="w-[452px] opacity-100"
+      leaveFrom="w-[512px] opacity-100"
       leaveTo="w-0 opacity-0"
     >
       <TransactionDetailsContent

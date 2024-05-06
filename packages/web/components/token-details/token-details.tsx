@@ -313,6 +313,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
                   maximumSignificantDigits: 3,
                   notation: "compact",
                   compactDisplay: "short",
+                  scientificMagnitudeThreshold: 30,
                 })
               : "-"}
           </h5>

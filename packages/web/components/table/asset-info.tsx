@@ -83,8 +83,8 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    setCategory("topGainers");
-  }, []);
+    selectCategory("topGainers");
+  }, [selectCategory]);
   const categories = useMemo(
     () =>
       selectedCategory && selectedCategory !== "topGainers"
@@ -342,7 +342,8 @@ export const AssetsInfoTable: FunctionComponent<{
     useDimension<HTMLDivElement>();
   const [searchRef, { height: searchBoxHeight }] =
     useDimension<HTMLInputElement>();
-  const [bannerRef, { height: bannerHeight }] = useDimension<HTMLDivElement>();
+  const [bannerRef, { height: bannerHeight }] =
+    useDimension<HTMLAnchorElement>();
   const totalTopOffset =
     highlightsHeight +
     categoriesHeight +
@@ -438,12 +439,12 @@ export const AssetsInfoTable: FunctionComponent<{
       >
         <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="top-0 z-50">
               {headerGroup.headers.map((header, index) => (
                 <th
                   className={classNames(
                     // apply to all columns
-                    "sm:w-fit",
+                    "sm:w-fit ",
                     {
                       // defines column widths after first column
                       "w-36 xl:w-28": index !== 0,

@@ -71,7 +71,7 @@ const Transactions: React.FC = observer(() => {
   }, [transactionsPage, router, _isInitialized]);
 
   useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Stake.pageViewed],
+    onLoadEvent: [EventName.TransactionsPage.pageViewed],
   });
 
   const { t } = useTranslation();
@@ -110,7 +110,7 @@ const Transactions: React.FC = observer(() => {
   }, [isLargeDesktop]);
 
   return (
-    <main className="mx-auto flex max-w-7xl gap-8 px-16 lg:px-8">
+    <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
         transactions={transactions}

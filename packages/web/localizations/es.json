@@ -987,11 +987,18 @@
     "executionPrice": "Precio de ejecución",
     "totalFees": "Tarifas totales",
     "transactionHash": "Hash de transacción",
-    "viewOnExplorer": "Ver en el explorador"
+    "viewOnExplorer": "Ver en el explorador",
+    "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
+    "noPriceData": "Datos de precios no disponibles",
+    "viewAll": "Ver todo"
   },
   "date": {
     "earlierToday": "El día de hoy",
     "yesterday": "Ayer"
   },
-  "backToTop": "Volver arriba"
+  "backToTop": "Volver arriba",
+  "pagination": {
+    "older": "Más viejo",
+    "newer": "Más nuevo"
+  }
 }
