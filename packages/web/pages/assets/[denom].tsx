@@ -222,10 +222,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
-              <YourBalance
-                denom={denom}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-              />
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
@@ -235,6 +231,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             </div>
 
             <div className="flex flex-col gap-4">
+              <YourBalance
+                denom={denom}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
+
               <div className="xl:hidden">
                 <SwapTool
                   fixedWidth

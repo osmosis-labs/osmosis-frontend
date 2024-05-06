@@ -7,7 +7,6 @@ import {
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
 import { ReactElement, useMemo } from "react";
@@ -15,7 +14,6 @@ import { ReactElement, useMemo } from "react";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
@@ -220,7 +218,7 @@ const YourBalance = observer(
           denom={denom}
           tokenDetailsByLanguage={tokenDetailsByLanguage}
         />
-        <div className="flex flex-col gap-6 self-stretch">
+        {/* <div className="flex flex-col gap-6 self-stretch">
           <header>
             <h6 className="text-lg font-h6 leading-6 tracking-wide">
               {t("tokenInfos.earnWith", { denom })}
@@ -322,7 +320,7 @@ const YourBalance = observer(
               />
             </Link>
           </div>
-        </div>
+        </div> */}
       </section>
     );
   }
