@@ -70,13 +70,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const selectCategory = useCallback(
     (category: string, highlight?: string) => {
       setCategory(category);
-      console.log([
-        EventName.Assets.categorySelected,
-        {
-          assetCategory: category,
-          highlight,
-        },
-      ]);
       logEvent([
         EventName.Assets.categorySelected,
         {

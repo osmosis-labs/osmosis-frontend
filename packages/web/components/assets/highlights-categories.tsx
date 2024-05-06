@@ -238,7 +238,6 @@ const AssetHighlightRow: FunctionComponent<{
       target={externalLink ? "_blank" : "_self"}
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
       onClick={() => {
-        console.log([EventName.Assets.assetClicked, { coinDenom, highlight }]);
         logEvent([EventName.Assets.assetClicked, { coinDenom, highlight }]);
       }}
     >
