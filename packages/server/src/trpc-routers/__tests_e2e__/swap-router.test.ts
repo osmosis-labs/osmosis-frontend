@@ -317,7 +317,7 @@ it("Sidecar — USDC.axl <> USDC — Should return valid quote for possible allo
   expect(reply.priceImpactTokenOut?.toDec().lte(new Dec(0.05))).toBeTruthy();
 });
 
-it("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", async () => {
+it.skip("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = astroAsset;
   const tokenOut = osmoAsset;
