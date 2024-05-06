@@ -59,6 +59,7 @@ export type EventProperties = {
   errorMessage: string | undefined;
   valueUsd: number;
   assetCategory: string;
+  highlight: string;
 };
 
 export type UserProperties = {

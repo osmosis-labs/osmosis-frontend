@@ -68,12 +68,20 @@ export const AssetsInfoTable: FunctionComponent<{
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
   const selectCategory = useCallback(
-    (category: string) => {
+    (category: string, highlight?: string) => {
       setCategory(category);
+      console.log([
+        EventName.Assets.categorySelected,
+        {
+          assetCategory: category,
+          highlight,
+        },
+      ]);
       logEvent([
         EventName.Assets.categorySelected,
         {
           assetCategory: category,
+          highlight,
         },
       ]);
     },
@@ -83,7 +91,7 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    selectCategory("topGainers");
+    selectCategory("topGainers", "topGainers");
   }, [selectCategory]);
   const categories = useMemo(
     () =>
