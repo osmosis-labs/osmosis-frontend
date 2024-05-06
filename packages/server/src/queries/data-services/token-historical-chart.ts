@@ -42,14 +42,20 @@ export async function queryTokenHistoricalChart({
   coinDenom,
   timeFrameMinutes,
 }: {
-  /** Major (symbol) denom to fetch historical price data for. */
+  /**
+   * Major (symbol) denom to fetch historical price data for.
+   *
+   * Note: this can be both a symbol or a denom (coinMinimaldenom)
+   * */
   coinDenom: string;
   /** Number of minutes per bar. So 60 refers to price every 60 minutes. */
   timeFrameMinutes: TimeFrame;
 }): Promise<TokenHistoricalPrice[]> {
   // collect params
   const url = new URL(
-    `/tokens/v2/historical/${coinDenom}/chart?tf=${timeFrameMinutes}`,
+    `/tokens/v2/historical/${encodeURIComponent(
+      coinDenom
+    )}/chart?tf=${timeFrameMinutes}`,
     TIMESERIES_DATA_URL
   );
   try {
