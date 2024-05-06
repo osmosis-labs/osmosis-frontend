@@ -12,7 +12,9 @@ export interface TokenData {
   volume_24h: number;
   volume_24h_change: number | null;
   name: string;
+  price_1h_change: number | null;
   price_24h_change: number | null;
+  price_7d_change: number | null;
   exponent: number;
   display: string;
 }

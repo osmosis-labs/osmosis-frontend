@@ -59,7 +59,7 @@ export const MainLayout: FunctionComponent<{
         menus={menus}
         secondaryMenuItems={secondaryMenuItems}
       />
-      <div className="ml-sidebar h-content overflow-x-hidden bg-osmoverse-900 md:ml-0 md:h-content-mobile">
+      <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
         {children}
       </div>
     </React.Fragment>

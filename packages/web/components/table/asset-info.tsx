@@ -251,6 +251,27 @@ export const AssetsInfoTable: FunctionComponent<{
           ),
       }),
       columnHelper.accessor((row) => row, {
+        id: "priceChange1h",
+        header: () => (
+          <SortHeader
+            label="1h"
+            sortKey="priceChange1h"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange1h },
+          },
+        }) =>
+          priceChange1h && (
+            <PriceChange className="justify-end" priceChange={priceChange1h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
         id: "priceChange24h",
         header: () => (
           <SortHeader
@@ -269,6 +290,27 @@ export const AssetsInfoTable: FunctionComponent<{
         }) =>
           priceChange24h && (
             <PriceChange className="justify-end" priceChange={priceChange24h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "priceChange7d",
+        header: () => (
+          <SortHeader
+            label="7d"
+            sortKey="priceChange7d"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange7d },
+          },
+        }) =>
+          priceChange7d && (
+            <PriceChange className="justify-end" priceChange={priceChange7d} />
           ),
       }),
       columnHelper.accessor(
@@ -328,6 +370,8 @@ export const AssetsInfoTable: FunctionComponent<{
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl) collapsedColIds.push("priceChange7d");
+    if (width < Breakpoint.xlhalf) collapsedColIds.push("priceChange1h");
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
     if (width < Breakpoint.lg) collapsedColIds.push("priceChange24h");
@@ -461,7 +505,7 @@ export const AssetsInfoTable: FunctionComponent<{
                     "sm:w-fit ",
                     {
                       // defines column widths after first column
-                      "w-36 xl:w-28": index !== 0,
+                      "w-28": index !== 0,
                     }
                   )}
                   key={header.id}
