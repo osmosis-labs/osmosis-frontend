@@ -24,9 +24,9 @@ import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,
   AvailableTimeDurations,
+  TimeDuration,
   TimeFrame,
 } from "../queries/data-services";
-import { TimeDuration } from "../queries/data-services";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { captureErrorAndReturn } from "../utils/error";
 import { maybeCachePaginatedItems } from "../utils/pagination";
@@ -176,7 +176,9 @@ export const assetsRouter = createTRPCRouter({
         z.object({
           sort: createSortSchema([
             "currentPrice",
+            "priceChange1h",
             "priceChange24h",
+            "priceChange7d",
             "marketCap",
             "volume24h",
           ] as const).optional(),
