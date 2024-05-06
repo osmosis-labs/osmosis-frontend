@@ -41,7 +41,7 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
-  useUserFavoriteAssetDenoms,
+  useUserWatchlist,
   useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
@@ -268,7 +268,7 @@ const Navigation = observer((props: NavigationProps) => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
-  const { favoritesList, toggleFavoriteDenom } = useUserFavoriteAssetDenoms();
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -276,26 +276,24 @@ const Navigation = observer((props: NavigationProps) => {
       : undefined;
   }, [language, tokenDetailsByLanguage]);
 
-  const isFavorite = useMemo(
-    () => favoritesList.includes(denom),
-    [denom, favoritesList]
-  );
-
   const chain = useMemo(
     () => chainStore.getChainFromCurrency(denom),
     [denom, chainStore]
   );
 
-  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
+  const currencies = useMemo(
+    () => chain?.currencies ?? [],
+    [chain?.currencies]
+  );
 
   const coinGeckoId = useMemo(
     () =>
       details?.coingeckoID
         ? details?.coingeckoID
-        : balances.find(
+        : currencies.find(
             (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
           )?.coinGeckoId,
-    [balances, details?.coingeckoID, denom]
+    [currencies, details?.coingeckoID, denom]
   );
 
   const title = useMemo(() => {
@@ -369,12 +367,14 @@ const Navigation = observer((props: NavigationProps) => {
           variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={() => toggleFavoriteDenom(denom)}
+          onClick={() => toggleWatchAssetDenom(denom)}
         >
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              isFavorite ? "" : "opacity-30 group-hover:opacity-100"
+              watchListDenoms.includes(denom)
+                ? ""
+                : "opacity-30 group-hover:opacity-100"
             } `}
           />
           {t("tokenInfos.watchlist")}

@@ -39,32 +39,6 @@ describe("sort function", () => {
     expect(result).toEqual(list);
   });
 
-  it("should sort using a custom compare function", () => {
-    const list = [
-      { name: "John", age: 30 },
-      { name: "Alice", age: 20 },
-      { name: "Bob", age: 25 },
-    ];
-
-    const resultAsc = sort(list, "name", "asc", (a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    expect(resultAsc).toEqual([
-      { name: "Alice", age: 20 },
-      { name: "Bob", age: 25 },
-      { name: "John", age: 30 },
-    ]);
-
-    const resultDesc = sort(list, "name", "desc", (a, b) =>
-      b.name.localeCompare(a.name)
-    );
-    expect(resultDesc).toEqual([
-      { name: "John", age: 30 },
-      { name: "Bob", age: 25 },
-      { name: "Alice", age: 20 },
-    ]);
-  });
-
   it("should sort using a deep key path", () => {
     const list = [
       { name: "John", age: { b: 20 } },

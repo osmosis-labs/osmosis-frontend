@@ -239,13 +239,14 @@ const PoolCards: FunctionComponent<{
       />
     </div>
     {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
-      <ShowMoreButton
-        className="m-auto"
-        isOn={showAllPools}
-        onToggle={() => {
-          setShowAllPools(!showAllPools);
-        }}
-      />
+      <div className="w-full text-center">
+        <ShowMoreButton
+          isOn={showAllPools}
+          onToggle={() => {
+            setShowAllPools(!showAllPools);
+          }}
+        />
+      </div>
     )}
   </>
 ));

@@ -28,14 +28,11 @@ export function createSortSchema<
 /** Sorts a list of objects by given sort params - a key and sort direction - into a new array.
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
  *  Filters elements at the given `keyPath` that are `null` or `undefined`.
- *  Includes a custom compare function for sorting any other types which will override
- *  default behavior including the sort direction.
  *  Default `direction` is `"desc"`. */
 export function sort<TItem extends Record<string, CommonCompareType | any>>(
   list: TItem[],
   keyPath: string,
-  direction: SortDirection = "desc",
-  compare?: (a: TItem, b: TItem) => number
+  direction: SortDirection = "desc"
 ): TItem[] {
   // list is empty or keyPath is not in the list items, return items
   if (list.length === 0 || !getValueAtPath(list[0], keyPath)) {
@@ -51,8 +48,6 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
       const bValue = keyPath.includes(".")
         ? getValueAtPath(b, keyPath)
         : b[keyPath];
-
-      if (compare) return compare(a, b);
 
       const commonCompare = withDirection(
         compareCommon(aValue, bValue),
