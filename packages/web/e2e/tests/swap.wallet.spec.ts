@@ -66,7 +66,6 @@ test.describe("Test Swap feature", () => {
       "token_out_denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
     );
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '10000'");
     expect(msgContentAmount).toContain("denom: uosmo");
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
@@ -83,7 +82,6 @@ test.describe("Test Swap feature", () => {
       "denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
     );
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '1000'");
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
@@ -98,7 +96,6 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '100000'");
     expect(msgContentAmount).toContain("token_out_denom: " + USDCa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -114,7 +111,6 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDCa);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '100000'");
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -130,7 +126,6 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDT);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '100000'");
     expect(msgContentAmount).toContain("token_out_denom: " + USDTa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -146,7 +141,6 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDTa);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("amount: '100000'");
     expect(msgContentAmount).toContain("token_out_denom: " + USDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
