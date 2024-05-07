@@ -914,9 +914,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <Button
               disabled={
                 isWalletLoading ||
-                !Boolean(swapState.quote) ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
+                    !Boolean(swapState.quote) ||
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
