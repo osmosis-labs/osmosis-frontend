@@ -618,35 +618,35 @@ const MainnetIBCAdditionalData: Partial<
   CROWDP: {
     depositUrlOverride: "https://app.evmos.org/assets",
   },
-  'ETH.pica': {
+  "ETH.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'DAI.pica': {
+  "DAI.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'FXS.pica': {
+  "FXS.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'FRAX.pica': {
+  "FRAX.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'USDT.pica': {
+  "USDT.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'sFRAX.pica': {
+  "sFRAX.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'frxETH.pica': {
+  "frxETH.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
-  'sfrxETH.pica': {
+  "sfrxETH.pica": {
     depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
   },
