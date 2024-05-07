@@ -79,7 +79,8 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
       />
       <AssetHighlights
         className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
-        title={t("assets.highlights.topGainers") + " (24h)"}
+        title={t("assets.highlights.topGainers")}
+        subtitle="24h"
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
@@ -133,6 +134,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
 export const AssetHighlights: FunctionComponent<
   {
     title: string;
+    subtitle?: string;
     onClickSeeAll?: () => void;
     assets: {
       asset: {
@@ -148,6 +150,7 @@ export const AssetHighlights: FunctionComponent<
   } & CustomClasses
 > = ({
   title,
+  subtitle,
   onClickSeeAll,
   assets,
   isLoading = false,
@@ -164,7 +167,12 @@ export const AssetHighlights: FunctionComponent<
       )}
     >
       <div className="flex place-content-between pt-1 pb-3">
-        <h6>{title}</h6>
+        <h6>
+          {title}{" "}
+          {subtitle && (
+            <span className="body1 text-osmoverse-400">{subtitle}</span>
+          )}
+        </h6>
         {onClickSeeAll && (
           <button className="body2 text-wosmongton-300" onClick={onClickSeeAll}>
             {t("assets.seeAll")}
