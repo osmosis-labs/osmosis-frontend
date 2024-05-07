@@ -70,13 +70,13 @@ export const useAssetInfoConfig = (
     isError,
   } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
-      coinDenom: denom,
+      coinDenom: coinMinimalDenom ?? denom,
       timeFrame: {
         custom: customTimeFrame,
       },
     },
     {
-      enabled: Boolean(denom),
+      enabled: Boolean(coinMinimalDenom ?? denom),
       staleTime: 1000 * 60 * 3, // 3 minutes
       cacheTime: 1000 * 60 * 6, // 6 minutes
       trpc: {

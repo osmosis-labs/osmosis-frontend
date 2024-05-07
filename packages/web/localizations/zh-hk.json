@@ -987,23 +987,18 @@
     "executionPrice": "執行價格",
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
-    "viewOnExplorer": "在資源管理器上查看"
+    "viewOnExplorer": "在資源管理器上查看",
+    "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
+    "noPriceData": "價格數據不可用",
+    "viewAll": "看全部"
   },
   "date": {
     "earlierToday": "今天早些時候",
-    "yesterday": "昨天",
-    "january": "一月",
-    "february": "二月",
-    "march": "行進",
-    "april": "四月",
-    "may": "可能",
-    "june": "六月",
-    "july": "七月",
-    "august": "八月",
-    "september": "九月",
-    "october": "十月",
-    "november": "十一月",
-    "december": "十二月"
+    "yesterday": "昨天"
   },
-  "backToTop": "回到頂部"
+  "backToTop": "回到頂部",
+  "pagination": {
+    "older": "年長的",
+    "newer": "較新"
+  }
 }

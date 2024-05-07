@@ -987,23 +987,18 @@
     "executionPrice": "Preço de Execução",
     "totalFees": "Taxas totais",
     "transactionHash": "Hash de transação",
-    "viewOnExplorer": "Ver no explorador"
+    "viewOnExplorer": "Ver no explorador",
+    "launchAlert": "Atualmente apenas o histórico de negociações é exibido. Suporte para mais tipos de transação em breve.",
+    "noPriceData": "Dados de preço indisponíveis",
+    "viewAll": "Ver tudo"
   },
   "date": {
     "earlierToday": "Hoje mais cedo",
-    "yesterday": "Ontem",
-    "january": "Janeiro",
-    "february": "Fevereiro",
-    "march": "Marchar",
-    "april": "abril",
-    "may": "Poderia",
-    "june": "Junho",
-    "july": "Julho",
-    "august": "Agosto",
-    "september": "Setembro",
-    "october": "Outubro",
-    "november": "novembro",
-    "december": "dezembro"
+    "yesterday": "Ontem"
   },
-  "backToTop": "De volta ao topo"
+  "backToTop": "De volta ao topo",
+  "pagination": {
+    "older": "Mais velho",
+    "newer": "Mais recente"
+  }
 }

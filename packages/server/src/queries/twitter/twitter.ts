@@ -101,30 +101,37 @@ export class Twitter {
    * @returns An array of tweet's objects
    */
   private async internalGetUserTweets(userId: string) {
-    const url = new URL(
-      `2/tweets/search/recent?query=${encodeURIComponent(
-        `from:${userId}`
-      )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`,
-      TWITTER_API_URL
-    );
+    try {
+      const url = new URL(
+        `2/tweets/search/recent?query=${encodeURIComponent(
+          `from:${userId}`
+        )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`,
+        TWITTER_API_URL
+      );
 
-    const {
-      data: tweets,
-      includes: { users, media },
-    } = await apiClient<{
-      data: RawTweet[];
-      includes: { users: RawUser[]; media: RawMedia[] };
-    }>(url.toString(), {
-      headers: {
-        Authorization: `Bearer ${TWITTER_API_ACCESS_TOKEN}`,
-      },
-    });
+      const {
+        data: tweets = [],
+        includes: { users, media } = {
+          users: [],
+          media: [],
+        },
+      } = await apiClient<{
+        data: RawTweet[];
+        includes: { users: RawUser[]; media: RawMedia[] };
+      }>(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${TWITTER_API_ACCESS_TOKEN}`,
+        },
+      });
 
-    this.rawTweets = tweets;
-    this.rawUsers = users;
-    this.rawMedia = media;
+      this.rawTweets = tweets;
+      this.rawUsers = users;
+      this.rawMedia = media;
 
-    return this.tweets;
+      return this.tweets;
+    } catch {
+      return [];
+    }
   }
 
   /**

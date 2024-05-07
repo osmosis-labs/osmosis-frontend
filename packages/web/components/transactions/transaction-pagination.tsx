@@ -1,3 +1,5 @@
+import { type LinkProps } from "next/link";
+
 import {
   Pagination,
   PaginationContent,
@@ -14,8 +16,8 @@ const TransactionsPaginaton = ({
 }: {
   showPrevious: boolean;
   showNext: boolean;
-  previousHref: string;
-  nextHref: string;
+  previousHref: LinkProps["href"];
+  nextHref: LinkProps["href"];
 }) => {
   return (
     <Pagination>

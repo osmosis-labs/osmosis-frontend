@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
-
 import { ChainList } from "~/config/generated/chain-list";
 
 class SimulateTxError extends Error {
@@ -18,18 +16,17 @@ class SimulateTxError extends Error {
  * We require this endpoint since many nodes do not have CORS enabled. Without CORS,
  * a node is unable to interact directly with browsers unless it's updated to incorporate
  * the CORS headers. Therefore, by having this endpoint, we can ensure that
- * users can still broadcast their transactions to the network.
+ * users can still broadcast their transactions to the network, particularly on counterparty chains
+ * when depositing.
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: Request) {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "Method not allowed" });
-    return;
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+    });
   }
 
-  const body = req.body as {
+  const body = (await req.json()) as {
     tx_bytes: string;
     restEndpoint: string;
   };
@@ -40,13 +37,15 @@ export default async function handler(
   );
 
   if (!isEndpointInChainConfig) {
-    res.status(400).json({ error: "Invalid rest endpoint" });
-    return;
+    return new Response(JSON.stringify({ error: "Invalid rest endpoint" }), {
+      status: 400,
+    });
   }
 
   if (!body.tx_bytes || typeof body.tx_bytes !== "string") {
-    res.status(400).json({ error: "Invalid tx_bytes" });
-    return;
+    return new Response(JSON.stringify({ error: "Invalid tx_bytes" }), {
+      status: 400,
+    });
   }
 
   try {
@@ -76,18 +75,27 @@ export default async function handler(
       };
     } = await response.json();
 
-    res.status(200).json(result);
+    return new Response(JSON.stringify(result));
   } catch (e) {
     if (e instanceof SimulateTxError) {
-      res.status(400).json({
-        code: e.code,
-        message: e.message,
-      });
-      return;
+      return new Response(
+        JSON.stringify({
+          code: e.code,
+          message: e.message,
+        }),
+        { status: 400 }
+      );
     }
 
-    res.status(500).json({
-      message: "An unexpected error occurred. Please try again.",
-    });
+    return new Response(
+      JSON.stringify({
+        message: "An unexpected error occurred. Please try again.",
+      }),
+      { status: 500 }
+    );
   }
 }
+
+export const config = {
+  runtime: "edge",
+};

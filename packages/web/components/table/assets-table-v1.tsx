@@ -22,10 +22,9 @@ import { SortDirection } from "~/components/types";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { initialAssetsSort } from "~/config";
+import { EventName, initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -705,7 +704,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
             ])}
-            headerTrClassName="!h-12 !body2"
+            headerTrClassName="!h-12 !body2 !top-0 z-50"
           />
         )}
         <div className="relative flex h-12 justify-center">

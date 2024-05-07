@@ -6,6 +6,7 @@ import { FunctionComponent, useMemo, useRef } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
+import { CustomClasses } from "../types";
 import { Icon } from "./icon";
 
 const staticCategoryAssetImageSamples = {
@@ -23,13 +24,8 @@ const staticCategoryAssetImageSamples = {
   }, [] as string[]),
   defi: [
     "/tokens/generated/osmo.svg",
-    "/tokens/generated/ion.svg",
     "/tokens/generated/mars.svg",
-  ],
-  stablecoin: [
-    "/tokens/generated/usdc.svg",
-    "/tokens/generated/dai.svg",
-    "/tokens/generated/usdt.svg",
+    "/tokens/generated/lvn.svg",
   ],
   meme: [
     "/tokens/generated/pepe.svg",
@@ -45,6 +41,11 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/akt.svg",
     "/tokens/generated/fet.svg",
     "/tokens/generated/boot.svg",
+  ],
+  stablecoin: [
+    "/tokens/generated/usdc.svg",
+    "/tokens/generated/dai.svg",
+    "/tokens/generated/usdt.svg",
   ],
   bridges: [
     "/tokens/generated/axl.svg",
@@ -158,9 +159,9 @@ export const AssetCategoriesSelectors: FunctionComponent<{
   return (
     <div
       ref={divRef}
-      className="flex w-full place-content-between items-center py-3"
+      className="flex w-full place-content-between items-center gap-1 py-3"
     >
-      <div className="flex items-center gap-3">
+      <div className="no-scrollbar flex w-full items-center gap-3 overflow-x-scroll">
         {visibleCategories.map((category) => {
           const isSelected = selectedCategory === category;
           const sampleImages = getSampleImages(
@@ -175,7 +176,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               key={category}
               aria-label={category.replace("_", " ").replace("-", " ")}
               className={classNames(
-                "group flex shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150",
+                "group flex max-w-full shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150 md:gap-2",
                 "hover:border-osmoverse-200 hover:text-white-high",
                 "focus:border-wosmongton-400 focus:text-osmoverse-200",
                 "active:opacity-50",
@@ -195,11 +196,16 @@ export const AssetCategoriesSelectors: FunctionComponent<{
                 }
               }}
             >
-              <span>{t(`assets.categories.${category}`)}</span>
-              <OverlappingAssetImages imageUrls={sampleImages} />
+              <span className="overflow-x-hidden text-ellipsis whitespace-nowrap md:w-full">
+                {t(`assets.categories.${category}`)}
+              </span>
+              <OverlappingAssetImages
+                className="md:hidden"
+                imageUrls={sampleImages}
+              />
               {isSelected && (
                 <Icon
-                  className="text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
+                  className="shrink-0 text-osmoverse-600 transition-all duration-150 ease-out group-hover:text-osmoverse-200"
                   id="x-circle"
                   height={16}
                   width={17}
@@ -236,7 +242,7 @@ const CategoriesDropdown: FunctionComponent<{
   const { t } = useTranslation();
 
   return (
-    <Popover className="relative">
+    <Popover className="relative shrink-0">
       {({ open }) => (
         <>
           <Popover.Button
@@ -254,7 +260,7 @@ const CategoriesDropdown: FunctionComponent<{
                 "transition-transform duration-150 ease-out",
                 open && "rotate-180"
               )}
-              id="chevron-up"
+              id="chevron-down"
               width={16}
               height={16}
             />
@@ -298,21 +304,21 @@ const CategoriesDropdown: FunctionComponent<{
   );
 };
 
-const OverlappingAssetImages: FunctionComponent<{ imageUrls: string[] }> = ({
-  imageUrls,
-}) => (
+const OverlappingAssetImages: FunctionComponent<
+  { imageUrls: string[] } & CustomClasses
+> = ({ imageUrls, className }) => (
   <div
     style={{
       width: `${imageUrls.slice(undefined, 4).length * 28}px`,
     }}
-    className="relative flex h-fit items-center"
+    className={classNames("relative flex h-fit items-center", className)}
   >
     {imageUrls.map((url, index, urls) => (
       <div
         key={url}
         style={{
           marginLeft: `${index * 24}px`,
-          zIndex: 50 + index,
+          zIndex: 40 + index,
         }}
         className={classNames(
           "absolute flex h-8 w-8 items-center justify-center",

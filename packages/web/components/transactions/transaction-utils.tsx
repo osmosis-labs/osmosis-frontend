@@ -1,9 +1,13 @@
+import { PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { FormattedTransaction } from "@osmosis-labs/server";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { MultiLanguageT, useTranslation } from "hooks";
+import { useTranslation } from "hooks";
+
+import { MultiLanguageT } from "~/hooks";
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
@@ -26,24 +30,6 @@ export const groupTransactionsByDate = (
   }, {} as Record<string, FormattedTransaction[]>);
 };
 
-// input: string month like "January", "February", ...
-// note - inlang linter requires direct references to months like t("date.january")
-export const getMonthTranslation = (month: string, t: MultiLanguageT) => {
-  if (month === "January") return t("date.january");
-  if (month === "February") return t("date.february");
-  if (month === "March") return t("date.march");
-  if (month === "April") return t("date.april");
-  if (month === "May") return t("date.may");
-  if (month === "June") return t("date.june");
-  if (month === "July") return t("date.july");
-  if (month === "August") return t("date.august");
-  if (month === "September") return t("date.september");
-  if (month === "October") return t("date.october");
-  if (month === "November") return t("date.november");
-  if (month === "December") return t("date.december");
-  return "";
-};
-
 export const useFormatDate = () => {
   const { t } = useTranslation();
 
@@ -53,13 +39,34 @@ export const useFormatDate = () => {
     if (date.isYesterday()) return t("date.yesterday");
 
     const month = date.format("MMMM");
-    const monthTranslation = getMonthTranslation(month, t);
 
-    if (date.isSame(dayjs(), "year"))
-      return `${monthTranslation} ${date.format("D")}`;
+    if (date.isSame(dayjs(), "year")) return `${month} ${date.format("D")}`;
 
-    return `${monthTranslation} ${date.format("D, YYYY")}`;
+    return `${month} ${date.format("D, YYYY")}`;
   };
 
   return formatDate;
+};
+
+export const displayFiatPrice = (
+  value: PricePretty | undefined,
+  prefix: "-" | "+" | "",
+  t: MultiLanguageT
+): string => {
+  if (value === undefined || value?.toDec().equals(new Dec(0)))
+    return t("transactions.noPriceData");
+
+  const decValue = value.toDec();
+  const symbol = value.symbol;
+
+  if (decValue.lt(new Dec(0.01))) {
+    return `${prefix} <${symbol}0.01`;
+  }
+
+  // Convert displayValue to a fixed 2-decimal place string
+  const formattedDisplayValue = `${prefix} ${symbol}${Number(
+    decValue.toString()
+  ).toFixed(2)}`;
+
+  return formattedDisplayValue;
 };

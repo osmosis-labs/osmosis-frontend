@@ -1,4 +1,5 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
+import { useRouter } from "next/router";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { Spinner } from "~/components/loaders";
@@ -22,6 +23,7 @@ export const TransactionContent = ({
   isLoading,
   isWalletConnected,
   page,
+  hasNextPage,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions?: FormattedTransaction[];
@@ -31,6 +33,7 @@ export const TransactionContent = ({
   isLoading: boolean;
   isWalletConnected: boolean;
   page: string;
+  hasNextPage: boolean;
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -40,14 +43,23 @@ export const TransactionContent = ({
 
   const showPagination = isWalletConnected && !isLoading;
 
+  const router = useRouter();
+
   return (
     <div className="flex w-full flex-col pb-16">
       <div className="flex w-full justify-between pt-8 pb-4">
-        <h1 className="text-h3">{t("transactions.title")}</h1>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-h3 font-h3 md:text-h5 md:font-h5">
+            {t("transactions.title")}
+          </h1>
+          <p className="body2 text-osmoverse-200 opacity-50">
+            {t("transactions.launchAlert")}
+          </p>
+        </div>
         <TransactionButtons open={open} address={address} />
       </div>
 
-      <div className="flex flex-col">
+      <div className="-mx-4 flex flex-col">
         {!isWalletConnected ? (
           <NoTransactionsSplash variant="connect" />
         ) : isLoading ? (
@@ -57,58 +69,69 @@ export const TransactionContent = ({
         ) : (
           Object.entries(groupTransactionsByDate(transactions)).map(
             ([date, transactions]) => (
-              <div key={date} className="flex flex-col gap-4 px-4 pt-8 pb-3">
-                <div className="text-osmoverse-300">{formatDate(date)}</div>
-                <hr className="text-osmoverse-700" />
-                {transactions.map((transaction) => (
-                  <TransactionRow
-                    key={transaction.id}
-                    title={{
-                      // each type of transaction would have a translation for when it's pending, successful, or failed
-                      pending: t("transactions.swapping"),
-                      success: t("transactions.swapped"),
-                      failed: t("transactions.swapFailed"),
-                    }}
-                    effect="swap"
-                    status={transaction.code === 0 ? "success" : "failed"}
-                    onClick={() => {
-                      // TODO - once there are more transaction types, we can add more event names
-                      logEvent([
-                        EventName.TransactionsPage.swapClicked,
-                        {
-                          tokenIn:
-                            transaction.metadata[0].value[0].txInfo.tokenIn
-                              .token.denom,
-                          tokenOut:
-                            transaction.metadata[0].value[0].txInfo.tokenOut
-                              .token.denom,
-                        },
-                      ]);
+              <div key={date} className="flex flex-col px-4 pt-8">
+                <div className="subtitle1 md:body2 pb-3 capitalize text-osmoverse-300">
+                  {formatDate(date)}
+                </div>
+                <hr className="mb-3 text-osmoverse-700" />
+                {transactions
+                  .map((transaction) => {
+                    return (
+                      <TransactionRow
+                        key={transaction.id}
+                        title={{
+                          // each type of transaction would have a translation for when it's pending, successful, or failed
+                          pending: t("transactions.swapping"),
+                          success: t("transactions.swapped"),
+                          failed: t("transactions.swapFailed"),
+                        }}
+                        effect="swap"
+                        status={transaction.code === 0 ? "success" : "failed"}
+                        onClick={() => {
+                          // TODO - once there are more transaction types, we can add more event names
+                          logEvent([
+                            EventName.TransactionsPage.swapClicked,
+                            {
+                              tokenIn:
+                                transaction.metadata[0].value[0].txInfo.tokenIn
+                                  .token.denom,
+                              tokenOut:
+                                transaction.metadata[0].value[0].txInfo.tokenOut
+                                  .token.denom,
+                            },
+                          ]);
 
-                      setSelectedTransaction(transaction);
+                          setSelectedTransaction(transaction);
 
-                      // delay to ensure the slide over transitions smoothly
-                      if (!open) {
-                        setTimeout(() => setOpen(true), 1);
-                      }
-                    }}
-                    tokenConversion={{
-                      tokenIn: {
-                        amount:
-                          transaction.metadata[0].value[0].txInfo.tokenIn.token,
-                        value:
-                          transaction.metadata[0].value[0].txInfo.tokenIn.usd,
-                      },
-                      tokenOut: {
-                        amount:
-                          transaction.metadata[0].value[0].txInfo.tokenOut
-                            .token,
-                        value:
-                          transaction.metadata[0].value[0].txInfo.tokenOut.usd,
-                      },
-                    }}
-                  />
-                ))}
+                          // delay to ensure the slide over transitions smoothly
+                          if (!open) {
+                            setTimeout(() => setOpen(true), 1);
+                          }
+                        }}
+                        tokenConversion={{
+                          tokenIn: {
+                            amount:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenIn?.token,
+                            value:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenIn?.usd,
+                          },
+                          tokenOut: {
+                            amount:
+                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                                ?.tokenOut?.token,
+
+                            value:
+                              transaction.metadata[0].value[0].txInfo.tokenOut
+                                .usd,
+                          },
+                        }}
+                      />
+                    );
+                  })
+                  // filters out any transactions with missing metadata
+                  .filter(Boolean)}
               </div>
             )
           )
@@ -119,9 +142,15 @@ export const TransactionContent = ({
         {showPagination && (
           <TransactionsPaginaton
             showPrevious={+page > 0}
-            showNext={transactions !== undefined && transactions?.length > 0}
-            previousHref={`?page=${Math.max(0, +page - 1)}`}
-            nextHref={`?page=${+page + 1}`}
+            showNext={hasNextPage}
+            previousHref={{
+              pathname: router.pathname,
+              query: { ...router.query, page: Math.max(0, +page - 1) },
+            }}
+            nextHref={{
+              pathname: router.pathname,
+              query: { ...router.query, page: +page + 1 },
+            }}
           />
         )}
       </div>

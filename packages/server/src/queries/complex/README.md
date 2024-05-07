@@ -16,7 +16,7 @@ With this, once a value is cached and the function is called again, the followin
 
 - The `ttl` is checked against the current time. If it's still live, it's returned.
 - If the current time has exceeded the `ttl` BUT NOT the `staleWhileRevalidate` time, the "stale" value is returned immediately, and a new value is created in the background for use in future requests. This ensures that the user does not experience a delay while the cache is being updated.
-- If for whatever reason (often failed/slow query, a bug, etc.) the current time has exceeded `staleWhileRevalidate`, the cache is updated synchronously and the new value is returned. The user must wait for a new value to be created. This is often the case when the the underlying function is failing and the error is propagated to the user.
+- If for whatever reason (often failed/slow query, a bug, etc.) the current time has exceeded `staleWhileRevalidate`, the cache is updated synchronously, and the new value is returned. The user must wait for a new value to be created. This is often the case when the underlying function is failing and the error is propagated to the user.
 
 Example:
 

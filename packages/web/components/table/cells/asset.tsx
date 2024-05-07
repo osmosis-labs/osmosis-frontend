@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
@@ -12,12 +13,38 @@ export const AssetCell: FunctionComponent<
     coinName: string;
     coinImageUrl: string;
     warnUnverified: boolean;
+    isInUserWatchlist: boolean;
+    onClickWatchlist: () => void;
   }>
-> = ({ coinDenom, coinName, coinImageUrl, warnUnverified = false }) => {
+> = ({
+  coinDenom,
+  coinName,
+  coinImageUrl,
+  warnUnverified = false,
+  isInUserWatchlist,
+  onClickWatchlist,
+}) => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-44 flex w-full items-center gap-4 md:gap-1">
+    <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
+      {isInUserWatchlist !== undefined && onClickWatchlist && (
+        <Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            onClickWatchlist();
+          }}
+          className={classNames(
+            "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
+            isInUserWatchlist ? "text-wosmongton-400" : "text-osmoverse-600"
+          )}
+          id="star"
+          width={24}
+          height={24}
+        />
+      )}
       <div className="h-10 w-10 flex-shrink-0">
         {coinImageUrl && (
           <Image

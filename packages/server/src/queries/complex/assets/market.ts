@@ -18,7 +18,9 @@ import { DEFAULT_VS_CURRENCY } from "./config";
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
   currentPrice: PricePretty;
+  priceChange1h: RatePretty;
   priceChange24h: RatePretty;
+  priceChange7d: RatePretty;
   volume24h: PricePretty;
 }>;
 
@@ -48,7 +50,9 @@ export async function getMarketAsset<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        priceChange1h: assetMarketActivity?.price1hChange,
         priceChange24h: assetMarketActivity?.price24hChange,
+        priceChange7d: assetMarketActivity?.price7dChange,
         volume24h: assetMarketActivity?.volume24h,
       };
     },
@@ -151,9 +155,17 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
         ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
         : undefined,
     name: tokenData.name,
+    price1hChange:
+      tokenData.price_1h_change !== null
+        ? new RatePretty(new Dec(tokenData.price_1h_change).quo(new Dec(100)))
+        : undefined,
     price24hChange:
       tokenData.price_24h_change !== null
         ? new RatePretty(new Dec(tokenData.price_24h_change).quo(new Dec(100)))
+        : undefined,
+    price7dChange:
+      tokenData.price_7d_change !== null
+        ? new RatePretty(new Dec(tokenData.price_7d_change).quo(new Dec(100)))
         : undefined,
     exponent: tokenData.exponent,
     display: tokenData.display,
@@ -172,7 +184,8 @@ async function batchFetchCoingeckoCoins(keys: readonly string[]) {
 }
 const coingeckoCoinBatchLoader = new EdgeDataLoader(batchFetchCoingeckoCoins);
 
-async function getActiveCoingeckoCoins() {
+/** Set of active CoinGecko IDs that CoinGecko has data for (is "active"). */
+export async function getActiveCoingeckoCoins() {
   return await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 60, // 1 hour

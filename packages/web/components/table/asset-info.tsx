@@ -25,7 +25,9 @@ import { EventName } from "~/config";
 import {
   Breakpoint,
   useAmplitudeAnalytics,
+  useDimension,
   useTranslation,
+  useUserWatchlist,
   useWindowSize,
 } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
@@ -34,11 +36,12 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { formatPretty, getPriceTableFormatOptions } from "~/utils/formatter";
+import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
+import { SubscriptDecimal } from "../chart";
 import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import Spinner from "../loaders/spinner";
@@ -47,9 +50,11 @@ import { SortHeader } from "./headers/sort";
 
 type AssetRow =
   RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
-type SortKey = NonNullable<
-  RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
->["keyPath"];
+type SortKey =
+  | NonNullable<
+      RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+    >["keyPath"]
+  | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -66,12 +71,13 @@ export const AssetsInfoTable: FunctionComponent<{
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
   const selectCategory = useCallback(
-    (category: string) => {
+    (category: string, highlight?: string) => {
       setCategory(category);
       logEvent([
         EventName.Assets.categorySelected,
         {
           assetCategory: category,
+          highlight,
         },
       ]);
     },
@@ -81,8 +87,8 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    setCategory("topGainers");
-  }, []);
+    selectCategory("topGainers", "topGainers");
+  }, [selectCategory]);
   const categories = useMemo(
     () =>
       selectedCategory && selectedCategory !== "topGainers"
@@ -96,13 +102,9 @@ export const AssetsInfoTable: FunctionComponent<{
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
-  const search = useMemo(
-    () => (Boolean(selectedCategory) ? undefined : searchQuery),
-    [selectedCategory, searchQuery]
-  );
 
   // sorting
-  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey_, setSortKey_] = useState<SortKey>(undefined);
   const sortKey = useMemo(() => {
     // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "priceChange24h";
@@ -116,8 +118,8 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, sortDirection_]);
   const setSortKey = useCallback(
     (key: SortKey | undefined) => {
+      setSortKey_(key);
       if (key !== undefined) {
-        setSortKey_(key);
         logEvent([
           EventName.Assets.assetsListSorted,
           {
@@ -132,13 +134,13 @@ export const AssetsInfoTable: FunctionComponent<{
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
-      !Boolean(search)
+      !Boolean(searchQuery) && sortKey
         ? {
             keyPath: sortKey,
             direction: sortDirection,
           }
         : undefined,
-    [search, sortKey, sortDirection]
+    [searchQuery, sortKey, sortDirection]
   );
 
   // unverified assets
@@ -154,6 +156,8 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   // Query
   const {
     data: assetPagesData,
@@ -166,10 +170,11 @@ export const AssetsInfoTable: FunctionComponent<{
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
       limit: 50,
-      search,
-      onlyVerified: showUnverifiedAssets === false && !search,
+      search: searchQuery,
+      onlyVerified: showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
+      watchListDenoms,
       categories,
     },
     {
@@ -213,39 +218,62 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: t("assets.table.asset"),
-        cell: (cell) => (
+        cell: ({ row: { original } }) => (
           <AssetCell
-            {...cell.row.original}
-            warnUnverified={
-              showUnverifiedAssets && !cell.row.original.isVerified
-            }
+            {...original}
+            warnUnverified={showUnverifiedAssets && !original.isVerified}
+            isInUserWatchlist={watchListDenoms.includes(original.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetDenom(original.coinDenom)}
           />
         ),
       }),
-      columnHelper.accessor(
-        (row) =>
-          (row.currentPrice &&
-            formatPretty(
-              row.currentPrice,
-              getPriceTableFormatOptions(row.currentPrice.toDec())
-            )) ??
-          "-",
-        {
-          id: "price",
-          header: () => (
-            <SortHeader
-              label={t("assets.table.price")}
-              sortKey="currentPrice"
-              currentSortKey={sortKey}
-              currentDirection={sortDirection}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            />
-          ),
-        }
-      ),
       columnHelper.accessor((row) => row, {
-        id: "historicalPrice",
+        id: "price",
+        header: () => (
+          <SortHeader
+            label={t("assets.table.price")}
+            sortKey="currentPrice"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { currentPrice },
+          },
+        }) =>
+          currentPrice && (
+            <div>
+              {currentPrice.symbol}
+              <SubscriptDecimal decimal={currentPrice.toDec()} />
+            </div>
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "priceChange1h",
+        header: () => (
+          <SortHeader
+            label="1h"
+            sortKey="priceChange1h"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange1h },
+          },
+        }) =>
+          priceChange1h && (
+            <PriceChange className="justify-end" priceChange={priceChange1h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "priceChange24h",
         header: () => (
           <SortHeader
             label="24h"
@@ -263,6 +291,27 @@ export const AssetsInfoTable: FunctionComponent<{
         }) =>
           priceChange24h && (
             <PriceChange className="justify-end" priceChange={priceChange24h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "priceChange7d",
+        header: () => (
+          <SortHeader
+            label="7d"
+            sortKey="priceChange7d"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange7d },
+          },
+        }) =>
+          priceChange7d && (
+            <PriceChange className="justify-end" priceChange={priceChange7d} />
           ),
       }),
       columnHelper.accessor(
@@ -309,15 +358,26 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    watchListDenoms,
+    toggleWatchAssetDenom,
+    setSortKey,
+    t,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl) collapsedColIds.push("priceChange7d");
+    if (width < Breakpoint.xlhalf) collapsedColIds.push("priceChange1h");
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
+    if (width < Breakpoint.lg) collapsedColIds.push("priceChange24h");
     if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.sm) collapsedColIds.push("volume24h");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
@@ -334,12 +394,27 @@ export const AssetsInfoTable: FunctionComponent<{
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
-  const topOffset =
-    Number(
-      isMobile
-        ? theme.extend.height["navbar-mobile"].replace("px", "")
-        : theme.extend.height.navbar.replace("px", "")
-    ) + tableTopPadding;
+  // collect height of elements above table to inform virtualizer
+  const [highlightsRef, { height: highlightsHeight }] =
+    useDimension<HTMLDivElement>();
+  const [categoriesRef, { height: categoriesHeight }] =
+    useDimension<HTMLDivElement>();
+  const [searchRef, { height: searchBoxHeight }] =
+    useDimension<HTMLInputElement>();
+  const [bannerRef, { height: bannerHeight }] =
+    useDimension<HTMLAnchorElement>();
+  const totalTopOffset =
+    highlightsHeight +
+    categoriesHeight +
+    searchBoxHeight +
+    bannerHeight +
+    tableTopPadding;
+  const navBarOffset = Number(
+    isMobile
+      ? theme.extend.height["navbar-mobile"].replace("px", "")
+      : theme.extend.height.navbar.replace("px", "")
+  );
+  const topOffset = navBarOffset + totalTopOffset;
   const rowHeightEstimate = 80;
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
@@ -387,14 +462,15 @@ export const AssetsInfoTable: FunctionComponent<{
           setVerifiedAsset(null);
         }}
       />
-      <section className="mb-4">
+      <section ref={highlightsRef} className="mb-4">
         <HighlightsCategories
+          className="lg:-mx-4 lg:px-4"
           isCategorySelected={!!selectedCategory}
           onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>
-      <section className="mb-4">
+      <section ref={categoriesRef} className="mb-4">
         <AssetCategoriesSelectors
           selectedCategory={selectedCategory}
           hiddenCategories={useConst(["new", "topGainers"])}
@@ -404,14 +480,14 @@ export const AssetsInfoTable: FunctionComponent<{
         />
       </section>
       <SearchBox
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        ref={searchRef}
+        className="my-4 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
         debounce={500}
-        disabled={Boolean(selectedCategory)}
       />
-      <BalancesMoved className="my-3" />
+      <BalancesMoved ref={bannerRef} className="my-3" />
       <table
         className={classNames(
           "mt-3",
@@ -420,15 +496,19 @@ export const AssetsInfoTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="top-0 z-50">
               {headerGroup.headers.map((header, index) => (
                 <th
-                  className={classNames({
-                    // defines column width
-                    "w-36 xl:w-25": index !== 0,
-                  })}
+                  className={classNames(
+                    // apply to all columns
+                    "sm:w-fit ",
+                    {
+                      // defines column widths after first column
+                      "w-28": index !== 0,
+                    }
+                  )}
                   key={header.id}
                   colSpan={header.colSpan}
                 >

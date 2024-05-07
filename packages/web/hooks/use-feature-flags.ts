@@ -81,9 +81,11 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-    newAssetsPage:
-      isMobile || !isInitialized ? false : launchdarklyFlags.newAssetsPage,
     portfolioPageAndNewAssetsPage:
+      // don't want to use either on mobile
+      // as this flag bundles the 2 pages,
+      // and the portfolio page not be mobile responsive yet
+      // (even thought the assets page is)
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
