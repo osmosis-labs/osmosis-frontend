@@ -285,4 +285,71 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["trust-extension"],
+    logo: "/wallets/trust.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+    windowPropertyName: "trustwallet",
+    async supportsChain(chainId) {
+      const trustAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "stride-1",
+        "neutron-1",
+        "axelar-dojo-1",
+        "laozi-mainnet",
+        "columbus-5",
+        "phoenix-1",
+        "evmos_9001-2",
+        "injective-1",
+        "stargaze-1",
+        "crypto-org-chain-mainnet-1",
+        "kava_2222-10",
+      ];
+      return trustAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    mode: "extension", // Add mode property with correct value
+  },
+  {
+    ...CosmosKitWalletList["trust-mobile"],
+    logo: "/wallets/trust.png",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-mobile").then((m) => m.TrustMobileWallet),
+    supportsChain: async (chainId) => {
+      const trustMobileAvailableChains: MainnetChainIds[] = [
+        "akashnet-2",
+        "mantle-1",
+        "axelar-dojo-1",
+        "cosmoshub-4",
+        "emoney-3",
+        "evmos_9001-2",
+        "injective-1",
+        "irishub-1",
+        "juno-1",
+        "kava_2222-10",
+        "likecoin-mainnet-2",
+        "mars-1",
+        "neutron-1",
+        "osmosis-1",
+        "secret-4",
+        "pacific-1",
+        "sentinelhub-2",
+        "stargaze-1",
+        "iov-mainnet-ibc",
+        "stride-1",
+        "phoenix-1",
+      ];
+
+      return trustMobileAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    mode: "wallet-connect",
+  },
 ];
