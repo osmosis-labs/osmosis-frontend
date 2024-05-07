@@ -1,9 +1,9 @@
 import { OS, Wallet } from "@cosmos-kit/core";
 
-export const TrustMobileInfo: Wallet = {
+export const trustMobileInfo: Wallet = {
   name: "trust-mobile",
   prettyName: "Trust Mobile",
-  logo: "https://ia804606.us.archive.org/28/items/github.com-trustwallet-assets_-_2022-01-03_21-15-20/cover.jpg",
+  logo: "/wallets/trust.png",
   mode: "wallet-connect",
   mobileDisabled: false,
   rejectMessage: {
