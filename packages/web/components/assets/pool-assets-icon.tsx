@@ -30,7 +30,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
             key={coinDenom}
             style={{
               marginLeft: size === "md" ? `${index * 28}px` : `${index * 24}px`,
-              zIndex: 40 - index,
+              zIndex: 30 - index,
             }}
             className={classNames(
               {
