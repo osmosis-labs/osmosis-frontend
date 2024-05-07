@@ -22,10 +22,9 @@ import { SortDirection } from "~/components/types";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { initialAssetsSort } from "~/config";
+import { EventName, initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
