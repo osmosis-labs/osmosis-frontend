@@ -1,11 +1,5 @@
 import { SignOptions } from "@cosmos-kit/core";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  PricePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -306,7 +300,8 @@ export function useSwap(
     )
   );
 
-  const quoteBaseOutSpotPrice = useMemo(() => {
+  /** Spot price, current or effective, of the currently selected tokens. */
+  const inBaseOutQuoteSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
     if (
       inAmountInput.amount &&
@@ -324,27 +319,29 @@ export function useSwap(
           )
       );
     }
-  }, [inAmountInput.amount, inAmountInput.isTyping, quote, swapAssets.toAsset]);
+    return spotPriceQuote?.amount;
+  }, [
+    spotPriceQuote,
+    swapAssets.toAsset,
+    inAmountInput.amount,
+    inAmountInput.isTyping,
+    quote,
+  ]);
 
-  /** Spot price, current or effective, of the currently selected tokens. */
-  const inBaseOutQuoteSpotPrice = useMemo(() => {
-    return quoteBaseOutSpotPrice ?? spotPriceQuote?.amount;
-  }, [quoteBaseOutSpotPrice, spotPriceQuote?.amount]);
-
-  const tokenOutAmountMinusSwapFee = useMemo(
+  // Calculate token out fiat value from price impact and token in fiat value.
+  //
+  // This helps to mitigate the impact of various levels of caches. Here, we are guaranteed that to use
+  // the same fiat spot price used for both token in and token out amounts.
+  //
+  // The price impact is computed directly from quote, ensuring most up-to-date state.
+  // This guarantees consistency between token in and token out fiat values.
+  const tokenOutFiatValue: PricePretty = useMemo(
     () =>
-      getTokenOutMinusSwapFee({
-        tokenOut: quote?.amount,
-        tokenInAsset: swapAssets.fromAsset,
-        tokenInFeeAmount: quote?.tokenInFeeAmount,
-        quoteBaseOutSpotPrice,
-      }),
-    [
-      quote?.amount,
-      quote?.tokenInFeeAmount,
-      quoteBaseOutSpotPrice,
-      swapAssets.fromAsset,
-    ]
+      getTokenOutFiatValue(
+        quote?.priceImpactTokenOut?.toDec(),
+        inAmountInput.fiatValue?.toDec()
+      ),
+    [inAmountInput.fiatValue, quote?.priceImpactTokenOut]
   );
 
   // Calculate token in fee amount fiat value from token in fee amount returned by quote and token in price
@@ -361,24 +358,6 @@ export function useSwap(
     [inAmountInput.price, quote?.tokenInFeeAmount, swapAssets.fromAsset]
   );
 
-  // Calculate token out fiat value from price impact and token in fiat value.
-  //
-  // This helps to mitigate the impact of various levels of caches. Here, we are guaranteed that to use
-  // the same fiat spot price used for both token in and token out amounts.
-  //
-  // The price impact is computed directly from quote, ensuring most up-to-date state.
-  // This guarantees consistency between token in and token out fiat values.
-  const tokenOutFiatValue: PricePretty = useMemo(() => {
-    return getTokenOutFiatValue(
-      quote?.priceImpactTokenOut?.toDec(),
-      inAmountInput.fiatValue?.toDec()
-    ).sub(tokenInFeeAmountFiatValue);
-  }, [
-    inAmountInput.fiatValue,
-    quote?.priceImpactTokenOut,
-    tokenInFeeAmountFiatValue,
-  ]);
-
   return {
     ...swapAssets,
     inAmountInput,
@@ -391,7 +370,6 @@ export function useSwap(
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
-    tokenOutAmountMinusSwapFee,
     totalFee: sum([
       tokenInFeeAmountFiatValue,
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
@@ -411,64 +389,6 @@ export function useSwap(
 }
 
 const DefaultDenoms = ["ATOM", "OSMO"];
-
-// getTokenOutAmountMinusSwapFee calculates the token out amount after subtracting the swap fee.
-// If the token out is undefined, it returns undefined.
-// If any of the input values are undefined, it return the token out.
-// This function is used to determine the net amount of tokens received after accounting for the swap fee.
-//
-// - outToken: the token being output from the swap
-// - tokenInAsset: the input token asset
-// - tokenInFeeAmount: the fee amount in the input token
-// - quoteBaseOutSpotPrice: the spot price of the output token in terms of the base token
-//
-// Returns the output token amount minus the calculated swap fee.
-export function getTokenOutMinusSwapFee({
-  tokenOut,
-  tokenInAsset,
-  tokenInFeeAmount,
-  quoteBaseOutSpotPrice,
-}: {
-  tokenOut: CoinPretty | undefined;
-  tokenInAsset: Currency | undefined;
-  tokenInFeeAmount: Int | undefined;
-  quoteBaseOutSpotPrice: CoinPretty | undefined;
-}) {
-  if (!tokenOut) return undefined;
-  if (!tokenInFeeAmount || !quoteBaseOutSpotPrice || !tokenInAsset)
-    return tokenOut;
-
-  // Get precision exponent.
-  const coinDecimals = tokenInAsset.coinDecimals;
-  const precisionExponent = DecUtils.getTenExponentN(coinDecimals);
-
-  // Prevent division by zero
-  if (precisionExponent.isZero()) {
-    return tokenOut;
-  }
-
-  /**
-   * Swap Fee calculation = (Token In Fee Amount / Precision Exponent) × Quote Base Out Spot Price × 10^Coin Decimals
-   */
-  const outTokenSwapFee = tokenInFeeAmount
-    .toDec()
-    .quo(precisionExponent)
-    .mul(quoteBaseOutSpotPrice.toDec())
-    .mul(DecUtils.getTenExponentN(quoteBaseOutSpotPrice.currency.coinDecimals));
-
-  /**
-   *  Formula
-   *  Token Out Minus Swap Fee = Token Out − Swap Fee
-   */
-  const outTokenMinusSwapFee = tokenOut.sub(outTokenSwapFee);
-
-  // If the swap fee is greater than the output token amount, return 0
-  if (outTokenMinusSwapFee.toDec().isNegative()) {
-    return tokenOut;
-  }
-
-  return outTokenMinusSwapFee;
-}
 
 /**
  * Determines the next fallback denom for `fromAssetDenom` based on the
