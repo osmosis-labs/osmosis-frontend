@@ -618,7 +618,7 @@ export function useSwapAssets({
     }
   );
 
-  const allSelectableAssets = useMemo(
+  const selectableAssets = useMemo(
     () =>
       useOtherCurrencies
         ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
@@ -628,11 +628,11 @@ export function useSwapAssets({
 
   const { asset: fromAsset } = useSwapAsset({
     minDenomOrSymbol: fromAssetDenom,
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
   const { asset: toAsset } = useSwapAsset({
     minDenomOrSymbol: toAssetDenom,
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
 
   /**
@@ -684,7 +684,7 @@ export function useSwapAssets({
     fromAsset,
     toAsset,
     assetsQueryInput,
-    selectableAssets: allSelectableAssets,
+    selectableAssets,
     isLoadingSelectAssets,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
