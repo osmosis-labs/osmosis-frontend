@@ -29,9 +29,22 @@ export const AssetFilterSchema = z.object({
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
-  "symbol",
-  "name",
+const searchableAssetListAssetKeys: {
+  name: keyof AssetListAsset;
+  weight: number;
+}[] = [
+  {
+    name: "symbol",
+    weight: 10,
+  },
+  {
+    name: "name",
+    weight: 10,
+  },
+  {
+    name: "coinMinimalDenom",
+    weight: 1,
+  },
 ];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */

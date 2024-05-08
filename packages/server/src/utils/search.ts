@@ -10,7 +10,7 @@ export const SearchSchema = z.object({
 /** Searches a list of items by given search params - a query and limit - into a new array. */
 export function search<TItem extends object>(
   data: TItem[],
-  keys: string[],
+  keys: string[] | { name: string; weight: number }[],
   search: Search,
   threshold = 0.4
 ): TItem[] {
