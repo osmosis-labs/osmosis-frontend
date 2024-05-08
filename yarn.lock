@@ -118,24 +118,24 @@
     axios "1.6.2"
     got "^11.8.6"
 
-"@axelar-network/axelar-cgp-solidity@^4.5.0", "@axelar-network/axelar-cgp-solidity@^6.2.1":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-6.3.0.tgz#478214c83c6b4ecd34d0fb029fe0278c14d9a575"
-  integrity sha512-dHE2UgaFZvQvL0ythMi+aBsr4t+eR6zrVGmCU5BxslEqi6Tx+Wmjwg1O1p15EqoztalSqRKj+r57n3GtgeUpig==
+"@axelar-network/axelar-cgp-solidity@^6.3.0":
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-6.3.1.tgz#da35246f3002911368fd5fa7c7cb637ac4e642ec"
+  integrity sha512-RJmcOQbj2VhQb8uqBtu0beNj4MKRVjiYj74wXu6QI/a4bJ5EwwZK3+uCbTVNM9Qc7LqJqObhtGQfKUnAXEFCHA==
   dependencies:
-    "@axelar-network/axelar-gmp-sdk-solidity" "5.7.0"
+    "@axelar-network/axelar-gmp-sdk-solidity" "5.8.0"
 
-"@axelar-network/axelar-gmp-sdk-solidity@5.7.0":
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.7.0.tgz#db1d38d89c518272fc7704e3ec0844128749556b"
-  integrity sha512-JlokiWFxvR6bFQtDjdErtk0mZrr3GH1A8bKps1zVP/Bu4XOHR0WsrWGPVhWIbvT8a8Ag3dva4hskBYgdq+pLig==
+"@axelar-network/axelar-gmp-sdk-solidity@5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.8.0.tgz#449c6246b9f403af97a030b0a90b4f321c3a8a66"
+  integrity sha512-ThiCWK7lhwmsipgjKkw8c0z0ubB9toRMV9X0tRVOXHHSknKp5DCFfatbCwjpSC5GZRa+61ciTSqJNtCc7j9YoQ==
 
-"@axelar-network/axelarjs-sdk@0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.15.0.tgz#eec92763d53069ae58741aadc50754c3d76429bd"
-  integrity sha512-7DSO/loMu/3p592WZ7rXtL0uUyLgSi5c7JH26OCR2WElzhobScM6twb1JUi+Gu9u3OcrFPJZyBLd/COIVY6S7A==
+"@axelar-network/axelarjs-sdk@0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.16.0.tgz#e076482c1b82f8f79dd8aaf5dd41c818aed26acb"
+  integrity sha512-CSj5JZKFLdHYIPziU3O7FVI9oDYhCwiF5ysMQ7B82gt+KW/Ex2NMPx4Do+eEJi6dvcsHkUnsZFyY+YRXpQJoBw==
   dependencies:
-    "@axelar-network/axelar-cgp-solidity" "^4.5.0"
+    "@axelar-network/axelar-cgp-solidity" "^6.3.0"
     "@axelar-network/axelarjs-types" "^0.33.0"
     "@cosmjs/json-rpc" "^0.30.1"
     "@cosmjs/stargate" "0.31.0-alpha.1"
