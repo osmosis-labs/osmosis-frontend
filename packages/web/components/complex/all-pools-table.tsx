@@ -396,7 +396,7 @@ export const AllPoolsTable: FunctionComponent<{
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="top-0 z-50">
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder

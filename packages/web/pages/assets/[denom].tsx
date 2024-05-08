@@ -1,10 +1,13 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
   CoingeckoCoin,
+  getActiveCoingeckoCoins,
   getAsset,
+  getAssetMarketActivity,
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
+  sort,
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
@@ -560,23 +563,49 @@ const TokenChart = observer(() => {
 
 export default AssetInfoPage;
 
+/** Number of assets, sorted by volume, to generate static paths for. */
+const TOP_VOLUME_ASSETS_COUNT = 50;
+
 /**
- * Prerender all the denoms, we can also filter this value to reduce
- * build time
+ * Prerender important denoms. See function body for what we consider "important".
  */
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
   let paths: { params: { denom: string } }[] = [];
 
-  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
-    (a, b) => [...a, ...b]
+  const assets = AssetLists.flatMap((list) => list.assets);
+  const activeCoinGeckoIds = await getActiveCoingeckoCoins();
+
+  const importantAssets = assets.filter(
+    (asset) =>
+      asset.verified &&
+      !asset.unstable &&
+      !asset.preview &&
+      // Prevent repeated "coin not found" errors from CoinGecko coin query downsteram
+      asset.coingeckoId &&
+      activeCoinGeckoIds.has(asset.coingeckoId)
   );
 
+  const marketAssets = (
+    await Promise.all(
+      importantAssets.map((asset) =>
+        getAssetMarketActivity(asset).then((activity) => ({
+          ...activity,
+          ...asset,
+        }))
+      )
+    )
+  ).filter((asset): asset is NonNullable<typeof asset> => asset !== undefined);
+
+  const topVolumeAssets = sort(marketAssets, "volume7d").slice(
+    0,
+    TOP_VOLUME_ASSETS_COUNT
+  );
   /**
    * Add cache for all available currencies
    */
-  paths = currencies.map((currency) => ({
+  paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: currency.coinDenom,
+      denom: asset.symbol,
     },
   }));
 

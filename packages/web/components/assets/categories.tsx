@@ -27,25 +27,25 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/mars.svg",
     "/tokens/generated/lvn.svg",
   ],
-  stablecoin: [
-    "/tokens/generated/usdc.svg",
-    "/tokens/generated/dai.svg",
-    "/tokens/generated/usdt.svg",
-  ],
   meme: [
     "/tokens/generated/pepe.svg",
     "/tokens/generated/shib.svg",
     "/tokens/generated/huahua.svg",
+  ],
+  liquid_staking: [
+    "/tokens/generated/stosmo.svg",
+    "/tokens/generated/milktia.svg",
+    "/tokens/generated/statom.svg",
   ],
   ai: [
     "/tokens/generated/akt.svg",
     "/tokens/generated/fet.svg",
     "/tokens/generated/boot.svg",
   ],
-  liquid_staking: [
-    "/tokens/generated/stosmo.svg",
-    "/tokens/generated/milktia.svg",
-    "/tokens/generated/statom.svg",
+  stablecoin: [
+    "/tokens/generated/usdc.svg",
+    "/tokens/generated/dai.svg",
+    "/tokens/generated/usdt.svg",
   ],
   bridges: [
     "/tokens/generated/axl.svg",
