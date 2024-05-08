@@ -14,6 +14,21 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("ACRE");
     });
 
+    // TODO - potentially remove this
+    it("should be possible to search IBC denoms", () => {
+      const assets = getAssets({
+        search: {
+          query:
+            "ibc/C491E7582E94AE921F6A029790083CDE1106C28F3F6C4AD7F1340544C13EC372",
+        },
+        assetLists: MockAssetLists,
+      });
+
+      // OSMO should clearly be the best search result
+      expect(assets.length).toBeTruthy();
+      expect(assets[0].coinDenom).toEqual("stLUNA");
+    });
+
     it("should not return preview assets", () => {
       const assets = getAssets({
         search: { query: "PURSE" },
