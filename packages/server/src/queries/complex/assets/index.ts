@@ -31,7 +31,6 @@ export type AssetFilter = z.input<typeof AssetFilterSchema>;
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
 const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
   "symbol",
-  "coinMinimalDenom",
   "name",
 ];
 /** Get an individual asset explicitly by it's denom (any type).
