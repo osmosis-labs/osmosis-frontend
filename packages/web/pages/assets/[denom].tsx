@@ -195,6 +195,17 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       return asset?.rawAsset.name;
     }, [denom, details]);
 
+    const SwapTool_ = (
+      <SwapTool
+        fixedWidth
+        useQueryParams={false}
+        useOtherCurrencies={true}
+        initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+        initialOutTokenDenom={denom}
+        page="Token Info Page"
+      />
+    );
+
     return (
       <AssetInfoViewProvider value={contextValue}>
         <NextSeo
@@ -225,10 +236,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
-              <YourBalance
-                denom={denom}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-              />
+              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+                <div className="hidden w-[26.875rem] shrink-0 xl:block 1.5lg:w-full">
+                  {SwapTool_}
+                </div>
+                <YourBalance
+                  className="xl:flex-grow"
+                  denom={denom}
+                  tokenDetailsByLanguage={tokenDetailsByLanguage}
+                />
+              </div>
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
@@ -238,16 +255,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="xl:hidden">
-                <SwapTool
-                  fixedWidth
-                  useQueryParams={false}
-                  useOtherCurrencies={true}
-                  initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  initialOutTokenDenom={denom}
-                  page="Token Info Page"
-                />
-              </div>
+              <div className="xl:hidden">{SwapTool_}</div>
 
               {/* {routablePools && (
                 <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
