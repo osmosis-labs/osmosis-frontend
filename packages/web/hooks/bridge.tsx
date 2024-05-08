@@ -1,5 +1,6 @@
 import { FunctionComponent } from "react";
 
+import { ImmersiveBridgeFlow } from "~/components/bridge/immersive";
 import { LegacyBridgeFlow } from "~/components/bridge/legacy";
 import { FiatRampKey } from "~/integrations";
 import { createContext } from "~/utils/react-context";
@@ -28,7 +29,11 @@ export const BridgeProvider: FunctionComponent = ({ children }) => {
   if (!featureFlags._isInitialized)
     return <LoadingContext>{children}</LoadingContext>;
   if (featureFlags.newDepositWithdrawFlow)
-    return <LoadingContext>{children}</LoadingContext>;
+    return (
+      <ImmersiveBridgeFlow Provider={BridgeInnerProvider}>
+        {children}
+      </ImmersiveBridgeFlow>
+    );
   else
     return (
       <LegacyBridgeFlow Provider={BridgeInnerProvider}>

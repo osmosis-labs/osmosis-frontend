@@ -38,6 +38,7 @@ import { BridgeFlowProvider } from "./flow";
 const TransactionTypeQueryParamKey = "transaction_type";
 const DenomQueryParamKey = "denom";
 
+/** Legacy deposit/withdraw flow to be replaced by immersive flow. */
 export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
   ({ Provider, children }) => {
     const { assetsStore, userSettings } = useStore();
