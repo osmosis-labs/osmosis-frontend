@@ -237,7 +237,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
-                <div className="hidden w-[26.875rem] shrink-0 xl:block 1.5lg:w-full">
+                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                   {SwapTool_}
                 </div>
                 <YourBalance
