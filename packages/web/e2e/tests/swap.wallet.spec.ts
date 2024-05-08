@@ -159,7 +159,7 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to OSMO", async () => {
-    await swapPage.selectPair("USDC", "OSNO");
+    await swapPage.selectPair("USDC", "OSMO");
     await swapPage.swap("0.1");
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
