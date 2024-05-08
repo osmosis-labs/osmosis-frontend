@@ -21,6 +21,8 @@ test.describe("Test Swap feature", () => {
     "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4";
   let USDT =
     "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB";
+  let ATOM =
+    "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
   test.beforeEach(async () => {
     console.log("Before test setup Wallet Extension.");
@@ -62,9 +64,7 @@ test.describe("Test Swap feature", () => {
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
     // Handle Pop-up page <-
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain(
-      "token_out_denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-    );
+    expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
@@ -78,9 +78,7 @@ test.describe("Test Swap feature", () => {
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
     // Handle Pop-up page <-
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain(
-      "denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-    );
+    expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
@@ -144,5 +142,61 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+  });
+
+  test("User should be able to swap OSMO to USDC", async () => {
+    await swapPage.selectPair("OSMO", "USDC");
+    await swapPage.swap("0.1");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("denom: uosmo");
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDC to OSMO", async () => {
+    await swapPage.selectPair("USDC", "OSNO");
+    await swapPage.swap("0.1");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("token_out_denom: uosmo");
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap ATOM to USDC", async () => {
+    await swapPage.selectPair("ATOM", "USDC");
+    await swapPage.swap("0.01");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + ATOM);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDC to ATOM", async () => {
+    await swapPage.selectPair("USDC", "ATOM");
+    await swapPage.swap("0.1");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 });
