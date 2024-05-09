@@ -8,7 +8,6 @@ import { toHex } from "web3-utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import SkipApiClient from "~/integrations/bridges/skip/queries";
 import {
@@ -17,6 +16,7 @@ import {
 } from "~/integrations/ethereum";
 
 import { BridgeError } from "../errors";
+import { EthereumChainInfo } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,

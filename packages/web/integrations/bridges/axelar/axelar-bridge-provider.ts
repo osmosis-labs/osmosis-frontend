@@ -14,13 +14,13 @@ import { hexToNumberString, toHex } from "web3-utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { EthereumChainInfo } from "~/integrations/bridge-info";
-import {
-  Erc20Abi,
-  NativeEVMTokenConstantAddress,
-} from "~/integrations/ethereum";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
+import {
+  Erc20Abi,
+  EthereumChainInfo,
+  NativeEVMTokenConstantAddress,
+} from "../ethereum";
 import {
   BridgeAsset,
   BridgeCoin,
