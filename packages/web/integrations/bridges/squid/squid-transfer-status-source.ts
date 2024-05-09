@@ -1,6 +1,6 @@
 import { StatusResponse } from "@0xsquid/sdk";
 import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
-import { apiClient, ApiClientError } from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
 import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
 import type {
@@ -8,7 +8,6 @@ import type {
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
-import { poll } from "~/utils/promise";
 
 import { BridgeError } from "../errors";
 

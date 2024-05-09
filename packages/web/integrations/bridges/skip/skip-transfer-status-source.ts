@@ -3,6 +3,7 @@ import {
   ITxStatusSource,
   TxStatus,
 } from "@osmosis-labs/stores";
+import { poll } from "@osmosis-labs/utils";
 
 import SkipApiClient from "~/integrations/bridges/skip/queries";
 import type {
@@ -10,7 +11,6 @@ import type {
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
-import { poll } from "~/utils/promise";
 
 import { providerName } from "./types";
 

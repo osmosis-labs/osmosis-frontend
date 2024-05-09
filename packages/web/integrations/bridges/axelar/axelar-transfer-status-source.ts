@@ -1,11 +1,11 @@
 import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import { poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeProviderContext,
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
-import { poll } from "~/utils/promise";
 
 import { getTransferStatus } from "./queries";
 import { providerName } from "./types";

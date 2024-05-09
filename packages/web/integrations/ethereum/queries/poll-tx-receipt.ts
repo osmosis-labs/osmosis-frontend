@@ -1,7 +1,7 @@
+import { poll } from "@osmosis-labs/utils";
 import { hexToNumberString } from "web3-utils";
 
 import { SendFn } from "~/integrations/ethereum/types";
-import { poll } from "~/utils/promise";
 
 type ReceiptStatus = "confirmed" | "failed";
 
