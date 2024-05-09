@@ -12,13 +12,8 @@ import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
-import { TransactionRow } from "~/components/transactions/transaction-row";
-import {
-  groupTransactionsByDate,
-  useFormatDate,
-} from "~/components/transactions/transaction-utils";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { TransactionRows } from "~/components/transactions/transaction-rows";
+import { useTranslation } from "~/hooks";
 
 export const TransactionContent = ({
   setSelectedTransaction,
@@ -43,11 +38,7 @@ export const TransactionContent = ({
   hasNextPage: boolean;
   wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
 }) => {
-  const { logEvent } = useAmplitudeAnalytics();
-
   const { t } = useTranslation();
-
-  const formatDate = useFormatDate();
 
   const showPagination = isWalletConnected && !isLoading;
 
@@ -79,74 +70,12 @@ export const TransactionContent = ({
         {showConnectWallet ? (
           <NoTransactionsSplash variant="connect" />
         ) : showTransactionContent ? (
-          Object.entries(groupTransactionsByDate(transactions)).map(
-            ([date, transactions]) => (
-              <div key={date} className="flex flex-col px-4 pt-8">
-                <div className="subtitle1 md:body2 pb-3 capitalize text-osmoverse-300">
-                  {formatDate(date)}
-                </div>
-                <hr className="mb-3 text-osmoverse-700" />
-                {transactions
-                  .map((transaction) => {
-                    return (
-                      <TransactionRow
-                        key={transaction.id}
-                        title={{
-                          // each type of transaction would have a translation for when it's pending, successful, or failed
-                          pending: t("transactions.swapping"),
-                          success: t("transactions.swapped"),
-                          failed: t("transactions.swapFailed"),
-                        }}
-                        effect="swap"
-                        status={transaction.code === 0 ? "success" : "failed"}
-                        onClick={() => {
-                          // TODO - once there are more transaction types, we can add more event names
-                          logEvent([
-                            EventName.TransactionsPage.swapClicked,
-                            {
-                              tokenIn:
-                                transaction.metadata[0].value[0].txInfo.tokenIn
-                                  .token.denom,
-                              tokenOut:
-                                transaction.metadata[0].value[0].txInfo.tokenOut
-                                  .token.denom,
-                            },
-                          ]);
-
-                          setSelectedTransaction(transaction);
-
-                          // delay to ensure the slide over transitions smoothly
-                          if (!open) {
-                            setTimeout(() => setOpen(true), 1);
-                          }
-                        }}
-                        tokenConversion={{
-                          tokenIn: {
-                            amount:
-                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                                ?.tokenIn?.token,
-                            value:
-                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                                ?.tokenIn?.usd,
-                          },
-                          tokenOut: {
-                            amount:
-                              transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                                ?.tokenOut?.token,
-
-                            value:
-                              transaction.metadata[0].value[0].txInfo.tokenOut
-                                .usd,
-                          },
-                        }}
-                      />
-                    );
-                  })
-                  // filters out any transactions with missing metadata
-                  .filter(Boolean)}
-              </div>
-            )
-          )
+          <TransactionRows
+            transactions={transactions}
+            setSelectedTransaction={setSelectedTransaction}
+            setOpen={setOpen}
+            open={open}
+          />
         ) : isLoading ? (
           <Spinner className="self-center" />
         ) : transactions.length === 0 ? (
