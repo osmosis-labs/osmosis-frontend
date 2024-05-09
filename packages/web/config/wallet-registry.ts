@@ -105,7 +105,6 @@ export const WalletRegistry: RegistryWallet[] = [
       ),
     supportsChain: async (chainId) => {
       const keplrMobileAvailableChains: MainnetChainIds[] = [
-        "agoric-3" /** agoric */,
         "cosmoshub-4",
         "osmosis-1",
         "secret-4",
@@ -132,8 +131,6 @@ export const WalletRegistry: RegistryWallet[] = [
         "gitopia",
         "likecoin-mainnet-2",
         "akashnet-2",
-        "pacific-1" /** sei */,
-        "kava_2222-10" /** kava */,
       ];
 
       return keplrMobileAvailableChains.includes(chainId as MainnetChainIds);
