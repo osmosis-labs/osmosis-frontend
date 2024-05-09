@@ -268,7 +268,7 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction?: FormattedTransactio }
+  ModalBaseProps & { transaction?: FormattedTransaction }
 > = ({ onRequestClose, isOpen, transaction }) => {
   if (!transaction) return null;
   return (
