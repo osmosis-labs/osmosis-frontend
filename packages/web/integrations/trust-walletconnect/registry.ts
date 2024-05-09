@@ -13,7 +13,7 @@ export const TrustMobileInfo: Wallet = {
     {
       device: "mobile",
       os: "android",
-      link: "https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp&pli=1",
+      link: "https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp",
     },
     {
       device: "mobile",
@@ -46,11 +46,11 @@ export const TrustMobileInfo: Wallet = {
       const encodedWcUrl = encodeURIComponent(wcUri);
       switch (os) {
         case "ios":
-          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
+          return `${plainAppUrl}://wc?${encodedWcUrl}`;
         case "android":
-          return `${plainAppUrl}://wcV2?${encodedWcUrl}#Intent;package=com.chainapsis.trust;scheme=trustwallet;end;`;
+          return `${plainAppUrl}://wc?${encodedWcUrl}#Intent;package=com.wallet.crypto.trustapp;scheme=trust;end;`;
         default:
-          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
+          return `${plainAppUrl}://wc?${encodedWcUrl}`;
       }
     },
   },
