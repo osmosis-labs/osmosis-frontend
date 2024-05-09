@@ -226,6 +226,6 @@ it("should return only pool assets when sending a pool id and useOtherCurrencies
   // Search box should not be visible
   expect(screen.queryByPlaceholderText("Search")).toBeNull();
 
-  // Only the pool assets should be visible
-  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(1);
+  // Only the pool assets should be visible, including the to and from tokens
+  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(3);
 });
