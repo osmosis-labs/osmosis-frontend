@@ -105,8 +105,11 @@ const Transactions: React.FC = observer(() => {
     ctas: [],
   });
 
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<FormattedTransaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<
+    FormattedTransaction | undefined
+  >(undefined);
+
+  console.log("selectedTransaction: ", selectedTransaction);
 
   const [open, setOpen] = useState(false);
 
@@ -121,6 +124,7 @@ const Transactions: React.FC = observer(() => {
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
       <TransactionContent
         setSelectedTransaction={setSelectedTransaction}
+        selectedTransaction={selectedTransaction}
         transactions={transactions}
         setOpen={setOpen}
         open={open}
@@ -133,13 +137,25 @@ const Transactions: React.FC = observer(() => {
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
-          onRequestClose={() => setOpen(false)}
+          onRequestClose={() => {
+            setOpen(false);
+
+            setTimeout(() => {
+              setSelectedTransaction(undefined);
+            }, 300);
+          }}
           open={open}
           transaction={selectedTransaction}
         />
       ) : (
         <TransactionDetailsModal
-          onRequestClose={() => setOpen(false)}
+          onRequestClose={() => {
+            setOpen(false);
+
+            setTimeout(() => {
+              setSelectedTransaction(undefined);
+            }, 300);
+          }}
           isOpen={open}
           transaction={selectedTransaction}
         />

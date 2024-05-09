@@ -1,4 +1,5 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { FormattedTransaction } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -15,6 +16,8 @@ export type TransactionStatus = "pending" | "success" | "failed";
 type Effect = "swap" | "deposit" | "withdraw";
 
 interface Transaction {
+  selectedTransaction?: FormattedTransaction;
+  hash: string;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
   effect: Effect;
@@ -41,6 +44,7 @@ interface Transaction {
 }
 
 export const TransactionRow: FunctionComponent<Transaction> = ({
+  hash,
   status,
   effect,
   title,
@@ -48,6 +52,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   tokenConversion,
   transfer,
   onClick,
+  selectedTransaction,
 }) => {
   const effectIconId = effect === "swap" ? "swap" : "down-arrow";
 
@@ -57,7 +62,11 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
       className={classNames(
         "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
         {
-          "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
+          "bg-osmoverse-825 transition-colors duration-100 ease-in-out":
+            selectedTransaction?.hash === hash,
+        },
+        {
+          "cursor-pointer hover:bg-osmoverse-850": Boolean(onClick),
         }
       )}
       onClick={() => onClick?.()}

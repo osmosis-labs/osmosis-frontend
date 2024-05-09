@@ -10,11 +10,13 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export const TransactionRows = ({
   transactions,
+  selectedTransaction,
   setSelectedTransaction,
   setOpen,
   open,
 }: {
   transactions: FormattedTransaction[];
+  selectedTransaction?: FormattedTransaction;
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   setOpen: (open: boolean) => void;
   open: boolean;
@@ -37,6 +39,8 @@ export const TransactionRows = ({
                 return (
                   <TransactionRow
                     key={transaction.id}
+                    hash={transaction.hash}
+                    selectedTransaction={selectedTransaction}
                     title={{
                       pending: t("transactions.swapping"),
                       success: t("transactions.swapped"),

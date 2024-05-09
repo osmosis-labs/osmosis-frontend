@@ -245,7 +245,7 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: FormattedTransaction | null;
+  transaction?: FormattedTransaction;
 }) => {
   if (!transaction) return null;
   return (
@@ -268,7 +268,7 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: FormattedTransaction | null }
+  ModalBaseProps & { transaction?: FormattedTransactio }
 > = ({ onRequestClose, isOpen, transaction }) => {
   if (!transaction) return null;
   return (
