@@ -1,4 +1,10 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
+import {
+  AccountStoreWallet,
+  CosmosAccount,
+  CosmwasmAccount,
+  OsmosisAccount,
+} from "@osmosis-labs/stores";
 import { useRouter } from "next/router";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
@@ -24,6 +30,7 @@ export const TransactionContent = ({
   isWalletConnected,
   page,
   hasNextPage,
+  wallet,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
   transactions?: FormattedTransaction[];
@@ -34,6 +41,7 @@ export const TransactionContent = ({
   isWalletConnected: boolean;
   page: string;
   hasNextPage: boolean;
+  wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -44,6 +52,14 @@ export const TransactionContent = ({
   const showPagination = isWalletConnected && !isLoading;
 
   const router = useRouter();
+
+  const showTransactionContent =
+    wallet &&
+    wallet.isWalletConnected &&
+    wallet.address &&
+    transactions.length > 0;
+
+  const showConnectWallet = !isWalletConnected && !isLoading;
 
   return (
     <div className="flex w-full flex-col pb-16">
@@ -60,13 +76,9 @@ export const TransactionContent = ({
       </div>
 
       <div className="-mx-4 flex flex-col">
-        {!isWalletConnected ? (
+        {showConnectWallet ? (
           <NoTransactionsSplash variant="connect" />
-        ) : isLoading ? (
-          <Spinner className="self-center" />
-        ) : transactions.length === 0 ? (
-          <NoTransactionsSplash variant="transactions" />
-        ) : (
+        ) : showTransactionContent ? (
           Object.entries(groupTransactionsByDate(transactions)).map(
             ([date, transactions]) => (
               <div key={date} className="flex flex-col px-4 pt-8">
@@ -135,9 +147,12 @@ export const TransactionContent = ({
               </div>
             )
           )
-        )}
+        ) : isLoading ? (
+          <Spinner className="self-center" />
+        ) : transactions.length === 0 ? (
+          <NoTransactionsSplash variant="transactions" />
+        ) : null}
       </div>
-
       <div className="py-6">
         {showPagination && (
           <TransactionsPaginaton
