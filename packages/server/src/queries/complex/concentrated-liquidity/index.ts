@@ -244,7 +244,6 @@ export async function mapGetUserPositionDetails({
     : queryAccountPositions({ ...params, bech32Address: userOsmoAddress }).then(
         ({ positions }) => positions
       );
-  const lockableDurationsPromise = getLockableDurations(params);
   const userUnbondingPositionsPromise = getUserUnbondingPositions({
     ...params,
     bech32Address: userOsmoAddress,
@@ -265,7 +264,6 @@ export async function mapGetUserPositionDetails({
 
   const [
     positions,
-    lockableDurations,
     userUnbondingPositions,
     delegatedPositions,
     undelegatingPositions,
@@ -273,13 +271,15 @@ export async function mapGetUserPositionDetails({
     superfluidPoolIds,
   ] = await Promise.all([
     positionsPromise,
-    lockableDurationsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
     undelegatingPositionsPromise,
     stakeCurrencyPromise,
     superfluidPoolIdsPromise,
   ]);
+
+  const lockableDurations = getLockableDurations();
+  const longestLockDuration = lockableDurations[lockableDurations.length - 1];
 
   const pools = await getPools({
     ...params,
@@ -438,8 +438,6 @@ export async function mapGetUserPositionDetails({
       if (isSuperfluidStaked && delegatedSuperfluidPosition) {
         // delegated position info
 
-        const longestLockDuration =
-          lockableDurations[lockableDurations.length - 1];
         const validatorInfo = await getValidatorInfo({
           ...params,
           validatorBech32Address: delegatedSuperfluidPosition.validatorAddress,
