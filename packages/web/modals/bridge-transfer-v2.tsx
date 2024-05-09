@@ -44,6 +44,7 @@ import {
   SourceChainTokenConfig,
 } from "~/integrations/bridges/axelar/types";
 import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
+import { BridgeError } from "~/integrations/bridges/errors";
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -62,7 +63,6 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
-import { ErrorTypes } from "~/utils/error-types";
 import { createContext } from "~/utils/react-context";
 import { api } from "~/utils/trpc";
 
@@ -1069,7 +1069,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const errors = someError?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
+  const hasNoQuotes = errors?.[0]?.errorType === BridgeError.NoQuotesError;
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 
