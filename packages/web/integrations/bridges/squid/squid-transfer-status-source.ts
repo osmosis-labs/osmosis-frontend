@@ -8,8 +8,9 @@ import type {
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "~/integrations/bridges/types";
-import { ErrorTypes } from "~/utils/error-types";
 import { poll } from "~/utils/promise";
+
+import { BridgeError } from "../errors";
 
 // TODO: move to types file
 const providerName = "Squid" as const;
@@ -93,11 +94,11 @@ export class SquidTransferStatusSource implements ITxStatusSource {
             error.data?.errors?.map(
               ({ errorType, message }) =>
                 ({
-                  errorType: errorType ?? ErrorTypes.UnexpectedError,
+                  errorType: errorType ?? BridgeError.UnexpectedError,
                   message: message ?? "",
                 } ?? [
                   {
-                    errorType: ErrorTypes.UnexpectedError,
+                    errorType: BridgeError.UnexpectedError,
                     message: "Failed to fetch transfer status",
                   },
                 ])

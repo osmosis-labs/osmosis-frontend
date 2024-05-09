@@ -15,8 +15,8 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { ErrorTypes } from "~/utils/error-types";
 
+import { BridgeError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
@@ -75,7 +75,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (!sourceAsset) {
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnsupportedQuoteError,
+              errorType: BridgeError.UnsupportedQuoteError,
               message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
             },
           ]);
@@ -86,7 +86,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (!destinationAsset) {
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnsupportedQuoteError,
+              errorType: BridgeError.UnsupportedQuoteError,
               message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
             },
           ]);

@@ -1,4 +1,25 @@
-import { Errors } from "~/server/api/errors";
+/** A collection of errors that is itself an error. */
+export class Errors extends Error {
+  errors: Array<{
+    errorType: string;
+    message: string;
+  }>;
+
+  constructor(
+    errors: Array<{
+      errorType: string;
+      message: string;
+    }>
+  ) {
+    super();
+    this.errors = errors;
+    this.name = "Errors";
+  }
+
+  get message() {
+    return this.errors.map((error) => error.message).join(", ");
+  }
+}
 
 export class BridgeQuoteError extends Errors {
   constructor(
@@ -22,4 +43,13 @@ export class BridgeTransferStatusError extends Errors {
     super(errors);
     this.name = "BridgeTransferError";
   }
+}
+
+export enum BridgeError {
+  UnexpectedError = "UnexpectedError",
+  CreateApprovalTxError = "ApprovalTxError",
+  CreateCosmosTxError = "CreateCosmosTxError",
+  CreateEVMTxError = "CreateEVMTxError",
+  NoQuotesError = "NoQuotesError",
+  UnsupportedQuoteError = "UnsupportedQuoteError",
 }

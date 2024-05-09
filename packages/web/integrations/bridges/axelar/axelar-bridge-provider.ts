@@ -19,9 +19,8 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { ErrorTypes } from "~/utils/error-types";
 
-import { BridgeQuoteError } from "../errors";
+import { BridgeError, BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -107,7 +106,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -138,7 +137,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -150,7 +149,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           ) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: `Amount exceeds transfer limit of ${new CoinPretty(
                   {
                     coinDecimals: fromAsset.decimals,
@@ -336,16 +335,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (error instanceof Error) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error.message,
               },
             ]);
           }
 
           if (typeof error === "string") {
-            let errorType = ErrorTypes.UnexpectedError;
+            let errorType = BridgeError.UnexpectedError;
             if (error.includes("not found")) {
-              errorType = ErrorTypes.UnsupportedQuoteError;
+              errorType = BridgeError.UnsupportedQuoteError;
             }
 
             throw new BridgeQuoteError([
@@ -358,7 +357,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnexpectedError,
+              errorType: BridgeError.UnexpectedError,
               message: error.message,
             },
           ]);
@@ -455,7 +454,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     ) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateEVMTxError,
+          errorType: BridgeError.CreateEVMTxError,
           message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
         },
       ]);
@@ -514,7 +513,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     ) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateEVMTxError,
+          errorType: BridgeError.CreateEVMTxError,
           message: `When withdrawing native ${fromAsset.denom} from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom`,
         },
       ]);
@@ -545,7 +544,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (!ibcAssetInfo) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: "Could not find IBC asset info",
           },
         ]);
@@ -558,7 +557,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (!ibcTransferMethod) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: "Could not find IBC asset transfer info",
           },
         ]);
@@ -591,7 +590,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (error instanceof Error) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: error.message,
           },
         ]);

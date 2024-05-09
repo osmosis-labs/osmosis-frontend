@@ -14,12 +14,11 @@ import {
   BridgeManager,
 } from "~/integrations/bridges/bridge-manager";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
+import { BridgeError, Errors } from "~/integrations/bridges/errors";
 import {
   type BridgeQuote,
   getBridgeQuoteSchema,
 } from "~/integrations/bridges/types";
-import { Errors } from "~/server/api/errors";
-import { ErrorTypes } from "~/utils/error-types";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -120,7 +119,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "No successful quotes found",
             cause: new Errors([
               {
-                errorType: ErrorTypes.NoQuotesError,
+                errorType: BridgeError.NoQuotesError,
                 message: "No successful quotes found",
               },
             ]),
@@ -160,7 +159,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "Unexpected Error",
             cause: [
               {
-                error: ErrorTypes.UnexpectedError,
+                error: BridgeError.UnexpectedError,
                 message: error?.message ?? "Unexpected Error",
               },
             ],
@@ -170,7 +169,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
+          cause: [{ errorType: BridgeError.UnexpectedError }],
         });
       }
     }),
@@ -240,7 +239,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "Unexpected Error",
             cause: new Errors([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error?.message ?? "Unexpected Error",
               },
             ]),
@@ -250,7 +249,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
+          cause: [{ errorType: BridgeError.UnexpectedError }],
         });
       }
     }),
@@ -309,7 +308,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "Unexpected Error",
             cause: new Errors([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error?.message ?? "Unexpected Error",
               },
             ]),
@@ -321,7 +320,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           message: "Unexpected Error",
           cause: new Errors([
             {
-              errorType: ErrorTypes.UnexpectedError,
+              errorType: BridgeError.UnexpectedError,
               message: "Unexpected Error",
             },
           ]),

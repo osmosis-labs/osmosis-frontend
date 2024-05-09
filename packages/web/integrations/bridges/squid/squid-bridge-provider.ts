@@ -21,8 +21,8 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { ErrorTypes } from "~/utils/error-types";
 
+import { BridgeError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
@@ -117,7 +117,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           if (fromChain.chainType === "cosmos") {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message:
                   "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
               },
@@ -144,7 +144,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           if (feeCosts.length > 1 || gasCosts.length > 1) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message:
                   "Osmosis FrontEnd only supports a single fee and gas costs",
               },
@@ -154,7 +154,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           if (!data.route.transactionRequest) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message:
                   "Squid failed to generate a transaction request for this quote",
               },
@@ -167,7 +167,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           if (!aggregatePriceImpact) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message:
                   "Squid failed to generate a price impact for this quote",
               },
@@ -177,7 +177,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           if (data.route.params.toToken.address !== toAsset.address) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "toAsset mismatch",
               },
             ]);
@@ -191,7 +191,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           ) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "USD value not found",
               },
             ]);
@@ -267,7 +267,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
           throw new BridgeQuoteError(
             error.data?.errors?.map(({ errorType, message }) => ({
-              errorType: errorType ?? ErrorTypes.UnexpectedError,
+              errorType: errorType ?? BridgeError.UnexpectedError,
               message: message ?? "",
             }))
           );
@@ -299,7 +299,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     if (!squidFromChain) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateApprovalTxError,
+          errorType: BridgeError.CreateApprovalTxError,
           message: `Error getting approval Tx`,
         },
       ]);
@@ -324,7 +324,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     } catch (e) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateApprovalTxError,
+          errorType: BridgeError.CreateApprovalTxError,
           message: `Error creating approval Tx`,
         },
       ]);
@@ -384,7 +384,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       ) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message:
               "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
           },
@@ -425,7 +425,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       if (error instanceof Error) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: error.message,
           },
         ]);
