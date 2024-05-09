@@ -58,13 +58,14 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 
   return (
     <div
-      // update padding on mobile
       className={classNames(
         "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
+        // Highlight the selected transaction
         {
           "bg-osmoverse-825 transition-colors duration-100 ease-in-out":
             selectedTransaction?.hash === hash,
         },
+        // Highlight the hovered transaction
         {
           "cursor-pointer hover:bg-osmoverse-850": Boolean(onClick),
         }
