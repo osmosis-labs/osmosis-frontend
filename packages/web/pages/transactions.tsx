@@ -120,6 +120,12 @@ const Transactions: React.FC = observer(() => {
     setOpen(false);
   }, [isLargeDesktop]);
 
+  const onRequestClose = () => {
+    setOpen(false);
+    // add delay for smoother transition
+    setTimeout(() => setSelectedTransaction(undefined), 300);
+  };
+
   return (
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
       <TransactionContent
@@ -137,25 +143,13 @@ const Transactions: React.FC = observer(() => {
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
-          onRequestClose={() => {
-            setOpen(false);
-
-            setTimeout(() => {
-              setSelectedTransaction(undefined);
-            }, 300);
-          }}
+          onRequestClose={onRequestClose}
           open={open}
           transaction={selectedTransaction}
         />
       ) : (
         <TransactionDetailsModal
-          onRequestClose={() => {
-            setOpen(false);
-
-            setTimeout(() => {
-              setSelectedTransaction(undefined);
-            }, 300);
-          }}
+          onRequestClose={onRequestClose}
           isOpen={open}
           transaction={selectedTransaction}
         />
