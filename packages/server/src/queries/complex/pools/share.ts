@@ -62,10 +62,9 @@ export async function getSharePool(params: {
   chainList: Chain[];
   poolId: string;
 }) {
-  const [pool, lockableDurations] = await Promise.all([
-    getPool(params),
-    getLockableDurations(params),
-  ]);
+  const pool = await getPool(params);
+
+  const lockableDurations = getLockableDurations();
 
   const basePool = {
     ...pool,
