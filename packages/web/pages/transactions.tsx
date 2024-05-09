@@ -12,7 +12,12 @@ import {
 } from "~/components/transactions/transaction-details";
 import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
-import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useTranslation,
+  useWalletSelect,
+  useWindowSize,
+} from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -40,24 +45,27 @@ const Transactions: React.FC = observer(() => {
 
   const { accountStore, chainStore } = useStore();
   const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
+  const wallet = accountStore.getWallet(osmosisChainId);
   // for easy testing, pass in an optional address query string to override connected address
   // /transactions?page=0&address=osmoADDRESS
-  const address = addressFromQueryString || account?.address || "";
+  const address = addressFromQueryString || wallet?.address || "";
 
-  const isWalletConnected = Boolean(account?.isWalletConnected);
+  const isWalletConnected = Boolean(wallet?.isWalletConnected);
 
-  const { data, isLoading } = api.edge.transactions.getTransactions.useQuery(
-    {
-      // address: EXAMPLE.ADDRESS,
-      address,
-      page: pageString,
-      pageSize: pageSizeString,
-    },
-    {
-      enabled: !!address,
-    }
-  );
+  const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { data, isFetching: isGetTransactionsFetching } =
+    api.edge.transactions.getTransactions.useQuery(
+      {
+        // address: EXAMPLE.ADDRESS,
+        address,
+        page: pageString,
+        pageSize: pageSizeString,
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      }
+    );
 
   const { transactions, hasNextPage } = data ?? {
     transactions: [],
@@ -117,10 +125,11 @@ const Transactions: React.FC = observer(() => {
         setOpen={setOpen}
         open={open}
         address={address}
-        isLoading={isLoading}
+        isLoading={isGetTransactionsFetching || isWalletLoading}
         isWalletConnected={isWalletConnected}
         page={pageString}
         hasNextPage={hasNextPage}
+        wallet={wallet}
       />
       {isLargeDesktop ? (
         <TransactionDetailsSlideover
