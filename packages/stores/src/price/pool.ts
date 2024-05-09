@@ -106,7 +106,7 @@ export class PoolFallbackPriceStore
             route.sourceCoinBase,
             route.destCoinBase
           );
-          const spotPriceDec = inSpotPrice.toDec().equals(new Dec(0))
+          const spotPriceDec = !inSpotPrice.toDec().isPositive()
             ? new Dec(0)
             : new Dec(1).quo(inSpotPrice.toDec());
           const destCoinPrice = this.getPrice(route.destCoinBase, vsCurrency);
