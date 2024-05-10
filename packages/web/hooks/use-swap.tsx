@@ -1,4 +1,10 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,

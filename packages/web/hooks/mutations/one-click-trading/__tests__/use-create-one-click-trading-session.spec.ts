@@ -36,7 +36,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
     const authenticator = parseAuthenticator({
       authenticator: {
         id: "1",
-        data: Buffer.from(rawAuthenticator.data).toString("base64"),
+        config: Buffer.from(rawAuthenticator.data).toString("base64"),
         type: rawAuthenticator.type,
       },
     });
@@ -78,9 +78,9 @@ describe("getOneClickTradingSessionAuthenticator", () => {
     expect(result.type).toEqual("AllOf");
     const data = JSON.parse(Buffer.from(result.data).toString());
     expect(data).toHaveLength(3);
-    expect(data[0].authenticator_type).toEqual("SignatureVerification");
-    expect(data[1].authenticator_type).toEqual("CosmwasmAuthenticatorV1");
-    expect(data[2].authenticator_type).toEqual("AnyOf");
+    expect(data[0].Type).toEqual("SignatureVerification");
+    expect(data[1].Type).toEqual("CosmwasmAuthenticatorV1");
+    expect(data[2].Type).toEqual("AnyOf");
   });
 });
 
