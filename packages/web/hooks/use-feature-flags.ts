@@ -26,7 +26,8 @@ export type AvailableFlags =
   | "swapToolSimulateFee"
   | "portfolioPageAndNewAssetsPage"
   | "displayDailyEarn"
-  | "newAssetsPage";
+  | "newAssetsPage"
+  | "newDepositWithdrawFlow";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -55,6 +56,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   portfolioPageAndNewAssetsPage: false,
   newAssetsPage: false,
   displayDailyEarn: false,
+  newDepositWithdrawFlow: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
