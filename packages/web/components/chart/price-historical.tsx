@@ -18,13 +18,14 @@ import {
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, memo } from "react";
+import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
+import { compressZeros } from "~/utils/formatter";
 import {
   FormatOptions,
   formatPretty,
@@ -32,7 +33,7 @@ import {
 } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
-const TokenPairHistoricalChart: FunctionComponent<{
+const HistoricalPriceChart: FunctionComponent<{
   data: { close: number; time: number }[];
   margin?: Partial<Margin>;
   annotations: Dec[];
@@ -245,7 +246,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
   )
 );
 
-export default TokenPairHistoricalChart;
+export default HistoricalPriceChart;
 
 export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
@@ -266,6 +267,7 @@ export const PriceChartHeader: FunctionComponent<{
     pricesHeaderContainerClass?: string;
     pricesHeaderRootContainer?: string;
   };
+  compactZeros?: boolean;
 }> = observer(
   ({
     historicalRange,
@@ -280,8 +282,30 @@ export const PriceChartHeader: FunctionComponent<{
     fiatSymbol,
     showAllRange = false,
     isLoading = false,
+    compactZeros = false,
   }) => {
     const { t } = useTranslation();
+
+    const getFormattedPrice = useCallback(
+      (
+        additionalFormatOpts?: Partial<
+          Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+        >
+      ) =>
+        formatPretty(new Dec(hoverPrice), {
+          maxDecimals: decimal,
+          notation: "compact",
+          ...formatOpts,
+          ...additionalFormatOpts,
+        }) || "",
+      [decimal, formatOpts, hoverPrice]
+    );
+
+    const { decimalDigits, significantDigits, zeros } = useMemo(
+      () =>
+        compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+      [getFormattedPrice]
+    );
 
     return (
       <div
@@ -304,11 +328,19 @@ export const PriceChartHeader: FunctionComponent<{
               )}
             >
               {fiatSymbol}
-              {formatPretty(new Dec(hoverPrice), {
-                maxDecimals: decimal,
-                notation: "compact",
-                ...formatOpts,
-              }) || ""}
+              {compactZeros ? (
+                <>
+                  {significantDigits}.
+                  {Boolean(zeros) && (
+                    <>
+                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                    </>
+                  )}
+                  {decimalDigits}
+                </>
+              ) : (
+                getFormattedPrice()
+              )}
             </h4>
           </SkeletonLoader>
           {baseDenom && quoteDenom ? (
@@ -388,5 +420,50 @@ export const ChartUnavailable: FunctionComponent = () => {
         {t("errors.chartUnavailable")}
       </span>
     </div>
+  );
+};
+
+/** Displays a decimal with subscript 0s, with unsyled elements, without a root parent element. */
+export const SubscriptDecimal: FunctionComponent<{
+  decimal: Dec;
+  maxDecimals?: number;
+  /** Overrides default from result of `getPriceExtendedFormatOptions` */
+  formatOptions?: FormatOptions;
+}> = ({ decimal: price, maxDecimals = 3, formatOptions }) => {
+  const formatOpts = useMemo(
+    () => formatOptions ?? getPriceExtendedFormatOptions(price),
+    [formatOptions, price]
+  );
+
+  const getFormattedPrice = useCallback(
+    (
+      additionalFormatOpts?: Partial<
+        Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+      >
+    ) =>
+      formatPretty(price, {
+        maxDecimals,
+        notation: "compact",
+        ...formatOpts,
+        ...additionalFormatOpts,
+      }) || "",
+    [maxDecimals, formatOpts, price]
+  );
+
+  const { decimalDigits, significantDigits, zeros } = useMemo(
+    () => compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+    [getFormattedPrice]
+  );
+
+  return (
+    <>
+      {significantDigits}.
+      {Boolean(zeros) && (
+        <>
+          0<sub title={getFormattedPrice()}>{zeros}</sub>
+        </>
+      )}
+      {decimalDigits}
+    </>
   );
 };

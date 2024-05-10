@@ -51,9 +51,18 @@ export const TokenSelectDrawer: FunctionComponent<{
   isOpen: boolean;
   onClose?: () => void;
   onSelect?: (tokenDenom: string) => void;
+  showRecommendedTokens?: boolean;
+  showSearchBox?: boolean;
   swapState: SwapState;
 }> = observer(
-  ({ isOpen, swapState, onClose: onCloseProp, onSelect: onSelectProp }) => {
+  ({
+    isOpen,
+    swapState,
+    onClose: onCloseProp,
+    onSelect: onSelectProp,
+    showSearchBox = true,
+    showRecommendedTokens = true,
+  }) => {
     const { t } = useTranslation();
     const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
@@ -260,56 +269,63 @@ export const TokenSelectDrawer: FunctionComponent<{
             </div>
 
             <div className="mb-2 shadow-[0_4px_8px_0_rgba(9,5,36,0.12)]">
-              <div className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                <SearchBox
-                  ref={searchBoxRef}
-                  type="text"
-                  className="!w-full"
-                  placeholder={t("components.searchTokens")}
-                  onInput={onSearch}
-                  onKeyDown={searchBarKeyDown}
-                  size={isMobile ? "medium" : "large"}
-                />
-              </div>
-
-              <div className="mb-2 h-fit">
-                <div
-                  ref={quickSelectRef}
-                  onMouseDown={onMouseDownQuickSelect}
-                  className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
-                >
-                  {swapState.recommendedAssets.map((asset) => {
-                    const { coinDenom, coinImageUrl } = asset;
-
-                    return (
-                      <button
-                        key={asset.coinDenom}
-                        className={classNames(
-                          "flex items-center space-x-3 rounded-lg border border-osmoverse-700 p-2",
-                          "transition-colors duration-150 ease-out hover:bg-osmoverse-900",
-                          "my-1 focus:bg-osmoverse-900"
-                        )}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onClickAsset(coinDenom);
-                        }}
-                      >
-                        {coinImageUrl && (
-                          <div className="h-[24px] w-[24px] rounded-full">
-                            <Image
-                              src={coinImageUrl}
-                              alt="token icon"
-                              width={24}
-                              height={24}
-                            />
-                          </div>
-                        )}
-                        <p className="subtitle1">{coinDenom}</p>
-                      </button>
-                    );
-                  })}
+              {showSearchBox && (
+                <div className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                  <SearchBox
+                    ref={searchBoxRef}
+                    type="text"
+                    className="!w-full"
+                    placeholder={t("components.searchTokens")}
+                    onInput={onSearch}
+                    onKeyDown={searchBarKeyDown}
+                    size={isMobile ? "medium" : "large"}
+                  />
                 </div>
-              </div>
+              )}
+
+              {showRecommendedTokens && (
+                <div
+                  data-testid="recommended-assets-container"
+                  className="mb-2 h-fit"
+                >
+                  <div
+                    ref={quickSelectRef}
+                    onMouseDown={onMouseDownQuickSelect}
+                    className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
+                  >
+                    {swapState.recommendedAssets.map((asset) => {
+                      const { coinDenom, coinImageUrl } = asset;
+
+                      return (
+                        <button
+                          key={asset.coinDenom}
+                          className={classNames(
+                            "flex items-center space-x-3 rounded-lg border border-osmoverse-700 p-2",
+                            "transition-colors duration-150 ease-out hover:bg-osmoverse-900",
+                            "my-1 focus:bg-osmoverse-900"
+                          )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onClickAsset(coinDenom);
+                          }}
+                        >
+                          {coinImageUrl && (
+                            <div className="h-[24px] w-[24px] rounded-full">
+                              <Image
+                                src={coinImageUrl}
+                                alt="token icon"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          )}
+                          <p className="subtitle1">{coinDenom}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {swapState.isLoadingSelectAssets ? (
@@ -339,6 +355,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                             "bg-osmoverse-900": keyboardSelectedIndex === index,
                           }
                         )}
+                        data-testid="token-select-asset"
                         onClick={(e) => {
                           e.stopPropagation();
                           onClickAsset?.(coinDenom);

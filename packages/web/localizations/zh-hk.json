@@ -209,10 +209,10 @@
       "activate": "啟用",
       "marketCap": "市值",
       "volume24h": "體積",
-      "priceChange24h": "24小時變化",
       "price": "價格",
-      "name": "姓名",
-      "balance": "結餘"
+      "balance": "結餘",
+      "lastWeek": "過去 7 天",
+      "asset": "資產"
     },
     "totalAssets": "總資產",
     "totalBalance": "總餘額",
@@ -303,14 +303,17 @@
       "dweb": "去中心化網絡",
       "rwa": "現實世界的資產發行",
       "gaming": "賭博",
-      "topGainers": "漲幅居前者"
+      "topGainers": "漲幅居前者",
+      "more": "更多類別"
     },
     "seeAll": "看全部",
     "highlights": {
       "new": "新的",
       "topGainers": "漲幅居前者",
       "upcoming": "即將推出"
-    }
+    },
+    "balancesMovedTitle": "尋找您的餘額？",
+    "balancesMovedDescription": "前往作品集頁面，這是您餘額等的新家。"
   },
   "portfolio": {
     "buy": "買",
@@ -373,6 +376,7 @@
     "highSwapFee": "兌換費太高啦",
     "insufficientAmount": "幣額唔夠喎",
     "insufficientBal": "結餘唔夠喎",
+    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
@@ -835,7 +839,6 @@
       "hide": "隱藏",
       "show": "顯示"
     },
-    "maxButtonError": "無法計算最大金額。請檢查您的網路連線或嘗試重新整理頁面。",
     "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
     "available": "可用",
     "button": "交易",
@@ -982,7 +985,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "購買{coinDenom}",
     "staking": "質押",
     "liquidityInOSMOPools": "{number} {denom}池中的流動性"
@@ -1101,6 +1103,30 @@
     "noTransactions": "沒有交易",
     "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
     "connectToSee": "連接以查看您的交易記錄",
-    "connectWallet": "連接錢包"
+    "connectWallet": "連接錢包",
+    "title": "交易",
+    "swapping": "交換",
+    "swapped": "交換了",
+    "swapFailed": "兌換失敗",
+    "taxReports": "稅務報告",
+    "explorer": "探險家",
+    "sold": "賣",
+    "bought": "買",
+    "executionPrice": "執行價格",
+    "totalFees": "總費用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在資源管理器上查看",
+    "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
+    "noPriceData": "價格數據不可用",
+    "viewAll": "看全部"
+  },
+  "date": {
+    "earlierToday": "今天早些時候",
+    "yesterday": "昨天"
+  },
+  "backToTop": "回到頂部",
+  "pagination": {
+    "older": "年長的",
+    "newer": "較新"
   }
 }

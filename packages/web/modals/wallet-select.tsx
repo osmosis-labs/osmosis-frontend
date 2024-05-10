@@ -1008,7 +1008,6 @@ const RightModalContent: FunctionComponent<
                         height={186}
                       />
                     </div>
-
                     <div className="flex max-w-sm flex-col gap-3">
                       <h1 className="subtitle1">{title}</h1>
                       <p className="body2 text-osmoverse-200">{content}</p>
@@ -1017,6 +1016,7 @@ const RightModalContent: FunctionComponent<
                 </Step>
               ))}
               <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
+              <StepsIndicator className="mt-16" />
             </Stepper>
           </div>
         )}

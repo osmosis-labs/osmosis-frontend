@@ -209,10 +209,10 @@
       "activate": "Activate",
       "marketCap": "Market cap",
       "volume24h": "Volume",
-      "priceChange24h": "24h change",
       "price": "Price",
-      "name": "Name",
-      "balance": "Balance"
+      "balance": "Balance",
+      "lastWeek": "Last 7 days",
+      "asset": "Asset"
     },
     "totalAssets": "Total assets",
     "totalBalance": "Total balance",
@@ -303,14 +303,17 @@
       "dweb": "Decentralized Web",
       "rwa": "Real World Asset Issuance",
       "gaming": "Gaming",
-      "topGainers": "Top gainers"
+      "topGainers": "Top gainers",
+      "more": "More categories"
     },
     "seeAll": "See all",
     "highlights": {
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    }
+    },
+    "balancesMovedTitle": "Looking for your balances?",
+    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
   },
   "portfolio": {
     "buy": "Buy",
@@ -373,6 +376,7 @@
     "highSwapFee": "Swap fee too high",
     "insufficientAmount": "Insufficient amount",
     "insufficientBal": "Insufficient balance",
+    "insufficientBalForFee": "Insufficient balance for fee",
     "insufficientLiquidity": "Insufficient liquidity",
     "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
@@ -835,7 +839,6 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonError": "Unable to calculate the maximum amount. Please check your network connection or try refreshing the page.",
     "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
     "available": "Available",
     "button": "Swap",
@@ -982,7 +985,6 @@
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
-    "noData": "N.D.",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",
     "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"
@@ -1101,6 +1103,30 @@
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
     "connectToSee": "Connect to see your transaction history",
-    "connectWallet": "Connect wallet"
+    "connectWallet": "Connect wallet",
+    "title": "Transactions",
+    "swapping": "Swapping",
+    "swapped": "Swapped",
+    "swapFailed": "Swap failed",
+    "taxReports": "Tax Reports",
+    "explorer": "Explorer",
+    "sold": "Sold",
+    "bought": "Bought",
+    "executionPrice": "Execution Price",
+    "totalFees": "Total Fees",
+    "transactionHash": "Transaction Hash",
+    "viewOnExplorer": "View on explorer",
+    "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
+    "noPriceData": "Price data unavailable",
+    "viewAll": "View all"
+  },
+  "date": {
+    "earlierToday": "Earlier today",
+    "yesterday": "Yesterday"
+  },
+  "backToTop": "Back to top",
+  "pagination": {
+    "older": "Older",
+    "newer": "Newer"
   }
 }

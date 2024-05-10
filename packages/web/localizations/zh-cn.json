@@ -209,10 +209,10 @@
       "activate": "启用",
       "marketCap": "市值",
       "volume24h": "体积",
-      "priceChange24h": "24小时变化",
       "price": "价格",
-      "name": "姓名",
-      "balance": "余额"
+      "balance": "余额",
+      "lastWeek": "过去 7 天",
+      "asset": "资产"
     },
     "totalAssets": "总资产",
     "totalBalance": "总余额",
@@ -303,14 +303,17 @@
       "dweb": "去中心化网络",
       "rwa": "现实世界资产发行",
       "gaming": "赌博",
-      "topGainers": "涨幅最大的股票"
+      "topGainers": "涨幅最大的股票",
+      "more": "更多类别"
     },
     "seeAll": "查看全部",
     "highlights": {
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    }
+    },
+    "balancesMovedTitle": "正在查找您的余额？",
+    "balancesMovedDescription": "前往投资组合页面，这是您的余额和更多信息的新家。"
   },
   "portfolio": {
     "buy": "买",
@@ -373,6 +376,7 @@
     "highSwapFee": "交易费太高",
     "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
+    "insufficientBalForFee": "余额不足，无法支付费用",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
@@ -835,7 +839,6 @@
       "hide": "隐藏",
       "show": "节目"
     },
-    "maxButtonError": "无法计算最大金额。请检查您的网络连接或尝试刷新页面。",
     "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
     "available": "可用",
     "button": "兑换",
@@ -982,7 +985,6 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",
     "liquidityInOSMOPools": "{number} {denom}池中的流动性"
@@ -1101,6 +1103,30 @@
     "noTransactions": "没有交易",
     "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
     "connectToSee": "连接以查看您的交易历史记录",
-    "connectWallet": "连接钱包"
+    "connectWallet": "连接钱包",
+    "title": "交易",
+    "swapping": "交换",
+    "swapped": "已交换",
+    "swapFailed": "交换失败",
+    "taxReports": "税务报告",
+    "explorer": "探索者",
+    "sold": "卖",
+    "bought": "买",
+    "executionPrice": "执行价格",
+    "totalFees": "总费用",
+    "transactionHash": "交易哈希",
+    "viewOnExplorer": "在资源管理器中查看",
+    "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。",
+    "noPriceData": "价格数据不可用",
+    "viewAll": "查看全部"
+  },
+  "date": {
+    "earlierToday": "今天早些时候",
+    "yesterday": "昨天"
+  },
+  "backToTop": "回到顶部",
+  "pagination": {
+    "older": "较旧",
+    "newer": "较新"
   }
 }

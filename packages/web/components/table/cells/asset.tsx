@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
@@ -5,19 +6,46 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 
+/** Width should be defined by parent elements. */
 export const AssetCell: FunctionComponent<
   Partial<{
     coinDenom: string;
     coinName: string;
     coinImageUrl: string;
     warnUnverified: boolean;
+    isInUserWatchlist: boolean;
+    onClickWatchlist: () => void;
   }>
-> = ({ coinDenom, coinName, coinImageUrl, warnUnverified = false }) => {
+> = ({
+  coinDenom,
+  coinName,
+  coinImageUrl,
+  warnUnverified = false,
+  isInUserWatchlist,
+  onClickWatchlist,
+}) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex w-44 items-center gap-4 md:gap-1">
-      <div className="h-10 w-10 shrink-0">
+    <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
+      {isInUserWatchlist !== undefined && onClickWatchlist && (
+        <Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            onClickWatchlist();
+          }}
+          className={classNames(
+            "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
+            isInUserWatchlist ? "text-wosmongton-400" : "text-osmoverse-600"
+          )}
+          id="star"
+          width={24}
+          height={24}
+        />
+      )}
+      <div className="h-10 w-10 flex-shrink-0">
         {coinImageUrl && (
           <Image
             alt={coinDenom ?? "coin image"}
@@ -27,10 +55,20 @@ export const AssetCell: FunctionComponent<
           />
         )}
       </div>
-      <div className="flex w-full flex-col place-content-center">
+      <div className="flex min-w-0 flex-grow flex-col">
         {coinName && (
-          <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-            {coinName}
+          <div className="flex items-center gap-2">
+            <div className="subtitle1 min-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {coinName}
+            </div>
+            {warnUnverified && (
+              <Tooltip content={t("components.selectToken.unverifiedAsset")}>
+                <Icon
+                  id="alert-triangle"
+                  className="h-5 w-5 text-osmoverse-300"
+                />
+              </Tooltip>
+            )}
           </div>
         )}
         {coinDenom && (
@@ -39,11 +77,6 @@ export const AssetCell: FunctionComponent<
           </span>
         )}
       </div>
-      {warnUnverified && (
-        <Tooltip content={t("components.selectToken.unverifiedAsset")}>
-          <Icon id="alert-triangle" className="h-5 w-5 text-osmoverse-300" />
-        </Tooltip>
-      )}
     </div>
   );
 };

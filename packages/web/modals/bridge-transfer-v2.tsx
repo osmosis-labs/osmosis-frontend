@@ -27,10 +27,8 @@ import { isAddress } from "web3-utils";
 import { displayToast, ToastType } from "~/components/alert";
 import { Transfer, TransferProps } from "~/components/complex/transfer";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import {
   useAmountConfig,
-  useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
@@ -375,7 +373,6 @@ export const TransferContent: FunctionComponent<
     isCounterpartyAddressValid = true,
   } = props;
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const {
     queriesExternalStore,
@@ -1034,26 +1031,6 @@ export const TransferContent: FunctionComponent<
             queryBalance.fetch();
           }
 
-          if (isDeposit) {
-            logEvent([
-              EventName.Assets.depositAssetCompleted,
-              {
-                tokenName: originCurrency.coinDenom,
-                tokenAmount: Number(inputAmountRaw),
-                bridge: quote.provider.id,
-              },
-            ]);
-          } else {
-            logEvent([
-              EventName.Assets.withdrawAssetCompleted,
-              {
-                tokenName: originCurrency.coinDenom,
-                tokenAmount: Number(inputAmountRaw),
-                bridge: quote.provider.id,
-              },
-            ]);
-          }
-
           trackTransferStatus(quote.provider.id, {
             sendTxHash: tx.transactionHash,
             fromChainId: quote.fromChain.chainId,
@@ -1079,17 +1056,6 @@ export const TransferContent: FunctionComponent<
 
     if (!transactionRequest || !quote) return;
 
-    logEvent([
-      isWithdraw
-        ? EventName.Assets.withdrawAssetStarted
-        : EventName.Assets.depositAssetStarted,
-      {
-        tokenName: originCurrency.coinDenom,
-        tokenAmount: Number(inputAmountRaw),
-        bridge: selectedQuote.provider.id,
-      },
-    ]);
-
     try {
       if (transactionRequest.type === "evm") {
         await handleEvmTx({ ...quote, transactionRequest });
@@ -1098,26 +1064,6 @@ export const TransferContent: FunctionComponent<
           ...quote,
           transactionRequest,
         });
-      }
-
-      if (isDeposit) {
-        logEvent([
-          EventName.Assets.depositAssetCompleted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: selectedQuote.provider.id,
-          },
-        ]);
-      } else {
-        logEvent([
-          EventName.Assets.withdrawAssetCompleted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: selectedQuote.provider.id,
-          },
-        ]);
       }
     } catch (e) {}
   };

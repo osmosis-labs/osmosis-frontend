@@ -209,10 +209,10 @@
       "activate": "활성화",
       "marketCap": "시가총액",
       "volume24h": "용량",
-      "priceChange24h": "24시간 변경",
       "price": "가격",
-      "name": "이름",
-      "balance": "균형"
+      "balance": "균형",
+      "lastWeek": "지난 7일",
+      "asset": "유산"
     },
     "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
@@ -303,14 +303,17 @@
       "dweb": "분산형 웹",
       "rwa": "실물자산 발행",
       "gaming": "노름",
-      "topGainers": "최고 상승자"
+      "topGainers": "최고 상승자",
+      "more": "카테고리 더보기"
     },
     "seeAll": "모두 보기",
     "highlights": {
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    }
+    },
+    "balancesMovedTitle": "잔액을 찾고 계십니까?",
+    "balancesMovedDescription": "귀하의 저울 등을 위한 새로운 홈인 포트폴리오 페이지로 이동하십시오."
   },
   "portfolio": {
     "buy": "구입하다",
@@ -373,6 +376,7 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
+    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
@@ -835,7 +839,6 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
-    "maxButtonError": "최대 금액을 계산할 수 없습니다. 네트워크 연결을 확인하거나 페이지를 새로 고쳐보세요.",
     "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
     "available": "거래 가능수량",
     "button": "거래",
@@ -982,7 +985,6 @@
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
     "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
@@ -1101,6 +1103,30 @@
     "noTransactions": "거래 없음",
     "pastShownHere": "Osmosis에서의 과거 거래가 여기에 표시됩니다.",
     "connectToSee": "거래 내역을 보려면 연결하세요.",
-    "connectWallet": "지갑 연결"
+    "connectWallet": "지갑 연결",
+    "title": "업무",
+    "swapping": "스와핑",
+    "swapped": "교환됨",
+    "swapFailed": "교환 실패",
+    "taxReports": "세금 보고서",
+    "explorer": "탐침",
+    "sold": "판매된",
+    "bought": "구입했다",
+    "executionPrice": "실행 가격",
+    "totalFees": "총 수수료",
+    "transactionHash": "거래 해시",
+    "viewOnExplorer": "탐색기에서 보기",
+    "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다.",
+    "noPriceData": "가격 데이터를 사용할 수 없습니다.",
+    "viewAll": "모두보기"
+  },
+  "date": {
+    "earlierToday": "오늘 일찍",
+    "yesterday": "어제"
+  },
+  "backToTop": "맨 위로",
+  "pagination": {
+    "older": "이전",
+    "newer": "최신"
   }
 }

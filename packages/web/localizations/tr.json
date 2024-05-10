@@ -209,10 +209,10 @@
       "activate": "Etkinleştir",
       "marketCap": "Piyasa değeri",
       "volume24h": "Hacim",
-      "priceChange24h": "24 saat değişim",
       "price": "Fiyat",
-      "name": "İsim",
-      "balance": "Denge"
+      "balance": "Denge",
+      "lastWeek": "Son 7 gün",
+      "asset": "Varlık"
     },
     "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
@@ -303,14 +303,17 @@
       "dweb": "Merkezi Olmayan Web",
       "rwa": "Gerçek Dünya Varlık İhracı",
       "gaming": "Oyun",
-      "topGainers": "En çok kazananlar"
+      "topGainers": "En çok kazananlar",
+      "more": "Daha fazla kategori"
     },
     "seeAll": "Hepsini gör",
     "highlights": {
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
+    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
   },
   "portfolio": {
     "buy": "Satın almak",
@@ -373,6 +376,7 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -835,7 +839,6 @@
       "hide": "Saklamak",
       "show": "Göstermek"
     },
-    "maxButtonError": "Maksimum tutar hesaplanamıyor. Lütfen ağ bağlantınızı kontrol edin veya sayfayı yenilemeyi deneyin.",
     "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
     "available": "Mevcut",
     "button": "Takas",
@@ -982,7 +985,6 @@
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",
     "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"
@@ -1101,6 +1103,30 @@
     "noTransactions": "İşlem yok",
     "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
     "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
-    "connectWallet": "Cüzdanı bağlayın"
+    "connectWallet": "Cüzdanı bağlayın",
+    "title": "İşlemler",
+    "swapping": "Değiştirme",
+    "swapped": "Değiştirildi",
+    "swapFailed": "Değiştirme başarısız oldu",
+    "taxReports": "Vergi Raporları",
+    "explorer": "Kaşif",
+    "sold": "Satılmış",
+    "bought": "Satın alınmış",
+    "executionPrice": "Uygulama Fiyatı",
+    "totalFees": "Toplam ücretler",
+    "transactionHash": "İşlem Karması",
+    "viewOnExplorer": "Explorer'da görüntüle",
+    "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
+    "noPriceData": "Fiyat verileri mevcut değil",
+    "viewAll": "Hepsini gör"
+  },
+  "date": {
+    "earlierToday": "Bugün erken saatlerde",
+    "yesterday": "Dün"
+  },
+  "backToTop": "Başa dönüş",
+  "pagination": {
+    "older": "Daha eski",
+    "newer": "Daha yeni"
   }
 }

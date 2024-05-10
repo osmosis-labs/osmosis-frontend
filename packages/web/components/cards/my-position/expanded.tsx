@@ -20,10 +20,7 @@ import React, {
 } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import {
-  ChartUnavailable,
-  PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
@@ -47,8 +44,8 @@ const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () => import("~/components/chart/price-historical"),
   { ssr: false }
 );
 
@@ -544,7 +541,7 @@ const Chart: FunctionComponent<{
     config;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={
         isFullRange

@@ -16,8 +16,12 @@ export const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
 export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 
 // data services
-export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
-export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+export const TIMESERIES_DATA_URL =
+  process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL ??
+  "https://stage-proxy-data-api.osmosis-labs.workers.dev";
+export const INDEXER_DATA_URL =
+  process.env.NEXT_PUBLIC_INDEXER_DATA_URL ??
+  "https://stage-proxy-data-indexer.osmosis-labs.workers.dev";
 export const SIDECAR_BASE_URL =
   process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "https://sqs.osmosis.zone/";
 export const TFM_BASE_URL = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;

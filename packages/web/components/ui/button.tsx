@@ -34,7 +34,7 @@ const buttonVariants = cva(
           "bg-osmoverse-825 text-wosmongton-200 shadow hover:bg-osmoverse-825/80",
         success:
           "bg-bullish-400 text-osmoverse-1000 shadow-sm hover:bg-bullish-400/80",
-        ghost: "hover:bg-osmoverse-600",
+        ghost: "hover:bg-osmoverse-850",
         link: "text-white-full underline-offset-4 hover:underline",
       },
       size: {

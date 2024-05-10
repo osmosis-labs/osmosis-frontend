@@ -209,10 +209,10 @@
       "activate": "सक्रिय",
       "marketCap": "बाज़ार आकार",
       "volume24h": "आयतन",
-      "priceChange24h": "24 घंटे का परिवर्तन",
       "price": "कीमत",
-      "name": "नाम",
-      "balance": "संतुलन"
+      "balance": "संतुलन",
+      "lastWeek": "पिछले 7 दिन",
+      "asset": "संपत्ति"
     },
     "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",
@@ -303,14 +303,17 @@
       "dweb": "विकेन्द्रीकृत वेब",
       "rwa": "वास्तविक विश्व परिसंपत्ति निर्गमन",
       "gaming": "जुआ",
-      "topGainers": "शीर्ष लाभार्थी"
+      "topGainers": "शीर्ष लाभार्थी",
+      "more": "अधिक श्रेणियाँ"
     },
     "seeAll": "सभी देखें",
     "highlights": {
       "new": "नया",
       "topGainers": "शीर्ष लाभार्थी",
       "upcoming": "आगामी"
-    }
+    },
+    "balancesMovedTitle": "क्या आप अपना बैलेंस खोज रहे हैं?",
+    "balancesMovedDescription": "पोर्टफोलियो पेज पर जाएं, जो आपके शेष राशि और अन्य जानकारी का नया घर है।"
   },
   "portfolio": {
     "buy": "खरीदना",
@@ -373,6 +376,7 @@
     "highSwapFee": "स्वैप शुल्क बहुत अधिक है",
     "insufficientAmount": "अपर्याप्त राशि",
     "insufficientBal": "अपर्याप्त शेषराशि",
+    "insufficientBalForFee": "शुल्क के लिए अपर्याप्त शेष राशि",
     "insufficientLiquidity": "अपर्याप्त तरलता",
     "invalidNumberAmount": "संख्या का अमान्य रूप",
     "invalidScalingFactorControllerAddress": "अमान्य स्केलिंग फ़ैक्टर नियंत्रक पता",
@@ -835,7 +839,6 @@
       "hide": "छिपाना",
       "show": "दिखाओ"
     },
-    "maxButtonError": "अधिकतम राशि की गणना करने में असमर्थ। कृपया अपना नेटवर्क कनेक्शन जांचें या पेज को रीफ़्रेश करके देखें।",
     "maxButtonErrorNoBalance": "अधिकतम राशि की गणना करने के लिए पर्याप्त शेष राशि नहीं है।",
     "available": "उपलब्ध",
     "button": "बदलना",
@@ -982,7 +985,6 @@
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
     "tvl": "टी वी लाइनों",
-    "noData": "रा",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
     "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"
@@ -1101,6 +1103,30 @@
     "noTransactions": "कोई लेनदेन नहीं",
     "pastShownHere": "ओस्मोसिस पर आपके पिछले ट्रेड यहां दिखाई देंगे।",
     "connectToSee": "अपना लेन-देन इतिहास देखने के लिए कनेक्ट करें",
-    "connectWallet": "वॉलेट कनेक्ट करें"
+    "connectWallet": "वॉलेट कनेक्ट करें",
+    "title": "लेनदेन",
+    "swapping": "अदला-बदली",
+    "swapped": "बदली",
+    "swapFailed": "स्वैप विफल",
+    "taxReports": "कर रिपोर्ट",
+    "explorer": "एक्सप्लोरर",
+    "sold": "बिका हुआ",
+    "bought": "खरीदा",
+    "executionPrice": "निष्पादन मूल्य",
+    "totalFees": "कुल शुल्क",
+    "transactionHash": "लेनदेन हैश",
+    "viewOnExplorer": "एक्सप्लोरर पर देखें",
+    "launchAlert": "वर्तमान में केवल व्यापार इतिहास प्रदर्शित किया जाता है। जल्द ही अधिक लेनदेन प्रकारों के लिए सहायता उपलब्ध होगी।",
+    "noPriceData": "मूल्य डेटा उपलब्ध नहीं है",
+    "viewAll": "सभी को देखें"
+  },
+  "date": {
+    "earlierToday": "आज पहले",
+    "yesterday": "कल"
+  },
+  "backToTop": "वापस शीर्ष पर",
+  "pagination": {
+    "older": "पुराने",
+    "newer": "नई"
   }
 }

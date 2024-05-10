@@ -85,34 +85,34 @@ export const PortfolioPage: FunctionComponent = () => {
             <Tab.List className="flex gap-6" ref={tabsRef}>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourAssets")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.yourPositions")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
               <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
                 {({ selected }) => (
-                  <h5 className={!selected ? "text-osmoverse-500" : undefined}>
+                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
                     {t("portfolio.recentTransfers")}
-                  </h5>
+                  </h6>
                 )}
               </Tab>
             </Tab.List>
             {!isTotalValueFetched ? (
-              <div className="mx-auto w-fit py-3">
+              <div className="mx-auto my-6 w-fit">
                 <Spinner />
               </div>
             ) : userHasNoAssets ? (
               <UserZeroBalanceTableSplash />
             ) : (
-              <Tab.Panels className="py-3">
+              <Tab.Panels className="py-6">
                 <Tab.Panel>
                   <AssetBalancesTable
                     tableTopPadding={overviewHeight + tabsHeight}
@@ -235,13 +235,17 @@ const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
       <>
         {hasPositions && (
           <section>
-            <h6>{t("portfolio.yourSuperchargedPositions")}</h6>
+            <span className="body2 text-osmoverse-200">
+              {t("portfolio.yourSuperchargedPositions")}
+            </span>
             <MyPositionsSection />
           </section>
         )}
         {hasPools && (
           <section>
-            <h6>{t("portfolio.yourLiquidityPools")}</h6>
+            <span className="body2 text-osmoverse-200">
+              {t("portfolio.yourLiquidityPools")}
+            </span>
             <MyPoolsCardsGrid />
           </section>
         )}

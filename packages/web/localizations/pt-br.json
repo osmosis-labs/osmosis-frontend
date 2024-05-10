@@ -209,10 +209,10 @@
       "activate": "Ativar",
       "marketCap": "Valor de mercado",
       "volume24h": "Volume",
-      "priceChange24h": "Mudança de 24h",
       "price": "Preço",
-      "name": "Nome",
-      "balance": "Saldo"
+      "balance": "Saldo",
+      "lastWeek": "Últimos 7 dias",
+      "asset": "Ativo"
     },
     "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
@@ -303,14 +303,17 @@
       "dweb": "Web descentralizada",
       "rwa": "Emissão de ativos do mundo real",
       "gaming": "Jogos",
-      "topGainers": "Principais ganhadores"
+      "topGainers": "Principais ganhadores",
+      "more": "Mais categorias"
     },
     "seeAll": "Ver tudo",
     "highlights": {
       "new": "Novo",
       "topGainers": "Principais ganhadores",
       "upcoming": "Por vir"
-    }
+    },
+    "balancesMovedTitle": "Procurando seus saldos?",
+    "balancesMovedDescription": "Acesse a página do Portfólio, a nova página para seus saldos e muito mais."
   },
   "portfolio": {
     "buy": "Comprar",
@@ -373,6 +376,7 @@
     "highSwapFee": "Taxa de troca está muito alta",
     "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para taxa",
     "insufficientLiquidity": "Liquidez Insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
@@ -835,7 +839,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Não foi possível calcular o valor máximo. Verifique sua conexão de rede ou tente atualizar a página.",
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
     "available": "Disponível",
     "button": "Trocar",
@@ -982,7 +985,6 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "TVL",
-    "noData": "DE",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
     "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
@@ -1101,6 +1103,30 @@
     "noTransactions": "Nenhuma transação",
     "pastShownHere": "Suas negociações anteriores no Osmosis aparecerão aqui.",
     "connectToSee": "Conecte-se para ver seu histórico de transações",
-    "connectWallet": "Conectar carteira"
+    "connectWallet": "Conectar carteira",
+    "title": "Transações",
+    "swapping": "Troca",
+    "swapped": "Trocado",
+    "swapFailed": "Falha na troca",
+    "taxReports": "Relatórios fiscais",
+    "explorer": "Explorador",
+    "sold": "Vendido",
+    "bought": "Comprado",
+    "executionPrice": "Preço de Execução",
+    "totalFees": "Taxas totais",
+    "transactionHash": "Hash de transação",
+    "viewOnExplorer": "Ver no explorador",
+    "launchAlert": "Atualmente apenas o histórico de negociações é exibido. Suporte para mais tipos de transação em breve.",
+    "noPriceData": "Dados de preço indisponíveis",
+    "viewAll": "Ver tudo"
+  },
+  "date": {
+    "earlierToday": "Hoje mais cedo",
+    "yesterday": "Ontem"
+  },
+  "backToTop": "De volta ao topo",
+  "pagination": {
+    "older": "Mais velho",
+    "newer": "Mais recente"
   }
 }

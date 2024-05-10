@@ -209,10 +209,10 @@
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
       "volume24h": "Volum",
-      "priceChange24h": "schimbare 24h",
       "price": "Preț",
-      "name": "Nume",
-      "balance": "Echilibru"
+      "balance": "Echilibru",
+      "lastWeek": "Ultimele 7 zile",
+      "asset": "Atu"
     },
     "totalAssets": "Total",
     "totalBalance": "Sold total",
@@ -303,14 +303,17 @@
       "dweb": "Web descentralizat",
       "rwa": "Emiterea de active din lumea reală",
       "gaming": "Jocuri",
-      "topGainers": "Câștigători de top"
+      "topGainers": "Câștigători de top",
+      "more": "Mai multe categorii"
     },
     "seeAll": "Vezi toate",
     "highlights": {
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "balancesMovedTitle": "Îți cauți soldurile?",
+    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
   },
   "portfolio": {
     "buy": "Cumpără",
@@ -373,6 +376,7 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
@@ -835,7 +839,6 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
-    "maxButtonError": "Nu se poate calcula suma maximă. Verificați conexiunea la rețea sau încercați să reîmprospătați pagina.",
     "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
     "available": "Disponibil",
     "button": "Schimba",
@@ -982,7 +985,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
@@ -1101,6 +1103,30 @@
     "noTransactions": "Fără tranzacții",
     "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
     "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
-    "connectWallet": "Conectați portofelul"
+    "connectWallet": "Conectați portofelul",
+    "title": "Tranzacții",
+    "swapping": "Schimbarea",
+    "swapped": "Schimbat",
+    "swapFailed": "Schimbarea a eșuat",
+    "taxReports": "Rapoarte fiscale",
+    "explorer": "Explorator",
+    "sold": "Vândut",
+    "bought": "Cumparat",
+    "executionPrice": "Pretul de executie",
+    "totalFees": "Taxe totale",
+    "transactionHash": "Hash de tranzacție",
+    "viewOnExplorer": "Vizualizare pe explorer",
+    "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "noPriceData": "Datele de preț nu sunt disponibile",
+    "viewAll": "A vedea tot"
+  },
+  "date": {
+    "earlierToday": "Mai devreme astazi",
+    "yesterday": "Ieri"
+  },
+  "backToTop": "Inapoi sus",
+  "pagination": {
+    "older": "Mai batran",
+    "newer": "Mai nou"
   }
 }

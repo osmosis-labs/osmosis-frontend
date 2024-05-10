@@ -229,7 +229,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
           />
         </RiskLink>
         <p className="flex gap-1 text-caption text-osmoverse-200">
-          <span>{t(verbalKey)}</span>
+          <span className="whitespace-nowrap">{t(verbalKey)}</span>
           <span>{value}</span>
         </p>
       </div>

@@ -15,14 +15,12 @@ import {
 import { displayToast, ToastType } from "~/components/alert";
 import { Transfer } from "~/components/complex/transfer";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config/user-analytics-v2";
 import { useTranslation } from "~/hooks";
 import {
   useAmountConfig,
   useFakeFeeConfig,
   useLocalStorageState,
 } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { waitByTransferFromSourceChain } from "~/integrations/axelar";
 import {
   useAxelarDepositAddress,
@@ -95,8 +93,6 @@ const AxelarTransfer: FunctionComponent<
       queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
 
     useTxEventToasts(ethWalletClient);
-
-    const { logEvent } = useAmplitudeAnalytics();
 
     const isDeposit = !isWithdraw;
 
@@ -368,16 +364,6 @@ const AxelarTransfer: FunctionComponent<
     const [transferInitiated, setTransferInitiated] = useState(false);
     const doAxelarTransfer = async () => {
       if (depositAddress) {
-        logEvent([
-          isWithdraw
-            ? EventName.Assets.withdrawAssetStarted
-            : EventName.Assets.depositAssetStarted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: "axelar",
-          },
-        ]);
         if (isWithdraw) {
           // IBC transfer to generated axelar address
           try {
@@ -396,14 +382,6 @@ const AxelarTransfer: FunctionComponent<
               undefined,
               (event) => {
                 trackTransferStatus(event.txHash);
-                logEvent([
-                  EventName.Assets.withdrawAssetCompleted,
-                  {
-                    tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(inputAmountRaw),
-                    bridge: "axelar",
-                  },
-                ]);
               }
             );
           } catch (e) {
@@ -423,14 +401,6 @@ const AxelarTransfer: FunctionComponent<
               );
               trackTransferStatus(txHash as string);
               setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-              logEvent([
-                EventName.Assets.depositAssetCompleted,
-                {
-                  tokenName: originCurrency.coinDenom,
-                  tokenAmount: Number(inputAmountRaw),
-                  bridge: "axelar",
-                },
-              ]);
             } catch (e) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
@@ -459,14 +429,6 @@ const AxelarTransfer: FunctionComponent<
               );
               trackTransferStatus(txHash as string);
               setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-              logEvent([
-                EventName.Assets.depositAssetCompleted,
-                {
-                  tokenName: originCurrency.coinDenom,
-                  tokenAmount: Number(inputAmountRaw),
-                  bridge: "axelar",
-                },
-              ]);
             } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {

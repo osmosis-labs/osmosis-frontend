@@ -1242,6 +1242,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param messages - An array of message objects to be encoded and included in the transaction.
    * @param initialFee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
    * @param memo - A string used as a memo or note with the transaction.
+   * @param signOptions - Optional options for customizing the sign process.
+   * @param excludedFeeMinimalDenoms - An array of minimal denoms to exclude from the fee calculation.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -1267,6 +1269,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo = "",
     nonCriticalExtensionOptions,
     signOptions = {},
+    excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
@@ -1274,6 +1277,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
     memo?: string;
     signOptions?: SignOptions;
+    excludedFeeMinimalDenoms?: string[];
   }): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
@@ -1349,6 +1353,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
               gasLimit,
               chainId: wallet.chainId,
               address: wallet.address,
+              excludedFeeMinimalDenoms,
               checkOtherFeeTokens: signOptions.useOneClickTrading
                 ? false
                 : true,
@@ -1400,6 +1405,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * @param {string} params.gasLimit - The gas limit for the transaction.
    * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
    * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
+   * @param {string[]} [params.excludedFeeMinimalDenoms=[]] - An array of fee tokens to exclude from the fee calculation.
    * @param {boolean} params.checkOtherFeeTokens - If true, the function will attempt to find an alternative fee token if the user doesn't have enough balance for the primary fee token.
    * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
    *
@@ -1415,11 +1421,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     gasLimit,
     chainId,
     address,
+    excludedFeeMinimalDenoms: excludedFeeTokens = [],
     checkOtherFeeTokens = true,
   }: {
     gasLimit: string;
     chainId: string;
     address: string | undefined;
+    excludedFeeMinimalDenoms?: string[];
     checkOtherFeeTokens?: boolean;
   }) {
     const chain = getChain({ chainList: this.chains, chainId });
@@ -1485,11 +1493,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the chain supports the Osmosis chain fee module, check that the user has enough balance
      * to pay the fee denom, otherwise find another fee token to use.
      */
-    if (chainHasOsmosisFeeModule && isUserBalanceInsufficientForBaseChainFee) {
+    if (
+      chainHasOsmosisFeeModule &&
+      (isUserBalanceInsufficientForBaseChainFee ||
+        excludedFeeTokens.includes(fee.denom))
+    ) {
       const { feeTokens } = await this.getFeeTokens({ chainId });
 
-      const feeTokenUserBalances = balances.filter((balance) =>
-        feeTokens.includes(balance.denom)
+      const feeTokenUserBalances = balances.filter(
+        (balance) =>
+          feeTokens.includes(balance.denom) &&
+          !excludedFeeTokens.includes(balance.denom)
       );
 
       if (!feeTokenUserBalances.length) {
@@ -1537,6 +1551,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       fee = alternateFee;
+    }
+
+    if (!fee) {
+      throw new Error("Fee not found");
     }
 
     return fee;

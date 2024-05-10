@@ -8,7 +8,7 @@ import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { RootStore } from "~/stores/root";
 import { api } from "~/utils/trpc";
 
-const storeContext = React.createContext<RootStore | null>(null);
+export const storeContext = React.createContext<RootStore | null>(null);
 
 /** Once data is invalidated, React Query will automatically refetch data
  *  when the dependent component becomes visible. */

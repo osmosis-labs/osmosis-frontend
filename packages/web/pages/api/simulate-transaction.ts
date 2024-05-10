@@ -10,17 +10,27 @@ class SimulateTxError extends Error {
   }
 }
 
-export default async function simulateTransactionHandler(req: Request) {
+/**
+ * Broadcasts a transaction to the chain.
+ *
+ * We require this endpoint since many nodes do not have CORS enabled. Without CORS,
+ * a node is unable to interact directly with browsers unless it's updated to incorporate
+ * the CORS headers. Therefore, by having this endpoint, we can ensure that
+ * users can still broadcast their transactions to the network, particularly on counterparty chains
+ * when depositing.
+ */
+export default async function handler(req: Request) {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
   }
 
-  const body = await req.json();
+  const body = (await req.json()) as {
+    tx_bytes: string;
+    restEndpoint: string;
+  };
+
   const restEndpoint = body.restEndpoint;
   const isEndpointInChainConfig = ChainList.some(({ apis }) =>
     apis?.rest?.some(({ address }) => address.startsWith(restEndpoint))
@@ -29,18 +39,12 @@ export default async function simulateTransactionHandler(req: Request) {
   if (!isEndpointInChainConfig) {
     return new Response(JSON.stringify({ error: "Invalid rest endpoint" }), {
       status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
   }
 
   if (!body.tx_bytes || typeof body.tx_bytes !== "string") {
     return new Response(JSON.stringify({ error: "Invalid tx_bytes" }), {
       status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
   }
 
@@ -67,12 +71,7 @@ export default async function simulateTransactionHandler(req: Request) {
 
     const result = await response.json();
 
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return new Response(JSON.stringify(result));
   } catch (e) {
     if (e instanceof SimulateTxError) {
       return new Response(
@@ -80,12 +79,7 @@ export default async function simulateTransactionHandler(req: Request) {
           code: e.code,
           message: e.message,
         }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { status: 400 }
       );
     }
 
@@ -93,17 +87,11 @@ export default async function simulateTransactionHandler(req: Request) {
       JSON.stringify({
         message: "An unexpected error occurred. Please try again.",
       }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      { status: 500 }
     );
   }
 }
 
 export const config = {
   runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
 };

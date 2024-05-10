@@ -77,7 +77,7 @@
     "long": "^5.2.3",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "protobufjs": "^6.11.2",
+    "protobufjs": "^7.2.6",
     "sha.js": "^2.4.11",
     "utility-types": "^3.10.0",
     "@osmosis-labs/types": "^1.0.0",

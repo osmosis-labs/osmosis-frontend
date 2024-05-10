@@ -209,10 +209,10 @@
       "activate": "સક્રિય કરો",
       "marketCap": "માર્કેટ કેપ",
       "volume24h": "વોલ્યુમ",
-      "priceChange24h": "24 કલાક ફેરફાર",
       "price": "કિંમત",
-      "name": "નામ",
-      "balance": "સંતુલન"
+      "balance": "સંતુલન",
+      "lastWeek": "છેલ્લા 7 દિવસ",
+      "asset": "એસેટ"
     },
     "totalAssets": "કુલ સંપતિ",
     "totalBalance": "કુલ બેલેન્સ",
@@ -303,14 +303,17 @@
       "dweb": "વિકેન્દ્રિત વેબ",
       "rwa": "રિયલ વર્લ્ડ એસેટ ઇશ્યુ",
       "gaming": "ગેમિંગ",
-      "topGainers": "ટોચના લાભાર્થીઓ"
+      "topGainers": "ટોચના લાભાર્થીઓ",
+      "more": "વધુ શ્રેણીઓ"
     },
     "seeAll": "બધા જુઓ",
     "highlights": {
       "new": "નવી",
       "topGainers": "ટોચના લાભાર્થીઓ",
       "upcoming": "આગામી"
-    }
+    },
+    "balancesMovedTitle": "તમારા બેલેન્સ શોધી રહ્યાં છો?",
+    "balancesMovedDescription": "પોર્ટફોલિયો પૃષ્ઠ પર જાઓ, તમારા બેલેન્સ અને વધુ માટે નવું ઘર."
   },
   "portfolio": {
     "buy": "ખરીદો",
@@ -373,6 +376,7 @@
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
     "insufficientAmount": "અપૂરતી રકમ",
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
+    "insufficientBalForFee": "ફી માટે અપર્યાપ્ત બેલેન્સ",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
     "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",
@@ -835,7 +839,6 @@
       "hide": "છુપાવો",
       "show": "બતાવો"
     },
-    "maxButtonError": "મહત્તમ રકમની ગણતરી કરવામાં અસમર્થ. કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અથવા પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો.",
     "maxButtonErrorNoBalance": "મહત્તમ રકમની ગણતરી કરવા માટે પર્યાપ્ત બેલેન્સ નથી.",
     "available": "ઉપલબ્ધ છે",
     "button": "સ્વેપ",
@@ -982,7 +985,6 @@
     "marketCap": "માર્કેટ કેપ",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
     "tvl": "ટીવીએલ",
-    "noData": "એનડી",
     "buyToken": "{coinDenom} ખરીદો",
     "staking": "સ્ટેકિંગ",
     "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"
@@ -1101,6 +1103,30 @@
     "noTransactions": "કોઈ વ્યવહારો નથી",
     "pastShownHere": "ઓસ્મોસિસ પરના તમારા ભૂતકાળના સોદા અહીં દેખાશે.",
     "connectToSee": "તમારો વ્યવહાર ઇતિહાસ જોવા માટે કનેક્ટ થાઓ",
-    "connectWallet": "વૉલેટ કનેક્ટ કરો"
+    "connectWallet": "વૉલેટ કનેક્ટ કરો",
+    "title": "વ્યવહારો",
+    "swapping": "અદલાબદલી",
+    "swapped": "અદલાબદલી",
+    "swapFailed": "સ્વેપ નિષ્ફળ",
+    "taxReports": "ટેક્સ રિપોર્ટ્સ",
+    "explorer": "એક્સપ્લોરર",
+    "sold": "વેચાય છે",
+    "bought": "ખરીદ્યું",
+    "executionPrice": "અમલની કિંમત",
+    "totalFees": "કુલ ફી",
+    "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
+    "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
+    "launchAlert": "હાલમાં માત્ર વેપાર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
+    "noPriceData": "કિંમત ડેટા ઉપલબ્ધ નથી",
+    "viewAll": "બધુજ જુઓ"
+  },
+  "date": {
+    "earlierToday": "આજેવહેલા",
+    "yesterday": "ગઇકાલે"
+  },
+  "backToTop": "ટોચ પર પાછા",
+  "pagination": {
+    "older": "જૂની",
+    "newer": "નવું"
   }
 }

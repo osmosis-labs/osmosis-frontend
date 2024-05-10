@@ -5,6 +5,7 @@ import {
   AssetFilterSchema,
   getAsset,
   getAssetHistoricalPrice,
+  getAssetListingDate,
   getAssetMarketActivity,
   getAssetPrice,
   getAssets,
@@ -23,14 +24,18 @@ import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,
   AvailableTimeDurations,
+  TimeDuration,
   TimeFrame,
 } from "../queries/data-services";
-import { TimeDuration } from "../queries/data-services";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { captureErrorAndReturn } from "../utils/error";
-import { maybeCachePaginatedItems } from "../utils/pagination";
-import { createSortSchema, sort } from "../utils/sort";
-import { InfiniteQuerySchema } from "../utils/zod-types";
+import {
+  captureErrorAndReturn,
+  compareCommon,
+  createSortSchema,
+  InfiniteQuerySchema,
+  maybeCachePaginatedItems,
+  sort,
+} from "../utils";
 
 const GetInfiniteAssetsInputSchema =
   InfiniteQuerySchema.merge(AssetFilterSchema);
@@ -59,7 +64,14 @@ export const assetsRouter = createTRPCRouter({
       }
     ),
   getUserAssets: publicProcedure
-    .input(GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema))
+    .input(
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+        z.object({
+          // Optional poolId to filter assets by pool
+          poolId: z.string().optional(),
+        })
+      )
+    )
     .query(
       async ({
         input: {
@@ -70,6 +82,7 @@ export const assetsRouter = createTRPCRouter({
           onlyVerified,
           includePreview,
           categories,
+          poolId,
         },
         ctx,
       }) =>
@@ -83,6 +96,7 @@ export const assetsRouter = createTRPCRouter({
               sortFiatValueDirection: "desc",
               includePreview,
               categories,
+              poolId,
             }),
           cacheKey: JSON.stringify({
             search,
@@ -90,6 +104,7 @@ export const assetsRouter = createTRPCRouter({
             onlyVerified,
             includePreview,
             categories,
+            poolId,
           }),
           cursor,
           limit,
@@ -165,10 +180,13 @@ export const assetsRouter = createTRPCRouter({
         z.object({
           sort: createSortSchema([
             "currentPrice",
+            "priceChange1h",
             "priceChange24h",
+            "priceChange7d",
             "marketCap",
             "volume24h",
           ] as const).optional(),
+          watchListDenoms: z.array(z.string()).optional(),
         })
       )
     )
@@ -178,6 +196,7 @@ export const assetsRouter = createTRPCRouter({
           search,
           onlyVerified,
           sort: sortInput,
+          watchListDenoms,
           categories,
           cursor,
           limit,
@@ -187,7 +206,7 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            let assets = await mapGetMarketAssets({
+            const assets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -195,17 +214,40 @@ export const assetsRouter = createTRPCRouter({
               categories,
             });
 
+            // sorting
             if (sortInput) {
-              assets = sort(assets, sortInput.keyPath, sortInput.direction);
-            }
+              // user sorting
 
-            // Can be searching and/or sorting
-            return assets;
+              return sort(assets, sortInput.keyPath, sortInput.direction);
+            } else {
+              // default sorting, maybe with watchlist
+
+              if (watchListDenoms) {
+                // default sort watchlist to top
+                return assets.sort((a, b) => {
+                  // 1. watchlist denoms sorted by volume 24h desc
+                  if (
+                    watchListDenoms.includes(a.coinDenom) &&
+                    watchListDenoms.includes(b.coinDenom)
+                  )
+                    return compareCommon(a.volume24h, b.volume24h);
+                  if (watchListDenoms.includes(a.coinDenom)) return -1;
+                  if (watchListDenoms.includes(b.coinDenom)) return 1;
+
+                  // 2. rest of the assets by volume 24h desc
+                  return compareCommon(a.volume24h, b.volume24h);
+                });
+              } else {
+                // default sort by volume24h desc
+                return sort(assets, "volume24h");
+              }
+            }
           },
           cacheKey: JSON.stringify({
             search,
             onlyVerified,
             sort: sortInput,
+            watchListDenoms,
             categories,
             includePreview,
           }),
@@ -404,16 +446,23 @@ export const assetsRouter = createTRPCRouter({
             captureErrorAndReturn(e, undefined)
           );
 
+          const listingDate = getAssetListingDate({
+            assetLists: ctx.assetLists,
+            coinMinimalDenom: asset.coinMinimalDenom,
+          });
+
           return {
             ...asset,
+            listingDate,
             priceChange24h: marketAsset?.price24hChange,
           };
         })
       );
 
-      return marketAssets
-        .filter((asset) => asset.priceChange24h !== undefined)
-        .slice(0, topN);
+      return sort(
+        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        "listingDate"
+      ).slice(0, topN);
     }),
   getTopGainerAssets: publicProcedure
     .input(
@@ -442,8 +491,7 @@ export const assetsRouter = createTRPCRouter({
 
       return sort(
         marketAssets.filter((asset) => asset.priceChange24h !== undefined),
-        "priceChange24h",
-        "desc"
+        "priceChange24h"
       ).slice(0, topN);
     }),
   getTopUpcomingAssets: publicProcedure

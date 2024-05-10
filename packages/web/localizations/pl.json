@@ -209,10 +209,10 @@
       "activate": "Aktywuj",
       "marketCap": "Kapitalizacja rynkowa",
       "volume24h": "Tom",
-      "priceChange24h": "Zmiana 24h",
       "price": "Cena",
-      "name": "Nazwa",
-      "balance": "Saldo"
+      "balance": "Saldo",
+      "lastWeek": "Ostatnie 7 dni",
+      "asset": "Zaleta"
     },
     "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
@@ -303,14 +303,17 @@
       "dweb": "Zdecentralizowana sieć",
       "rwa": "Emisja aktywów w świecie rzeczywistym",
       "gaming": "Hazard",
-      "topGainers": "Najlepsi zdobywcy"
+      "topGainers": "Najlepsi zdobywcy",
+      "more": "Więcej kategorii"
     },
     "seeAll": "Widzieć wszystko",
     "highlights": {
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "balancesMovedTitle": "Szukasz salda?",
+    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
   },
   "portfolio": {
     "buy": "Kupić",
@@ -373,6 +376,7 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -835,7 +839,6 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonError": "Nie można obliczyć maksymalnej kwoty. Sprawdź połączenie sieciowe lub spróbuj odświeżyć stronę.",
     "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
     "available": "Dostępne",
     "button": "Wymień",
@@ -982,7 +985,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "noData": "ND",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
@@ -1101,6 +1103,30 @@
     "noTransactions": "Żadnych transakcji",
     "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
     "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
-    "connectWallet": "Podłącz portfel"
+    "connectWallet": "Podłącz portfel",
+    "title": "Transakcje",
+    "swapping": "Zamiana",
+    "swapped": "Zamienione",
+    "swapFailed": "Zamiana nie powiodła się",
+    "taxReports": "Raporty podatkowe",
+    "explorer": "poszukiwacz",
+    "sold": "Sprzedany",
+    "bought": "Kupił",
+    "executionPrice": "Cena wykonania",
+    "totalFees": "Wszystkie koszty",
+    "transactionHash": "Hash transakcji",
+    "viewOnExplorer": "Zobacz w eksploratorze",
+    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
+    "noPriceData": "Dane cenowe niedostępne",
+    "viewAll": "Pokaż wszystkie"
+  },
+  "date": {
+    "earlierToday": "Dzisiaj wcześniej",
+    "yesterday": "Wczoraj"
+  },
+  "backToTop": "Powrót do góry",
+  "pagination": {
+    "older": "Starszy",
+    "newer": "Nowsza"
   }
 }

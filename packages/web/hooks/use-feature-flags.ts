@@ -26,6 +26,8 @@ export type AvailableFlags =
   | "swapToolSimulateFee"
   | "portfolioPageAndNewAssetsPage"
   | "displayDailyEarn"
+  | "newAssetsPage"
+  | "newDepositWithdrawFlow"
   | "oneClickTrading";
 
 type ModifiedFlags =
@@ -53,7 +55,9 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
+  newAssetsPage: false,
   displayDailyEarn: false,
+  newDepositWithdrawFlow: false,
   oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,
@@ -71,16 +75,21 @@ export const useFeatureFlags = () => {
       client.waitForInitialization().then(() => setIsInitialized(true));
   }, [isInitialized, client]);
 
+  const isDevModeWithoutClientID =
+    process.env.NODE_ENV === "development" &&
+    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
-    ...(process.env.NODE_ENV === "development" &&
-    !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-      ? defaultFlags
-      : {}),
+    ...(isDevModeWithoutClientID ? defaultFlags : {}),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
     portfolioPageAndNewAssetsPage:
+      // don't want to use either on mobile
+      // as this flag bundles the 2 pages,
+      // and the portfolio page not be mobile responsive yet
+      // (even thought the assets page is)
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
@@ -88,11 +97,7 @@ export const useFeatureFlags = () => {
       !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
       launchdarklyFlags.oneClickTrading,
-    _isInitialized:
-      process.env.NODE_ENV === "development" &&
-      !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-        ? true
-        : isInitialized,
+    _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;
 };

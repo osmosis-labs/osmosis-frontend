@@ -11,7 +11,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/loaders/spinner";
@@ -38,8 +38,8 @@ const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () => import("~/components/chart/price-historical"),
   { ssr: false }
 );
 
@@ -425,7 +425,7 @@ const Chart: FunctionComponent<{
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={[]}
       domain={yRange}
