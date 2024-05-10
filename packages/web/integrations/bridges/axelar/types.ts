@@ -2,7 +2,8 @@ import type {
   MainnetChainIds,
   TestnetChainIds,
 } from "~/config/generated/chain-list";
-import { SourceChain } from "~/integrations/bridge-info";
+
+import { SourceChain } from "../ethereum";
 
 export const providerName = "Axelar" as const;
 
