@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 
 import { IS_TESTNET } from "~/config";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
-import type { SourceChainKey } from "~/integrations/bridge-info";
+import type { SourceChain } from "~/integrations/bridges";
 import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -27,7 +27,7 @@ export const BridgeTransferV1Modal: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChainKey;
+    sourceChainKey: SourceChain;
     walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }

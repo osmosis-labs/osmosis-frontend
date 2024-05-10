@@ -15,7 +15,7 @@ import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { GetTransferStatusParams } from "~/integrations/bridges/interface";
+import { GetTransferStatusParams } from "~/integrations/bridges";
 import { useStore } from "~/stores";
 
 type History = {

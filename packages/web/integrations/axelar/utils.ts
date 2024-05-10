@@ -1,5 +1,6 @@
 import { t } from "~/hooks/language/context";
-import { SourceChain } from "~/integrations/bridge-info";
+
+import { SourceChain } from "../bridges/chain";
 
 /**
  * @deprecated

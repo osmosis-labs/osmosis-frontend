@@ -7,8 +7,7 @@ import type {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
-import { isNil } from "@osmosis-labs/utils";
-import { apiClient, ApiClientError } from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";

@@ -21,8 +21,10 @@ export interface BridgeProvider {
   ) => Promise<BridgeDepositAddress>;
 }
 
+export type Environment = "mainnet" | "testnet";
+
 export interface BridgeProviderContext {
-  env: "mainnet" | "testnet";
+  env: Environment;
   cache: LRUCache<string, CacheEntry>;
 }
 

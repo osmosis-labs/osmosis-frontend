@@ -34,18 +34,18 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { SourceChain, useTxEventToasts } from "~/integrations";
-import {
-  EthClientChainIds_SourceChainMap,
-  type SourceChainKey,
-} from "~/integrations/bridge-info";
+import { useTxEventToasts } from "~/integrations";
 import {
   AxelarChainIds_SourceChainMap,
+  EthClientChainIds_SourceChainMap,
+} from "~/integrations/axelar";
+import {
   Bridge,
   BridgeError,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetTransferStatusParams,
+  type SourceChain,
   SourceChainTokenConfig,
 } from "~/integrations/bridges";
 import {
@@ -82,7 +82,7 @@ const [BridgeTransferModalProvider, useBridgeTransfer] =
 interface BridgeTransferModalProps extends ModalBaseProps {
   isWithdraw: boolean;
   balance: IBCBalance;
-  sourceChainKey: SourceChainKey;
+  sourceChainKey: SourceChain;
   walletClient?: ObservableWallet;
   onRequestSwitchWallet: () => void;
 }
@@ -327,7 +327,7 @@ export const TransferContent: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChainKey;
+    sourceChainKey: SourceChain;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
     isCounterpartyAddressValid?: boolean;

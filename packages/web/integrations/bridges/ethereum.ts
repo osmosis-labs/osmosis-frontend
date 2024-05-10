@@ -1,39 +1,8 @@
 import { Interface } from "ethers";
 
-import { AxelarBridgeConfig } from "~/integrations/bridges/axelar/types";
-import { WalletKey } from "~/integrations/wallets";
+import { SourceChain } from "./chain";
 
-// Add to these types as more bridges are integrated
-
-export type OriginBridgeInfo = {
-  bridge: "axelar" | "nomic";
-  wallets: WalletKey[];
-} & AxelarBridgeConfig;
-
-/** Human-displayable global source chain identifiers */
-export type SourceChain =
-  | "Bitcoin"
-  | "Bitcoin Testnet"
-  | "Aurora Testnet"
-  | "Avalanche"
-  | "Avalanche Fuji Testnet"
-  | "Binance Smart Chain"
-  | "BSC Testnet"
-  | "Ethereum"
-  | "Goerli Testnet"
-  | "Fantom"
-  | "Fantom Testnet"
-  | "Moonbeam"
-  | "Moonbase Alpha"
-  | "Polygon"
-  | "Mumbai"
-  | "Filecoin"
-  | "Filecoin Hyperspace"
-  | "Arbitrum";
-
-/** String literal identifiers for a source chain. */
-export type SourceChainKey = SourceChain;
-
+// TODO maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
   Dict extends Partial<
     Record<

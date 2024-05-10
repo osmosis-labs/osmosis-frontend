@@ -1,7 +1,4 @@
-import type {
-  FiatRampKey,
-  OriginBridgeInfo,
-} from "../integrations/bridge-info";
+import type { FiatRampKey, OriginBridgeInfo } from "../integrations";
 import { AxelarSourceChainTokenConfigs } from "../integrations/bridges";
 import { IS_TESTNET } from "./env";
 import type {

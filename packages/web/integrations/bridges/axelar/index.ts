@@ -444,6 +444,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (
       isNativeToken &&
+      // is wrapped token
       !Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
         return Object.values(chain).some(
           ({ nativeWrapEquivalent }) =>
@@ -503,6 +504,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (
       isNativeToken &&
+      // is native token
       Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
         return Object.values(chain).some(
           ({ nativeWrapEquivalent }) =>
@@ -663,7 +665,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       if (!chainId) return undefined;
 
-      return CosmosChainIds_AxelarChainIds[chainId];
+      return CosmosChainIds_AxelarChainIds(this.ctx.env)[chainId];
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
@@ -672,7 +674,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (!ethereumChainName) return undefined;
 
-    return getKeyByValue(AxelarChainIds_SourceChainMap, ethereumChainName);
+    return getKeyByValue(
+      AxelarChainIds_SourceChainMap(this.ctx.env),
+      ethereumChainName
+    );
   }
 
   async initClients() {
@@ -720,4 +725,3 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
 export * from "./tokens";
 export * from "./transfer-status";
-export * from "./types";

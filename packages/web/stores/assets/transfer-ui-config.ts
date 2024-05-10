@@ -10,7 +10,8 @@ import {
 import { ComponentProps } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
+import { FiatRampKey, ObservableWallet } from "~/integrations";
+import { SourceChain } from "~/integrations/bridges";
 import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
   BridgeTransferV1Modal,
@@ -173,7 +174,7 @@ export class ObservableTransferUIConfig {
     }
 
     if (balance.originBridgeInfo) {
-      const sourceChainKey: SourceChainKey =
+      const sourceChainKey: SourceChain =
         (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
         balance.originBridgeInfo?.defaultSourceChainId ||
         balance.originBridgeInfo.sourceChainTokens[0].id;
@@ -270,7 +271,7 @@ export class ObservableTransferUIConfig {
     onSelectAsset: (
       denom: string,
       /** Is ibc transfer if `undefined`. */
-      sourceChainKey?: SourceChainKey
+      sourceChainKey?: SourceChain
     ) => void
   ) {
     const availableAssets = this.assetsStore.ibcBalances.filter(
@@ -288,7 +289,7 @@ export class ObservableTransferUIConfig {
         // override default source chain if prev selected by
         if (originBridgeInfo && defaultSourceChainId)
           originBridgeInfo.defaultSourceChainId =
-            (defaultSourceChainId as SourceChainKey) ?? undefined;
+            (defaultSourceChainId as SourceChain) ?? undefined;
 
         return {
           token: balance,
@@ -321,7 +322,7 @@ export class ObservableTransferUIConfig {
   protected launchSelectAssetSourceModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    sourceChainKey: SourceChainKey
+    sourceChainKey: SourceChain
   ) {
     const wallets = this._ethClientWallets as ObservableWallet[];
     const applicableWallets = wallets.filter(({ key }) =>
@@ -401,7 +402,7 @@ export class ObservableTransferUIConfig {
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
     connectedWalletClient: ObservableWallet | undefined,
-    sourceChainKey: SourceChainKey,
+    sourceChainKey: SourceChain,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
   ) {

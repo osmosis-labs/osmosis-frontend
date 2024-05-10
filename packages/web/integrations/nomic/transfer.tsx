@@ -20,7 +20,7 @@ import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
-import { SourceChain } from "~/integrations/bridge-info";
+import { SourceChain } from "~/integrations/bridges";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";

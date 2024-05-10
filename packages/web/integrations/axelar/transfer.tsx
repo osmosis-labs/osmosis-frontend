@@ -26,14 +26,7 @@ import {
   useAxelarDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
-import {
-  EthClientChainIds_SourceChainMap,
-  SourceChain,
-} from "~/integrations/bridge-info";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-} from "~/integrations/bridges/axelar";
+import type { SourceChain } from "~/integrations/bridges";
 import {
   ChainNames,
   EthWallet,
@@ -48,6 +41,12 @@ import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
+
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+  EthClientChainIds_SourceChainMap,
+} from "./types";
 
 /** Axelar-specific bridge transfer integration UI. */
 /**

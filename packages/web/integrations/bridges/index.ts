@@ -42,6 +42,7 @@ export class BridgeProviders {
 }
 
 export * from "./axelar";
+export * from "./chain";
 export * from "./errors";
 export * from "./interface";
 export * from "./skip";

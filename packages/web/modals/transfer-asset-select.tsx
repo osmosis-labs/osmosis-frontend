@@ -8,11 +8,8 @@ import { TokenSelect } from "~/components/control";
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
-import type { SourceChain } from "~/integrations";
-import type {
-  OriginBridgeInfo,
-  SourceChainKey,
-} from "~/integrations/bridge-info";
+import type { OriginBridgeInfo } from "~/integrations/bridge";
+import type { SourceChain } from "~/integrations/bridges";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -29,7 +26,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     onSelectAsset: (
       denom: string,
       /** `undefined` if IBC asset. */
-      sourceChainKey?: SourceChainKey
+      sourceChainKey?: SourceChain
     ) => void;
   }
 > = observer((props) => {
