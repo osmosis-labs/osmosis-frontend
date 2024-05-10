@@ -1,24 +1,25 @@
 import { StatusResponse } from "@0xsquid/sdk";
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import {
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "@osmosis-labs/stores";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
-import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
+import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
   BridgeProviderContext,
   BridgeTransferStatus,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
-
-import { BridgeError } from "../errors";
+} from "../interface";
 
 // TODO: move to types file
 const providerName = "Squid" as const;
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
-export class SquidTransferStatusSource implements ITxStatusSource {
+export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Squid Bridge";
-  public statusReceiverDelegate?: ITxStatusReceiver;
+  public statusReceiverDelegate?: TransferStatusReceiver;
   readonly apiURL:
     | "https://api.0xsquid.com"
     | "https://testnet.api.squidrouter.com";

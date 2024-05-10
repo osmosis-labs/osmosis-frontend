@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import cases from "jest-in-case";
 
-import { removeAllCommas } from "../squid-bridge-utils";
+import { removeAllCommas } from "../utils";
 
 cases(
   "removeAllCommas(str)",

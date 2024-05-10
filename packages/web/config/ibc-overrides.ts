@@ -2,7 +2,7 @@ import type {
   FiatRampKey,
   OriginBridgeInfo,
 } from "../integrations/bridge-info";
-import { AxelarSourceChainTokenConfigs } from "../integrations/bridges/axelar/axelar-source-chain-token-config";
+import { AxelarSourceChainTokenConfigs } from "../integrations/bridges";
 import { IS_TESTNET } from "./env";
 import type {
   MainnetAssetSymbols,

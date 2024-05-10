@@ -1,20 +1,22 @@
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import {
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "@osmosis-labs/stores";
 import { poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeProviderContext,
   BridgeTransferStatus,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
-
+} from "../interface";
 import { getTransferStatus } from "./queries";
 import { providerName } from "./types";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
-export class AxelarTransferStatusSource implements ITxStatusSource {
+export class AxelarTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Axelar Bridge";
-  public statusReceiverDelegate?: ITxStatusReceiver;
+  public statusReceiverDelegate?: TransferStatusReceiver;
 
   axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
   axelarApiBaseUrl:

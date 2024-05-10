@@ -2,12 +2,13 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "~/config/env";
-import { AxelarBridgeProvider } from "~/integrations/bridges/axelar";
-import { SkipBridgeProvider } from "~/integrations/bridges/skip";
-import { SquidBridgeProvider } from "~/integrations/bridges/squid";
-import { BridgeProviderContext } from "~/integrations/bridges/types";
 
-export type AvailableBridges = keyof BridgeManager["bridges"];
+import { AxelarBridgeProvider } from "./axelar";
+import { BridgeProviderContext } from "./interface";
+import { SkipBridgeProvider } from "./skip";
+import { SquidBridgeProvider } from "./squid";
+
+export type Bridge = keyof BridgeManager["bridges"];
 
 export class BridgeManager {
   public readonly bridges: {
@@ -40,3 +41,9 @@ export class BridgeManager {
     };
   }
 }
+
+export * from "./axelar";
+export * from "./errors";
+export * from "./interface";
+export * from "./skip";
+export * from "./squid";

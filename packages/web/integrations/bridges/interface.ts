@@ -1,4 +1,4 @@
-import { TxReason, TxStatus } from "@osmosis-labs/stores";
+import { TransferFailureReason, TransferStatus } from "@osmosis-labs/stores";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -57,8 +57,8 @@ export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
 export interface BridgeTransferStatus {
   id: string;
-  status: TxStatus;
-  reason?: TxReason;
+  status: TransferStatus;
+  reason?: TransferFailureReason;
 }
 
 export interface BridgeStatus {

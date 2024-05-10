@@ -1,10 +1,10 @@
 /** Plugin to fetch status of many transactions from a remote source. */
-export interface ITxStatusSource {
+export interface TransferStatusProvider {
   /** Example: axelar */
   readonly keyPrefix: string;
   readonly sourceDisplayName?: string;
   /** Destination for updates to tracked transactions.  */
-  statusReceiverDelegate?: ITxStatusReceiver;
+  statusReceiverDelegate?: TransferStatusReceiver;
 
   /**
    * Source instance should begin tracking a transaction identified by `key`.
@@ -16,14 +16,17 @@ export interface ITxStatusSource {
   makeExplorerUrl(key: string): string;
 }
 
-export interface ITxStatusReceiver {
+export interface TransferStatusReceiver {
   /** Key with prefix (`keyPrefix`) included. */
   receiveNewTxStatus(
     prefixedKey: string,
-    status: TxStatus,
+    status: TransferStatus,
     displayReason?: string
   ): void;
 }
 
-export type TxStatus = "success" | "pending" | "failed";
-export type TxReason = "insufficientFee";
+/** A simplified transfer status. */
+export type TransferStatus = "success" | "pending" | "failed";
+
+/** A simplified reason for transfer failure. */
+export type TransferFailureReason = "insufficientFee";

@@ -2,10 +2,10 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useCallback, useMemo, useState } from "react";
 
-import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar/axelar-source-chain-token-config";
-import { erc20TransferParams, sendParams } from "~/integrations/ethereum//tx";
+import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges";
 import { SendFn } from "~/integrations/ethereum//types";
 import { useTxGasEstimate } from "~/integrations/ethereum/hooks/use-tx-gas-estimate";
+import { erc20TransferParams, sendParams } from "~/integrations/ethereum/tx";
 
 /** Amount config for EVM native or ERC20 token, with the option to set to max balance and for `amount` to not exceed the coin's decimal count.
  * Includes gas.

@@ -10,15 +10,14 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 import {
-  AvailableBridges,
+  type Bridge,
+  BridgeError,
   BridgeManager,
-} from "~/integrations/bridges/bridge-manager";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
-import { BridgeError, Errors } from "~/integrations/bridges/errors";
-import {
   type BridgeQuote,
+  BridgeQuoteError,
+  Errors,
   getBridgeQuoteSchema,
-} from "~/integrations/bridges/types";
+} from "~/integrations/bridges";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -40,7 +39,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         );
 
         interface BridgeQuoteInPromise {
-          providerId: AvailableBridges;
+          providerId: Bridge;
           logoUrl: string;
           quote: BridgeQuote;
         }

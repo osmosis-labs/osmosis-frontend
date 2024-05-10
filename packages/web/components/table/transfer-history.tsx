@@ -3,7 +3,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  TxReason,
+  TransferFailureReason,
 } from "@osmosis-labs/stores";
 import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -15,7 +15,7 @@ import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { GetTransferStatusParams } from "~/integrations/bridges/types";
+import { GetTransferStatusParams } from "~/integrations/bridges/interface";
 import { useStore } from "~/stores";
 
 type History = {
@@ -23,7 +23,7 @@ type History = {
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
-  reason?: TxReason;
+  reason?: TransferFailureReason;
   status: IBCTransferHistoryStatus | "failed";
   isWithdraw: boolean;
 };
@@ -171,12 +171,15 @@ const TxHashDisplayCell: FunctionComponent<
   );
 };
 
-const reasonToTranslationKey: Record<TxReason, string> = {
+const reasonToTranslationKey: Record<TransferFailureReason, string> = {
   insufficientFee: "assets.historyTable.errors.insufficientFee",
 };
 
 const StatusDisplayCell: FunctionComponent<
-  BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: TxReason }
+  BaseCell & {
+    status?: IBCTransferHistoryStatus | "failed";
+    reason?: TransferFailureReason;
+  }
 > = ({ status, reason }) => {
   const { t } = useTranslation();
   if (status == null) {

@@ -2,12 +2,12 @@ import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  TxReason,
+  TransferFailureReason,
 } from "@osmosis-labs/stores";
 import { ChainIdHelper, isNumeric } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
-import { GetTransferStatusParams } from "~/integrations/bridges/types";
+import { GetTransferStatusParams } from "~/integrations/bridges/interface";
 import { useStore } from "~/stores";
 
 type RecentTransfer = {
@@ -15,7 +15,7 @@ type RecentTransfer = {
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
-  reason?: TxReason;
+  reason?: TransferFailureReason;
   status: IBCTransferHistoryStatus | "failed";
   isWithdraw: boolean;
 };

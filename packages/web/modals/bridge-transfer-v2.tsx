@@ -41,15 +41,13 @@ import {
 } from "~/integrations/bridge-info";
 import {
   AxelarChainIds_SourceChainMap,
-  SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar/types";
-import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
-import { BridgeError } from "~/integrations/bridges/errors";
-import {
+  Bridge,
+  BridgeError,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
+  SourceChainTokenConfig,
+} from "~/integrations/bridges";
 import {
   ChainNames,
   EthWallet,
@@ -321,7 +319,7 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
-const availableBridgeKeys: AvailableBridges[] = ["Skip", "Squid", "Axelar"];
+const availableBridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar"];
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -547,7 +545,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
-    useState<AvailableBridges | null>(null);
+    useState<Bridge | null>(null);
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
     useState(false);
 
@@ -825,7 +823,7 @@ export const TransferContent: FunctionComponent<
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: AvailableBridges, params: GetTransferStatusParams) => {
+    (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
