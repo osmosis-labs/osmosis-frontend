@@ -106,13 +106,12 @@ export function useSwap(
     initialToDenom,
     useQueryParams,
     useOtherCurrencies,
+    poolId: forceSwapInPoolId,
   });
 
   const inAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
-
     maxSlippage,
-
     swapAssets,
   });
   // load flags
@@ -199,6 +198,13 @@ export function useSwap(
       !inAmountInput.isEmpty &&
       !precedentError &&
       featureFlags.swapToolSimulateFee,
+    sendToken:
+      inAmountInput.balance && inAmountInput.amount
+        ? {
+            amount: inAmountInput.amount,
+            balance: inAmountInput.balance,
+          }
+        : undefined,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
@@ -529,95 +535,6 @@ export function useSwap(
 
 const DefaultDenoms = ["ATOM", "OSMO"];
 
-/**
- * Determines the next fallback denom for `fromAssetDenom` based on the
- * current asset denoms and defaults.
- * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is not the first default,
- *   set `fromAssetDenom` to the first default denom.
- * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is the first default,
- *   set `fromAssetDenom` to the second default denomination.
- * - If `initialFromDenom` is the same as `toAssetDenom`, set `fromAssetDenom` to `initialToDenom`.
- * - Otherwise, reset `fromAssetDenom` to `initialFromDenom`.
- */
-export function determineNextFallbackFromDenom(params: {
-  fromAssetDenom: string;
-
-  toAssetDenom: string | undefined;
-
-  initialFromDenom: string;
-
-  initialToDenom: string;
-
-  DefaultDenoms: string[];
-}): string {
-  const {
-    fromAssetDenom,
-
-    toAssetDenom,
-
-    initialFromDenom,
-
-    initialToDenom,
-
-    DefaultDenoms,
-  } = params;
-
-  if (fromAssetDenom === initialFromDenom) {
-    return toAssetDenom === DefaultDenoms[0]
-      ? DefaultDenoms[1]
-      : DefaultDenoms[0];
-  } else if (initialFromDenom === toAssetDenom) {
-    return initialToDenom;
-  } else {
-    return initialFromDenom;
-  }
-}
-
-/**
- * Determines the next fallback denom for `toAssetDenom` based on the
- * current asset denoms and defaults.
- * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is not the second default,
- *   it sets `toAssetDenom` to the second default denomination.
- * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is the second default,
- *   it sets `toAssetDenom` to the first default denomination.
- * - If the `initialToDenom` is the same as `fromAssetDenom`, it sets `toAssetDenom` to `initialFromDenom`.
- * - Otherwise, it resets `toAssetDenom` to `initialToDenom`.
- */
-
-export function determineNextFallbackToDenom(params: {
-  toAssetDenom: string;
-
-  fromAssetDenom: string | undefined;
-
-  initialToDenom: string;
-
-  initialFromDenom: string;
-
-  DefaultDenoms: string[];
-}): string {
-  const {
-    toAssetDenom,
-
-    fromAssetDenom,
-
-    initialToDenom,
-
-    initialFromDenom,
-
-    DefaultDenoms,
-  } = params;
-
-  if (toAssetDenom === initialToDenom) {
-    return fromAssetDenom === DefaultDenoms[1]
-      ? DefaultDenoms[0]
-      : DefaultDenoms[1];
-  } else if (initialToDenom === fromAssetDenom) {
-    return initialFromDenom;
-  } else {
-    return initialToDenom;
-  }
-}
-
 // getTokenOutAmountMinusSwapFee calculates the token out amount after subtracting the swap fee.
 // If the token out is undefined, it returns undefined.
 // If any of the input values are undefined, it return the token out.
@@ -674,6 +591,79 @@ export function getTokenOutMinusSwapFee({
   }
 
   return outTokenMinusSwapFee;
+}
+
+/**
+ * Determines the next fallback denom for `fromAssetDenom` based on the
+ * current asset denoms and defaults.
+ * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is not the first default,
+ *   set `fromAssetDenom` to the first default denom.
+ * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is the first default,
+ *   set `fromAssetDenom` to the second default denomination.
+ * - If `initialFromDenom` is the same as `toAssetDenom`, set `fromAssetDenom` to `initialToDenom`.
+ * - Otherwise, reset `fromAssetDenom` to `initialFromDenom`.
+ */
+export function determineNextFallbackFromDenom(params: {
+  fromAssetDenom: string;
+  toAssetDenom: string | undefined;
+  initialFromDenom: string;
+  initialToDenom: string;
+  DefaultDenoms: string[];
+}): string {
+  const {
+    fromAssetDenom,
+    toAssetDenom,
+    initialFromDenom,
+    initialToDenom,
+    DefaultDenoms,
+  } = params;
+
+  if (fromAssetDenom === initialFromDenom) {
+    return toAssetDenom === DefaultDenoms[0]
+      ? DefaultDenoms[1]
+      : DefaultDenoms[0];
+  } else if (initialFromDenom === toAssetDenom) {
+    return initialToDenom;
+  } else {
+    return initialFromDenom;
+  }
+}
+
+/**
+ * Determines the next fallback denom for `toAssetDenom` based on the
+ * current asset denoms and defaults.
+ * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is not the second default,
+ *   it sets `toAssetDenom` to the second default denomination.
+ * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is the second default,
+ *   it sets `toAssetDenom` to the first default denomination.
+ * - If the `initialToDenom` is the same as `fromAssetDenom`, it sets `toAssetDenom` to `initialFromDenom`.
+ * - Otherwise, it resets `toAssetDenom` to `initialToDenom`.
+ */
+
+export function determineNextFallbackToDenom(params: {
+  toAssetDenom: string;
+  fromAssetDenom: string | undefined;
+  initialToDenom: string;
+  initialFromDenom: string;
+  DefaultDenoms: string[];
+}): string {
+  const {
+    toAssetDenom,
+    fromAssetDenom,
+    initialToDenom,
+    initialFromDenom,
+    DefaultDenoms,
+  } = params;
+
+  if (toAssetDenom === initialToDenom) {
+    return fromAssetDenom === DefaultDenoms[1]
+      ? DefaultDenoms[0]
+      : DefaultDenoms[1];
+  } else if (initialToDenom === fromAssetDenom) {
+    return initialFromDenom;
+  } else {
+    return initialToDenom;
+  }
 }
 
 /** Use assets for swapping: the from and to assets, as well as the list of
@@ -781,13 +771,9 @@ export function useSwapAssets({
     if (!isNil(fromAssetDenom) && !fromAsset) {
       const nextFromDenom = determineNextFallbackFromDenom({
         fromAssetDenom,
-
         toAssetDenom,
-
         initialFromDenom,
-
         initialToDenom,
-
         DefaultDenoms,
       });
 
@@ -797,13 +783,9 @@ export function useSwapAssets({
     if (!isNil(toAssetDenom) && !toAsset) {
       const nextToDenom = determineNextFallbackToDenom({
         toAssetDenom,
-
         fromAssetDenom,
-
         initialToDenom,
-
         initialFromDenom,
-
         DefaultDenoms,
       });
 
@@ -811,19 +793,12 @@ export function useSwapAssets({
     }
   }, [
     fromAsset,
-
     fromAssetDenom,
-
     initialFromDenom,
-
     initialToDenom,
-
     setFromAssetDenom,
-
     setToAssetDenom,
-
     toAsset,
-
     toAssetDenom,
   ]);
 
@@ -863,15 +838,11 @@ export function useSwapAssets({
 
 function useSwapAmountInput({
   swapAssets,
-
   forceSwapInPoolId,
-
   maxSlippage,
 }: {
   swapAssets: ReturnType<typeof useSwapAssets>;
-
   forceSwapInPoolId: string | undefined;
-
   maxSlippage: Dec | undefined;
 }) {
   const { chainStore } = useStore();
@@ -888,20 +859,14 @@ function useSwapAmountInput({
 
   const {
     data: quoteForCurrentBalance,
-
     isLoading: isQuoteForCurrentBalanceLoading,
-
     error: quoteForCurrentBalanceError,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset,
-
       tokenOut: swapAssets.toAsset,
-
       tokenInAmount: inAmountInput.balance?.toCoin().amount!,
-
       forcePoolId: forceSwapInPoolId,
-
       maxSlippage,
     },
 
@@ -916,9 +881,13 @@ function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-
     messages: quoteForCurrentBalance?.messages,
-
+    sendToken: inAmountInput.balance
+      ? {
+          amount: inAmountInput.balance,
+          balance: inAmountInput.balance,
+        }
+      : undefined,
     enabled:
       featureFlags.swapToolSimulateFee &&
       !!inAmountInput.balance &&
@@ -940,7 +909,6 @@ function useSwapAmountInput({
     );
   }, [
     currentBalanceNetworkFeeError?.message,
-
     quoteForCurrentBalanceError?.message,
   ]);
 
@@ -954,11 +922,8 @@ function useSwapAmountInput({
 
   return {
     ...inAmountInput,
-
     isLoadingCurrentBalanceNetworkFee,
-
     hasErrorWithCurrentBalanceQuote,
-
     notEnoughBalanceForMax,
   };
 }
@@ -969,15 +934,11 @@ function useSwapAmountInput({
  */
 function useToFromDenoms({
   useQueryParams,
-
   initialFromDenom,
-
   initialToDenom,
 }: {
   useQueryParams: boolean;
-
   initialFromDenom?: string;
-
   initialToDenom?: string;
 }) {
   const router = useRouter();
@@ -1060,7 +1021,7 @@ function useSwapAsset<TAsset extends Asset>({
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
-  !existingAsset;
+
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 
