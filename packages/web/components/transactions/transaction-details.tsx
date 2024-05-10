@@ -186,14 +186,10 @@ export const TransactionDetailsContent = ({
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
-            {/* // TODO - onClick={toggleConversion} whole container */}
-            <div className="body2 flex items-center gap-3 text-right">
-              <div className="text-wosmongton-300">
-                1 {conversion.denominator.denom} = {conversionRate}{" "}
-                {conversion.numerator.denom}
-              </div>
-              <CopyIconButton valueToCopy={conversionRate} />
-            </div>
+            <CopyIconButton
+              valueToCopy={conversionRate}
+              label={`1 ${conversion.denominator.denom} = ${conversionRate} ${conversion.numerator.denom}`}
+            />
           </div>
           <div className="body2 flex justify-between gap-3 py-3">
             <div>{t("transactions.totalFees")}</div>
@@ -205,12 +201,10 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
-            <div className="flex items-center gap-3">
-              <div className="text-wosmongton-300">
-                {getShortAddress(transaction.hash)}
-              </div>
-              <CopyIconButton valueToCopy={transaction.hash} />
-            </div>
+            <CopyIconButton
+              valueToCopy={transaction.hash}
+              label={getShortAddress(transaction.hash)}
+            />
           </div>
         </div>
         <Button
