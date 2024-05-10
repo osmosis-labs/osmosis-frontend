@@ -329,7 +329,7 @@ export function useSwap(
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
-    return quoteBaseOutSpotPrice ?? spotPriceQuote?.amount;
+    return quoteBaseOutSpotPrice ?? spotPriceQuote?.amount.mul(new Dec(10));
   }, [quoteBaseOutSpotPrice, spotPriceQuote?.amount]);
 
   const tokenOutAmountMinusSwapFee = useMemo(
