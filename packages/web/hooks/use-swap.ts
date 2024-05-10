@@ -74,7 +74,7 @@ type SwapOptions = {
 // The reason is that high-value tokens such as WBTC cause price impact and
 // spot price to be very off when swapping 1 unit of token in.
 // This is a temporary hack to bypass the issue with high-value tokens.
-// Long-term, we should allow custom quotes in SQS /tokens/prices query. 
+// Long-term, we should allow custom quotes in SQS /tokens/prices query.
 const spotPriceQuoteMultiplier = new Dec(10);
 
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
@@ -337,7 +337,10 @@ export function useSwap(
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
-    return quoteBaseOutSpotPrice ?? spotPriceQuote?.amount.mul(spotPriceQuoteMultiplier);
+    return (
+      quoteBaseOutSpotPrice ??
+      spotPriceQuote?.amount.mul(spotPriceQuoteMultiplier)
+    );
   }, [quoteBaseOutSpotPrice, spotPriceQuote?.amount]);
 
   const tokenOutAmountMinusSwapFee = useMemo(
