@@ -204,10 +204,6 @@ export type BridgeCoin = {
   /** Global identifier for denom on origin chain. */
   sourceDenom: string;
   decimals: number;
-  fiatValue?: {
-    currency: "usd";
-    amount: string;
-  };
 };
 
 export interface BridgeQuote {
