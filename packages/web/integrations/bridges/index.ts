@@ -1,6 +1,3 @@
-import { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
-
 import { AxelarBridgeProvider } from "./axelar";
 import { BridgeProviderContext } from "./interface";
 import { SkipBridgeProvider } from "./skip";
@@ -16,27 +13,20 @@ export class BridgeProviders {
     [SkipBridgeProvider.providerName]: SkipBridgeProvider;
   };
 
-  constructor(
-    integratorId: string,
-    protected env: "mainnet" | "testnet",
-    cache = new LRUCache<string, CacheEntry>({ max: 500 })
-  ) {
+  constructor(integratorId: string, commonContext: BridgeProviderContext) {
     if (!integratorId) {
       throw new Error("Integrator ID is required");
     }
 
-    const context: BridgeProviderContext = {
-      env,
-      cache,
-    };
-
     this.bridges = {
       [SquidBridgeProvider.providerName]: new SquidBridgeProvider(
         integratorId,
-        context
+        commonContext
       ),
-      [AxelarBridgeProvider.providerName]: new AxelarBridgeProvider(context),
-      [SkipBridgeProvider.providerName]: new SkipBridgeProvider(context),
+      [AxelarBridgeProvider.providerName]: new AxelarBridgeProvider(
+        commonContext
+      ),
+      [SkipBridgeProvider.providerName]: new SkipBridgeProvider(commonContext),
     };
   }
 }

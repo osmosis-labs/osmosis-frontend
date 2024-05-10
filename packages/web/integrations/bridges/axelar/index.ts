@@ -3,7 +3,6 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
@@ -425,8 +424,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
               fromChain.chainType === "cosmos" && isNativeToken,
           });
 
-      const timeoutHeight = await getTimeoutHeight({
-        chainList: ChainList,
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
         destinationAddress: depositAddress,
       });
 

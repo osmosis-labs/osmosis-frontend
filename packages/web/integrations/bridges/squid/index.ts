@@ -5,15 +5,12 @@ import type {
   TransactionRequest,
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
 import { toHex } from "web3-utils";
-
-import { ChainList } from "~/config/generated/chain-list";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import { Erc20Abi, NativeEVMTokenConstantAddress } from "../ethereum";
@@ -369,8 +366,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         ]);
       }
 
-      const timeoutHeight = await getTimeoutHeight({
-        chainList: ChainList,
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
         destinationAddress: parsedData.msg.receiver,
       });
 

@@ -26,6 +26,13 @@ export type Environment = "mainnet" | "testnet";
 export interface BridgeProviderContext {
   env: Environment;
   cache: LRUCache<string, CacheEntry>;
+
+  /** Provides current timeout height for a chain of the ID
+   *  parsed from the bech32 config of the given destinationAddress. */
+  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+    revisionNumber: string | undefined;
+    revisionHeight: string;
+  }>;
 }
 
 const bridgeChainSchema = z.object({

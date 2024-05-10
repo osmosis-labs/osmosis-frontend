@@ -1,12 +1,9 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
-
-import { ChainList } from "~/config/generated/chain-list";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
@@ -242,8 +239,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     const messageData = JSON.parse(message.msg);
 
-    const timeoutHeight = await getTimeoutHeight({
-      chainList: ChainList,
+    const timeoutHeight = await this.ctx.getTimeoutHeight({
       destinationAddress: messageData.receiver,
     });
 

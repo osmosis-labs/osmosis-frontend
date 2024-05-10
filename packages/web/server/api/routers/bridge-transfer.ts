@@ -3,6 +3,7 @@ import {
   createTRPCRouter,
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
+  getTimeoutHeight,
   publicProcedure,
   timeout,
 } from "@osmosis-labs/server";
@@ -35,8 +36,12 @@ export const bridgeTransferRouter = createTRPCRouter({
       try {
         const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
+          {
+            env: IS_TESTNET ? "testnet" : "mainnet",
+            cache: lruCache,
+            getTimeoutHeight: ({ destinationAddress }) =>
+              getTimeoutHeight({ ...ctx, destinationAddress }),
+          }
         );
 
         const bridgeProvider =
@@ -198,12 +203,17 @@ export const bridgeTransferRouter = createTRPCRouter({
    */
   getTransactionRequestByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
         const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
+          {
+            env: IS_TESTNET ? "testnet" : "mainnet",
+            cache: lruCache,
+            getTimeoutHeight: ({ destinationAddress }) =>
+              // passes testnet chains if IS_TESTNET
+              getTimeoutHeight({ ...ctx, destinationAddress }),
+          }
         );
 
         const bridgeProvider =
