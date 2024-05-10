@@ -142,6 +142,7 @@ export function useSwap(
       tokenInAmount: DecUtils.getTenExponentN(
         swapAssets.fromAsset?.coinDecimals ?? 0
       )
+        .mul(new Dec(0.1))
         .truncate()
         .toString(),
       tokenOut: swapAssets.toAsset,
