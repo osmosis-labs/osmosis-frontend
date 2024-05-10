@@ -1,5 +1,4 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { FormattedTransaction } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -16,8 +15,7 @@ export type TransactionStatus = "pending" | "success" | "failed";
 type Effect = "swap" | "deposit" | "withdraw";
 
 interface Transaction {
-  selectedTransaction?: FormattedTransaction;
-  hash: string;
+  isSelected?: boolean;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
   effect: Effect;
@@ -44,7 +42,7 @@ interface Transaction {
 }
 
 export const TransactionRow: FunctionComponent<Transaction> = ({
-  hash,
+  isSelected = false,
   status,
   effect,
   title,
@@ -52,7 +50,6 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   tokenConversion,
   transfer,
   onClick,
-  selectedTransaction,
 }) => {
   const effectIconId = effect === "swap" ? "swap" : "down-arrow";
 
@@ -63,7 +60,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
         // Highlight the selected transaction
         {
           "bg-osmoverse-825 transition-colors duration-100 ease-in-out":
-            selectedTransaction?.hash === hash,
+            isSelected,
         },
         // Highlight the hovered transaction
         {

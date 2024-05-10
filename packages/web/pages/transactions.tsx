@@ -109,8 +109,6 @@ const Transactions: React.FC = observer(() => {
     FormattedTransaction | undefined
   >(undefined);
 
-  console.log("selectedTransaction: ", selectedTransaction);
-
   const [open, setOpen] = useState(false);
 
   const { isLargeDesktop } = useWindowSize();

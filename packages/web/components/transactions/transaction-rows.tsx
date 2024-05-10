@@ -36,11 +36,12 @@ export const TransactionRows = ({
             <hr className="mb-3 text-osmoverse-700" />
             {transactions
               .map((transaction) => {
+                const isSelected =
+                  selectedTransaction?.hash === transaction.hash;
                 return (
                   <TransactionRow
                     key={transaction.id}
-                    hash={transaction.hash}
-                    selectedTransaction={selectedTransaction}
+                    isSelected={isSelected}
                     title={{
                       pending: t("transactions.swapping"),
                       success: t("transactions.swapped"),
