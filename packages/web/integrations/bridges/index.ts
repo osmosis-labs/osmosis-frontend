@@ -1,16 +1,15 @@
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/config/env";
-
 import { AxelarBridgeProvider } from "./axelar";
 import { BridgeProviderContext } from "./interface";
 import { SkipBridgeProvider } from "./skip";
 import { SquidBridgeProvider } from "./squid";
 
-export type Bridge = keyof BridgeManager["bridges"];
+export type Bridge = keyof BridgeProviders["bridges"];
 
-export class BridgeManager {
+/** Instance of all available bridge providers. */
+export class BridgeProviders {
   public readonly bridges: {
     [SquidBridgeProvider.providerName]: SquidBridgeProvider;
     [AxelarBridgeProvider.providerName]: AxelarBridgeProvider;
@@ -19,7 +18,7 @@ export class BridgeManager {
 
   constructor(
     integratorId: string,
-    env: "mainnet" | "testnet" = IS_TESTNET ? "testnet" : "mainnet",
+    protected env: "mainnet" | "testnet",
     cache = new LRUCache<string, CacheEntry>({ max: 500 })
   ) {
     if (!integratorId) {

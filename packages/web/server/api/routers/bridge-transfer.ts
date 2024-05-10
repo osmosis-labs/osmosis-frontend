@@ -11,7 +11,7 @@ import { z } from "zod";
 import { IS_TESTNET } from "~/config/env";
 import {
   BridgeError,
-  BridgeManager,
+  BridgeProviders,
   BridgeQuoteError,
   Errors,
   getBridgeQuoteSchema,
@@ -29,15 +29,15 @@ export const bridgeTransferRouter = createTRPCRouter({
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
     .query(async ({ input }) => {
       try {
-        const bridgeManager = new BridgeManager(
+        const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
           IS_TESTNET ? "testnet" : "mainnet",
           lruCache
         );
 
         const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
+          bridgeProviders.bridges[
+            input.bridge as keyof typeof bridgeProviders.bridges
           ];
 
         if (!bridgeProvider) {
@@ -109,15 +109,15 @@ export const bridgeTransferRouter = createTRPCRouter({
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
     .query(async ({ input }) => {
       try {
-        const bridgeManager = new BridgeManager(
+        const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
           IS_TESTNET ? "testnet" : "mainnet",
           lruCache
         );
 
         const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
+          bridgeProviders.bridges[
+            input.bridge as keyof typeof bridgeProviders.bridges
           ];
 
         if (!bridgeProvider) {

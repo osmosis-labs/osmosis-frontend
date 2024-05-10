@@ -85,6 +85,10 @@ const bridgeAssetSchema = z.object({
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
+
+  /**
+   * Global identifier for denom on origin chain.
+   */
   sourceDenom: z.string(),
 });
 
@@ -157,17 +161,6 @@ export const getBridgeQuoteSchema = z.object({
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
-export interface BridgeCoin {
-  amount: string;
-  denom: string;
-  sourceDenom: string;
-  decimals: number;
-  fiatValue?: {
-    currency: "usd";
-    amount: string;
-  };
-}
-
 export interface EvmBridgeTransactionRequest {
   type: "evm";
   to: string;
@@ -200,6 +193,21 @@ export type BridgeTransactionRequest =
   | CosmosBridgeTransactionRequest
   | QRCodeBridgeTransactionRequest;
 
+/**
+ * Bridge asset with raw base amount (without decimals).
+ */
+export type BridgeCoin = {
+  amount: string;
+  denom: string;
+  /** Global identifier for denom on origin chain. */
+  sourceDenom: string;
+  decimals: number;
+  fiatValue?: {
+    currency: "usd";
+    amount: string;
+  };
+};
+
 export interface BridgeQuote {
   input: Required<BridgeCoin>;
   expectedOutput: Required<BridgeCoin> & {
@@ -220,5 +228,7 @@ export interface BridgeQuote {
    * The estimated gas fee for the transfer.
    */
   estimatedGasFee?: BridgeCoin;
+
+  /** Sign doc. */
   transactionRequest?: BridgeTransactionRequest;
 }
