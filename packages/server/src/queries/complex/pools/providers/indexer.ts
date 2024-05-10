@@ -67,7 +67,7 @@ export async function getPoolsFromIndexer({
   return cachified({
     cache: poolsCache,
     key: "indexer-pools",
-    ttl: 5_000, // 5 seconds
+    ttl: 2_500, // 2.5 seconds
     getFreshValue: async () => {
       const numPools = await getNumPools(chainList);
       const { pools } = await queryFilteredPools(
