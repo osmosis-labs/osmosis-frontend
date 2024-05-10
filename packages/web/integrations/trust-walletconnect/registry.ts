@@ -1,6 +1,6 @@
 import { OS, Wallet } from "@cosmos-kit/core";
 
-export const TrustMobileInfo: Wallet = {
+export const trustMobileInfo: Wallet = {
   name: "trust-mobile",
   prettyName: "Trust Mobile",
   logo: "https://ia804606.us.archive.org/28/items/github.com-trustwallet-assets_-_2022-01-03_21-15-20/cover.jpg",
@@ -26,9 +26,9 @@ export const TrustMobileInfo: Wallet = {
   ],
   connectEventNamesOnWindow: ["trust_keystorechange"],
   walletconnect: {
-    name: "Trust",
+    name: "Trust Wallet",
     projectId:
-      "6adb6082c909901b9e7189af3a4a0223102cd6f8d5c39e39f3d49acb92b578bb",
+      "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0",
     encoding: "base64",
     mobile: {
       native: {
@@ -46,11 +46,11 @@ export const TrustMobileInfo: Wallet = {
       const encodedWcUrl = encodeURIComponent(wcUri);
       switch (os) {
         case "ios":
-          return `${plainAppUrl}://wc?${encodedWcUrl}`;
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
         case "android":
-          return `${plainAppUrl}://wc?${encodedWcUrl}#Intent;package=com.wallet.crypto.trustapp;scheme=trust;end;`;
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}#Intent;package=com.wallet.crypto.trustapp;scheme=trust;end;`;
         default:
-          return `${plainAppUrl}://wc?${encodedWcUrl}`;
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
       }
     },
   },
