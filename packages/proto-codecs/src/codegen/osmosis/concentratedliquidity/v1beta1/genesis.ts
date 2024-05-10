@@ -175,6 +175,7 @@ export interface GenesisState {
   nextPositionId: bigint;
   nextIncentiveRecordId: bigint;
   incentivesAccumulatorPoolIdMigrationThreshold: bigint;
+  spreadFactorPoolIdMigrationThreshold: bigint;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.GenesisState";
@@ -190,6 +191,7 @@ export interface GenesisStateAmino {
   next_position_id?: string;
   next_incentive_record_id?: string;
   incentives_accumulator_pool_id_migration_threshold?: string;
+  spread_factor_pool_id_migration_threshold?: string;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/concentratedliquidity/genesis-state";
@@ -203,6 +205,7 @@ export interface GenesisStateSDKType {
   next_position_id: bigint;
   next_incentive_record_id: bigint;
   incentives_accumulator_pool_id_migration_threshold: bigint;
+  spread_factor_pool_id_migration_threshold: bigint;
 }
 export interface AccumObject {
   /** Accumulator's name (pulled from AccumulatorContent) */
@@ -650,6 +653,7 @@ function createBaseGenesisState(): GenesisState {
     nextPositionId: BigInt(0),
     nextIncentiveRecordId: BigInt(0),
     incentivesAccumulatorPoolIdMigrationThreshold: BigInt(0),
+    spreadFactorPoolIdMigrationThreshold: BigInt(0),
   };
 }
 export const GenesisState = {
@@ -677,6 +681,9 @@ export const GenesisState = {
       writer
         .uint32(48)
         .uint64(message.incentivesAccumulatorPoolIdMigrationThreshold);
+    }
+    if (message.spreadFactorPoolIdMigrationThreshold !== BigInt(0)) {
+      writer.uint32(56).uint64(message.spreadFactorPoolIdMigrationThreshold);
     }
     return writer;
   },
@@ -708,6 +715,9 @@ export const GenesisState = {
         case 6:
           message.incentivesAccumulatorPoolIdMigrationThreshold =
             reader.uint64();
+          break;
+        case 7:
+          message.spreadFactorPoolIdMigrationThreshold = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -742,6 +752,11 @@ export const GenesisState = {
             object.incentivesAccumulatorPoolIdMigrationThreshold.toString()
           )
         : BigInt(0);
+    message.spreadFactorPoolIdMigrationThreshold =
+      object.spreadFactorPoolIdMigrationThreshold !== undefined &&
+      object.spreadFactorPoolIdMigrationThreshold !== null
+        ? BigInt(object.spreadFactorPoolIdMigrationThreshold.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -771,6 +786,14 @@ export const GenesisState = {
     ) {
       message.incentivesAccumulatorPoolIdMigrationThreshold = BigInt(
         object.incentives_accumulator_pool_id_migration_threshold
+      );
+    }
+    if (
+      object.spread_factor_pool_id_migration_threshold !== undefined &&
+      object.spread_factor_pool_id_migration_threshold !== null
+    ) {
+      message.spreadFactorPoolIdMigrationThreshold = BigInt(
+        object.spread_factor_pool_id_migration_threshold
       );
     }
     return message;
@@ -803,6 +826,10 @@ export const GenesisState = {
     obj.incentives_accumulator_pool_id_migration_threshold =
       message.incentivesAccumulatorPoolIdMigrationThreshold !== BigInt(0)
         ? message.incentivesAccumulatorPoolIdMigrationThreshold.toString()
+        : undefined;
+    obj.spread_factor_pool_id_migration_threshold =
+      message.spreadFactorPoolIdMigrationThreshold !== BigInt(0)
+        ? message.spreadFactorPoolIdMigrationThreshold.toString()
         : undefined;
     return obj;
   },

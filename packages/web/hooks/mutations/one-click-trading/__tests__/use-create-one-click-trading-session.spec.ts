@@ -45,7 +45,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
 
   it("should return false for an invalid 1-Click Trading Session authenticator", () => {
     const authenticator = {
-      type: "AllOfAuthenticator",
+      type: "AllOf",
       subAuthenticators: [{ type: "InvalidType" }],
     };
     expect(
@@ -75,14 +75,12 @@ describe("getOneClickTradingSessionAuthenticator", () => {
       sessionPeriod,
     });
 
-    expect(result.type).toEqual("AllOfAuthenticator");
+    expect(result.type).toEqual("AllOf");
     const data = JSON.parse(Buffer.from(result.data).toString());
     expect(data).toHaveLength(3);
-    expect(data[0].authenticator_type).toEqual(
-      "SignatureVerificationAuthenticator"
-    );
+    expect(data[0].authenticator_type).toEqual("SignatureVerification");
     expect(data[1].authenticator_type).toEqual("CosmwasmAuthenticatorV1");
-    expect(data[2].authenticator_type).toEqual("AnyOfAuthenticator");
+    expect(data[2].authenticator_type).toEqual("AnyOf");
   });
 });
 

@@ -1,8 +1,8 @@
 export type AuthenticatorType =
-  | "SignatureVerificationAuthenticator"
-  | "AnyOfAuthenticator"
-  | "AllOfAuthenticator"
-  | "MessageFilterAuthenticator"
+  | "SignatureVerification"
+  | "AnyOf"
+  | "AllOf"
+  | "MessageFilter"
   | "CosmwasmAuthenticatorV1";
 
 export interface RawAuthenticator {
@@ -18,7 +18,7 @@ export interface RawNestedAuthenticator {
 
 export interface MessageFilterAuthenticator {
   id: string;
-  type: "MessageFilterAuthenticator";
+  type: "MessageFilter";
   // Allowed message
   "@type": string;
 }
@@ -32,7 +32,7 @@ export interface CosmwasmAuthenticatorV1 {
 }
 export interface SignatureVerificationAuthenticator {
   id: string;
-  type: "SignatureVerificationAuthenticator";
+  type: "SignatureVerification";
   publicKey: string;
 }
 
@@ -45,13 +45,13 @@ export type NestedAuthenticator =
 
 export interface AnyOfAuthenticator {
   id: string;
-  type: "AnyOfAuthenticator";
+  type: "AnyOf";
   subAuthenticators: NestedAuthenticator[];
 }
 
 export interface AllOfAuthenticator {
   id: string;
-  type: "AllOfAuthenticator";
+  type: "AllOf";
   subAuthenticators: NestedAuthenticator[];
 }
 

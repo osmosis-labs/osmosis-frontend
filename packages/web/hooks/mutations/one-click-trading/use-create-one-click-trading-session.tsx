@@ -42,7 +42,7 @@ function getFirstAuthenticator({ pubKey }: { pubKey: string }): {
   data: Uint8Array;
 } {
   return {
-    type: "SignatureVerificationAuthenticator",
+    type: "SignatureVerification",
     data: fromBase64(pubKey),
   };
 }
@@ -53,9 +53,9 @@ export function isAuthenticatorOneClickTradingSession({
   authenticator: ParsedAuthenticator;
 }) {
   return (
-    authenticator.type === "AllOfAuthenticator" &&
+    authenticator.type === "AllOf" &&
     authenticator.subAuthenticators.some(
-      (sub) => sub.type === "SignatureVerificationAuthenticator"
+      (sub) => sub.type === "SignatureVerification"
     ) &&
     authenticator.subAuthenticators.some(
       (sub) =>
@@ -64,10 +64,8 @@ export function isAuthenticatorOneClickTradingSession({
     ) &&
     authenticator.subAuthenticators.some(
       (sub) =>
-        sub.type === "AnyOfAuthenticator" &&
-        sub.subAuthenticators.every(
-          (sub) => sub.type === "MessageFilterAuthenticator"
-        )
+        sub.type === "AnyOf" &&
+        sub.subAuthenticators.every((sub) => sub.type === "MessageFilter")
     )
   );
 }
@@ -89,7 +87,7 @@ export function getOneClickTradingSessionAuthenticator({
   data: Uint8Array;
 } {
   const signatureVerification = {
-    authenticator_type: "SignatureVerificationAuthenticator",
+    authenticator_type: "SignatureVerification",
     data: toBase64(key.getPubKey().toBytes()),
   };
 
@@ -112,23 +110,23 @@ export function getOneClickTradingSessionAuthenticator({
   };
 
   const messageFilters = allowedMessages.map((message) => ({
-    authenticator_type: "MessageFilterAuthenticator",
+    authenticator_type: "MessageFilter",
     data: toBase64(Buffer.from(`{"@type":"${message}"}`)),
   }));
 
-  const messageFilterAnyOfAuthenticator = {
-    authenticator_type: "AnyOfAuthenticator",
+  const messageFilterAnyOf = {
+    authenticator_type: "AnyOf",
     data: Buffer.from(JSON.stringify(messageFilters)).toJSON().data,
   };
 
   const compositeAuthData = [
     signatureVerification,
     spendLimit,
-    messageFilterAnyOfAuthenticator,
+    messageFilterAnyOf,
   ];
 
   return {
-    type: "AllOfAuthenticator",
+    type: "AllOf",
     data: new Uint8Array(
       Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
     ),
@@ -338,7 +336,7 @@ export const useCreateOneClickTradingSession = ({
         });
 
       /**
-       * If the user has 15 authenticators, remove the oldest AllOfAuthenticator
+       * If the user has 15 authenticators, remove the oldest AllOf
        * which is the previous OneClickTrading session
        */
       const authenticatorToRemoveId =

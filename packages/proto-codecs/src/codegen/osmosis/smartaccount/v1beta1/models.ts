@@ -16,12 +16,12 @@ export interface AccountAuthenticator {
    */
   type: string;
   /**
-   * Data is a versatile field used in conjunction with the specific type of
+   * Config is a versatile field used in conjunction with the specific type of
    * account authenticator to facilitate complex authentication processes.
    * The interpretation of this field is overloaded, enabling multiple
    * authenticators to utilize it for their respective purposes.
    */
-  data: Uint8Array;
+  config: Uint8Array;
 }
 export interface AccountAuthenticatorProtoMsg {
   typeUrl: "/osmosis.smartaccount.v1beta1.AccountAuthenticator";
@@ -42,12 +42,12 @@ export interface AccountAuthenticatorAmino {
    */
   type?: string;
   /**
-   * Data is a versatile field used in conjunction with the specific type of
+   * Config is a versatile field used in conjunction with the specific type of
    * account authenticator to facilitate complex authentication processes.
    * The interpretation of this field is overloaded, enabling multiple
    * authenticators to utilize it for their respective purposes.
    */
-  data?: string;
+  config?: string;
 }
 export interface AccountAuthenticatorAminoMsg {
   type: "osmosis/smartaccount/account-authenticator";
@@ -61,13 +61,13 @@ export interface AccountAuthenticatorAminoMsg {
 export interface AccountAuthenticatorSDKType {
   id: bigint;
   type: string;
-  data: Uint8Array;
+  config: Uint8Array;
 }
 function createBaseAccountAuthenticator(): AccountAuthenticator {
   return {
     id: BigInt(0),
     type: "",
-    data: new Uint8Array(),
+    config: new Uint8Array(),
   };
 }
 export const AccountAuthenticator = {
@@ -82,8 +82,8 @@ export const AccountAuthenticator = {
     if (message.type !== "") {
       writer.uint32(18).string(message.type);
     }
-    if (message.data.length !== 0) {
-      writer.uint32(26).bytes(message.data);
+    if (message.config.length !== 0) {
+      writer.uint32(26).bytes(message.config);
     }
     return writer;
   },
@@ -105,7 +105,7 @@ export const AccountAuthenticator = {
           message.type = reader.string();
           break;
         case 3:
-          message.data = reader.bytes();
+          message.config = reader.bytes();
           break;
         default:
           reader.skipType(tag & 7);
@@ -121,7 +121,7 @@ export const AccountAuthenticator = {
         ? BigInt(object.id.toString())
         : BigInt(0);
     message.type = object.type ?? "";
-    message.data = object.data ?? new Uint8Array();
+    message.config = object.config ?? new Uint8Array();
     return message;
   },
   fromAmino(object: AccountAuthenticatorAmino): AccountAuthenticator {
@@ -132,8 +132,8 @@ export const AccountAuthenticator = {
     if (object.type !== undefined && object.type !== null) {
       message.type = object.type;
     }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = bytesFromBase64(object.data);
+    if (object.config !== undefined && object.config !== null) {
+      message.config = bytesFromBase64(object.config);
     }
     return message;
   },
@@ -141,7 +141,7 @@ export const AccountAuthenticator = {
     const obj: any = {};
     obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
     obj.type = message.type === "" ? undefined : message.type;
-    obj.data = message.data ? base64FromBytes(message.data) : undefined;
+    obj.config = message.config ? base64FromBytes(message.config) : undefined;
     return obj;
   },
   fromAminoMsg(object: AccountAuthenticatorAminoMsg): AccountAuthenticator {

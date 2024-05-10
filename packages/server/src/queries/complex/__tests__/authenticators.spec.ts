@@ -10,20 +10,20 @@ describe("getSessionAuthenticator", () => {
   const mockAuthenticators = [
     {
       id: "1",
-      type: "AllOfAuthenticator",
+      type: "AllOf",
       subAuthenticators: [
         {
-          type: "SignatureVerificationAuthenticator",
+          type: "SignatureVerification",
           publicKey: "publicKey1",
         },
       ],
     },
     {
       id: "2",
-      type: "AllOfAuthenticator",
+      type: "AllOf",
       subAuthenticators: [
         {
-          type: "SignatureVerificationAuthenticator",
+          type: "SignatureVerification",
           publicKey: "publicKey2",
         },
       ],

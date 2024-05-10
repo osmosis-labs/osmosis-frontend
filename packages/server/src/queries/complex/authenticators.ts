@@ -57,7 +57,7 @@ export async function getSessionAuthenticator({
   const subAuthenticators = authenticators
     .filter(
       (authenticator): authenticator is AllOfAuthenticator =>
-        authenticator.type === "AllOfAuthenticator"
+        authenticator.type === "AllOf"
     )
     .flatMap((authenticator) =>
       authenticator.subAuthenticators.map((sub) => ({
@@ -73,7 +73,7 @@ export async function getSessionAuthenticator({
 
   const authenticatorId = subAuthenticators.find(
     (authenticator) =>
-      authenticator.type === "SignatureVerificationAuthenticator" &&
+      authenticator.type === "SignatureVerification" &&
       authenticator.publicKey === publicKey
   )?.authenticatorId;
 

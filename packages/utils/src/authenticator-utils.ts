@@ -15,10 +15,10 @@ export function parseAuthenticator({
   authenticator: RawAuthenticator;
 }): ParsedAuthenticator {
   try {
-    if (rawAuthenticator.type === "SignatureVerificationAuthenticator") {
+    if (rawAuthenticator.type === "SignatureVerification") {
       return {
         id: rawAuthenticator?.id,
-        type: "SignatureVerificationAuthenticator",
+        type: "SignatureVerification",
         publicKey: rawAuthenticator.data,
       };
     }
@@ -38,20 +38,20 @@ export function parseAuthenticator({
       } as CosmwasmAuthenticatorV1;
     }
 
-    if (rawAuthenticator.type === "MessageFilterAuthenticator") {
+    if (rawAuthenticator.type === "MessageFilter") {
       const parsedData: { "@type": string } = JSON.parse(
         Buffer.from(rawAuthenticator.data, "base64").toString("utf-8")
       );
       return {
         id: rawAuthenticator?.id,
-        type: "MessageFilterAuthenticator",
+        type: "MessageFilter",
         "@type": parsedData["@type"],
       };
     }
 
     if (
-      rawAuthenticator.type === "AnyOfAuthenticator" ||
-      rawAuthenticator.type === "AllOfAuthenticator"
+      rawAuthenticator.type === "AnyOf" ||
+      rawAuthenticator.type === "AllOf"
     ) {
       const subAuthenticators: RawNestedAuthenticator[] = JSON.parse(
         Buffer.from(rawAuthenticator.data, "base64").toString("utf-8")
@@ -86,12 +86,9 @@ export function parseNestedAuthenticator({
   authenticator: RawNestedAuthenticator;
 }): NestedAuthenticator {
   try {
-    if (
-      rawNestedAuthenticator.authenticator_type ===
-      "SignatureVerificationAuthenticator"
-    ) {
+    if (rawNestedAuthenticator.authenticator_type === "SignatureVerification") {
       return {
-        type: "SignatureVerificationAuthenticator",
+        type: "SignatureVerification",
         publicKey: rawNestedAuthenticator.data,
       };
     }
@@ -112,21 +109,19 @@ export function parseNestedAuthenticator({
       } as CosmwasmAuthenticatorV1;
     }
 
-    if (
-      rawNestedAuthenticator.authenticator_type === "MessageFilterAuthenticator"
-    ) {
+    if (rawNestedAuthenticator.authenticator_type === "MessageFilter") {
       const parsedData: { "@type": string } = JSON.parse(
         Buffer.from(rawNestedAuthenticator.data, "base64").toString("utf-8")
       );
       return {
-        type: "MessageFilterAuthenticator",
+        type: "MessageFilter",
         "@type": parsedData["@type"],
       };
     }
 
     if (
-      rawNestedAuthenticator.authenticator_type === "AnyOfAuthenticator" ||
-      rawNestedAuthenticator.authenticator_type === "AllOfAuthenticator"
+      rawNestedAuthenticator.authenticator_type === "AnyOf" ||
+      rawNestedAuthenticator.authenticator_type === "AllOf"
     ) {
       const subAuthenticators: RawNestedAuthenticator[] = JSON.parse(
         Buffer.from(rawNestedAuthenticator.data, "base64").toString("utf-8")

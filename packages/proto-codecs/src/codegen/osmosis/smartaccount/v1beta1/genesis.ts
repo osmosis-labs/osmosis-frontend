@@ -16,8 +16,7 @@ export interface AuthenticatorData {
   address: string;
   /**
    * authenticators are the account's authenticators, these can be multiple
-   * types including SignatureVerificationAuthenticator, AllOfAuthenticators and
-   * CosmWasmAuthenticators.
+   * types including SignatureVerification, AllOfs, CosmWasmAuthenticators, etc
    */
   authenticators: AccountAuthenticator[];
 }
@@ -35,8 +34,7 @@ export interface AuthenticatorDataAmino {
   address?: string;
   /**
    * authenticators are the account's authenticators, these can be multiple
-   * types including SignatureVerificationAuthenticator, AllOfAuthenticators and
-   * CosmWasmAuthenticators.
+   * types including SignatureVerification, AllOfs, CosmWasmAuthenticators, etc
    */
   authenticators?: AccountAuthenticatorAmino[];
 }
