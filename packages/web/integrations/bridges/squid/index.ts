@@ -29,7 +29,6 @@ import {
   GetBridgeQuoteParams,
 } from "../interface";
 import { providerName } from "./const";
-import { removeAllCommas } from "./utils";
 
 const logoUrl = "/bridges/squid.svg" as const;
 
@@ -198,10 +197,6 @@ export class SquidBridgeProvider implements BridgeProvider {
               sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               denom: fromAsset.denom,
-              fiatValue: {
-                currency: "usd",
-                amount: removeAllCommas(fromAmountUSD),
-              },
             },
             expectedOutput: {
               amount: toAmount,
@@ -211,10 +206,6 @@ export class SquidBridgeProvider implements BridgeProvider {
               priceImpact: new Dec(aggregatePriceImpact)
                 .quo(new Dec(100))
                 .toString(),
-              fiatValue: {
-                currency: "usd",
-                amount: removeAllCommas(toAmountUSD),
-              },
             },
             fromChain,
             toChain,
@@ -223,10 +214,6 @@ export class SquidBridgeProvider implements BridgeProvider {
               amount: feeCosts[0].amount,
               decimals: feeCosts[0].token.decimals,
               sourceDenom: feeCosts[0].token.symbol,
-              fiatValue: {
-                currency: "usd",
-                amount: removeAllCommas(feeCosts[0].amountUSD),
-              },
             },
             estimatedTime: estimatedRouteDuration,
             estimatedGasFee: {
@@ -234,10 +221,6 @@ export class SquidBridgeProvider implements BridgeProvider {
               amount: gasCosts[0].amount,
               decimals: gasCosts[0].token.decimals,
               sourceDenom: gasCosts[0].token.symbol,
-              fiatValue: {
-                currency: "usd",
-                amount: removeAllCommas(gasCosts[0].amountUSD),
-              },
             },
             transactionRequest: isEvmTransaction
               ? await this.createEvmTransaction({

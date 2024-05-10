@@ -1,12 +1,11 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
+import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
 
-import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
@@ -91,15 +90,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           ]);
         }
 
-        const amount = new CoinPretty(
-          {
-            coinDecimals: fromAsset.decimals,
-            coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.denom,
-          },
-          fromAmount
-        );
-
         const route = await this.skipClient.route({
           source_asset_denom: sourceAsset.denom,
           source_asset_chain_id: fromChain.chainId.toString(),
@@ -125,54 +115,15 @@ export class SkipBridgeProvider implements BridgeProvider {
           route.amount_out
         );
 
-        const inputAssetPriceUSD = await getAssetPrice({
-          assetLists: AssetLists,
-          chainList: ChainList,
-          asset: {
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom ?? "",
-            sourceDenom: toAsset.sourceDenom,
-          },
-          currency: "usd",
-        });
-
-        const outputAssetPriceUSD = await getAssetPrice({
-          assetLists: AssetLists,
-          chainList: ChainList,
-          asset: {
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom ?? "",
-            sourceDenom: toAsset.sourceDenom,
-          },
-          currency: "usd",
-        });
-
         let transferFee: BridgeCoin = {
           amount: "0",
           denom: fromAsset.denom,
           sourceDenom: fromAsset.sourceDenom,
           decimals: fromAsset.decimals,
-          fiatValue: {
-            currency: "usd",
-            amount: "0",
-          },
         };
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
-            const feeAssetPrice = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom:
-                  operation.axelar_transfer.fee_asset.symbol ??
-                  operation.axelar_transfer.fee_asset.denom,
-                coinMinimalDenom: operation.axelar_transfer.asset,
-                sourceDenom: operation.axelar_transfer.asset,
-              },
-              currency: "usd",
-            });
-
             const feeAmount = new CoinPretty(
               {
                 coinDecimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
@@ -191,10 +142,6 @@ export class SkipBridgeProvider implements BridgeProvider {
                 operation.axelar_transfer.fee_asset.denom,
               sourceDenom: operation.axelar_transfer.fee_asset.denom,
               decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
-              fiatValue: {
-                currency: "usd",
-                amount: feeAmount.mul(feeAssetPrice).toDec().toString(),
-              },
             };
           }
         }
@@ -232,19 +179,10 @@ export class SkipBridgeProvider implements BridgeProvider {
             ? sourceChainFinalityTime
             : destinationChainFinalityTime;
 
-        const gasCost = await this.estimateGasCost(params, transactionRequest);
-
-        const gasAssetPriceUSD = gasCost
-          ? await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: gasCost?.denom ?? "",
-                sourceDenom: gasCost?.sourceDenom ?? "",
-              },
-              currency: "usd",
-            })
-          : undefined;
+        const estimatedGasFee = await this.estimateGasCost(
+          params,
+          transactionRequest
+        );
 
         return {
           input: {
@@ -252,19 +190,11 @@ export class SkipBridgeProvider implements BridgeProvider {
             denom: fromAsset.denom,
             sourceDenom: fromAsset.sourceDenom,
             decimals: fromAsset.decimals,
-            fiatValue: {
-              currency: "usd",
-              amount: amount.mul(inputAssetPriceUSD).toDec().toString(),
-            },
           },
           expectedOutput: {
             amount: amountOut.toCoin().amount,
             denom: toAsset.denom,
             sourceDenom: toAsset.sourceDenom,
-            fiatValue: {
-              currency: "usd",
-              amount: amountOut.mul(outputAssetPriceUSD).toDec().toString(),
-            },
             decimals: toAsset.decimals,
             priceImpact: "0",
           },
@@ -273,26 +203,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           transferFee,
           estimatedTime,
           transactionRequest,
-          estimatedGasFee:
-            gasCost && gasAssetPriceUSD
-              ? {
-                  ...gasCost,
-                  fiatValue: {
-                    currency: "usd",
-                    amount: new CoinPretty(
-                      {
-                        coinDecimals: gasCost.decimals,
-                        coinDenom: gasCost.sourceDenom,
-                        coinMinimalDenom: gasCost.sourceDenom,
-                      },
-                      gasCost.amount
-                    )
-                      .mul(gasAssetPriceUSD)
-                      .toDec()
-                      .toString(),
-                  },
-                }
-              : undefined,
+          estimatedGasFee,
         };
       },
       ttl: 20 * 1000, // 20 seconds,

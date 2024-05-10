@@ -1,11 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { getKeyByValue } from "@osmosis-labs/utils";
@@ -378,7 +372,6 @@ export const TransferContent: FunctionComponent<
     accountStore,
     queriesStore,
     nonIbcBridgeHistoryStore,
-    priceStore,
   } = useStore();
   const {
     showModalBase,
@@ -590,10 +583,8 @@ export const TransferContent: FunctionComponent<
             const priceImpact = new RatePretty(
               new Dec(expectedOutput.priceImpact)
             );
-            const expectedOutputFiatDec = new Dec(
-              expectedOutput.fiatValue.amount
-            );
-            const inputFiatDec = new Dec(input.fiatValue.amount);
+            const expectedOutputFiatDec = expectedOutput.fiatValue.toDec();
+            const inputFiatDec = input.fiatValue.toDec();
 
             let transferSlippage: Dec;
             if (expectedOutputFiatDec.gt(inputFiatDec)) {
@@ -638,51 +629,12 @@ export const TransferContent: FunctionComponent<
                 new Dec(expectedOutput.amount)
               ),
 
-              get expectedOutputFiat() {
-                if (!expectedOutput.fiatValue) return undefined;
-                const expectedOutputFiatValue = expectedOutput.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  expectedOutputFiatValue.currency
-                );
-                if (!fiat) return undefined;
-
-                return new PricePretty(
-                  fiat,
-                  new Dec(expectedOutputFiatValue.amount)
-                );
-              },
-
-              get transferFeeFiat() {
-                if (!transferFee.fiatValue) return undefined;
-
-                const transferFeeFiatValue = transferFee.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  transferFeeFiatValue?.currency ?? "usd"
-                );
-
-                if (!fiat) throw new Error("No fiat currency found");
-
-                return new PricePretty(
-                  fiat,
-                  new Dec(transferFeeFiatValue.amount)
-                );
-              },
-
-              get gasCostFiat() {
-                if (!estimatedGasFee?.fiatValue) return undefined;
-                const gasCostFiatValue = estimatedGasFee.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  gasCostFiatValue.currency
-                );
-                if (!fiat) return undefined;
-
-                return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
-              },
-
+              expectedOutputFiat: expectedOutput.fiatValue,
+              transferFeeFiat: transferFee.fiatValue,
+              gasCostFiat: estimatedGasFee?.fiatValue,
               estimatedTime: dayjs.duration({
                 seconds: estimatedTime,
               }),
-
               responseTime: dayjs(),
               quote,
               transactionRequest,

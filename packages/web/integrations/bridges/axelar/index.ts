@@ -3,7 +3,7 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
+import { getTimeoutHeight } from "@osmosis-labs/server";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
@@ -170,58 +170,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
             assetLists: AssetLists,
           });
 
-          const currency = "usd";
-
-          let transferFeeFiatValue: Dec | undefined;
-          try {
-            transferFeeFiatValue = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: fromAsset.denom,
-                sourceDenom: transferFeeRes.fee.denom,
-              },
-              currency,
-            });
-          } catch (e) {
-            console.error(`Failed to get ${transferFeeRes.fee.denom} price`);
-          }
-
-          let gasCostFiatValue: Dec | undefined;
-          try {
-            gasCostFiatValue = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: fromAsset.denom,
-                sourceDenom: gasCost?.sourceDenom ?? "",
-              },
-              currency,
-            });
-          } catch (e) {
-            console.error(`Failed to get ${gasCost?.sourceDenom} price`);
-          }
-
-          const expectedOutputAssetFiatValue = await getAssetPrice({
-            assetLists: AssetLists,
-            chainList: ChainList,
-            asset: {
-              coinDenom: toAsset.denom,
-              sourceDenom: toAsset.sourceDenom ?? "",
-            },
-            currency,
-          });
-
-          const inputAssetFiatValue = await getAssetPrice({
-            assetLists: AssetLists,
-            chainList: ChainList,
-            asset: {
-              coinDenom: toAsset.denom,
-              sourceDenom: toAsset.sourceDenom ?? "",
-            },
-            currency,
-          });
-
           const expectedOutputAmount = new Dec(fromAmount).sub(
             new Dec(transferFeeRes.fee.amount)
           );
@@ -233,20 +181,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
               sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               denom: fromAsset.denom,
-              fiatValue: {
-                currency: "usd",
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: fromAsset.decimals,
-                    coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.sourceDenom,
-                  },
-                  fromAmount
-                )
-                  .mul(inputAssetFiatValue)
-                  .toDec()
-                  .toString(),
-              },
             },
             expectedOutput: {
               amount: expectedOutputAmount.toString(),
@@ -254,20 +188,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
               decimals: toAsset.decimals,
               denom: toAsset.denom,
               priceImpact: "0",
-              fiatValue: {
-                currency,
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: toAsset.decimals,
-                    coinDenom: toAsset.denom,
-                    coinMinimalDenom: toAsset.sourceDenom,
-                  },
-                  expectedOutputAmount.toString()
-                )
-                  .mul(expectedOutputAssetFiatValue)
-                  .toDec()
-                  .toString(),
-              },
             },
             fromChain,
             toChain,
@@ -279,22 +199,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 transferFeeRes.fee.denom,
               sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
-              ...(transferFeeFiatValue && {
-                fiatValue: {
-                  currency,
-                  amount: new CoinPretty(
-                    {
-                      coinDecimals: fromAsset.decimals,
-                      coinDenom: fromAsset.denom,
-                      coinMinimalDenom: fromAsset.sourceDenom,
-                    },
-                    transferFeeRes.fee.amount
-                  )
-                    .mul(transferFeeFiatValue)
-                    .toDec()
-                    .toString(),
-                },
-              }),
             },
             ...(gasCost && {
               estimatedGasFee: {
@@ -302,22 +206,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 denom: gasCost.denom,
                 sourceDenom: gasCost.sourceDenom,
                 decimals: gasCost.decimals,
-                ...(gasCostFiatValue && {
-                  fiatValue: {
-                    currency,
-                    amount: new CoinPretty(
-                      {
-                        coinDecimals: gasCost.decimals,
-                        coinDenom: gasCost.denom,
-                        coinMinimalDenom: gasCost.sourceDenom,
-                      },
-                      gasCost?.amount
-                    )
-                      .mul(gasCostFiatValue)
-                      .toDec()
-                      .toString(),
-                  },
-                }),
               },
             }),
           };
