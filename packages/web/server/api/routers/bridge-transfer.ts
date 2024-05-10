@@ -1,6 +1,5 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
-  captureErrorAndReturn,
   createTRPCRouter,
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
@@ -83,7 +82,11 @@ export const bridgeTransferRouter = createTRPCRouter({
                 coinMinimalDenom: quote.transferFee.denom,
                 sourceDenom: quote.transferFee.sourceDenom,
               },
-            }).catch((e) => captureErrorAndReturn(e, undefined)),
+            }).catch(
+              () =>
+                // it's common for bridge providers to not provide correct denoms
+                undefined
+            ),
             quote.estimatedGasFee
               ? getAssetPrice({
                   ...ctx,
@@ -92,7 +95,11 @@ export const bridgeTransferRouter = createTRPCRouter({
                     coinMinimalDenom: quote.estimatedGasFee.denom,
                     sourceDenom: quote.estimatedGasFee.sourceDenom,
                   },
-                }).catch((e) => captureErrorAndReturn(e, undefined))
+                }).catch(
+                  () =>
+                    // it's common for bridge providers to not provide correct denoms
+                    undefined
+                )
               : Promise.resolve(undefined),
           ]);
 
