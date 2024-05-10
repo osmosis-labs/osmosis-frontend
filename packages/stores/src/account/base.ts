@@ -904,7 +904,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo,
       nonCriticalExtensionOptions: [
         {
-          typeUrl: "/osmosis.smartaccount.v1beta.TxExtension",
+          typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
           value: TxExtension.encode({
             selectedAuthenticators: [
               BigInt(oneClickTradingInfo.authenticatorId),
@@ -1794,7 +1794,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!oneClickTradingInfo) return undefined;
     return [
       {
-        typeUrl: "/osmosis.smartaccount.v1beta.TxExtension",
+        typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
         value: TxExtension.encode({
           selectedAuthenticators: [
             BigInt(oneClickTradingInfo?.authenticatorId),

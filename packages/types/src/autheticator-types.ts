@@ -7,13 +7,13 @@ export type AuthenticatorType =
 
 export interface RawAuthenticator {
   id: string;
-  data: string;
+  config: string;
   type: AuthenticatorType;
 }
 
 export interface RawNestedAuthenticator {
-  data: string;
-  authenticator_type: AuthenticatorType;
+  Config: string;
+  Type: AuthenticatorType;
 }
 
 export interface MessageFilterAuthenticator {
