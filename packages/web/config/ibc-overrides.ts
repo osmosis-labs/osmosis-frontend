@@ -25,6 +25,7 @@ type AdditionalData = Partial<
   Record<MainnetAssetSymbols | TestnetAssetSymbols, AdditionalDataValue>
 >;
 
+const environment = IS_TESTNET ? "testnet" : "mainnet";
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
@@ -35,12 +36,12 @@ const TestnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.usdc.ethereum,
-        AxelarSourceChainTokenConfigs.usdc.binance,
-        AxelarSourceChainTokenConfigs.usdc.moonbeam,
-        AxelarSourceChainTokenConfigs.usdc.polygon,
-        AxelarSourceChainTokenConfigs.usdc.avalanche,
-        AxelarSourceChainTokenConfigs.usdc.fantom,
+        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
+        AxelarSourceChainTokenConfigs(environment).usdc.binance,
+        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
+        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
+        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
       ],
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
@@ -51,7 +52,9 @@ const TestnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
+      ],
     },
   },
 };
@@ -79,7 +82,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wbtc.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wbtc.ethereum,
+      ],
     },
   },
   ETH: {
@@ -88,7 +93,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
+      ],
     },
   },
   BNB: {
@@ -97,7 +104,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wbnb.binance],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wbnb.binance,
+      ],
     },
   },
   "wstETH.axl": {
@@ -106,7 +115,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wsteth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wsteth.ethereum,
+      ],
     },
   },
   SOL: {
@@ -123,7 +134,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wmatic.polygon],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wmatic.polygon,
+      ],
     },
   },
   SHIB: {
@@ -132,7 +145,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.shib.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).shib.ethereum,
+      ],
     },
   },
   DAI: {
@@ -141,7 +156,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.dai.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).dai.ethereum,
+      ],
     },
   },
   AVAX: {
@@ -150,7 +167,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wavax.avalanche],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wavax.avalanche,
+      ],
     },
   },
   LINK: {
@@ -159,7 +178,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).link.ethereum,
+      ],
     },
   },
   BUSD: {
@@ -168,7 +189,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.busd.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).busd.ethereum,
+      ],
     },
   },
   FIL: {
@@ -177,7 +200,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wfil.filecoin],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wfil.filecoin,
+      ],
     },
   },
   APT: {
@@ -190,7 +215,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.arb.arbitrum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).arb.arbitrum,
+      ],
     },
   },
   MKR: {
@@ -199,7 +226,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.mkr.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).mkr.ethereum,
+      ],
     },
   },
   rETH: {
@@ -208,7 +237,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.reth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).reth.ethereum,
+      ],
     },
   },
   AAVE: {
@@ -217,7 +248,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.aave.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).aave.ethereum,
+      ],
     },
   },
   FRAX: {
@@ -226,7 +259,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).frax.ethereum,
+      ],
     },
   },
   INJ: {
@@ -241,7 +276,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wftm.fantom],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wftm.fantom,
+      ],
     },
   },
   APE: {
@@ -250,7 +287,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.ape.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).ape.ethereum,
+      ],
     },
   },
   SUI: {
@@ -263,7 +302,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.cbeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).cbeth.ethereum,
+      ],
     },
   },
   PEPE: {
@@ -272,7 +313,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.pepe.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).pepe.ethereum,
+      ],
     },
   },
   sfrxETH: {
@@ -281,7 +324,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.sfrxeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).sfrxeth.ethereum,
+      ],
     },
   },
   SEI: {
@@ -304,7 +349,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.usdt.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).usdt.ethereum,
+      ],
     },
   },
   "USDC.axl": {
@@ -314,12 +361,12 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.usdc.ethereum,
-        AxelarSourceChainTokenConfigs.usdc.binance,
-        AxelarSourceChainTokenConfigs.usdc.moonbeam,
-        AxelarSourceChainTokenConfigs.usdc.polygon,
-        AxelarSourceChainTokenConfigs.usdc.avalanche,
-        AxelarSourceChainTokenConfigs.usdc.fantom,
+        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
+        AxelarSourceChainTokenConfigs(environment).usdc.binance,
+        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
+        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
+        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
       ],
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
@@ -330,7 +377,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.polygonusdc.polygon],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).polygonusdc.polygon,
+      ],
     },
   },
   "avalanche.USDC.axl": {
@@ -340,7 +389,7 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.avalancheusdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).avalancheusdc.avalanche,
       ],
     },
   },
@@ -350,7 +399,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.dot.moonbeam],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).dot.moonbeam,
+      ],
     },
   },
   GLMR: {
@@ -359,7 +410,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wglmr.moonbeam],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wglmr.moonbeam,
+      ],
     },
   },
   KUJI: {
@@ -386,7 +439,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.rai.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).rai.ethereum,
+      ],
     },
   },
   SHD: {
@@ -515,7 +570,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.yieldeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).yieldeth.ethereum,
+      ],
     },
   },
   XPLA: {

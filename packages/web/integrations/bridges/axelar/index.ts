@@ -445,13 +445,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (
       isNativeToken &&
       // is wrapped token
-      !Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
-        return Object.values(chain).some(
-          ({ nativeWrapEquivalent }) =>
-            nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
-        );
-      })
+      !Object.values(AxelarSourceChainTokenConfigs(this.ctx.env)).some(
+        (chain) => {
+          return Object.values(chain).some(
+            ({ nativeWrapEquivalent }) =>
+              nativeWrapEquivalent &&
+              nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
+          );
+        }
+      )
     ) {
       throw new BridgeQuoteError([
         {
@@ -505,13 +507,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (
       isNativeToken &&
       // is native token
-      Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
-        return Object.values(chain).some(
-          ({ nativeWrapEquivalent }) =>
-            nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
-        );
-      })
+      Object.values(AxelarSourceChainTokenConfigs(this.ctx.env)).some(
+        (chain) => {
+          return Object.values(chain).some(
+            ({ nativeWrapEquivalent }) =>
+              nativeWrapEquivalent &&
+              nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
+          );
+        }
+      )
     ) {
       throw new BridgeQuoteError([
         {
