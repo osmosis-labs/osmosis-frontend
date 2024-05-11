@@ -336,3 +336,4 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
 };
 
 export { Step, Stepper, useStepContext, useStepperContext };
+export * from "./progress-bar";

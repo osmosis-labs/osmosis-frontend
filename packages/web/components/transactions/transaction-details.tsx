@@ -82,7 +82,8 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
-        "sticky top-0 ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
+        // 4.5rem is the height of the navbar
+        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
       })}
     >
@@ -245,7 +246,7 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: FormattedTransaction | null;
+  transaction?: FormattedTransaction;
 }) => {
   if (!transaction) return null;
   return (
@@ -268,7 +269,7 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: FormattedTransaction | null }
+  ModalBaseProps & { transaction?: FormattedTransaction }
 > = ({ onRequestClose, isOpen, transaction }) => {
   if (!transaction) return null;
   return (

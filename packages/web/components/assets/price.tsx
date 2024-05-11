@@ -54,7 +54,7 @@ export const PriceChange: FunctionComponent<
       >
         {isFlat
           ? "-"
-          : priceChange.maxDecimals(2).inequalitySymbol(false).toString()}
+          : priceChange.maxDecimals(1).inequalitySymbol(false).toString()}
       </div>
     </div>
   );
