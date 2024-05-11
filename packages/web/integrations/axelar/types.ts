@@ -1,6 +1,6 @@
-import { IS_TESTNET } from "~/config";
+import { SourceChain, SourceChainTokenConfig } from "@osmosis-labs/bridge";
 
-import { SourceChain, SourceChainTokenConfig } from "../bridges";
+import { IS_TESTNET } from "~/config";
 
 export interface AxelarBridgeConfig {
   /** Currently just via deposit address, future could be gateway contract call. */

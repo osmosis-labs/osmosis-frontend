@@ -1,5 +1,13 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
+  BridgeCoin,
+  BridgeError,
+  BridgeProviders,
+  BridgeQuoteError,
+  Errors,
+  getBridgeQuoteSchema,
+} from "@osmosis-labs/bridge";
+import {
   createTRPCRouter,
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
@@ -13,14 +21,6 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import {
-  BridgeCoin,
-  BridgeError,
-  BridgeProviders,
-  BridgeQuoteError,
-  Errors,
-  getBridgeQuoteSchema,
-} from "~/integrations/bridges";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -37,6 +37,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
           {
+            ...ctx,
             env: IS_TESTNET ? "testnet" : "mainnet",
             cache: lruCache,
             getTimeoutHeight: ({ destinationAddress }) =>
@@ -208,6 +209,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
           {
+            ...ctx,
             env: IS_TESTNET ? "testnet" : "mainnet",
             cache: lruCache,
             getTimeoutHeight: ({ destinationAddress }) =>

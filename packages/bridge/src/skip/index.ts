@@ -23,7 +23,7 @@ import {
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../interface";
-import SkipApiClient from "./queries";
+import { SkipApiClient } from "./queries";
 import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 const logoUrl = "/bridges/skip.svg" as const;

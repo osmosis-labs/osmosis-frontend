@@ -1,6 +1,7 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -26,7 +27,6 @@ import {
   useAxelarDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
-import type { SourceChain } from "~/integrations/bridges";
 import {
   ChainNames,
   EthWallet,

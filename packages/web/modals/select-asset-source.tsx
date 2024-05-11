@@ -1,3 +1,4 @@
+import { SourceChain } from "@osmosis-labs/bridge";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 
@@ -9,7 +10,6 @@ import {
   FiatRampKey,
   ObservableWallet,
 } from "~/integrations";
-import { SourceChain } from "~/integrations/bridges";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */

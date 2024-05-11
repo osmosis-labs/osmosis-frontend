@@ -1,4 +1,9 @@
 import {
+  AxelarTransferStatusProvider,
+  SkipTransferStatusProvider,
+  SquidTransferStatusProvider,
+} from "@osmosis-labs/bridge";
+import {
   CosmosQueries,
   CosmwasmQueries,
   QueriesStore,
@@ -36,11 +41,6 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import {
-  AxelarTransferStatusProvider,
-  SkipTransferStatusProvider,
-  SquidTransferStatusProvider,
-} from "~/integrations/bridges";
 import { ObservableAssets } from "~/stores/assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";

@@ -1,5 +1,6 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { GetTransferStatusParams } from "@osmosis-labs/bridge";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
@@ -15,7 +16,6 @@ import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { GetTransferStatusParams } from "~/integrations/bridges";
 import { useStore } from "~/stores";
 
 type History = {

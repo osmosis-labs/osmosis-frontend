@@ -1,8 +1,4 @@
-import type {
-  MainnetChainIds,
-  TestnetChainIds,
-} from "~/config/generated/chain-list";
-import { Environment } from "~/integrations/bridges/interface";
+import { Environment } from "../interface";
 
 export const providerName = "Axelar" as const;
 
@@ -38,15 +34,11 @@ export const AxelarChainIds_SourceChainMap: (env: Environment) => {
         arbitrum: "Arbitrum",
       };
 
-const TestnetCosmosChainIds_AxelarChainIds: Partial<
-  Record<TestnetChainIds, string>
-> = {
+const TestnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmo-test-5": "osmosis-7",
 };
 
-const MainnetCosmosChainIds_AxelarChainIds: Partial<
-  Record<MainnetChainIds, string>
-> = {
+const MainnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmosis-1": "osmosis",
 };
 
@@ -55,7 +47,7 @@ const MainnetCosmosChainIds_AxelarChainIds: Partial<
  */
 export const CosmosChainIds_AxelarChainIds: (
   env: Environment
-) => Partial<Record<MainnetChainIds | TestnetChainIds, string>> = (env) =>
+) => Partial<Record<string, string>> = (env) =>
   env === "testnet"
     ? TestnetCosmosChainIds_AxelarChainIds
     : MainnetCosmosChainIds_AxelarChainIds;

@@ -1,4 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,7 +10,6 @@ import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { OriginBridgeInfo } from "~/integrations/bridge";
-import type { SourceChain } from "~/integrations/bridges";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";

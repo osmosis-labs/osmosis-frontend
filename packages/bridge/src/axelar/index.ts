@@ -1,18 +1,19 @@
-import type {
+import {
   AxelarAssetTransfer,
   AxelarQueryAPI,
+  Environment as AxelarEnvironment,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import {
+  getAssetFromAssetList,
+  getChain,
+  getKeyByValue,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
-
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
@@ -166,7 +167,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const transferFeeAsset = getAssetFromAssetList({
             /** Denom from Axelar's `getTransferFee` is the min denom */
             sourceDenom: transferFeeRes.fee.denom,
-            assetLists: AssetLists,
+            assetLists: this.ctx.assetLists,
           });
 
           const expectedOutputAmount = new Dec(fromAmount).sub(
@@ -429,7 +430,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       });
 
       const ibcAssetInfo = getAssetFromAssetList({
-        assetLists: AssetLists,
+        assetLists: this.ctx.assetLists,
         sourceDenom: toAsset.sourceDenom,
       });
 
@@ -549,7 +550,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
     if (chain.chainType === "cosmos") {
       const chainId = getChain({
-        chainList: ChainList,
+        chainList: this.ctx.chainList,
         chainId: chain.chainId as string,
       })?.chain_id;
 
@@ -572,23 +573,17 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async initClients() {
     try {
-      const [queryClientClass, assetTransferClientClass, Environment] =
-        await import("@axelar-network/axelarjs-sdk").then(
-          (m) =>
-            [m.AxelarQueryAPI, m.AxelarAssetTransfer, m.Environment] as const
-        );
-
-      this._queryClient = new queryClientClass({
+      this._queryClient = new AxelarQueryAPI({
         environment:
           this.ctx.env === "mainnet"
-            ? Environment.MAINNET
-            : Environment.TESTNET,
+            ? AxelarEnvironment.MAINNET
+            : AxelarEnvironment.TESTNET,
       });
-      this._assetTransferClient = new assetTransferClientClass({
+      this._assetTransferClient = new AxelarAssetTransfer({
         environment:
           this.ctx.env === "mainnet"
-            ? Environment.MAINNET
-            : Environment.TESTNET,
+            ? AxelarEnvironment.MAINNET
+            : AxelarEnvironment.TESTNET,
       });
     } catch (e) {
       console.error("Failed to init Axelar clients. Reason: ", e);

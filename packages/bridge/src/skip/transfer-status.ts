@@ -10,7 +10,7 @@ import type {
   BridgeTransferStatus,
   GetTransferStatusParams,
 } from "../interface";
-import SkipApiClient from "./queries";
+import { SkipApiClient } from "./queries";
 import { providerName } from "./types";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */

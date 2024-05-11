@@ -1,6 +1,6 @@
-import { t } from "~/hooks/language/context";
+import { SourceChain } from "@osmosis-labs/bridge";
 
-import { SourceChain } from "../bridges/chain";
+import { t } from "~/hooks/language/context";
 
 /**
  * @deprecated

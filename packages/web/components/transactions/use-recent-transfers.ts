@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { GetTransferStatusParams } from "@osmosis-labs/bridge";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
@@ -7,7 +8,6 @@ import {
 import { ChainIdHelper, isNumeric } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
-import { GetTransferStatusParams } from "~/integrations/bridges";
 import { useStore } from "~/stores";
 
 type RecentTransfer = {

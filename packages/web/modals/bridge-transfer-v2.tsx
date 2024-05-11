@@ -1,5 +1,14 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
+import {
+  Bridge,
+  BridgeError,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
+  type SourceChain,
+  SourceChainTokenConfig,
+} from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { getKeyByValue } from "@osmosis-labs/utils";
@@ -33,15 +42,6 @@ import {
   AxelarChainIds_SourceChainMap,
   EthClientChainIds_SourceChainMap,
 } from "~/integrations/axelar";
-import {
-  Bridge,
-  BridgeError,
-  CosmosBridgeTransactionRequest,
-  EvmBridgeTransactionRequest,
-  GetTransferStatusParams,
-  type SourceChain,
-  SourceChainTokenConfig,
-} from "~/integrations/bridges";
 import {
   ChainNames,
   EthWallet,

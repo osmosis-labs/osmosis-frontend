@@ -1,10 +1,10 @@
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
 import { IS_TESTNET } from "~/config";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
-import type { SourceChain } from "~/integrations/bridges";
 import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";

@@ -1,9 +1,9 @@
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { AxelarSourceChainTokenConfigs } from "@osmosis-labs/bridge";
 import { useCallback, useMemo, useState } from "react";
 
 import { IS_TESTNET } from "~/config";
-import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges";
 import { SendFn } from "~/integrations/ethereum//types";
 import { useTxGasEstimate } from "~/integrations/ethereum/hooks/use-tx-gas-estimate";
 import { erc20TransferParams, sendParams } from "~/integrations/ethereum/tx";

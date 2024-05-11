@@ -1,5 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { IBCCurrency } from "@keplr-wallet/types";
+import { SourceChain } from "@osmosis-labs/bridge";
 import {
   action,
   computed,
@@ -11,7 +12,6 @@ import { ComponentProps } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { FiatRampKey, ObservableWallet } from "~/integrations";
-import { SourceChain } from "~/integrations/bridges";
 import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
   BridgeTransferV1Modal,
