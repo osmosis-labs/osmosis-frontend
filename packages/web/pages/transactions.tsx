@@ -1,4 +1,3 @@
-import { FormattedTransaction } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -105,8 +104,8 @@ const Transactions: React.FC = observer(() => {
     ctas: [],
   });
 
-  const [selectedTransaction, setSelectedTransaction] = useState<
-    FormattedTransaction | undefined
+  const [selectedTransactionHash, setSelectedTransactionHash] = useState<
+    string | undefined
   >(undefined);
 
   const [open, setOpen] = useState(false);
@@ -121,14 +120,18 @@ const Transactions: React.FC = observer(() => {
   const onRequestClose = () => {
     setOpen(false);
     // add delay for smoother transition
-    setTimeout(() => setSelectedTransaction(undefined), 300);
+    setTimeout(() => setSelectedTransactionHash(undefined), 300);
   };
+
+  const selectedTransaction = transactions.find(
+    (transactions) => transactions.hash === selectedTransactionHash
+  );
 
   return (
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
       <TransactionContent
-        setSelectedTransaction={setSelectedTransaction}
-        selectedTransaction={selectedTransaction}
+        setSelectedTransactionHash={setSelectedTransactionHash}
+        selectedTransactionHash={selectedTransactionHash}
         transactions={transactions}
         setOpen={setOpen}
         open={open}
