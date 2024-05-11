@@ -5,7 +5,6 @@ import type {
   TransactionRequest,
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
@@ -25,6 +24,7 @@ import {
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../interface";
+import { cosmosMsgOpts } from "../msg";
 import { providerName } from "./const";
 
 const logoUrl = "/bridges/squid.svg" as const;

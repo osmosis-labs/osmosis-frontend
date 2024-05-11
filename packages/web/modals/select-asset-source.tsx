@@ -1,4 +1,4 @@
-import { SourceChain } from "@osmosis-labs/bridge";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 

@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import {
+import type {
   GetTransferStatusParams,
   TransferFailureReason,
 } from "@osmosis-labs/bridge";

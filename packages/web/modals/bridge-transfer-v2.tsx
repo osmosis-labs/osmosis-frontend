@@ -1,13 +1,13 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import {
-  Bridge,
+  type Bridge,
   BridgeError,
-  CosmosBridgeTransactionRequest,
-  EvmBridgeTransactionRequest,
-  GetTransferStatusParams,
+  type CosmosBridgeTransactionRequest,
+  type EvmBridgeTransactionRequest,
+  type GetTransferStatusParams,
   type SourceChain,
-  SourceChainTokenConfig,
+  type SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";

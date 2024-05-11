@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { IBCCurrency } from "@keplr-wallet/types";
-import { SourceChain } from "@osmosis-labs/bridge";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import {
   action,
   computed,

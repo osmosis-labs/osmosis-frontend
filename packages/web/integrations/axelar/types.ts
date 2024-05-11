@@ -1,4 +1,4 @@
-import { SourceChain, SourceChainTokenConfig } from "@osmosis-labs/bridge";
+import type { SourceChain, SourceChainTokenConfig } from "@osmosis-labs/bridge";
 
 import { IS_TESTNET } from "~/config";
 

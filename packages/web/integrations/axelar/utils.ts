@@ -1,4 +1,4 @@
-import { SourceChain } from "@osmosis-labs/bridge";
+import type { SourceChain } from "@osmosis-labs/bridge";
 
 import { t } from "~/hooks/language/context";
 

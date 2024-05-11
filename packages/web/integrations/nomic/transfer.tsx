@@ -1,4 +1,4 @@
-import { SourceChain } from "@osmosis-labs/bridge";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

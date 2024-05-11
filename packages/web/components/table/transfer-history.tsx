@@ -1,6 +1,6 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
-import {
+import type {
   GetTransferStatusParams,
   TransferFailureReason,
 } from "@osmosis-labs/bridge";

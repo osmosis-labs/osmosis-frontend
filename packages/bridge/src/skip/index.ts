@@ -1,6 +1,5 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
@@ -23,6 +22,7 @@ import {
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../interface";
+import { cosmosMsgOpts } from "../msg";
 import { SkipApiClient } from "./queries";
 import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 

@@ -4,7 +4,6 @@ import {
   Environment as AxelarEnvironment,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -34,6 +33,7 @@ import {
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../interface";
+import { cosmosMsgOpts } from "../msg";
 import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
   AxelarChainIds_SourceChainMap,
