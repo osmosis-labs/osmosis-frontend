@@ -1,4 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
+import {
+  TransferFailureReason,
+  TransferStatus,
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "@osmosis-labs/bridge";
 import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   action,
@@ -9,9 +15,6 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { TransferFailureReason, TransferStatus } from "./types";
-import { TransferStatusProvider, TransferStatusReceiver } from "./types";
 
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
@@ -194,5 +197,3 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     return Date.now() - snapshot.createdAtMs > expiryMs;
   }
 }
-
-export * from "./types";

@@ -1,13 +1,11 @@
-import {
-  TransferStatusProvider,
-  TransferStatusReceiver,
-} from "@osmosis-labs/stores";
 import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeProviderContext,
   BridgeTransferStatus,
+  Environment,
   GetTransferStatusParams,
+  TransferStatusProvider,
+  TransferStatusReceiver,
 } from "../interface";
 import { getTransferStatus } from "./queries";
 import { providerName } from "./types";
@@ -23,7 +21,7 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
     | "https://testnet.api.axelarscan.io"
     | "https://api.axelarscan.io";
 
-  constructor(readonly env: BridgeProviderContext["env"]) {
+  constructor(readonly env: Environment) {
     this.axelarScanBaseUrl =
       env === "mainnet"
         ? "https://axelarscan.io"

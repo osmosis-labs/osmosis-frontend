@@ -1,8 +1,23 @@
-import { TransferFailureReason, TransferStatus } from "@osmosis-labs/stores";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { z } from "zod";
+
+export type Environment = "mainnet" | "testnet";
+
+export interface BridgeProviderContext {
+  env: Environment;
+  cache: LRUCache<string, CacheEntry>;
+  assetLists: AssetList[];
+  chainList: Chain[];
+
+  /** Provides current timeout height for a chain of the ID
+   *  parsed from the bech32 config of the given destinationAddress. */
+  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+    revisionNumber: string | undefined;
+    revisionHeight: string;
+  }>;
+}
 
 export interface BridgeProvider {
   providerName: string;
@@ -20,22 +35,6 @@ export interface BridgeProvider {
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
-}
-
-export type Environment = "mainnet" | "testnet";
-
-export interface BridgeProviderContext {
-  env: Environment;
-  cache: LRUCache<string, CacheEntry>;
-  assetLists: AssetList[];
-  chainList: Chain[];
-
-  /** Provides current timeout height for a chain of the ID
-   *  parsed from the bech32 config of the given destinationAddress. */
-  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
-    revisionNumber: string | undefined;
-    revisionHeight: string;
-  }>;
 }
 
 const bridgeChainSchema = z.object({
@@ -66,12 +65,6 @@ const bridgeChainSchema = z.object({
 });
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
-
-export interface BridgeTransferStatus {
-  id: string;
-  status: TransferStatus;
-  reason?: TransferFailureReason;
-}
 
 export interface BridgeStatus {
   /**
@@ -239,4 +232,46 @@ export interface BridgeQuote {
 
   /** Sign doc. */
   transactionRequest?: BridgeTransactionRequest;
+}
+
+// Transfer status
+
+export interface BridgeTransferStatus {
+  id: string;
+  status: TransferStatus;
+  reason?: TransferFailureReason;
+}
+
+/** Capable of receiving updates as a delegate passed to a `TransferStatusProvider`. */
+export interface TransferStatusReceiver {
+  /** Key with prefix (`keyPrefix`) included. */
+  receiveNewTxStatus(
+    prefixedKey: string,
+    status: TransferStatus,
+    displayReason?: string
+  ): void;
+}
+
+/** A simplified transfer status. */
+export type TransferStatus = "success" | "pending" | "failed";
+
+/** A simplified reason for transfer failure. */
+export type TransferFailureReason = "insufficientFee";
+
+/** Plugin to fetch status of many transactions from a remote source. */
+export interface TransferStatusProvider {
+  /** Example: axelar */
+  readonly keyPrefix: string;
+  readonly sourceDisplayName?: string;
+  /** Destination for updates to tracked transactions.  */
+  statusReceiverDelegate?: TransferStatusReceiver;
+
+  /**
+   * Source instance should begin tracking a transaction identified by `key`.
+   * @param key Example: Tx hash without prefix i.e. `0x...`
+   */
+  trackTxStatus(key: string): void;
+
+  /** Make url to this tx explorer. */
+  makeExplorerUrl(key: string): string;
 }

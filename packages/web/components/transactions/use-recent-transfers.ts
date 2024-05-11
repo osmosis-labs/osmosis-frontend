@@ -1,9 +1,11 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { GetTransferStatusParams } from "@osmosis-labs/bridge";
+import {
+  GetTransferStatusParams,
+  TransferFailureReason,
+} from "@osmosis-labs/bridge";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  TransferFailureReason,
 } from "@osmosis-labs/stores";
 import { ChainIdHelper, isNumeric } from "@osmosis-labs/utils";
 

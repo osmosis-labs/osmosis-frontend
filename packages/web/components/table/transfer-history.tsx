@@ -1,10 +1,12 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { GetTransferStatusParams } from "@osmosis-labs/bridge";
+import {
+  GetTransferStatusParams,
+  TransferFailureReason,
+} from "@osmosis-labs/bridge";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  TransferFailureReason,
 } from "@osmosis-labs/stores";
 import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";

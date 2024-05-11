@@ -1,14 +1,12 @@
-import {
-  TransferStatus,
-  TransferStatusProvider,
-  TransferStatusReceiver,
-} from "@osmosis-labs/stores";
 import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeProviderContext,
   BridgeTransferStatus,
+  Environment,
   GetTransferStatusParams,
+  TransferStatus,
+  TransferStatusProvider,
+  TransferStatusReceiver,
 } from "../interface";
 import { SkipApiClient } from "./queries";
 import { providerName } from "./types";
@@ -27,7 +25,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     | "https://axelarscan.io"
     | "https://testnet.axelarscan.io";
 
-  constructor(env: BridgeProviderContext["env"]) {
+  constructor(env: Environment) {
     this.skipClient = new SkipApiClient();
 
     this.axelarScanBaseUrl =
