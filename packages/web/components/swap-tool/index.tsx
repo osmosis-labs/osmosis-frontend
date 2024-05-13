@@ -505,7 +505,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setFromAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "to" token, switch the assets
+                      if (tokenDenom === swapState.toAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setFromAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                       fromAmountInputEl.current?.focus();
                     },
@@ -622,7 +628,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   swapState={swapState}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setToAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "from" token, switch the assets
+                      if (tokenDenom === swapState.fromAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setToAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                     },
                     [swapState, closeTokenSelectDropdowns]

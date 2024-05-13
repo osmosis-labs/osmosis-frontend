@@ -336,11 +336,11 @@ export const TokenSelectDrawer: FunctionComponent<{
               <div className="flex flex-col overflow-auto">
                 {assets
                   // should not be able to select the same token for to / from
-                  .filter((asset) =>
-                    isFromSelect
-                      ? asset.amount?.denom !== swapState.toAsset?.coinDenom
-                      : asset.amount?.denom !== swapState.fromAsset?.coinDenom
-                  )
+                  // .filter((asset) =>
+                  //   isFromSelect
+                  //     ? asset.amount?.denom !== swapState.toAsset?.coinDenom
+                  //     : asset.amount?.denom !== swapState.fromAsset?.coinDenom
+                  // )
                   .map(
                     (
                       {
