@@ -1,6 +1,5 @@
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { AxelarSourceChainTokenConfigs } from "@osmosis-labs/bridge";
 import { useCallback, useMemo, useState } from "react";
 
 import { IS_TESTNET } from "~/config";
@@ -36,7 +35,7 @@ export function useAmountConfig({
   const evmTxParams: unknown[] | undefined = useMemo(() => {
     if (!balCurrency || !address) return;
 
-    // is ERC20 amount
+    // is ERC20 amount, return tx for any ERC20 token transfer tx for gas cost estimation
     if (
       !gasCurrency ||
       balCurrency.coinMinimalDenom !== gasCurrency.coinMinimalDenom
@@ -45,8 +44,10 @@ export function useAmountConfig({
         address,
         address,
         "0",
-        AxelarSourceChainTokenConfigs(IS_TESTNET ? "testnet" : "mainnet").usdc
-          .ethereum.erc20ContractAddress! // any address will do
+        // USDC ERC20 on Ethereum testnet/mainnet
+        IS_TESTNET
+          ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
+          : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
       );
     }
 
