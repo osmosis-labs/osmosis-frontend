@@ -117,7 +117,6 @@ export * from "./bonding";
 export * from "./incentives";
 export * from "./market";
 export * from "./providers";
-export * from "./route-token-out-given-in";
 export * from "./share";
 export * from "./superfluid";
 export * from "./user";
