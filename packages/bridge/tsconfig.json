@@ -5,7 +5,7 @@
     "declaration": true,
     "allowJs": false,
     "rootDir": "src",
-    "module": "ES6"
+    "module": "esnext"
   },
   "include": ["src/**/*"]
 }

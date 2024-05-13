@@ -1,7 +1,6 @@
-import {
+import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
-  Environment as AxelarEnvironment,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
@@ -573,21 +572,25 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async initClients() {
     try {
+      const { AxelarQueryAPI, AxelarAssetTransfer, Environment } = await import(
+        "@axelar-network/axelarjs-sdk"
+      );
+
       this._queryClient = new AxelarQueryAPI({
         environment:
           this.ctx.env === "mainnet"
-            ? AxelarEnvironment.MAINNET
-            : AxelarEnvironment.TESTNET,
+            ? Environment.MAINNET
+            : Environment.TESTNET,
       });
+
       this._assetTransferClient = new AxelarAssetTransfer({
         environment:
           this.ctx.env === "mainnet"
-            ? AxelarEnvironment.MAINNET
-            : AxelarEnvironment.TESTNET,
+            ? Environment.MAINNET
+            : Environment.TESTNET,
       });
-    } catch (e) {
-      console.error("Failed to init Axelar clients. Reason: ", e);
-      throw new Error("Failed to init Axelar clients");
+    } catch (e: any) {
+      throw new Error("Failed to init Axelar clients: " + e.message);
     }
   }
 
