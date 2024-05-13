@@ -1,8 +1,8 @@
 import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeTransferStatus,
   BridgeEnvironment,
+  BridgeTransferStatus,
   GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
@@ -14,12 +14,11 @@ import { providerName } from "./types";
 export class AxelarTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Axelar Bridge";
-  public statusReceiverDelegate?: TransferStatusReceiver;
 
-  axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
-  axelarApiBaseUrl:
-    | "https://testnet.api.axelarscan.io"
-    | "https://api.axelarscan.io";
+  statusReceiverDelegate?: TransferStatusReceiver;
+
+  readonly axelarScanBaseUrl: string;
+  readonly axelarApiBaseUrl: string;
 
   constructor(readonly env: BridgeEnvironment) {
     this.axelarScanBaseUrl =

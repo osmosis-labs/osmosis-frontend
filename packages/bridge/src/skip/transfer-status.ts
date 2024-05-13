@@ -1,8 +1,8 @@
 import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeTransferStatus,
   BridgeEnvironment,
+  BridgeTransferStatus,
   GetTransferStatusParams,
   TransferStatus,
   TransferStatusProvider,
@@ -14,16 +14,12 @@ import { providerName } from "./types";
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
+  readonly sourceDisplayName = "Skip Bridge";
 
-  sourceDisplayName = "Skip Bridge";
+  statusReceiverDelegate?: TransferStatusReceiver;
 
-  statusReceiverDelegate?: TransferStatusReceiver | undefined;
-
-  private skipClient: SkipApiClient;
-
-  private axelarScanBaseUrl:
-    | "https://axelarscan.io"
-    | "https://testnet.axelarscan.io";
+  readonly skipClient: SkipApiClient;
+  readonly axelarScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
     this.skipClient = new SkipApiClient();

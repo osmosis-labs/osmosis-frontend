@@ -3,8 +3,8 @@ import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
 import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
-  BridgeTransferStatus,
   BridgeEnvironment,
+  BridgeTransferStatus,
   GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
@@ -17,16 +17,14 @@ const providerName = "Squid" as const;
 export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Squid Bridge";
+
   public statusReceiverDelegate?: TransferStatusReceiver;
-  readonly apiURL:
-    | "https://api.0xsquid.com"
-    | "https://testnet.api.squidrouter.com";
-  readonly squidScanBaseUrl:
-    | "https://axelarscan.io"
-    | "https://testnet.axelarscan.io";
+
+  readonly apiUrl: string;
+  readonly squidScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
-    this.apiURL =
+    this.apiUrl =
       env === "mainnet"
         ? "https://api.0xsquid.com"
         : "https://testnet.api.squidrouter.com";
@@ -45,7 +43,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     poll({
       fn: async () => {
         try {
-          const url = new URL(`${this.apiURL}/v1/status`);
+          const url = new URL(`${this.apiUrl}/v1/status`);
           url.searchParams.append("transactionId", sendTxHash);
           if (fromChainId) {
             url.searchParams.append("fromChainId", fromChainId.toString());
