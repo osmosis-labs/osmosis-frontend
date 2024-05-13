@@ -15,10 +15,6 @@
     "bridge"
   ],
   "license": "Apache-2.0",
-  "sideEffects": [
-    "./build/utils/superjson.js",
-    "./build/utils/dayjs.js"
-  ],
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
     "build": "tsc",

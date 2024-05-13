@@ -4,7 +4,7 @@ import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
   BridgeTransferStatus,
-  Environment,
+  BridgeEnvironment,
   GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
@@ -25,7 +25,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     | "https://axelarscan.io"
     | "https://testnet.axelarscan.io";
 
-  constructor(env: Environment) {
+  constructor(env: BridgeEnvironment) {
     this.apiURL =
       env === "mainnet"
         ? "https://api.0xsquid.com"

@@ -1,6 +1,6 @@
 import { SourceChain } from "../chain";
 import { EthereumChainInfo } from "../ethereum";
-import { Environment } from "../interface";
+import { BridgeEnvironment } from "../interface";
 
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */
@@ -41,7 +41,7 @@ export type SourceChainTokenConfig = {
 /** https://axelarscan.io/assets
  *  Ensure that users bridge sufficient amounts from EthMainnet=>NonEthEvm via Axelar before enabling.
  */
-export const AxelarSourceChainTokenConfigs: (env: Environment) => {
+export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
   [asset: string]: { [chain: string]: SourceChainTokenConfig };
 } = (env) => {
   const isTestnet = env === "testnet";

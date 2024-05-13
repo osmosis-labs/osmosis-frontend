@@ -1,4 +1,4 @@
-import { Environment } from "../interface";
+import { BridgeEnvironment } from "../interface";
 
 export const providerName = "Axelar" as const;
 
@@ -9,7 +9,7 @@ export const providerName = "Axelar" as const;
  *  Testnet Docs: https://docs.axelar.dev/dev/build/chain-names/testnet
  *  Testnet API: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
  */
-export const AxelarChainIds_SourceChainMap: (env: Environment) => {
+export const AxelarChainIds_SourceChainMap: (env: BridgeEnvironment) => {
   [axelarChainIds: string]: string | undefined;
 } = (env) =>
   env === "testnet"
@@ -46,7 +46,7 @@ const MainnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
  * Maps Cosmos chain ids => Axelar chain ids.
  */
 export const CosmosChainIds_AxelarChainIds: (
-  env: Environment
+  env: BridgeEnvironment
 ) => Partial<Record<string, string>> = (env) =>
   env === "testnet"
     ? TestnetCosmosChainIds_AxelarChainIds

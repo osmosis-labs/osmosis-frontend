@@ -2,7 +2,7 @@ import { poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeTransferStatus,
-  Environment,
+  BridgeEnvironment,
   GetTransferStatusParams,
   TransferStatus,
   TransferStatusProvider,
@@ -25,7 +25,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     | "https://axelarscan.io"
     | "https://testnet.axelarscan.io";
 
-  constructor(env: Environment) {
+  constructor(env: BridgeEnvironment) {
     this.skipClient = new SkipApiClient();
 
     this.axelarScanBaseUrl =

@@ -3,10 +3,10 @@ import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-export type Environment = "mainnet" | "testnet";
+export type BridgeEnvironment = "mainnet" | "testnet";
 
 export interface BridgeProviderContext {
-  env: Environment;
+  env: BridgeEnvironment;
   cache: LRUCache<string, CacheEntry>;
   assetLists: AssetList[];
   chainList: Chain[];
