@@ -4,7 +4,13 @@ import { useCopyToClipboard, useTimeoutFn } from "react-use";
 import { CopyIcon, Icon } from "~/components/assets";
 
 // TODO migrate from profile
-export const CopyIconButton = ({ valueToCopy }: { valueToCopy: string }) => {
+export const CopyIconButton = ({
+  valueToCopy,
+  label,
+}: {
+  valueToCopy: string;
+  label: string | JSX.Element;
+}) => {
   const [hasCopied, setHasCopied] = useState(false);
   const [, copyToClipboard] = useCopyToClipboard();
   const [, , reset] = useTimeoutFn(() => setHasCopied(false), 2000);
@@ -17,9 +23,10 @@ export const CopyIconButton = ({ valueToCopy }: { valueToCopy: string }) => {
 
   return (
     <button
-      className="flex h-6 w-6 items-center justify-center"
+      className="flex items-center justify-center gap-3"
       onClick={onCopyAddress}
     >
+      <span className="body2 text-wosmongton-300">{label}</span>
       {hasCopied ? (
         <Icon id="check-mark" className="text-wosmongton-300" />
       ) : (
