@@ -1079,7 +1079,7 @@ function useQueryRouterBestQuote(
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
-  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+  routerKeys = ["sidecar", "tfm"] as RouterKey[]
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -1091,7 +1091,6 @@ function useQueryRouterBestQuote(
         ? []
         : routerKeys.filter((key) => {
             if (!featureFlags.sidecarRouter && key === "sidecar") return false;
-            if (!featureFlags.legacyRouter && key === "legacy") return false;
             // TFM doesn't support force swap through pool
             if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
               return false;
@@ -1100,7 +1099,6 @@ function useQueryRouterBestQuote(
     [
       featureFlags._isInitialized,
       featureFlags.sidecarRouter,
-      featureFlags.legacyRouter,
       featureFlags.tfmRouter,
       routerKeys,
       input.forcePoolId,

@@ -16,7 +16,6 @@ export type AvailableFlags =
   | "earnPage"
   | "transactionsPage"
   | "sidecarRouter"
-  | "legacyRouter"
   | "tfmRouter"
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
@@ -45,7 +44,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   earnPage: false,
   transactionsPage: false,
   sidecarRouter: true,
-  legacyRouter: true,
   tfmRouter: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,

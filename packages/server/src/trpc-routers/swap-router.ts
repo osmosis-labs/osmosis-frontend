@@ -10,13 +10,12 @@ import { SIDECAR_BASE_URL, TFM_BASE_URL } from "../env";
 import { calcAssetValue, getAsset } from "../queries/complex/assets";
 import { Pool } from "../queries/complex/pools";
 import { getCosmwasmPoolTypeFromCodeId } from "../queries/complex/pools/env";
-import { routeTokenOutGivenIn } from "../queries/complex/pools/route-token-out-given-in";
 import { OsmosisSidecarRemoteRouter } from "../queries/sidecar/router";
 import { TfmRemoteRouter } from "../queries/tfm/router";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { captureIfError } from "../utils/error";
 
-const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
+const zodAvailableRouterKey = z.enum(["tfm", "sidecar"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
 
 export const swapRouter = createTRPCRouter({
@@ -61,20 +60,6 @@ export const swapRouter = createTRPCRouter({
             router: new OsmosisSidecarRemoteRouter(
               SIDECAR_BASE_URL ?? "https://sqs.stage.osmosis.zone"
             ),
-          },
-          {
-            name: "legacy",
-            router: {
-              routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
-                (
-                  await routeTokenOutGivenIn({
-                    ...ctx,
-                    token: tokenIn,
-                    tokenOutDenom,
-                    forcePoolId,
-                  })
-                ).quote,
-            } as TokenOutGivenInRouter,
           },
         ];
 
