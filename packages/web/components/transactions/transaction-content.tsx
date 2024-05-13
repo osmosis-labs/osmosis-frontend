@@ -17,6 +17,7 @@ import { useTranslation } from "~/hooks";
 
 export const TransactionContent = ({
   setSelectedTransaction,
+  selectedTransaction,
   transactions = [],
   setOpen,
   open,
@@ -28,6 +29,7 @@ export const TransactionContent = ({
   wallet,
 }: {
   setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  selectedTransaction?: FormattedTransaction;
   transactions?: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
@@ -73,6 +75,7 @@ export const TransactionContent = ({
           <TransactionRows
             transactions={transactions}
             setSelectedTransaction={setSelectedTransaction}
+            selectedTransaction={selectedTransaction}
             setOpen={setOpen}
             open={open}
           />
