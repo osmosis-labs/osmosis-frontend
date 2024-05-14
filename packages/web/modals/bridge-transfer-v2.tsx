@@ -1,11 +1,14 @@
 import { WalletStatus } from "@cosmos-kit/core";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+  type Bridge,
+  BridgeError,
+  type CosmosBridgeTransactionRequest,
+  type EvmBridgeTransactionRequest,
+  type GetTransferStatusParams,
+  type SourceChain,
+  type SourceChainTokenConfig,
+} from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { getKeyByValue } from "@osmosis-labs/utils";
@@ -34,21 +37,11 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { SourceChain, useTxEventToasts } from "~/integrations";
-import {
-  EthClientChainIds_SourceChainMap,
-  type SourceChainKey,
-} from "~/integrations/bridge-info";
+import { useTxEventToasts } from "~/integrations";
 import {
   AxelarChainIds_SourceChainMap,
-  SourceChainTokenConfig,
-} from "~/integrations/bridges/axelar/types";
-import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
-import {
-  CosmosBridgeTransactionRequest,
-  EvmBridgeTransactionRequest,
-  GetTransferStatusParams,
-} from "~/integrations/bridges/types";
+  EthClientChainIds_SourceChainMap,
+} from "~/integrations/axelar";
 import {
   ChainNames,
   EthWallet,
@@ -62,7 +55,6 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
-import { ErrorTypes } from "~/utils/error-types";
 import { createContext } from "~/utils/react-context";
 import { api } from "~/utils/trpc";
 
@@ -84,7 +76,7 @@ const [BridgeTransferModalProvider, useBridgeTransfer] =
 interface BridgeTransferModalProps extends ModalBaseProps {
   isWithdraw: boolean;
   balance: IBCBalance;
-  sourceChainKey: SourceChainKey;
+  sourceChainKey: SourceChain;
   walletClient?: ObservableWallet;
   onRequestSwitchWallet: () => void;
 }
@@ -321,7 +313,7 @@ const ManualTransfer: FunctionComponent<
   );
 });
 
-const availableBridgeKeys: AvailableBridges[] = ["Skip", "Squid", "Axelar"];
+const availableBridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar"];
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const TransferContent: FunctionComponent<
@@ -329,7 +321,7 @@ export const TransferContent: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChainKey;
+    sourceChainKey: SourceChain;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
     isCounterpartyAddressValid?: boolean;
@@ -380,7 +372,6 @@ export const TransferContent: FunctionComponent<
     accountStore,
     queriesStore,
     nonIbcBridgeHistoryStore,
-    priceStore,
   } = useStore();
   const {
     showModalBase,
@@ -547,7 +538,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
-    useState<AvailableBridges | null>(null);
+    useState<Bridge | null>(null);
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
     useState(false);
 
@@ -592,10 +583,8 @@ export const TransferContent: FunctionComponent<
             const priceImpact = new RatePretty(
               new Dec(expectedOutput.priceImpact)
             );
-            const expectedOutputFiatDec = new Dec(
-              expectedOutput.fiatValue.amount
-            );
-            const inputFiatDec = new Dec(input.fiatValue.amount);
+            const expectedOutputFiatDec = expectedOutput.fiatValue.toDec();
+            const inputFiatDec = input.fiatValue.toDec();
 
             let transferSlippage: Dec;
             if (expectedOutputFiatDec.gt(inputFiatDec)) {
@@ -640,51 +629,12 @@ export const TransferContent: FunctionComponent<
                 new Dec(expectedOutput.amount)
               ),
 
-              get expectedOutputFiat() {
-                if (!expectedOutput.fiatValue) return undefined;
-                const expectedOutputFiatValue = expectedOutput.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  expectedOutputFiatValue.currency
-                );
-                if (!fiat) return undefined;
-
-                return new PricePretty(
-                  fiat,
-                  new Dec(expectedOutputFiatValue.amount)
-                );
-              },
-
-              get transferFeeFiat() {
-                if (!transferFee.fiatValue) return undefined;
-
-                const transferFeeFiatValue = transferFee.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  transferFeeFiatValue?.currency ?? "usd"
-                );
-
-                if (!fiat) throw new Error("No fiat currency found");
-
-                return new PricePretty(
-                  fiat,
-                  new Dec(transferFeeFiatValue.amount)
-                );
-              },
-
-              get gasCostFiat() {
-                if (!estimatedGasFee?.fiatValue) return undefined;
-                const gasCostFiatValue = estimatedGasFee.fiatValue;
-                const fiat = priceStore.getFiatCurrency(
-                  gasCostFiatValue.currency
-                );
-                if (!fiat) return undefined;
-
-                return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
-              },
-
+              expectedOutputFiat: expectedOutput.fiatValue,
+              transferFeeFiat: transferFee.fiatValue,
+              gasCostFiat: estimatedGasFee?.fiatValue,
               estimatedTime: dayjs.duration({
                 seconds: estimatedTime,
               }),
-
               responseTime: dayjs(),
               quote,
               transactionRequest,
@@ -825,7 +775,7 @@ export const TransferContent: FunctionComponent<
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: AvailableBridges, params: GetTransferStatusParams) => {
+    (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
@@ -1069,7 +1019,7 @@ export const TransferContent: FunctionComponent<
   };
 
   const errors = someError?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
+  const hasNoQuotes = errors?.[0]?.errorType === BridgeError.NoQuotesError;
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 
