@@ -1,65 +1,8 @@
-import { SpriteIconId } from "~/config";
-import { AxelarBridgeConfig } from "~/integrations/bridges/axelar/types";
-import { WalletKey } from "~/integrations/wallets";
+import { Interface } from "ethers";
 
-// Add to these types as more bridges are integrated
+import { SourceChain } from "./chain";
 
-export type OriginBridgeInfo = {
-  bridge: "axelar" | "nomic";
-  wallets: WalletKey[];
-} & AxelarBridgeConfig;
-
-/** Human-displayable global source chain identifiers */
-export type SourceChain =
-  | "Bitcoin"
-  | "Bitcoin Testnet"
-  | "Aurora Testnet"
-  | "Avalanche"
-  | "Avalanche Fuji Testnet"
-  | "Binance Smart Chain"
-  | "BSC Testnet"
-  | "Ethereum"
-  | "Goerli Testnet"
-  | "Fantom"
-  | "Fantom Testnet"
-  | "Moonbeam"
-  | "Moonbase Alpha"
-  | "Polygon"
-  | "Mumbai"
-  | "Filecoin"
-  | "Filecoin Hyperspace"
-  | "Arbitrum";
-
-/** String literal identifiers for a source chain. */
-export type SourceChainKey = SourceChain;
-
-/** Maps eth client chainIDs => source chain ids.
- *
- *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{}
- *  to map the name to a chainID, which is in turn used to add the network to
- *  EVM-compatible wallets, like Metamask.
- */
-export const EthClientChainIds_SourceChainMap: {
-  [ethClientChainIds: string]: SourceChain;
-} = {
-  "Aurora Testnet": "Aurora Testnet",
-  "Avalanche Fuji Testnet": "Avalanche Fuji Testnet",
-  "Binance Smart Chain Testnet": "BSC Testnet",
-  "Goerli Test Network": "Goerli Testnet",
-  "Fantom Testnet": "Fantom Testnet",
-  "Moonbase Alpha": "Moonbase Alpha",
-  Mumbai: "Mumbai",
-  "Filecoin Hyperspace": "Filecoin Hyperspace",
-  "Avalanche C-Chain": "Avalanche",
-  "Binance Smart Chain Mainnet": "Binance Smart Chain",
-  "Ethereum Main Network": "Ethereum",
-  "Fantom Opera": "Fantom",
-  "Moonbeam Mainnet": "Moonbeam",
-  "Polygon Mainnet": "Polygon",
-  "Filecoin - Mainnet": "Filecoin",
-  "Arbitrum One": "Arbitrum",
-};
-
+// TODO maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
   Dict extends Partial<
     Record<
@@ -249,42 +192,233 @@ export const EthereumChainInfo = createEthereumChainInfo({
   },
 });
 
-// Fiat on/off ramps
-export type FiatRampKey =
-  | "kado"
-  | "transak"
-  | "layerswapcoinbase"
-  | "onrampmoney";
-export const FiatRampDisplayInfos: Record<
-  FiatRampKey,
+/**
+ * Placeholder address for the native tokens like ETH, or AVAX. This is used by protocols to refer to the native token, in order,
+ * to be handled similarly to other ERC20 tokens.
+ */
+export const NativeEVMTokenConstantAddress =
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+/** ABI spec for interfacing with ERC20 token contracts on EVM chains. */
+export const Erc20Abi = new Interface([
   {
-    rampKey: FiatRampKey;
-    iconUrl: string;
-    displayName: string;
-    logoId?: SpriteIconId;
-  }
-> = {
-  kado: {
-    rampKey: "kado",
-    iconUrl: "/logos/kado.svg",
-    displayName: "Kado",
-    logoId: "kado-logo",
+    constant: true,
+    inputs: [],
+    name: "name",
+    outputs: [
+      {
+        name: "",
+        type: "string",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
   },
-  transak: {
-    rampKey: "transak",
-    iconUrl: "/logos/transak.svg",
-    displayName: "Transak",
-    logoId: "transak-logo",
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_spender",
+        type: "address",
+      },
+      {
+        name: "_value",
+        type: "uint256",
+      },
+    ],
+    name: "approve",
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
   },
-  layerswapcoinbase: {
-    rampKey: "layerswapcoinbase",
-    iconUrl: "/logos/coinbase.svg",
-    displayName: "Coinbase",
+  {
+    constant: true,
+    inputs: [],
+    name: "totalSupply",
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
   },
-  onrampmoney: {
-    rampKey: "onrampmoney",
-    iconUrl: "/logos/onrampmoney.svg",
-    displayName: "Onramp.money",
-    logoId: "onrampmoney-logo",
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_from",
+        type: "address",
+      },
+      {
+        name: "_to",
+        type: "address",
+      },
+      {
+        name: "_value",
+        type: "uint256",
+      },
+    ],
+    name: "transferFrom",
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
   },
-};
+  {
+    constant: true,
+    inputs: [],
+    name: "decimals",
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "balanceOf", // balanceOf
+    outputs: [
+      {
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "symbol",
+    outputs: [
+      {
+        name: "",
+        type: "string",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_to",
+        type: "address",
+      },
+      {
+        name: "_value",
+        type: "uint256",
+      },
+    ],
+    name: "transfer",
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "_owner",
+        type: "address",
+      },
+      {
+        name: "_spender",
+        type: "address",
+      },
+    ],
+    name: "allowance",
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    payable: true,
+    stateMutability: "payable",
+    type: "fallback",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        name: "spender",
+        type: "address",
+      },
+      {
+        indexed: false,
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "Approval",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        name: "from",
+        type: "address",
+      },
+      {
+        indexed: true,
+        name: "to",
+        type: "address",
+      },
+      {
+        indexed: false,
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "Transfer",
+    type: "event",
+  },
+]);

@@ -1,6 +1,60 @@
-## Bridge Providers Documentation
+# @osmosis-labs/bridge
 
-Bridge providers are an abstraction layer in Osmosis that allows for the seamless integration of new blockchain bridges. The types for these providers are defined in the `packages/web/integrations/bridges/types.ts` file.
+Provides a single API for for interacting with multiple bridge providers. Relies on canonical chain and asset identifiers across ecosystems for identifying assets and chains. Some bridge providers include routing and swap aggregation capabilites. New providers can be added by implementing the `BridgeProvider` interface. The interface includes some optional components that can be used to support alternative bridge features, such as the `getDepositAddress` for briding via a send transaction to a generated deposit address.
+
+Providers are complemented with objects that implement the `TransferStatusProvider` interface. These objects provide updates on the status of a transfer transaction recommended by a bridge provider. The provider can then push these updates to the caller's implementation of the `TransferStatusReceiver` interface, using the transaction's hash. Depending on the needs of the caller the `TransferStatusReceiver` object can be implemented to provide updates to the UI or other observer.
+
+Instances of the above providers are intended to be created to maintain references to any underlying caches or connections. Also, a single `BridgeProviders` object is available for maintaining a single instance of all available bridge providers.
+
+## Basic usage
+
+General flow using a given provider:
+
+1. Get a quote from the provider's `BridgeProvider.getQuote` implementation and present to user
+2. User accepts quote and initiates the transfer by sending the quote data to the provider's `BridgeProvider.getTransactionData` implementation and signing & broadcasting the returned value in their wallet.
+3. Optionally, the calling app can provide UI updates by receiving events from the provider's corresponding `TransferStatusProvider` implementation via the caller's own `TransferStatusReceiver` implementation.
+4. User's funds arrive at the specified destination address.
+
+Example pseudocode:
+
+```ts
+// setup chosen provider
+const provider =
+  new SkipBridgeProvider(context) || new BridgeProviders(context)["Skip"];
+
+// get quote
+// can also get multiple and only show user the best one with lowest fee / highest out amount
+const quote = await provider.getQuote({
+  fromAsset,
+  toAsset,
+  fromChain,
+  toChain,
+  fromAddress,
+  toAddress,
+  slippage,
+});
+
+// user accepts quote
+const signDocument = await provider.getTransactionData(quote);
+
+// user signs and broadcasts
+const { txHash } = await wallet.signAndBroadcast(signDocument);
+
+// subscribe to updates
+
+const statusProvider = new SkipTransferStatusProvider("testnet");
+// object capable of providing updates to UI or other observer
+// can accept multiple providers since keys are recommended to be namespaced
+const statusReceiver = new MyObservableTransferStatusReceiver([statusProvider]);
+
+// subscribe to updates; could use websocket, polling, black magic, etc.
+statusProvider.trackTxStatus(txHash, statusReceiver);
+
+// log: MyObservableTransferStatusReceiver got "pending" for skip_txHash ABC123
+// log: MyObservableTransferStatusReceiver got "pending" for skip_txHash ABC123
+// log: MyObservableTransferStatusReceiver got "pending" for skip_txHash ABC123
+// log: MyObservableTransferStatusReceiver got "completed" for skip_txHash ABC123
+```
 
 ### Steps to add a Bridge Provider
 
@@ -81,13 +135,6 @@ export interface BridgeProvider {
 
 The BridgeProviderContext interface provides context for a bridge provider, including the environment (mainnet or testnet) and a cache.
 
-```tsx
-export interface BridgeProviderContext {
-  env: "mainnet" | "testnet";
-  cache: LRUCache<string, CacheEntry>;
-}
-```
-
 #### BridgeChain
 
 The BridgeChain interface represents a blockchain that can be bridged. It includes the chain ID, human-readable name, network name, and chain type (either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains).
@@ -124,6 +171,20 @@ export interface BridgeAsset {
   decimals: number;
   sourceDenom: string;
 }
+```
+
+#### BridgeCoin
+
+The BridgeCoin type represents an asset with an amount, likely returned within a bridge quote.
+
+```tsx
+export type BridgeCoin = {
+  denom: string;
+  decimals: number;
+  sourceDenom: string;
+  /** Amount without decimals. */
+  amount: string;
+};
 ```
 
 #### BridgeTransactionRequest

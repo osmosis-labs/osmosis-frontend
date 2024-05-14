@@ -630,7 +630,7 @@ export function useSwapAssets({
     }
   );
 
-  const allSelectableAssets = useMemo(
+  const selectableAssets = useMemo(
     () =>
       useOtherCurrencies
         ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
@@ -640,11 +640,11 @@ export function useSwapAssets({
 
   const { asset: fromAsset } = useSwapAsset({
     minDenomOrSymbol: fromAssetDenom,
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
   const { asset: toAsset } = useSwapAsset({
     minDenomOrSymbol: toAssetDenom,
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
 
   /**
@@ -692,26 +692,14 @@ export function useSwapAssets({
     toAsset?.coinMinimalDenom
   );
 
-  /** Remove to and from assets from assets that can be selected. */
-  const filteredSelectableAssets = useMemo(
-    () =>
-      allSelectableAssets.filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [],
-    [allSelectableAssets, fromAsset, toAsset]
-  );
-
   return {
     fromAsset,
     toAsset,
     assetsQueryInput,
-    selectableAssets: filteredSelectableAssets,
+    selectableAssets,
     isLoadingSelectAssets,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
-    /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,

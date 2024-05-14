@@ -10,7 +10,7 @@ import {
   SkipTxStatusResponse,
 } from "./types";
 
-class SkipApiClient {
+export class SkipApiClient {
   async assets({ chainID }: { chainID?: string } = {}) {
     const url = new URL("/v1/fungible/assets", "https://api.skip.money");
 
@@ -97,5 +97,3 @@ class SkipApiClient {
     return apiClient<SkipTxStatusResponse>(url.toString());
   }
 }
-
-export default SkipApiClient;

@@ -1,33 +1,30 @@
 import { StatusResponse } from "@0xsquid/sdk";
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
-import { apiClient, ApiClientError } from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
-import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
+import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
-  BridgeProviderContext,
+  BridgeEnvironment,
   BridgeTransferStatus,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
-import { ErrorTypes } from "~/utils/error-types";
-import { poll } from "~/utils/promise";
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "../interface";
 
 // TODO: move to types file
 const providerName = "Squid" as const;
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
-export class SquidTransferStatusSource implements ITxStatusSource {
+export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Squid Bridge";
-  public statusReceiverDelegate?: ITxStatusReceiver;
-  readonly apiURL:
-    | "https://api.0xsquid.com"
-    | "https://testnet.api.squidrouter.com";
-  readonly squidScanBaseUrl:
-    | "https://axelarscan.io"
-    | "https://testnet.axelarscan.io";
 
-  constructor(env: BridgeProviderContext["env"]) {
-    this.apiURL =
+  public statusReceiverDelegate?: TransferStatusReceiver;
+
+  readonly apiUrl: string;
+  readonly squidScanBaseUrl: string;
+
+  constructor(env: BridgeEnvironment) {
+    this.apiUrl =
       env === "mainnet"
         ? "https://api.0xsquid.com"
         : "https://testnet.api.squidrouter.com";
@@ -46,7 +43,7 @@ export class SquidTransferStatusSource implements ITxStatusSource {
     poll({
       fn: async () => {
         try {
-          const url = new URL(`${this.apiURL}/v1/status`);
+          const url = new URL(`${this.apiUrl}/v1/status`);
           url.searchParams.append("transactionId", sendTxHash);
           if (fromChainId) {
             url.searchParams.append("fromChainId", fromChainId.toString());
@@ -93,11 +90,11 @@ export class SquidTransferStatusSource implements ITxStatusSource {
             error.data?.errors?.map(
               ({ errorType, message }) =>
                 ({
-                  errorType: errorType ?? ErrorTypes.UnexpectedError,
+                  errorType: errorType ?? BridgeError.UnexpectedError,
                   message: message ?? "",
                 } ?? [
                   {
-                    errorType: ErrorTypes.UnexpectedError,
+                    errorType: BridgeError.UnexpectedError,
                     message: "Failed to fetch transfer status",
                   },
                 ])
