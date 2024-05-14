@@ -1,5 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -130,7 +130,7 @@ function filterAssetList(
     // search for exact match for coinMinimalDenom first
     const coinMinimalDemonMatches = search(
       assetListAssets,
-      ["coinMinimalDenom"],
+      ["coinMinimalDenom"] as (keyof AssetListAsset)[],
       params.search,
       0.0 // Exact match
     );
@@ -142,7 +142,7 @@ function filterAssetList(
       const symbolOrNameMatches = search(
         assetListAssets,
         /** Search is performed on the raw asset list data, instead of `Asset` type. */
-        ["symbol", "name"],
+        ["symbol", "name"] as (keyof AssetListAsset)[],
         params.search
       );
       assetListAssets = symbolOrNameMatches;
