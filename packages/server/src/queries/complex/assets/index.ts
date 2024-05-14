@@ -29,22 +29,9 @@ export const AssetFilterSchema = z.object({
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
 /** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys: {
-  name: keyof AssetListAsset;
-  weight: number;
-}[] = [
-  {
-    name: "symbol",
-    weight: 10,
-  },
-  {
-    name: "name",
-    weight: 10,
-  },
-  {
-    name: "coinMinimalDenom",
-    weight: 1,
-  },
+const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
+  "symbol",
+  "name",
 ];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
@@ -147,9 +134,19 @@ function filterAssetList(
   if (params.search && !params.findMinDenomOrSymbol) {
     assetListAssets = search(
       assetListAssets,
-      searchableAssetListAssetKeys,
-      params.search
+      ["coinMinimalDenom"],
+      params.search,
+      0.0 // Exact match
     );
+
+    // if not exact match for coinMinimalDenom, search by symbol or name
+    if (assetListAssets.length === 0) {
+      assetListAssets = search(
+        assetListAssets,
+        searchableAssetListAssetKeys,
+        params.search
+      );
+    }
   }
 
   // Filter by only verified
