@@ -1,4 +1,4 @@
-export function getKeyByValue<Dict extends Record<string, string>>(
+export function getKeyByValue<Dict extends Record<string, string | undefined>>(
   object: Dict,
   value: keyof Dict
 ): string | undefined {

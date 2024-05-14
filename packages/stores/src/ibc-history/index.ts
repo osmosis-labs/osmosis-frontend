@@ -375,66 +375,64 @@ export class IBCTransferHistoryStore {
         | { type: string; attributes: { key: string; value: string }[] }[]
         | undefined;
       if (tx && !tx.code && events) {
-        if (events) {
-          for (const event of events) {
-            if (event.type === "send_packet") {
-              const attributes = event.attributes;
-              const sourceChannelAttr = attributes.find(
-                (attr) =>
-                  attr.key ===
-                  Buffer.from("packet_src_channel").toString("base64")
-              );
-              const sourceChannel = sourceChannelAttr
-                ? Buffer.from(sourceChannelAttr.value, "base64").toString()
-                : undefined;
-              const destChannelAttr = attributes.find(
-                (attr) =>
-                  attr.key ===
-                  Buffer.from("packet_dst_channel").toString("base64")
-              );
-              const destChannel = destChannelAttr
-                ? Buffer.from(destChannelAttr.value, "base64").toString()
-                : undefined;
-              const sequenceAttr = attributes.find(
-                (attr) =>
-                  attr.key === Buffer.from("packet_sequence").toString("base64")
-              );
-              const sequence = sequenceAttr
-                ? Buffer.from(sequenceAttr.value, "base64").toString()
-                : undefined;
-              const timeoutHeightAttr = attributes.find(
-                (attr) =>
-                  attr.key ===
-                  Buffer.from("packet_timeout_height").toString("base64")
-              );
-              const timeoutHeight = timeoutHeightAttr
-                ? Buffer.from(timeoutHeightAttr.value, "base64").toString()
-                : undefined;
-              const timeoutTimestampAttr = attributes.find(
-                (attr) =>
-                  attr.key ===
-                  Buffer.from("packet_timeout_timestamp").toString("base64")
-              );
-              const timeoutTimestamp = timeoutTimestampAttr
-                ? Buffer.from(timeoutTimestampAttr.value, "base64").toString()
-                : undefined;
+        for (const event of events) {
+          if (event.type === "send_packet") {
+            const attributes = event.attributes;
+            const sourceChannelAttr = attributes.find(
+              (attr) =>
+                attr.key ===
+                Buffer.from("packet_src_channel").toString("base64")
+            );
+            const sourceChannel = sourceChannelAttr
+              ? Buffer.from(sourceChannelAttr.value, "base64").toString()
+              : undefined;
+            const destChannelAttr = attributes.find(
+              (attr) =>
+                attr.key ===
+                Buffer.from("packet_dst_channel").toString("base64")
+            );
+            const destChannel = destChannelAttr
+              ? Buffer.from(destChannelAttr.value, "base64").toString()
+              : undefined;
+            const sequenceAttr = attributes.find(
+              (attr) =>
+                attr.key === Buffer.from("packet_sequence").toString("base64")
+            );
+            const sequence = sequenceAttr
+              ? Buffer.from(sequenceAttr.value, "base64").toString()
+              : undefined;
+            const timeoutHeightAttr = attributes.find(
+              (attr) =>
+                attr.key ===
+                Buffer.from("packet_timeout_height").toString("base64")
+            );
+            const timeoutHeight = timeoutHeightAttr
+              ? Buffer.from(timeoutHeightAttr.value, "base64").toString()
+              : undefined;
+            const timeoutTimestampAttr = attributes.find(
+              (attr) =>
+                attr.key ===
+                Buffer.from("packet_timeout_timestamp").toString("base64")
+            );
+            const timeoutTimestamp = timeoutTimestampAttr
+              ? Buffer.from(timeoutTimestampAttr.value, "base64").toString()
+              : undefined;
 
-              if (sourceChannel && destChannel && sequence) {
-                this.pushPendingHistoryWithCreatedAt({
-                  txHash: uncommited.txHash,
-                  sourceChainId: uncommited.sourceChainId,
-                  sourceChannelId: sourceChannel,
-                  destChainId: uncommited.destChainId,
-                  destChannelId: destChannel,
-                  sequence,
-                  sender: uncommited.sender,
-                  recipient: uncommited.recipient,
-                  amount: uncommited.amount,
-                  timeoutHeight,
-                  timeoutTimestamp,
-                  createdAt: uncommited.createdAt,
-                });
-              }
+            if (sourceChannel && destChannel && sequence) {
+              this.pushPendingHistoryWithCreatedAt({
+                txHash: uncommited.txHash,
+                sourceChainId: uncommited.sourceChainId,
+                sourceChannelId: sourceChannel,
+                destChainId: uncommited.destChainId,
+                destChannelId: destChannel,
+                sequence,
+                sender: uncommited.sender,
+                recipient: uncommited.recipient,
+                amount: uncommited.amount,
+                timeoutHeight,
+                timeoutTimestamp,
+                createdAt: uncommited.createdAt,
+              });
             }
           }
         }

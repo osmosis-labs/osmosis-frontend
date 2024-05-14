@@ -1,7 +1,23 @@
-import { TxReason, TxStatus } from "@osmosis-labs/stores";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { z } from "zod";
+
+export type BridgeEnvironment = "mainnet" | "testnet";
+
+export interface BridgeProviderContext {
+  env: BridgeEnvironment;
+  cache: LRUCache<string, CacheEntry>;
+  assetLists: AssetList[];
+  chainList: Chain[];
+
+  /** Provides current timeout height for a chain of the ID
+   *  parsed from the bech32 config of the given destinationAddress. */
+  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+    revisionNumber: string | undefined;
+    revisionHeight: string;
+  }>;
+}
 
 export interface BridgeProvider {
   providerName: string;
@@ -19,11 +35,6 @@ export interface BridgeProvider {
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
-}
-
-export interface BridgeProviderContext {
-  env: "mainnet" | "testnet";
-  cache: LRUCache<string, CacheEntry>;
 }
 
 const bridgeChainSchema = z.object({
@@ -55,12 +66,6 @@ const bridgeChainSchema = z.object({
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
-export interface BridgeTransferStatus {
-  id: string;
-  status: TxStatus;
-  reason?: TxReason;
-}
-
 export interface BridgeStatus {
   /**
    * Indicates whether the bridge is currently in maintenance mode.
@@ -85,6 +90,10 @@ const bridgeAssetSchema = z.object({
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
+
+  /**
+   * Global identifier for denom on origin chain.
+   */
   sourceDenom: z.string(),
 });
 
@@ -157,17 +166,6 @@ export const getBridgeQuoteSchema = z.object({
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
-export interface BridgeCoin {
-  amount: string;
-  denom: string;
-  sourceDenom: string;
-  decimals: number;
-  fiatValue?: {
-    currency: "usd";
-    amount: string;
-  };
-}
-
 export interface EvmBridgeTransactionRequest {
   type: "evm";
   to: string;
@@ -200,6 +198,17 @@ export type BridgeTransactionRequest =
   | CosmosBridgeTransactionRequest
   | QRCodeBridgeTransactionRequest;
 
+/**
+ * Bridge asset with raw base amount (without decimals).
+ */
+export type BridgeCoin = {
+  amount: string;
+  denom: string;
+  /** Global identifier for denom on origin chain. */
+  sourceDenom: string;
+  decimals: number;
+};
+
 export interface BridgeQuote {
   input: Required<BridgeCoin>;
   expectedOutput: Required<BridgeCoin> & {
@@ -220,5 +229,49 @@ export interface BridgeQuote {
    * The estimated gas fee for the transfer.
    */
   estimatedGasFee?: BridgeCoin;
+
+  /** Sign doc. */
   transactionRequest?: BridgeTransactionRequest;
+}
+
+// Transfer status
+
+export interface BridgeTransferStatus {
+  id: string;
+  status: TransferStatus;
+  reason?: TransferFailureReason;
+}
+
+/** Capable of receiving updates as a delegate passed to a `TransferStatusProvider`. */
+export interface TransferStatusReceiver {
+  /** Key with prefix (`keyPrefix`) included. */
+  receiveNewTxStatus(
+    prefixedKey: string,
+    status: TransferStatus,
+    displayReason?: string
+  ): void;
+}
+
+/** A simplified transfer status. */
+export type TransferStatus = "success" | "pending" | "failed";
+
+/** A simplified reason for transfer failure. */
+export type TransferFailureReason = "insufficientFee";
+
+/** Plugin to fetch status of many transactions from a remote source. */
+export interface TransferStatusProvider {
+  /** Example: axelar */
+  readonly keyPrefix: string;
+  readonly sourceDisplayName?: string;
+  /** Destination for updates to tracked transactions.  */
+  statusReceiverDelegate?: TransferStatusReceiver;
+
+  /**
+   * Source instance should begin tracking a transaction identified by `key`.
+   * @param key Example: Tx hash without prefix i.e. `0x...`
+   */
+  trackTxStatus(key: string): void;
+
+  /** Make url to this tx explorer. */
+  makeExplorerUrl(key: string): string;
 }
