@@ -15,6 +15,13 @@ export default defineConfig({
   reporter: [
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results/test-results.xml" }],
+    [
+      "monocart-reporter",
+      {
+        name: "My Test Report",
+        outputFile: "./test-results/cov-report.html",
+      },
+    ],
   ],
   timeout: 60000,
   testDir: "./e2e/tests",
