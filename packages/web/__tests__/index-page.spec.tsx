@@ -91,10 +91,10 @@ it("If there's a previous trade and no query params, swap tool should select tho
   });
 
   screen.getByRole("heading", { name: usdtAsset.symbol });
-  screen.getByText(usdtAsset.rawAsset.name);
+  screen.getAllByText(usdtAsset.rawAsset.name);
 
   screen.getByRole("heading", { name: usdcAsset.symbol });
-  screen.getByText(usdcAsset.rawAsset.name);
+  screen.getAllByText(usdcAsset.rawAsset.name);
 });
 
 it("If the previous trade is not available, swap tool should select default tokens", async () => {
