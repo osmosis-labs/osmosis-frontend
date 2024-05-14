@@ -136,7 +136,6 @@ export const TokenSelectWithDrawer: FunctionComponent<
             onSelect={onSelect}
             showSearchBox={showSearchBox}
             showRecommendedTokens={showRecommendedTokens}
-            isFromSelect={isFromSelect}
           />
         </div>
       </div>

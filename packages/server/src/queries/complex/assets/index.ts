@@ -1,5 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
+import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -28,11 +28,6 @@ export const AssetFilterSchema = z.object({
 /** Params for filtering assets. */
 export type AssetFilter = z.input<typeof AssetFilterSchema>;
 
-/** Search is performed on the raw asset list data, instead of `Asset` type. */
-const searchableAssetListAssetKeys: (keyof AssetListAsset)[] = [
-  "symbol",
-  "name",
-];
 /** Get an individual asset explicitly by it's denom (any type).
  *  @throws If asset not found. */
 export function getAsset({
@@ -132,6 +127,7 @@ function filterAssetList(
 
   // Search raw asset list before reducing type to minimal Asset type
   if (params.search && !params.findMinDenomOrSymbol) {
+    // search for exact match for coinMinimalDenom first
     assetListAssets = search(
       assetListAssets,
       ["coinMinimalDenom"],
@@ -139,11 +135,15 @@ function filterAssetList(
       0.0 // Exact match
     );
 
+    console.log("assetListAssets: ", assetListAssets);
+    console.log("assetListAssets.length === 0: ", assetListAssets.length === 0);
+
     // if not exact match for coinMinimalDenom, search by symbol or name
     if (assetListAssets.length === 0) {
       assetListAssets = search(
         assetListAssets,
-        searchableAssetListAssetKeys,
+        /** Search is performed on the raw asset list data, instead of `Asset` type. */
+        ["symbol", "name"],
         params.search
       );
     }
