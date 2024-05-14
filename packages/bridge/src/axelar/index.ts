@@ -278,6 +278,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
         const fromProvider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
 
+        console.log({ fromProvider });
+
         const gasAmountUsed = String(
           await fromProvider.estimateGas({
             from: params.fromAddress,
@@ -564,7 +566,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
-      ({ chainId }) => chainId === chain.chainId
+      ({ chainId }) => String(chainId) === String(chain.chainId)
     )?.chainName;
 
     if (!ethereumChainName) return undefined;

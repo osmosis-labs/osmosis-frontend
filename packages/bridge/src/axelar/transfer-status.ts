@@ -1,8 +1,8 @@
 import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeTransferStatus,
   BridgeEnvironment,
+  BridgeTransferStatus,
   GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
