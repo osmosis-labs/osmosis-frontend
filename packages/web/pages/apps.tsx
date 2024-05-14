@@ -56,7 +56,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     const options = {
       keys: ["title"],
       threshold: 0.3,
-      minMatchCharLength: 3,
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
