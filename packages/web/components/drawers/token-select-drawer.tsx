@@ -54,7 +54,6 @@ export const TokenSelectDrawer: FunctionComponent<{
   showRecommendedTokens?: boolean;
   showSearchBox?: boolean;
   swapState: SwapState;
-  isFromSelect: boolean;
 }> = observer(
   ({
     isOpen,
@@ -63,7 +62,6 @@ export const TokenSelectDrawer: FunctionComponent<{
     onSelect: onSelectProp,
     showSearchBox = true,
     showRecommendedTokens = true,
-    isFromSelect,
   }) => {
     const { t } = useTranslation();
     const { userSettings } = useStore();
@@ -334,118 +332,107 @@ export const TokenSelectDrawer: FunctionComponent<{
               <Spinner className="m-auto" />
             ) : (
               <div className="flex flex-col overflow-auto">
-                {assets
-                  // should not be able to select the same token for to / from
-                  // .filter((asset) =>
-                  //   isFromSelect
-                  //     ? asset.amount?.denom !== swapState.toAsset?.coinDenom
-                  //     : asset.amount?.denom !== swapState.fromAsset?.coinDenom
-                  // )
-                  .map(
-                    (
-                      {
-                        coinDenom,
-                        coinMinimalDenom,
-                        coinImageUrl,
-                        coinName,
-                        amount,
-                        usdValue,
-                        isVerified,
-                      },
-                      index
-                    ) => {
-                      return (
-                        <button
-                          key={coinMinimalDenom}
+                {assets.map(
+                  (
+                    {
+                      coinDenom,
+                      coinMinimalDenom,
+                      coinImageUrl,
+                      coinName,
+                      amount,
+                      usdValue,
+                      isVerified,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <button
+                        key={coinMinimalDenom}
+                        className={classNames(
+                          "flex cursor-pointer items-center justify-between py-2 px-5",
+                          "transition-colors duration-150 ease-out",
+                          {
+                            "bg-osmoverse-900": keyboardSelectedIndex === index,
+                          }
+                        )}
+                        data-testid="token-select-asset"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onClickAsset?.(coinDenom);
+                        }}
+                        onMouseOver={() => setKeyboardSelectedIndex(index)}
+                        onFocus={() => setKeyboardSelectedIndex(index)}
+                        {...{
+                          [dataAttributeName]: getTokenItemId(uniqueId, index),
+                        }}
+                      >
+                        <div
                           className={classNames(
-                            "flex cursor-pointer items-center justify-between py-2 px-5",
-                            "transition-colors duration-150 ease-out",
+                            "flex w-full items-center justify-between text-left",
                             {
-                              "bg-osmoverse-900":
-                                keyboardSelectedIndex === index,
+                              "opacity-40":
+                                !shouldShowUnverifiedAssets && !isVerified,
                             }
                           )}
-                          data-testid="token-select-asset"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onClickAsset?.(coinDenom);
-                          }}
-                          onMouseOver={() => setKeyboardSelectedIndex(index)}
-                          onFocus={() => setKeyboardSelectedIndex(index)}
-                          {...{
-                            [dataAttributeName]: getTokenItemId(
-                              uniqueId,
-                              index
-                            ),
-                          }}
                         >
-                          <div
-                            className={classNames(
-                              "flex w-full items-center justify-between text-left",
-                              {
-                                "opacity-40":
-                                  !shouldShowUnverifiedAssets && !isVerified,
-                              }
-                            )}
-                          >
-                            <div className="flex items-center">
-                              {coinImageUrl && (
-                                <div className="mr-4 h-8 w-8 rounded-full">
-                                  <Image
-                                    src={coinImageUrl}
-                                    alt="token icon"
-                                    width={32}
-                                    height={32}
-                                  />
-                                </div>
-                              )}
-                              <div className="mr-4">
-                                <h6 className="button font-button text-white-full">
-                                  {coinDenom}
-                                </h6>
-                                <div className="caption text-left font-medium text-osmoverse-400">
-                                  {coinName}
-                                </div>
+                          <div className="flex items-center">
+                            {coinImageUrl && (
+                              <div className="mr-4 h-8 w-8 rounded-full">
+                                <Image
+                                  src={coinImageUrl}
+                                  alt="token icon"
+                                  width={32}
+                                  height={32}
+                                />
                               </div>
-                              {!isVerified && shouldShowUnverifiedAssets && (
-                                <Tooltip
-                                  content={t(
-                                    "components.selectToken.unverifiedAsset"
-                                  )}
-                                >
-                                  <Icon
-                                    id="alert-triangle"
-                                    className="h-5 w-5 text-osmoverse-400"
-                                  />
-                                </Tooltip>
-                              )}
+                            )}
+                            <div className="mr-4">
+                              <h6 className="button font-button text-white-full">
+                                {coinDenom}
+                              </h6>
+                              <div className="caption text-left font-medium text-osmoverse-400">
+                                {coinName}
+                              </div>
                             </div>
-
-                            {amount &&
-                              isVerified &&
-                              usdValue &&
-                              amount.toDec().isPositive() && (
-                                <div className="flex flex-col text-right">
-                                  <p className="button">
-                                    {formatPretty(amount.hideDenom(true), {
-                                      maxDecimals: 6,
-                                    })}
-                                  </p>
-                                  <span className="caption font-medium text-osmoverse-400">
-                                    {usdValue.toString()}
-                                  </span>
-                                </div>
-                              )}
+                            {!isVerified && shouldShowUnverifiedAssets && (
+                              <Tooltip
+                                content={t(
+                                  "components.selectToken.unverifiedAsset"
+                                )}
+                              >
+                                <Icon
+                                  id="alert-triangle"
+                                  className="h-5 w-5 text-osmoverse-400"
+                                />
+                              </Tooltip>
+                            )}
                           </div>
-                          {!shouldShowUnverifiedAssets && !isVerified && (
-                            <p className="caption whitespace-nowrap text-wosmongton-200">
-                              {t("components.selectToken.clickToActivate")}
-                            </p>
-                          )}
-                        </button>
-                      );
-                    }
-                  )}
+
+                          {amount &&
+                            isVerified &&
+                            usdValue &&
+                            amount.toDec().isPositive() && (
+                              <div className="flex flex-col text-right">
+                                <p className="button">
+                                  {formatPretty(amount.hideDenom(true), {
+                                    maxDecimals: 6,
+                                  })}
+                                </p>
+                                <span className="caption font-medium text-osmoverse-400">
+                                  {usdValue.toString()}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                        {!shouldShowUnverifiedAssets && !isVerified && (
+                          <p className="caption whitespace-nowrap text-wosmongton-200">
+                            {t("components.selectToken.clickToActivate")}
+                          </p>
+                        )}
+                      </button>
+                    );
+                  }
+                )}
                 <Intersection
                   onVisible={() => {
                     // If this element becomes visible at bottom of list, fetch next page
