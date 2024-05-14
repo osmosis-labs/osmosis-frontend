@@ -128,24 +128,24 @@ function filterAssetList(
   // Search raw asset list before reducing type to minimal Asset type
   if (params.search && !params.findMinDenomOrSymbol) {
     // search for exact match for coinMinimalDenom first
-    assetListAssets = search(
+    const coinMinimalDemonMatches = search(
       assetListAssets,
       ["coinMinimalDenom"],
       params.search,
       0.0 // Exact match
     );
 
-    console.log("assetListAssets: ", assetListAssets);
-    console.log("assetListAssets.length === 0: ", assetListAssets.length === 0);
-
     // if not exact match for coinMinimalDenom, search by symbol or name
-    if (assetListAssets.length === 0) {
-      assetListAssets = search(
+    if (coinMinimalDemonMatches.length > 0) {
+      assetListAssets = coinMinimalDemonMatches;
+    } else {
+      const symbolOrNameMatches = search(
         assetListAssets,
         /** Search is performed on the raw asset list data, instead of `Asset` type. */
         ["symbol", "name"],
         params.search
       );
+      assetListAssets = symbolOrNameMatches;
     }
   }
 
