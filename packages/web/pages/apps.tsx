@@ -109,6 +109,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             onInput={handleSearchInput}
             className="self-end"
             size={searchBoxSize || "long"}
+            debounce={100}
           />
         </div>
       </div>
