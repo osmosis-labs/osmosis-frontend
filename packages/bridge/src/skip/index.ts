@@ -1,22 +1,15 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
-import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import cachified from "cachified";
 import { ethers, JsonRpcProvider } from "ethers";
 import { toHex } from "web3-utils";
 
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
-import { EthereumChainInfo } from "~/integrations/bridge-info";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
-import SkipApiClient from "~/integrations/bridges/skip/queries";
+import { BridgeError, BridgeQuoteError } from "../errors";
 import {
   Erc20Abi,
+  EthereumChainInfo,
   NativeEVMTokenConstantAddress,
-} from "~/integrations/ethereum";
-import { ErrorTypes } from "~/utils/error-types";
-
+} from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -28,7 +21,9 @@ import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
-} from "../types";
+} from "../interface";
+import { cosmosMsgOpts } from "../msg";
+import { SkipApiClient } from "./queries";
 import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 const logoUrl = "/bridges/skip.svg" as const;
@@ -75,7 +70,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (!sourceAsset) {
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnsupportedQuoteError,
+              errorType: BridgeError.UnsupportedQuoteError,
               message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
             },
           ]);
@@ -86,20 +81,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (!destinationAsset) {
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnsupportedQuoteError,
+              errorType: BridgeError.UnsupportedQuoteError,
               message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
             },
           ]);
         }
-
-        const amount = new CoinPretty(
-          {
-            coinDecimals: fromAsset.decimals,
-            coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.denom,
-          },
-          fromAmount
-        );
 
         const route = await this.skipClient.route({
           source_asset_denom: sourceAsset.denom,
@@ -126,54 +112,15 @@ export class SkipBridgeProvider implements BridgeProvider {
           route.amount_out
         );
 
-        const inputAssetPriceUSD = await getAssetPrice({
-          assetLists: AssetLists,
-          chainList: ChainList,
-          asset: {
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom ?? "",
-            sourceDenom: toAsset.sourceDenom,
-          },
-          currency: "usd",
-        });
-
-        const outputAssetPriceUSD = await getAssetPrice({
-          assetLists: AssetLists,
-          chainList: ChainList,
-          asset: {
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom ?? "",
-            sourceDenom: toAsset.sourceDenom,
-          },
-          currency: "usd",
-        });
-
         let transferFee: BridgeCoin = {
           amount: "0",
           denom: fromAsset.denom,
           sourceDenom: fromAsset.sourceDenom,
           decimals: fromAsset.decimals,
-          fiatValue: {
-            currency: "usd",
-            amount: "0",
-          },
         };
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
-            const feeAssetPrice = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom:
-                  operation.axelar_transfer.fee_asset.symbol ??
-                  operation.axelar_transfer.fee_asset.denom,
-                coinMinimalDenom: operation.axelar_transfer.asset,
-                sourceDenom: operation.axelar_transfer.asset,
-              },
-              currency: "usd",
-            });
-
             const feeAmount = new CoinPretty(
               {
                 coinDecimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
@@ -192,10 +139,6 @@ export class SkipBridgeProvider implements BridgeProvider {
                 operation.axelar_transfer.fee_asset.denom,
               sourceDenom: operation.axelar_transfer.fee_asset.denom,
               decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
-              fiatValue: {
-                currency: "usd",
-                amount: feeAmount.mul(feeAssetPrice).toDec().toString(),
-              },
             };
           }
         }
@@ -233,19 +176,10 @@ export class SkipBridgeProvider implements BridgeProvider {
             ? sourceChainFinalityTime
             : destinationChainFinalityTime;
 
-        const gasCost = await this.estimateGasCost(params, transactionRequest);
-
-        const gasAssetPriceUSD = gasCost
-          ? await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: gasCost?.denom ?? "",
-                sourceDenom: gasCost?.sourceDenom ?? "",
-              },
-              currency: "usd",
-            })
-          : undefined;
+        const estimatedGasFee = await this.estimateGasCost(
+          params,
+          transactionRequest
+        );
 
         return {
           input: {
@@ -253,19 +187,11 @@ export class SkipBridgeProvider implements BridgeProvider {
             denom: fromAsset.denom,
             sourceDenom: fromAsset.sourceDenom,
             decimals: fromAsset.decimals,
-            fiatValue: {
-              currency: "usd",
-              amount: amount.mul(inputAssetPriceUSD).toDec().toString(),
-            },
           },
           expectedOutput: {
             amount: amountOut.toCoin().amount,
             denom: toAsset.denom,
             sourceDenom: toAsset.sourceDenom,
-            fiatValue: {
-              currency: "usd",
-              amount: amountOut.mul(outputAssetPriceUSD).toDec().toString(),
-            },
             decimals: toAsset.decimals,
             priceImpact: "0",
           },
@@ -274,26 +200,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           transferFee,
           estimatedTime,
           transactionRequest,
-          estimatedGasFee:
-            gasCost && gasAssetPriceUSD
-              ? {
-                  ...gasCost,
-                  fiatValue: {
-                    currency: "usd",
-                    amount: new CoinPretty(
-                      {
-                        coinDecimals: gasCost.decimals,
-                        coinDenom: gasCost.sourceDenom,
-                        coinMinimalDenom: gasCost.sourceDenom,
-                      },
-                      gasCost.amount
-                    )
-                      .mul(gasAssetPriceUSD)
-                      .toDec()
-                      .toString(),
-                  },
-                }
-              : undefined,
+          estimatedGasFee,
         };
       },
       ttl: 20 * 1000, // 20 seconds,
@@ -332,8 +239,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     const messageData = JSON.parse(message.msg);
 
-    const timeoutHeight = await getTimeoutHeight({
-      chainList: ChainList,
+    const timeoutHeight = await this.ctx.getTimeoutHeight({
       destinationAddress: messageData.receiver,
     });
 
@@ -683,3 +589,5 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 }
+
+export * from "./transfer-status";

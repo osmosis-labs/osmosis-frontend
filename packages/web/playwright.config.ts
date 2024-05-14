@@ -16,7 +16,7 @@ export default defineConfig({
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results/test-results.xml" }],
   ],
-  timeout: 60000,
+  timeout: 90000,
   testDir: "./e2e/tests",
   /* Run tests in files in parallel */
   fullyParallel: false,

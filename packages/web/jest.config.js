@@ -30,5 +30,7 @@ const config = {
 
 module.exports = async () => ({
   ...(await createJestConfig(config)()),
-  transformIgnorePatterns: ["node_modules/(?!(superjson|@cosmos-kit/core)/)"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(superjson|@cosmos-kit/core|uuid|@keplr-wallet/unit|@osmosis-labs/stores|@osmosis-labs/utils|@axelar-network/axelarjs-sdk)/)",
+  ],
 });
