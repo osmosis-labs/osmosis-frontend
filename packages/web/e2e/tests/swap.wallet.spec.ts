@@ -23,6 +23,12 @@ test.describe("Test Swap feature", () => {
     "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB";
   let ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+  let TIA =
+    "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877";
+  let INJ =
+    "ibc/64BA6E31FE887D66C6F8F31C7B1A80C7CA179239677B4088BB55F5EA07DBE273";
+  let AKT =
+    "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
   test.beforeEach(async () => {
     console.log("Before test setup Wallet Extension.");
@@ -197,6 +203,90 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDC to TIA", async () => {
+    await swapPage.selectPair("USDC", "TIA");
+    await swapPage.swap("0.2");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + TIA);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap TIA to USDC", async () => {
+    await swapPage.selectPair("TIA", "USDC");
+    await swapPage.swap("0.02");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + TIA);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDC to INJ", async () => {
+    await swapPage.selectPair("USDC", "INJ");
+    await swapPage.swap("0.2");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + INJ);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap INJ to USDC", async () => {
+    await swapPage.selectPair("INJ", "USDC");
+    await swapPage.swap("0.01");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + INJ);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDC to AKT", async () => {
+    await swapPage.selectPair("USDC", "AKT");
+    await swapPage.swap("0.1");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + AKT);
+    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+  });
+
+  test("User should be able to swap AKT to USDC", async () => {
+    await swapPage.selectPair("AKT", "USDC");
+    await swapPage.swap("0.02");
+    // Handle Pop-up page ->
+    const pageApprove = context.waitForEvent("page");
+    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
+    // Handle Pop-up page <-
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + AKT);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 });
