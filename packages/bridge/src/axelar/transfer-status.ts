@@ -1,27 +1,26 @@
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import { poll } from "@osmosis-labs/utils";
 
 import type {
-  BridgeProviderContext,
+  BridgeEnvironment,
   BridgeTransferStatus,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
-import { poll } from "~/utils/promise";
-
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "../interface";
 import { getTransferStatus } from "./queries";
 import { providerName } from "./types";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
-export class AxelarTransferStatusSource implements ITxStatusSource {
+export class AxelarTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Axelar Bridge";
-  public statusReceiverDelegate?: ITxStatusReceiver;
 
-  axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
-  axelarApiBaseUrl:
-    | "https://testnet.api.axelarscan.io"
-    | "https://api.axelarscan.io";
+  statusReceiverDelegate?: TransferStatusReceiver;
 
-  constructor(readonly env: BridgeProviderContext["env"]) {
+  readonly axelarScanBaseUrl: string;
+  readonly axelarApiBaseUrl: string;
+
+  constructor(readonly env: BridgeEnvironment) {
     this.axelarScanBaseUrl =
       env === "mainnet"
         ? "https://axelarscan.io"

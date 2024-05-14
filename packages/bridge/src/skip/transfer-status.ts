@@ -1,34 +1,27 @@
-import {
-  ITxStatusReceiver,
-  ITxStatusSource,
-  TxStatus,
-} from "@osmosis-labs/stores";
+import { poll } from "@osmosis-labs/utils";
 
-import SkipApiClient from "~/integrations/bridges/skip/queries";
 import type {
-  BridgeProviderContext,
+  BridgeEnvironment,
   BridgeTransferStatus,
   GetTransferStatusParams,
-} from "~/integrations/bridges/types";
-import { poll } from "~/utils/promise";
-
+  TransferStatus,
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "../interface";
+import { SkipApiClient } from "./queries";
 import { providerName } from "./types";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
-export class SkipTransferStatusSource implements ITxStatusSource {
+export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
+  readonly sourceDisplayName = "Skip Bridge";
 
-  sourceDisplayName = "Skip Bridge";
+  statusReceiverDelegate?: TransferStatusReceiver;
 
-  statusReceiverDelegate?: ITxStatusReceiver | undefined;
+  readonly skipClient: SkipApiClient;
+  readonly axelarScanBaseUrl: string;
 
-  private skipClient: SkipApiClient;
-
-  private axelarScanBaseUrl:
-    | "https://axelarscan.io"
-    | "https://testnet.axelarscan.io";
-
-  constructor(env: BridgeProviderContext["env"]) {
+  constructor(env: BridgeEnvironment) {
     this.skipClient = new SkipApiClient();
 
     this.axelarScanBaseUrl =
@@ -52,7 +45,7 @@ export class SkipTransferStatusSource implements ITxStatusSource {
             txHash: sendTxHash,
           });
 
-          let status: TxStatus = "pending";
+          let status: TransferStatus = "pending";
           if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
             status = "success";
           }

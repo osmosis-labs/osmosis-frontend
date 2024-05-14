@@ -3,25 +3,22 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { getAssetPrice, getTimeoutHeight } from "@osmosis-labs/server";
-import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList, getChain } from "@osmosis-labs/utils";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import {
+  getAssetFromAssetList,
+  getChain,
+  getKeyByValue,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
-import { EthereumChainInfo } from "~/integrations/bridge-info";
+import { BridgeError, BridgeQuoteError } from "../errors";
 import {
   Erc20Abi,
+  EthereumChainInfo,
   NativeEVMTokenConstantAddress,
-} from "~/integrations/ethereum";
-import { ErrorTypes } from "~/utils/error-types";
-
-import { BridgeQuoteError } from "../errors";
+} from "../ethereum";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -34,8 +31,9 @@ import {
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
-} from "../types";
-import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
+} from "../interface";
+import { cosmosMsgOpts } from "../msg";
+import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
   AxelarChainIds_SourceChainMap,
   CosmosChainIds_AxelarChainIds,
@@ -107,7 +105,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -138,7 +136,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -150,7 +148,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           ) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnsupportedQuoteError,
+                errorType: BridgeError.UnsupportedQuoteError,
                 message: `Amount exceeds transfer limit of ${new CoinPretty(
                   {
                     coinDecimals: fromAsset.decimals,
@@ -168,59 +166,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const transferFeeAsset = getAssetFromAssetList({
             /** Denom from Axelar's `getTransferFee` is the min denom */
             sourceDenom: transferFeeRes.fee.denom,
-            assetLists: AssetLists,
-          });
-
-          const currency = "usd";
-
-          let transferFeeFiatValue: Dec | undefined;
-          try {
-            transferFeeFiatValue = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: fromAsset.denom,
-                sourceDenom: transferFeeRes.fee.denom,
-              },
-              currency,
-            });
-          } catch (e) {
-            console.error(`Failed to get ${transferFeeRes.fee.denom} price`);
-          }
-
-          let gasCostFiatValue: Dec | undefined;
-          try {
-            gasCostFiatValue = await getAssetPrice({
-              assetLists: AssetLists,
-              chainList: ChainList,
-              asset: {
-                coinDenom: fromAsset.denom,
-                sourceDenom: gasCost?.sourceDenom ?? "",
-              },
-              currency,
-            });
-          } catch (e) {
-            console.error(`Failed to get ${gasCost?.sourceDenom} price`);
-          }
-
-          const expectedOutputAssetFiatValue = await getAssetPrice({
-            assetLists: AssetLists,
-            chainList: ChainList,
-            asset: {
-              coinDenom: toAsset.denom,
-              sourceDenom: toAsset.sourceDenom ?? "",
-            },
-            currency,
-          });
-
-          const inputAssetFiatValue = await getAssetPrice({
-            assetLists: AssetLists,
-            chainList: ChainList,
-            asset: {
-              coinDenom: toAsset.denom,
-              sourceDenom: toAsset.sourceDenom ?? "",
-            },
-            currency,
+            assetLists: this.ctx.assetLists,
           });
 
           const expectedOutputAmount = new Dec(fromAmount).sub(
@@ -234,20 +180,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
               sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               denom: fromAsset.denom,
-              fiatValue: {
-                currency: "usd",
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: fromAsset.decimals,
-                    coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.sourceDenom,
-                  },
-                  fromAmount
-                )
-                  .mul(inputAssetFiatValue)
-                  .toDec()
-                  .toString(),
-              },
             },
             expectedOutput: {
               amount: expectedOutputAmount.toString(),
@@ -255,20 +187,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
               decimals: toAsset.decimals,
               denom: toAsset.denom,
               priceImpact: "0",
-              fiatValue: {
-                currency,
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: toAsset.decimals,
-                    coinDenom: toAsset.denom,
-                    coinMinimalDenom: toAsset.sourceDenom,
-                  },
-                  expectedOutputAmount.toString()
-                )
-                  .mul(expectedOutputAssetFiatValue)
-                  .toDec()
-                  .toString(),
-              },
             },
             fromChain,
             toChain,
@@ -280,22 +198,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 transferFeeRes.fee.denom,
               sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
-              ...(transferFeeFiatValue && {
-                fiatValue: {
-                  currency,
-                  amount: new CoinPretty(
-                    {
-                      coinDecimals: fromAsset.decimals,
-                      coinDenom: fromAsset.denom,
-                      coinMinimalDenom: fromAsset.sourceDenom,
-                    },
-                    transferFeeRes.fee.amount
-                  )
-                    .mul(transferFeeFiatValue)
-                    .toDec()
-                    .toString(),
-                },
-              }),
             },
             ...(gasCost && {
               estimatedGasFee: {
@@ -303,22 +205,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 denom: gasCost.denom,
                 sourceDenom: gasCost.sourceDenom,
                 decimals: gasCost.decimals,
-                ...(gasCostFiatValue && {
-                  fiatValue: {
-                    currency,
-                    amount: new CoinPretty(
-                      {
-                        coinDecimals: gasCost.decimals,
-                        coinDenom: gasCost.denom,
-                        coinMinimalDenom: gasCost.sourceDenom,
-                      },
-                      gasCost?.amount
-                    )
-                      .mul(gasCostFiatValue)
-                      .toDec()
-                      .toString(),
-                  },
-                }),
               },
             }),
           };
@@ -336,16 +222,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (error instanceof Error) {
             throw new BridgeQuoteError([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error.message,
               },
             ]);
           }
 
           if (typeof error === "string") {
-            let errorType = ErrorTypes.UnexpectedError;
+            let errorType = BridgeError.UnexpectedError;
             if (error.includes("not found")) {
-              errorType = ErrorTypes.UnsupportedQuoteError;
+              errorType = BridgeError.UnsupportedQuoteError;
             }
 
             throw new BridgeQuoteError([
@@ -358,7 +244,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
           throw new BridgeQuoteError([
             {
-              errorType: ErrorTypes.UnexpectedError,
+              errorType: BridgeError.UnexpectedError,
               message: error.message,
             },
           ]);
@@ -445,17 +331,20 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (
       isNativeToken &&
-      !Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
-        return Object.values(chain).some(
-          ({ nativeWrapEquivalent }) =>
-            nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
-        );
-      })
+      // is wrapped token
+      !Object.values(AxelarSourceChainTokenConfigs(this.ctx.env)).some(
+        (chain) => {
+          return Object.values(chain).some(
+            ({ nativeWrapEquivalent }) =>
+              nativeWrapEquivalent &&
+              nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
+          );
+        }
+      )
     ) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateEVMTxError,
+          errorType: BridgeError.CreateEVMTxError,
           message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
         },
       ]);
@@ -504,17 +393,20 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (
       isNativeToken &&
-      Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
-        return Object.values(chain).some(
-          ({ nativeWrapEquivalent }) =>
-            nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
-        );
-      })
+      // is native token
+      Object.values(AxelarSourceChainTokenConfigs(this.ctx.env)).some(
+        (chain) => {
+          return Object.values(chain).some(
+            ({ nativeWrapEquivalent }) =>
+              nativeWrapEquivalent &&
+              nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
+          );
+        }
+      )
     ) {
       throw new BridgeQuoteError([
         {
-          errorType: ErrorTypes.CreateEVMTxError,
+          errorType: BridgeError.CreateEVMTxError,
           message: `When withdrawing native ${fromAsset.denom} from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom`,
         },
       ]);
@@ -532,20 +424,19 @@ export class AxelarBridgeProvider implements BridgeProvider {
               fromChain.chainType === "cosmos" && isNativeToken,
           });
 
-      const timeoutHeight = await getTimeoutHeight({
-        chainList: ChainList,
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
         destinationAddress: depositAddress,
       });
 
       const ibcAssetInfo = getAssetFromAssetList({
-        assetLists: AssetLists,
+        assetLists: this.ctx.assetLists,
         sourceDenom: toAsset.sourceDenom,
       });
 
       if (!ibcAssetInfo) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: "Could not find IBC asset info",
           },
         ]);
@@ -558,7 +449,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (!ibcTransferMethod) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: "Could not find IBC asset transfer info",
           },
         ]);
@@ -591,7 +482,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (error instanceof Error) {
         throw new BridgeQuoteError([
           {
-            errorType: ErrorTypes.CreateCosmosTxError,
+            errorType: BridgeError.CreateCosmosTxError,
             message: error.message,
           },
         ]);
@@ -658,13 +549,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
     if (chain.chainType === "cosmos") {
       const chainId = getChain({
-        chainList: ChainList,
+        chainList: this.ctx.chainList,
         chainId: chain.chainId as string,
       })?.chain_id;
 
       if (!chainId) return undefined;
 
-      return CosmosChainIds_AxelarChainIds[chainId];
+      return CosmosChainIds_AxelarChainIds(this.ctx.env)[chainId];
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
@@ -673,32 +564,33 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     if (!ethereumChainName) return undefined;
 
-    return getKeyByValue(AxelarChainIds_SourceChainMap, ethereumChainName);
+    return getKeyByValue(
+      AxelarChainIds_SourceChainMap(this.ctx.env),
+      ethereumChainName
+    );
   }
 
   async initClients() {
     try {
-      const [queryClientClass, assetTransferClientClass, Environment] =
-        await import("@axelar-network/axelarjs-sdk").then(
-          (m) =>
-            [m.AxelarQueryAPI, m.AxelarAssetTransfer, m.Environment] as const
-        );
+      const { AxelarQueryAPI, AxelarAssetTransfer, Environment } = await import(
+        "@axelar-network/axelarjs-sdk"
+      );
 
-      this._queryClient = new queryClientClass({
+      this._queryClient = new AxelarQueryAPI({
         environment:
           this.ctx.env === "mainnet"
             ? Environment.MAINNET
             : Environment.TESTNET,
       });
-      this._assetTransferClient = new assetTransferClientClass({
+
+      this._assetTransferClient = new AxelarAssetTransfer({
         environment:
           this.ctx.env === "mainnet"
             ? Environment.MAINNET
             : Environment.TESTNET,
       });
-    } catch (e) {
-      console.error("Failed to init Axelar clients. Reason: ", e);
-      throw new Error("Failed to init Axelar clients");
+    } catch (e: any) {
+      throw new Error("Failed to init Axelar clients: " + e.message);
     }
   }
 
@@ -718,3 +610,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
     return this._assetTransferClient!;
   }
 }
+
+export * from "./tokens";
+export * from "./transfer-status";
