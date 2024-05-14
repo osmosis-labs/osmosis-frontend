@@ -14,7 +14,6 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("ACRE");
     });
 
-    // TODO - potentially remove this
     it("should be possible to search IBC denoms", () => {
       const assets = getAssets({
         search: {
