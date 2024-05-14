@@ -102,11 +102,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const fromChainAxelarId = this.getAxelarChainId(fromChain);
           const toChainAxelarId = this.getAxelarChainId(toChain);
 
-          console.log({
-            fromChainAxelarId,
-            toChainAxelarId,
-          });
-
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
@@ -271,14 +266,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       if (transactionData.type === "evm") {
         const evmChain = Object.values(EthereumChainInfo).find(
-          ({ chainId }) => chainId === params.fromChain.chainId
+          ({ chainId }) => String(chainId) === String(params.fromChain.chainId)
         );
 
         if (!evmChain) throw new Error("Could not find EVM chain");
 
         const fromProvider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
-
-        console.log({ fromProvider });
 
         const gasAmountUsed = String(
           await fromProvider.estimateGas({
@@ -539,8 +532,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
     });
   }
 
-  isNativeAsset(fromAsset: BridgeAsset) {
-    return fromAsset.address === NativeEVMTokenConstantAddress;
+  isNativeAsset(asset: BridgeAsset) {
+    return asset.address === NativeEVMTokenConstantAddress;
   }
 
   getWaitTime(sourceChain: string) {
