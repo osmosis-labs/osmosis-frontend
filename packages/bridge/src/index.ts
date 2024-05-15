@@ -1,4 +1,5 @@
 import { AxelarBridgeProvider, axelarProviderId } from "./axelar";
+import { IbcBridgeProvider, ibcProviderId } from "./ibc";
 import { BridgeProviderContext } from "./interface";
 import { SkipBridgeProvider, skipProviderId } from "./skip";
 import { SquidBridgeProvider, squidProviderId } from "./squid";
@@ -11,6 +12,7 @@ export class BridgeProviders {
     [squidProviderId]: SquidBridgeProvider;
     [axelarProviderId]: AxelarBridgeProvider;
     [skipProviderId]: SkipBridgeProvider;
+    [ibcProviderId]: IbcBridgeProvider;
   };
 
   constructor(integratorId: string, commonContext: BridgeProviderContext) {
@@ -22,6 +24,7 @@ export class BridgeProviders {
       [squidProviderId]: new SquidBridgeProvider(integratorId, commonContext),
       [axelarProviderId]: new AxelarBridgeProvider(commonContext),
       [skipProviderId]: new SkipBridgeProvider(commonContext),
+      [ibcProviderId]: new IbcBridgeProvider(commonContext),
     };
   }
 }
