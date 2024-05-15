@@ -24,20 +24,17 @@ import {
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { SkipApiClient } from "./queries";
-import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
+import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
-const logoUrl = "/bridges/skip.svg" as const;
+const providerName = "Skip" as const;
 
 export class SkipBridgeProvider implements BridgeProvider {
-  static providerName = providerName;
-  providerName = providerName;
-  logoUrl = logoUrl;
+  static readonly providerName = providerName;
+  readonly providerName = providerName;
 
-  private skipClient: SkipApiClient;
+  protected readonly skipClient = new SkipApiClient();
 
-  constructor(readonly ctx: BridgeProviderContext) {
-    this.skipClient = new SkipApiClient();
-  }
+  constructor(protected readonly ctx: BridgeProviderContext) {}
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {

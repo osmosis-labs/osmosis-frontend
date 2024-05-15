@@ -37,23 +37,22 @@ import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
   AxelarChainIds_SourceChainMap,
   CosmosChainIds_AxelarChainIds,
-  providerName,
 } from "./types";
 
+const providerName = "Axelar" as const;
+
 export class AxelarBridgeProvider implements BridgeProvider {
-  static providerName = providerName;
-  providerName = providerName;
-  logoUrl = "/bridges/axelar.svg";
+  static readonly providerName = providerName;
+  readonly providerName = providerName;
 
-  private _queryClient: AxelarQueryAPI | null = null;
-  private _assetTransferClient: AxelarAssetTransfer | null = null;
+  // initialized via dynamic import
+  protected _queryClient: AxelarQueryAPI | null = null;
+  protected _assetTransferClient: AxelarAssetTransfer | null = null;
 
-  axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
-  axelarApiBaseUrl:
-    | "https://testnet.api.axelarscan.io"
-    | "https://api.axelarscan.io";
+  protected readonly axelarScanBaseUrl: string;
+  protected readonly axelarApiBaseUrl: string;
 
-  constructor(readonly ctx: BridgeProviderContext) {
+  constructor(protected readonly ctx: BridgeProviderContext) {
     this.axelarScanBaseUrl =
       this.ctx.env === "mainnet"
         ? "https://axelarscan.io"

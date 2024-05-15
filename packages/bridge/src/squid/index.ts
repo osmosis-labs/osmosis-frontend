@@ -25,23 +25,21 @@ import {
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
-import { providerName } from "./const";
 
-const logoUrl = "/bridges/squid.svg" as const;
+const providerName = "Squid" as const;
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static providerName = providerName;
-  providerName = providerName;
-  logoUrl = logoUrl;
-  apiURL: "https://api.0xsquid.com" | "https://testnet.api.squidrouter.com";
+  static readonly providerName = providerName;
+  readonly providerName = providerName;
 
-  squidScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
+  protected readonly apiURL: string;
+  protected readonly squidScanBaseUrl: string;
 
   constructor(
-    readonly integratorId: string,
-    readonly ctx: BridgeProviderContext
+    protected readonly integratorId: string,
+    protected readonly ctx: BridgeProviderContext
   ) {
     this.apiURL =
       ctx.env === "mainnet"
