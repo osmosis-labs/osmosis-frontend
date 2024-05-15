@@ -32,7 +32,13 @@ beforeEach(() => {
   server.use(
     rest.post("https://api.axelarscan.io/deposit-address", (_req, res, ctx) => {
       return res(ctx.json({ depositAddress: "0x123" }));
-    })
+    }),
+    rest.get(
+      "https://axelar-mainnet.s3.us-east-2.amazonaws.com/mainnet-asset-config.json",
+      (_req, res, ctx) => {
+        return res(ctx.json({}));
+      }
+    )
   );
 });
 
@@ -176,6 +182,41 @@ describe("AxelarBridgeProvider", () => {
       type: "evm",
       to: "0x0000000000000000000000000000000000000000",
     });
+  });
+
+  it("should throw an error when creating an EVM transaction with a non-native token", async () => {
+    const mockDepositClient: Partial<AxelarAssetTransfer> = {
+      getDepositAddress: jest
+        .fn()
+        .mockResolvedValue("0x1234567890abcdef1234567890abcdef12345678"),
+    };
+
+    jest
+      .spyOn(provider, "getAssetTransferClient")
+      .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
+
+    await expect(
+      provider.createEvmTransaction({
+        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromAsset: {
+          denom: "ETH",
+          address: NativeEVMTokenConstantAddress,
+          decimals: 6,
+          sourceDenom: "weth",
+        },
+        toAsset: {
+          denom: "ETH",
+          address: NativeEVMTokenConstantAddress,
+          decimals: 6,
+          sourceDenom: "eth",
+        },
+        fromAmount: "1",
+        fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
+        toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+        simulated: false,
+      })
+    ).rejects.toThrow("eth is not a native token on Axelar");
   });
 
   it("should create a Cosmos transaction", async () => {
