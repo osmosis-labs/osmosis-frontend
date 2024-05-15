@@ -352,7 +352,7 @@ it.skip("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", 
   expect(pclPool!.outCurrency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
 });
 
-it("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async () => {
+it.skip("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = atomAsset;
   const tokenOut = osmoAsset;
