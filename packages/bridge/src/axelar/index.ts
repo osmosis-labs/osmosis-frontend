@@ -4,11 +4,7 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import {
-  getAssetFromAssetList,
-  getChain,
-  getKeyByValue,
-} from "@osmosis-labs/utils";
+import { getAssetFromAssetList, getKeyByValue } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
@@ -546,14 +542,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
     if (chain.chainType === "cosmos") {
-      const chainId = getChain({
-        chainList: this.ctx.chainList,
-        chainId: chain.chainId as string,
-      })?.chain_id;
-
-      if (!chainId) return undefined;
-
-      return CosmosChainIds_AxelarChainIds(this.ctx.env)[chainId];
+      return CosmosChainIds_AxelarChainIds(this.ctx.env)[chain.chainId];
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
