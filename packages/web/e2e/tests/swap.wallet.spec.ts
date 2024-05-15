@@ -307,7 +307,7 @@ test.describe("Test Swap feature", () => {
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 
-  test.only("User should be able to swap AKT to USDC", async () => {
+  test("User should be able to swap AKT to USDC", async () => {
     await swapPage.selectPair("AKT", "USDC");
     await swapPage.enterAmount("0.02");
     await swapPage.showSwapInfo();
