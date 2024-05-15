@@ -16,10 +16,8 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
   readonly sourceDisplayName = "Axelar Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
-  axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
-  axelarApiBaseUrl:
-    | "https://testnet.api.axelarscan.io"
-    | "https://api.axelarscan.io";
+  readonly axelarScanBaseUrl: string;
+  readonly axelarApiBaseUrl: string;
 
   constructor(readonly env: BridgeEnvironment) {
     this.axelarScanBaseUrl =

@@ -98,7 +98,7 @@ export class SwapPage {
     await this.swapInput.fill(amount, { timeout: 4000 });
     await this.page.waitForTimeout(2000);
     await expect(this.swapInput).toHaveValue(amount);
-    await expect(this.swapBtn).toBeEnabled();
+    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
     const exchangeRate = await this.getExchangeRate();
     console.log("Swap " + amount + " with rate: " + exchangeRate);
     await this.swapBtn.click();

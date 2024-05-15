@@ -3,8 +3,8 @@ import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
 import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
-  BridgeTransferStatus,
   BridgeEnvironment,
+  BridgeTransferStatus,
   GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
@@ -18,12 +18,9 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = providerName;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
-  readonly apiURL:
-    | "https://api.0xsquid.com"
-    | "https://testnet.api.squidrouter.com";
-  readonly squidScanBaseUrl:
-    | "https://axelarscan.io"
-    | "https://testnet.axelarscan.io";
+
+  readonly apiURL: string;
+  readonly squidScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
     this.apiURL =
