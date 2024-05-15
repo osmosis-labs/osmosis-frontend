@@ -64,7 +64,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap OSMO to ATOM", async () => {
     await swapPage.selectPair("OSMO", "ATOM");
-    await swapPage.swap("0.01");
+    await swapPage.enterAmount("0.01");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -78,7 +80,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap ATOM to OSMO", async () => {
     await swapPage.selectPair("ATOM", "OSMO");
-    await swapPage.swap("0.001");
+    await swapPage.enterAmount("0.001");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -92,7 +96,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to USDC.axl", async () => {
     await swapPage.selectPair("USDC", "USDC.axl");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -107,7 +113,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC.axl to USDC", async () => {
     await swapPage.selectPair("USDC.axl", "USDC");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -122,7 +130,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDT to USDT.axl", async () => {
     await swapPage.selectPair("USDT", "USDT.axl");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -137,7 +147,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDT.axl to USDT", async () => {
     await swapPage.selectPair("USDT.axl", "USDT");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -152,7 +164,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap OSMO to USDC", async () => {
     await swapPage.selectPair("OSMO", "USDC");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -166,7 +180,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to OSMO", async () => {
     await swapPage.selectPair("USDC", "OSMO");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -180,7 +196,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap ATOM to USDC", async () => {
     await swapPage.selectPair("ATOM", "USDC");
-    await swapPage.swap("0.01");
+    await swapPage.enterAmount("0.01");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -194,7 +212,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to ATOM", async () => {
     await swapPage.selectPair("USDC", "ATOM");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -208,7 +228,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to TIA", async () => {
     await swapPage.selectPair("USDC", "TIA");
-    await swapPage.swap("0.2");
+    await swapPage.enterAmount("0.2");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -222,7 +244,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap TIA to USDC", async () => {
     await swapPage.selectPair("TIA", "USDC");
-    await swapPage.swap("0.02");
+    await swapPage.enterAmount("0.02");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -236,7 +260,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to INJ", async () => {
     await swapPage.selectPair("USDC", "INJ");
-    await swapPage.swap("0.2");
+    await swapPage.enterAmount("0.2");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -250,7 +276,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap INJ to USDC", async () => {
     await swapPage.selectPair("INJ", "USDC");
-    await swapPage.swap("0.01");
+    await swapPage.enterAmount("0.01");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -264,7 +292,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap USDC to AKT", async () => {
     await swapPage.selectPair("USDC", "AKT");
-    await swapPage.swap("0.1");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
@@ -278,7 +308,9 @@ test.describe("Test Swap feature", () => {
 
   test("User should be able to swap AKT to USDC", async () => {
     await swapPage.selectPair("AKT", "USDC");
-    await swapPage.swap("0.02");
+    await swapPage.enterAmount("0.02");
+    await swapPage.showSwapInfo();
+    await swapPage.swap();
     // Handle Pop-up page ->
     const pageApprove = context.waitForEvent("page");
     const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
