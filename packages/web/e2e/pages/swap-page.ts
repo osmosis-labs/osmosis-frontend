@@ -192,6 +192,11 @@ export class SwapPage {
     return await issufBalanceBtn.isVisible({ timeout: 2000 });
   }
 
+  async isError() {
+    const errorBtn = this.page.locator('//button[.="Error"]');
+    return await errorBtn.isVisible({ timeout: 2000 });
+  }
+
   async showSwapInfo() {
     const swapInfo = this.page.locator(
       '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'

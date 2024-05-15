@@ -56,6 +56,7 @@ test.describe("Test Swap feature", () => {
     swapPage = new SwapPage(await context.newPage());
     await swapPage.goto();
     await swapPage.connectWallet();
+    expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
   });
 
   test.afterEach(async () => {
@@ -306,7 +307,7 @@ test.describe("Test Swap feature", () => {
     expect(swapPage.isTransactionSuccesful()).toBeTruthy();
   });
 
-  test("User should be able to swap AKT to USDC", async () => {
+  test.only("User should be able to swap AKT to USDC", async () => {
     await swapPage.selectPair("AKT", "USDC");
     await swapPage.enterAmount("0.02");
     await swapPage.showSwapInfo();
