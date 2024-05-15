@@ -9,7 +9,6 @@ import { LRUCache } from "lru-cache";
 import { rest } from "msw";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
-import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
 import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
@@ -48,7 +47,6 @@ describe("AxelarBridgeProvider", () => {
         max: 500,
       }),
       assetLists: MockAssetLists,
-      chainList: MockChains,
       getTimeoutHeight: jest.fn().mockResolvedValue({
         revisionNumber: "1",
         revisionHeight: "1000",
