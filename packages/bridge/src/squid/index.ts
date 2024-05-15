@@ -26,13 +26,12 @@ import {
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 
-const providerName = "Squid" as const;
+export const squidProviderId = "Squid" as const;
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static readonly providerName = providerName;
-  readonly providerName = providerName;
+  readonly providerName = squidProviderId;
 
   protected readonly apiURL: string;
   protected readonly squidScanBaseUrl: string;
@@ -64,7 +63,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: providerName,
+        id: squidProviderId,
         fromAmount,
         fromAsset,
         fromChain,
