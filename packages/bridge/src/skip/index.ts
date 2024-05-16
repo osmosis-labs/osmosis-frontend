@@ -24,20 +24,16 @@ import {
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { SkipApiClient } from "./queries";
-import { providerName, SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
+import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
-const logoUrl = "/bridges/skip.svg" as const;
+export const skipProviderId = "Skip" as const;
 
 export class SkipBridgeProvider implements BridgeProvider {
-  static providerName = providerName;
-  providerName = providerName;
-  logoUrl = logoUrl;
+  readonly providerName = skipProviderId;
 
-  private skipClient: SkipApiClient;
+  protected readonly skipClient = new SkipApiClient();
 
-  constructor(readonly ctx: BridgeProviderContext) {
-    this.skipClient = new SkipApiClient();
-  }
+  constructor(protected readonly ctx: BridgeProviderContext) {}
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
@@ -54,7 +50,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: providerName,
+        id: skipProviderId,
         fromAmount,
         fromAsset,
         fromChain,
@@ -376,7 +372,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: providerName,
+        id: skipProviderId,
         func: "_getSkipAssets",
         chainID,
       }),
@@ -392,7 +388,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: providerName,
+        id: skipProviderId,
         func: "_getChains",
       }),
       getFreshValue: async () => {

@@ -25,23 +25,20 @@ import {
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
-import { providerName } from "./const";
 
-const logoUrl = "/bridges/squid.svg" as const;
+export const squidProviderId = "Squid" as const;
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static providerName = providerName;
-  providerName = providerName;
-  logoUrl = logoUrl;
-  apiURL: "https://api.0xsquid.com" | "https://testnet.api.squidrouter.com";
+  readonly providerName = squidProviderId;
 
-  squidScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
+  protected readonly apiURL: string;
+  protected readonly squidScanBaseUrl: string;
 
   constructor(
-    readonly integratorId: string,
-    readonly ctx: BridgeProviderContext
+    protected readonly integratorId: string,
+    protected readonly ctx: BridgeProviderContext
   ) {
     this.apiURL =
       ctx.env === "mainnet"
@@ -66,7 +63,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: providerName,
+        id: squidProviderId,
         fromAmount,
         fromAsset,
         fromChain,
