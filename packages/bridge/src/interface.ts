@@ -138,12 +138,6 @@ export interface GetDepositAddressParams {
   autoUnwrapIntoNative?: boolean;
 }
 
-export interface GetTransferStatusParams {
-  sendTxHash: string;
-  fromChainId: BridgeChain["chainId"];
-  toChainId: BridgeChain["chainId"];
-}
-
 export const getBridgeQuoteSchema = z.object({
   /**
    * The originating chain information.
@@ -250,6 +244,12 @@ export interface BridgeQuote {
 }
 
 // Transfer status
+
+export interface GetTransferStatusParams {
+  sendTxHash: string;
+  fromChainId: BridgeChain["chainId"];
+  toChainId: BridgeChain["chainId"];
+}
 
 export interface BridgeTransferStatus {
   id: string;
