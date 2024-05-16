@@ -1,4 +1,4 @@
-import type { AssetList } from "@osmosis-labs/types";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -9,6 +9,7 @@ export interface BridgeProviderContext {
   env: BridgeEnvironment;
   cache: LRUCache<string, CacheEntry>;
   assetLists: AssetList[];
+  chainList: Chain[];
 
   /** Provides current timeout height for a chain of the ID
    *  parsed from the bech32 config of the given destinationAddress. */
