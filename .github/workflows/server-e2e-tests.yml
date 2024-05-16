@@ -1,6 +1,10 @@
 name: Server E2E Workflow
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: "*/15 * * * *"
 
 jobs:
   setup-matrix:
