@@ -6,6 +6,8 @@ import { rest } from "msw";
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
 import {
+  BridgeAsset,
+  BridgeChain,
   BridgeProviderContext,
   BridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -13,6 +15,34 @@ import {
 } from "../../interface";
 import { SkipBridgeProvider } from "..";
 import { SkipMsg } from "../types";
+
+jest.mock("ethers", () => {
+  const originalModule = jest.requireActual("ethers");
+  return {
+    ...originalModule,
+    ethers: {
+      ...originalModule.ethers,
+      JsonRpcProvider: jest.fn().mockImplementation(() => ({
+        estimateGas: jest.fn().mockResolvedValue("21000"),
+        send: jest.fn().mockResolvedValue("0x4a817c800"),
+        getFeeData: jest.fn().mockResolvedValue({
+          gasPrice: BigInt("20000000000"),
+          maxFeePerGas: BigInt("30000000000"),
+          maxPriorityFeePerGas: BigInt("1000000000"),
+        }),
+      })),
+      Contract: jest.fn().mockImplementation(() => ({
+        allowance: jest.fn().mockResolvedValue(BigInt("100")),
+        approve: {
+          populateTransaction: jest.fn().mockResolvedValue({
+            to: "0x123",
+            data: "0xabcdef",
+          }),
+        },
+      })),
+    },
+  };
+});
 
 beforeEach(() => {
   server.use(
@@ -133,7 +163,7 @@ describe("SkipBridgeProvider", () => {
     provider = new SkipBridgeProvider(ctx);
   });
 
-  it.only("should get a quote", async () => {
+  it("should get a quote", async () => {
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -188,7 +218,12 @@ describe("SkipBridgeProvider", () => {
         value: "0x3e8",
         approvalTransactionRequest: undefined,
       },
-      estimatedGasFee: undefined,
+      estimatedGasFee: {
+        amount: "420000000000000",
+        decimals: 18,
+        denom: "ETH",
+        sourceDenom: "ETH",
+      },
     });
   });
 
@@ -294,5 +329,115 @@ describe("SkipBridgeProvider", () => {
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBeDefined();
     expect(gasCost?.denom).toBe("ETH");
+  });
+
+  it("should fetch and return the correct skip asset", async () => {
+    const chain: BridgeChain = {
+      chainId: 1,
+      chainName: "Ethereum",
+      chainType: "evm",
+    };
+    const asset: BridgeAsset = {
+      denom: "asset1",
+      address: "0x123",
+      decimals: 18,
+      sourceDenom: "asset1",
+    };
+
+    const skipAsset = await provider.getSkipAsset(chain, asset);
+
+    expect(skipAsset).toBeDefined();
+    expect(skipAsset?.denom).toBe("asset1");
+  });
+
+  it("should fetch and cache skip assets", async () => {
+    const chainID = "1";
+    const assets = await provider.getSkipAssets(chainID);
+
+    expect(assets).toBeDefined();
+    expect(assets[chainID].assets.length).toBeGreaterThan(0);
+  });
+
+  it("should fetch and cache chains", async () => {
+    const chains = await provider.getChains();
+
+    expect(chains).toBeDefined();
+    expect(chains.length).toBeGreaterThan(0);
+  });
+
+  it("should generate correct address list for EVM chains", async () => {
+    const chainIDs = ["1"];
+    const fromAddress = "0xabc";
+    const toAddress = "0xdef";
+    const fromChain: BridgeChain = {
+      chainId: 1,
+      chainName: "Ethereum",
+      chainType: "evm",
+    };
+    const toChain: BridgeChain = {
+      chainId: 1,
+      chainName: "Ethereum",
+      chainType: "evm",
+    };
+
+    const addressList = await provider.getAddressList(
+      chainIDs,
+      fromAddress,
+      toAddress,
+      fromChain,
+      toChain
+    );
+
+    expect(addressList).toEqual([fromAddress]);
+  });
+
+  it("should return correct finality time for known chain IDs", () => {
+    const finalityTime = provider.getFinalityTimeForChain("1");
+
+    expect(finalityTime).toBe(960);
+  });
+
+  it("should return default finality time for unknown chain IDs", () => {
+    const finalityTime = provider.getFinalityTimeForChain("999");
+
+    expect(finalityTime).toBe(1);
+  });
+
+  it("should generate approval transaction request if needed", async () => {
+    const chainID = "1";
+    const tokenAddress = "0x123";
+    const owner = "0xabc";
+    const spender = "0xdef";
+    const amount = "1000";
+
+    const approvalTxRequest = await provider.getApprovalTransactionRequest(
+      chainID,
+      tokenAddress,
+      owner,
+      spender,
+      amount
+    );
+
+    expect(approvalTxRequest).toBeDefined();
+    expect(approvalTxRequest?.to).toBe(tokenAddress);
+    expect(approvalTxRequest?.data).toBeDefined();
+  });
+
+  it("should not generate approval transaction request if allowance is sufficient", async () => {
+    const chainID = "1";
+    const tokenAddress = "0x123";
+    const owner = "0xabc";
+    const spender = "0xdef";
+    const amount = "1";
+
+    const approvalTxRequest = await provider.getApprovalTransactionRequest(
+      chainID,
+      tokenAddress,
+      owner,
+      spender,
+      amount
+    );
+
+    expect(approvalTxRequest).toBeUndefined();
   });
 });
