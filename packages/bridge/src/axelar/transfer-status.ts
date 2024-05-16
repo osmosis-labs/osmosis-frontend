@@ -7,12 +7,12 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
+import { axelarProviderId } from ".";
 import { getTransferStatus } from "./queries";
-import { providerName } from "./types";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
 export class AxelarTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = providerName;
+  readonly keyPrefix = axelarProviderId;
   readonly sourceDisplayName = "Axelar Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 

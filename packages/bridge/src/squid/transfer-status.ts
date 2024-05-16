@@ -9,13 +9,11 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
-
-// TODO: move to types file
-const providerName = "Squid" as const;
+import { squidProviderId } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = providerName;
+  readonly keyPrefix = squidProviderId;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 

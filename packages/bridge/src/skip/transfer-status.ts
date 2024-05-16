@@ -8,12 +8,12 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
+import { skipProviderId } from ".";
 import { SkipApiClient } from "./queries";
-import { providerName } from "./types";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = providerName;
+  readonly keyPrefix = skipProviderId;
   readonly sourceDisplayName = "Skip Bridge";
 
   statusReceiverDelegate?: TransferStatusReceiver | undefined;

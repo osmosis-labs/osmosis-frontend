@@ -1,5 +1,6 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
+  Bridge,
   BridgeCoin,
   BridgeError,
   BridgeProviders,
@@ -25,6 +26,12 @@ import { IS_TESTNET } from "~/config/env";
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
+
+const BridgeLogoUrls: Record<Bridge, string> = {
+  Skip: "/bridge/skip.svg",
+  Squid: "/bridge/squid.svg",
+  Axelar: "/bridge/axelar.svg",
+};
 
 export const bridgeTransferRouter = createTRPCRouter({
   /**
@@ -131,7 +138,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           quote: {
             provider: {
               id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
+              logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
             },
             ...quote,
             input: {
@@ -236,7 +243,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           transactionRequest: {
             provider: {
               id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
+              logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
             },
             ...quote,
           },
