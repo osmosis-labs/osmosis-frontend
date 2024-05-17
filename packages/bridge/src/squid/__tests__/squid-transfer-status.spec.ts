@@ -3,7 +3,7 @@ import { rest } from "msw";
 
 import { server } from "../../__tests__/msw";
 import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
-import { SkipTransferStatusProvider } from "../transfer-status";
+import { SquidTransferStatusProvider } from "../transfer-status";
 
 jest.mock("@osmosis-labs/utils", () => {
   const originalModule = jest.requireActual("@osmosis-labs/utils");
@@ -21,14 +21,14 @@ jest.mock("@osmosis-labs/utils", () => {
   };
 });
 
-describe("SkipTransferStatusProvider", () => {
-  let provider: SkipTransferStatusProvider;
+describe("SquidTransferStatusProvider", () => {
+  let provider: SquidTransferStatusProvider;
   const mockReceiver: TransferStatusReceiver = {
     receiveNewTxStatus: jest.fn(),
   };
 
   beforeEach(() => {
-    provider = new SkipTransferStatusProvider("mainnet" as BridgeEnvironment);
+    provider = new SquidTransferStatusProvider("mainnet" as BridgeEnvironment);
     provider.statusReceiverDelegate = mockReceiver;
   });
 
@@ -37,7 +37,7 @@ describe("SkipTransferStatusProvider", () => {
   });
 
   it("should initialize with correct URLs", () => {
-    expect(provider.axelarScanBaseUrl).toBe("https://axelarscan.io");
+    expect(provider.squidScanBaseUrl).toBe("https://axelarscan.io");
   });
 
   it("should generate correct explorer URL", () => {
@@ -49,8 +49,10 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
-        return res(ctx.json({ state: "STATE_COMPLETED_SUCCESS" }));
+      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
+        return res(
+          ctx.json({ id: "testTxHash", squidTransactionStatus: "success" })
+        );
       })
     );
 
@@ -59,7 +61,7 @@ describe("SkipTransferStatusProvider", () => {
     );
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Skip${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      `Squid${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
       "success",
       undefined
     );
@@ -67,8 +69,10 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle failed transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
-        return res(ctx.json({ state: "STATE_COMPLETED_ERROR" }));
+      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
+        return res(
+          ctx.json({ id: "testTxHash", squidTransactionStatus: "needs_gas" })
+        );
       })
     );
 
@@ -77,15 +81,15 @@ describe("SkipTransferStatusProvider", () => {
     );
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Skip${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      `Squid${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
       "failed",
-      undefined
+      "insufficientFee"
     );
   });
 
   it("should handle undefined transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
+      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
         return res(ctx.status(404));
       })
     );
@@ -98,7 +102,7 @@ describe("SkipTransferStatusProvider", () => {
   });
 
   it("should generate correct explorer URL for testnet", () => {
-    const testnetProvider = new SkipTransferStatusProvider(
+    const testnetProvider = new SquidTransferStatusProvider(
       "testnet" as BridgeEnvironment
     );
     const url = testnetProvider.makeExplorerUrl(

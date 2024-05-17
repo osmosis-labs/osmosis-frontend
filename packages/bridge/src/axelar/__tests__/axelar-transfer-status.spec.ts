@@ -178,4 +178,10 @@ describe("AxelarTransferStatusProvider", () => {
 
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
+
+  it("should generate correct explorer URL with serialized params", () => {
+    const serializedParams = JSON.stringify({ sendTxHash: "testTxHash" });
+    const url = provider.makeExplorerUrl(serializedParams);
+    expect(url).toBe("https://axelarscan.io/transfer/testTxHash");
+  });
 });

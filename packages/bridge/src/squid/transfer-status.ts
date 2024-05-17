@@ -32,12 +32,12 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(serializedParams: string): void {
+  async trackTxStatus(serializedParams: string): Promise<void> {
     const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
     const snapshotKey = `${this.keyPrefix}${serializedParams}`;
-    poll({
+    await poll({
       fn: async () => {
         try {
           const url = new URL(`${this.apiURL}/v1/status`);
@@ -84,18 +84,15 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           }>;
 
           throw new BridgeTransferStatusError(
-            error.data?.errors?.map(
-              ({ errorType, message }) =>
-                ({
-                  errorType: errorType ?? BridgeError.UnexpectedError,
-                  message: message ?? "",
-                } ?? [
-                  {
-                    errorType: BridgeError.UnexpectedError,
-                    message: "Failed to fetch transfer status",
-                  },
-                ])
-            )
+            error.data?.errors?.map(({ errorType, message }) => ({
+              errorType: errorType ?? BridgeError.UnexpectedError,
+              message: message ?? "Failed to fetch transfer status",
+            })) ?? [
+              {
+                errorType: BridgeError.UnexpectedError,
+                message: "Failed to fetch transfer status",
+              },
+            ]
           );
         }
       },
