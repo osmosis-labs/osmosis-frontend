@@ -1,6 +1,6 @@
 # @osmosis-labs/bridge
 
-Provides a single API for for interacting with multiple bridge providers. Relies on canonical chain and asset identifiers across ecosystems for identifying assets and chains. Some bridge providers include routing and swap aggregation capabilites. New providers can be added by implementing the `BridgeProvider` interface. The interface includes some optional components that can be used to support alternative bridge features, such as the `getDepositAddress` for briding via a send transaction to a generated deposit address.
+Provides a single API for for interacting with multiple bridge providers, with a focus on IBC asset info for a single chain. Relies on canonical chain and asset identifiers across ecosystems for identifying assets and chains. Some bridge providers include routing and swap aggregation capabilites. New providers can be added by implementing the `BridgeProvider` interface. The interface includes some optional components that can be used to support alternative bridge features, such as the `getDepositAddress` for briding via a send transaction to a generated deposit address.
 
 Providers are complemented with objects that implement the `TransferStatusProvider` interface. These objects provide updates on the status of a transfer transaction recommended by a bridge provider. The provider can then push these updates to the caller's implementation of the `TransferStatusReceiver` interface, using the transaction's hash. Depending on the needs of the caller the `TransferStatusReceiver` object can be implemented to provide updates to the UI or other observer.
 
@@ -56,7 +56,7 @@ statusProvider.trackTxStatus(txHash, statusReceiver);
 // log: MyObservableTransferStatusReceiver got "completed" for skip_txHash ABC123
 ```
 
-### Steps to add a Bridge Provider
+## Steps to add a Bridge Provider
 
 1. **Create a new Bridge Provider Class**: This class should implement the BridgeProvider interface. This means it should have the following methods: `getQuote`, `getTransferStatus`, `getTransactionData`, and optionally `getDepositAddress`.
 
@@ -104,13 +104,9 @@ this.bridges = {
 
 3. **Test Your Implementation**: After you've implemented and registered your bridge provider, you should thoroughly test it to make sure it works correctly.
 
-### Outstanding tasks
+## Interfaces
 
-- [ ] Add support for QR-Based bridge providers like Nomic
-
-### Interfaces
-
-#### BridgeProvider
+### BridgeProvider
 
 The BridgeProvider interface is the main interface for a bridge provider. It includes methods for requesting a quote for a cross-chain transfer, getting the status of a transfer, getting transaction data, and optionally getting a deposit address.
 
@@ -131,11 +127,11 @@ export interface BridgeProvider {
 }
 ```
 
-#### BridgeProviderContext
+### BridgeProviderContext
 
 The BridgeProviderContext interface provides context for a bridge provider, including the environment (mainnet or testnet) and a cache.
 
-#### BridgeChain
+### BridgeChain
 
 The BridgeChain interface represents a blockchain that can be bridged. It includes the chain ID, human-readable name, network name, and chain type (either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains).
 
@@ -148,7 +144,7 @@ export interface BridgeChain {
 }
 ```
 
-#### BridgeTransferStatus
+### BridgeTransferStatus
 
 The BridgeTransferStatus interface represents the status of a bridge transfer. It includes the transfer ID, status, and reason for the status.
 
@@ -160,7 +156,7 @@ export interface BridgeTransferStatus {
 }
 ```
 
-#### BridgeAsset
+### BridgeAsset
 
 The BridgeAsset interface represents an asset that can be transferred across a bridge. It includes the denomination of the asset, the address of the asset, the number of decimal places for the asset, and the source minimum denom (e.g. uatom).
 
@@ -173,7 +169,7 @@ export interface BridgeAsset {
 }
 ```
 
-#### BridgeCoin
+### BridgeCoin
 
 The BridgeCoin type represents an asset with an amount, likely returned within a bridge quote.
 
@@ -187,7 +183,7 @@ export type BridgeCoin = {
 };
 ```
 
-#### BridgeTransactionRequest
+### BridgeTransactionRequest
 
 The BridgeTransactionRequest type represents a request for a bridge transaction. It can be one of three types: EvmBridgeTransactionRequest, CosmosBridgeTransactionRequest, or QRCodeBridgeTransactionRequest.
 
