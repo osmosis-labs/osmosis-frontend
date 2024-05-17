@@ -20,8 +20,8 @@ export interface BridgeProviderContext {
 }
 
 export interface BridgeProvider {
-  providerName: string;
-  logoUrl: string;
+  readonly providerName: string;
+
   /**
    * Requests a quote for a cross-chain transfer.
    *
@@ -29,9 +29,25 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a GetBridgeQuoteResponse object.
    */
   getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote>;
+
+  /**
+   * Requests one or more transactions to initiate a cross-chain transfer.
+   *
+   * @param params The parameters from a prior quote request.
+   * @returns A promise that resolves to a sign document ready to be signed.
+   */
   getTransactionData: (
     params: GetBridgeQuoteParams
   ) => Promise<BridgeTransactionRequest>;
+
+  /**
+   * If the provider supports deposit address transfers:
+   * Requests for a deposit address generated from the given params.
+   * Sending to the deposit address automatically triggers the transfer.
+   *
+   * @param params The parameters from a prior quote request.
+   * @returns A promise that resolves to a deposit address ready for signing.
+   */
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
@@ -121,12 +137,6 @@ export interface GetDepositAddressParams {
    */
   toAddress: string;
   autoUnwrapIntoNative?: boolean;
-}
-
-export interface GetTransferStatusParams {
-  sendTxHash: string;
-  fromChainId: BridgeChain["chainId"];
-  toChainId: BridgeChain["chainId"];
 }
 
 export const getBridgeQuoteSchema = z.object({
@@ -235,6 +245,12 @@ export interface BridgeQuote {
 }
 
 // Transfer status
+
+export interface GetTransferStatusParams {
+  sendTxHash: string;
+  fromChainId: BridgeChain["chainId"];
+  toChainId: BridgeChain["chainId"];
+}
 
 export interface BridgeTransferStatus {
   id: string;

@@ -1,7 +1,5 @@
 import { BridgeEnvironment } from "../interface";
 
-export const providerName = "Axelar" as const;
-
 /** Maps Axelar chain id agruments => source chain ids.
  *  SourceChain (IDs) are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *  Axelar Chain IDs are accepted as arguments in Axelar's APIs.
