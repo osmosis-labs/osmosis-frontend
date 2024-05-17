@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "build",
     "declaration": true,
-    "allowJs": false,
     "rootDir": "src",
     "module": "ES6"
   },
