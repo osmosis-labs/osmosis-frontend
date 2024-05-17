@@ -9,4 +9,20 @@ module.exports = {
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
+  transformIgnorePatterns: ["node_modules/(?!(@osmosis-labs/tx)/)"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
+  transform: {
+    "^.+\\.(js|jsx)?$": [
+      "babel-jest",
+      { configFile: "../../babel.config.json" },
+    ],
+    "^.+\\.(ts|tsx)?$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
+  },
 };

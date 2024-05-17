@@ -1,11 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
-  createCallerFactory,
   DEFAULT_VS_CURRENCY,
   FilteredPoolsResponse,
   NumPoolsResponse,
 } from "@osmosis-labs/server";
+import { createCallerFactory } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
